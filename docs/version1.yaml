@@ -1,0 +1,2312 @@
+####################################################################################
+# Copyright © 2019 Lisk Foundation
+#
+# See the LICENSE file at the top-level directory of this distribution
+# for licensing information.
+#
+# Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+# no part of this software, including this file, may be copied, modified,
+# propagated, or distributed except according to the terms contained in the
+# LICENSE file.
+#
+# Removal or modification of this copyright notice is prohibited.
+####################################################################################
+swagger: '2.0'
+info:
+  title: Lisk Service API
+  version: "1.0"
+  # put the contact info for your development or API team
+  contact:
+    email: admin@lisk.io
+  description: | 
+    # Lisk Service API Documentation
+    
+    The Lisk Service is a web application that interacts with the whole Lisk ecosystem in various aspects: by accessing blockchain data, storing users' private data, retrieving and storing market data and interacting with social media. 
+
+    The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API.The project is planned to split into several smaller components. The general idea is to provide one component for one particular purpose. 
+    
+    As a purely backend project it is designed to meet requirements of frontend developers, especially Lisk Hub and Lisk Mobile.
+    
+    The API can be accessed by the `https://service.lisk.io`.
+    You can also access the testnet network by `https://testnet-service.lisk.io`
+    
+    The Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples how to use the API in practice.
+    
+    ## Endpoint Logic
+    
+    The logic of the endpoints comes as follows:
+    - the structure is always based on `/<root_entity>/<object>/<properties>`
+    
+    ## Responses
+    
+    All responses are returned in the JSON format - `application/json`.
+    
+    Each API request has the following structure:
+    
+    ```
+    {
+      "data": {}, // Contains the requested data
+      "meta": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`
+      "links": {} // Contains links to connected API calls from here, e.g. pagination links
+    }
+    ```
+    
+    ## The `account_id` Parameter
+    
+    Users that want to retrieve account data can rely on its unique properties: Account ID (ex. 1234567L), public key or a registered delegate name.
+    
+    ## Date Format
+    
+    In the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
+    
+  license:
+    name: GPL v3.0
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+
+# All paths relative to specified basePath
+basePath: /api/v1
+
+# Tags for organizing operations
+tags:
+- name: Accounts
+  description: Lisk Network account API calls
+- name: Blocks
+  description: Lisk Network block API calls
+- name: Delegates
+  description: Lisk Network delegate API calls
+- name: Peers
+  description: Lisk Network peer API calls
+- name: Transactions
+  description: Lisk Network transaction API calls
+- name: Network
+  description: Lisk Network utils
+
+schemes:
+  - http
+  - https
+
+paths:
+  /accounts:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves account details.
+      operationId: getAccounts
+      description: |
+        Retrieves account details based on criteria defined by params.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/accounts?address=4935562234363081651L`
+          `/api/v1/accounts?publickey=094ebe...18ab6f`
+          `/api/v1/accounts?username=genesis_84`
+          `/api/v1/accounts?address=4935562234363081651L&offset=100&limit=50`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddress'
+      - $ref: '#/parameters/accountPublicKey'
+      - $ref: '#/parameters/accountSecondPublicKey'
+      - $ref: '#/parameters/accountUsername'
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      - name: sort
+        in: query
+        description: Fields to sort results by
+        required: false
+        type: string
+        enum:
+          - balance:asc
+          - balance:desc
+        default: balance:asc
+      responses:
+        200:
+          description: array of accounts with details
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AccountsWithEnvelope'
+        400:
+          description: bad input parameter
+  /accounts/top:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves top accounts.
+      operationId: getTopAccounts
+      description: |
+        Retrieves account details sorted by balance descending.
+        Supports pagination.
+        ##
+        **Example**
+         `/api/v1/accounts/top?limit=100`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of accounts with details
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/AccountsWithEnvelope'
+        400:
+          description: bad input parameter
+  /account/{account_id}:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves account details.
+      operationId: getAccountById
+      description: |
+        Retrieves a single account details based on address, public key or delegate name.
+        ##
+        **Example**
+          `/api/v1/account/4935562234363081651L`
+          `/api/v1/account/6122ac...7c684b`
+          `/api/v1/account/genesis_84`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      responses:
+        200:
+          description: array of votes
+          schema:
+            $ref: '#/definitions/AccountsWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /account/{account_id}/transactions:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves list of transactions.
+      operationId: getTransactionsPerAccount
+      description: |
+        Retrieves transactions for a single account based on address, public key or delegate name.
+        Supports pagination.
+        ##
+        **Example**
+        `/api/v1/account/4935562234363081651L/transactions`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      - $ref: '#/parameters/transactionType'
+      - $ref: '#/parameters/transactionData'
+      - $ref: '#/parameters/height'
+      - $ref: '#/parameters/minAmount'
+      - $ref: '#/parameters/maxAmount'
+      - $ref: '#/parameters/fromTimestamp'
+      - $ref: '#/parameters/toTimestamp'
+      - $ref: '#/parameters/blockId'
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      - in: query
+        name: sort
+        description: Fields to sort results by
+        required: false
+        type: string
+        enum:
+          - amount:asc
+          - amount:desc
+          - fee:asc
+          - fee:desc
+          - type:asc
+          - type:desc
+          - timestamp:asc
+          - timestamp:desc
+        default: amount:asc
+      responses:
+        200:
+          description: array of last transactions
+          schema:
+            $ref: '#/definitions/TransactionsWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /account/{account_id}/transactions/json:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves list of transactions.
+      operationId: getAllTransactionsPerAccountJson
+      description: |
+        Retrieves transactions for a single account based on address, public key or delegate name.
+        Supports pagination.
+        ##
+        **Example**
+        `/api/v1/account/4935562234363081651L/transactions/json`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      responses:
+        200:
+          description: array of all transactions
+          schema:
+            $ref: '#/definitions/TransactionsExportWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /account/{account_id}/transactions/csv:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves list of transactions.
+      operationId: getAllTransactionsPerAccountCsv
+      description: |
+        Retrieves transactions for a single account based on address, public key or delegate name.
+        Supports pagination.
+        ##
+        **Example**
+        `/api/v1/account/4935562234363081651L/transactions/csv`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      responses:
+        200:
+          description: array of all transactions in CSV format
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /account/{account_id}/votes:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves votes.
+      operationId: getAccountVotes
+      description: |
+        Retrieves votes for a single account based on address, public key or delegate name.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/account/4935562234363081651L/votes`
+          `/api/v1/account/6122ac...7c684b/votes`
+          `/api/v1/account/genesis_84/votes`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of votes
+          schema:
+            $ref: '#/definitions/VotesWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /account/{account_id}/voters:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves voters.
+      operationId: getAccountVoters
+      description: |
+        Retrieves voters for a single account based on address, public key or delegate name.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/account/4935562234363081651L/voters`
+          `/api/v1/account/6122ac...7c684b/voters`
+          `/api/v1/account/genesis_84/voters`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of votes
+          schema:
+            $ref: '#/definitions/VotesWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /account/{account_id}/history:
+    get:
+      tags:
+      - Accounts
+      summary: Retrieves account balance history.
+      operationId: getAccountHistory
+      description: |
+        (Not implemented yet) Retrieves account balance over time based on address, public key or delegate name.
+        **Example**
+          `/api/v1/account/4935562234363081651L/history`
+          `/api/v1/account/6122ac...7c684b/history`
+          `/api/v1/account/genesis_84/history`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        501:
+          description: feature not implemented
+          schema:
+            $ref: '#/definitions/FeatureNotImplemented'
+        400:
+          description: bad input parameter
+  /blocks:
+    get:
+      tags:
+      - Blocks
+      summary: Retrieves blocks by criteria.
+      operationId: getBlocks
+      description: |
+        Retrieves block details based on criteria defined by params.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/blocks?offset=100&limit=50`
+          `/api/v1/blocks?height=1`
+          `/api/v1/blocks?account=4935562234363081651L`
+      produces:
+      - application/json
+      parameters:
+        - in: query
+          name: id
+          description: Block id to query
+          type: string
+          format: id
+          minLength: 1
+          maxLength: 20
+        - $ref: '#/parameters/height'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/fromTimestamp'
+        - $ref: '#/parameters/toTimestamp'
+        - $ref: '#/parameters/accountAddressPublicKeyUsernameQuery'
+        - in: query
+          name: sort
+          description: Fields to sort results by
+          required: false
+          type: string
+          enum:
+            - height:asc
+            - height:desc
+            - totalAmount:asc
+            - totalAmount:desc
+            - totalFee:asc
+            - totalFee:desc
+            - timestamp:asc
+            - timestamp:desc
+          default: height:desc
+      responses:
+        200:
+          description: array of blocks
+          schema:
+            $ref: '#/definitions/BlocksWithEnvelope'
+        400:
+          description: bad input parameter
+  /blocks/last:
+    get:
+      tags:
+      - Blocks
+      summary: Retrieves last blocks.
+      operationId: getLastBlocks
+      description: |
+        Retrieves block details sorted by timestamp in descending order.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/blocks/last?limit=10`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of blocks
+          schema:
+            $ref: '#/definitions/BlocksWithEnvelope'
+        400:
+          description: bad input parameter
+  /blocks/best:
+    get:
+      tags:
+      - Blocks
+      summary: Retrieves blocks with the total amount.
+      operationId: getBestBlocks
+      description: |
+        Retrieves block details sorted by its sum of transaction amounts in descending order.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/blocks/best?limit=10`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of blocks
+          schema:
+            $ref: '#/definitions/BlocksWithEnvelope'
+        400:
+          description: bad input parameter
+  /block/{block_id}:
+    get:
+      tags:
+      - Blocks
+      summary: Retrieves blocks by criteria.
+      operationId: getBlock
+      description: |
+        Retrieves block details by block ID.
+        ##
+        **Example**
+          `/api/v1/block/9769762548389700282`
+      produces:
+      - application/json
+      parameters:
+        - $ref: '#/parameters/blockIdPath'
+      responses:
+        200:
+          description: array of blocks
+          schema:
+            $ref: '#/definitions/BlocksWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /block/{block_id}/transactions:
+    get:
+      tags:
+      - Blocks
+      summary: Retrieves blocks by criteria.
+      operationId: getTransactionsByBlock
+      description: |
+        Retrieves transaction details by block ID.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/block/9769762548389700282/transactions`
+      produces:
+      - application/json
+      parameters:
+        - $ref: '#/parameters/blockIdPath'
+        - $ref: '#/parameters/offset'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/minAmount'
+        - $ref: '#/parameters/maxAmount'
+        - $ref: '#/parameters/fromTimestamp'
+        - $ref: '#/parameters/toTimestamp'
+        - in: query
+          name: sort
+          description: Fields to sort results by
+          required: false
+          type: string
+          enum:
+            - amount:asc
+            - amount:desc
+            - fee:asc
+            - fee:desc
+            - type:asc
+            - type:desc
+            - timestamp:asc
+            - timestamp:desc
+          default: timestamp:desc
+      responses:
+        200:
+          description: array of blocks
+          schema:
+            $ref: '#/definitions/TransactionsWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /network/status:
+    get:
+      tags:
+      - Network
+      summary: Retrieves network details and constants.
+      operationId: getNetworkStatus
+      description: |
+        Retrieves network details and constants such as network height, broadhash, fees, reward amount etc.
+        ##
+        **Example**
+          `/api/v1/network/status`
+      produces:
+      - application/json
+      responses:
+        200:
+          description: object with network status details
+          schema:
+            $ref: '#/definitions/NetworkStatus'
+        400:
+          description: bad input parameter
+  /network/statistics:
+    get:
+      tags:
+      - Network
+      summary: Retrieves network statistics.
+      operationId: getNetworkStatistics
+      description: |
+        Retrieves network statistics such as number of peers, node versions, heights etc.
+        ##
+        **Example**
+          `/api/v1/network/statistics`
+      produces:
+      - application/json
+      responses:
+        200:
+          description: array of peers
+          schema:
+            $ref: '#/definitions/NetworkStatistics'
+  /search:
+    get:
+      tags:
+      - Network
+      summary: Performs search among the blockchain data.
+      operationId: searchByQuery
+      description: |
+        Performs search among the delegates, accounts, public keys, transactions, blocks and height.
+        ##
+        **Example**
+          `/api/v1/search?q=genesis_10`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/searchQuery'
+      responses:
+        200:
+          description: Feature not implemented yet.
+          schema:
+            $ref: '#/definitions/UnifiedSearch'
+        400:
+          description: bad input parameter
+          
+  /delegates:
+    get:
+      tags:
+      - Delegates
+      summary: Retrieves delegate list with their details.
+      operationId: getDelegates
+      description: |
+        Retrieves delegate list with their details based on criteria.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/delegates?limit=101`
+          `/api/v1/delegates?limit=5&sort=missedBlocks:desc`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddress'
+      - $ref: '#/parameters/accountPublicKey'
+      - $ref: '#/parameters/accountSecondPublicKey'
+      - $ref: '#/parameters/accountUsername'
+      - $ref: '#/parameters/offset'
+      - $ref: '#/parameters/limit101'
+      - name: search
+        in: query
+        description: Delegate name full text search phrase
+        type: string
+        minLength: 1
+        maxLength: 20
+      - in: query
+        name: sort
+        description: Fields to sort results by
+        required: false
+        type: string
+        enum:
+          - username:asc
+          - username:desc
+          - rank:asc
+          - rank:desc
+          - productivity:asc
+          - productivity:desc
+          - missedBlocks:asc
+          - missedBlocks:desc
+        default: rank:asc
+      responses:
+        200:
+          description: array of delegates matching filter criteria
+          schema:
+            $ref: '#/definitions/DelegatesWithEnvelope'
+        400:
+          description: bad input parameter
+  /delegates/active:
+    get:
+      tags:
+      - Delegates
+      summary: Retrieves active delegate list.
+      operationId: getActiveDelegates
+      description: |
+        Retrieves active delegate list with their details.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/delegates/active?limit=10`
+      parameters:
+      - name: limit
+        in: query
+        description: Limit applied to results
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 101
+        default: 101
+      - $ref: '#/parameters/offset'
+      produces:
+      - application/json
+      responses:
+        200:
+          description: array of active delegates
+          schema:
+            $ref: '#/definitions/DelegatesWithEnvelope'
+        400:
+          description: bad input parameter
+  /delegates/standby:
+    get:
+      tags:
+      - Delegates
+      summary: Retrieves standby delegate list.
+      operationId: getStandbyDelegates
+      description: |
+        Retrieves standby delegate list with their details.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/delegates/standby`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of standby delegates
+          schema:
+            $ref: '#/definitions/DelegatesWithEnvelope'
+        400:
+          description: bad input parameter
+  /delegates/latest_registrations:
+    get:
+      tags:
+      - Delegates
+      summary: Retrieves latest delegate registrations.
+      operationId: getLastDelegateRegistrations
+      description: |
+        Retrieves recently registered delegates with their details.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/delegates/latest_registrations?limit=10`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of recently registered delegates
+          schema:
+            $ref: '#/definitions/DelegatesWithEnvelope'
+        400:
+          description: bad input parameter
+  /delegates/next_forgers:
+    get:
+      tags:
+      - Delegates
+      summary: Retrieves next forgers.
+      operationId: getNextForgers
+      description: |
+        Retrieves next forgers with details in the current round.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/delegates/next_forgers`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit101'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of next forgers
+          schema:
+            $ref: '#/definitions/DelegatesWithEnvelope'
+        400:
+          description: bad input parameter
+  /delegate/{account_id}:
+    get:
+      tags:
+      - Delegates
+      summary: Retrieves delegate list with their details.
+      operationId: getDelegate
+      description: |
+        Retrieves a single delegate details based on address, public key or delegate name.
+        ##
+        **Example**
+          `/api/v1/delegate/4935562234363081651L`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/accountAddressPublicKeyUsernamePath'
+      responses:
+        200:
+          description: array of delegates matching filter criteria
+          schema:
+            $ref: '#/definitions/DelegatesWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /peers:
+    get:
+      tags:
+      - Peers
+      summary: Retrieves network peers.
+      operationId: getPeers
+      description: |
+        Retrieves network peers with details based on criteria.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/peers`
+      parameters:
+        - $ref: '#/parameters/ip'
+        - $ref: '#/parameters/httpPort'
+        - $ref: '#/parameters/wsPort'
+        - $ref: '#/parameters/os'
+        - $ref: '#/parameters/version'
+        - $ref: '#/parameters/state'
+        - $ref: '#/parameters/height'
+        - $ref: '#/parameters/broadhash'
+        - $ref: '#/parameters/limit'
+        - $ref: '#/parameters/offset'
+        - in: query
+          name: sort
+          description: Fields to sort results by
+          required: false
+          type: string
+          enum:
+            - height:asc
+            - height:desc
+            - version:asc
+            - version:desc
+          default: height:desc
+      produces:
+      - application/json
+      responses:
+        200:
+          description: array of peers
+          schema:
+            $ref: '#/definitions/PeersWithEnvelope'
+        400:
+          description: bad input parameter
+  /peers/connected:
+    get:
+      tags:
+      - Peers
+      summary: Retrieves connected network peers.
+      operationId: getConnectedPeers
+      description: |
+        Retrieves connected network peers with details.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/peers/connected`
+      produces:
+      - application/json
+      responses:
+        200:
+          description: array of connected peers
+          schema:
+            $ref: '#/definitions/PeersWithEnvelope'
+        400:
+          description: bad input parameter
+  /peers/disconnected:
+    get:
+      tags:
+      - Peers
+      summary: Retrieves disconnected network peers.
+      operationId: getDisconnectedPeers
+      description: |
+        Retrieves disconnected network peers with details.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/peers/disconnected`
+      produces:
+      - application/json
+      responses:
+        200:
+          description: array of connected peers
+          schema:
+            $ref: '#/definitions/PeersWithEnvelope'
+        400:
+          description: bad input parameter
+  /peer/{ip}:
+    get:
+      tags:
+      - Peers
+      summary: Retrieves network peer by IP.
+      operationId: getPeerByIp
+      description: |
+        Retrieves network peer details by IP address.
+        ##
+        **Example**
+          `/api/v1/peer/127.0.0.1`
+      parameters:
+        - in: path
+          name: ip
+          description: IP address
+          required: true
+          type: string
+      produces:
+      - application/json
+      responses:
+        200:
+          description: array of peers
+          schema:
+            $ref: '#/definitions/PeersWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /transactions:
+    get:
+      tags:
+      - Transactions
+      summary: Retrieves network transactions.
+      operationId: getTransactions
+      description: |
+        Retrieves network transactions by criteria defined by params.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/transactions?id=3944539288124618625`
+          `/api/v1/transactions?type=0&limit=10&offset=50`
+          `/api/v1/transactions?height=80418`
+          `/api/v1/transactions?account=4935562234363081651L`
+          `/api/v1/transactions?sender=genesis_84`
+          `/api/v1/transactions?recipient=094ebe...18ab6f`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/transactionId'
+      - $ref: '#/parameters/transactionType'
+      - $ref: '#/parameters/transactionData'
+      - $ref: '#/parameters/accountAddressPublicKeyUsernameQuery'
+      - $ref: '#/parameters/senderAddressPublicKeyUsername'
+      - $ref: '#/parameters/recipientAddressPublicKeyUsername'
+      - $ref: '#/parameters/minAmount'
+      - $ref: '#/parameters/maxAmount'
+      - $ref: '#/parameters/fromTimestamp'
+      - $ref: '#/parameters/toTimestamp'
+      - $ref: '#/parameters/blockId'
+      - $ref: '#/parameters/height'
+      - $ref: '#/parameters/offset'
+      - $ref: '#/parameters/limit'
+      - in: query
+        name: sort
+        description: Fields to sort results by
+        required: false
+        type: string
+        enum:
+          - amount:asc
+          - amount:desc
+          - fee:asc
+          - fee:desc
+          - type:asc
+          - type:desc
+          - timestamp:asc
+          - timestamp:desc
+        default: timestamp:desc
+      responses:
+        200:
+          description: search results matching criteria
+          schema:
+            $ref: '#/definitions/TransactionsWithEnvelope'
+        400:
+          description: bad input parameter
+  /transactions/last:
+    get:
+      tags:
+      - Transactions
+      summary: Retrieves last transactions.
+      operationId: getLastTransactions
+      description: |
+        Retrieves recent network transactions in descending order.
+        Supports pagination.
+        ##
+        **Example**
+          `/api/v1/transactions/last`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: array of last transactions
+          schema:
+            $ref: '#/definitions/TransactionsWithEnvelope'
+        400:
+          description: bad input parameter
+  /transaction/{transaction_id}:
+    get:
+      tags:
+      - Transactions
+      summary: Retrieves transaction by ID.
+      operationId: getTransactionById
+      description: |
+        Retrieves transaction details by ID.
+        ##
+        **Example**
+          `/api/v1/transaction/123456789`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/transactionIdPath'
+      responses:
+        200:
+          description: array of last transactions
+          schema:
+            $ref: '#/definitions/TransactionsWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /transactions/statistics/day:
+    get:
+      tags:
+      - Transactions
+      summary: Retrieves daily transactions statistics.
+      operationId: getTransactionsStatisticsDay
+      description: |
+        Retrieves daily transactions statistics for given limit and offset.
+        ##
+        **Example**
+          `/api/v1/transactions/statistics/day`
+          `/api/v1/transactions/statistics/day?limit=7`
+          `/api/v1/transactions/statistics/day?limit=6&offset=3`
+      produces:
+      - application/json
+      parameters:
+      - $ref: '#/parameters/limit'
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: object with transaction statistics
+          schema:
+            $ref: '#/definitions/TransactionsStatisticsWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+  /transactions/statistics/month:
+    get:
+      tags:
+      - Transactions
+      summary: Retrieves monthly transactions statistics.
+      operationId: getTransactionsStatisticsMonth
+      description: |
+        Retrieves monthly transactions statistics for given limit and offset.
+        ##
+        **Example**
+          `/api/v1/transactions/statistics/month`
+          `/api/v1/transactions/statistics/month?limit=7`
+          `/api/v1/transactions/statistics/month?limit=6&offset=3`
+      produces:
+      - application/json
+      parameters:
+      - in: query
+        name: limit
+        description: Limit applied to results
+        type: integer
+        format: int32
+        minimum: 1
+        maximum: 12
+        default: 10
+      - $ref: '#/parameters/offset'
+      responses:
+        200:
+          description: object with transaction statistics
+          schema:
+            $ref: '#/definitions/TransactionsStatisticsWithEnvelope'
+        400:
+          description: bad input parameter
+        404:
+          description: not found
+          
+definitions:
+
+  Account:
+    type: object
+    required:
+      - address
+    properties:
+      address:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: |
+          The Lisk Address is the human readable representation of the accounts owners' public key.
+          It consists of multiple numbers followed by a big 'L' at the end.
+      publicKey:
+        type: string
+        format: publicKey
+        example: 968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b
+        description: |
+          The public key is derived from the private key of the owner of the account.
+          It can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.
+      secondPublicKey:
+        type: string
+        format: publicKey
+        example: 968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b
+        description: |
+          The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.
+      balance:
+        type: string
+        example: "4448642000"
+      delegate:
+        $ref: '#/definitions/DelegateSub'
+      knowledge:
+        type: object
+        properties:
+          owner:
+            type: string
+            example: genesis_84
+          description:
+            type: string
+            example: Genesis wallet
+      multisignatureAccount:
+        type: object
+        properties:
+          lifetime:
+            type: integer
+            example: 48
+          minimalNumberAcccounts:
+            type: integer
+            example: 2
+          members:
+            type: array
+            items:
+              $ref: '#/definitions/AccountBasic'
+      multisignatureMemberships:
+        type: array
+        items: 
+          type: object
+          properties:
+            address:
+              type: string
+              format: address
+              example: 4935562234363081651L
+              description: |
+                The Lisk Address is the human readable representation of the accounts owners' public key.
+                It consists of multiple numbers followed by a big 'L' at the end.
+            balance:
+              type: string
+              example: "4448642000"
+            lifetime:
+              type: integer
+              example: 48
+            min:
+              type: integer
+              example: 2
+            publicKey:
+              type: string
+              format: publicKey
+              example: 968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b
+              description: |
+                The public key is derived from the private key of the owner of the account.
+                It can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.
+            secondPublicKey:
+              type: string
+              format: publicKey
+              example: 968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b
+              description: |
+                The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.
+      transactionCount:
+        type: object
+        properties:
+          incoming:
+            type: string
+            example: "216"
+          outgoing:
+            type: string
+            example: "1581"
+      unconfirmedMultisignatureMemberships:
+        type: array
+        items:
+          $ref: '#/definitions/AccountBasic'
+    
+  AccountBasic:
+    type: object
+    required:
+      - address
+      - publicKey
+    properties:
+      address:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: |
+          The Lisk Address is the human readable representation of the accounts owners' public key.
+          It consists of multiple numbers followed by a big 'L' at the end.
+      publicKey:
+        type: string
+        format: publicKey
+        example: 968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b
+        description: |
+          The public key is derived from the private key of the owner of the account.
+          It can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.
+      secondPublicKey:
+        type: string
+        format: publicKey
+        example: 968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b
+        description: |
+          The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.
+      balance:
+        type: string
+        example: "4448642000"
+      unconfirmedSignature: 
+        type: number
+        example: 0
+        
+  Block:
+    type: object
+    required:
+      - id
+      - height
+      - timestamp
+      - numberOfTransactions
+      - totalAmount
+      - totalFee
+      - reward
+      - totalForged
+    properties:
+      id:
+        type: string
+        format: id
+        minLength: 1
+        maxLength: 20
+        example: "6258354802676165798"
+        description: |
+          Unique identifier of the block.
+          Derived from the block signature.
+      height:
+        type: integer
+        example: 8344448
+        minimum: 1
+        description: |
+          Height of the network, when the block got forged.
+          The height of the networks represents the number of blocks,
+          that have been forged on the network since Genesis Block.
+      version:
+        type: integer
+        example: 0
+        minimum: 0
+        description: Versioning for future upgrades of the lisk protocol.
+      timestamp:
+        type: integer
+        example: 85944650
+        description: UNIX Timestamp
+      payloadLength:
+        type: integer
+        example: 117
+        minimum: 0
+        description: Bytesize of the payload hash.
+      generatorAddress:
+        type: string
+        example: '7749538982696555450L'
+        description: Delegate address.
+      generatorPublicKey:
+        type: string
+        example: '6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8'
+        description: Delegate public key.
+      generatorUsername:
+        type: string
+        example: 'genesis_13'
+        description: Delegate registered name.
+      payloadHash:
+        type: string
+        format: hex
+        example: 4e4d91be041e09a2e54bb7dd38f1f2a02ee7432ec9f169ba63cd1f193a733dd2
+        description: |
+          Hash of the payload of the block.
+          The payload of a block is comprised of the transactions the block contains.
+          For each type of transaction exists a different maximum size for the payload.
+      blockSignature:
+        type: string
+        format: signature
+        example: a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07
+        description: |
+          Derived from a SHA-256 hash of the block header,
+          that is signed by the private key of the delegate who forged the block.
+      confirmations:
+        type: integer
+        example: 200
+        description: |
+          Number of times that this Block has been confirmed by the network.
+          By forging a new block on a chain, all former blocks in the chain get confirmed by the forging delegate.
+      previousBlockId:
+        type: string
+        format: id
+        example: "15918760246746894806"
+        description: The id of the previous block of the chain.
+      numberOfTransactions:
+        type: integer
+        example: 15
+        description: The number of transactions processed in the block.
+      totalAmount:
+        type: string
+        example: "150000000"
+        description: The total amount of Lisk transferred.
+      totalFee:
+        type: string
+        example: "15000000"
+        description: The total amount of fees associated with the block.
+      reward:
+        type: string
+        example: "50000000"
+        description: The Lisk reward for the delegate.
+      totalForged:
+        type: string
+        example: "65000000"
+        description: |
+          Total amount of LSK that have been forged in this Block.
+          Consists of fees and the reward.
+  Delegate:
+    type: object
+    required:
+      - address
+      - publicKey
+      - username
+    properties:
+      address:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: Lisk Address of the delegate who forged the block.
+      approval:
+        type: string
+        example: "35.77"
+        description: |
+      missedBlocks:
+        type: integer
+        example: 157
+        minimum: 1
+        description: |
+      producedBlocks:
+        type: integer
+        example: 55222
+        minimum: 1
+        description: |
+      productivity:
+        type: string
+        example: "99.72"
+        description: |
+      publicKey:
+        type: string
+        format: publicKey
+        example: 6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b
+        description: Public key of th edelagte who forged the block.
+      secondPublicKey:
+        type: string
+        format: publicKey
+        example: 6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b
+        description: Second public key of th edelagte who forged the block.
+      rank:
+        type: integer
+        example: 93
+        minimum: 1
+        description: |
+      rewards:
+        type: string
+        example: "109000000000"
+        description: Amount of rewards in LSK collected during forging
+      username:
+        type: string
+        example: "genesis_84"
+        description: |
+      vote:
+        type: string
+        example: "4630668157412954"
+        description: |
+  DelegateSub:
+    type: object
+    required:
+      - username
+    properties:
+      approval:
+        type: string
+        example: "35.77"
+        description: |
+      missedBlocks:
+        type: integer
+        example: 157
+        minimum: 1
+        description: |
+      producedBlocks:
+        type: integer
+        example: 55222
+        minimum: 1
+        description: |
+      productivity:
+        type: string
+        example: "99.72"
+        description: |
+      rank:
+        type: integer
+        example: 93
+        minimum: 1
+        description: |
+      rewards:
+        type: string
+        example: "109000000000"
+        description: Amount of rewards in LSK collected during forging
+      username:
+        type: string
+        example: "genesis_84"
+        description: |
+      vote:
+        type: string
+        example: "4630668157412954"
+        description: |
+  Transaction:
+    type: object
+    required:
+      - id
+      - type
+      - amount
+      - fee
+      - senderPublicKey
+      - recipientId
+      - timestamp
+      - asset
+      - signature
+    properties:
+      id:
+        type: string
+        format: id
+        example: "222675625422353767"
+        minLength: 1
+        maxLength: 20
+        description: |
+          Unique identifier of the transaction.
+          Derived from the transaction signature.
+      amount:
+        type: string
+        example: '150000000'
+        description: |
+          Amount of Lisk to be transferred in this transaction.
+      fee:
+        type: string
+        example: '1000000'
+        description: |
+          Transaction fee associated with this transaction.
+      type:
+        type: integer
+        minimum: 0
+        maximum: 7
+        description: |
+          Describes the Transaction type.
+      height:
+        type: integer
+        minimum: 1
+        example: 8350681
+        description: |
+          The height of the network, at the moment where this transaction was included in the blockchain.
+      blockId:
+        type: string
+        format: id
+        minLength: 1
+        maxLength: 20
+        example: "6258354802676165798"
+        description: |
+          The Id of the block, this transaction is included in.
+      timestamp:
+        type: integer
+        example: 28227090
+        description: |
+          Time when the transaction was created.
+          UNIX Timestamp.
+      senderId:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: |
+          Lisk Address of the Senders' account.
+      senderPublicKey:
+        type: string
+        format: publicKey
+        example: 2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079
+        description: |
+          The public key of the Senders' account.
+      senderSecondPublicKey:
+        type: string
+        format: publicKey
+        example: 2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079
+        description: |
+          The second public key of the Senders' account, if it exists.
+      recipientId:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: |
+          Lisk Address of the Recipients' account.
+      recipientPublicKey:
+        type: string
+        format: publicKey
+        example: 2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079
+        description: |
+          The public key of the Recipients' account.
+      signature:
+        type: string
+        format: signature
+        example: 2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205
+        description: |
+          Derived from a SHA-256 hash of the transaction object,
+          that is signed by the private key of the account who created the transaction.
+      signSignature:
+        type: string
+        format: signature
+        example: 2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205
+        description: Contains the second signature, if the transaction is sent from an account with second passphrase activated.
+      signatures:
+        type: array
+        items:
+          type: string
+          format: signature
+          example: 72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a
+          description: If the transaction is a multisignature transaction, all signatures of the members of the corresponding multisignature group will be listed here.
+      confirmations:
+        type: integer
+        minimum: 0
+        description: |
+          Number of times that this transaction has been confirmed by the network.
+          By forging a new block on a chain, all former blocks and their contained transactions in the chain get confirmed by the forging delegate.
+      asset:
+        type: object
+      receivedAt:
+        type: string
+        format: 'date-time'
+        description: The timestamp of the moment, where a node discovered a transaction for the first time.
+      relays:
+        type: integer
+        description: Number of times, a single transaction object has been broadcasted to another peer.
+      ready:
+        type: boolean
+        example: false
+        description: |
+          Only present in transactions sent from a multisignature account, or transactions type 4 (multisignature registration).
+          False, if the minimum amount of signatures to sign this transaction has not been reached yet.
+          True, if the minimum amount of signatures has been reached.
+  TransactionExport:
+    type: object
+    required:
+      - amount
+      - blockId
+      - date
+      - fee
+      - senderId
+      - senderPublicKey
+      - transactionId
+    properties:
+      amount:
+        type: string
+        example: '150000000'
+        description: |
+          Amount of Lisk to be transferred in this transaction.
+      blockId:
+        type: string
+        format: id
+        minLength: 1
+        maxLength: 20
+        example: "6258354802676165798"
+        description: |
+          The Id of the block, this transaction is included in.
+      date:
+        type: string
+        example: "2020-02-18T21:00:23.000Z"
+        description: |
+          Time when the transaction was created in ISO format.
+      fee:
+        type: string
+        example: '0.1'
+        description: |
+          Transaction fee associated with this transaction in LSK.
+      recipientId:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: |
+          Lisk Address of the Recipients' account.
+      senderId:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: |
+          Lisk Address of the Senders' account.
+      senderPublicKey:
+        type: string
+        format: publicKey
+        example: 2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079
+        description: |
+          The public key of the Senders' account.
+      transactionId:
+        type: string
+        format: id
+        example: "222675625422353767"
+        minLength: 1
+        maxLength: 20
+        description: |
+          Unique identifier of the transaction.
+          Derived from the transaction signature.
+
+  Peer:
+    type: object
+    required:
+      - wsPort
+      - state
+    properties:
+      ip:
+        type: string
+        example: 127.0.0.1
+        format: ip
+        description: IPv4 address of the peer node.
+      httpPort:
+        type: integer
+        example: 8000
+        format: int32
+        minimum: 1
+        maximum: 65535
+        description: The port the peer node uses for HTTP requests, e.g. API calls.
+      wsPort:
+        type: integer
+        example: 8001
+        format: int32
+        minimum: 1
+        maximum: 65535
+        description: The port the peer node uses for Websocket Connections, e.g. P2P broadcasts.
+      os:
+        type: string
+        example: debian
+        description: The Operating System, that the peer node runs on.
+      version:
+        type: string
+        example: v0.8.0
+        format: version
+        description: The version of Lisk Core that the peer node runs on.
+      state:
+        type: integer
+        example: 2
+        format: int32
+        minimum: 0
+        maximum: 2
+        description: |
+          The state of the Peer.
+          Available values: Connected, Disconnected, Banned
+      height:
+        type: integer
+        minimum: 1
+        example: 8350681
+        description: |
+          Network height on the peer node.
+          Represents the current number of blocks in the chain on the peer node.
+      broadhash:
+        type: string
+        example: 258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea
+        format: hex
+        description: |
+          Broadhash on the peer node.
+          Broadhash is established as an aggregated rolling hash of the past five blocks present in the database.
+      nonce:
+        type: string
+        example: sYHEDBKcScaAAAYg
+        minLength: 1
+        description: |
+          Unique Identifier for the peer.
+          Random string.
+      location:
+        $ref: '#/definitions/Location'
+  Location:
+    type: object
+    properties:
+      city:
+        type: string
+        example: "Berlin"
+        description: Name of the city.
+      countryCode:
+        type: string
+        example: "DE"
+        description: ISO 3166-1 country code.
+      countryName:
+        type: string
+        example: "Germany"
+        description: Name of the country.
+      hostname:
+        type: string
+        example: "host.210.239.23.62.rev.coltfrance.com"
+        description: Hostname associated with the node's IP.
+      ip:
+        type: string
+        example: "210.239.23.62"
+        description: Node's IP address.
+      latitude:
+        type: string
+        example: "52.5073"
+        description: Geolocation data (latitude).
+      longitude:
+        type: string
+        example: "13.3643"
+        description: Geolocation data (longitude).
+      regionCode:
+        type: string
+        example: "BE"
+        description: Code of the region.
+      regionName:
+        type: string
+        example: "Land Berlin"
+        description: Name of the region.
+      timeZone:
+        type: string
+        example: "Europe/Berlin"
+        description: Node's time zone.
+      zipCode:
+        type: string
+        example: "10785"
+        description: Zip/Postal code.
+  NetworkStatus:
+    type: object
+    required:
+      - broadhash
+      - nethash
+      - height
+    properties:
+      broadhash:
+        type: string
+        example: 258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea
+        minLength: 64
+        maxLength: 64
+        description: |
+          Broadhash is established as an aggregated rolling hash of the past five blocks present in the database.
+          Broadhash consensus serves a vital function for the Lisk network in order to prevent forks.
+          It ensures that a majority of available peers agree that it is acceptable to forge.
+      height:
+        type: integer
+        example: 123
+        minimum: 1
+        description: |
+          Current block height of the node.
+          Represents the current number of blocks in the chain on the node.
+      networkHeight:
+        type: integer
+        example: 123
+        description: |
+          Current block height of the network.
+          Represents the current number of blocks in the chain on the network.
+      epoch:
+        type: string
+        format: date-time
+        example: '2016-05-24T17:00:00.000Z'
+        description: Timestamp of first block on the network.
+      milestone:
+        type: string
+        example: '500000000'
+        description: |
+          The Reward, each forger will get for forging a block at the current slot.
+          After a certain amount of slots, the reward will be reduced.
+      nethash:
+        type: string
+        example: ed14889723f24ecc54871d058d98ce91ff2f973192075c0155ba2b7b70ad2511
+        description: |
+          Describes the network.
+          The nethash describes e.g. the Mainnet or the Testnet, that the node is connecting to.
+      supply:
+        type: string
+        example: '10575384500000000'
+        description: Total supply of LSK in the network.
+      reward:
+        type: string
+        example: '500000000'
+        description: |
+          The reward a delegate will get for forging a block.
+          Depends on the slot height.
+      fees:
+        $ref: '#/definitions/Fees'
+  Fees:
+    type: object
+    required:
+      - send
+      - vote
+      - secondSignature
+      - delegate
+      - multisignature
+      - dappRegistration
+      - dappWithdrawal
+      - dappDeposit
+    properties:
+      send:
+        type: string
+        example: '10000000'
+      vote:
+        type: string
+        example: '100000000'
+      secondSignature:
+        type: string
+        example: '500000000'
+      delegate:
+        type: string
+        example: '2500000000'
+      multisignature:
+        type: string
+        example: '500000000'
+      dappRegistration:
+        type: string
+        example: '2500000000'
+      dappWithdrawal:
+        type: string
+        example: '10000000'
+      dappDeposit:
+        type: string
+        example: '10000000'
+
+  AccountsWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        description: List of blocks
+        type: array
+        items:
+          $ref: '#/definitions/Account'
+      meta:
+        $ref: '#/definitions/Pagination'
+      links:
+        type: object
+  BlocksWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        description: List of blocks
+        type: array
+        items:
+          $ref: '#/definitions/Block'
+      meta:
+        $ref: '#/definitions/Pagination'
+      links:
+        type: object
+  DelegatesWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        description: List of blocks
+        type: array
+        items:
+          $ref: '#/definitions/Delegate'
+      meta:
+        $ref: '#/definitions/Pagination'
+      links:
+        type: object
+  PeersWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        description: List of blocks
+        type: array
+        items:
+          $ref: '#/definitions/Peer'
+      meta:
+        $ref: '#/definitions/Pagination'
+      links:
+        type: object
+  TransactionsWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        description: List of blocks
+        type: array
+        items:
+          $ref: '#/definitions/Transaction'
+      meta:
+        $ref: '#/definitions/Pagination'
+      links:
+        type: object
+  TransactionsExportWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        description: List of blocks
+        type: array
+        items:
+          $ref: '#/definitions/TransactionExport'
+      meta:
+        type: object
+      links:
+        type: object
+  TransactionsStatisticsWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        $ref: '#/definitions/TransactionsStatistics'
+      meta:
+        $ref: '#/definitions/Pagination'
+      links:
+        type: object
+  TransactionsStatistics:
+    type: object
+    description: Transactions statistics
+    required:
+      - timeline
+      - distributionByType
+      - distributionByAmount
+    properties:
+      timeline:
+        type: array
+        items:
+          type: object
+          required:
+            - timestamp
+            - date
+            - transactionCount
+            - volume
+          properties:
+            timestamp:
+              type: integer
+              description: UNIX timestamp representing beginning of the aggregation interval
+              example: 1556100060
+            date:
+              type: string
+              description: Date representing beginning of the aggregation interval
+              example: "2019-11-27"
+            transactionCount:
+              type: integer
+              description: Count of all transactions in the given time span
+              example: "14447177193385"
+            volume:
+              type: string
+              description: Sum of all transaction amounts and fees sent in the given time span (in Beddows unit)
+              example: "14447177193385"
+      distributionByType:
+        type: object
+        description: Count of transactions by transaction type in the whole time interval
+      distributionByAmount:
+        type: object
+        description: Count of transactions by amount range in the whole time interval
+  VotesWithEnvelope:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        description: List of votes
+        type: array
+        items:
+          $ref: '#/definitions/Vote'
+      meta:
+        $ref: '#/definitions/Pagination'
+      links:
+        type: object
+  Vote:
+    type: object
+    required:
+      - address
+      - publicKey
+      - balance
+      - username
+    properties:
+      address:
+        type: string
+        format: address
+        example: 4935562234363081651L
+        description: Lisk Address of the delegate the queried account voted for.
+      publicKey:
+        type: string
+        format: publicKey
+        example: 968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b
+        description: Public key of the delegate the queried account voted for.
+      balance:
+        type: string
+        example: 1081560729258
+        description: Balance of the delegate the queried account voted for.
+      username:
+        type: string
+        format: username
+        example: liskhq
+        description: Username of the delegate the queried account voted for.
+  Pagination:
+    type: object
+    required:
+      - count
+      - offset
+    properties:
+      count:
+        type: integer
+        example: 100
+        minimum: 0
+        description: Number of items returned in the request.
+      offset:
+        type: integer
+        example: 25
+        minimum: 0
+        description: Defines how many items are skipped.
+      total:
+        type: integer
+        example: 43749
+        minimum: 0
+        description: Total number of items in the database.
+  NetworkStatistics:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        type: object
+        description: Number of items returned in the request.
+        properties:
+          basic:
+            type: object
+            description: Total number of items in the database.
+            properties:
+              connectedPeers: 
+                type: integer
+                description: Number of connected peers
+                example: 134
+              disconnectedPeers:
+                type: integer
+                description: Number of disconnected peers
+                example: 48
+              totalPeers:
+                type: integer
+                description: Total number of peers
+                example: 181
+          height:
+            type: object
+            description: Number of nodes on the given height.
+            properties:
+              "7982598":
+                type: integer
+                example: 24
+          coreVer:
+            type: object
+            description: Number of nodes on the given Lisk Core versions.
+            properties:
+              "1.4.0":
+                type: integer
+                example: 12
+              "1.5.0":
+                type: integer
+                example: 41
+          os:
+            type: object
+            description: Number of nodes using a given operating system.
+            properties:
+              "linux3.10":
+                type: integer
+                example: 33
+              "linux4.4":
+                type: integer
+                example: 71
+      meta:
+        type: object
+        description: Defines how many items are skipped.
+      links:
+        type: object
+        description: Total number of items in the database.
+  UnifiedSearch:
+    type: object
+    properties:
+      results: 
+        type: array
+        items:
+          type: object
+          properties:
+            score:
+              type: number
+              example: 0.82
+              description: Search result score on the scale 0.0 - the worst, 1.0 - best
+            description:
+              type: string
+              example: genesis_10
+            id:
+              type: string
+              example: 1864409191503661202L
+            type:
+              type: string
+              example: address
+      meta:
+        type: object
+      links:
+        type: object
+
+  FeatureNotImplemented:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        type: object
+      meta:
+        type: object
+      links:
+        type: object
+
+parameters:
+  ip:
+    name: ip
+    in: query
+    description: IP of the node or delegate
+    type: string
+    format: ip
+  httpPort:
+    name: httpPort
+    in: query
+    description: Http port of the node or delegate
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 65535
+  wsPort:
+    name: wsPort
+    in: query
+    description: Web socket port for the node or delegate
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 65535
+  os:
+    name: os
+    in: query
+    description: OS of the node
+    type: string
+  version:
+    name: version
+    in: query
+    description: Lisk version of the node
+    type: string
+    format: version
+  state:
+    name: state
+    in: query
+    description: Current state of the network
+    type: integer
+    format: int32
+    minimum: 0
+    maximum: 2
+  height:
+    name: height
+    in: query
+    description: Current height of the network
+    type: integer
+    format: int32
+    minimum: 1
+  broadhash:
+    name: broadhash
+    in: query
+    description: Broadhash of the network
+    type: string
+    format: hex
+  searchQuery:
+    in: query  
+    name: q
+    required: true
+    description: Search query
+    type: string
+  limit:
+    in: query
+    name: limit
+    description: Limit applied to results
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 100
+    default: 10
+  limit101:
+    in: query
+    name: limit
+    description: Limit applied to results
+    type: integer
+    format: int32
+    minimum: 1
+    maximum: 101
+    default: 10
+  offset:
+    name: offset
+    in: query
+    description: Offset value for results
+    type: integer
+    format: int32
+    minimum: 0
+    default: 0
+  accountAddress:
+    name: address
+    in: query
+    description: Lisk account address
+    type: string
+    format: address
+    minLength: 1
+    maxLength: 22
+  accountPublicKey:
+    name: publickey
+    in: query
+    description: Public key to query
+    type: string
+    format: publicKey
+    minLength: 1
+  accountSecondPublicKey:
+    name: secpubkey
+    in: query
+    description: Second public key to query
+    type: string
+    format: publicKey
+    minLength: 1
+  accountUsername:
+    name: username
+    in: query
+    description: Delegate username to query
+    type: string
+    format: username
+    minLength: 1
+    maxLength: 20
+  blockId:
+    name: block
+    in: query
+    description: Block id to query
+    type: string
+    format: id
+    minLength: 1
+    maxLength: 20
+  blockIdPath:
+    name: block_id
+    in: path
+    required: true
+    description: Block id to query
+    type: string
+    format: id
+    minLength: 1
+    maxLength: 20
+  transactionId:
+    name: id
+    in: query
+    description: Transaction id to query
+    type: string
+    format: id
+    minLength: 1
+    maxLength: 20
+    pattern: '^\d*$'
+  transactionIdPath:
+    name: transaction_id
+    in: path
+    required: true
+    description: Transaction id to query
+    type: string
+    format: id
+    minLength: 1
+    maxLength: 20
+    pattern: '^\d*$'
+  accountAddressPublicKeyUsernameQuery:
+    name: address
+    in: query
+    description: Lisk address, public key or account name
+    type: string
+    minLength: 1
+  accountAddressPublicKeyUsernamePath:
+    name: account_id
+    in: path
+    required: true
+    description: Lisk address, public key or account name
+    type: string
+    minLength: 1
+  recipientAddressPublicKeyUsername:
+    name: recipient
+    in: query
+    description: Lisk address, public key or account name (recipientId)
+    type: string
+    minLength: 1
+  senderAddressPublicKeyUsername:
+    name: sender
+    in: query
+    description: Lisk address, public key or account name (senderId)
+    type: string
+    minLength: 1
+  transactionType:
+    name: type
+    in: query
+    description: Transaction type (0-12)
+    type: integer
+    minimum: 0
+    maximum: 12
+  transactionData:
+    name: data
+    in: query
+    description: Search in transaction data field. Exact match, but can use % as wildcard e.g. data=test% 
+    type: string
+    minLength: 1
+  minAmount:
+    name: min
+    in: query
+    description: Minimum transaction amount in Beddows
+    type: integer
+    minimum: 0
+  maxAmount:
+    name: max
+    in: query
+    description: Maximum transaction amount in Beddows
+    type: integer
+    minimum: 0
+  fromTimestamp:
+    name: from
+    in: query
+    description: Starting UNIX timestamp
+    type: integer
+    minimum: 0
+  toTimestamp:
+    name: to
+    in: query
+    description: Ending UNIX timestamp
+    type: integer
+    minimum: 1
