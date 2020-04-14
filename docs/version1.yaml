@@ -60,8 +60,8 @@ info:
     In the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
     
   license:
-    name: GPL v3.0
-    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0
 
 # All paths relative to specified basePath
 basePath: /api/v1
