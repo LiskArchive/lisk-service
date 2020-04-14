@@ -1,0 +1,29 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "meta": {},
+    "data": {
+        "build": "2019-07-30T14:27:01.000Z",
+        "commit": "328592cc9887656b27eebbe9cfa6f1c12b5994c9",
+        "epoch": "2016-05-24T17:00:00.000Z",
+        "fees": {
+            "send": "10000000",
+            "vote": "100000000",
+            "secondSignature": "500000000",
+            "delegate": "2500000000",
+            "multisignature": "500000000",
+            "dappRegistration": "2500000000",
+            "dappWithdrawal": "10000000",
+            "dappDeposit": "10000000"
+        },
+        "nethash": "da3ed6a45429278bac2666961289ca17ad86595d33b31037615d4b8e8f158bba",
+        "nonce": "xBp0ZRFLPz1KDKJ5",
+        "milestone": "2",
+        "reward": "300000000",
+        "supply": "13571789200000000",
+        "version": "2.0.1-rc.0",
+        "protocolVersion": "1.1"
+    },
+    "links": {}
+}

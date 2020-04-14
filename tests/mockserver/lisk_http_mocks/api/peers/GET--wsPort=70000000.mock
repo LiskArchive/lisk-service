@@ -1,0 +1,21 @@
+HTTP/1.1 400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+	"message": "Validation errors",
+		"errors": [
+		{
+			"code": "INVALID_REQUEST_PARAMETER",
+			"message": "Invalid parameter (wsPort): Value failed JSON Schema validation",
+			"in": "query",
+			"name": "wsPort",
+			"errors": [
+			{
+				"code": "MAXIMUM",
+				"message": "Value 70000 is greater than maximum 65535",
+				"path": []
+			}
+			]
+		}
+		]
+}

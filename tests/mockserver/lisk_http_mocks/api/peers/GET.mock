@@ -1,0 +1,129 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "meta": {
+        "offset": 0,
+        "limit": 10,
+        "count": 114
+    },
+    "data": [
+        {
+            "ip": "173.212.222.195",
+            "os": "linux4.4.0-72-generic",
+            "version": "2.0.1-rc.0",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "xqM2EsvGBESIEdmx",
+            "state": 2
+        },
+        {
+            "ip": "94.237.92.196",
+            "os": "linux4.15.0-55-generic",
+            "version": "2.0.1-rc.0",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "uZ0PeTCEwb8NA6Nl",
+            "state": 2
+        },
+        {
+            "ip": "51.15.129.24",
+            "os": "linux4.4.0-134-generic",
+            "version": "2.0.0-rc.1",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "CuAuZCHoGLC5dTW9",
+            "state": 2
+        },
+        {
+            "ip": "31.187.70.31",
+            "os": "linux2.6.32-042stab127.2",
+            "version": "1.1.1-rc.1",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "v0RC28wtOSCEcVVK",
+            "state": 2
+        },
+        {
+            "ip": "45.76.228.180",
+            "os": "linux4.4.0-138-generic",
+            "version": "1.1.1-rc.1",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "S5SqGkj06pscKdhg",
+            "state": 2
+        },
+        {
+            "ip": "104.237.0.166",
+            "os": "linux2.6.32-042stab127.2",
+            "version": "1.1.1-rc.1",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "nkVFhVxe2860TLLz",
+            "state": 2
+        },
+        {
+            "ip": "91.134.217.221",
+            "os": "linux3.10.0-693.21.1.el7.x86_64",
+            "version": "1.2.0-rc.2",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "i1X6jqQbsq6ZeSb7",
+            "state": 2
+        },
+        {
+            "ip": "94.237.46.115",
+            "os": "linux4.15.0-55-generic",
+            "version": "2.0.1-rc.0",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "qLtpeZ7F40CDFTmZ",
+            "state": 2
+        },
+        {
+            "ip": "94.237.61.168",
+            "os": "linux4.15.0-55-generic",
+            "version": "2.0.1-rc.0",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "PQqz87z4jr94Rj61",
+            "state": 2
+        },
+        {
+            "ip": "149.28.69.13",
+            "os": "linux4.15.0-55-generic",
+            "version": "2.0.1-rc.0",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907337,
+            "broadhash": "bfd1248776ccd110fa2f8cef5013e09903552c3dddeb364868f375160e25cf0d",
+            "nonce": "NeqfHY6AKvhD85Ut",
+            "state": 2
+        }
+    ],
+    "links": {}
+}
