@@ -302,29 +302,3 @@ Updates about active peers.
     }, 
 }
 ```
-
-# Market data updates (`/market`)
-
-## `update.prices` _(not implemented)_
-
-Updates about current market prices, based on exchange data.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-            "code": "BTC_LSK",
-            "from": "BTC",
-            "to": "LSK",
-            "rate": "0.00034450",
-            "updateTimestamp": 1556100060
-        }
-    ],
-    "meta": {
-        "update": 1565107927,
-        "count": 9
-    }, 
-}
-```
