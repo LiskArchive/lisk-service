@@ -26,6 +26,14 @@ const requireAllJs = relPath => requireAll({
 	dirname: path.resolve(__dirname, relPath),
 });
 
+const BaseLogger = require("moleculer").Loggers.Base;
+
+class MyLogger extends BaseLogger {
+    getLogHandler(bindings) {
+        return (type, args) => logger[type](`[${bindings.mod}]`, ...args);
+    }
+}
+
 /*
 * The most crucial parts of code can be written as:
 *  - methods: client -> server, typically called on user request (ex. get.transactions)
@@ -39,7 +47,7 @@ const init = (config) => {
 	const broker = new ServiceBroker({
 		transporter: config.moleculer.transporter,
 		requestTimeout: 5 * 1000,
-		logger,
+		logger: new MyLogger(),
 	});
 
 	const moleculerConfig = {
