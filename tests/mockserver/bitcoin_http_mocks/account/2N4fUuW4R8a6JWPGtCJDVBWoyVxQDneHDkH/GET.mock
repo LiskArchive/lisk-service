@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Content-ype: application/json; charset=utf-8
+
+{
+    "data": {
+        "address": "2N4fUuW4R8a6JWPGtCJDVBWoyVxQDneHDkH",
+        "confirmed_balance": 0,
+        "n_tx": 2,
+        "unconfirmed_balance": 0
+    },
+    "links": {},
+    "meta": {
+        "offset": 0
+    }
+}

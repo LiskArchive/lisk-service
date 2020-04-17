@@ -1,0 +1,12 @@
+version: "3"
+services:
+
+  core:
+    environment:
+      - LISK_HOST=testnet.lisk.io
+      - LISK_PORT=7000
+
+  legacy:
+    environment:
+      - LISK_HOST=testnet.lisk.io
+      - LISK_PORT=7000
