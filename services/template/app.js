@@ -21,7 +21,7 @@ const config = require('./config');
 const packageJson = require('./package.json');
 
 const app = new Microservice({
-	name: 'template-shared',
+	name: 'template',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	log: config.log,
