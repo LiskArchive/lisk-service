@@ -19,14 +19,19 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {},
+  "bin": {
+    "moleculer_client": "./bin/moleculer_client.js"
+  },
   "dependencies": {
     "@log4js-node/gelf": "github:MichalTuleja/log4js-node-gelf#89d9933",
     "debug": "=4.1.1",
+    "jsome": "^2.5.0",
     "keyv": "=4.0.0",
     "log4js": "^5.1.0",
     "moleculer": "^0.13.12",
     "nats": "^1.3.2",
     "node-cron": "^2.0.3",
+    "prettyjson": "^1.2.1",
     "require-all": "^3.0.0",
     "stack-trace": "0.0.10"
   },

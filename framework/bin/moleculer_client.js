@@ -1,6 +1,4 @@
-// Initialize moleculer
-
-
+#!/usr/bin/env node
 /*
  * LiskHQ/lisk-service
  * Copyright © 2020 Lisk Foundation
@@ -45,7 +43,8 @@ const request = (method, params) => {
 		.then(() => broker.waitForServices(method.split('.')[0]))
 		.then(() => broker.call(method, params || {}))
 		.then((res) => {
-			console.log(prettyjson.render(res));
+			// console.log(prettyjson.render(res));
+			jsome(res);
 			process.exit(0);
 		})
 		.catch(err => console.error(`Error occured! ${err.message}`));
