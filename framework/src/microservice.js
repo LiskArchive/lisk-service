@@ -20,68 +20,78 @@ const requireAllJs = require('./requireAllJs');
 const loggerContext = require('./logger.js');
 const cacheRedis = require('./cacheRedis.js');
 
-const logger = loggerContext('microservice.js');
+class Microservice {
+	constructor(config = {}) {
+		this.moleculerConfig = config;
+		this.logger = loggerContext('Microservice');
+		this.moleculerConfig.actions = {};
+		loggerContext.configure(config);
+		cacheRedis.configure(config);
+	}
 
-const Microservice = function (config = {}) {
-	this.moleculerConfig = config;
-	loggerContext.configure(config);
-	cacheRedis.configure(config);
-};
+	_addItems(folderPath, type) {
+		const items = requireAllJs(folderPath);
+		const fnMap = {
+			'method': this.addMethod,
+			'event': this.addEvent,
+			'job': this.addJob,
+		}
 
-Microservice.prototype.addMethods = function (folderPath) {
-	const methods = requireAllJs(folderPath);
-	this.moleculerConfig.actions = {};
-	Object.keys(methods).forEach(methodGroup => {
-		methods[methodGroup].forEach(item => {
-			this.moleculerConfig.actions[item.name] = {
-				params: item.params,
-				handler: ctx => item.controller(ctx.params),
-			};
-			logger.info(`Registered method ${this.moleculerConfig.name}.${item.name}`);
+		Object.keys(items)
+			.forEach(itemGroup => items[itemGroup]
+				.forEach(item => fnMap[type].call(this, item)));
+	}
+
+	addMethods(folderPath) {
+		this._addItems(folderPath, 'method');
+	}
+
+	addEvents(folderPath) {
+		this._addItems(folderPath, 'event');
+	}
+
+	addJobs(folderPath) {
+		this._addItems(folderPath, 'job');
+	}
+
+	addMethod(item) {
+		this.moleculerConfig.actions[item.name] = {
+			params: item.params,
+			handler: ctx => item.controller(ctx.params),
+		};
+		this.logger.info(`Registered method ${this.moleculerConfig.name}.${item.name}`);
+	}
+
+	addEvent(event) {
+		event.controller(data => {
+			this.broker.emit(event.name, data, 'gateway');
 		});
-	});
-};
+		this.logger.info(`Registered event ${this.moleculerConfig.name}.${event.name}`);
+	}
 
-Microservice.prototype.addEvents = function (folderPath) {
-	const events = requireAllJs(folderPath);
-	Object.keys(events).forEach(eventGroup => {
-		events[eventGroup].forEach(event => {
-			event.controller(data => {
-				this.broker.emit(event.name, data, 'gateway');
-			});
-			logger.info(`Registered event ${this.moleculerConfig.name}.${event.name}`);
+	addJob(job) {
+		cron.schedule(job.schedule, job.controller);
+		this.logger.info(`Registered job ${this.moleculerConfig.name}.${job.name}`);
+	}
+
+	getLogger(context) {
+		return loggerContext(context);
+	}
+
+	run() {
+		this.broker = new ServiceBroker({
+			transporter: this.moleculerConfig.transporter,
+			requestTimeout: this.moleculerConfig.brokerTimeout * 1000,
+			logLevel: 'info',
+			logger: loggerContext('ServiceBroker'),
 		});
-	});
-};
-
-Microservice.prototype.addJobs = function (folderPath) {
-	const jobs = requireAllJs(folderPath);
-	Object.keys(jobs).forEach(jobsGroup => {
-		jobs[jobsGroup].forEach(job => {
-			cron.schedule(job.schedule, job.controller);
-			logger.info(`Registered job ${this.moleculerConfig.name}.${job.name}`);
-		});
-	});
-};
-
-Microservice.prototype.getLogger = function (context) {
-	return loggerContext(context);
-};
-
-
-Microservice.prototype.run = function () {
-	this.broker = new ServiceBroker({
-		transporter: this.moleculerConfig.transporter,
-		requestTimeout: this.moleculerConfig.brokerTimeout * 1000,
-		logLevel: 'info',
-		logger: loggerContext('ServiceBroker'),
-	});
-
-	// Create a service
-	this.broker.createService(this.moleculerConfig);
-
-	// Start server
-	return this.broker.start();
-};
+	
+		// Create a service
+		this.broker.createService(this.moleculerConfig);
+	
+		// Start server
+		return this.broker.start();
+	}
+}
 
 module.exports = Microservice;
