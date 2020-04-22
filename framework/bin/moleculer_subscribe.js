@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * LiskHQ/lisk-service
  * Copyright © 2020 Lisk Foundation

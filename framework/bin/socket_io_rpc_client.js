@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * LiskHQ/lisk-service
  * Copyright © 2019 Lisk Foundation
@@ -16,15 +17,13 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const util = require('util');
 const prettyjson = require('prettyjson');
+const jsome = require('jsome');
 
-if (process.argv.length < 3) {
-	console.log('Usage: node socket_io_rpc_multirequest.js <endpoint>');
-	console.log('');
-	console.log('Examples:');
-	console.log('  node socket_io_rpc_multirequest.js ws://localhost:9901/rpc');
-	console.log('  node socket_io_rpc_multirequest.js wss://service.lisk.io/rpc');
+jsome.params.colored = true;
+
+if (process.argv.length < 4) {
+	console.log('Usage: client.js <endpoint> <call> [json]');
 	process.exit(1);
 }
 
@@ -43,60 +42,29 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 	// 'ping', 'pong',
 ].forEach((item) => {
 	socket.on(item, (res) => {
-		// Enable this to log all events
 		// console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
 ['status'].forEach((eventName) => {
 	socket.on(eventName, (newData) => {
-		// Enable this to log incoming data
 		// console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
 	});
 });
 
-const request = (path, params) => new Promise((resolve) => {
+const request = (path, params) => {
 	socket.emit(path, params, (answer) => {
-		// Enable this to log incoming data
-		// console.log(`Got answer: ${JSON.stringify(answer)}`);
-		// console.log(path);
-		// console.log(util.inspect(answer));
-		resolve(answer);
+		console.log(prettyjson.render(answer));
+		// jsome(answer);
+		process.exit(0);
 	});
-});
+};
 
 setTimeout(() => {
 	console.log('Timeout exceeded - could not get a response');
 	process.exit(1);
 }, TIMEOUT);
 
-(async () => {
-	/*
-	* Enable particular console.log to see different outputs
-	* Consider `jq` as a JSON parser
-	*/
-	const results = [];
+// request('request', { method: 'get.hello', params: { name: 'michal' } });
 
-	const response1 = await request('request', { method: 'get.blocks', params: { limit: 100 } });
-
-	results.push(response1);
-	// console.log(JSON.stringify(response1));
-
-	const requests = response1.result.data
-		.filter(o => Number(o.numberOfTransactions) > 0)
-		.map(o => ({ method: 'get.transactions', params: { block: o.id } }));
-
-	results.push(requests);
-	// console.log(JSON.stringify(requests));
-
-	const response2 = await request('request', requests);
-	// console.log(JSON.stringify(response2));
-
-	results.push(response2);
-	// console.log(JSON.stringify(results));
-
-	// This returns combined result
-	console.log(prettyjson.render(response2));
-
-	process.exit(0);
-})();
+request('request', { method: cliProcedureName, params: cliParams });
