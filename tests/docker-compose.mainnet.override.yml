@@ -1,0 +1,12 @@
+version: "3"
+services:
+
+  core:
+    environment:
+      - LISK_HOST=explorer.lisk.io
+      - LISK_PORT=8000
+
+  legacy:
+    environment:
+      - LISK_HOST=explorer.lisk.io
+      - LISK_PORT=8000

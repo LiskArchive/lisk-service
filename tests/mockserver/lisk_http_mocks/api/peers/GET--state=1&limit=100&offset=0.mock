@@ -1,0 +1,37 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "meta": {
+        "offset": 0,
+        "limit": 100,
+        "count": 2
+    },
+    "data": [
+        {
+            "ip": "178.62.254.56",
+            "os": "linux4.15.0-54-generic",
+            "version": "2.0.0-rc.0",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907294,
+            "broadhash": "4665317347a34c21097b72952defcd9d9b20c0e95147f1002cd6d39d0eabd3c8",
+            "nonce": "Hnmyq8txFdGC2Y70",
+            "state": 1
+        },
+        {
+            "ip": "51.15.125.84",
+            "os": "linux4.4.0-154-generic",
+            "version": "2.0.0-rc.0",
+            "wsPort": 7001,
+            "httpPort": 7000,
+            "protocolVersion": "1.1",
+            "height": 8907294,
+            "broadhash": "4665317347a34c21097b72952defcd9d9b20c0e95147f1002cd6d39d0eabd3c8",
+            "nonce": "2T4A2t6GgJKpctHX",
+            "state": 1
+        }
+    ],
+    "links": {}
+}

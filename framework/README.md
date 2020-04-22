@@ -1,24 +1,6 @@
-# Lisk Service
-
-The REST client component acts as a bridge between the Lisk Core and the Lisk Service API.
-Its main purpose is to provide enriched data from the Lisk Core API.
-This component is aimed at providing high availability, efficient and reliable access to the Lisk Core API. 
-
-## Installation
+# Lisk Service App Framework
 
 ...
-
-## Configuration
-
-...
-
-## Management
-
-...
-
-## Contributors
-
-https://github.com/LiskHQ/lisk-service/graphs/contributors
 
 ## License
 

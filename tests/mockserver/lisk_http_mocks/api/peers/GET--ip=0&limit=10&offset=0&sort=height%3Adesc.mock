@@ -1,0 +1,21 @@
+HTTP/1.1 400 Bad Request
+Content-Type: application/json; charset=utf-8
+
+{
+    "message": "Validation errors",
+    "errors": [
+        {
+            "code": "INVALID_REQUEST_PARAMETER",
+            "message": "Invalid parameter (ip): Expected type string but found type number",
+            "in": "query",
+            "name": "ip",
+            "errors": [
+                {
+                    "code": "INVALID_TYPE",
+                    "message": "Expected type string but found type number",
+                    "path": []
+                }
+            ]
+        }
+    ]
+}

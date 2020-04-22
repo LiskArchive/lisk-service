@@ -1,0 +1,94 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+
+{
+    "meta": {
+        "offset": 0,
+        "limit": 10,
+        "count": 199
+    },
+    "data": [
+        {
+            "ip": "45.122.123.61",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.5.0-rc.1",
+            "protocolVersion": "1.0"
+        },
+        {
+            "ip": "45.122.123.197",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.5.0-rc.1",
+            "protocolVersion": "1.0"
+        },
+        {
+            "ip": "47.31.190.41",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.4.0-rc.0"
+        },
+        {
+            "ip": "45.122.123.213",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.5.0-rc.1",
+            "protocolVersion": "1.0"
+        },
+        {
+            "ip": "35.205.206.45",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.6.0-alpha.5",
+            "protocolVersion": "1.0"
+        },
+        {
+            "ip": "13.78.123.250",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.5.1-rc.0",
+            "protocolVersion": "1.0"
+        },
+        {
+            "ip": "62.23.239.233",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.6.0-rc.1",
+            "protocolVersion": "1.0"
+        },
+        {
+            "ip": "182.70.242.26",
+            "wsPort": 7001,
+            "state": 1,
+            "version": "1.6.0-rc.4",
+            "protocolVersion": "1.0",
+            "nonce": "yaoByvrCl3bwvMQv",
+            "httpPort": 7000
+        },
+        {
+            "ip": "52.177.221.41",
+            "wsPort": 7001,
+            "state": 2,
+            "os": "linux4.15.0-1036-azure",
+            "version": "1.6.0-rc.4",
+            "protocolVersion": "1.0",
+            "broadhash": "800889309c56911b615135c244a3f20119dae475dffe27b6a71adc20fe00626a",
+            "height": 8542481,
+            "nonce": "o0kN42wec3nTpeQd",
+            "httpPort": 7000
+        },
+        {
+            "ip": "77.55.214.115",
+            "wsPort": 7001,
+            "state": 2,
+            "os": "linux4.4.0-148-generic",
+            "version": "1.6.0-rc.4",
+            "protocolVersion": "1.0",
+            "broadhash": "800889309c56911b615135c244a3f20119dae475dffe27b6a71adc20fe00626a",
+            "height": 8542481,
+            "nonce": "ZBNmRqryeE9QIkT6",
+            "httpPort": 7000
+        }
+    ],
+    "links": {}
+}
