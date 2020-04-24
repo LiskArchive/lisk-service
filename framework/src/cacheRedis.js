@@ -15,20 +15,20 @@
  */
 const Keyv = require('keyv');
 
-let cache = new Keyv();
+const connectionPool = {};
 
-const configure = (config) => {
-	if (config.endpoints && config.endpoints.redis) {
-		cache = new Keyv(config.endpoints.redis);
+const keyvRedisCache = (endpoint) => {
+	if (!connectionPool[endpoint]) {
+		connectionPool[endpoint] = new Keyv(endpoint);
 	}
+
+	const cache = connectionPool[endpoint];
+
+	return {
+		set: (key, val, ttl) => cache.set(key, val, ttl),
+		get: key => cache.get(key),
+		delete: key => cache.delete(key),
+	};
 };
 
-const set = (key, val, ttl) => cache.set(key, val, ttl);
-const get = key => cache.get(key);
-
-module.exports = {
-	configure,
-	set,
-	get,
-	delete: key => cache.delete(key),
-};
+module.exports = keyvRedisCache;
