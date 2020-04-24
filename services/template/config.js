@@ -16,7 +16,7 @@
 const config = {};
 
 // Moleculer broker config
-config.transporter = process.env.LISK_SERVICE_TRANSPORTER || 'nats://localhost:4222';
+config.transporter = process.env.LISK_SERVICE_TRANSPORTER || 'redis://localhost:6379';
 config.brokerTimeout = Number(process.env.LISK_SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
 // Logging

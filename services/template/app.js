@@ -13,22 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// 3rd party libraries
 const path = require('path');
-const { Microservice } = require('lisk-service-framework');
+const { Microservice, Logger } = require('lisk-service-framework');
 
 const config = require('./config');
 const packageJson = require('./package.json');
 
-const app = new Microservice({
+const app = Microservice({
 	name: 'template',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
-	log: config.log,
 	packageJson,
 });
 
-const logger = app.getLogger();
+const logger = Logger(config.log);
 
 app.addMethods(path.join(__dirname, 'methods'));
 app.addEvents(path.join(__dirname, 'events'));
