@@ -13,85 +13,84 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// 3rd party libraries
 const { ServiceBroker } = require('moleculer');
 const cron = require('node-cron');
 const requireAllJs = require('./requireAllJs');
-const loggerContext = require('./logger.js');
-const cacheRedis = require('./cacheRedis.js');
+const debug = require('debug')('framework:microservice');
 
-class Microservice {
-	constructor(config = {}) {
-		this.moleculerConfig = config;
-		this.logger = loggerContext('Microservice');
-		this.moleculerConfig.actions = {};
-		loggerContext.configure(config);
-		cacheRedis.configure(config);
-	}
+const Microservice = (config = {}) => {
+	const moleculerConfig = config;
+	moleculerConfig.actions = {};
+	
+	let broker;
 
-	_addItems(folderPath, type) {
+	const _addItems = (folderPath, type) => {
 		const items = requireAllJs(folderPath);
 		const fnMap = {
-			'method': this.addMethod,
-			'event': this.addEvent,
-			'job': this.addJob,
+			'method': addMethod,
+			'event': addEvent,
+			'job': addJob,
 		}
 
 		Object.keys(items)
 			.forEach(itemGroup => items[itemGroup]
 				.forEach(item => fnMap[type].call(this, item)));
-	}
+	};
 
-	addMethods(folderPath) {
-		this._addItems(folderPath, 'method');
-	}
+	const addMethods = (folderPath) => {
+		_addItems(folderPath, 'method');
+	};
 
-	addEvents(folderPath) {
-		this._addItems(folderPath, 'event');
-	}
+	const addEvents = (folderPath) => {
+		_addItems(folderPath, 'event');
+	};
 
-	addJobs(folderPath) {
-		this._addItems(folderPath, 'job');
-	}
+	const addJobs = (folderPath) => {
+		_addItems(folderPath, 'job');
+	};
 
-	addMethod(item) {
-		this.moleculerConfig.actions[item.name] = {
+	const addMethod = (item) => {
+		moleculerConfig.actions[item.name] = {
 			params: item.params,
 			handler: ctx => item.controller(ctx.params),
 		};
-		this.logger.info(`Registered method ${this.moleculerConfig.name}.${item.name}`);
-	}
+		logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
+	};
 
-	addEvent(event) {
+	const addEvent = (event) => {
 		event.controller(data => {
-			this.broker.emit(event.name, data, 'gateway');
+			broker.emit(event.name, data, 'gateway');
 		});
-		this.logger.info(`Registered event ${this.moleculerConfig.name}.${event.name}`);
-	}
+		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
+	};
 
-	addJob(job) {
+	const addJob = (job) => {
 		cron.schedule(job.schedule, job.controller);
-		this.logger.info(`Registered job ${this.moleculerConfig.name}.${job.name}`);
-	}
+		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
+	};
 
-	getLogger(context) {
-		return loggerContext(context);
-	}
-
-	run() {
-		this.broker = new ServiceBroker({
-			transporter: this.moleculerConfig.transporter,
-			requestTimeout: this.moleculerConfig.brokerTimeout * 1000,
-			logLevel: 'info',
-			logger: loggerContext('ServiceBroker'),
+	const run = () => {
+		broker = new ServiceBroker({
+			transporter: moleculerConfig.transporter,
+			requestTimeout: moleculerConfig.brokerTimeout * 1000,
+			logLevel: 'info', // broken
+			logger: moleculerConfig.logger || console.log,
 		});
 	
+		debug(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
+
 		// Create a service
-		this.broker.createService(this.moleculerConfig);
+		broker.createService(moleculerConfig);
 	
 		// Start server
-		return this.broker.start();
-	}
+		return broker.start();
+	};
+
+	return {
+		addMethods, addEvents, addJobs,
+		addMethod, addEvent, addJob,
+		run,
+	};
 }
 
 module.exports = Microservice;
