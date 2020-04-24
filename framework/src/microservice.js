@@ -54,19 +54,19 @@ const Microservice = (config = {}) => {
 			params: item.params,
 			handler: ctx => item.controller(ctx.params),
 		};
-		logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
+		debug(`Registered method ${moleculerConfig.name}.${item.name}`);
 	};
 
 	const addEvent = (event) => {
 		event.controller(data => {
 			broker.emit(event.name, data, 'gateway');
 		});
-		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
+		debug(`Registered event ${moleculerConfig.name}.${event.name}`);
 	};
 
 	const addJob = (job) => {
 		cron.schedule(job.schedule, job.controller);
-		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
+		debug(`Registered job ${moleculerConfig.name}.${job.name}`);
 	};
 
 	const run = () => {
@@ -74,7 +74,7 @@ const Microservice = (config = {}) => {
 			transporter: moleculerConfig.transporter,
 			requestTimeout: moleculerConfig.brokerTimeout * 1000,
 			logLevel: 'info', // broken
-			logger: moleculerConfig.logger || console.log,
+			logger: moleculerConfig.logger,
 		});
 	
 		debug(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
