@@ -19,7 +19,7 @@ module.exports = {
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
 	},
-	CacheInMemory: require('./src/cacheInMemory'),
+	CacheMemory: require('./src/cacheMemory'),
 	CacheRedis: require('./src/cacheRedis'),
 	Constants: {
 		...require('./constants/ErrorCodes'),
