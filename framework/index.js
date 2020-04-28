@@ -21,6 +21,7 @@ module.exports = {
 	},
 	CacheMemory: require('./src/cacheMemory'),
 	CacheRedis: require('./src/cacheRedis'),
+	CacheLRU: require('./src/cacheLru'),
 	Constants: {
 		...require('./constants/ErrorCodes'),
 	},
