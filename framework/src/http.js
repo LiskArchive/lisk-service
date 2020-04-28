@@ -1,6 +1,8 @@
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 
+const delay = require('./delay');
+
 const CACHE_MAX_N_ITEMS = 4096;
 const CACHE_MAX_TTL = 12 * 60 * 60 * 1000; // 12 hrs
 
@@ -72,9 +74,6 @@ const performRequestUntilSuccess = async (url, params) => {
 
 	return response;
 }
-
-const delay = (t, val) => new Promise((resolve) => {
-	setTimeout(() => { resolve(val) }, t) });
 
 const requestWithCache = async (url, {requestLib = request, expireMiliseconds, requestParams,
 	} = {}) => {
