@@ -15,13 +15,16 @@
  */
 module.exports = {
 	Microservice: require('./src/microservice'),
-	Logger: require('./src/logger'),
-	Utils: {
-		requireAllJs: require('./src/requireAllJs'),
-	},
+	Logger: require('./src/logger').get,
+	LoggerConfig: require('./src/logger').init,
+	Debug: require('./src/logger').debug,
 	CacheMemory: require('./src/cacheMemory'),
 	CacheRedis: require('./src/cacheRedis'),
 	CacheLRU: require('./src/cacheLru'),
+	HTTP: require('./src/http'),
+	Utils: {
+		requireAllJs: require('./src/requireAllJs'),
+	},
 	Constants: {
 		...require('./constants/ErrorCodes'),
 	},
