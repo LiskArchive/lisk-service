@@ -14,19 +14,31 @@
  *
  */
 const path = require('path');
-const { Microservice, Logger } = require('lisk-service-framework');
+const {
+	Microservice,
+	LoggerConfig,
+	Logger,
+	Debug
+} = require('lisk-service-framework');
 
 const config = require('./config');
 const packageJson = require('./package.json');
+
+LoggerConfig({
+	...config.log,
+	name: packageJson.name,
+	version: packageJson.version,
+});
+
+const logger = Logger();
 
 const app = Microservice({
 	name: 'template',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
+	logger: Debug('Moleculer'),
 });
-
-const logger = Logger(config.log);
 
 app.addMethods(path.join(__dirname, 'methods'));
 app.addEvents(path.join(__dirname, 'events'));
