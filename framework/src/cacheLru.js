@@ -19,6 +19,7 @@ const memoryPool = {};
 
 const keyvMemoryCache = (bank, options) => {
 	if (!bank) bank = '$default';
+	if (!options) options = {};
 
 	if (!memoryPool[bank]) {
 		memoryPool[bank] = new KeyvLru({
