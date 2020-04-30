@@ -13,18 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { cachedRequest } = require('../../shared/cachedRequest');
-const { isEmptyArray } = require('../../shared/object.js');
+const { HTTP, Utils } = require('lisk-service-framework');
+const { StatusCodes: { NOT_FOUND } } = HTTP;
+const { isEmptyArray } = Utils.Data;
+
 const CoreService = require('../../shared/core.js');
+
 const config = require('../../config.js');
-const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
 
 const getKnownAccounts = async () => {
 	const { nethash } = await CoreService.getConstants();
 
 	const knownAccountsRequest = async (route) => {
 		const expireMiliseconds = 5 * 60 * 1000;
-		return JSON.parse(await cachedRequest(`${config.endpoints.liskStatic}${route}`, { expireMiliseconds }));
+		return JSON.parse(
+			await HTTP.request(`${config.endpoints.liskStatic}${route}`,
+			{ cacheTTL: expireMiliseconds }
+			));
 	};
 
 	try {
