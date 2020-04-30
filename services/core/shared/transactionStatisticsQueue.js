@@ -13,14 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
+const { Logger } = require('lisk-service-framework');
 const BigNumber = require('big-number');
 const Queue = require('bull');
 const moment = require('moment');
+
 const core = require('./core');
-const logger = require('./logger')();
 const { getDatabase, dbQueries } = require('./postgres');
 const config = require('../config');
+
+const logger = Logger();
 
 const statsQueue = new Queue('statsQueue', config.endpoints.redis);
 

@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
+const logger = Logger();
+
 const moment = require('moment');
 const core = require('./core');
-const logger = require('./logger')();
 const transactionStatisticsQueue = require('./transactionStatisticsQueue');
 const { getDatabase, dbQueries } = require('./postgres');
 

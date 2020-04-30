@@ -13,13 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Utils } = require('lisk-service-framework');
+const ObjectUtilService = Utils.Data;
+
 const recentBlocksCache = require('./recentBlocksCache');
 const coreCache = require('./coreCache');
-const config = require('../config.js');
-const ObjectUtilService = require('./object.js');
 const coreApi = require('./coreApi');
 const coreApiCached = require('./coreApiCached');
 const { setProtocolVersion } = require('./coreProtocolCompatibility.js');
+
+const config = require('../config.js');
 
 const numOfActiveDelegates = 101;
 const peerStates = {

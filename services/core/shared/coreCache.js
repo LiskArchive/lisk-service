@@ -13,12 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const { isEmptyArray } = require('./object');
+const { Utils, CacheLRU } = require('lisk-service-framework');
+const { isEmptyArray }  = Utils.Data;
 const { getAccounts } = require('./coreApi');
-const config = require('../config');
-const cache = require('./cacheMemory');
 
+const config = require('../config');
+
+const cache = CacheLRU();
 const getCacheKey = (key, value) => `account:${key}:${value}`;
 
 const getCachedAccountBy = async (key, value) => {
