@@ -4,7 +4,7 @@ const path = require('path');
 const requireAllJs = absolutePath => requireAll({
 	filter: /(.+)\.js$/,
 	excludeDirs: /^\.(git|svn)$/,
-	recursive: true,
+	recursive: false,
 	dirname: path.resolve(absolutePath),
 });
 
