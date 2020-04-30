@@ -97,4 +97,5 @@ module.exports = {
 	// connect,
 	// options,
 	// trace,
+	StatusCodes: HttpStatus,
 };
