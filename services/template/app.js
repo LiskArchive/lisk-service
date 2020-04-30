@@ -24,6 +24,7 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 
+// Configure logger
 LoggerConfig({
 	...config.log,
 	name: packageJson.name,
@@ -32,6 +33,7 @@ LoggerConfig({
 
 const logger = Logger();
 
+// Initialize Microservice framework
 const app = Microservice({
 	name: 'template',
 	transporter: config.transporter,
@@ -40,10 +42,12 @@ const app = Microservice({
 	logger: Debug('Moleculer'),
 });
 
+// Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
 app.addEvents(path.join(__dirname, 'events'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
+// Run the application
 app.run().then(() => {
 	logger.info(`Service started ${packageJson.name}`);
 }).catch((err) => {
