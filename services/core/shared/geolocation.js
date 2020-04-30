@@ -1,7 +1,8 @@
-const requestLib = require('request-promise');
+const { HTTP, CacheRedis, Logger } = require('lisk-service-framework');
+const requestLib = HTTP.request;
+const logger = Logger();
+
 const config = require('../config.js');
-const cacheRedis = require('./cacheRedis');
-const logger = require('./logger')();
 
 const GEOIP_TTL = 12 * 60 * 60 * 1000; // ms
 const REQUEST_LATENCY = 2000; // ms
@@ -11,14 +12,13 @@ const SCHEDULE_CLEANUP_INTERVAL = 1 * 60 * 1000; // ms
 
 const freegeoAddress = config.endpoints.geoip;
 
+const cacheRedis = CacheRedis();
+
 const refreshSchedule = [];
 const getRandInt = max => Math.ceil(Math.random() * max);
 
 const getFromHttp = ip => new Promise((resolve, reject) => {
-	requestLib({
-		url: `${freegeoAddress}/${ip}`,
-		json: true,
-	}).then((body) => {
+	requestLib(`${freegeoAddress}/${ip}`).then((body) => {
 		let jsonContent;
 		if (typeof body === 'string') jsonContent = JSON.parse(body);
 		else jsonContent = body;

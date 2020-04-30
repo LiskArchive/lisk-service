@@ -13,7 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const requestLib = require('request-promise');
+const { HTTP } = require('lisk-service-framework');
+const requestLib = HTTP.request;
 
 const { mapResponse, mapParams } = require('./coreProtocolCompatibility.js');
 const config = require('../config.js');
@@ -33,10 +34,8 @@ const validateCoreResponse = (body) => {
 };
 
 const request = (url, params) => new Promise((resolve, reject) => {
-	requestLib({
-		url: `${liskAddress}${url}`,
-		qs: mapParams(params, url),
-		json: true,
+	requestLib(`${liskAddress}${url}`, {
+		params: mapParams(params, url),
 	}).then((body) => {
 		let jsonContent;
 		if (typeof body === 'string') jsonContent = JSON.parse(body);

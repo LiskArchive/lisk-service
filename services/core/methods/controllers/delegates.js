@@ -14,9 +14,9 @@
  *
  */
 
-const { getTotalNumberOfDelegates } = require('../../services/delegateCache');
-const CoreService = require('../../services/core.js');
-const ObjectUtilService = require('../../services/object.js');
+const { getTotalNumberOfDelegates } = require('../../shared/delegateCache');
+const CoreService = require('../../shared/core.js');
+const ObjectUtilService = require('../../shared/object.js');
 const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
 
 const numOfActiveDelegates = CoreService.numOfActiveDelegates;

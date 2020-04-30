@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../services/core.js');
+const CoreService = require('../../shared/core.js');
 
 const getNetworkStatus = async () => {
 	const status = await CoreService.getNetworkStatus();

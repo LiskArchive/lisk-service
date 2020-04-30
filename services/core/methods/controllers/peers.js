@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../services/core.js');
-const GeoService = require('../../services/geolocation.js');
-const ObjectUtilService = require('../../services/object.js');
+const CoreService = require('../../shared/core.js');
+const GeoService = require('../../shared/geolocation.js');
+const ObjectUtilService = require('../../shared/object.js');
 const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
 
 const peerStates = CoreService.peerStates;

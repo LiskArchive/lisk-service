@@ -14,9 +14,9 @@
  *
  */
 const moment = require('moment');
-const CoreService = require('../../services/core.js');
-const ObjectUtilService = require('../../services/object.js');
-const txStatisticsService = require('../../services/transactionStatistics');
+const CoreService = require('../../shared/core.js');
+const ObjectUtilService = require('../../shared/object.js');
+const txStatisticsService = require('../../shared/transactionStatistics');
 const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
 
 const isEmptyArray = ObjectUtilService.isEmptyArray;

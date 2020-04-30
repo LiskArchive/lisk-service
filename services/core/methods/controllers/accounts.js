@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { cachedRequest } = require('../../services/cachedRequest');
-const { isEmptyArray } = require('../../services/object.js');
-const CoreService = require('../../services/core.js');
+const { cachedRequest } = require('../../shared/cachedRequest');
+const { isEmptyArray } = require('../../shared/object.js');
+const CoreService = require('../../shared/core.js');
 const config = require('../../config.js');
 const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
 

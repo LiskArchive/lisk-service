@@ -15,7 +15,7 @@
  */
 const httpStatus = require('http-status-codes');
 
-const CoreService = require('../../services/core.js');
+const CoreService = require('../../shared/core.js');
 const packageJson = require('../../package.json');
 
 const getStatus = async () => {
