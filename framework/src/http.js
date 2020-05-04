@@ -3,6 +3,7 @@ const HttpStatus = require('http-status-codes');
 
 const delay = require('./delay');
 
+const CACHE_DEFAULT_TTL = 0;
 const CACHE_MAX_N_ITEMS = 4096;
 const CACHE_MAX_TTL = 12 * 60 * 60 * 1000; // 12 hrs
 
@@ -30,7 +31,7 @@ const request = async (url, params) => {
 			url, 
 			params);
 		if(_validateHttpResponse(response)) {
-			cache.set(key, response, params.cacheTTL || DEFAULT_TTL);
+			cache.set(key, response, params.cacheTTL || CACHE_DEFAULT_TTL);
 		}
 	}
 
