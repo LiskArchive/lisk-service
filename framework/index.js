@@ -22,6 +22,7 @@ module.exports = {
 	CacheRedis: require('./src/cacheRedis'),
 	CacheLRU: require('./src/cacheLru'),
 	HTTP: require('./src/http'),
+	SocketClient: require('./src/socketClient'),
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
 		Data: require('./src/data'),
