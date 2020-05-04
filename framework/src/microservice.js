@@ -20,13 +20,26 @@ const cron = require('node-cron');
 const requireAllJs = require('./requireAllJs');
 const {
 	isProperObject,
-	isString,
 } = require('./data');
 
 const methodSchema = {
 	name: { type: 'string'},
+	description: { type: 'string', optional: true},
 	controller: { type: 'function' },
 	params: { type: 'object', optional: true },
+};
+
+const eventSchema = {
+	name: { type: 'string'},
+	description: { type: 'string', optional: true},
+	controller: { type: 'function' },
+};
+
+const jobSchema = {
+	name: { type: 'string'},
+	description: { type: 'string', optional: true},
+	schedule: { type: 'string'},
+	controller: { type: 'function' },
 };
 
 const v = new Validator();
@@ -93,6 +106,16 @@ const Microservice = (config = {}) => {
 	};
 
 	const addEvent = (event) => {
+		const validDefinition = v.validate(event, eventSchema);
+		if (validDefinition !== true) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}:`,
+				`${util.inspect(event)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+
 		event.controller(data => {
 			broker.emit(event.name, data, 'gateway');
 		});
@@ -100,6 +123,16 @@ const Microservice = (config = {}) => {
 	};
 
 	const addJob = (job) => {
+		const validDefinition = v.validate(job, jobSchema);
+		if (validDefinition !== true) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+
 		cron.schedule(job.schedule, job.controller);
 		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
 	};
