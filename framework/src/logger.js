@@ -38,7 +38,7 @@ const configure = (config) => {
 		categories: { default: { appenders: [], level: LOG_LEVEL } },
 	};
 
-	const coverPasswords = input => input.replace(
+	const coverPasswords = input => `${input}`.replace(
 		/(\b(?!:\/\/\b)[^@/$]+(\b!?@)\b)/g,
 		`${Array(8).join('*')}:${Array(8).join('*')}@`);
 
