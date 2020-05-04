@@ -14,14 +14,22 @@
  *
  */
 const util = require('util');
+const Validator = require("fastest-validator");
 const { ServiceBroker } = require('moleculer');
 const cron = require('node-cron');
 const requireAllJs = require('./requireAllJs');
-const { 
+const {
 	isProperObject,
 	isString,
 } = require('./data');
-const debug = require('debug')('framework:microservice');
+
+const methodSchema = {
+	name: { type: 'string'},
+	controller: { type: 'function' },
+	params: { type: 'object', optional: true },
+};
+
+const v = new Validator();
 
 const Microservice = (config = {}) => {
 	const moleculerConfig = config;
@@ -57,16 +65,31 @@ const Microservice = (config = {}) => {
 	};
 
 	const addMethod = (item) => {
-		if (isProperObject(item) && isString(item.name)) {
-			
-			moleculerConfig.actions[item.name] = {
-				params: item.params,
-				handler: ctx => item.controller(ctx.params),
-			};
-			logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
-		} else {
-			logger.warn(`Invalid method definition in ${moleculerConfig.name}: ${util.inspect(item)}`);
+		const validDefinition = v.validate(item, methodSchema);
+		if (validDefinition !== true) {
+			logger.warn([
+				`Invalid method definition in ${moleculerConfig.name}:`,
+				`${util.inspect(item)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
 		}
+
+		try {
+			isProperObject(item.params) ? v.validate({}, item.params) : true;
+		} catch(err) {
+			logger.warn([
+				`Invalid parameter definition in ${moleculerConfig.name}:`,
+				`${util.inspect(item)}`,
+			].join('\n'));
+			return;
+		}
+
+		moleculerConfig.actions[item.name] = {
+			params: item.params,
+			handler: ctx => item.controller(ctx.params),
+		};
+		logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
 	};
 
 	const addEvent = (event) => {
