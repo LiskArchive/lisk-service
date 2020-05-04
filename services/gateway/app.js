@@ -23,8 +23,8 @@ const ApiService = require("moleculer-web");
 const config = require('./config');
 const packageJson = require('./package.json');
 
-const ip = '0.0.0.0';
-const port = 3011;
+const ip = config.host;
+const port = config.port;
 
 LoggerConfig({
 	...config.log,
@@ -38,7 +38,7 @@ const app = Microservice({
 	name: 'gateway',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
-	logger: console,
+	logger: Logger('lisk-service-gateway'),
 });
 
 const broker = app.getBroker();
