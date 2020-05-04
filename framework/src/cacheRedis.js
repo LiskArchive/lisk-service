@@ -17,7 +17,8 @@ const Keyv = require('keyv');
 
 const connectionPool = {};
 
-const keyvRedisCache = (endpoint) => {
+const keyvRedisCache = (bank, endpoint) => {
+	if (!bank) bank = '$default';
 	if (!connectionPool[endpoint]) {
 		connectionPool[endpoint] = new Keyv(endpoint);
 	}
@@ -25,9 +26,9 @@ const keyvRedisCache = (endpoint) => {
 	const cache = connectionPool[endpoint];
 
 	return {
-		set: (key, val, ttl) => cache.set(key, val, ttl),
-		get: key => cache.get(key),
-		delete: key => cache.delete(key),
+		set: (key, val, ttl) => cache.set(`${bank}:${key}`, val, ttl),
+		get: key => cache.get(`${bank}:${key}`),
+		delete: key => cache.delete(`${bank}:${key}`),
 	};
 };
 
