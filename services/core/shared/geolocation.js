@@ -27,7 +27,7 @@ const SCHEDULE_CLEANUP_INTERVAL = 1 * 60 * 1000; // ms
 
 const freegeoAddress = config.endpoints.geoip;
 
-const cacheRedis = CacheRedis();
+const cacheRedis = CacheRedis('geodata', config.endpoints.redis);
 
 const refreshSchedule = [];
 const getRandInt = max => Math.ceil(Math.random() * max);
