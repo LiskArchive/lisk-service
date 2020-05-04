@@ -17,8 +17,7 @@ const path = require('path');
 const {
 	Microservice,
 	LoggerConfig,
-	Logger,
-	Debug
+	Logger
 } = require('lisk-service-framework');
 
 const config = require('./config');
@@ -39,7 +38,7 @@ const app = Microservice({
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
-	logger: Debug('Moleculer'),
+	logger: Logger('lisk-moleculer'),
 });
 
 // Add routes, events & jobs
