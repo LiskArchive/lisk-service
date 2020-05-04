@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Utils } = require('lisk-service-framework');
+const { HTTP, Utils, Logger } = require('lisk-service-framework');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
@@ -24,6 +24,9 @@ const peerStates = CoreService.peerStates;
 const isEmptyArray = ObjectUtilService.isEmptyArray;
 const isEmptyObject = ObjectUtilService.isEmptyObject;
 
+const logger = Logger();
+
+/* TODO: Move request all to HTTP library */
 const requestAll = async (fn, params, limit) => {
 	const defaultMaxAmount = limit || 10000;
 	const oneRequestLimit = params.limit || 100;
@@ -47,11 +50,15 @@ const requestAll = async (fn, params, limit) => {
 			}))).then((result) => {
 			result.data.forEach((item) => { data.push(item); });
 			return data;
+		}).catch(err => {
+			logger.warn(`Failed to fetch data ${err}`);
 		}), Promise.resolve());
 		return collection;
 	}
 	return data;
 };
+
+// const requestAll = async (fn, params, limit) => (await fn(params)).data;
 
 const addLocation = async (ipaddress) => {
 	try {
@@ -94,10 +101,13 @@ const getPeers = async (params) => {
 const getConnectedPeers = async () => {
 	const peers = await requestAll(CoreService.getPeers, { state: peerStates.CONNECTED });
 
-	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
-		elem.location = await addLocation(elem.ip);
-		return elem;
-	}));
+	// TODO: Fix geolocation
+	// const dataWithLocation = await Promise.all(peers.map(async (elem) => {
+	// 	elem.location = await addLocation(elem.ip);
+	// 	return elem;
+	// })).catch((err) => logger.warn(err));
+
+	const dataWithLocation = () => peers;
 
 	const meta = {
 		count: peers.length,
