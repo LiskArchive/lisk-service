@@ -46,13 +46,13 @@ const CORE_DISCOVERY_INTERVAL = 10 * 1000; // ms
 
 const nodeStatus = require('./helpers/nodeStatus');
 const updatersInit = require('./helpers/updatersInit');
-// const socketInit = require('./helpers/socket');
+const socketInit = require('./helpers/socket');
 
 nodeStatus().then(() => {
 	updatersInit();
 	setInterval(nodeStatus, CORE_DISCOVERY_INTERVAL);
 
-	// socketInit();
+	socketInit(app.getBroker());
 
 	app.run().then(() => {
 		logger.info(`Service started ${packageJson.name}`);
