@@ -29,14 +29,14 @@ LoggerConfig({
 	version: packageJson.version,
 });
 
+const logger = Logger();
+
 const app = Microservice({
-	name: 'template',
+	name: 'core',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
-	logger: Logger('Moleculer'),
+	logger: Logger('lisk:moleculer'),
 });
-
-const logger = Logger();
 
 app.addMethods(path.join(__dirname, 'methods'));
 app.addEvents(path.join(__dirname, 'events'));
@@ -50,6 +50,6 @@ app.run().then(() => {
 	process.exit(1);
 });
 
-const updatersInit = require('./helpers/updatersInit');
-const socketInit = require('./helpers/socket');
-const nodeStatusInit = require('./helpers/nodeStatus');
+// const updatersInit = require('./helpers/updatersInit');
+// const socketInit = require('./helpers/socket');
+// const nodeStatusInit = require('./helpers/nodeStatus');
