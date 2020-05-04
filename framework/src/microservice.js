@@ -13,14 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const { ServiceBroker } = require('moleculer');
 const cron = require('node-cron');
 const requireAllJs = require('./requireAllJs');
+const { 
+	isProperObject,
+	isString,
+} = require('./data');
 const debug = require('debug')('framework:microservice');
 
 const Microservice = (config = {}) => {
 	const moleculerConfig = config;
 	moleculerConfig.actions = {};
+
+	const logger = moleculerConfig.logger;
 	
 	let broker;
 
@@ -50,34 +57,39 @@ const Microservice = (config = {}) => {
 	};
 
 	const addMethod = (item) => {
-		moleculerConfig.actions[item.name] = {
-			params: item.params,
-			handler: ctx => item.controller(ctx.params),
-		};
-		debug(`Registered method ${moleculerConfig.name}.${item.name}`);
+		if (isProperObject(item) && isString(item.name)) {
+			
+			moleculerConfig.actions[item.name] = {
+				params: item.params,
+				handler: ctx => item.controller(ctx.params),
+			};
+			logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
+		} else {
+			logger.warn(`Invalid method definition in ${moleculerConfig.name}: ${util.inspect(item)}`);
+		}
 	};
 
 	const addEvent = (event) => {
 		event.controller(data => {
 			broker.emit(event.name, data, 'gateway');
 		});
-		debug(`Registered event ${moleculerConfig.name}.${event.name}`);
+		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
 	};
 
 	const addJob = (job) => {
 		cron.schedule(job.schedule, job.controller);
-		debug(`Registered job ${moleculerConfig.name}.${job.name}`);
+		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
 	};
 
 	const run = () => {
 		broker = new ServiceBroker({
 			transporter: moleculerConfig.transporter,
-			requestTimeout: moleculerConfig.brokerTimeout * 1000,
+			requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
 			logLevel: 'info', // broken
 			logger: moleculerConfig.logger,
 		});
 	
-		debug(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
+		logger.info(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
 
 		// Create a service
 		broker.createService(moleculerConfig);
