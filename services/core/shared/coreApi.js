@@ -39,7 +39,7 @@ const request = (url, params) => new Promise((resolve, reject) => {
 	}).then((body) => {
 		let jsonContent;
 		if (typeof body === 'string') jsonContent = JSON.parse(body);
-		else jsonContent = body;
+		else jsonContent = body.data;
 		if (validateCoreResponse(jsonContent)) {
 			return resolve(mapResponse(jsonContent, url));
 		}
