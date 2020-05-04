@@ -42,14 +42,26 @@ app.addMethods(path.join(__dirname, 'methods'));
 app.addEvents(path.join(__dirname, 'events'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
-app.run().then(() => {
-	logger.info(`Service started ${packageJson.name}`);
-}).catch((err) => {
-	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-	logger.fatal(err.stack);
-	process.exit(1);
+const CORE_DISCOVERY_INTERVAL = 10 * 1000; // ms
+
+const nodeStatus = require('./helpers/nodeStatus');
+const updatersInit = require('./helpers/updatersInit');
+// const socketInit = require('./helpers/socket');
+
+nodeStatus().then(() => {
+	updatersInit();
+	setInterval(nodeStatus, CORE_DISCOVERY_INTERVAL);
+
+	// socketInit();
+
+	app.run().then(() => {
+		logger.info(`Service started ${packageJson.name}`);
+	}).catch((err) => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});
 });
 
-// const updatersInit = require('./helpers/updatersInit');
-// const socketInit = require('./helpers/socket');
-// const nodeStatusInit = require('./helpers/nodeStatus');
+
+
