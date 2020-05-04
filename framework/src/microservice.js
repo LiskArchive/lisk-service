@@ -50,7 +50,14 @@ const Microservice = (config = {}) => {
 
 	const logger = moleculerConfig.logger;
 	
-	let broker;
+	const broker = new ServiceBroker({
+		transporter: moleculerConfig.transporter,
+		requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
+		logLevel: 'info', // broken
+		logger: moleculerConfig.logger,
+	});
+
+	const getBroker = () => broker;
 
 	const _addItems = (folderPath, type) => {
 		const items = requireAllJs(folderPath);
@@ -138,13 +145,6 @@ const Microservice = (config = {}) => {
 	};
 
 	const run = () => {
-		broker = new ServiceBroker({
-			transporter: moleculerConfig.transporter,
-			requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
-			logLevel: 'info', // broken
-			logger: moleculerConfig.logger,
-		});
-	
 		logger.info(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
 
 		// Create a service
@@ -157,7 +157,7 @@ const Microservice = (config = {}) => {
 	return {
 		addMethods, addEvents, addJobs,
 		addMethod, addEvent, addJob,
-		run,
+		getBroker, run,
 	};
 }
 
