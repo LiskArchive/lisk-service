@@ -18,7 +18,7 @@ npm install lisk-service-framework
 
 ## Quick Start
 
-Following example works with Redis to 
+Following example works with Redis as a service broker.
 Alternatively NATS can be used.
 
 ```javascript
