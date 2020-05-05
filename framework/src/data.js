@@ -16,7 +16,7 @@
 const isProperObject = item => !!(item !== null && typeof item === 'object');
 const isEmptyArray = array => !!(Array.isArray(array) && (array.length === 0));
 const isEmptyObject = obj => !!(obj !== null && typeof obj === 'object' && Object.keys(obj).length === 0);
-const isString = item => !!(typeof item === 'string');
+const isString = item => typeof item === 'string';
 
 module.exports = {
 	isProperObject,

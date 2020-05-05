@@ -17,7 +17,7 @@ const Keyv = require('keyv');
 
 const memoryPool = {};
 
-const keyvMemoryCache = (bank) => {
+const keyvMemoryCache = (bank = '$default') => {
 	if (!bank) bank = '$default';
 
 	if (!memoryPool[bank]) {
