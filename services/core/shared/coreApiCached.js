@@ -13,23 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP } = require('lisk-service-framework');
+const coreApi = require('./coreApi');
 
-const request = require('request-promise-native');
-const cache = require('./cacheMemory');
+const {
+	request,
+	...coreApiGetters
+} = coreApi;
 
-const cachedRequest = async (url, {
-	requestLib = request, expireMiliseconds, requestParams,
-} = {}) => {
-	let response;
-	const key = url + (requestParams ? JSON.stringify(requestParams) : '');
-	response = await cache.get(key);
-	if (!response) {
-		response = await requestLib(url, requestParams);
-		cache.set(key, response, expireMiliseconds);
-	}
-	return response;
-};
+const coreApiCached = Object.entries(coreApiGetters).reduce((accumulator, [key, getter]) => ({
+	...accumulator,
+	[key]: (requestParams, { expireMiliseconds } = {}) => (
+		HTTP.request(key, {
+			...requestParams,
+			cacheTTL: expireMiliseconds,
+		})
+	),
+}), {});
 
-module.exports = {
-	cachedRequest,
-};
+module.exports = coreApiCached;

@@ -13,24 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const isProperObject = item => !!(item !== null && typeof item === 'object');
+const isEmptyArray = array => !!(Array.isArray(array) && (array.length === 0));
+const isEmptyObject = obj => !!(obj !== null && typeof obj === 'object' && Object.keys(obj).length === 0);
+const isString = item => !!(typeof item === 'string');
 
-const { cachedRequest } = require('./cachedRequest');
-const coreApi = require('./coreApi');
-
-const {
-	request,
-	...coreApiGetters
-} = coreApi;
-
-const coreApiCached = Object.entries(coreApiGetters).reduce((accumulator, [key, getter]) => ({
-	...accumulator,
-	[key]: (requestParams, { expireMiliseconds } = {}) => (
-		cachedRequest(key, {
-			requestLib: (url, params) => getter(params),
-			expireMiliseconds,
-			requestParams,
-		})
-	),
-}), {});
-
-module.exports = coreApiCached;
+module.exports = {
+	isProperObject,
+	isEmptyArray,
+	isEmptyObject,
+	isString,
+};

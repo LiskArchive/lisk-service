@@ -15,15 +15,22 @@
  */
 const Keyv = require('keyv');
 
-const cache = new Keyv();
+const memoryPool = {};
 
-const set = (key, val, ttl) => cache.set(key, val, ttl);
-const get = key => cache.get(key);
-const del = key => cache.delete(key);
+const keyvMemoryCache = (bank) => {
+	if (!bank) bank = '$default';
 
-module.exports = {
-	set,
-	get,
-	del,
+	if (!memoryPool[bank]) {
+		memoryPool[bank] = new Keyv();
+	}
+
+	const cache = memoryPool[bank];
+
+	return {
+		set: (key, val, ttl) => cache.set(key, val, ttl),
+		get: key => cache.get(key),
+		delete: key => cache.delete(key),
+	};
 };
 
+module.exports = keyvMemoryCache;

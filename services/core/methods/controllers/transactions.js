@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const moment = require('moment');
-const CoreService = require('../../services/core.js');
-const ObjectUtilService = require('../../services/object.js');
-const txStatisticsService = require('../../services/transactionStatistics');
-const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
+const { HTTP, Utils } = require('lisk-service-framework');
+const { StatusCodes: { NOT_FOUND } } = HTTP;
+const { isEmptyArray, isEmptyObject } = Utils.Data;
 
-const isEmptyArray = ObjectUtilService.isEmptyArray;
-const isEmptyObject = ObjectUtilService.isEmptyObject;
+const moment = require('moment');
+
+const CoreService = require('../../shared/core.js');
+const txStatisticsService = require('../../shared/transactionStatistics');
 
 const getTransactions = async (params) => {
 	const addressParam = ['senderId', 'recipientId', 'senderIdOrRecipientId'].filter(item => typeof params[item] === 'string');

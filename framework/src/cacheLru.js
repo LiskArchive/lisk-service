@@ -13,23 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Keyv = require('keyv');
+const { KeyvLru } = require('keyv-lru');
 
-const connectionPool = {};
+const memoryPool = {};
 
-const keyvRedisCache = (bank, endpoint) => {
+const keyvMemoryCache = (bank, options) => {
 	if (!bank) bank = '$default';
-	if (!connectionPool[endpoint]) {
-		connectionPool[endpoint] = new Keyv(endpoint);
+	if (!options) options = {};
+
+	if (!memoryPool[bank]) {
+		memoryPool[bank] = new KeyvLru({
+			max: options.max || 1000,
+			ttl: options.ttl || 0,
+			notify: false,
+			expire: 0,
+		});
 	}
 
-	const cache = connectionPool[endpoint];
+	const cache = memoryPool[bank];
 
 	return {
-		set: (key, val, ttl) => cache.set(`${bank}:${key}`, val, ttl),
-		get: key => cache.get(`${bank}:${key}`),
-		delete: key => cache.delete(`${bank}:${key}`),
+		set: (key, val, ttl) => cache.set(key, val, ttl),
+		get: key => cache.get(key),
+		delete: key => cache.delete(key),
 	};
 };
 
-module.exports = keyvRedisCache;
+module.exports = keyvMemoryCache;

@@ -13,27 +13,40 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// 3rd party libraries
 const path = require('path');
-const { Microservice } = require('lisk-service-framework');
+const {
+	Microservice,
+	LoggerConfig,
+	Logger
+} = require('lisk-service-framework');
 
 const config = require('./config');
 const packageJson = require('./package.json');
 
-const app = new Microservice({
+// Configure logger
+LoggerConfig({
+	...config.log,
+	name: packageJson.name,
+	version: packageJson.version,
+});
+
+const logger = Logger();
+
+// Initialize Microservice framework
+const app = Microservice({
 	name: 'template',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
-	log: config.log,
 	packageJson,
+	logger: Logger('lisk-moleculer'),
 });
 
-const logger = app.getLogger();
-
+// Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
 app.addEvents(path.join(__dirname, 'events'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
+// Run the application
 app.run().then(() => {
 	logger.info(`Service started ${packageJson.name}`);
 }).catch((err) => {

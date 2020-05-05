@@ -13,15 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
+const logger = Logger();
+
+const config = require('../config');
 
 const pgPromise = require('pg-promise')({
 	capSQL: true,
 	promiseLib: Promise,
 	noLocking: false,
 });
-const logger = require('./logger')();
-const config = require('../config');
-
 
 const dbQueries = {
 	tableName: 'transaction_statistics',

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,18 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Utils, CacheRedis, Logger } = require('lisk-service-framework');
 const path = require('path');
-const requireAll = require('require-all');
 
-const cacheRedis = require('./cacheRedis');
-const logger = require('../services/logger')();
+const config = require('../config');
 
-const controllers = requireAll({
-	dirname: path.resolve(__dirname, '../methods/controllers'),
-	filter: /(.+)\.js$/,
-	excludeDirs: /^\.(git|svn)$/,
-	recursive: false,
-});
+const cacheRedis = CacheRedis('block_updater', config.endpoints.redis);
+const logger = Logger();
+
+const controllers = Utils.requireAllJs(path.resolve(__dirname, '../methods/controllers'));
 
 const MIN_TIMEOUT = 15 * 1000;
 

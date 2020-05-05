@@ -13,11 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP, Utils } = require('lisk-service-framework');
+const { StatusCodes: { NOT_FOUND } } = HTTP;
+const ObjectUtilService = Utils.Data;
 
-const { getTotalNumberOfDelegates } = require('../../services/delegateCache');
-const CoreService = require('../../services/core.js');
-const ObjectUtilService = require('../../services/object.js');
-const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
+const { getTotalNumberOfDelegates } = require('../../shared/delegateCache');
+const CoreService = require('../../shared/core.js');
 
 const numOfActiveDelegates = CoreService.numOfActiveDelegates;
 
