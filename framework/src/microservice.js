@@ -42,7 +42,7 @@ const jobSchema = {
 	controller: { type: 'function' },
 };
 
-const v = new Validator();
+const validator = new Validator();
 
 const Microservice = (config = {}) => {
 	const moleculerConfig = config;
@@ -85,7 +85,7 @@ const Microservice = (config = {}) => {
 	};
 
 	const addMethod = (item) => {
-		const validDefinition = v.validate(item, methodSchema);
+		const validDefinition = validator.validate(item, methodSchema);
 		if (validDefinition !== true) {
 			logger.warn([
 				`Invalid method definition in ${moleculerConfig.name}:`,
@@ -96,7 +96,7 @@ const Microservice = (config = {}) => {
 		}
 
 		try {
-			isProperObject(item.params) ? v.validate({}, item.params) : true;
+			isProperObject(item.params) ? validator.validate({}, item.params) : true;
 		} catch(err) {
 			logger.warn([
 				`Invalid parameter definition in ${moleculerConfig.name}:`,
@@ -113,7 +113,7 @@ const Microservice = (config = {}) => {
 	};
 
 	const addEvent = (event) => {
-		const validDefinition = v.validate(event, eventSchema);
+		const validDefinition = validator.validate(event, eventSchema);
 		if (validDefinition !== true) {
 			logger.warn([
 				`Invalid event definition in ${moleculerConfig.name}:`,
@@ -130,7 +130,7 @@ const Microservice = (config = {}) => {
 	};
 
 	const addJob = (job) => {
-		const validDefinition = v.validate(job, jobSchema);
+		const validDefinition = validator.validate(job, jobSchema);
 		if (validDefinition !== true) {
 			logger.warn([
 				`Invalid event definition in ${moleculerConfig.name}:`,
