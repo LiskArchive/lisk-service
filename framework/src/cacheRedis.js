@@ -17,8 +17,7 @@ const Keyv = require('keyv');
 
 const connectionPool = {};
 
-const keyvRedisCache = (bank, endpoint) => {
-	if (!bank) bank = '$default';
+const keyvRedisCache = (bank = '$default', endpoint) => {
 	if (!connectionPool[endpoint]) {
 		connectionPool[endpoint] = new Keyv(endpoint);
 	}

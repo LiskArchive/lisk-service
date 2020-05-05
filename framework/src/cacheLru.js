@@ -17,10 +17,7 @@ const { KeyvLru } = require('keyv-lru');
 
 const memoryPool = {};
 
-const keyvMemoryCache = (bank, options) => {
-	if (!bank) bank = '$default';
-	if (!options) options = {};
-
+const keyvMemoryCache = (bank = '$default', options = {}) => {
 	if (!memoryPool[bank]) {
 		memoryPool[bank] = new KeyvLru({
 			max: options.max || 1000,
