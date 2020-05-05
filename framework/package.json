@@ -14,7 +14,9 @@
   "bugs": {
     "url": "https://github.com/LiskHQ/lisk-service/issues"
   },
-  "private": true,
+  "publishConfig": {
+    "registry":"https://npm.lisk.io/"
+  },
   "author": "Lisk Foundation <admin@lisk.io>, lightcurve GmbH <admin@lightcurve.io>",
   "license": "Apache-2.0",
   "main": "index.js",
