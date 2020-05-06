@@ -65,8 +65,6 @@ const performRequestUntilSuccess = async (url, params) => {
 		if (firstErrorCoreDigit === '1') return response;
 		if (firstErrorCoreDigit === '2') return response;
 		if (firstErrorCoreDigit === '3') return response;
-		// if (firstErrorCoreDigit === '4') return response;
-		// if (firstErrorCoreDigit === '5') return response;
 
 		--retries;
 		await delay(params.retryDelay || 100);
