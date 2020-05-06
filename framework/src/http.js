@@ -17,9 +17,8 @@ const _validateHttpResponse = (response) => {
 	return false;
 };
 
-const request = async (url, params) => {
+const request = async (url, params = {}) => {
 	let response;
-	if (!params) params = {};
 	const key = url + JSON.stringify(params);
 
 	if (params.cacheTTL && params.cacheTTL > 0) {
