@@ -75,18 +75,6 @@ const performRequestUntilSuccess = async (url, params) => {
 	return response;
 }
 
-const requestWithCache = async (url, {requestLib = request, expireMiliseconds, requestParams,
-	} = {}) => {
-	let response;
-	const key = url + (requestParams ? JSON.stringify(requestParams) : '');
-	response = await cache.get(key);
-	if (!response) {
-		response = await requestLib(url, requestParams);
-		cache.set(key, response, expireMiliseconds);
-	}
-	return response;
-};
-
 module.exports = {
 	request,
 	// get,
