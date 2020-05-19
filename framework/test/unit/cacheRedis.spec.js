@@ -13,9 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { redis } = require('redis-mock');
-console.log(redis);
-// import redis from 'redis-mock';
+// TODO: mock Redis
+// const { redis } = require('redis-mock');
 // jest.doMock('redis', () => redis);
 
 const Cache = require('../../src/cacheRedis');
