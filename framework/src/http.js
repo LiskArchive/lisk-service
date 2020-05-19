@@ -80,10 +80,8 @@ const requestWithPagination = async (fn, params, limit) => {
 		limit: oneRequestLimit,
 		offset: 0,
 	}));
-	const data = firstRequest.data;
-	const maxAmount = firstRequest.meta.count > defaultMaxAmount
-		? defaultMaxAmount
-		: firstRequest.meta.count;
+	const { data } = firstRequest;
+	const maxAmount = Math.min(defaultMaxAmount, firstRequest.meta.count);
 
 	if (maxAmount > oneRequestLimit) {
 		const pages = [...Array(Math.ceil(maxAmount / oneRequestLimit)).keys()];
@@ -106,13 +104,13 @@ const requestWithPagination = async (fn, params, limit) => {
 
 module.exports = {
 	request,
-	// get,
-	// head,
-	// post,
-	// put,
-	// 'delete': httpDelete,
-	// connect,
-	// options,
-	// trace,
+	get: (url, params) => request(url, { ...params, method: 'get' }),
+	head: (url, params) => request(url, { ...params, method: 'head' }),
+	post: (url, params) => request(url, { ...params, method: 'post' }),
+	put: (url, params) => request(url, { ...params, method: 'put' }),
+	delete: (url, params) => request(url, { ...params, method: 'delete' }),
+	connect: (url, params) => request(url, { ...params, method: 'connect' }),
+	options: (url, params) => request(url, { ...params, method: 'options' }),
+	trace: (url, params) => request(url, { ...params, method: 'trace' }),
 	StatusCodes: HttpStatus,
 };
