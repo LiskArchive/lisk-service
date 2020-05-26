@@ -50,17 +50,19 @@ const request = async (url, params = {}) => {
 	}
 
 	if (!response) {
-		httpResponse = await performRequestUntilSuccess(
-			url, 
-			params);
-		if(_validateHttpResponse(httpResponse) && params.cacheTTL && params.cacheTTL > 0) {
+		httpResponse = await performRequestUntilSuccess(url, params);
+		
+		if (_validateHttpResponse(httpResponse)) {
 			const { data, headers, status, statusText } = httpResponse;
 			response = { data, headers, status, statusText };
-			await cache.set(key, response, params.cacheTTL);
+
+			if (params.cacheTTL && params.cacheTTL > 0) {
+				cache.set(key, response, params.cacheTTL);
+			}
 		}
 	}
 
-	return { data, headers, status, statusText };
+	return response;
 };
 
 const performRequest = async (url, params) => {
