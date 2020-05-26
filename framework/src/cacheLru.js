@@ -33,6 +33,7 @@ const keyvMemoryCache = (bank = '$default', options = {}) => {
 		set: (key, val, ttl) => cache.set(key, val, ttl),
 		get: key => cache.get(key),
 		delete: key => cache.delete(key),
+		destroy: () => cache.clear(),
 	};
 };
 
