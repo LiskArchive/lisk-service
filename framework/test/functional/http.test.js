@@ -67,6 +67,7 @@ describe('HTTP library with caching enabled', () => {
 	});
 
 	test('handles expire time properly', async () => {
+		const FIXED_DATA = 'fixed';
 		const ttl = 50;
 		const timestamps = [];
 
@@ -85,6 +86,9 @@ describe('HTTP library with caching enabled', () => {
 		timestamps.push(getTimestamp());
 
 		// console.log(timestamps.map(t => t - timestamps[0]));
+
+		originalResponse.headers.date = FIXED_DATA;
+		secondResponse.headers.date = FIXED_DATA;
 
 		expect(timestamps[1] - timestamps[0]).toBeGreaterThanOrEqual(50);
 		expect(timestamps[3] - timestamps[2]).toBeGreaterThanOrEqual(50);
