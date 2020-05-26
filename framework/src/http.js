@@ -18,16 +18,20 @@ const HttpStatus = require('http-status-codes');
 
 const delay = require('./delay');
 
-const CACHE_DEFAULT_TTL = 0;
-const CACHE_MAX_N_ITEMS = 4096;
-const CACHE_MAX_TTL = 12 * 60 * 60 * 1000; // 12 hrs
+// const CACHE_DEFAULT_TTL = 0;
+// const CACHE_MAX_N_ITEMS = 4096;
+// const CACHE_MAX_TTL = 12 * 60 * 60 * 1000; // 12 hrs
 
-const CacheLRU = require('./cacheLru');
+// const CacheLRU = require('./cacheLru');
+const CacheMemory = require('./cacheMemory');
+// const CacheRedis = require('./cacheRedis');
 
-const cache = CacheLRU('_framework_http_cache', {
-	max: CACHE_MAX_N_ITEMS,
-	ttl: CACHE_MAX_TTL,
-});
+// const cache = CacheLRU('_framework_http_cache', {
+// 	max: CACHE_MAX_N_ITEMS,
+// 	ttl: CACHE_MAX_TTL,
+// });
+
+const cache = CacheMemory('_framework_http_cache');
 
 const _validateHttpResponse = (response) => {
 	if (response.status === HttpStatus.OK) return true;
@@ -35,9 +39,10 @@ const _validateHttpResponse = (response) => {
 };
 
 const request = async (url, params = {}) => {
-	let response;
+	let response, data, headers, status, statusText;
 	if (!params.method) params.method = 'get';
-	const key = url + JSON.stringify(params);
+
+	const key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
 
 	if (params.method.toLowerCase() === 'get'
 		&& params.cacheTTL && params.cacheTTL > 0) {
@@ -45,15 +50,17 @@ const request = async (url, params = {}) => {
 	}
 
 	if (!response) {
-		response = await performRequestUntilSuccess(
+		httpResponse = await performRequestUntilSuccess(
 			url, 
 			params);
-		if(_validateHttpResponse(response)) {
-			cache.set(key, response, params.cacheTTL || CACHE_DEFAULT_TTL);
+		if(_validateHttpResponse(httpResponse) && params.cacheTTL && params.cacheTTL > 0) {
+			const { data, headers, status, statusText } = httpResponse;
+			response = { data, headers, status, statusText };
+			await cache.set(key, response, params.cacheTTL);
 		}
 	}
 
-	return response;
+	return { data, headers, status, statusText };
 };
 
 const performRequest = async (url, params) => {
@@ -90,7 +97,7 @@ const performRequestUntilSuccess = async (url, params) => {
 	} while(retries > 0);
 
 	return response;
-}
+};
 
 module.exports = {
 	request,
