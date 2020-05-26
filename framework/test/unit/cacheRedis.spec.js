@@ -36,13 +36,13 @@ test('store value in default memory bank', async () => {
 	const originalData = testData[0];
 	await cache.set('key', originalData);
 	const result = await cache.get('key');
-	expect(result).toBe(originalData);
+	expect(result).toStrictEqual(originalData);
 });
 
 test('get value from non-existent key', async () => {
 	const cache = Cache();
 	const result = await cache.get('unknownKey');
-	expect(result).toBe(undefined);
+	expect(result).toStrictEqual(undefined);
 });
 
 test('store value in a custom memory bank', async () => {
@@ -55,7 +55,7 @@ test('store value in a custom memory bank', async () => {
 	await cacheDefaultMemBank.set('key', defaultData);
 
 	const result = await cacheCustomMemBank.get('key');
-	expect(result).toBe(customData);
+	expect(result).toStrictEqual(customData);
 });
 
 test('store value with limited validity', async () => {
