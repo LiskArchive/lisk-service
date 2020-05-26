@@ -21,6 +21,12 @@ const testData = [
 	{ test: 'another_test_value' },
 ];
 
+const waitMs = (n) => new Promise((resolve) => {
+	setTimeout(() => {
+		resolve();
+	}, n);
+});
+
 test('store value in default memory bank', async () => {
 	const cache = Cache();
 	const originalData = testData[0];
@@ -46,4 +52,22 @@ test('store value in a custom memory bank', async () => {
 
 	const result = await cacheCustomMemBank.get('key');
 	expect(result).toStrictEqual(customData);
+});
+
+test('store value with limited validity', async () => {
+	const ttl = 500; // ms
+	const cache = Cache({ ttl });
+	const originalData = testData[0];
+
+	await cache.set('key', originalData, ttl);
+
+	await waitMs(Math.floor(ttl * 0.9));
+
+	const resultCached = await cache.get('key');
+	expect(resultCached).toStrictEqual(originalData);
+
+	await waitMs(Math.ceil(ttl * 1.1));
+
+	const resultEmpty = await cache.get('key');
+	expect(resultEmpty).toStrictEqual(undefined);
 });
