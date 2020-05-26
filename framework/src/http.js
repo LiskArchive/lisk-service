@@ -18,20 +18,15 @@ const HttpStatus = require('http-status-codes');
 
 const delay = require('./delay');
 
-// const CACHE_DEFAULT_TTL = 0;
-// const CACHE_MAX_N_ITEMS = 4096;
-// const CACHE_MAX_TTL = 12 * 60 * 60 * 1000; // 12 hrs
+const CACHE_MAX_N_ITEMS = 4096;
+const CACHE_MAX_TTL = 12 * 60 * 60 * 1000; // 12 hrs
 
-// const CacheLRU = require('./cacheLru');
-const CacheMemory = require('./cacheMemory');
-// const CacheRedis = require('./cacheRedis');
+const CacheLRU = require('./cacheLru');
 
-// const cache = CacheLRU('_framework_http_cache', {
-// 	max: CACHE_MAX_N_ITEMS,
-// 	ttl: CACHE_MAX_TTL,
-// });
-
-const cache = CacheMemory('_framework_http_cache');
+const cache = CacheLRU('_framework_http_cache', {
+	max: CACHE_MAX_N_ITEMS,
+	ttl: CACHE_MAX_TTL,
+});
 
 const _validateHttpResponse = (response) => {
 	if (response.status === HttpStatus.OK) return true;
@@ -51,7 +46,7 @@ const request = async (url, params = {}) => {
 
 	if (!response) {
 		httpResponse = await performRequestUntilSuccess(url, params);
-		
+
 		if (_validateHttpResponse(httpResponse)) {
 			const { data, headers, status, statusText } = httpResponse;
 			response = { data, headers, status, statusText };
