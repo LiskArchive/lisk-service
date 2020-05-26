@@ -48,33 +48,35 @@ describe('HTTP library is able to send GET request', () => {
 
 describe('HTTP library with caching enabled', () => {
 	test('supports plain GET request cache', async () => {
+		const ttl = 50000;
 		const timestamps = [];
 
 		timestamps.push(getTimestamp());
 		const originalResponse = await http.request(url, {
-			cacheTTL: 1,
+			cacheTTL: ttl,
 		});
 
 		timestamps.push(getTimestamp());
 		const cachedResponse = await http.request(url, {
-			cacheTTL: 1,
+			cacheTTL: ttl,
 		});
 		timestamps.push(getTimestamp());
 
-		expect(cachedResponse).toStrictEqual(originalResponse);
+		expect(cachedResponse).toEqual(originalResponse);
 		expect(timestamps[2] - timestamps[1]).toBeLessThanOrEqual(7);
 	});
 
-	xtest('handles expire time properly', async () => {
+	test('handles expire time properly', async () => {
+		const ttl = 50;
 		const timestamps = [];
 
 		timestamps.push(getTimestamp());
 		const originalResponse = await http.request(url, {
-			cacheTTL: 1,
+			cacheTTL: ttl,
 		});
 		timestamps.push(getTimestamp());
 
-		await waitMs(2001);
+		await waitMs(ttl + 1);
 
 		timestamps.push(getTimestamp());
 		const secondResponse = await http.request(url, {
@@ -82,11 +84,11 @@ describe('HTTP library with caching enabled', () => {
 		});
 		timestamps.push(getTimestamp());
 
-		console.log(timestamps.map(t => t - timestamps[0]));
+		// console.log(timestamps.map(t => t - timestamps[0]));
 
 		expect(timestamps[1] - timestamps[0]).toBeGreaterThanOrEqual(50);
 		expect(timestamps[3] - timestamps[2]).toBeGreaterThanOrEqual(50);
-		expect(secondResponse).toStrictEqual(originalResponse);
+		expect(secondResponse).toEqual(originalResponse);
 	});
 });
 
