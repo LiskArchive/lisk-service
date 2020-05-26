@@ -18,7 +18,8 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/jest --config=test/unit.config.js --detectOpenHandles  --forceExit"
+    "test:unit": "./node_modules/.bin/jest --config=test/unit.config.js --detectOpenHandles  --forceExit",
+    "test:functional": "./node_modules/.bin/jest --config=test/functional.config.js --detectOpenHandles"
   },
   "bin": {
     "moleculer_client": "./bin/moleculer_client.js"
