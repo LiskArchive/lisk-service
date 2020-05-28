@@ -22,4 +22,3 @@ COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/co
 USER lisk
 WORKDIR /home/lisk/lisk-service/core
 CMD ["node", "app.js"]
-EXPOSE 9904
