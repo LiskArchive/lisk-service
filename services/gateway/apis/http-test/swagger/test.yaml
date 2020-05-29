@@ -1,0 +1,101 @@
+####################################################################################
+# Copyright © 2019 Lisk Foundation
+#
+# See the LICENSE file at the top-level directory of this distribution
+# for licensing information.
+#
+# Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+# no part of this software, including this file, may be copied, modified,
+# propagated, or distributed except according to the terms contained in the
+# LICENSE file.
+#
+# Removal or modification of this copyright notice is prohibited.
+####################################################################################
+swagger: '2.0'
+info:
+  title: Lisk Service Test API
+  version: "1.0"
+  # put the contact info for your development or API team
+  contact:
+    email: admin@lisk.io
+  description: | 
+    ## Endpoint Logic
+    
+    The logic of the endpoints comes as follows:
+    - the structure is always based on `/<root_entity>/<object>/<properties>`
+    
+    ## Responses
+    
+    All responses are returned in the JSON format - `application/json`.
+    
+    Each API request has the following structure:
+    
+    ```
+    {
+      "data": {}, // Contains the requested data
+      "meta": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`
+      "links": {} // Contains links to connected API calls from here, e.g. pagination links
+    }
+    ```
+    
+  license:
+    name: GPL v3.0
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+
+# All paths relative to specified basePath
+basePath: /
+
+# Tags for organizing operations
+tags:
+- name: Generic
+  description: Generic endpoints
+
+schemes:
+  - http
+  - https
+
+paths:
+  /spec:
+    x-swagger-pipe: swagger_raw
+
+  /hello/{path_name}:
+    x-swagger-router-controller: mapper
+    get:
+      tags:
+      - Generic
+      summary: Sample response for testing.
+      operationId: getHello
+      produces:
+      - application/json
+      parameters:
+        - $ref: '#/parameters/pathName'
+      responses:
+        200:
+          description: Generic response
+          schema:
+            $ref: '#/definitions/GenericResponse'
+        400:
+          description: bad input parameter
+
+definitions:
+  GenericResponse:
+    type: object
+    required:
+      - data
+      - meta
+      - links
+    properties:
+      data:
+        type: object
+      meta:
+        type: object
+      links:
+        type: object
+
+parameters:
+  pathName:
+    name: path_name
+    in: path
+    required: true
+    description: Sample name
+    type: string
