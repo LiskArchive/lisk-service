@@ -28,6 +28,7 @@ const keyvRedisCache = (bank = '$default', endpoint) => {
 		set: (key, val, ttl) => cache.set(`${bank}:${key}`, val, ttl),
 		get: key => cache.get(`${bank}:${key}`),
 		delete: key => cache.delete(`${bank}:${key}`),
+		destroy: () => cache.clear(),
 	};
 };
 

@@ -1,13 +1,29 @@
+/*
+ * LiskHQ/lisk-service
+ * Copyright © 2020 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 
 const delay = require('./delay');
 
-const CACHE_DEFAULT_TTL = 0;
 const CACHE_MAX_N_ITEMS = 4096;
 const CACHE_MAX_TTL = 12 * 60 * 60 * 1000; // 12 hrs
 
-const cache = require('./cacheLru')('_framework_http_cache', {
+const CacheLRU = require('./cacheLru');
+
+const cache = CacheLRU('_framework_http_cache', {
 	max: CACHE_MAX_N_ITEMS,
 	ttl: CACHE_MAX_TTL,
 });
@@ -17,21 +33,29 @@ const _validateHttpResponse = (response) => {
 	return false;
 };
 
-const request = async (url, params) => {
+const request = async (url, params = {}) => {
 	let response;
-	if (!params) params = {};
-	const key = url + JSON.stringify(params);
+	let key;
 
-	if (params.cacheTTL && params.cacheTTL > 0) {
-		response = await cache.get(key);
+	const httpParams = { ...params };
+	delete httpParams.cacheTTL;
+
+	if (!httpParams.method) httpParams.method = 'get';
+
+	if (httpParams.method.toLowerCase() === 'get' 
+		&& params.cacheTTL && params.cacheTTL > 0) {
+			key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
+			response = await cache.get(key);
 	}
 
 	if (!response) {
-		response = await performRequestUntilSuccess(
-			url, 
-			params);
-		if(_validateHttpResponse(response)) {
-			cache.set(key, response, params.cacheTTL || CACHE_DEFAULT_TTL);
+		httpResponse = await performRequestUntilSuccess(url, httpParams);
+
+		if (_validateHttpResponse(httpResponse)) {
+			const { data, headers, status, statusText } = httpResponse;
+			response = { data, headers, status, statusText };
+
+			if (key) cache.set(key, response, params.cacheTTL);
 		}
 	}
 
@@ -66,37 +90,24 @@ const performRequestUntilSuccess = async (url, params) => {
 		if (firstErrorCoreDigit === '1') return response;
 		if (firstErrorCoreDigit === '2') return response;
 		if (firstErrorCoreDigit === '3') return response;
-		// if (firstErrorCoreDigit === '4') return response;
-		// if (firstErrorCoreDigit === '5') return response;
 
 		--retries;
 		await delay(params.retryDelay || 100);
 	} while(retries > 0);
 
 	return response;
-}
-
-const requestWithCache = async (url, {requestLib = request, expireMiliseconds, requestParams,
-	} = {}) => {
-	let response;
-	const key = url + (requestParams ? JSON.stringify(requestParams) : '');
-	response = await cache.get(key);
-	if (!response) {
-		response = await requestLib(url, requestParams);
-		cache.set(key, response, expireMiliseconds);
-	}
-	return response;
 };
 
 module.exports = {
 	request,
-	// get,
-	// head,
-	// post,
-	// put,
-	// 'delete': httpDelete,
-	// connect,
-	// options,
-	// trace,
+	get: (url, params) => request(url, { ...params, method: 'get' }),
+	head: (url, params) => request(url, { ...params, method: 'head' }),
+	post: (url, params) => request(url, { ...params, method: 'post' }),
+	put: (url, params) => request(url, { ...params, method: 'put' }),
+	delete: (url, params) => request(url, { ...params, method: 'delete' }),
+	connect: (url, params) => request(url, { ...params, method: 'connect' }),
+	options: (url, params) => request(url, { ...params, method: 'options' }),
+	trace: (url, params) => request(url, { ...params, method: 'trace' }),
 	StatusCodes: HttpStatus,
+	_destroyCache: () => cache.destroy(),
 };

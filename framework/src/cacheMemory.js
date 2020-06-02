@@ -18,8 +18,6 @@ const Keyv = require('keyv');
 const memoryPool = {};
 
 const keyvMemoryCache = (bank = '$default') => {
-	if (!bank) bank = '$default';
-
 	if (!memoryPool[bank]) {
 		memoryPool[bank] = new Keyv();
 	}
@@ -30,6 +28,7 @@ const keyvMemoryCache = (bank = '$default') => {
 		set: (key, val, ttl) => cache.set(key, val, ttl),
 		get: key => cache.get(key),
 		delete: key => cache.delete(key),
+		destroy: () => cache.clear(),
 	};
 };
 

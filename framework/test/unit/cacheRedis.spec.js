@@ -25,18 +25,42 @@ const testData = [
 	{ test: 'another_test_value' },
 ];
 
+const waitMs = (n) => new Promise((resolve) => {
+	setTimeout(() => {
+		resolve();
+	}, n);
+});
+
 test('store value in default memory bank', async () => {
 	const cache = Cache();
 	const originalData = testData[0];
 	await cache.set('key', originalData);
 	const result = await cache.get('key');
-	expect(result).toBe(originalData);
+	expect(result).toStrictEqual(originalData);
+});
+
+test('store value with a long key', async () => {
+	const key = '4c257ae1-944a-4f26-a02c-e4e9439b9c2c';
+	const cache = Cache();
+	const originalData = testData[0];
+	await cache.set(key, originalData);
+	const result = await cache.get(key);
+	expect(result).toStrictEqual(originalData);
+});
+
+test('store value with a key with special chars', async () => {
+	const key = 'https://service.lisk.io/api/v1/blocks:{"serialized":"JSON"}';
+	const cache = Cache();
+	const originalData = testData[0];
+	await cache.set(key, originalData);
+	const result = await cache.get(key);
+	expect(result).toStrictEqual(originalData);
 });
 
 test('get value from non-existent key', async () => {
 	const cache = Cache();
 	const result = await cache.get('unknownKey');
-	expect(result).toBe(undefined);
+	expect(result).toStrictEqual(undefined);
 });
 
 test('store value in a custom memory bank', async () => {
@@ -49,23 +73,23 @@ test('store value in a custom memory bank', async () => {
 	await cacheDefaultMemBank.set('key', defaultData);
 
 	const result = await cacheCustomMemBank.get('key');
-	expect(result).toBe(customData);
+	expect(result).toStrictEqual(customData);
 });
 
 test('store value with limited validity', async () => {
-	const cache = Cache();
-	const originalData = testData[0];
 	const ttl = 500; // ms
+	const cache = Cache({ ttl });
+	const originalData = testData[0];
 
 	await cache.set('key', originalData, ttl);
 
-	setTimeout(async () => {
-		const result = await cache.get('key');
-		expect(result).toBe(originalData);
-	}, Math.floor(ttl * 0.9));
+	await waitMs(Math.floor(ttl * 0.9));
 
-	setTimeout(async () => {
-		const result = await cache.get('key');
-		expect(result).toBe(undefined);
-	}, Math.ceil(ttl * 1.1));
+	const resultCached = await cache.get('key');
+	expect(resultCached).toStrictEqual(originalData);
+
+	await waitMs(Math.ceil(ttl * 1.1));
+
+	const resultEmpty = await cache.get('key');
+	expect(resultEmpty).toStrictEqual(undefined);
 });

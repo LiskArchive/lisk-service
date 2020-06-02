@@ -16,7 +16,7 @@
 module.exports = {
 	verbose: true,
 	testMatch: [
-		'<rootDir>/unit/*.spec.js',
+		'<rootDir>/functional/*.test.js',
 	],
 	testEnvironment: 'node',
 	setupFilesAfterEnv: [
