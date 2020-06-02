@@ -34,26 +34,30 @@ const _validateHttpResponse = (response) => {
 };
 
 const request = async (url, params = {}) => {
-	let response, data, headers, status, statusText;
-	if (!params.method) params.method = 'get';
+	let response;
+	let key;
 
-	const key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
+	const httpParams = { ...params };
+	delete httpParams.cacheTTL;
 
-	if (params.method.toLowerCase() === 'get'
-		&& params.cacheTTL && params.cacheTTL > 0) {
-			response = await cache.get(key);
+	if (!httpParams.method) httpParams.method = 'get';
+
+	if (params.cacheTTL && params.cacheTTL > 0) {
+		key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
+	}
+
+	if (httpParams.method.toLowerCase() === 'get' && key) {
+		response = await cache.get(key);
 	}
 
 	if (!response) {
-		httpResponse = await performRequestUntilSuccess(url, params);
+		httpResponse = await performRequestUntilSuccess(url, httpParams);
 
 		if (_validateHttpResponse(httpResponse)) {
 			const { data, headers, status, statusText } = httpResponse;
 			response = { data, headers, status, statusText };
 
-			if (params.cacheTTL && params.cacheTTL > 0) {
-				cache.set(key, response, params.cacheTTL);
-			}
+			if (key) cache.set(key, response, params.cacheTTL);
 		}
 	}
 
