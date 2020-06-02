@@ -1,0 +1,26 @@
+version: "3"
+services:
+
+  gateway:
+    image: lisk/service_gateway
+    depends_on:
+      - legacy
+      - gateway_redis
+    networks:
+      - services_network
+    restart: always
+    environment:
+      - SERVICE_NATS=${SERVICE_NATS}
+      - SERVICE_LEGACY_HTTP=${SERVICE_LEGACY_HTTP}
+      - SERVICE_STORAGE_HTTP=${SERVICE_STORAGE_HTTP}
+      - SERVICE_MARKET_POSTGRES=${SERVICE_MARKET_POSTGRES}
+      - SERVICE_GATEWAY_REDIS=${SERVICE_GATEWAY_REDIS}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+      - LISK_CORE_POSTGRES=${LISK_CORE_POSTGRES}
+
+    healthcheck:
+      test: curl --fail http://localhost:9901/api/status
