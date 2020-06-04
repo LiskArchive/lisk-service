@@ -21,6 +21,7 @@ const {
 
 const ApiService = require("moleculer-web");
 const config = require('./config');
+const routes = require('./routes');
 const packageJson = require('./package.json');
 
 const ip = config.host;
@@ -53,11 +54,34 @@ broker.createService({
 		}
 	},
 	settings: {
-		port,
-		ip,
-		middleware: false,
+		port, ip,
 		path: "/api",
-	},
+		use: [
+			// compression(),
+			// cookieParser()
+		],
+
+		// Used server instance. If null, it will create a new HTTP(s)(2) server
+		// If false, it will start without server in middleware mode
+		server: true,
+
+		logRequestParams: "info",
+		logResponseData: "debug",
+		httpServerTimeout: 30,
+		optimizeOrder: true,
+		routes: routes,
+	
+		assets: {
+			folder: "./public",
+			options: {}
+		},
+
+		onError(req, res, err) {
+			res.setHeader("Content-Type", "text/plain");
+			res.writeHead(err.code || 500);
+			res.end("Server error: " + err.message);
+		}
+	}
 });
 
 broker.start();
