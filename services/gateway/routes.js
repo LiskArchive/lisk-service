@@ -36,11 +36,11 @@ const configureApi = (apiName) => {
 };
 
 const registerApi = (apiName, config) => {
-	const { path } = config;
 	const { aliases, whitelist, methodPaths } = configureApi(apiName);
 
 	const transformResponse = async (path, data) => {
-		const transformedData = await mapper(data, methodPaths[path].source.definition);
+		if (!methodPaths[path]) return data;
+		const transformedData = await mapper(data.data, methodPaths[path].source.definition);
 		return {
 			...methodPaths[path].envelope,
 			...transformedData,
@@ -53,19 +53,17 @@ const registerApi = (apiName, config) => {
 		whitelist: [
 			...config.whitelist,
 			...whitelist,
-			"$node.*"
 		],
 
 		aliases: {
 			...config.aliases,
 			...aliases,
-			"GET health": "$node.health"
 		},
 
 		async onAfterCall(ctx, route, req, res, data) {
 			// Replace it to support ETag
 			res.setHeader("X-Custom-Header", "123456");
-			return transformResponse(req.url, data.data);
+			return transformResponse(req.url, data);
 		},
 	}
 };
