@@ -14,18 +14,17 @@
  *
  */
 const {
-	Microservice, 
-	Logger, 
-	LoggerConfig
+	Microservice,
+	Logger,
+	LoggerConfig,
 } = require('lisk-service-framework');
 
-const ApiService = require("moleculer-web");
+const ApiService = require('moleculer-web');
 const config = require('./config');
 const routes = require('./routes');
 const packageJson = require('./package.json');
 
-const ip = config.host;
-const port = config.port;
+const { host, port } = config;
 
 LoggerConfig({
 	...config.log,
@@ -50,12 +49,13 @@ broker.createService({
 	name: 'status',
 	actions: {
 		status() {
-			return 'OK'
-		}
+			return 'OK';
+		},
 	},
 	settings: {
-		port, ip,
-		path: "/api",
+		host,
+		port,
+		path: '/api',
 		use: [
 			// compression(),
 			// cookieParser()
@@ -65,24 +65,24 @@ broker.createService({
 		// If false, it will start without server in middleware mode
 		server: true,
 
-		logRequestParams: "info",
-		logResponseData: "debug",
+		logRequestParams: 'info',
+		logResponseData: 'debug',
 		httpServerTimeout: 30,
 		optimizeOrder: true,
-		routes: routes,
-	
+		routes,
+
 		assets: {
-			folder: "./public",
-			options: {}
+			folder: './public',
+			options: {},
 		},
 
 		onError(req, res, err) {
-			res.setHeader("Content-Type", "text/plain");
+			res.setHeader('Content-Type', 'text/plain');
 			res.writeHead(err.code || 500);
-			res.end("Server error: " + err.message);
-		}
-	}
+			res.end(`Server error: ${err.message}`);
+		},
+	},
 });
 
 broker.start();
-logger.info(`Started Gateway API on ${ip}:${port}`);
+logger.info(`Started Gateway API on ${host}:${port}`);
