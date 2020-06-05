@@ -20,27 +20,27 @@ module.exports = [
 		path: '/v1',
 
 		whitelist: [
-			"$node.*"
+			'$node.*',
 		],
 
 		aliases: {
-			"GET health": "$node.health"
+			'GET health': '$node.health',
 		},
 
 		callOptions: {
 			timeout: 3000,
 			retries: 3,
-			fallbackResponse: "Static fallback response"
+			fallbackResponse: 'Static fallback response',
 		},
 
 		authorization: false,
 		mergeParams: true,
-		
-		mappingPolicy: "restrict",
+
+		mappingPolicy: 'restrict',
 
 		bodyParsers: {
 			json: true,
-			urlencoded: { extended: true }
+			urlencoded: { extended: true },
 		},
 
 		uses: [],
