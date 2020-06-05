@@ -1,9 +1,48 @@
+const { mapper, Utils } = require('lisk-service-framework');
+const path = require('path');
+
+const transformPath = (url) => {
+	const dropSlash = (str) => str.replace(/^\//, '');
+	const curlyBracketsToColon = (str) => str.split('{').join(':').replace(/}/g, '');
+
+	return curlyBracketsToColon(dropSlash(url));
+};
+
+const allMethods = Utils.requireAllJs(path.resolve(__dirname, './apis/http-version1/methods'));
+
+const methods = Object.keys(allMethods).reduce((acc, key) => {
+	const method = allMethods[key];
+	if (method.version !== '2.0') return { ...acc };
+	if (!method.source) return { ...acc };
+	if (!method.source.method) return { ...acc };
+	if (!method.swaggerApiPath) return { ...acc };
+	return { ...acc, [key]: method };
+}, {});
+
+const methodPaths = Object.keys(methods).reduce((acc, key) => ({
+	...acc, [methods[key].swaggerApiPath]: methods[key]
+}), {});
+
+const whitelist = Object.keys(methods).reduce((acc, key) => [ ...acc, methods[key].source.method ], []);
+
+const aliases = Object.keys(methods).reduce((acc, key) => ({
+	...acc, [`GET ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method
+}), {});
+
+const transformResponse = async (path, data) => {
+	const transformedData = await mapper(data, methodPaths[path].source.definition);
+	return {
+		...methodPaths[path].envelope,
+		...transformedData,
+	};
+};
+
 module.exports = [
 	{
 		path: "/v1",
 
 		whitelist: [
-			"core.*",
+			...whitelist,
 			"$node.*"
 		],
 
@@ -19,7 +58,7 @@ module.exports = [
 		uses: [],
 
 		aliases: {
-			"GET blocks": "core.blocks",
+			...aliases,
 			"GET health": "$node.health"
 		},
 
@@ -31,9 +70,10 @@ module.exports = [
 			urlencoded: { extended: true }
 		},
 
-		onAfterCall(ctx, route, req, res, data) {
+		async onAfterCall(ctx, route, req, res, data) {
+			// Replace it to support ETag
 			res.setHeader("X-Custom-Header", "123456");
-			return data.data;
+			return transformResponse(req.url, data.data);
 		},
 	},
 ];
