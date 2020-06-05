@@ -48,35 +48,18 @@ const registerApi = (apiName, config) => {
 	};
 
 	return {
-		path,
+		...config,
 
 		whitelist: [
+			...config.whitelist,
 			...whitelist,
 			"$node.*"
 		],
 
-		callOptions: {
-			timeout: 3000,
-			retries: 3,
-			fallbackResponse: "Static fallback response"
-		},
-
-		authorization: false,
-		mergeParams: true,
-		
-		uses: [],
-
 		aliases: {
+			...config.aliases,
 			...aliases,
 			"GET health": "$node.health"
-		},
-
-		mappingPolicy: "restrict",
-
-		// Use bodyparser module
-		bodyParsers: {
-			json: true,
-			urlencoded: { extended: true }
 		},
 
 		async onAfterCall(ctx, route, req, res, data) {
@@ -90,5 +73,31 @@ const registerApi = (apiName, config) => {
 module.exports = [
 	registerApi('http-version1', {
 		path: '/v1',
+
+		whitelist: [
+			"$node.*"
+		],
+
+		aliases: {
+			"GET health": "$node.health"
+		},
+
+		callOptions: {
+			timeout: 3000,
+			retries: 3,
+			fallbackResponse: "Static fallback response"
+		},
+
+		authorization: false,
+		mergeParams: true,
+		
+		mappingPolicy: "restrict",
+
+		bodyParsers: {
+			json: true,
+			urlencoded: { extended: true }
+		},
+
+		uses: [],
 	}),
 ];
