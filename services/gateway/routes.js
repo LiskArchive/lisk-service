@@ -25,9 +25,11 @@ const configureApi = (apiName) => {
 	}), {});
 	
 	const whitelist = Object.keys(methods).reduce((acc, key) => [ ...acc, methods[key].source.method ], []);
+
+	const getMethodName = (method) => method.httpMethod ? method.httpMethod : 'GET';
 	
 	const aliases = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`GET ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method
+		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method
 	}), {});
 	
 	return {
