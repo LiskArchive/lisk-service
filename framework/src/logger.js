@@ -26,9 +26,7 @@ let log4jsConfig = {
 
 let packageName = '';
 
-let isConfigured = false;
-
-const configure = (config) => {
+const configure = config => {
 	packageName = config.name;
 
 	LOG_LEVEL = (config.level || 'info').toLowerCase();
@@ -126,8 +124,7 @@ const configure = (config) => {
 	}
 
 	if (Object.keys(log4jsConfig.appenders).length > 0) log4js.configure(log4jsConfig);
-	isConfigured = true;
-}
+};
 
 const getFileNameWhichCalledGetLogger = () => {
 	const trace = stackTrace.get();
@@ -135,17 +132,12 @@ const getFileNameWhichCalledGetLogger = () => {
 	return filePath.slice(filePath.lastIndexOf('/') + 1, -3);
 };
 
-const isObject = (obj) => (obj !== null && typeof obj === 'object');
-
-const getLogger = (configuration) => {
-	// if (!isConfigured && isObject(configuration)) {
-	// 	configure(configuration);
-		
-	// }
+const getLogger = configuration => {
+	let entityName;
 
 	if (typeof configuration === 'string') entityName = configuration;
 	else entityName = getFileNameWhichCalledGetLogger();
-	
+
 	const debugInstance = debug(`${packageName}:${entityName}`);
 
 	if (Object.keys(log4jsConfig.appenders).length > 0) {
@@ -166,18 +158,18 @@ const getLogger = (configuration) => {
 	};
 };
 
-const getDebug = (entityName) => {
-	if(!entityName) entityName = getFileNameWhichCalledGetLogger();
+const getDebug = entityName => {
+	if (!entityName) entityName = getFileNameWhichCalledGetLogger();
 	const debugInstance = debug(`${packageName}:${entityName}`);
 
 	return [
-		'trace', 'debug', 'info', 
-		'warn', 'error', 'fatal', 
+		'trace', 'debug', 'info',
+		'warn', 'error', 'fatal',
 		'mark']
 		.reduce((acc, item) => (acc[item] = debugInstance) && acc, {});
 };
 
-module.exports = { 
+module.exports = {
 	init: configure,
 	get: getLogger,
 	debug: getDebug,

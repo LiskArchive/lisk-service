@@ -37,20 +37,20 @@ const socket = io(config.endpoint, { forceNew: true, transports: ['websocket'] }
 	'reconnect', 'reconnect_attempt',
 	'reconnecting', 'reconnect_error', 'reconnect_failed',
 	// 'ping', 'pong',
-].forEach((item) => {
-	socket.on(item, (res) => {
+].forEach(item => {
+	socket.on(item, res => {
 		console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
-['status'].forEach((eventName) => {
-	socket.on(eventName, (newData) => {
+['status'].forEach(eventName => {
+	socket.on(eventName, newData => {
 		console.log(`Received data from ${config.endpoint}/${eventName}: ${newData}`);
 	});
 });
 
-const subscribe = (event) => {
-	socket.on(event, (answer) => {
+const subscribe = event => {
+	socket.on(event, answer => {
 		console.log(`====== ${event} ======`);
 		// console.log(prettyjson.render(answer));
 		jsome(answer);

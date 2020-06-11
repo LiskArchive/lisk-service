@@ -42,7 +42,7 @@ const request = (method, params) => {
 	broker.start()
 		.then(() => broker.waitForServices(method.split('.')[0]))
 		.then(() => broker.call(method, params || {}))
-		.then((res) => {
+		.then(res => {
 			// console.log(prettyjson.render(res));
 			jsome(res);
 			process.exit(0);

@@ -40,20 +40,20 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 	'reconnect', 'reconnect_attempt',
 	'reconnecting', 'reconnect_error', 'reconnect_failed',
 	// 'ping', 'pong',
-].forEach((item) => {
-	socket.on(item, (res) => {
+].forEach(item => {
+	socket.on(item, res => {
 		// console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
-['status'].forEach((eventName) => {
-	socket.on(eventName, (newData) => {
+['status'].forEach(eventName => {
+	socket.on(eventName, newData => {
 		// console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
 	});
 });
 
 const request = (path, params) => {
-	socket.emit(path, params, (answer) => {
+	socket.emit(path, params, answer => {
 		console.log(prettyjson.render(answer));
 		// jsome(answer);
 		process.exit(0);

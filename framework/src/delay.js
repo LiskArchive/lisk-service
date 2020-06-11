@@ -13,7 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delay = (t, val) => new Promise((resolve) => {
-	setTimeout(() => { resolve(val) }, t) });
+const delay = (t, val) => new Promise(resolve => {
+	setTimeout(() => { resolve(val); }, t);
+});
 
 module.exports = delay;

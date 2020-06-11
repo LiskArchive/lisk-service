@@ -19,7 +19,7 @@ const util = require('util');
 
 const connectionPool = {};
 
-const SocketClient = (endpoint) => {
+const SocketClient = endpoint => {
 	if (!connectionPool[endpoint]) {
 		connectionPool[endpoint] = io.connect(endpoint, {
 			transports: ['websocket'],
@@ -32,19 +32,19 @@ const SocketClient = (endpoint) => {
 		debug(`SocketClient is connected on ${endpoint}`);
 	});
 
-	socket.on('connect_error', (error) => {
+	socket.on('connect_error', error => {
 		debug(`Connection error \n${util.inspect(error)}`);
 	});
 
-	socket.on('connect_timeout', (timeout) => {
+	socket.on('connect_timeout', timeout => {
 		debug(`Connection timeout: ${timeout}`);
 	});
 
-	socket.on('error', (error) => {
+	socket.on('error', error => {
 		debug(util.inspect(error));
 	});
 
-	socket.on('disconnect', (reason) => {
+	socket.on('disconnect', reason => {
 		debug(`Disconnected.\n${reason}`);
 	});
 
@@ -56,7 +56,7 @@ const SocketClient = (endpoint) => {
 		debug('Reconnecting');
 	});
 
-	socket.on('reconnect_error', (error) => {
+	socket.on('reconnect_error', error => {
 		debug(`Reconnection error \n${util.inspect(error)}`);
 	});
 
@@ -64,26 +64,26 @@ const SocketClient = (endpoint) => {
 		debug('Reconnection failed');
 	});
 
-	const emit = (event, data) => {
-		debug(`Emitting socket event ${event} with params ${params}, ${util.inspect(answer)}`);
-		socket.emit(event, data, (answer) => {
+	const emit = (event, data) => new Promise(resolve => {
+		socket.emit(event, data, answer => {
+			debug(`Emitting socket event ${event} with data ${util.inspect(data)}: ${util.inspect(answer)}`);
 			resolve(answer);
 		});
-	};
+	});
 
-	const requestRpc = (params) => {
+	const requestRpc = params => new Promise(resolve => {
 		debug(`Emitting RPC request ${params}`);
-		socket.emit('request', params, (answer) => {
+		socket.emit('request', params, answer => {
 			debug(`Received RPC answer for method ${params.method} with params ${params}: ${util.inspect(answer)}`);
-			resolve(answer);
+			answer(resolve);
 		});
-	};
+	});
 
 	return {
 		emit,
 		requestRpc,
 		socket,
 	};
-}
+};
 
 module.exports = SocketClient;
