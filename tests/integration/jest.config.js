@@ -1,10 +1,10 @@
 module.exports = {
 	verbose: true,
 	testMatch: [
-		'<rootDir>/api/http_v1_local/*.test.js',
-		'<rootDir>/api/http_v1_testnet/*.test.js',
-		'<rootDir>/api/socketJsonRpc_v1_local/*.test.js',
-		'<rootDir>/api/socketJsonRpc_v1_testnet/*.test.js',
+		'<rootDir>/api/compare_http_rpc/*.test.js',
+		'<rootDir>/api/compare_staging_mainnet/*.test.js',
+		'<rootDir>/api/http/*.test.js',
+		'<rootDir>/api/rpc/*.test.js',
 	],
 	testEnvironment: 'node',
 	setupFilesAfterEnv: [
