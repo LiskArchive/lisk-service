@@ -24,7 +24,7 @@ const config = {
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379';
-config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
+config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30; // in seconds
 
 /**
  * External endpoints
