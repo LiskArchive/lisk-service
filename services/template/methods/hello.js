@@ -38,7 +38,7 @@ module.exports = [
 		params: {
 			name: { type: 'string' },
 		},
-		controller: async (param) => {
+		controller: async param => {
 			const response = {
 				data: [{
 					message: 'Hello World!',
@@ -55,7 +55,7 @@ module.exports = [
 		name: 'asynchronous.hello',
 		description: 'Hello function with asynchronous operations',
 		controller: () => {
-			const request = () => new Promise((resolve) => {
+			const request = () => new Promise(resolve => {
 				setTimeout(() => {
 					resolve({
 						data: ['one', 'two', 'three'],
