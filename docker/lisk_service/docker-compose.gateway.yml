@@ -3,9 +3,6 @@ services:
 
   gateway:
     image: lisk/service_gateway
-    depends_on:
-      - legacy
-      - gateway_redis
     networks:
       - services_network
     restart: always
