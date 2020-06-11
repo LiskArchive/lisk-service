@@ -23,6 +23,9 @@
     "node": "12.16.2",
     "npm": "6.14.4"
   },
+  "scripts": {
+    "eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\""
+  },
   "devDependencies": {
     "eslint": "^7.1.0",
     "eslint-config-airbnb-base": "^14.1.0",
