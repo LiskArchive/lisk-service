@@ -78,8 +78,7 @@ const registerApi = (apiName, config) => {
 		},
 
 		async onAfterCall(ctx, route, req, res, data) {
-			// Replace it to support ETag
-			res.setHeader("X-Custom-Header", "123456");
+			// TODO: Add support for ETag
 			return transformResponse(req.url, data);
 		},
 	}
