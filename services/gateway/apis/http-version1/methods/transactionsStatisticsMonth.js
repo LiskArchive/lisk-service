@@ -22,4 +22,3 @@ module.exports = {
 	source: transactionsStatisticsMonthSource,
 	envelope,
 };
-

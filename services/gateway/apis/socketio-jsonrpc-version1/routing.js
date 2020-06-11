@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// TODO: Enabled eslint when JSON-RPC is ready
+/* eslint-disable */
 const path = require('path');
 const requireAll = require('require-all');
 const BluebirdPromise = require('bluebird');
@@ -94,7 +96,7 @@ const performClientRequest = async (id, request) => {
 
 	const params = utils.parseParams({
 		swaggerParams: parseAllParams(route.params, request.params),
-		inputParams: Object.assign({}, parseDefaultParams(route.params), request.params),
+		inputParams: { ...parseDefaultParams(route.params), ...request.params },
 	});
 
 	if (Object.keys(params.invalid).length > 0) {
@@ -184,7 +186,7 @@ const performClientRequest = async (id, request) => {
 		const transformedResult = MapperService(json, source.definition);
 		result = Object.entries(json).length === 0
 			? json
-			: Object.assign({}, route.envelope, transformedResult);
+			: ({ ...route.envelope, ...transformedResult });
 	} catch (err) {
 		logger.error(err.message);
 		return errorResponse(errorCodes.SERVER_ERROR, 'Server error, failed on transforming.');
@@ -193,8 +195,8 @@ const performClientRequest = async (id, request) => {
 	return successResponse(id, result);
 };
 
-const registerCustomSocketApis = async (socket) => {
-	Object.keys(routes).forEach((routeName) => {
+const registerCustomSocketApis = async socket => {
+	Object.keys(routes).forEach(routeName => {
 		const route = routes[routeName];
 		try {
 			rpcRoutes[route.method] = route;
@@ -205,7 +207,7 @@ const registerCustomSocketApis = async (socket) => {
 		}
 	});
 
-	socket.on('connection', (clientSocket) => {
+	socket.on('connection', clientSocket => {
 		const ipAddress = clientSocket.handshake.address.split(':')[3];
 		clientSocket.on('request', async (requests, answerCb = () => {}) => {
 			if (!requests) answerCb(errorResponse(errorCodes.INVALID_PARAMS, 'No request params are passed'));
@@ -216,7 +218,7 @@ const registerCustomSocketApis = async (socket) => {
 				requests = [requests];
 			}
 
-			const responses = await BluebirdPromise.map(requests, async (request) => {
+			const responses = await BluebirdPromise.map(requests, async request => {
 				const id = request.id || (requests.indexOf(request)) + 1;
 				const response = await performClientRequest(id, request);
 				trafficLogger.info(`${ipAddress} ${request.method} ${JSON.stringify(request.params)}`);
