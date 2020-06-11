@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+
 const logger = Logger();
 
 const types = {
@@ -38,7 +39,7 @@ const totalCountsByType = { };
 let CoreService;
 
 const init = (core = CoreService) => {
-	typesList.forEach(async (type) => {
+	typesList.forEach(async type => {
 		const params = { sort: defaultSorts[type], limit: 100 };
 		const latestItems = await core.get(`/${type}`, params);
 		recent[type] = [
@@ -52,7 +53,7 @@ const init = (core = CoreService) => {
 };
 
 const bumpConfirmations = () => (
-	typesList.forEach((type) => {
+	typesList.forEach(type => {
 		recent[type] = recent[type].map(({ confirmations, ...rest }) => ({
 			...rest,
 			confirmations: confirmations + 1,

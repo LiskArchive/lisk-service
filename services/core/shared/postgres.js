@@ -14,11 +14,13 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const PgPromise = require('pg-promise');
+
 const logger = Logger();
 
 const config = require('../config');
 
-const pgPromise = require('pg-promise')({
+const pgPromise = PgPromise({
 	capSQL: true,
 	promiseLib: Promise,
 	noLocking: false,

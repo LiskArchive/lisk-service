@@ -14,6 +14,7 @@
  *
  */
 const { HTTP } = require('lisk-service-framework');
+
 const httpStatus = HTTP.StatusCodes;
 
 const CoreService = require('../../shared/core.js');

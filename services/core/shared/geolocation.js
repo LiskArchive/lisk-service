@@ -14,6 +14,7 @@
  *
  */
 const { HTTP, CacheRedis, Logger } = require('lisk-service-framework');
+
 const requestLib = HTTP.request;
 const logger = Logger();
 
@@ -33,26 +34,26 @@ const refreshSchedule = [];
 const getRandInt = max => Math.ceil(Math.random() * max);
 
 const getFromHttp = ip => new Promise((resolve, reject) => {
-	requestLib(`${freegeoAddress}/${ip}`).then((body) => {
+	requestLib(`${freegeoAddress}/${ip}`).then(body => {
 		let jsonContent;
 		if (typeof body === 'string') jsonContent = JSON.parse(body);
 		else jsonContent = body;
 		return resolve(jsonContent);
-	}).catch((err) => {
+	}).catch(err => {
 		reject(err);
 	});
 });
 
-const requestData = async (requestedIp) => {
+const requestData = async requestedIp => {
 	const key = `geoip:${requestedIp}`;
 
-	const refreshData = ip => getFromHttp(ip).then((data) => {
+	const refreshData = ip => getFromHttp(ip).then(data => {
 		cacheRedis.set(key, data, GEOIP_TTL);
 		logger.debug(`Fetched geolocation data from online service for IP ${ip}`);
 		refreshSchedule.push(setTimeout(
 			() => refreshData(ip),
 			GEOIP_TTL - (getRandInt(SCHEDULE_INTERVAL) + REQUEST_LATENCY)));
-	}).catch((err) => {
+	}).catch(err => {
 		logger.warn(`Could not retrieve geolocation data: ${err.message}`);
 	});
 

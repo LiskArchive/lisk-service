@@ -33,7 +33,7 @@ const peerStateParamMap = {
 	[peerStates['1.1'].CONNECTED]: peerStates['2.0'].CONNECTED,
 };
 
-const mapState = (state) => {
+const mapState = state => {
 	const stateMapping = {
 		[peerStates['2.0'].CONNECTED]: peerStates['1.1'].CONNECTED,
 		[peerStates['2.0'].DISCONNECTED]: peerStates['1.1'].DISCONNECTED,
@@ -41,7 +41,7 @@ const mapState = (state) => {
 	return stateMapping[state] !== undefined ? stateMapping[state] : state;
 };
 
-const mapTransaction = (transaction) => {
+const mapTransaction = transaction => {
 	let changesByType = {
 		0: {
 			amount: transaction.asset.amount,
@@ -83,32 +83,32 @@ const mapDelegate = ({ voteWeight, ...delegate }) => ({
 });
 
 const responseMappers = {
-	'/peers': (response) => {
+	'/peers': response => {
 		response.data = response.data.map(peer => ({ ...peer, state: mapState(peer.state) }));
 		return response;
 	},
-	'/transactions': (response) => {
+	'/transactions': response => {
 		response.data = response.data.map(mapTransaction);
 		return response;
 	},
-	'/delegates': (response) => {
+	'/delegates': response => {
 		response.data = response.data.map(mapDelegate);
 		return response;
 	},
-	'/node/constants': (response) => {
+	'/node/constants': response => {
 		response.data = { ...response.data, nethash: response.data.networkId };
 		return response;
 	},
 };
 
 const paramMappers = {
-	'/peers': (params) => {
+	'/peers': params => {
 		if (params.state) {
 			params.state = peerStateParamMap[params.state];
 		}
 		return params;
 	},
-	'/delegates': (params) => {
+	'/delegates': params => {
 		if (params.sort) {
 			params.sort = params.sort.replace('rank:asc', 'voteWeight:desc');
 			params.sort = params.sort.replace('rank:desc', 'voteWeight:asc');
@@ -122,4 +122,3 @@ module.exports = {
 	responseMappers,
 	paramMappers,
 };
-

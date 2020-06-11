@@ -14,18 +14,19 @@
  *
  */
 const { HTTP, Utils } = require('lisk-service-framework');
+
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
 const { getTotalNumberOfDelegates } = require('../../shared/delegateCache');
 const CoreService = require('../../shared/core.js');
 
-const numOfActiveDelegates = CoreService.numOfActiveDelegates;
+const { numOfActiveDelegates } = CoreService;
 
-const isEmptyArray = ObjectUtilService.isEmptyArray;
-const isEmptyObject = ObjectUtilService.isEmptyObject;
+const { isEmptyArray } = ObjectUtilService;
+const { isEmptyObject } = ObjectUtilService;
 
-const getDelegates = async (params) => {
+const getDelegates = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
 	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Delegate ${params.anyId} not found.` } };
@@ -71,7 +72,7 @@ const getDelegates = async (params) => {
 	};
 };
 
-const getActiveDelegates = async (params) => {
+const getActiveDelegates = async params => {
 	const response = await CoreService.getDelegates(Object.assign(params, {
 		limit: params.limit || numOfActiveDelegates,
 	}));
@@ -89,7 +90,7 @@ const getActiveDelegates = async (params) => {
 	};
 };
 
-const getStandbyDelegates = async (params) => {
+const getStandbyDelegates = async params => {
 	const response = await CoreService.getDelegates(Object.assign(params, {
 		limit: params.limit,
 		offset: parseInt(params.offset, 10) + numOfActiveDelegates || numOfActiveDelegates,
@@ -112,12 +113,12 @@ const getStandbyDelegates = async (params) => {
 	};
 };
 
-const getNextForgers = async (params) => {
+const getNextForgers = async params => {
 	const nextForgers = await CoreService.getNextForgers(params);
 	const nextForgersData = nextForgers.data;
 
-	const makeDelegatesArr = (forgers) => {
-		const promises = forgers.map(async (forger) => {
+	const makeDelegatesArr = forgers => {
+		const promises = forgers.map(async forger => {
 			const delegates = await CoreService.getDelegates({
 				address: forger.address,
 			});
@@ -139,14 +140,14 @@ const getNextForgers = async (params) => {
 	};
 };
 
-const getLatestRegistrations = async (params) => {
+const getLatestRegistrations = async params => {
 	const registrationsRes = await CoreService.getTransactions(Object.assign(params, {
 		type: 2,
 		sort: 'timestamp:desc',
 	}));
 	const registrations = registrationsRes.data;
-	const makeDelegatesArr = (regis) => {
-		const promises = regis.map(async (registration) => {
+	const makeDelegatesArr = regis => {
+		const promises = regis.map(async registration => {
 			const delegates = await CoreService.getDelegates({
 				address: registration.senderId,
 			});

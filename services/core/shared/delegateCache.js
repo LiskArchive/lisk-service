@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+
 const logger = Logger();
 
 let delegates = [];
@@ -33,7 +34,7 @@ const loadAllDelegates = async (core, delegateList = []) => {
 	}
 };
 
-const init = (core) => {
+const init = core => {
 	loadAllDelegates(core);
 };
 

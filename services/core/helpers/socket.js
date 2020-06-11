@@ -15,7 +15,7 @@
  */
 const {
 	Logger,
-	SocketClient
+	SocketClient,
 } = require('lisk-service-framework');
 
 const config = require('../config');
@@ -25,17 +25,17 @@ const delegateCache = require('../shared/delegateCache');
 
 const logger = Logger();
 
-module.exports = (broker) => {
+module.exports = broker => {
 	const coreSocket = SocketClient(config.endpoints.liskWs);
 	logger.info(`Registering ${config.endpoints.liskWs}`);
-	
-	config.wsEvents.forEach((event) => {
-		coreSocket.socket.on(event, async (data) => {
+
+	config.wsEvents.forEach(event => {
+		coreSocket.socket.on(event, async data => {
 			if (event === 'blocks/change') {
 				const emitData = await core.getBlocks({ blockId: data.id });
 				broker.emit(event.replace('/', '.'), emitData.data[0], 'gateway');
 				recentBlocksCache.addNewBlock(emitData.data[0], data.transactions);
-	
+
 				if (emitData.data[0].numberOfTransactions > 0) {
 					const transactionData = await core.getTransactions({ blockId: data.id });
 					broker.emit('transactions.confirmed', transactionData, 'gateway');

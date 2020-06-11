@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+
 const logger = Logger();
 
 const moment = require('moment');
@@ -29,7 +30,7 @@ const transformParamsForDb = ({ dateFrom, dateTo, ...rest }) => ({
 
 const database = getDatabase();
 
-const getStatsTimeline = async (params) => {
+const getStatsTimeline = async params => {
 	const result = await database.any(`SELECT to_char(timestamp, $<dateFormat>)
 		AS date, sum(count) AS "transactionCount", SUM(volume) AS volume 
 		FROM transaction_statistics 
@@ -39,7 +40,7 @@ const getStatsTimeline = async (params) => {
 	return result;
 };
 
-const getDistributionByAmount = async (params) => {
+const getDistributionByAmount = async params => {
 	const result = await database.any(`SELECT amount_range, sum(count)
 		AS count FROM transaction_statistics
 		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
@@ -48,7 +49,7 @@ const getDistributionByAmount = async (params) => {
 	return result;
 };
 
-const getDistributionByType = async (params) => {
+const getDistributionByType = async params => {
 	const result = await database.any(`SELECT type, sum(count) AS count FROM transaction_statistics
 		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
 		GROUP BY type
@@ -70,7 +71,7 @@ const ensureDbTableIsCreated = async () => {
 	}
 };
 
-const fetchTransactionsForPastNDays = (n) => {
+const fetchTransactionsForPastNDays = n => {
 	const db = getDatabase();
 	[...Array(n)].forEach(async (_, i) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
@@ -86,7 +87,7 @@ const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const liskCoreIsReady = async () => {
 	try {
-	  logger.debug('Waiting for lisk-core...');
+		logger.debug('Waiting for lisk-core...');
 		await core.getNetworkStatus();
 	} catch (e) {
 		await timeout(5000);
@@ -94,7 +95,7 @@ const liskCoreIsReady = async () => {
 	}
 };
 
-const init = async (historyLengthDays) => {
+const init = async historyLengthDays => {
 	await ensureDbTableIsCreated();
 	await liskCoreIsReady();
 	fetchTransactionsForPastNDays(historyLengthDays);

@@ -14,6 +14,7 @@
  *
  */
 const { HTTP } = require('lisk-service-framework');
+
 const requestLib = HTTP.request;
 
 const { mapResponse, mapParams } = require('./coreProtocolCompatibility.js');
@@ -22,7 +23,7 @@ const config = require('../config.js');
 const liskAddress = config.endpoints.liskHttp;
 
 // HTTP request stack
-const validateCoreResponse = (body) => {
+const validateCoreResponse = body => {
 	try {
 		if (typeof body === 'object') {
 			return true;
@@ -36,7 +37,7 @@ const validateCoreResponse = (body) => {
 const request = (url, params) => new Promise((resolve, reject) => {
 	requestLib(`${liskAddress}${url}`, {
 		params: mapParams(params, url),
-	}).then((body) => {
+	}).then(body => {
 		let jsonContent;
 		if (typeof body === 'string') jsonContent = JSON.parse(body);
 		else jsonContent = body.data;
@@ -44,7 +45,7 @@ const request = (url, params) => new Promise((resolve, reject) => {
 			return resolve(mapResponse(jsonContent, url));
 		}
 		return reject(body.error || 'Response was unsuccessful');
-	}).catch((err) => {
+	}).catch(err => {
 		if (err.statusCode === 400 || err.statusCode === 404) resolve({});
 		else reject(err);
 	});

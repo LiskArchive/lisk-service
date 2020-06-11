@@ -24,7 +24,7 @@ const logger = Logger();
 let logConnectStatus = true;
 
 const checkStatus = () => new Promise((resolve, reject) => {
-	core.getNetworkConstants().then((result) => {
+	core.getNetworkConstants().then(result => {
 		if (typeof result.data === 'object' && result.data.version) {
 			core.setProtocolVersion(result.data.protocolVersion);
 			core.setReadyStatus(true);

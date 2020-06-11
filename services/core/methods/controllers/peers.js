@@ -14,15 +14,16 @@
  *
  */
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
+
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
 const CoreService = require('../../shared/core.js');
 const GeoService = require('../../shared/geolocation.js');
 
-const peerStates = CoreService.peerStates;
-const isEmptyArray = ObjectUtilService.isEmptyArray;
-const isEmptyObject = ObjectUtilService.isEmptyObject;
+const { peerStates } = CoreService;
+const { isEmptyArray } = ObjectUtilService;
+const { isEmptyObject } = ObjectUtilService;
 
 const logger = Logger();
 
@@ -30,11 +31,10 @@ const logger = Logger();
 const requestAll = async (fn, params, limit) => {
 	const defaultMaxAmount = limit || 10000;
 	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn(Object.assign({}, params, {
-		limit: oneRequestLimit,
-		offset: 0,
-	}));
-	const data = firstRequest.data;
+	const firstRequest = await fn({ ...params,
+limit: oneRequestLimit,
+		offset: 0 });
+	const { data } = firstRequest;
 	const maxAmount = firstRequest.meta.count > defaultMaxAmount
 		? defaultMaxAmount
 		: firstRequest.meta.count;
@@ -44,11 +44,10 @@ const requestAll = async (fn, params, limit) => {
 		pages.shift();
 
 		const collection = await pages.reduce((promise, page) => promise.then(() => fn(
-			Object.assign({}, params, {
-				limit: oneRequestLimit,
-				offset: oneRequestLimit * page,
-			}))).then((result) => {
-			result.data.forEach((item) => { data.push(item); });
+			{ ...params,
+limit: oneRequestLimit,
+				offset: oneRequestLimit * page })).then(result => {
+			result.data.forEach(item => { data.push(item); });
 			return data;
 		}).catch(err => {
 			logger.warn(`Failed to fetch data ${err}`);
@@ -60,7 +59,7 @@ const requestAll = async (fn, params, limit) => {
 
 // const requestAll = async (fn, params, limit) => (await fn(params)).data;
 
-const addLocation = async (ipaddress) => {
+const addLocation = async ipaddress => {
 	try {
 		const result = await GeoService.requestData(ipaddress);
 		return result;
@@ -69,15 +68,15 @@ const addLocation = async (ipaddress) => {
 	}
 };
 
-const getPeers = async (params) => {
+const getPeers = async params => {
 	const res = await CoreService.getPeers(params);
-	const data = res.data;
+	const { data } = res;
 
 	if (isEmptyObject(res) || isEmptyArray(data)) {
 		return { status: NOT_FOUND, data: { error: 'Not found' } };
 	}
 
-	const dataWithLocation = await Promise.all(data.map(async (elem) => {
+	const dataWithLocation = await Promise.all(data.map(async elem => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
@@ -127,7 +126,7 @@ const getConnectedPeers = async () => {
 const getDisconnectedPeers = async () => {
 	const peers = await requestAll(CoreService.getPeers, { state: peerStates.DISCONNECTED });
 
-	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
+	const dataWithLocation = await Promise.all(peers.map(async elem => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
@@ -147,7 +146,7 @@ const getDisconnectedPeers = async () => {
 	};
 };
 
-const getPeersStatistics = async (params) => {
+const getPeersStatistics = async params => {
 	const basicStats = {};
 	const heightStats = {};
 	const coreVerStats = {};
@@ -168,7 +167,7 @@ const getPeersStatistics = async (params) => {
 	coreVerArr.forEach(elem => coreVerStats[elem] = (coreVerStats[elem] || 0) + 1);
 
 	const osArr = connected.map(elem => elem.os);
-	const mappedOs = osArr.map((elem) => {
+	const mappedOs = osArr.map(elem => {
 		if (elem.match(/^linux(.*)/)) {
 			const splitOsString = elem.split('.');
 			elem = `${splitOsString[0]}.${splitOsString[1]}`;

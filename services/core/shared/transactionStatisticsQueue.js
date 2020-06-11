@@ -38,7 +38,7 @@ const getWithFallback = (acc, type, range) => {
 
 const getTxValue = tx => BigNumber(tx.amount).plus(tx.fee);
 
-const getRange = (tx) => {
+const getRange = tx => {
 	const value = getTxValue(tx);
 	const lowerBound = Math.pow(10, Math.floor(Math.log10(value / 1e8)));
 	const upperBound = Math.pow(10, Math.floor(Math.log10(value / 1e8)) + 1);
@@ -84,7 +84,7 @@ const transformStatsObjectToList = statsObject => (
 const insertToDb = async (statsList, date) => {
 	const db = getDatabase();
 	await db.any(dbQueries.deleteDay, { date });
-	return db.tx((t) => {
+	return db.tx(t => {
 		const queries = statsList.map(l => t.none(dbQueries.insert, { ...l, date }));
 		return t.batch(queries);
 	}).then(() => {
@@ -112,7 +112,7 @@ const fetchTransactions = async (date, offset = 0) => {
 	return data;
 };
 
-statsQueue.process(async (job) => {
+statsQueue.process(async job => {
 	const { date } = job.data;
 	const transactions = await fetchTransactions(date);
 	const statsObject = computeTransactionStats(transactions);
@@ -120,7 +120,7 @@ statsQueue.process(async (job) => {
 	return insertToDb(statsList, date);
 });
 
-statsQueue.on('active', (job) => {
+statsQueue.on('active', job => {
 	logger.debug('Processing transactionStatistics for', job.data);
 });
 

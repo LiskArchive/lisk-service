@@ -44,7 +44,7 @@ const mapParams = (params, url) => {
 	return params;
 };
 
-const setProtocolVersion = (version) => {
+const setProtocolVersion = version => {
 	protocolVersion = version;
 };
 
@@ -54,4 +54,3 @@ module.exports = {
 	mapParams,
 	setProtocolVersion,
 };
-

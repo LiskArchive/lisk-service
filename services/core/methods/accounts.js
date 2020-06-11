@@ -47,7 +47,7 @@ module.exports = [
 		name: 'accounts.votes',
 		controller: getVotes,
 		params: {
-			anyId: {type: 'any' },
+			anyId: { type: 'any' },
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },
 		},

@@ -16,16 +16,16 @@
 const { Utils, CacheRedis, Logger } = require('lisk-service-framework');
 const path = require('path');
 
-const config = require('../config');
+const appConfig = require('../config');
 
-const cacheRedis = CacheRedis('block_updater', config.endpoints.redis);
+const cacheRedis = CacheRedis('block_updater', appConfig.endpoints.redis);
 const logger = Logger();
 
 const controllers = Utils.requireAllJs(path.resolve(__dirname, '../methods/controllers'));
 
 const MIN_TIMEOUT = 15 * 1000;
 
-const registerUpdater = (config) => {
+const registerUpdater = config => {
 	if (config.interval < (MIN_TIMEOUT)) {
 		logger.warn(`Warning: Updater ${config.id} has a very low update interval ${config.interval} ms, which is below the reasonable minimum (${MIN_TIMEOUT} ms). Please consider increasing it.`);
 	}
