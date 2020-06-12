@@ -16,16 +16,16 @@
 const { mapper, Utils } = require('lisk-service-framework');
 const path = require('path');
 
-const configureApi = (apiName) => {
-	const transformPath = (url) => {
-		const dropSlash = (str) => str.replace(/^\//, '');
-		const curlyBracketsToColon = (str) => str.split('{').join(':').replace(/}/g, '');
-	
+const configureApi = apiName => {
+	const transformPath = url => {
+		const dropSlash = str => str.replace(/^\//, '');
+		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
+
 		return curlyBracketsToColon(dropSlash(url));
 	};
-	
+
 	const allMethods = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
-	
+
 	const methods = Object.keys(allMethods).reduce((acc, key) => {
 		const method = allMethods[key];
 		if (method.version !== '2.0') return { ...acc };
@@ -34,32 +34,32 @@ const configureApi = (apiName) => {
 		if (!method.swaggerApiPath) return { ...acc };
 		return { ...acc, [key]: method };
 	}, {});
-	
-	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [methods[key].swaggerApiPath]: methods[key]
-	}), {});
-	
-	const whitelist = Object.keys(methods).reduce((acc, key) => [ ...acc, methods[key].source.method ], []);
 
-	const getMethodName = (method) => method.httpMethod ? method.httpMethod : 'GET';
-	
-	const aliases = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method
+	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
+		...acc, [methods[key].swaggerApiPath]: methods[key],
 	}), {});
-	
-	return {
-		aliases, whitelist, methodPaths
-	}
+
+	const whitelist = Object.keys(methods).reduce((acc, key) => [
+		...acc, methods[key].source.method,
+	], []);
+
+	const getMethodName = method => method.httpMethod ? method.httpMethod : 'GET';
+
+	const aliases = Object.keys(methods).reduce((acc, key) => ({
+		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method,
+	}), {});
+
+	return { aliases, whitelist, methodPaths };
 };
 
 const registerApi = (apiName, config) => {
 	const { aliases, whitelist, methodPaths } = configureApi(apiName);
 
-	const transformResponse = async (path, data) => {
-		if (!methodPaths[path]) return data;
-		const transformedData = await mapper(data.data, methodPaths[path].source.definition);
+	const transformResponse = async (apiPath, data) => {
+		if (!methodPaths[apiPath]) return data;
+		const transformedData = await mapper(data.data, methodPaths[apiPath].source.definition);
 		return {
-			...methodPaths[path].envelope,
+			...methodPaths[apiPath].envelope,
 			...transformedData,
 		};
 	};
@@ -81,7 +81,7 @@ const registerApi = (apiName, config) => {
 			// TODO: Add support for ETag
 			return transformResponse(req.url, data);
 		},
-	}
+	};
 };
 
 module.exports = registerApi;

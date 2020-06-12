@@ -21,7 +21,7 @@ const {
 	...coreApiGetters
 } = coreApi;
 
-const coreApiCached = Object.entries(coreApiGetters).reduce((accumulator, [key, getter]) => ({
+const coreApiCached = Object.entries(coreApiGetters).reduce((accumulator, key) => ({
 	...accumulator,
 	[key]: (requestParams, { expireMiliseconds } = {}) => (
 		HTTP.request(key, {

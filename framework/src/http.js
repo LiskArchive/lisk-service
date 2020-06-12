@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable no-await-in-loop */
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 
@@ -28,56 +29,26 @@ const cache = CacheLRU('_framework_http_cache', {
 	ttl: CACHE_MAX_TTL,
 });
 
-const _validateHttpResponse = (response) => {
+const _validateHttpResponse = response => {
 	if (response.status === HttpStatus.OK) return true;
 	return false;
-};
-
-const request = async (url, params = {}) => {
-	let response;
-	let key;
-
-	const httpParams = { ...params };
-	delete httpParams.cacheTTL;
-
-	if (!httpParams.method) httpParams.method = 'get';
-
-	if (httpParams.method.toLowerCase() === 'get' 
-		&& params.cacheTTL && params.cacheTTL > 0) {
-			key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
-			response = await cache.get(key);
-	}
-
-	if (!response) {
-		httpResponse = await performRequestUntilSuccess(url, httpParams);
-
-		if (_validateHttpResponse(httpResponse)) {
-			const { data, headers, status, statusText } = httpResponse;
-			response = { data, headers, status, statusText };
-
-			if (key) cache.set(key, response, params.cacheTTL);
-		}
-	}
-
-	return response;
 };
 
 const performRequest = async (url, params) => {
 	try {
 		const response = await axios({ url, ...params });
 		return response;
-	} catch(err) {
+	} catch (err) {
 		if (err.response) {
 			return {
 				...err.response,
 				message: err.message,
 			};
-		} else {
+		}
 			return {
 				status: err.code,
 				message: err.message,
 			};
-		}
 	}
 };
 
@@ -93,7 +64,36 @@ const performRequestUntilSuccess = async (url, params) => {
 
 		--retries;
 		await delay(params.retryDelay || 100);
-	} while(retries > 0);
+	} while (retries > 0);
+
+	return response;
+};
+
+const request = async (url, params = {}) => {
+	let response;
+	let key;
+
+	const httpParams = { ...params };
+	delete httpParams.cacheTTL;
+
+	if (!httpParams.method) httpParams.method = 'get';
+
+	if (httpParams.method.toLowerCase() === 'get'
+		&& params.cacheTTL && params.cacheTTL > 0) {
+			key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
+			response = await cache.get(key);
+	}
+
+	if (!response) {
+		const httpResponse = await performRequestUntilSuccess(url, httpParams);
+
+		if (_validateHttpResponse(httpResponse)) {
+			const { data, headers, status, statusText } = httpResponse;
+			response = { data, headers, status, statusText };
+
+			if (key) cache.set(key, response, params.cacheTTL);
+		}
+	}
 
 	return response;
 };

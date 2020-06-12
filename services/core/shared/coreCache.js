@@ -14,7 +14,8 @@
  *
  */
 const { Utils, CacheLRU } = require('lisk-service-framework');
-const { isEmptyArray }  = Utils.Data;
+
+const { isEmptyArray } = Utils.Data;
 const { getAccounts } = require('./coreApi');
 
 const config = require('../config');

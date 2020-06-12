@@ -14,7 +14,7 @@
  *
  */
 const config = {
-	log: {}
+	log: {},
 };
 
 /**

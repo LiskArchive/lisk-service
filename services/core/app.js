@@ -15,9 +15,9 @@
  */
 const path = require('path');
 const {
-	Microservice, 
-	Logger, 
-	LoggerConfig
+	Microservice,
+	Logger,
+	LoggerConfig,
 } = require('lisk-service-framework');
 
 const config = require('./config');
@@ -56,12 +56,9 @@ nodeStatus().then(() => {
 
 	app.run().then(() => {
 		logger.info(`Service started ${packageJson.name}`);
-	}).catch((err) => {
+	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);
 		process.exit(1);
 	});
 });
-
-
-

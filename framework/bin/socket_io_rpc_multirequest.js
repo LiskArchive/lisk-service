@@ -42,22 +42,22 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 	'reconnect', 'reconnect_attempt',
 	'reconnecting', 'reconnect_error', 'reconnect_failed',
 	// 'ping', 'pong',
-].forEach((item) => {
-	socket.on(item, (res) => {
+].forEach(item => {
+	socket.on(item, res => {
 		// Enable this to log all events
 		// console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
-['status'].forEach((eventName) => {
-	socket.on(eventName, (newData) => {
+['status'].forEach(eventName => {
+	socket.on(eventName, newData => {
 		// Enable this to log incoming data
 		// console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
 	});
 });
 
-const request = (path, params) => new Promise((resolve) => {
-	socket.emit(path, params, (answer) => {
+const request = (path, params) => new Promise(resolve => {
+	socket.emit(path, params, answer => {
 		// Enable this to log incoming data
 		// console.log(`Got answer: ${JSON.stringify(answer)}`);
 		// console.log(path);

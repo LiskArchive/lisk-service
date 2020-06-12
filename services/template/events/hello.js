@@ -17,7 +17,7 @@ module.exports = [
 	{
 		name: 'event.hello',
 		description: 'Generic hello event',
-		controller: (callback) => {
+		controller: callback => {
 			setInterval(() => {
 				callback({
 					data: ['Hello!'],

@@ -14,6 +14,7 @@
  *
  */
 const { HTTP, Utils } = require('lisk-service-framework');
+
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray, isEmptyObject } = Utils.Data;
 
@@ -22,10 +23,10 @@ const moment = require('moment');
 const CoreService = require('../../shared/core.js');
 const txStatisticsService = require('../../shared/transactionStatistics');
 
-const getTransactions = async (params) => {
+const getTransactions = async params => {
 	const addressParam = ['senderId', 'recipientId', 'senderIdOrRecipientId'].filter(item => typeof params[item] === 'string');
 
-	const addressLookupResult = await Promise.all(addressParam.map(async (param) => {
+	const addressLookupResult = await Promise.all(addressParam.map(async param => {
 		const paramVal = params[param];
 		const address = await CoreService.getAddressByAny(paramVal);
 		if (!address) return false;
@@ -36,9 +37,7 @@ const getTransactions = async (params) => {
 		return { status: NOT_FOUND, data: { error: `Account ${params[addressParam[0]]} not found.` } };
 	}
 
-	const result = await CoreService.getTransactions(Object.assign({
-		sort: 'timestamp:desc',
-	}, params));
+	const result = await CoreService.getTransactions({ sort: 'timestamp:desc', ...params });
 
 	if (isEmptyObject(result) || isEmptyArray(result.data)) {
 		return { status: NOT_FOUND, data: { error: 'Not found.' } };
@@ -60,12 +59,10 @@ const getTransactions = async (params) => {
 	};
 };
 
-const getTransactionsByAddress = async (params) => {
+const getTransactionsByAddress = async params => {
 	const address = params.anyId;
 	delete params.anyId;
-	const result = await CoreService.getTransactions(Object.assign({}, params, {
-		senderIdOrRecipientId: address,
-	}));
+	const result = await CoreService.getTransactions({ ...params, senderIdOrRecipientId: address });
 	return {
 		data: {
 			data: result.data,
@@ -75,10 +72,8 @@ const getTransactionsByAddress = async (params) => {
 	};
 };
 
-const getLastTransactions = async (params) => {
-	const result = await CoreService.getTransactions(Object.assign({}, params, {
-		sort: 'timestamp:desc',
-	}));
+const getLastTransactions = async params => {
+	const result = await CoreService.getTransactions({ ...params, sort: 'timestamp:desc' });
 
 	const meta = {
 		count: result.data.length,

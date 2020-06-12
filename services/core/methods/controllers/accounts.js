@@ -14,6 +14,7 @@
  *
  */
 const { HTTP, Utils } = require('lisk-service-framework');
+
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray } = Utils.Data;
 
@@ -24,11 +25,11 @@ const config = require('../../config.js');
 const getKnownAccounts = async () => {
 	const { nethash } = await CoreService.getConstants();
 
-	const knownAccountsRequest = async (route) => {
+	const knownAccountsRequest = async route => {
 		const expireMiliseconds = 5 * 60 * 1000;
 		return JSON.parse(
 			await HTTP.request(`${config.endpoints.liskStatic}${route}`,
-			{ cacheTTL: expireMiliseconds }
+			{ cacheTTL: expireMiliseconds },
 			));
 	};
 
@@ -43,7 +44,7 @@ const getKnownAccounts = async () => {
 	}
 };
 
-const getDataForAccounts = async (params) => {
+const getDataForAccounts = async params => {
 	const accounts = await CoreService.getAccounts(params);
 
 	const response = {};
@@ -56,12 +57,12 @@ const getDataForAccounts = async (params) => {
 		response.meta.total = 0;
 	} else {
 		const knownAccounts = await getKnownAccounts();
-		const data = await Promise.all(accounts.data.map(async (account) => {
+		const data = await Promise.all(accounts.data.map(async account => {
 			account.multisignatureGroups = await CoreService.getMultisignatureGroups(account.address);
 			account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
 			account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
-			account.multisignatureMemberships
-			= await CoreService.getMultisignatureMemberships(account.address);
+			account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
+				account.address);
 			account.knowledge = knownAccounts[account.address] || {};
 			return account;
 		}));
@@ -74,7 +75,7 @@ const getDataForAccounts = async (params) => {
 	return response;
 };
 
-const getAccounts = async (params) => {
+const getAccounts = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
 	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.anyId} not found.` } };
@@ -95,7 +96,7 @@ const getAccounts = async (params) => {
 	};
 };
 
-const getTopAccounts = async (params) => {
+const getTopAccounts = async params => {
 	const response = await getDataForAccounts(Object.assign(params, {
 		sort: 'balance:desc',
 		limit: params.limit,
@@ -111,7 +112,7 @@ const getTopAccounts = async (params) => {
 	};
 };
 
-const getVotes = async (params) => {
+const getVotes = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
 
@@ -137,7 +138,7 @@ const getVotes = async (params) => {
 	};
 };
 
-const getVoters = async (params) => {
+const getVoters = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
 

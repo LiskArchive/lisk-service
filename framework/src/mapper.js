@@ -27,8 +27,8 @@ const cast = {
 	isodate: input => (new Date(input)).toISOString(),
 	epoch: input => Date.parse(input) / 1000,
 	datetime: input => moment(new Date(input)).utc().format('MM-DD-YYYY HH:mm:ss'),
-	hex: input => (input ? (new Buffer(input)).toString('hex') : undefined),
-	base64: input => (input ? (new Buffer(input)).toString('base64') : undefined),
+	hex: input => (input ? (Buffer.from(input)).toString('hex') : undefined),
+	base64: input => (input ? (Buffer.from(input)).toString('base64') : undefined),
 };
 
 const resolvePath = (obj, path) => {
@@ -40,8 +40,8 @@ const resolvePath = (obj, path) => {
 	}
 };
 
-const mapObject = (rootObj, definition, subObj = rootObj) =>
-	Object.keys(definition).reduce((acc, key) => {
+const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definition)
+	.reduce((acc, key) => {
 		if (definition[key] !== null && typeof definition[key] === 'string') {
 			const [path, type] = definition[key].split(',');
 			const val = (path === '=') ? subObj[key] : resolvePath(rootObj, path);
@@ -52,7 +52,7 @@ const mapObject = (rootObj, definition, subObj = rootObj) =>
 				const dataSource = (definition[key][0] === '') ? rootObj : resolvePath(rootObj, definition[key][0]);
 				if (Array.isArray(dataSource)) {
 					const tempArr = [];
-					dataSource.forEach((item) => {
+					dataSource.forEach(item => {
 						if (validate(mapObject(item, innerDef))) tempArr.push(mapObject(item, innerDef));
 					});
 					if (!isEmptyArr(tempArr)) acc[key] = tempArr;
