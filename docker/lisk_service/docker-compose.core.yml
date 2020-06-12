@@ -1,0 +1,58 @@
+version: "3"
+services:
+
+  core:
+    image: lisk/service_core
+    depends_on:
+      - redis_common
+      - postgres_core
+      - redis_core
+    networks:
+      - services_network
+      - core_network
+    restart: always
+    environment:
+      - SERVICE_BROKER=${SERVICE_BROKER}
+      - GEOIP_JSON=${GEOIP_JSON}
+      - LISK_CORE_HTTP=${LISK_CORE_HTTP}
+      - LISK_CORE_WS=${LISK_CORE_WS}
+      - SERVICE_CORE_REDIS=${SERVICE_CORE_REDIS}
+      - SERVICE_CORE_POSTGRES=${SERVICE_CORE_POSTGRES}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+
+  postgres_core:
+    image: postgres:10-alpine
+    volumes:
+      - postgres_core_vol:/var/lib/postgresql/data
+    networks:
+      - core_network
+    restart: always
+    environment:
+      - POSTGRES_DB=${ENV_LISK_DB_DATABASE}
+      - POSTGRES_PASSWORD=${ENV_LISK_DB_PASSWORD}
+      - POSTGRES_USER=${ENV_LISK_DB_USER}
+
+  redis_core:
+    image: redis:5-alpine
+    volumes:
+      - ./redis/redis.persistent.conf:/etc/redis/redis.conf:ro
+    networks:
+      - core_network
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping
+
+  gateway:
+    depends_on:
+      - core
+
+volumes:
+  postgres_core_vol:
+
+networks:
+  core_network:
