@@ -21,7 +21,7 @@ import { JSON_RPC } from '../../helpers/errorCodes';
 import { badRequestSchema } from '../../helpers/schemas';
 import {
 	goodRequestSchema, dataSchema, metaSchema, timelineItemSchema,
-} from '../schemas/transactionStatistics.schema';
+} from '../../schemas/transactionStatistics.schema';
 
 describe('get.transactions.statistics.{aggregateBy}', () => {
 	const baseMethod = 'get.transactions.statistics';

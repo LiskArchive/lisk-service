@@ -19,7 +19,7 @@ import api from '../../helpers/api';
 import config from '../../config';
 import {
 	goodRequestSchema, dataSchema, metaSchema, timelineItemSchema,
-} from '../schemas/transactionStatistics.schema';
+} from '../../schemas/transactionStatistics.schema';
 
 const invalidRequestSchema = {
 	message: 'string',

@@ -16,7 +16,7 @@
 import Joi from '@hapi/joi';
 
 import { api } from '../../helpers/socketIoRpcRequest';
-import networkStatisticsSchema from '../schemas/networkStatistics.schema';
+import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
 
 const goodRequestSchema = Joi.object({
 	data: Joi.object().required(),

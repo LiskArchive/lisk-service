@@ -14,7 +14,7 @@
  *
  */
 import { api } from '../../helpers/socketIoRpcRequest';
-import networkStatusSchema from '../schemas/networkStatus.schema';
+import networkStatusSchema from '../../schemas/networkStatus.schema';
 
 const requestNetworkStatus = async params => api.getJsonRpcV1('get.network.status', params);
 

@@ -17,7 +17,7 @@ import Joi from '@hapi/joi';
 
 import api from '../../helpers/api';
 import config from '../../config';
-import networkStatisticsSchema from '../socketJsonRpc_v1_local/schemas/networkStatistics.schema';
+import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
