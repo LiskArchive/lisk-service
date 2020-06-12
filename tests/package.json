@@ -62,10 +62,8 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jest": "=22.21.0",
     "eslint-plugin-mocha": "^4.11.0",
-    "jest": "^25.1.0",
-    "jest-extended": "^0.11.2",
-    "mocha": "^5.2.0",
-    "moment": "=2.24.0",
-    "supertest": "^3.4.2"
+    "jest": "^26.0.1",
+    "jest-extended": "^0.11.5",
+    "moment": "=2.24.0"
   }
 }
