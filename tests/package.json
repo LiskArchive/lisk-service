@@ -24,27 +24,8 @@
     "npm": "6.13.4"
   },
   "scripts": {
-    "eslint": "eslint ./integration ./*.js",
-    "eslint-fix": "eslint --fix ./integration ./*.js",
     "clean": "rm -rf ./node_modules",
-    "test": "npm run test:integration",
-    "test:testnet": "npm run test:integration:v1:testnet",
-    "test:bitcoin:mock": "jest --config=config/jest.mock.bitcoin.config.js",
-    "test:integration": "npm run test:integration:legacy && npm run test:integration:v1",
-    "test:integration:legacy": "npm run test:integration:legacy:local",
-    "test:integration:legacy:local": "jest --testTimeout=15000 --config=integration/jest.http.legacy.local.config.js",
-    "test:integration:legacy:testnet": "jest --config=integration/jest.http.legacy.testnet.config.js",
-    "test:integration:legacy:external": "jest --config=integration/jest.http.legacy.external.config.js",
-    "test:integration:v1": "jest --testTimeout=15000 --config=integration/jest.v1.config.js",
-    "test:integration:v1:jenkins": "npm run test:integration:v1 -- --runInBand",
-    "test:integration:v1:local": "npm run test:integration:v1 -- v1_loacal",
-    "test:integration:v1:testnet": "npm run test:integration:v1 -- v1_testnet",
-    "test:integration:v1:socketRpc": "npm run test:integration:v1 -- socketJsonRpc_v1",
-    "test:integration:v1:socketRpc:local": "npm run test:integration:v1 -- socketJsonRpc_v1_local",
-    "test:integration:v1:socketRpc:testnet": "npm run test:integration:v1 -- socketJsonRpc_v1_testnet",
-    "test:integration:v1:http": "npm run test:integration:v1 -- http_v1",
-    "test:integration:v1:http:local": "npm run test:integration:v1 -- http_v1_local",
-    "test:integration:v1:http:testnet": "npm run test:integration:v1 -- http_v1_testnet",
+    "test": "jest --config=integration/jest.config.js",
     "start": "node app.js"
   },
   "dependencies": {
@@ -81,10 +62,8 @@
     "eslint-plugin-import": "^2.13.0",
     "eslint-plugin-jest": "=22.21.0",
     "eslint-plugin-mocha": "^4.11.0",
-    "jest": "^25.1.0",
-    "jest-extended": "^0.11.2",
-    "mocha": "^5.2.0",
-    "moment": "=2.24.0",
-    "supertest": "^3.4.2"
+    "jest": "^26.0.1",
+    "jest-extended": "^0.11.5",
+    "moment": "=2.24.0"
   }
 }

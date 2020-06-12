@@ -13,14 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {
-	verbose: true,
-	testMatch: [
-		'<rootDir>/api/http_jsonrpc_compare/*.test.js',
-	],
-	testEnvironment: 'node',
-	setupFilesAfterEnv: [
-		'jest-extended',
-		'<rootDir>/helpers/setupCustomMatchers.js',
-	],
-};
+import { api } from '../../helpers/socketIoRpcRequest';
+import networkStatusSchema from '../../schemas/networkStatus.schema';
+
+const requestNetworkStatus = async params => api.getJsonRpcV1('get.network.status', params);
+
+describe('get.network.status', () => {
+	it('returns network status', async () => {
+		const response = await requestNetworkStatus();
+		expect(response).toMap(networkStatusSchema);
+	});
+});
+
