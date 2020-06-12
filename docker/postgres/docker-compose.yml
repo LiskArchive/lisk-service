@@ -1,0 +1,20 @@
+# Base file, do not modifiy.
+# Make changes in docker-compose.override.yml instead.
+# See https://docs.docker.com/compose/extends/#example-use-case
+version: "3"
+services:
+
+  postgres:
+    image: postgres:10-alpine
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: always
+    environment:
+      - POSTGRES_DB=${ENV_LISK_DB_DATABASE}
+      - POSTGRES_PASSWORD=${ENV_LISK_DB_PASSWORD}
+      - POSTGRES_USER=${ENV_LISK_DB_USER}
+
+volumes:
+  db-data:

@@ -16,8 +16,10 @@
   },
   "author": "Lisk Foundation <admin@lisk.io>, lightcurve GmbH <admin@lightcurve.io>",
   "license": "Apache-2.0",
+  "private": true,
   "main": "index.js",
   "scripts": {
+    "release:static": "npm pack && s3cmd put lisk-service-framework-$npm_package_version.tgz s3://static-data.lisk.io/lisk-service-framework-$npm_package_version.tgz",
     "test:unit": "./node_modules/.bin/jest --config=test/unit.config.js --detectOpenHandles  --forceExit",
     "test:functional": "./node_modules/.bin/jest --config=test/functional.config.js --detectOpenHandles"
   },
