@@ -5,8 +5,8 @@ services:
     image: lisk/service_core
     depends_on:
       - redis_common
-      - core_postgres
-      - core_redis
+      - postgres_core
+      - redis_core
     networks:
       - services_network
       - core_network
@@ -24,10 +24,10 @@ services:
       - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
       - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
 
-  core_postgres:
+  postgres_core:
     image: postgres:10-alpine
     volumes:
-      - core_postgres_vol:/var/lib/postgresql/data
+      - postgres_core_vol:/var/lib/postgresql/data
     networks:
       - core_network
     restart: always
@@ -36,10 +36,10 @@ services:
       - POSTGRES_PASSWORD=${ENV_LISK_DB_PASSWORD}
       - POSTGRES_USER=${ENV_LISK_DB_USER}
 
-  core_redis:
+  redis_core:
     image: redis:5-alpine
     volumes:
-      - ./lisk_service/redis.persistent.conf:/etc/redis/redis.conf:ro
+      - ./redis/redis.persistent.conf:/etc/redis/redis.conf:ro
     networks:
       - core_network
     restart: always
@@ -52,7 +52,7 @@ services:
       - core
 
 volumes:
-  core_postgres_vol:
+  postgres_core_vol:
 
 networks:
   core_network:
