@@ -1,17 +1,35 @@
 const accounts = {
 	genesis: {
-		address: '1085993630748340485L',
-		balance: '-9999999664752476',
-		publicKey: 'c96dec3595ff6041c3bd28b76b8cf75dce8225173d1bd00241624ee89b50f2a8',
+		address: '11756022781143156096L',
+		balance: '0',
+		publicKey: '8ec002db73e38a22f76f70c9f94968f99d77f1c009f23860400427ab63296785',
+		secondPublicKey: '',
 		transactionCount: {
 			incoming: '0',
-			outgoing: '1',
+			outgoing: '2',
 		},
 	},
 	delegate: {
-		address: '16108573387293654084L',
-		username: 'standby_130',
-		publicKey: 'dbe0a5c88fe97b38a72c4b766e0c70fa603dc5122efc778ab43026714a606c5e',
+		address: '910549356591813508L',
+		balance: '0',
+		delegate: {
+			approval: '0.05',
+			missedBlocks: 1041,
+			producedBlocks: 14721,
+			productivity: '93.4',
+			rank: 293,
+			rewards: '0',
+			username: 'genesis_20',
+			vote: '6834755447435',
+		},
+		knowledge: {},
+		multisignatureAccount: {},
+		publicKey: '0cfb773eac46cd18609323e298711c427f382d847a5f078c690a21ce09ef1c9c',
+		secondPublicKey: '',
+		transactionCount: {
+			incoming: '0',
+			outgoing: '2',
+		},
 	},
 	'empty account': {
 		passphrase: 'stay undo beyond powder sand laptop grow gloom apology hamster primary arrive',
