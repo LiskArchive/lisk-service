@@ -111,4 +111,3 @@ describe(endpoint, () => {
 		expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
 	});
 });
-

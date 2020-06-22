@@ -93,25 +93,22 @@ describe('GET /delegates', () => {
 		});
 	});
 
-	it('invalid address -> 400', () =>
-		expect(api.get(`${endpoint}?address=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
-			...swaggerWrongInput,
-		}));
+	it('invalid address -> 400', () => expect(api.get(`${endpoint}?address=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
+		...swaggerWrongInput,
+	}));
 
-	it('wrong input param -> 400', () =>
-		expect(api.get(`${endpoint}?id=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
-			...wrongInputParamSchema,
-		}));
+	it('wrong input param -> 400', () => expect(api.get(`${endpoint}?id=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
+		...wrongInputParamSchema,
+	}));
 
 	it('search delegates -> ok', async () => {
 		const response = await api.get(`${endpoint}?search=genesis`);
 		expect(response.data.length).toEqual(10);
 	});
 
-	it('wrong delegate publickey -> 404', () =>
-		expect(api.get(`${endpoint}?publickey=412875216073141752800000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundErrorSchema,
-		}));
+	it('wrong delegate publickey -> 404', () => expect(api.get(`${endpoint}?publickey=412875216073141752800000`, 404)).resolves.toMapRequiredSchema({
+		...notFoundErrorSchema,
+	}));
 
 	it('known delegate username -> ok', async () => {
 		const response = await api.get(`${endpoint}?username=genesis_51`);
@@ -121,10 +118,9 @@ describe('GET /delegates', () => {
 		});
 	});
 
-	it('wrong username -> 404', () =>
-		expect(api.get(`${endpoint}?username=genesis_510000000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundErrorSchema,
-		}));
+	it('wrong username -> 404', () => expect(api.get(`${endpoint}?username=genesis_510000000`, 404)).resolves.toMapRequiredSchema({
+		...notFoundErrorSchema,
+	}));
 });
 
 describe('GET /delegates/active', () => {
@@ -265,8 +261,7 @@ describe('GET /delegate/{address}', () => {
 		});
 	});
 
-	it('wrong address -> 404', () =>
-		expect(api.get(`${delegateEndpoint}/genesis_510000000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundErrorSchema,
-		}));
+	it('wrong address -> 404', () => expect(api.get(`${delegateEndpoint}/genesis_510000000`, 404)).resolves.toMapRequiredSchema({
+		...notFoundErrorSchema,
+	}));
 });

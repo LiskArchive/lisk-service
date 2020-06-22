@@ -153,7 +153,7 @@ describe('get.transactions', () => {
 		const response = await requestTransactions({ from, to: toTimestamp });
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data.length).toEqual(2);
-		response.data.forEach((trx) => {
+		response.data.forEach(trx => {
 			expect(trx.timestamp).toBeGreaterThanOrEqual(from);
 			expect(trx.timestamp).toBeLessThanOrEqual(toTimestamp);
 		});

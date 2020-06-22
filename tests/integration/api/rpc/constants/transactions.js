@@ -32,4 +32,3 @@ export const transaction = {
 	timestamp: 90173949,
 	type: 0,
 };
-

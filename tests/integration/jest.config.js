@@ -18,4 +18,3 @@ module.exports = {
 		'jest-watch-typeahead/filename',
 	],
 };
-

@@ -11,7 +11,7 @@ const port = 9007;
 
 const server = http.createServer(mockserver('bitcoin_http_mocks'));
 
-server.listen(port, [host], (err) => {
+server.listen(port, [host], err => {
 	if (err) logger.error(err);
 	else logger.info(`Mockserver for ${apiName} is listening on ${host}:${port}`);
 });

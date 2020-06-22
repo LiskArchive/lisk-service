@@ -36,4 +36,3 @@ const networkStatusSchema = Joi.object({
 }).required();
 
 export default networkStatusSchema;
-

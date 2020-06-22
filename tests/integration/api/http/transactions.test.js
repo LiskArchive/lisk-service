@@ -21,7 +21,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/transactions`;
 const transactionEndpoint = `${baseUrlV1}/transaction`;
-const transaction = transactions.transaction;
+const { transaction } = transactions;
 
 const transactionSchema = {
 	amount: 'string',
@@ -60,20 +60,17 @@ describe('GET /transactions', () => {
 		});
 	});
 
-	it('long transaction id -> 400', () =>
-		expect(api.get(`${endpoint}?id=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('long transaction id -> 400', () => expect(api.get(`${endpoint}?id=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
-	it('invalid transaction id -> 404', () =>
-		expect(api.get(`${endpoint}?id=41287`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+	it('invalid transaction id -> 404', () => expect(api.get(`${endpoint}?id=41287`, 404)).resolves.toMapRequiredSchema({
+		...notFoundSchema,
+	}));
 
-	it('empty transaction id -> 400', () =>
-		expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('empty transaction id -> 400', () => expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
 	it('known transaction type -> ok', async () => {
 		const response = await api.get(`${endpoint}?type=${transaction.type}`);
@@ -83,15 +80,13 @@ describe('GET /transactions', () => {
 		});
 	});
 
-	it('invalid transaction type -> 400', () =>
-		expect(api.get(`${endpoint}?type=13`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('invalid transaction type -> 400', () => expect(api.get(`${endpoint}?type=13`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
-	it('empty transaction type -> 400', () =>
-		expect(api.get(`${endpoint}?type=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('empty transaction type -> 400', () => expect(api.get(`${endpoint}?type=`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
 	it('known address -> ok', async () => {
 		const response = await api.get(`${endpoint}?address=${transaction.recipientId}`);
@@ -100,10 +95,9 @@ describe('GET /transactions', () => {
 		});
 	});
 
-	it('invalid address -> 404', () =>
-		expect(api.get(`${endpoint}?address=000000000L`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+	it('invalid address -> 404', () => expect(api.get(`${endpoint}?address=000000000L`, 404)).resolves.toMapRequiredSchema({
+		...notFoundSchema,
+	}));
 
 	it('known sender address -> ok', async () => {
 		const response = await api.get(`${endpoint}?sender=${transaction.senderId}`);
@@ -113,10 +107,9 @@ describe('GET /transactions', () => {
 		});
 	});
 
-	it('invalid sender address -> 404', () =>
-		expect(api.get(`${endpoint}?sender=000000000L`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+	it('invalid sender address -> 404', () => expect(api.get(`${endpoint}?sender=000000000L`, 404)).resolves.toMapRequiredSchema({
+		...notFoundSchema,
+	}));
 
 	it('known recipient address -> ok', async () => {
 		const response = await api.get(`${endpoint}?recipient=${transaction.recipientId}`);
@@ -126,10 +119,9 @@ describe('GET /transactions', () => {
 		});
 	});
 
-	it('invalid recipient address -> 404', () =>
-		expect(api.get(`${endpoint}?recipient=000000000L`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+	it('invalid recipient address -> 404', () => expect(api.get(`${endpoint}?recipient=000000000L`, 404)).resolves.toMapRequiredSchema({
+		...notFoundSchema,
+	}));
 
 	it('known block -> ok', async () => {
 		const response = await api.get(`${endpoint}?block=${transaction.blockId}`);
@@ -139,15 +131,13 @@ describe('GET /transactions', () => {
 		});
 	});
 
-	it('invalid block -> 400', () =>
-		expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('invalid block -> 400', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
-	it('empty block -> 400', () =>
-		expect(api.get(`${endpoint}?block=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('empty block -> 400', () => expect(api.get(`${endpoint}?block=`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
 	it('known height -> ok', async () => {
 		const response = await api.get(`${endpoint}?height=${transaction.height}`);
@@ -157,15 +147,13 @@ describe('GET /transactions', () => {
 		});
 	});
 
-	it('invalid height -> 400', () =>
-		expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('invalid height -> 400', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
-	it('empty height -> 400', () =>
-		expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('empty height -> 400', () => expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
 
 	it('transactions within set timestamps are returned', async () => {
@@ -199,13 +187,11 @@ describe('GET /transaction/{transaction_id}', () => {
 		});
 	});
 
-	it('incorrect transaction id -> 400', () =>
-		expect(api.get(`${transactionEndpoint}/123abc`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+	it('incorrect transaction id -> 400', () => expect(api.get(`${transactionEndpoint}/123abc`, 400)).resolves.toMapRequiredSchema({
+		...badRequestSchema,
+	}));
 
-	it('non-existing transaction id -> 400', () =>
-		expect(api.get(`${transactionEndpoint}/123456789`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+	it('non-existing transaction id -> 400', () => expect(api.get(`${transactionEndpoint}/123456789`, 404)).resolves.toMapRequiredSchema({
+		...notFoundSchema,
+	}));
 });
