@@ -11,8 +11,8 @@
 		"TEST": true
 	},
 	"env": {
-		"browser": true,
-		"node": true
+		"node": true,
+		"jest": true
 	},
 	"rules": {
 		"func-names": "off",
