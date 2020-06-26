@@ -17,9 +17,11 @@ const {
 	Microservice,
 	Logger,
 	LoggerConfig,
+	Libs
 } = require('lisk-service-framework');
 
-const ApiService = require('moleculer-web');
+const ApiService = Libs['moleculer-web'];
+
 const config = require('./config');
 const routes = require('./routes');
 const packageJson = require('./package.json');
