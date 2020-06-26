@@ -36,7 +36,7 @@ module.exports = [
 		name: 'parametrized.hello',
 		description: 'Hello function with named parameters',
 		params: {
-			name: { type: 'string' },
+			name: { type: 'string', optional: true },
 		},
 		controller: async param => {
 			const response = {
