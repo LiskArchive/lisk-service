@@ -84,7 +84,7 @@ const registerApi = (apiName, config) => {
 
 	const transformResponse = async (apiPath, data) => {
 		if (!methodPaths[apiPath]) return data;
-		const transformedData = await mapper(data.data, methodPaths[apiPath].source.definition);
+		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
 		return {
 			...methodPaths[apiPath].envelope,
 			...transformedData,
