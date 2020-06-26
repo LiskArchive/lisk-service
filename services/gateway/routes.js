@@ -15,34 +15,41 @@
  */
 const registerApi = require('./shared/registerHttpApi');
 
+const defaultConfig = {
+	whitelist: [
+		'$node.*',
+	],
+
+	aliases: {
+		'GET health': '$node.health',
+	},
+
+	callOptions: {
+		timeout: 3000,
+		retries: 3,
+		fallbackResponse: {
+			error: true,
+			message: 'Server error',
+		},
+	},
+
+	authorization: false,
+	mergeParams: true,
+
+	mappingPolicy: 'restrict',
+
+	bodyParsers: {
+		json: true,
+		urlencoded: { extended: true },
+	},
+
+	uses: [],
+
+	log4XXResponses: true,
+	httpServerTimeout: 30000,
+};
+
 module.exports = [
-	registerApi('http-version1', {
-		path: '/v1',
-
-		whitelist: [
-			'$node.*',
-		],
-
-		aliases: {
-			'GET health': '$node.health',
-		},
-
-		callOptions: {
-			timeout: 3000,
-			retries: 3,
-			fallbackResponse: 'Static fallback response',
-		},
-
-		authorization: false,
-		mergeParams: true,
-
-		mappingPolicy: 'restrict',
-
-		bodyParsers: {
-			json: true,
-			urlencoded: { extended: true },
-		},
-
-		uses: [],
-	}),
+	registerApi('http-version1', {...defaultConfig, path: '/v1' }),
+	registerApi('http-test', { ...defaultConfig, path: '/test', }),
 ];
