@@ -88,11 +88,9 @@ const getAccounts = async params => {
 	const response = await getDataForAccounts(params);
 
 	return {
-		data: {
-			data: response.data,
-			meta: response.meta,
-			links: response.links,
-		},
+		data: response.data,
+		meta: response.meta,
+		links: response.links,
 	};
 };
 
@@ -104,11 +102,9 @@ const getTopAccounts = async params => {
 	}));
 
 	return {
-		data: {
-			data: response.data,
-			meta: response.meta,
-			links: response.links,
-		},
+		data: response.data,
+		meta: response.meta,
+		links: response.links,
 	};
 };
 
@@ -123,18 +119,16 @@ const getVotes = async params => {
 	const response = await CoreService.getVotes(params);
 
 	return {
-		data: {
-			data: response.data.votes,
-			meta: {
-				limit: response.meta.limit,
-				offset: response.meta.offset,
-				total: response.data.votesUsed,
-				count: response.data.votes.length,
-				votesAvailable: response.data.votesAvailable,
-				votesUsed: response.data.votesUsed,
-			},
-			links: {},
+		data: response.data.votes,
+		meta: {
+			limit: response.meta.limit,
+			offset: response.meta.offset,
+			total: response.data.votesUsed,
+			count: response.data.votes.length,
+			votesAvailable: response.data.votesAvailable,
+			votesUsed: response.data.votesUsed,
 		},
+		links: {},
 	};
 };
 
@@ -149,16 +143,14 @@ const getVoters = async params => {
 	const response = await CoreService.getVoters(params);
 
 	return {
-		data: {
-			data: response.data.voters,
-			meta: {
-				limit: response.meta.limit,
-				offset: response.meta.offset,
-				total: response.data.votes,
-				count: response.data.voters.length,
-			},
-			links: {},
+		data: response.data.voters,
+		meta: {
+			limit: response.meta.limit,
+			offset: response.meta.offset,
+			total: response.data.votes,
+			count: response.data.voters.length,
 		},
+		links: {},
 	};
 };
 

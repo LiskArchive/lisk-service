@@ -64,11 +64,9 @@ const getDelegates = async params => {
 	}
 
 	return {
-		data: {
-			data: delegates,
-			meta: response.meta,
-			link: response.link,
-		},
+		data: delegates,
+		meta: response.meta,
+		link: response.link,
 	};
 };
 

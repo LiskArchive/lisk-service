@@ -108,14 +108,12 @@ const getSearch = async params => {
 	const response = await resolveAll(apiCalls, params.q);
 
 	return {
-		data: {
-			data: response.data.sort((a, b) => b.score - a.score),
-			meta: {
-				count: response.data.length,
-				total: Math.max(response.total, response.data.length),
-			},
-			links: {},
+		data: response.data.sort((a, b) => b.score - a.score),
+		meta: {
+			count: response.data.length,
+			total: Math.max(response.total, response.data.length),
 		},
+		links: {},
 	};
 };
 
