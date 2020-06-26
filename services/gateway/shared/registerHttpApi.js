@@ -35,10 +35,6 @@ const configureApi = apiName => {
 		return { ...acc, [key]: method };
 	}, {});
 
-	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
-		...acc, [methods[key].swaggerApiPath]: methods[key],
-	}), {});
-
 	const whitelist = Object.keys(methods).reduce((acc, key) => [
 		...acc, methods[key].source.method,
 	], []);
@@ -49,11 +45,42 @@ const configureApi = apiName => {
 		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key].source.method,
 	}), {});
 
+	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
+		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key],
+	}), {});
+
 	return { aliases, whitelist, methodPaths };
 };
 
+const mapParam = (source, originalKey, mappingKey) => {
+	if (mappingKey) {
+		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
+		return { key: mappingKey, value: source[originalKey] };
+	}
+	logger.warn(`ParamsMapper: Missing mapping for the param ${mappingKey}`);
+	return {};
+};
+
+const transformParams = (params, specs) => {
+	const output = {};
+	Object.keys(specs).forEach((specParam) => {
+		const result = mapParam(params, specs[specParam], specParam);
+		if (result.key) output[result.key] = result.value;
+	});
+	return output;
+};
+
+
 const registerApi = (apiName, config) => {
 	const { aliases, whitelist, methodPaths } = configureApi(apiName);
+
+	const transformRequest = (apiPath, params) => {
+		try {
+			const paramDef = methodPaths[apiPath].source.params;
+			const transformedParams = transformParams(params, paramDef);
+			return transformedParams;
+		} catch(e) { return params };
+	};
 
 	const transformResponse = async (apiPath, data) => {
 		if (!methodPaths[apiPath]) return data;
@@ -77,9 +104,14 @@ const registerApi = (apiName, config) => {
 			...aliases,
 		},
 
+		async onBeforeCall(ctx, route, req, res) {
+			const params = transformRequest(`${req.method.toUpperCase()} ${req.$alias.path}`, req.$params);
+			req.$params = params;
+		},
+
 		async onAfterCall(ctx, route, req, res, data) {
 			// TODO: Add support for ETag
-			return transformResponse(req.url, data);
+			return transformResponse(`${req.method.toUpperCase()} ${req.$alias.path}`, data);
 		},
 	};
 };
