@@ -69,7 +69,7 @@ broker.createService({
 
 		logRequestParams: 'info',
 		logResponseData: 'debug',
-		httpServerTimeout: 30,
+		httpServerTimeout: 30 * 1000, // ms
 		optimizeOrder: true,
 		routes,
 
