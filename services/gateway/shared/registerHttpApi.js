@@ -16,7 +16,9 @@
 const { mapper, Utils } = require('lisk-service-framework');
 const path = require('path');
 
-const configureApi = apiName => {
+const apiMeta = [];
+
+const configureApi = (apiName, apiPrefix) => {
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
 		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
@@ -49,6 +51,20 @@ const configureApi = apiName => {
 		...acc, [`${getMethodName(methods[key])} ${transformPath(methods[key].swaggerApiPath)}`]: methods[key],
 	}), {});
 
+	const meta = {
+		apiPrefix,
+		routes: Object.keys(methods).map(m => ({
+			path: methods[m].swaggerApiPath,
+			params: Object.keys(methods[m].source.params),
+			response: {
+				...methods[m].envelope,
+				...methods[m].source.definition,
+			},
+		})),
+	};
+
+	apiMeta.push(meta);
+
 	return { aliases, whitelist, methodPaths };
 };
 
@@ -57,7 +73,7 @@ const mapParam = (source, originalKey, mappingKey) => {
 		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
 		return { key: mappingKey, value: source[originalKey] };
 	}
-	logger.warn(`ParamsMapper: Missing mapping for the param ${mappingKey}`);
+	// logger.warn(`ParamsMapper: Missing mapping for the param ${mappingKey}`);
 	return {};
 };
 
@@ -72,14 +88,14 @@ const transformParams = (params, specs) => {
 
 
 const registerApi = (apiName, config) => {
-	const { aliases, whitelist, methodPaths } = configureApi(apiName);
+	const { aliases, whitelist, methodPaths } = configureApi(apiName, config.path);
 
 	const transformRequest = (apiPath, params) => {
 		try {
 			const paramDef = methodPaths[apiPath].source.params;
 			const transformedParams = transformParams(params, paramDef);
 			return transformedParams;
-		} catch(e) { return params };
+		} catch (e) { return params; }
 	};
 
 	const transformResponse = async (apiPath, data) => {
