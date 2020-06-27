@@ -82,7 +82,7 @@ module.exports = [
 		name: 'server.error',
 		description: 'Dummy function throwing a server error',
 		controller: async () => {
-			throw new Error('Error from template');
+			throw new Error('Called server.error');
 		},
 	},
 ];
