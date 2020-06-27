@@ -27,10 +27,6 @@ const defaultConfig = {
 	callOptions: {
 		timeout: 3000,
 		retries: 3,
-		fallbackResponse: {
-			error: true,
-			message: 'Server error',
-		},
 	},
 
 	authorization: false,
