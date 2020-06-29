@@ -62,7 +62,7 @@ describe('Gateway', () => {
 		});
 	});
 
-	xit('client error returns 400', async () => {
+	it('client error returns 400', async () => {
 		const expectedStatus = 400;
 		const response = await api.get(`${baseUrl}/client_error`, expectedStatus);
 		expect(response).toEqual(badRequestSchema);
@@ -77,10 +77,12 @@ describe('Gateway', () => {
 		});
 	});
 
-	xit('handles 404 error properly', async () => {
-		const expectedStatus = 400;
-		const response = await api.get(`${baseUrl}/client_error`, expectedStatus);
-		expect(response).toEqual({});
-		expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+	it('handles 404 error properly', async () => {
+		const expectedStatus = 404;
+		const response = await api.get(`${baseUrl}/wrong_path`, expectedStatus);
+		expect(response).toEqual({
+			error: true,
+			message: 'Server error: Not found',
+		});
 	});
 });
