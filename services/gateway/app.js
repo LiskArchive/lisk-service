@@ -17,7 +17,7 @@ const {
 	Microservice,
 	Logger,
 	LoggerConfig,
-	Libs
+	Libs,
 } = require('lisk-service-framework');
 
 const ApiService = Libs['moleculer-web'];
@@ -79,9 +79,12 @@ broker.createService({
 		},
 
 		onError(req, res, err) {
-			res.setHeader('Content-Type', 'text/plain');
+			res.setHeader('Content-Type', 'application/json');
 			res.writeHead(err.code || 500);
-			res.end(`Server error: ${err.message}`);
+			res.end(JSON.stringify({
+				error: true,
+				message: `Server error: ${err.message}`,
+			}));
 		},
 	},
 });
