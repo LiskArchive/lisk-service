@@ -19,6 +19,26 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blocks',
+	params: {
+		id: { required: false, type: 'string', minLength: 1 },
+		height: { required: false, type: 'number' },
+		from: { required: false, type: 'number' },
+		to: { required: false, type: 'number' },
+		address: { required: false, type: 'string', minLength: 1 },
+		limit: { required: false, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { required: false, type: 'number', min: 0, default: 0 },
+		sort: {
+			required: false,
+			type: 'string',
+			enum: [
+				'height:asc', 'height:desc',
+				'totalAmount:asc', 'totalAmount:desc',
+				'totalFee:asc', 'totalFee:desc',
+				'timestamp:asc', 'timestamp:desc',
+			],
+			default: 'height:desc',
+		},
+	},
 	source: blocksSource,
 	envelope,
 };

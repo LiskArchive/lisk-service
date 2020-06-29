@@ -19,6 +19,10 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/accounts/top',
+	params: {
+		limit: { required: false, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { required: false, type: 'number', min: 0, default: 0 },
+	},
 	source: {
 		...accountsSource,
 		method: 'core.accounts.top',
