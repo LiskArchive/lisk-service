@@ -120,7 +120,7 @@ const registerApi = (apiName, config) => {
 			...aliases,
 		},
 
-		async onBeforeCall(ctx, route, req, res) {
+		async onBeforeCall(ctx, route, req) {
 			const params = transformRequest(`${req.method.toUpperCase()} ${req.$alias.path}`, req.$params);
 			req.$params = params;
 		},
