@@ -19,17 +19,6 @@ import api from '../helpers/api';
 const baseUrlRoot = config.SERVICE_ENDPOINT;
 const baseUrl = `${baseUrlRoot}/api/test`;
 
-const badRequestSchema = {
-	errors: 'array',
-	message: 'string',
-};
-
-const notFoundSchema = {
-	error: 'boolean',
-	message: 'string',
-};
-
-
 describe('Gateway', () => {
 	it('provides basic HTTP route', async () => {
 		const response = await api.get(`${baseUrl}/hello`);
@@ -62,12 +51,30 @@ describe('Gateway', () => {
 		});
 	});
 
-	it('client error returns 400', async () => {
+	it('client error returns 400 on wrong param name', async () => {
 		const expectedStatus = 400;
 		const response = await api.get(`${baseUrl}/hello/user1?wrong_param_name=some_value`, expectedStatus);
 		expect(response).toEqual({
 			error: true,
 			message: 'Unknown input parameter(s): wrong_param_name',
+		});
+	});
+
+	it('client error returns 400 when no param value is defined', async () => {
+		const expectedStatus = 400;
+		const response = await api.get(`${baseUrl}/hello/user1?wrong_param_name=`, expectedStatus);
+		expect(response).toEqual({
+			error: true,
+			message: 'Unknown input parameter(s): wrong_param_name',
+		});
+	});
+
+	xit('client error returns 400 when param value is too short', async () => {
+		const expectedStatus = 400;
+		const response = await api.get(`${baseUrl}/hello/ab`, expectedStatus);
+		expect(response).toEqual({
+			error: true,
+			message: 'Invalid input parameter(s): wrong_param_name', // TODO: update
 		});
 	});
 
