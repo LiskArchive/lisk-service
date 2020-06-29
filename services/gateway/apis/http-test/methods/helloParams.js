@@ -17,7 +17,11 @@
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/hello/{path_name}',
-	envelope: {},
+	envelope: {
+		data: [],
+		meta: {},
+		links: {},
+	},
 	source: {
 		type: 'moleculer',
 		method: 'template.parametrized.hello',
