@@ -68,10 +68,13 @@ describe('Gateway', () => {
 		expect(response).toEqual(badRequestSchema);
 	});
 
-	xit('server error returns 500', async () => {
+	it('server error returns 500', async () => {
 		const expectedStatus = 500;
-		const response = await api.get(`${baseUrl}/client_error`, expectedStatus);
-		expect(response).toEqual({});
+		const response = await api.get(`${baseUrl}/server_error`, expectedStatus);
+		expect(response).toEqual({
+			error: true,
+			message: 'Server error: Called server.error',
+		});
 	});
 
 	xit('handles 404 error properly', async () => {
