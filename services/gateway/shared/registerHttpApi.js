@@ -16,6 +16,8 @@
 const { mapper, Utils } = require('lisk-service-framework');
 const path = require('path');
 
+const { validate } = require('./paramValidator');
+
 const apiMeta = [];
 
 const configureApi = (apiName, apiPrefix) => {
@@ -77,7 +79,7 @@ const mapParam = (source, originalKey, mappingKey) => {
 	return {};
 };
 
-const transformParams = (params, specs) => {
+const transformParams = (params = {}, specs) => {
 	const output = {};
 	Object.keys(specs).forEach((specParam) => {
 		const result = mapParam(params, specs[specParam], specParam);
@@ -120,8 +122,34 @@ const registerApi = (apiName, config) => {
 			...aliases,
 		},
 
-		async onBeforeCall(ctx, route, req) {
-			const params = transformRequest(`${req.method.toUpperCase()} ${req.$alias.path}`, req.$params);
+		async onBeforeCall(ctx, route, req, res) {
+			const sendResponse = (code, message) => {
+				res.setHeader('Content-Type', 'application/json');
+				res.writeHead(code || 400);
+				res.end(JSON.stringify({
+					error: true,
+					message,
+				}));
+			};
+
+			const routeAlias = `${req.method.toUpperCase()} ${req.$alias.path}`;
+			const paramReport = validate(req.$params, methodPaths[routeAlias]);
+
+			if (paramReport.missing.length > 0) {
+				sendResponse(400, `Missing parameter(s): ${paramReport.missing.join(', ')}`);
+			}
+
+			const unknownList = Object.keys(paramReport.unknown);
+			if (unknownList.length > 0) {
+				sendResponse(400, `Unknown input parameter(s): ${unknownList.join(', ')}`);
+			}
+
+			const invalidList = Object.keys(paramReport.invalid);
+			if (invalidList && invalidList.length > 0) {
+				sendResponse(400, `Invalid input parameter values: ${invalidList.join(', ')}`);
+			}
+
+			const params = transformRequest(routeAlias, req.$params);
 			req.$params = params;
 		},
 
