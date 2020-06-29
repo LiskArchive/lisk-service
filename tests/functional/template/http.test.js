@@ -64,8 +64,11 @@ describe('Gateway', () => {
 
 	it('client error returns 400', async () => {
 		const expectedStatus = 400;
-		const response = await api.get(`${baseUrl}/client_error`, expectedStatus);
-		expect(response).toEqual(badRequestSchema);
+		const response = await api.get(`${baseUrl}/hello/user1?wrong_param_name=some_value`, expectedStatus);
+		expect(response).toEqual({
+			error: true,
+			message: 'Unknown input parameter(s): wrong_param_name',
+		});
 	});
 
 	it('server error returns 500', async () => {

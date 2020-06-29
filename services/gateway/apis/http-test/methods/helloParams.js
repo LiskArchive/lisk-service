@@ -17,6 +17,9 @@
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/hello/{path_name}',
+	params: {
+		path_name: { required: true, type: 'string', minLength: 3 },
+	},
 	envelope: {
 		data: [],
 		meta: {},

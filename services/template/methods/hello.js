@@ -66,18 +66,6 @@ module.exports = [
 			return request('https://some.data.source.com');
 		},
 	},
-	/* TODO: Fix not passing error */
-	{
-		name: 'client.error',
-		description: 'Dummy function returning error',
-		controller: async () => {
-			const response = {
-				error: 'Some random error',
-				status: NOT_FOUND,
-			};
-			return response;
-		},
-	},
 	{
 		name: 'server.error',
 		description: 'Dummy function throwing a server error',
