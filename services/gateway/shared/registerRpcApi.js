@@ -149,9 +149,7 @@ const registerApi = (apiName, config) => {
 					request.params = transformRequest(request.method, request.params);
 				},
 
-				onAfterCall: async (ctx, socket, request, data) => {
-					return transformResponse(request.method, data);
-				},
+				onAfterCall: async (ctx, socket, request, data) => transformResponse(request.method, data),
 			},
 		},
 	};
