@@ -13,9 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const { Constants: { errorCodes: { NOT_FOUND } } } = require('lisk-service-framework');
-
 module.exports = [
 	{
 		name: 'generic.hello',
