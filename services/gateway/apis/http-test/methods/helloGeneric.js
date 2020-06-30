@@ -17,6 +17,7 @@
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/hello',
+	rpcMethod: 'get.hello',
 	envelope: {
 		data: [],
 		meta: {},
