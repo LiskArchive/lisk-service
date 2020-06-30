@@ -62,7 +62,7 @@ const configureApi = (apiName, apiPrefix) => {
 		apiPrefix,
 		routes: Object.keys(methods).map(m => ({
 			path: methods[m].swaggerApiPath,
-			params: Object.keys(methods[m].source.params),
+			params: Object.keys(methods[m].params || {}),
 			response: {
 				...methods[m].envelope,
 				...methods[m].source.definition,
