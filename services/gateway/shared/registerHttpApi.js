@@ -142,16 +142,19 @@ const registerApi = (apiName, config) => {
 
 			if (paramReport.missing.length > 0) {
 				sendResponse(BAD_REQUEST, `Missing parameter(s): ${paramReport.missing.join(', ')}`);
+				return;
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
 				sendResponse(BAD_REQUEST, `Unknown input parameter(s): ${unknownList.join(', ')}`);
+				return;
 			}
 
 			const invalidList = Object.keys(paramReport.invalid);
 			if (invalidList && invalidList.length > 0) {
 				sendResponse(BAD_REQUEST, `Invalid input parameter values: ${invalidList.join(', ')}`);
+				return;
 			}
 
 			const params = transformRequest(routeAlias, req.$params);
