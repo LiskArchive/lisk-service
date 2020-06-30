@@ -25,9 +25,9 @@ const objDiff = (reference, testedObject) => Object.keys(testedObject).filter(o 
 const arrDiff = (arr1, arr2) => arr2.filter(x => !arr1.includes(x));
 
 const parseParams = (p) => {
-	const combinedParams = Object.assign({}, p.swaggerParams, p.inputParams);
-	const paramsDiff = (allParams, swaggerParams) =>
-		allParams.filter(item => !swaggerParams.includes(item));
+	const combinedParams = { ...p.swaggerParams, ...p.inputParams };
+	const paramsDiff = (allParams, swaggerParams) => allParams.filter(
+		item => !swaggerParams.includes(item));
 	const invalidParamsList = paramsDiff(Object.keys(combinedParams), Object.keys(p.swaggerParams));
 	const invalidParams = invalidParamsList.reduce((acc, val) => {
 		acc[val] = p.inputParams[val];
