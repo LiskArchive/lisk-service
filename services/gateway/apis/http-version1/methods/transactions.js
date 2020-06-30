@@ -33,7 +33,7 @@ module.exports = {
 		height: { required: false, minLength: 1 },
 		limit: { required: false },
 		offset: { required: false },
-		sort: { required: false },
+		sort: { required: false }, // TODO: Convert to enum
 	},
 	source: transactionsSource,
 	envelope,
