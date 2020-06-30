@@ -20,10 +20,13 @@ const {
 	Libs,
 } = require('lisk-service-framework');
 
+const SocketIOService = require('./shared/moleculer-io');
+
 const ApiService = Libs['moleculer-web'];
 
 const config = require('./config');
 const routes = require('./routes');
+const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
 
 const { host, port } = config;
@@ -47,7 +50,7 @@ const broker = app.getBroker();
 
 broker.createService({
 	transporter: config.transporter,
-	mixins: [ApiService],
+	mixins: [ApiService, SocketIOService],
 	name: 'status',
 	actions: {
 		status() {
@@ -85,6 +88,9 @@ broker.createService({
 				error: true,
 				message: `Server error: ${err.message}`,
 			}));
+		},
+		io: {
+			namespaces,
 		},
 	},
 });

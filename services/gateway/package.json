@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "ioredis": "^4.16.3",
-    "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-0.1.2.tgz"
+    "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-0.1.2.tgz",
+    "moleculer-io": "^1.1.3"
   }
 }
