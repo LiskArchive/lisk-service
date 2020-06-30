@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { mapper, Utils } = require('lisk-service-framework');
+const {
+	mapper,
+	Utils,
+	Constants: { errorCodes: { BAD_REQUEST } },
+} = require('lisk-service-framework');
+
 const path = require('path');
 
 const { validate } = require('./paramValidator');
@@ -136,17 +141,17 @@ const registerApi = (apiName, config) => {
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
 			if (paramReport.missing.length > 0) {
-				sendResponse(400, `Missing parameter(s): ${paramReport.missing.join(', ')}`);
+				sendResponse(BAD_REQUEST, `Missing parameter(s): ${paramReport.missing.join(', ')}`);
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
-				sendResponse(400, `Unknown input parameter(s): ${unknownList.join(', ')}`);
+				sendResponse(BAD_REQUEST, `Unknown input parameter(s): ${unknownList.join(', ')}`);
 			}
 
 			const invalidList = Object.keys(paramReport.invalid);
 			if (invalidList && invalidList.length > 0) {
-				sendResponse(400, `Invalid input parameter values: ${invalidList.join(', ')}`);
+				sendResponse(BAD_REQUEST, `Invalid input parameter values: ${invalidList.join(', ')}`);
 			}
 
 			const params = transformRequest(routeAlias, req.$params);
