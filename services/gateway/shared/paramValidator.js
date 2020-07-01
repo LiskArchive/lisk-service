@@ -73,7 +73,7 @@ const validateInputParams = (inputParams = {}, specs) => {
 	paramReport.missing = checkMissingParams(specParams, inputParams);
 
 	if (paramReport.missing.length > 0) return paramReport;
-	if (Object.keys(paramReport.unknown) > 0) return paramReport;
+	if (Object.keys(paramReport.unknown).length > 0) return paramReport;
 
 	const isAllowedValue = (param, value) => (
 		!param.enum || value === undefined
