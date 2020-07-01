@@ -17,10 +17,14 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const prettyjson = require('prettyjson');
+// const prettyjson = require('prettyjson');
 const jsome = require('jsome');
 
 jsome.params.colored = true;
+
+/* Usage:
+ * node socket_io_rpc_client.js http://localhost:3011/rpc-test get.hello.param '{"path_name1": "user1"}'
+ */
 
 if (process.argv.length < 4) {
 	console.log('Usage: client.js <endpoint> <call> [json]');
@@ -54,8 +58,8 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 
 const request = (path, params) => {
 	socket.emit(path, params, answer => {
-		console.log(prettyjson.render(answer));
-		// jsome(answer);
+		// console.log(prettyjson.render(answer));
+		jsome(answer);
 		process.exit(0);
 	});
 };
@@ -66,5 +70,4 @@ setTimeout(() => {
 }, TIMEOUT);
 
 // request('request', { method: 'get.hello', params: { name: 'michal' } });
-
 request('request', { method: cliProcedureName, params: cliParams });
