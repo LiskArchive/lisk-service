@@ -8,6 +8,10 @@ const { ServiceNotFoundError } = require("moleculer").Errors;
 const { BadRequestError } = require('./errors');
 const chalk = require('chalk');
 
+const {
+	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
+} = require('lisk-service-framework');
+
 module.exports = {
   name: 'io',
   settings: {
@@ -256,9 +260,9 @@ module.exports = {
       socket.client.user = user;
     },
     socketOnError(err, respond) {
-      const errDebug = _.pick(err, ["name", "message", "code", "type", "data", "stack"]);
+      const errDebug = _.pick(err, ["jsonrpc", "name", "message", "code", "type", "data", "stack"]);
       this.logger.debug('socketOnError:', errDebug);
-      const errObj = _.pick(err, ["name", "message", "code", "type", "data"]);
+      const errObj = _.pick(err, ["jsonrpc", "name", "message", "code", "type", "data"]);
       return respond(errObj);
     },
     socketJoinRooms(socket, rooms) {
@@ -347,6 +351,12 @@ function addErrorEnvelope(code, message, id = 1) {
   }
 }
 
+function translateHttpToRpcCode(code) {
+  if (code === 404) return METHOD_NOT_FOUND[0];
+  if (code === 400) return INVALID_REQUEST[0];
+  if (code === 500) return SERVER_ERROR[0];
+}
+
 
 function makeHandler(svc, handlerItem) {
   svc.logger.debug('makeHandler:', handlerItem);
@@ -367,7 +377,13 @@ function makeHandler(svc, handlerItem) {
       if (svc.settings.log4XXResponses || err && !_.inRange(err.code, 400, 500)) {
         svc.logger.error("   Request error!", err.name, ":", err.message, "\n", err.stack, "\nData:", err.data);
       }
-      if (_.isFunction(respond)) svc.socketOnError(addErrorEnvelope(err.message.code, err.message.message, 1), respond);
+      if (_.isFunction(respond)) {
+        if (typeof err.message === 'string') {
+          svc.socketOnError(addErrorEnvelope(translateHttpToRpcCode(err.code), err.message, 1), respond);
+        } else {
+          svc.socketOnError(addErrorEnvelope(err.message.code, err.message.message, 1), respond);
+        }
+      }
     }
   };
 }
