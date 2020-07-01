@@ -18,6 +18,7 @@ const {
 	Utils,
 } = require('lisk-service-framework');
 
+const { MoleculerClientError } = require('moleculer').Errors;
 const path = require('path');
 
 const { validate } = require('./paramValidator');
@@ -129,21 +130,20 @@ const registerApi = (apiName, config) => {
 				},
 
 				onBeforeCall: async (ctx, socket, request) => {
-					const formatResponse = (code, message) => ({ error: true, code, message });
 					const paramReport = validate(request.params, methodPaths[request.method]);
 
 					if (paramReport.missing.length > 0) {
-						throw new Error(formatResponse(BAD_REQUEST, `Missing parameter(s): ${paramReport.missing.join(', ')}`));
+						throw new MoleculerClientError({ code: BAD_REQUEST, message: `Missing parameter(s): ${paramReport.missing.join(', ')}` });
 					}
 
 					const unknownList = Object.keys(paramReport.unknown);
 					if (unknownList.length > 0) {
-						throw new Error(formatResponse(BAD_REQUEST, `Unknown input parameter(s): ${unknownList.join(', ')}`));
+						throw new MoleculerClientError({ code: BAD_REQUEST, message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
 					}
 
 					const invalidList = Object.keys(paramReport.invalid);
 					if (invalidList && invalidList.length > 0) {
-						throw new Error(formatResponse(BAD_REQUEST, `Invalid input parameter values: ${invalidList.join(', ')}`));
+						throw new MoleculerClientError({ code: BAD_REQUEST, message: `Invalid input parameter values: ${invalidList.join(', ')}` });
 					}
 
 					request.params = transformRequest(request.method, request.params);

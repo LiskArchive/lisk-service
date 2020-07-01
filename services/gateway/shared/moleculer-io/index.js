@@ -367,8 +367,7 @@ function makeHandler(svc, handlerItem) {
       if (svc.settings.log4XXResponses || err && !_.inRange(err.code, 400, 500)) {
         svc.logger.error("   Request error!", err.name, ":", err.message, "\n", err.stack, "\nData:", err.data);
       }
-      // if (_.isFunction(respond)) svc.socketOnError(err, addErrorEnvelope(err.code, err.message, 1));
-      if (_.isFunction(respond)) svc.socketOnError(err, respond);
+      if (_.isFunction(respond)) svc.socketOnError(addErrorEnvelope(err.message.code, err.message.message, 1), respond);
     }
   };
 }
