@@ -17,6 +17,7 @@
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/async_hello',
+	rpcMethod: 'get.hello.async',
 	envelope: {},
 	source: {
 		type: 'moleculer',
