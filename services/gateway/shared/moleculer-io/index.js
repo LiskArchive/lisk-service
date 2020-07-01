@@ -355,6 +355,7 @@ function translateHttpToRpcCode(code) {
   if (code === 404) return METHOD_NOT_FOUND[0];
   if (code === 400) return INVALID_REQUEST[0];
   if (code === 500) return SERVER_ERROR[0];
+  return SERVER_ERROR[0];
 }
 
 
@@ -379,6 +380,9 @@ function makeHandler(svc, handlerItem) {
       }
       if (_.isFunction(respond)) {
         if (typeof err.message === 'string') {
+          if (!err.code || err.code === 500) {
+            svc.socketOnError(addErrorEnvelope(translateHttpToRpcCode(err.code), `Server error: ${err.message}`, 1), respond);  
+          }
           svc.socketOnError(addErrorEnvelope(translateHttpToRpcCode(err.code), err.message, 1), respond);
         } else {
           svc.socketOnError(addErrorEnvelope(err.message.code, err.message.message, 1), respond);
