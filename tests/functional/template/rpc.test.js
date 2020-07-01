@@ -14,15 +14,23 @@
  *
  */
 import config from '../config';
-import api from '../helpers/httpApi';
+import request from '../helpers/rpcApi';
+import { JSON_RPC } from '../helpers/errorCodes';
 
-const baseUrlRoot = config.SERVICE_ENDPOINT_HTTP;
-const baseUrl = `${baseUrlRoot}/api/test`;
+const baseUrlRoot = config.SERVICE_ENDPOINT_RPC;
+const baseUrl = `${baseUrlRoot}/rpc-test`;
+
+const {
+	INVALID_REQUEST,
+	METHOD_NOT_FOUND,
+	SERVER_ERROR,
+} = JSON_RPC;
 
 describe('Gateway', () => {
-	it('provides basic HTTP route', async () => {
-		const response = await api.get(`${baseUrl}/hello`);
-		expect(response).toEqual({
+	it('provides basic RPC route', async () => {
+		const response = await request(baseUrl, 'get.hello', {});
+
+		expect(response.result).toEqual({
 			data: [
 				{
 					message: 'Hello World!',
@@ -35,9 +43,9 @@ describe('Gateway', () => {
 		});
 	});
 
-	it('provides HTTP route with parameters', async () => {
-		const response = await api.get(`${baseUrl}/hello/user1`);
-		expect(response).toEqual({
+	it('provides RPC route with parameters', async () => {
+		const response = await request(baseUrl, 'get.hello.param', { path_name: 'user1' });
+		expect(response.result).toEqual({
 			data: [
 				{
 					message: 'Hello World!',
@@ -52,46 +60,41 @@ describe('Gateway', () => {
 	});
 
 	it('client error returns 400 on wrong param name', async () => {
-		const expectedStatus = 400;
-		const response = await api.get(`${baseUrl}/hello/user1?wrong_param_name=some_value`, expectedStatus);
+		const response = await request(baseUrl, 'get.hello', { wrong_param_name: 'user1' });
 		expect(response).toEqual({
-			error: true,
+			code: INVALID_REQUEST[0],
 			message: 'Unknown input parameter(s): wrong_param_name',
 		});
 	});
 
 	it('client error returns 400 when no param value is defined', async () => {
-		const expectedStatus = 400;
-		const response = await api.get(`${baseUrl}/hello/user1?wrong_param_name=`, expectedStatus);
+		const response = await request(baseUrl, 'get.hello', { wrong_param_name: null });
 		expect(response).toEqual({
-			error: true,
+			code: INVALID_REQUEST[0],
 			message: 'Unknown input parameter(s): wrong_param_name',
 		});
 	});
 
 	xit('client error returns 400 when param value is too short', async () => {
-		const expectedStatus = 400;
-		const response = await api.get(`${baseUrl}/hello/ab`, expectedStatus);
+		const response = await request(baseUrl, 'get.hello', { path_name: 'ab' });
 		expect(response).toEqual({
-			error: true,
+			code: INVALID_REQUEST[0],
 			message: 'Invalid input parameter(s): wrong_param_name', // TODO: update
 		});
 	});
 
 	it('server error returns 500', async () => {
-		const expectedStatus = 500;
-		const response = await api.get(`${baseUrl}/server_error`, expectedStatus);
+		const response = await request(baseUrl, 'get.server_error', {});
 		expect(response).toEqual({
-			error: true,
+			code: SERVER_ERROR[0],
 			message: 'Server error: Called server.error',
 		});
 	});
 
 	it('handles 404 error properly', async () => {
-		const expectedStatus = 404;
-		const response = await api.get(`${baseUrl}/wrong_path`, expectedStatus);
+		const response = await request(baseUrl, 'get.wrong_path', {});
 		expect(response).toEqual({
-			error: true,
+			code: METHOD_NOT_FOUND[0],
 			message: 'Server error: Not found',
 		});
 	});
