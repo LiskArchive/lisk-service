@@ -141,7 +141,7 @@ const registerApi = (apiName, config) => {
 					}
 
 					const invalidList = Object.keys(paramReport.invalid);
-					if (invalidList && invalidList.length > 0) {
+					if (invalidList.length > 0) {
 						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Invalid input parameter values: ${invalidList.join(', ')}` });
 					}
 
