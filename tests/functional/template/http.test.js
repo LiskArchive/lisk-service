@@ -14,9 +14,9 @@
  *
  */
 import config from '../config';
-import api from '../helpers/api';
+import api from '../helpers/httpApi';
 
-const baseUrlRoot = config.SERVICE_ENDPOINT;
+const baseUrlRoot = config.SERVICE_ENDPOINT_HTTP;
 const baseUrl = `${baseUrlRoot}/api/test`;
 
 describe('Gateway', () => {

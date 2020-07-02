@@ -32,6 +32,7 @@ module.exports = {
 		...require('./constants/ErrorCodes'),
 	},
 	Libs: {
+		moleculer: require('moleculer'),
 		'moleculer-web': require('moleculer-web'),
 	},
 };

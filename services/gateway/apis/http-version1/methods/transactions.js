@@ -19,6 +19,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions',
+	rpcMethod: 'get.transactions',
 	params: {
 		id: { required: false, minLength: 1 },
 		type: { required: false, minLength: 1, min: 0, max: 12 },

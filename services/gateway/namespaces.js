@@ -13,19 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const registerApi = require('./shared/registerRpcApi');
+
+const defaultConfig = {
+	whitelist: [],
+	aliases: {},
+};
 
 module.exports = {
-	version: '2.0',
-	swaggerApiPath: '/client_error',
-		rpcMethod: 'get.client_error',
-	envelope: {},
-	source: {
-		type: 'moleculer',
-		method: 'template.client.error',
-		params: {},
-		definition: {
-			error: '=,string',
-			status: '=,number',
-		},
-	},
+	'/rpc-v1': registerApi('http-version1', { ...defaultConfig }),
+	'/rpc-test': registerApi('http-test', { ...defaultConfig }),
 };

@@ -17,6 +17,7 @@
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/server_error',
+	rpcMethod: 'get.server_error',
 	envelope: {},
 	source: {
 		type: 'moleculer',
