@@ -90,21 +90,21 @@ describe('GET /blocks', () => {
 
 	it('known block by account -> ok', async () => {
 		const response = await api.get(`${endpoint}?address=${delegate.address}`);
-		response.data.forEach((blockData) => {
+		response.data.forEach(blockData => {
 			expect(blockData.generatorAddress).toEqual(delegate.address);
 		});
 	});
 
 	it('known block by publickey -> ok', async () => {
 		const response = await api.get(`${endpoint}?address=${delegate.publicKey}`);
-		response.data.forEach((blockData) => {
+		response.data.forEach(blockData => {
 			expect(blockData.generatorAddress).toEqual(delegate.address);
 		});
 	});
 
 	it('known block by username -> ok', async () => {
 		const response = await api.get(`${endpoint}?address=${delegate.username}`);
-		response.data.forEach((blockData) => {
+		response.data.forEach(blockData => {
 			expect(blockData.generatorAddress).toEqual(delegate.address);
 		});
 	});
@@ -114,17 +114,13 @@ describe('GET /blocks', () => {
 		expect(response).toMapRequiredSchema(notFoundSchema);
 	});
 
-	it('too long block id -> 400', () =>
-		expect(api.get(`${endpoint}?id=fkfkfkkkffkfkfk10101010101010101010`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('too long block id -> 400', () => expect(api.get(`${endpoint}?id=fkfkfkkkffkfkfk10101010101010101010`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-	it('empty block id -> 400', () =>
-		expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('empty block id -> 400', () => expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-	it('non-existent block id -> 404', () =>
-		expect(api.get(`${endpoint}?id=12602944501676077162`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
+	it('non-existent block id -> 404', () => expect(api.get(`${endpoint}?id=12602944501676077162`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 
-	it('invalid query parameter -> 400', () =>
-		expect(api.get(`${endpoint}?block=12602944501676077162`, 400)).resolves.toMapRequiredSchema(wrongInputParamSchema));
+	it('invalid query parameter -> 400', () => expect(api.get(`${endpoint}?block=12602944501676077162`, 400)).resolves.toMapRequiredSchema(wrongInputParamSchema));
 
 
 	it('known height -> ok', async () => {
@@ -135,11 +131,9 @@ describe('GET /blocks', () => {
 		});
 	});
 
-	it('non-existent height -> 404', () =>
-		expect(api.get(`${endpoint}?height=2000000000`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
+	it('non-existent height -> 404', () => expect(api.get(`${endpoint}?height=2000000000`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 
-	it('empty height -> 400', () =>
-		expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('empty height -> 400', () => expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
 	it('limit=100 -> ok', async () => {
 		const response = await api.get(`${endpoint}?limit=100`);
@@ -147,11 +141,9 @@ describe('GET /blocks', () => {
 		expect(response.data[0]).toMapRequiredSchema(blockSchema);
 	});
 
-	it('0 -> 400', () =>
-		expect(api.get(`${endpoint}?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('0 -> 400', () => expect(api.get(`${endpoint}?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-	it('empty limit -> 400', () =>
-		expect(api.get(`${endpoint}?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('empty limit -> 400', () => expect(api.get(`${endpoint}?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 });
 
 describe('GET /blocks/last', () => {
@@ -161,11 +153,9 @@ describe('GET /blocks/last', () => {
 		expect(response.data[0]).toMapRequiredSchema(blockSchema);
 	});
 
-	it('0 -> 400', () =>
-		expect(api.get(`${endpoint}/last?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('0 -> 400', () => expect(api.get(`${endpoint}/last?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-	it('empty limit -> 400', () =>
-		expect(api.get(`${endpoint}/last?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('empty limit -> 400', () => expect(api.get(`${endpoint}/last?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 });
 
 describe('GET /blocks/best', () => {
@@ -174,11 +164,9 @@ describe('GET /blocks/best', () => {
 		expect(response.data).toBeArrayOfSize(100);
 	});
 
-	it('0 -> 400', () =>
-		expect(api.get(`${endpoint}/best?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('0 -> 400', () => expect(api.get(`${endpoint}/best?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-	it('empty limit -> 400', () =>
-		expect(api.get(`${endpoint}/best?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('empty limit -> 400', () => expect(api.get(`${endpoint}/best?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 });
 
 describe('GET /block/{blockId}', () => {
@@ -209,8 +197,7 @@ describe('GET /block/{blockId}', () => {
 		});
 	});
 
-	it('invalid block id -> 404', () =>
-		expect(api.get(`${blockEndpoint}/123234`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
+	it('invalid block id -> 404', () => expect(api.get(`${blockEndpoint}/123234`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 });
 
 
@@ -309,15 +296,13 @@ describe('GET /block/{blockId}/transactions', () => {
 		const response = await api.get(`${endpoint}?from=${from}&to=${to}`);
 		expect(response.data).toBeArrayOfSize(totalNumberOfBlocks);
 		expect(response.meta.count).toEqual(totalNumberOfBlocks);
-		response.data.forEach((blockItem) => {
+		response.data.forEach(blockItem => {
 			expect(blockItem.timestamp).toBeGreaterThanOrEqual(parseInt(from, 10));
 			expect(blockItem.timestamp).toBeLessThanOrEqual(parseInt(to, 10));
 		});
 	});
 
-	it('invalid block id -> 404', () =>
-		expect(api.get(`${blockEndpoint}/123234/transactions`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
+	it('invalid block id -> 404', () => expect(api.get(`${blockEndpoint}/123234/transactions`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 
-	it('block with no transactions -> 404', () =>
-		expect(api.get(`${blockEndpoint}/12888533172885756103/transactions`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
+	it('block with no transactions -> 404', () => expect(api.get(`${blockEndpoint}/12888533172885756103/transactions`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 });

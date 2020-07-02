@@ -14,14 +14,17 @@
  *
  */
 
-const envelope = require('../../../sources/mappings/stdEnvelope');
-
 module.exports = {
-	version: '1.0',
-	endpoint: 'bitcoin',
-	swaggerApiPath: '/btc/transaction/',
-	sourceApiPath: '/transaction/',
-	params: {},
-	definition: {},
-	envelope,
+	version: '2.0',
+	swaggerApiPath: '/client_error',
+	envelope: {},
+	source: {
+		type: 'moleculer',
+		method: 'template.client.error',
+		params: {},
+		definition: {
+			error: '=,string',
+			status: '=,number',
+		},
+	},
 };

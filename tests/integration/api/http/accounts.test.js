@@ -147,8 +147,7 @@ describe('GET /accounts', () => {
 		expect(response).resolves.toMapRequiredSchema(notFoundSchema);
 	});
 
-	it('empty address -> 400', () =>
-		expect(api.get(`${endpoint}?address=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+	it('empty address -> 400', () => expect(api.get(`${endpoint}?address=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
 	it('known address by publickey', async () => {
 		const url = `${endpoint}?publickey=${accounts.genesis.publicKey}`;
@@ -351,7 +350,7 @@ describe('GET /account/{address}/transactions', () => {
 		const to = 1497779835;
 		const response = await api.get(`${accountEndpoint}/${address}/transactions?from=${from}&to=${to}&limit=100`);
 
-		response.data.forEach((transaction) => {
+		response.data.forEach(transaction => {
 			expect(transaction.timestamp).toBeGreaterThanOrEqual(from);
 			expect(transaction.timestamp).toBeLessThanOrEqual(to);
 		});

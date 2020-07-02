@@ -2,6 +2,7 @@ const http = require('http');
 const httpProxy = require('http-proxy');
 const mockserver = require('mockserver');
 const log4js = require('log4js');
+const socketIo = require('socket.io');
 const blocks = require('./lisk_ws_mocks/blocksChange');
 const transactions = require('./lisk_ws_mocks/transactionsChange');
 const rounds = require('./lisk_ws_mocks/roundsChange');
@@ -25,7 +26,7 @@ const server = http.createServer((req, res) => {
 	}
 });
 
-const io = require('socket.io')(server, {
+const io = socketIo(server, {
 	transports: ['websocket'],
 });
 

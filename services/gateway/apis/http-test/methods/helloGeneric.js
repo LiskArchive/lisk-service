@@ -14,17 +14,29 @@
  *
  */
 
-const accountsSource = require('../../../sources/accounts');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/account/{account_id}',
+	swaggerApiPath: '/hello',
+	envelope: {
+		data: [],
+		meta: {},
+		links: {},
+	},
 	source: {
-		...accountsSource,
-		params: {
-			anyId: 'account_id',
+		type: 'moleculer',
+		method: 'template.generic.hello',
+		params: {},
+		definition: {
+			data: ['data', {
+				message: '=',
+				name: '=',
+			}],
+			meta: {
+				count: 'meta.count,number',
+				offset: '=,number',
+				total: 'meta.total,number',
+			},
+			links: {},
 		},
 	},
-	envelope,
 };

@@ -82,7 +82,7 @@ describe('Method get.delegates', () => {
 		const { result } = await getDelegates({ search: 'genesis' });
 		expect(result.data[0]).toMap(delegateSchema);
 		expect(result.data.length).toEqual(10);
-		result.data.forEach((delegate) => {
+		result.data.forEach(delegate => {
 			expect(delegate.username).toInclude('genesis');
 		});
 	});

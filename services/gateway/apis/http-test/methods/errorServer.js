@@ -13,19 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegatesSource = require('../../../sources/delegates');
-const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/delegates/standby',
+	swaggerApiPath: '/server_error',
+	envelope: {},
 	source: {
-		...delegatesSource,
-		method: 'core.delegates.standby',
-		params: {
-			offset: '=',
-			limit: '=',
+		type: 'moleculer',
+		method: 'template.server.error',
+		params: {},
+		definition: {
+			error: '=,string',
+			status: '=,number',
 		},
 	},
-	envelope,
 };

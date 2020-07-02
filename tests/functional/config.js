@@ -13,19 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegatesSource = require('../../../sources/delegates');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-
 module.exports = {
-	version: '2.0',
-	swaggerApiPath: '/delegates/active',
-	source: {
-		...delegatesSource,
-		method: 'core.delegates.active',
-		params: {
-			offset: '=',
-			limit: '=',
-		},
-	},
-	envelope,
+	SERVICE_ENDPOINT: process.env.SERVICE_ENDPOINT || 'http://localhost:3011',
 };

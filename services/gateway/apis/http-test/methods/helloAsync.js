@@ -13,17 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peersSource = require('../../../sources/peers');
-const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/peer/{ip}',
+	swaggerApiPath: '/async_hello',
+	envelope: {},
 	source: {
-		...peersSource,
-		params: {
-			ip: '=',
+		type: 'moleculer',
+		method: 'template.asynchronous.hello',
+		params: {},
+		definition: {
+			data: '=',
+			meta: '=',
 		},
 	},
-	envelope,
 };

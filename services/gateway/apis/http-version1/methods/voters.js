@@ -13,18 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const delegatesSource = require('../../../sources/delegates');
+const votersSource = require('../../../sources/voters');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/delegate/{account_id}',
-	source: {
-		...delegatesSource,
-		params: {
-			anyId: 'account_id',
-		},
-	},
+	method: 'get.voters',
 	envelope,
+	params: {
+		address: { required: false, type: 'string', minLength: 1, maxLength: 21 },
+		username: { required: false, type: 'string', minLength: 3, maxLength: 20 },
+		publickey: { required: false, type: 'string', minLength: 64, maxLength: 64 },
+		secpubkey: { required: false, type: 'string', minLength: 64, maxLength: 64 },
+		limit: { required: false, min: 1, max: 100, type: 'number' },
+		offset: { required: false, min: 0, type: 'number' },
+	},
+	source: votersSource,
 };

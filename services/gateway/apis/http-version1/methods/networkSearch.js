@@ -20,6 +20,9 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/search',
+	params: {
+		q: { required: true },
+	},
 	source: networkSearchSource,
 	envelope,
 };

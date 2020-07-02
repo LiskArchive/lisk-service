@@ -17,9 +17,11 @@ const {
 	Microservice,
 	Logger,
 	LoggerConfig,
+	Libs,
 } = require('lisk-service-framework');
 
-const ApiService = require('moleculer-web');
+const ApiService = Libs['moleculer-web'];
+
 const config = require('./config');
 const routes = require('./routes');
 const packageJson = require('./package.json');
@@ -67,7 +69,7 @@ broker.createService({
 
 		logRequestParams: 'info',
 		logResponseData: 'debug',
-		httpServerTimeout: 30,
+		httpServerTimeout: 30 * 1000, // ms
 		optimizeOrder: true,
 		routes,
 
@@ -77,9 +79,12 @@ broker.createService({
 		},
 
 		onError(req, res, err) {
-			res.setHeader('Content-Type', 'text/plain');
+			res.setHeader('Content-Type', 'application/json');
 			res.writeHead(err.code || 500);
-			res.end(`Server error: ${err.message}`);
+			res.end(JSON.stringify({
+				error: true,
+				message: `Server error: ${err.message}`,
+			}));
 		},
 	},
 });

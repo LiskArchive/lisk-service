@@ -123,4 +123,3 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 		});
 	});
 });
-

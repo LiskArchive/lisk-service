@@ -51,11 +51,9 @@ const getTransactions = async params => {
 	};
 
 	return {
-		data: {
-			data: result.data,
-			meta,
-			links: {},
-		},
+		data: result.data,
+		meta,
+		links: {},
 	};
 };
 

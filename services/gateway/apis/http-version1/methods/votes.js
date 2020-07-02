@@ -13,24 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsSource = require('../../../sources/transactions');
+const votesSource = require('../../../sources/votes');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/block/{block_id}/transactions',
-	source: {
-		...transactionsSource,
-		params: {
-			blockId: 'block_id',
-			offset: '=',
-			limit: '=',
-			minAmount: 'min',
-			maxAmount: 'max',
-			fromTimestamp: 'from',
-			toTimestamp: 'to',
-			sort: '=',
-		},
-	},
+	method: 'get.votes',
 	envelope,
+	params: {
+		address: { required: false, type: 'string', minLength: 1, maxLength: 21 },
+		username: { required: false, type: 'string', minLength: 3, maxLength: 20 },
+		publickey: { required: false, type: 'string', minLength: 64, maxLength: 64 },
+		secpubkey: { required: false, type: 'string', minLength: 64, maxLength: 64 },
+		limit: { required: false, min: 1, max: 100, type: 'number' },
+		offset: { required: false, min: 0, type: 'number' },
+	},
+	source: votesSource,
 };

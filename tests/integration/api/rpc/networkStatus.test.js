@@ -24,4 +24,3 @@ describe('get.network.status', () => {
 		expect(response).toMap(networkStatusSchema);
 	});
 });
-

@@ -13,19 +13,35 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const accountsSource = require('../../../sources/accounts');
-const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/accounts/top',
+	swaggerApiPath: '/hello/{path_name}',
+	params: {
+		path_name: { required: true, type: 'string', minLength: 3 },
+	},
+	envelope: {
+		data: [],
+		meta: {},
+		links: {},
+	},
 	source: {
-		...accountsSource,
-		method: 'core.accounts.top',
+		type: 'moleculer',
+		method: 'template.parametrized.hello',
 		params: {
-			limit: '=',
-			offset: '=',
+			name: 'path_name',
+		},
+		definition: {
+			data: ['data', {
+				message: '=',
+				name: '=',
+			}],
+			meta: {
+				count: 'meta.count,number',
+				offset: '=,number',
+				total: 'meta.total,number',
+			},
+			links: {},
 		},
 	},
-	envelope,
 };

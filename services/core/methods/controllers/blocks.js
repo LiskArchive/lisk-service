@@ -87,11 +87,9 @@ const getBlocks = async params => {
 	}
 
 	return {
-		data: {
-			data: response.data,
-			meta: response.meta,
-			link: {},
-		},
+		data: response.data,
+		meta: response.meta,
+		link: {},
 	};
 };
 
@@ -102,11 +100,9 @@ const getBestBlocks = async params => {
 	const blocks = response.data;
 
 	return {
-		data: {
-			data: blocks,
-			meta: response.meta,
-			link: response.link,
-		},
+		data: blocks,
+		meta: response.meta,
+		link: response.link,
 	};
 };
 
@@ -117,11 +113,9 @@ const getLastBlocks = async params => {
 	const blocks = response.data;
 
 	return {
-		data: {
-			data: blocks,
-			meta: response.meta,
-			link: {},
-		},
+		data: blocks,
+		meta: response.meta,
+		link: {},
 	};
 };
 

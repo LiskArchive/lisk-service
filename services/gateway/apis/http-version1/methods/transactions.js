@@ -19,6 +19,22 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions',
+	params: {
+		id: { required: false, minLength: 1 },
+		type: { required: false, minLength: 1, min: 0, max: 12 },
+		address: { required: false, minLength: 1 },
+		sender: { required: false, minLength: 1 },
+		recipient: { required: false, minLength: 1 },
+		min: { required: false },
+		max: { required: false },
+		from: { required: false },
+		to: { required: false },
+		block: { required: false, minLength: 1 },
+		height: { required: false, minLength: 1 },
+		limit: { required: false },
+		offset: { required: false },
+		sort: { required: false }, // TODO: Convert to enum
+	},
 	source: transactionsSource,
 	envelope,
 };

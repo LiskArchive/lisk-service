@@ -36,4 +36,3 @@ const transactionSchema = Joi.object({
 }).required();
 
 module.exports = transactionSchema;
-

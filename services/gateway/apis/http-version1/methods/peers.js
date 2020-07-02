@@ -20,6 +20,19 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/peers',
+	params: {
+		ip: { required: false, type: 'string' },
+		httpPort: { required: false, type: 'number' },
+		wsPort: { required: false, type: 'number' },
+		os: { required: false, type: 'string' },
+		version: { required: false, minLength: 5, type: 'string' },
+		state: { required: false, type: 'number', enum: [0, 1, 2] },
+		height: { required: false, type: 'number' },
+		broadhash: { required: false, type: 'string' },
+		limit: { required: false, min: 1, max: 100, type: 'number' },
+		offset: { required: false, min: 0, type: 'number' },
+		sort: { required: false, enum: ['height:asc', 'height:desc', 'version:asc', 'version:desc'] },
+	},
 	source: peersSource,
 	envelope,
 };

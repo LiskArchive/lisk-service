@@ -46,7 +46,7 @@ describe(`Endpoint ${newsfeedEndpoint}`, () => {
 		const response = await api.getJsonRpcV1(newsfeedEndpoint, { source });
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toHaveLength(10);
-		response.data.forEach((item) => {
+		response.data.forEach(item => {
 			expect(item).toMap(newsfeedItemSchema, { source });
 		});
 	});
@@ -56,7 +56,7 @@ describe(`Endpoint ${newsfeedEndpoint}`, () => {
 		const response = await api.getJsonRpcV1(newsfeedEndpoint, { source });
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toHaveLength(10);
-		response.data.forEach((item) => {
+		response.data.forEach(item => {
 			expect(item).toMap(newsfeedItemSchema, { source });
 		});
 	});

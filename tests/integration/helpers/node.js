@@ -21,7 +21,7 @@ node.async = require('async');
 node.popsicle = require('popsicle');
 node.expect = require('chai').expect;
 node.chai = require('chai');
-node.supertest = require('supertest');
+// node.supertest = require('supertest');
 
 node.chai.config.includeStack = true;
 
