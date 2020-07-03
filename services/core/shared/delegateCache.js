@@ -21,7 +21,7 @@ let delegates = [];
 
 const loadAllDelegates = async (core, delegateList = []) => {
 	const limit = 100;
-	const response = await core.get('/delegates', { limit, offset: delegateList.length /* , sort: 'rank:asc' */ });
+	const response = await core.get('/delegates', { limit, offset: delegateList.length });
 	delegateList = [...delegateList, ...response.data];
 	if (delegateList.length >= delegates.length) {
 	// this condition should speed up initial load but not break things on rounds/change
@@ -30,14 +30,13 @@ const loadAllDelegates = async (core, delegateList = []) => {
 	if (response.data.length === limit) {
 		loadAllDelegates(core, delegateList);
 	} else {
-		logger.info(`Initialized  with ${delegates.length} delegates`);
+		logger.info(`Initialized with ${delegates.length} delegates`);
 	}
 };
 
-const init = core => {
+const reload = core => {
 	loadAllDelegates(core);
 };
-
 
 const getDelegateRankByUsername = username => (
 	delegates.findIndex(delegate => delegate.username === username) + 1
@@ -55,7 +54,7 @@ const getTotalNumberOfDelegates = (params = {}) => {
 };
 
 module.exports = {
-	init,
+	reload,
 	getDelegateRankByUsername,
 	getTotalNumberOfDelegates,
 };
