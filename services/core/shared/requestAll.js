@@ -14,15 +14,14 @@
  *
  */
 
-const { HTTP, Utils, Logger } = require('lisk-service-framework');
-
 const requestAll = async (fn, params, limit) => {
 	const defaultMaxAmount = limit || 10000;
 	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn({ ...params,
-limit: oneRequestLimit,
-		offset: 0 });
-	const { data } = firstRequest;
+	const firstRequest = await fn(Object.assign({}, params, {
+		limit: oneRequestLimit,
+		offset: 0,
+	}));
+	const data = firstRequest.data;
 	const maxAmount = firstRequest.meta.count > defaultMaxAmount
 		? defaultMaxAmount
 		: firstRequest.meta.count;
@@ -32,13 +31,12 @@ limit: oneRequestLimit,
 		pages.shift();
 
 		const collection = await pages.reduce((promise, page) => promise.then(() => fn(
-			{ ...params,
-limit: oneRequestLimit,
-				offset: oneRequestLimit * page })).then(result => {
-			result.data.forEach(item => { data.push(item); });
+			Object.assign({}, params, {
+				limit: oneRequestLimit,
+				offset: oneRequestLimit * page,
+			}))).then((result) => {
+			result.data.forEach((item) => { data.push(item); });
 			return data;
-		}).catch(err => {
-			logger.warn(`Failed to fetch data ${err}`);
 		}), Promise.resolve());
 		return collection;
 	}
