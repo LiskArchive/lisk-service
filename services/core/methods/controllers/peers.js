@@ -13,53 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Utils, Logger } = require('lisk-service-framework');
+const CoreService = require('../../services/core.js');
+const GeoService = require('../../services/geolocation.js');
+const ObjectUtilService = require('../../services/object.js');
+const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
+const peerCache = require('../../services/peerCache.js');
 
-const { StatusCodes: { NOT_FOUND } } = HTTP;
-const ObjectUtilService = Utils.Data;
+const isEmptyArray = ObjectUtilService.isEmptyArray;
+const isEmptyObject = ObjectUtilService.isEmptyObject;
 
-const CoreService = require('../../shared/core.js');
-const GeoService = require('../../shared/geolocation.js');
-
-const { peerStates } = CoreService;
-const { isEmptyArray } = ObjectUtilService;
-const { isEmptyObject } = ObjectUtilService;
-
-const logger = Logger();
-
-/* TODO: Move request all to HTTP library */
-const requestAll = async (fn, params, limit) => {
-	const defaultMaxAmount = limit || 10000;
-	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn({ ...params,
-limit: oneRequestLimit,
-		offset: 0 });
-	const { data } = firstRequest;
-	const maxAmount = firstRequest.meta.count > defaultMaxAmount
-		? defaultMaxAmount
-		: firstRequest.meta.count;
-
-	if (maxAmount > oneRequestLimit) {
-		const pages = [...Array(Math.ceil(maxAmount / oneRequestLimit)).keys()];
-		pages.shift();
-
-		const collection = await pages.reduce((promise, page) => promise.then(() => fn(
-			{ ...params,
-limit: oneRequestLimit,
-				offset: oneRequestLimit * page })).then(result => {
-			result.data.forEach(item => { data.push(item); });
-			return data;
-		}).catch(err => {
-			logger.warn(`Failed to fetch data ${err}`);
-		}), Promise.resolve());
-		return collection;
-	}
-	return data;
-};
-
-// const requestAll = async (fn, params, limit) => (await fn(params)).data;
-
-const addLocation = async ipaddress => {
+const addLocation = async (ipaddress) => {
 	try {
 		const result = await GeoService.requestData(ipaddress);
 		return result;
@@ -68,15 +31,15 @@ const addLocation = async ipaddress => {
 	}
 };
 
-const getPeers = async params => {
+const getPeers = async (params) => {
 	const res = await CoreService.getPeers(params);
-	const { data } = res;
+	const data = res.data;
 
 	if (isEmptyObject(res) || isEmptyArray(data)) {
 		return { status: NOT_FOUND, data: { error: 'Not found' } };
 	}
 
-	const dataWithLocation = await Promise.all(data.map(async elem => {
+	const dataWithLocation = await Promise.all(data.map(async (elem) => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
@@ -89,40 +52,18 @@ const getPeers = async params => {
 	};
 
 	return {
-		data: dataWithLocation,
-		meta,
-		links: {},
+		data: {
+			data: dataWithLocation,
+			meta,
+			links: {},
+		},
 	};
 };
 
 const getConnectedPeers = async () => {
-	const peers = await requestAll(CoreService.getPeers, { state: peerStates.CONNECTED });
+	const peers = await peerCache.get('connected');
 
-	// TODO: Fix geolocation
-	// const dataWithLocation = await Promise.all(peers.map(async (elem) => {
-	// 	elem.location = await addLocation(elem.ip);
-	// 	return elem;
-	// })).catch((err) => logger.warn(err));
-
-	const dataWithLocation = () => peers;
-
-	const meta = {
-		count: peers.length,
-		offset: 0,
-		total: peers.length,
-	};
-
-	return {
-		data: dataWithLocation,
-		meta,
-		links: {},
-	};
-};
-
-const getDisconnectedPeers = async () => {
-	const peers = await requestAll(CoreService.getPeers, { state: peerStates.DISCONNECTED });
-
-	const dataWithLocation = await Promise.all(peers.map(async elem => {
+	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
@@ -134,23 +75,48 @@ const getDisconnectedPeers = async () => {
 	};
 
 	return {
-		data: dataWithLocation,
-		meta,
-		links: {},
+		data: {
+			data: dataWithLocation,
+			meta,
+			links: {},
+		},
 	};
 };
 
-const getPeersStatistics = async params => {
+const getDisconnectedPeers = async () => {
+	const peers = await peerCache.get('disconnected');
+
+	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
+		elem.location = await addLocation(elem.ip);
+		return elem;
+	}));
+
+	const meta = {
+		count: peers.length,
+		offset: 0,
+		total: peers.length,
+	};
+
+	return {
+		data: {
+			data: dataWithLocation,
+			meta,
+			links: {},
+		},
+	};
+};
+
+const getPeersStatistics = async () => {
 	const basicStats = {};
 	const heightStats = {};
 	const coreVerStats = {};
 	const osStats = {};
 
-	const peers = await CoreService.getPeers(params);
-	const connected = await requestAll(CoreService.getPeers, { state: peerStates.CONNECTED });
-	const disconnected = await requestAll(CoreService.getPeers, { state: peerStates.DISCONNECTED });
+	const peers = await peerCache.get();
+	const connected = await peerCache.get('connected');
+	const disconnected = await peerCache.get('disconnected');
 
-	basicStats.totalPeers = peers.meta.count;
+	basicStats.totalPeers = peers.length;
 	basicStats.connectedPeers = connected.length;
 	basicStats.disconnectedPeers = disconnected.length;
 
@@ -161,10 +127,10 @@ const getPeersStatistics = async params => {
 	coreVerArr.forEach(elem => coreVerStats[elem] = (coreVerStats[elem] || 0) + 1);
 
 	const osArr = connected.map(elem => elem.os);
-	const mappedOs = osArr.map(elem => {
+	const mappedOs = osArr.map((elem) => {
 		if (elem.match(/^linux(.*)/)) {
 			const splitOsString = elem.split('.');
-			elem = `${splitOsString[0]}.${splitOsString[1]}`;
+			elem = `${splitOsString[0]}.${splitOsString[1].split('-')[0]}`;
 		}
 		return elem;
 	});
@@ -172,13 +138,15 @@ const getPeersStatistics = async params => {
 
 	return {
 		data: {
-			basic: basicStats,
-			height: heightStats,
-			coreVer: coreVerStats,
-			os: osStats,
+			data: {
+				basic: basicStats,
+				height: heightStats,
+				coreVer: coreVerStats,
+				os: osStats,
+			},
+			meta: {},
+			links: {},
 		},
-		meta: {},
-		links: {},
 	};
 };
 
