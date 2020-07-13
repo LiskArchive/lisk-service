@@ -22,7 +22,11 @@ module.exports = [
 	{
 		name: 'refresh.peers',
 		description: 'Keep the peer list up-to-date',
-		schedule: '*/5 * * * *', // Every 5 min
+		schedule: '* * * * *', // Every 1 min
+		// * TODO: Update when service-framework receives support for interval-based schedule
+		// schedule: 'interval-based',
+		// interval: 45 * 1000, // ms
+		updateOnInit: true,
 		controller: () => {
 			logger.info(`Scheduling peer list reload...`);
 			peerCache.reload(core);
