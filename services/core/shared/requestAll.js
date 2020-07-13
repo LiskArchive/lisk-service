@@ -15,7 +15,7 @@
  */
 
 const requestAll = async (fn, params, limit) => {
-	const defaultMaxAmount = limit || 10000;
+	const defaultMaxAmount = limit || 1000;
 	const oneRequestLimit = params.limit || 100;
 	const firstRequest = await fn(Object.assign({}, params, {
 		limit: oneRequestLimit,
