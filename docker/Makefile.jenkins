@@ -5,7 +5,8 @@ compose := docker-compose \
 	-f docker-compose.yml \
 	-f lisk_service/docker-compose.core.yml \
 	-f lisk_service/docker-compose.gateway.yml \
-	-f lisk_service/docker-compose.gateway-ports.yml
+	-f lisk_service/docker-compose.gateway-ports.yml \
+	-f lisk_service/docker-compose.template.yml
 
 up:
 	$(compose) up --detach
@@ -13,4 +14,4 @@ up:
 down:
 	$(compose) down --volumes --remove-orphans
 
-mrproper: down clean
+mrproper: down

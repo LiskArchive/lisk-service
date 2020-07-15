@@ -1,0 +1,27 @@
+version: "3"
+services:
+
+  template:
+    image: lisk/service_template
+
+    depends_on:
+      - redis_common
+    networks:
+      - services_network
+    restart: always
+    environment:
+      - SERVICE_BROKER=${SERVICE_BROKER}
+      - SERVICE_CORE_REDIS=${SERVICE_CORE_REDIS}
+      - SERVICE_CORE_POSTGRES=${SERVICE_CORE_POSTGRES}
+      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
+      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
+      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
+      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
+      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+
+  gateway:
+    depends_on:
+      - template
+
+networks:
+  core_network:
