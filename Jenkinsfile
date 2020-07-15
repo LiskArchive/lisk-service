@@ -18,6 +18,24 @@ def waitForHttp() {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	stages {
+		stage ('Check linting') {
+			steps {
+				nvm(getNodejsVersion()) {
+					sh 'npm ci && npm run eslint'
+				}
+			}
+		}
+
+		stage('Run framework unit tests') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./framework') {
+						sh "npm ci && npm run test:unit"
+					}
+				}
+			}
+		}
+
 		stage('Build docker images') {
 			steps {
 				nvm(getNodejsVersion()) {
@@ -37,27 +55,11 @@ pipeline {
 			}
 		}
 
-		stage ('Run ESLint') {
-			steps {
-				sh 'npm run eslint'
-			}
-		}
-
-		stage('Run framework unit tests') {
-			steps {
-				nvm(getNodejsVersion()) {
-					dir('./framework') {
-						sh "npm ci && npm run test:unit"
-					}
-				}
-			}
-		}
-
 		stage('Check API gateway status') {
 			steps {
 				// Wait for the API to spin up
 				// waitForHttp()
-				sleep(20)
+				sleep(1)
 			}
 		}
 
