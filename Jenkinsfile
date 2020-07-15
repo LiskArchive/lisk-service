@@ -76,8 +76,8 @@ pipeline {
 		// }
 	}
 	post {
-		failure {
-		}
+		// failure {
+		// }
 		cleanup {
 			dir('./docker') { sh "make -f ${Makefile} mrproper" }
 		}
