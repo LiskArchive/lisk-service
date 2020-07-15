@@ -66,7 +66,7 @@ pipeline {
 		stage('Run functional tests') {
 			steps {
 				nvm(getNodejsVersion()) {
-					dir('./test') { sh "npm ci && npm run test:functional" }
+					dir('./tests') { sh "npm ci && npm run test:functional" }
 				}
 			}
 		}
