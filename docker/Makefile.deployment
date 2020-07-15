@@ -1,0 +1,16 @@
+.PHONY: clean coldstart mrproper up
+all: up
+
+compose := docker-compose \
+	-f docker-compose.yml \
+	-f lisk_service/docker-compose.core.yml \
+	-f lisk_service/docker-compose.gateway.yml \
+	-f lisk_service/docker-compose.gateway-ports.yml
+
+up:
+	$(compose) up --detach
+
+down:
+	$(compose) down --volumes --remove-orphans
+
+mrproper: down
