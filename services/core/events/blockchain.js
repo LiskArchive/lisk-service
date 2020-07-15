@@ -17,6 +17,9 @@ const logger = require('lisk-service-framework').Logger();
 const { SocketClient } = require('lisk-service-framework');
 
 const core = require('../shared/core');
+const recentBlocksCache = require('../shared/recentBlocksCache');
+
+const config = require('../config');
 
 const coreSocket = SocketClient(config.endpoints.liskWs);
 logger.info(`Registering ${config.endpoints.liskWs}`);
@@ -30,7 +33,6 @@ module.exports = [
 		controller: callback => {
 			coreSocket.socket.on('blocks/change', async data => {
 				logger.info(`Scheduling block list reload...`);
-				recentBlocksCache.addNewBlock(emitData.data[0], data.transactions);
 	
 				logger.info(`Returning block list to the socket.io client...`);
 				const restData = await core.getBlocks({ blockId: data.id });
@@ -44,9 +46,13 @@ module.exports = [
 		controller: callback => {
 			coreSocket.socket.on('blocks/change', async data => {
 				const emitData = await core.getBlocks({ blockId: data.id });
+
 				if (emitData.data[0].numberOfTransactions > 0) {
 					const transactionData = await core.getTransactions({ blockId: data.id });
+					recentBlocksCache.addNewBlock(emitData.data[0], transactionData);
 					callback(transactionData);
+				} else {
+					recentBlocksCache.addNewBlock(emitData.data[0], []);
 				}
 			});
 		},
@@ -55,7 +61,7 @@ module.exports = [
 		name: 'round.change',
 		description: '',
 		controller: callback => {
-			coreSocket.socket.on(event, async data => {
+			coreSocket.socket.on('round/change', async data => {
 				delegateCache.init(core);
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);

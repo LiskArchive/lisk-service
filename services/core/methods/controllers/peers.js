@@ -13,11 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../services/core.js');
-const GeoService = require('../../services/geolocation.js');
-const ObjectUtilService = require('../../services/object.js');
-const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
-const peerCache = require('../../services/peerCache.js');
+const { HTTP, Utils } = require('lisk-service-framework');
+
+const { StatusCodes: { NOT_FOUND } } = HTTP;
+const ObjectUtilService = Utils.Data;
+
+const CoreService = require('../../shared/core.js');
+const GeoService = require('../../shared/geolocation.js');
+const peerCache = require('../../shared/peerCache.js');
 
 const isEmptyArray = ObjectUtilService.isEmptyArray;
 const isEmptyObject = ObjectUtilService.isEmptyObject;

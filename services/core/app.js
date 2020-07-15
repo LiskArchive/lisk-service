@@ -45,8 +45,6 @@ nodeStatus.waitForNode().then(() => {
 	app.addEvents(path.join(__dirname, 'events'));
 	app.addJobs(path.join(__dirname, 'jobs'));
 
-	socketInit(app.getBroker());
-
 	app.run().then(() => {
 		logger.info(`Service started ${packageJson.name}`);
 	}).catch(err => {

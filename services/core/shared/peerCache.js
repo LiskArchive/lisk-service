@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('./logger')();
+const { Logger } = require('lisk-service-framework');
 const CoreService = require('./core.js');
 const requestAll = require('./requestAll');
+
+const logger = Logger();
 
 const peerStates = CoreService.peerStates;
 
