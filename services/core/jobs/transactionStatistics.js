@@ -13,24 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const core = require('../shared/core');
-const config = require('../config');
+const logger = require('lisk-service-framework').Logger();
 
-const updaters = require('./updaters');
-
-const recentBlocksCache = require('../shared/recentBlocksCache');
-const delegateCache = require('../shared/delegateCache');
 const transactionStatistics = require('../shared/transactionStatistics');
 
-module.exports = () => {
-	recentBlocksCache.init(core);
-	delegateCache.init(core);
-
-	transactionStatistics.init(config.transactionStatistics.historyLengthDays);
-	setInterval(
-		transactionStatistics.updateTodayStats,
-		config.transactionStatistics.updateInterval * 1000);
-
-	// Run Redis-based updaters
-	updaters();
-};
+module.exports = [
+	{
+		name: 'refresh.delegates',
+		description: 'Keep the transaction statistics up-to-date',
+		schedule: '*/30 * * * *', // Every 30 min
+		updateOnInit: true,
+		init: () => {
+			logger.info(`Scheduling delegate list init...`);
+			transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+		},
+		controller: async () => {
+			logger.info(`Scheduling delegate list reload...`);
+			transactionStatistics.updateTodayStats();
+		},
+	},
+];

@@ -20,6 +20,8 @@ const core = require('../shared/core');
 const liskCoreAddress = config.endpoints.liskHttp;
 const logger = Logger();
 
+const CORE_DISCOVERY_INTERVAL = 1 * 1000; // ms
+
 // Report the Lisk Core status
 let logConnectStatus = true;
 
@@ -47,4 +49,21 @@ const checkStatus = () => new Promise((resolve, reject) => {
 	});
 });
 
-module.exports = checkStatus;
+const waitForNode = () => new Promise((resolve, reject) => {
+	setInterval(async () => {
+		try {
+			const result = await checkStatus();
+			resolve(result);
+		} catch (err) {
+			logger.debug('Could not connect with a Lisk Core node (yet)');
+		}
+	}, CORE_DISCOVERY_INTERVAL);
+});
+
+const getStatus = () => logConnectStatus;
+
+module.exports = {
+	waitForNode,
+	checkStatus,
+	getStatus
+};

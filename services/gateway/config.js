@@ -20,7 +20,7 @@ const config = {
 /**
  * Gateway socket configuration
  */
-config.port = process.env.PORT || 3011;
+config.port = process.env.PORT || 9901;
 config.host = process.env.HOST || '0.0.0.0';
 
 /**

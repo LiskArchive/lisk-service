@@ -23,6 +23,8 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 
+const nodeStatus = require('./shared/nodeStatus');
+
 LoggerConfig({
 	...config.log,
 	name: packageJson.name,
@@ -38,21 +40,10 @@ const app = Microservice({
 	logger: Logger('lisk:moleculer'),
 });
 
-app.addMethods(path.join(__dirname, 'methods'));
-app.addEvents(path.join(__dirname, 'events'));
-app.addJobs(path.join(__dirname, 'jobs'));
-
-const CORE_DISCOVERY_INTERVAL = 10 * 1000; // ms
-
-const nodeStatus = require('./helpers/nodeStatus');
-const updatersInit = require('./helpers/updatersInit');
-const socketInit = require('./helpers/socket');
-
-nodeStatus().then(() => {
-	updatersInit();
-	setInterval(nodeStatus, CORE_DISCOVERY_INTERVAL);
-
-	socketInit(app.getBroker());
+nodeStatus.waitForNode().then(() => {
+	app.addMethods(path.join(__dirname, 'methods'));
+	app.addEvents(path.join(__dirname, 'events'));
+	app.addJobs(path.join(__dirname, 'jobs'));
 
 	app.run().then(() => {
 		logger.info(`Service started ${packageJson.name}`);
