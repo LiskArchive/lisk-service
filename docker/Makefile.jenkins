@@ -6,7 +6,8 @@ compose := docker-compose \
 	-f lisk_service/docker-compose.core.yml \
 	-f lisk_service/docker-compose.gateway.yml \
 	-f lisk_service/docker-compose.gateway-ports.yml \
-	-f lisk_service/docker-compose.template.yml
+	-f lisk_service/docker-compose.template.yml \
+	-f docker-compose.testnet.yml
 
 up:
 	$(compose) up --detach
