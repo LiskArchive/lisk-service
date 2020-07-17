@@ -54,6 +54,7 @@ pipeline {
 				sh 'make build-core'
 				sh 'make build-gateway'
 				sh 'make build-template'
+				sh 'make build-tests'
 			}
 		}
 
