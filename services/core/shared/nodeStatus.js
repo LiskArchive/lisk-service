@@ -15,7 +15,7 @@
  */
 const { Logger } = require('lisk-service-framework');
 const config = require('../config');
-const core = require('../shared/core');
+const core = require('./core');
 
 const liskCoreAddress = config.endpoints.liskHttp;
 const logger = Logger();
@@ -49,7 +49,7 @@ const checkStatus = () => new Promise((resolve, reject) => {
 	});
 });
 
-const waitForNode = () => new Promise((resolve, reject) => {
+const waitForNode = () => new Promise((resolve) => {
 	setInterval(async () => {
 		try {
 			const result = await checkStatus();
@@ -65,5 +65,5 @@ const getStatus = () => logConnectStatus;
 module.exports = {
 	waitForNode,
 	checkStatus,
-	getStatus
+	getStatus,
 };
