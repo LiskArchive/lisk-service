@@ -67,9 +67,8 @@ pipeline {
 
 		stage('Check API gateway status') {
 			steps {
-				// Wait for the API to spin up
-				// waitForHttp()
-				sleep(1)
+				waitForHttp()
+				// sleep(1)
 			}
 		}
 

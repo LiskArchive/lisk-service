@@ -16,4 +16,4 @@ services:
       - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
 
     healthcheck:
-      test: curl --fail http://localhost:9901/api/status
+      test: curl --fail http://gateway:9901/api/v1/transactions

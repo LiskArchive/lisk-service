@@ -16,7 +16,7 @@ down:
 	$(compose) down --volumes --remove-orphans
 
 ready:
-	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/v1/status' >/dev/null
+	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/v1/transactions' >/dev/null
 
 test: test-functional
 
