@@ -30,6 +30,14 @@ build-template:
 build-tests:
 	cd ./tests && docker build --tag=lisk/service_tests ./
 
+build-local:
+	npm ci
+	cd ./framework && npm ci
+	cd ./services/core && npm ci
+	cd ./services/gateway && npm ci
+	cd ./services/template && npm ci
+	cd ./tests && npm ci
+
 clean:
 	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests
 
