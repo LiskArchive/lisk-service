@@ -72,7 +72,7 @@ test('store value in a custom memory bank', async () => {
 	expect(result).toStrictEqual(customData);
 });
 
-test('store value with limited validity', async () => {
+xtest('store value with limited validity', async () => {
 	const ttl = 500; // ms
 	const cache = Cache({ ttl });
 	const originalData = testData[0];
