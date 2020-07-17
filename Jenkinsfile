@@ -23,9 +23,9 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					dir('./') { sh 'npm ci' }
 					dir('./framework') { sh 'npm ci' }
-					dir('./core') { sh 'npm ci' }
-					dir('./gateway') { sh 'npm ci' }
-					dir('./template') { sh 'npm ci' }
+					dir('./services/core') { sh 'npm ci' }
+					dir('./services/gateway') { sh 'npm ci' }
+					dir('./services/template') { sh 'npm ci' }
 				}
 			}
 		}
