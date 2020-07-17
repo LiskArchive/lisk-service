@@ -14,4 +14,13 @@ up:
 down:
 	$(compose) down --volumes --remove-orphans
 
+cli-%:
+	$(compose) exec $* /bin/sh
+
+logs:
+	$(compose) logs
+
+logs-%:
+	$(compose) logs $*
+
 mrproper: down

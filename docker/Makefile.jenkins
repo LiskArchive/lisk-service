@@ -5,8 +5,8 @@ compose := docker-compose \
 	-f docker-compose.yml \
 	-f lisk_service/docker-compose.core.yml \
 	-f lisk_service/docker-compose.gateway.yml \
-	-f lisk_service/docker-compose.gateway-ports.yml \
 	-f lisk_service/docker-compose.template.yml \
+	-f lisk_service/docker-compose.tests.yml \
 	-f docker-compose.testnet.yml
 
 up:
@@ -14,5 +14,25 @@ up:
 
 down:
 	$(compose) down --volumes --remove-orphans
+
+ready:
+	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/v1/status' >/dev/null
+
+test: test-functional
+
+test-functional:
+	$(compose) exec -T tests npm run test:functional
+
+test-integration:
+	$(compose) exec -T tests npm run test:integration
+
+cli-%:
+	$(compose) exec $* /bin/sh
+
+logs:
+	$(compose) logs
+
+logs-%:
+	$(compose) logs $*
 
 mrproper: down

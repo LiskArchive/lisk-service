@@ -60,7 +60,6 @@ pipeline {
 		stage('Run microservices') {
 			steps {
 				ansiColor('xterm') {
-					// Run Lisk Core & Lisk Service
 					dir('./docker') { sh "make -f ${Makefile} up" }
 				}
 			}
@@ -76,21 +75,25 @@ pipeline {
 
 		stage('Run functional tests') {
 			steps {
-				nvm(getNodejsVersion()) {
-					dir('./tests') { sh "npm run test:functional" }
+				ansiColor('xterm') {
+					dir('./docker') { sh "make -f ${Makefile} test-functional" }
 				}
 			}
 		}
 
 		// stage('Run integration tests') {
 		// 	steps {
-		// 		dir('./docker') { sh "make -f ${Makefile} test" }
+		// 		dir('./docker') { sh "make -f ${Makefile} test-integration" }
 		// 	}
 		// }
 	}
 	post {
-		// failure {
-		// }
+		failure {
+			// dir('./docker') { sh "make -f ${Makefile} logs" }
+			dir('./docker') { sh "make -f ${Makefile} logs-template" }
+			dir('./docker') { sh "make -f ${Makefile} logs-gateway" }
+			dir('./docker') { sh "make -f ${Makefile} logs-core" }
+		}
 		cleanup {
 			dir('./docker') { sh "make -f ${Makefile} mrproper" }
 		}
