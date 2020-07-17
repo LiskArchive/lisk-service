@@ -24,11 +24,10 @@
     "npm": "6.14.4"
   },
   "scripts": {
+    "start": "pm2 start ecosystem.config.js",
+    "stop": "pm2 delete ecosystem.config.js",
     "eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
-    "docker:build": "npm run docker:build:core && npm run docker:build:gateway && npm run docker:build:template",
-    "docker:build:core": "cd ./services/core && docker build --tag=lisk/service_core ./",
-    "docker:build:gateway": "cd ./services/gateway && docker build --tag=lisk/service_gateway ./",
-    "docker:build:template": "cd ./services/template && docker build --tag=lisk/service_template ./"
+    "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\""
   },
   "devDependencies": {
     "eslint": "^7.1.0",
