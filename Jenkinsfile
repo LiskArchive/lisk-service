@@ -26,6 +26,7 @@ pipeline {
 					dir('./services/core') { sh 'npm ci' }
 					dir('./services/gateway') { sh 'npm ci' }
 					dir('./services/template') { sh 'npm ci' }
+					dir('./tests') { sh "npm ci" }
 				}
 			}
 		}
@@ -76,7 +77,7 @@ pipeline {
 		stage('Run functional tests') {
 			steps {
 				nvm(getNodejsVersion()) {
-					dir('./tests') { sh "npm ci && npm run test:functional" }
+					dir('./tests') { sh "npm run test:functional" }
 				}
 			}
 		}
