@@ -16,6 +16,8 @@ down:
 
 build: build-core build-gateway
 
+build-all: build-core build-gateway build-template build-tests
+
 build-core:
 	cd ./services/core && docker build --tag=lisk/service_core ./
 
@@ -25,8 +27,11 @@ build-gateway:
 build-template:
 	cd ./services/template && docker build --tag=lisk/service_template ./
 
+build-tests:
+	cd ./tests && docker build --tag=lisk/service_tests ./
+
 clean:
-	docker rmi lisk/service_gateway lisk/service_core lisk/service_template
+	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests
 
 
 mrproper: down clean
