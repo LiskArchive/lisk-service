@@ -18,10 +18,22 @@ def waitForHttp() {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	stages {
+		stage ('Build deps') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./') { sh 'npm ci' }
+					dir('./framework') { sh 'npm ci' }
+					dir('./core') { sh 'npm ci' }
+					dir('./gateway') { sh 'npm ci' }
+					dir('./template') { sh 'npm ci' }
+				}
+			}
+		}
+
 		stage ('Check linting') {
 			steps {
 				nvm(getNodejsVersion()) {
-					sh 'npm ci && npm run eslint'
+					sh 'npm run eslint'
 				}
 			}
 		}
@@ -30,7 +42,7 @@ pipeline {
 			steps {
 				nvm(getNodejsVersion()) {
 					dir('./framework') {
-						sh "npm ci && npm run test:unit"
+						sh "npm run test:unit"
 					}
 				}
 			}
@@ -38,11 +50,9 @@ pipeline {
 
 		stage('Build docker images') {
 			steps {
-				nvm(getNodejsVersion()) {
-					sh 'npm run docker:build:core'
-					sh 'npm run docker:build:gateway'
-					sh 'npm run docker:build:template'
-				}
+				sh 'make build-core'
+				sh 'make build-gateway'
+				sh 'make build-template'
 			}
 		}
 
