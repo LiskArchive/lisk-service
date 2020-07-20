@@ -24,58 +24,53 @@ Each service is independent part of the repository and is placed in a separate d
 **Remarks**
 
 - The default port for REST API requests and Socket.io-based communication is `9901`. It is configurable by Docker environment files.
-- REST API can be accessed by any HTTP client such as Postman (GUI), cURL (command-line) and Swagger (browser)
+- REST API can be accessed by any HTTP client such as [Postman]() (GUI), [cURL]() (command-line) and [Swagger]() (browser)
 - WebSocket-based APIs can by used through a socket.io library available for many modern programming languages and frameworks
 - The default installation method is based on Docker
 - PM2-based installation is described here
 - Lisk Service is configured to connect mainnet nodes by default
 
-## API
+## API documentation
 
 The Gateway service provides the following APIs, which all users of Lisk Service can access and use.
 
 | API                      | Description                                                                                                   |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | [HTTP API](https://app.swaggerhub.com/apis/LiskHQ/lisk-service-api/1.0#/)     | HTTP API is the public RESTful API that provides blockchain data in standardized JSON format.   |
-| [WebSocket JSON-RPC API](docs/websocket_json_rpc_api.md)     | The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format. The API uses the socket.io library and it is compatible with JSON-RPC 2.0 standard.   |
-| [Subscribe API](docs/websocket_subscribe_api.md)     | The Subscribe API is an event-driven API. It uses two-way streaming connection, which can notify the client about new data instantly as they arrive. It is responsible for updating users about changes in the blockchain network and markets.   |
+| [WebSocket JSON-RPC API](docs/api/websocket_json_rpc_api.md)     | The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format. The API uses the socket.io library and it is compatible with JSON-RPC 2.0 standard.   |
+| [Subscribe API](docs/api/websocket_subscribe_api.md)     | The Subscribe API is an event-driven API. It uses two-way streaming connection, which can notify the client about new data instantly as they arrive. It is responsible for updating users about changes in the blockchain network and markets.   |
 
 ## Installation
 
 Make sure that you have the following dependencies installed:
 - [Docker]() with [docker-compose]()
 - [make]()
-- [unzip]() or [tar]()
+- [tar]()
 
 The following documents describe installation of required dependencies on various operating systems.
 
-- [Ubuntu 18.04 LTS Bionic Beaver](./docs/prerequisities_docker_ubuntu.md)
-- [Ubuntu 20.04 LTS Focal Fossa](./docs/prerequisities_docker_ubuntu.md)
-- [Debian 10 Buster](./docs/prerequisities_docker_debian.md)
-- [MacOS 10.15 Catalina](./docs/prerequisities_docker_macos.md)
+- [Ubuntu 18.04 LTS Bionic Beaver](./docs/prerequisites_docker_ubuntu.md)
+- [Ubuntu 20.04 LTS Focal Fossa](./docs/prerequisites_docker_ubuntu.md)
+- [Debian 10 Buster](./docs/prerequisites_docker_debian.md)
+- [MacOS 10.15 Catalina](./docs/prerequisites_docker_macos.md)
 
 Retrieve the latest release from [the official repository](https://github.com/LiskHQ/lisk-cloud/releases).
 
 Unpack the source code archive
 
-```
-unzip x lisk-service-x.y.z.zip
-
-or
-
+```bash
 tar xf lisk-service-x.y.z.tar.gz
 ```
 
-Alternatively you can use Git
+### Docker image build (Optional) 
 
+If you want to build the local version of Lisk Service use the following command.
+
+```bash
+make build
 ```
-https://github.com/LiskHQ/lisk-service.git
-git checkout vx.y.z
-```
 
-Where `x.y.z` is the latest release version, ex. 1.0.1
-
-> Although the above commands retrieve the whole source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
+> This step is needed only if you want to build a custom or pre-release version that does not have a pre-built  Docker image in the Docker Hub. The installation script choses the last available stable version on Docker Hub, **unless** there is no local image. If you are unsure about any local builds, use `make clean` command to remove all locally build docker images.
 
 ## Configuration
 
@@ -83,25 +78,29 @@ The default configuration is sufficient to run Lisk Service against the [mainnet
 
 Configuration options are described [in this document](./docs/config_options.md).
 
-> Optional: Check your configuration with a command `make print-config`
+> Optional: Check your configuration with the command `make print-config`
 
 ## Management
 
 Run the application:
 
-```
+```bash
 make up
 ```
 
 Stop the application:
 
-```
+```bash
 make down
 ```
 
 More specific information to that method is described in the document [Run with Docker](./docs/run_with_docker.md).
 
 For PM2-based installation [this document](./docs/run_with_pm2.md) might be helpful.
+
+## Further development
+
+The possibility of customization and building Lisk Service from local source is described in the document [Building Lisk Service from source](./docs/build_from_source.md).
 
 ## Contributors
 
