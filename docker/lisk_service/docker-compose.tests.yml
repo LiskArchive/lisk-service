@@ -9,4 +9,3 @@ services:
       - SERVICE_ENDPOINT=http://gateway:9901
     restart: always
     command: tail -f /dev/null
-

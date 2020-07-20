@@ -3,4 +3,4 @@ services:
 
   core:
     env_file:
-     - ./env/mainnet.env
+      - ./lisk_service/env/network/mainnet.env
