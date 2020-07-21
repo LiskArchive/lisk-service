@@ -23,12 +23,8 @@ Each service is independent part of the repository and is placed in a separate d
 
 **Remarks**
 
-- The default port for REST API requests and Socket.io-based communication is `9901`. It is configurable by Docker environment files.
-- REST API can be accessed by any HTTP client such as [Postman]() (GUI), [cURL]() (command-line) and [Swagger]() (browser)
-- WebSocket-based APIs can by used through a socket.io library available for many modern programming languages and frameworks
-- The default installation method is based on Docker
-- PM2-based installation is described here
-- Lisk Service is configured to connect mainnet nodes by default
+- Lisk Service is configured to connect [Lisk mainnet network](https://explorer.lisk.io/) by default.
+- The default installation method is based on Docker.
 
 ## API documentation
 
@@ -42,12 +38,16 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 
 ## Installation
 
-Make sure that you have the following dependencies installed:
+The default port for REST API requests and Socket.io-based communication is `9901`, accessing it is possible through the URL http://localhost:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
+ 
+WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
+
+To continue the installation make sure that you have the following dependencies installed:
 - [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
 - [GNU Make](https://www.gnu.org/software/make/)
 - [GNU Tar](https://www.gnu.org/software/tar/)
 
-The following documents describe installation of required dependencies on various operating systems.
+Follow these instructions to get detailed information about installation of required dependencies on various operating systems.
 
 - [Ubuntu 18.04 LTS Bionic Beaver](./docs/prerequisites_docker_ubuntu.md)
 - [Ubuntu 20.04 LTS Focal Fossa](./docs/prerequisites_docker_ubuntu.md)
@@ -97,11 +97,11 @@ Stop the application:
 make down
 ```
 
-> For PM2-based installation [this document](./docs/run_with_pm2.md) might be helpful.
-
 ## Further development
 
 The possibility of customization and building Lisk Service from local source is described in the document [Building Lisk Service from source](./docs/build_from_source.md).
+
+For PM2-based installation [this document](./docs/run_with_pm2.md) might be helpful.
 
 ## Contributors
 
