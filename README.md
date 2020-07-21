@@ -98,9 +98,7 @@ make down
 
 ## Further development
 
-The possibility of customization and building Lisk Service from local source is described in the document [Building Lisk Service from source](./docs/build_from_source.md).
-
-For PM2-based installation [this document](./docs/run_with_pm2.md) might be helpful.
+The possibility of customization and building Lisk Service from local source is described in the document [Building Lisk Service from source](./docs/build_from_source.md). It might be also useful for PM2-based installation.
 
 ## Contributors
 
