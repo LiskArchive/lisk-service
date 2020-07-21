@@ -43,9 +43,9 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 ## Installation
 
 Make sure that you have the following dependencies installed:
-- [Docker]() with [docker-compose]()
-- [make]()
-- [tar]()
+- [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
+- [GNU Make](https://www.gnu.org/software/make/)
+- [GNU Tar](https://www.gnu.org/software/tar/)
 
 The following documents describe installation of required dependencies on various operating systems.
 
@@ -54,7 +54,7 @@ The following documents describe installation of required dependencies on variou
 - [Debian 10 Buster](./docs/prerequisites_docker_debian.md)
 - [MacOS 10.15 Catalina](./docs/prerequisites_docker_macos.md)
 
-Retrieve the latest release from [the official repository](https://github.com/LiskHQ/lisk-cloud/releases).
+Retrieve the latest release from [the official repository](https://github.com/LiskHQ/lisk-service/releases).
 
 Unpack the source code archive
 
@@ -96,9 +96,7 @@ Stop the application:
 make down
 ```
 
-More specific information to that method is described in the document [Run with Docker](./docs/run_with_docker.md).
-
-For PM2-based installation [this document](./docs/run_with_pm2.md) might be helpful.
+> For PM2-based installation [this document](./docs/run_with_pm2.md) might be helpful.
 
 ## Further development
 

@@ -4,10 +4,10 @@
 
 In order to run a local version of Lisk Service, the following development dependencies have to be installed.
 
-- [Ubuntu 18.04 LTS Bionic Beaver Development Dependencies](./docs/prerequisites_development_ubuntu.md)
-- [Ubuntu 20.04 LTS Focal Fossa Development Dependencies](./docs/prerequisites_development_ubuntu.md)
-- [Debian 10 Buster Development Dependencies](./docs/prerequisites_development_debian.md)
-- [MacOS 10.15 Catalina Development Dependencies](./docs/prerequisites_development_macos.md)
+- [Ubuntu 18.04 LTS Bionic Beaver Development Dependencies](./prerequisites_development_ubuntu.md)
+- [Ubuntu 20.04 LTS Focal Fossa Development Dependencies](./prerequisites_development_ubuntu.md)
+- [Debian 10 Buster Development Dependencies](./prerequisites_development_debian.md)
+- [MacOS 10.15 Catalina Development Dependencies](./prerequisites_development_macos.md)
 
 ## Installation
 
@@ -33,11 +33,11 @@ The `ecosystem.config.js` contains a sample configuration. Make sure it does ref
 ### Start Lisk Service
 
 ```bash
-npm start
+pm2 start ecosystem.config.js
 
 # or
 
-pm2 start ecosystem.config.js 
+npm start
 ```
 
 To check the service status, navigate to the URL <http://localhost:9901/api/status>. If it is running on a remote system, change the host name from `localhost` to the external IP Address of your machine.
@@ -67,6 +67,10 @@ pm2 restart ecosystem.config.js
 
 ```bash
 pm2 delete ecosystem.config.js
+
+# or
+
+npm stop
 ```
 
 ### Clean all run-time files with dependencies

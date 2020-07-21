@@ -9,7 +9,7 @@ These options are available for all micro-services provided by Lisk Service.
 
 # Must be identical for all micro-serivces
 # Make sure that all micro-services are able to connect with ir
-SERVICE_BROKER=redis://redis_common:6379/0
+SERVICE_BROKER=redis://localhost:6379/0
 
 ## Lisk Service log config
 
@@ -35,12 +35,12 @@ LISK_CORE_HTTP=https://mainnet.lisk.io # Lisk Core HTTP URL
 LISK_CORE_WS=wss://mainnet.lisk.io     # Lisk Core WebSocket URL
 ```
 
-
 ```bash
 ## Lisk Service Core
 
 # Local Redis cache for Lisk micro-service
-SERVICE_CORE_REDIS=redis://redis_core:6379/0
+# Note it is a different DB that SERVICE_BROKER uses
+SERVICE_CORE_REDIS=redis://localhost:6379/1
 
 # Postgres persistent database for Lisk micro-service
 SERVICE_CORE_POSTGRES=postgres://lisk:password@postgres_core:5432/lisk 
