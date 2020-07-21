@@ -38,14 +38,13 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 
 ## Installation
 
-The default port for REST API requests and Socket.io-based communication is `9901`, accessing it is possible through the URL http://localhost:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
+The default port for REST API requests and Socket.io-based communication is `9901`, it is possible to access it through the URL http://localhost:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
  
 WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
 
 To continue the installation make sure that you have the following dependencies installed:
 - [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
-- [GNU Make](https://www.gnu.org/software/make/)
-- [GNU Tar](https://www.gnu.org/software/tar/)
+- [GNU Make](https://www.gnu.org/software/make/) and [GNU Tar](https://www.gnu.org/software/tar/)
 
 Follow these instructions to get detailed information about installation of required dependencies on various operating systems.
 
@@ -56,7 +55,7 @@ Follow these instructions to get detailed information about installation of requ
 
 Retrieve the latest release from [the official repository](https://github.com/LiskHQ/lisk-service/releases).
 
-Unpack the source code archive
+Unpack the source code archive:
 
 ```bash
 tar xf lisk-service-x.y.z.tar.gz
