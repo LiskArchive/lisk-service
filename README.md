@@ -60,6 +60,7 @@ Unpack the source code archive
 
 ```bash
 tar xf lisk-service-x.y.z.tar.gz
+cd lisk-service
 ```
 
 > Although the above commands retrieve the whole source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
@@ -76,7 +77,7 @@ make build
 
 ## Configuration
 
-The default configuration is sufficient to run Lisk Service against the [mainnet](https://explorer.lisk.io/) network.
+The default configuration is sufficient to run Lisk Service against the [mainnet network](https://explorer.lisk.io/).
 
 Configuration options are described [in this document](./docs/config_options.md).
 
