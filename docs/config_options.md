@@ -16,7 +16,7 @@ SERVICE_BROKER=redis://localhost:6379/0
 SERVICE_LOG_STDOUT=true   # Asynchronous console output (non-blocking, preferred)
 SERVICE_LOG_CONSOLE=false # console.log() output, only for debug
 SERVICE_LOG_FILE=false    # file path ex. ./logs/service.log
-SERVICE_LOG_GELF=false    # GELF output for remote logging ex. Graylog gelf://localhost:12012
+SERVICE_LOG_GELF=false    # GELF output for remote logging ex. Graylog localhost:12201/udp
 SERVICE_LOG_LEVEL=debug   # Default log level
 ```
 
