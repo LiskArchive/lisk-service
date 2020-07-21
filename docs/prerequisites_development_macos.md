@@ -21,6 +21,8 @@ brew doctor
 
 Install [Xcode](https://developer.apple.com/xcode/) essentials coming from Apple.
 
+This package provides the `make` command.
+
 ```bash
 xcode-select --install
 ```

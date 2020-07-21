@@ -18,8 +18,11 @@ apt update
 
 Install `build-essential` package alongside with several development tools.
 
+> - GNU Tar is already installed with the standard distribution.
+> - GNU Make and Git have to be installed explicitly.
+
 ```bash
-sudo apt install build-essential git
+sudo apt install build-essential git make
 ```
 
 ### Redis
@@ -79,7 +82,7 @@ sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc
 
 # APT-based dependencies
 sudo apt update
-sudo apt install build-essential git redis-server postgres nodejs
+sudo apt install build-essential git make redis-server postgres nodejs
 
 # NPM-based dependencies
 npm install -g pm2
