@@ -19,7 +19,7 @@ apt update
 Install `build-essential` package alongside with several development tools.
 
 ```bash
-apt install build-essential git-core
+apt install build-essential git
 ```
 
 ### Docker
