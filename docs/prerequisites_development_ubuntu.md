@@ -1,4 +1,4 @@
-# Lisk Service prerequisites for Ubuntu
+# Lisk Service Development Dependencies for Ubuntu
 
 Note that those requirements are needed only if you want to build the project from sources, without support for Docker. This is useful if you are going to develop the project for your own blockchain or you cannot run Docker on your target machine. In other scenarios such as running stable version of Lisk Service against mainnet network it is highly recommended to follow [the Docker-based instruction](./prerequisites_docker_macos.md).
 

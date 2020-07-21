@@ -1,4 +1,4 @@
-# Lisk Service installation for Linux
+# Lisk Service prerequisites for Ubuntu
 
 Those requirements are needed to perform the recommended way of running Lisk Service on the server.
 

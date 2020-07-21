@@ -2,12 +2,12 @@
 
 ## Prerequisites
 
-In order to run a local version of Lisk Service, the following dependencies have to be installed.
+In order to run a local version of Lisk Service, the following development dependencies have to be installed.
 
-- [Ubuntu 18.04 LTS Bionic Beaver](./docs/prerequisites_development_ubuntu.md)
-- [Ubuntu 20.04 LTS Focal Fossa](./docs/prerequisites_development_ubuntu.md)
-- [Debian 10 Buster](./docs/prerequisites_development_debian.md)
-- [MacOS 10.15 Catalina](./docs/prerequisites_development_macos.md)
+- [Ubuntu 18.04 LTS Bionic Beaver Development Dependencies](./docs/prerequisites_development_ubuntu.md)
+- [Ubuntu 20.04 LTS Focal Fossa Development Dependencies](./docs/prerequisites_development_ubuntu.md)
+- [Debian 10 Buster Development Dependencies](./docs/prerequisites_development_debian.md)
+- [MacOS 10.15 Catalina Development Dependencies](./docs/prerequisites_development_macos.md)
 
 ## Installation
 

@@ -62,6 +62,8 @@ Unpack the source code archive
 tar xf lisk-service-x.y.z.tar.gz
 ```
 
+> Although the above commands retrieve the whole source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
+
 ### Docker image build (Optional) 
 
 If you want to build the local version of Lisk Service use the following command.
