@@ -13,12 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+import Joi from '@hapi/joi';
+
 import api from '../../helpers/api';
 import config from '../../config';
 
+import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
+
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
-const endpoint = `${baseUrlV1}/network/status`;
+const endpointStatus = `${baseUrlV1}/network/status`;
+const endpointStatistics = `${baseUrlV1}/network/statistics`;
 
 const networkSchema = {
 	broadhash: 'string',
@@ -32,9 +37,25 @@ const networkSchema = {
 	supply: 'string',
 };
 
-describe(`GET ${endpoint}`, () => {
-	it('retrieves network status -> ok', async () => {
-		const response = await api.get(`${endpoint}`);
-		expect(response).toMapRequiredSchema(networkSchema);
+const goodRequestSchema = Joi.object({
+	data: Joi.object().required(),
+	meta: Joi.object().required(),
+	links: Joi.object().required(),
+});
+
+describe('Network API', () => {
+	describe(`GET ${endpointStatus}`, () => {
+		it('retrieves network status -> ok', async () => {
+			const response = await api.get(`${endpointStatus}`);
+			expect(response).toMapRequiredSchema(networkSchema);
+		});
+	});
+
+	describe(`GET ${endpointStatistics}`, () => {
+		it('retrieves network statistics -> ok', async () => {
+			const response = await api.get(endpointStatistics);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toMap(networkStatisticsSchema);
+		});
 	});
 });

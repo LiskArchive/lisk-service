@@ -24,26 +24,28 @@ const util = require('util');
 
 const readFile = util.promisify(fs.readFile);
 
-describe('GET /<account>/transactions/json', () => {
-	it('Exports transactions to JSON when the account ID is correct', async () => {
-		const response = await api.get(`${baseUrlV1}/account/16313739661670634666L/transactions/json`);
-		expect(response.data[0]).toMapRequiredSchema({
-			transactionId: '1465651642158264047',
-			senderId: '1085993630748340485L',
-			recipientId: '16313739661670634666L',
-			blockId: '6524861224470851795',
-			amount: '100000000',
-			fee: '0',
-			date: '2016-05-24T17:00:00.000Z',
-			senderPublicKey: 'c96dec3595ff6041c3bd28b76b8cf75dce8225173d1bd00241624ee89b50f2a8',
+describe('Export API', () => {
+	describe('GET /<account>/transactions/json', () => {
+		it('Exports transactions to JSON when the account ID is correct', async () => {
+			const response = await api.get(`${baseUrlV1}/account/16313739661670634666L/transactions/json`);
+			expect(response.data[0]).toMapRequiredSchema({
+				transactionId: '1465651642158264047',
+				senderId: '1085993630748340485L',
+				recipientId: '16313739661670634666L',
+				blockId: '6524861224470851795',
+				amount: '100000000',
+				fee: '0',
+				date: '2016-05-24T17:00:00.000Z',
+				senderPublicKey: 'c96dec3595ff6041c3bd28b76b8cf75dce8225173d1bd00241624ee89b50f2a8',
+			});
 		});
 	});
-});
 
-describe('GET /<account>/transactions/csv', () => {
-	it('Exports transactions to CSV when the account ID is correct', async () => {
-		const response = await api.get(`${baseUrlV1}/account/16313739661670634666L/transactions/csv`);
-		const correctPattern = await readFile(`${__dirname}/../../data/16313739661670634666L.csv`, 'utf8');
-		expect(response.split('\n')).toEqual(correctPattern.split('\n'));
+	describe('GET /<account>/transactions/csv', () => {
+		it('Exports transactions to CSV when the account ID is correct', async () => {
+			const response = await api.get(`${baseUrlV1}/account/16313739661670634666L/transactions/csv`);
+			const correctPattern = await readFile(`${__dirname}/../../data/16313739661670634666L.csv`, 'utf8');
+			expect(response.split('\n')).toEqual(correctPattern.split('\n'));
+		});
 	});
 });
