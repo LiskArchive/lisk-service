@@ -42,7 +42,7 @@ const transactionSchema = {
 };
 
 const badRequestSchema = {
-	errors: 'array',
+	error: 'boolean',
 	message: 'string',
 };
 
@@ -51,9 +51,16 @@ const notFoundSchema = {
 	message: 'string',
 };
 
-xdescribe('Transactions API', () => {
+describe('Transactions API', () => {
 	describe('GET /transactions', () => {
-		it('known transaction id -> ok', async () => {
+		it('returns list of transactions', async () => {
+			const response = await api.get(`${endpoint}`);
+			response.data.forEach(element => {
+				expect(element).toMapRequiredSchema(transactionSchema);
+			});
+		});
+
+		it(`returns requested transaction when known transaction id=${transaction.id}`, async () => {
 			const response = await api.get(`${endpoint}?id=${transaction.id}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				id: transaction.id,
@@ -61,11 +68,11 @@ xdescribe('Transactions API', () => {
 			});
 		});
 
-		it('long transaction id -> 400', () => expect(api.get(`${endpoint}?id=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
+		xit('long transaction id -> 400', () => expect(api.get(`${endpoint}?id=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
-		it('invalid transaction id -> 404', () => expect(api.get(`${endpoint}?id=41287`, 404)).resolves.toMapRequiredSchema({
+		xit('invalid transaction id -> 404', () => expect(api.get(`${endpoint}?id=41287`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
@@ -73,15 +80,17 @@ xdescribe('Transactions API', () => {
 			...badRequestSchema,
 		}));
 
-		it('known transaction type -> ok', async () => {
+		it('returns transactions with known transaction type', async () => {
 			const response = await api.get(`${endpoint}?type=${transaction.type}`);
-			expect(response.data[0]).toMapRequiredSchema({
-				...transactionSchema,
-				type: transaction.type,
+			response.data.forEach(element => {
+				expect(element).toMapRequiredSchema({
+					...transactionSchema,
+					type: transaction.type,
+				});
 			});
 		});
 
-		it('invalid transaction type -> 400', () => expect(api.get(`${endpoint}?type=13`, 400)).resolves.toMapRequiredSchema({
+		it('invalid transaction type -> 400', () => expect(api.get(`${endpoint}?type=124`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
@@ -96,7 +105,7 @@ xdescribe('Transactions API', () => {
 			});
 		});
 
-		it('invalid address -> 404', () => expect(api.get(`${endpoint}?address=000000000L`, 404)).resolves.toMapRequiredSchema({
+		xit('invalid address -> 404', () => expect(api.get(`${endpoint}?address=000000000L`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
@@ -108,7 +117,7 @@ xdescribe('Transactions API', () => {
 			});
 		});
 
-		it('invalid sender address -> 404', () => expect(api.get(`${endpoint}?sender=000000000L`, 404)).resolves.toMapRequiredSchema({
+		xit('invalid sender address -> 404', () => expect(api.get(`${endpoint}?sender=000000000L`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
@@ -120,7 +129,7 @@ xdescribe('Transactions API', () => {
 			});
 		});
 
-		it('invalid recipient address -> 404', () => expect(api.get(`${endpoint}?recipient=000000000L`, 404)).resolves.toMapRequiredSchema({
+		xit('invalid recipient address -> 404', () => expect(api.get(`${endpoint}?recipient=000000000L`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
@@ -132,7 +141,7 @@ xdescribe('Transactions API', () => {
 			});
 		});
 
-		it('invalid block -> 400', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
+		xit('invalid block -> 400', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
@@ -148,7 +157,7 @@ xdescribe('Transactions API', () => {
 			});
 		});
 
-		it('invalid height -> 400', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
+		xit('invalid height -> 400', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
@@ -158,9 +167,11 @@ xdescribe('Transactions API', () => {
 
 
 		it('transactions within set timestamps are returned', async () => {
-			const from = 1497779831;
-			const to = 1497779835;
+			const from = 1556181000; // 2019-04-25T08:30:00+00:00
+			const to = from + (30 * 60); // +30 mins
 			const response = await api.get(`${endpoint}?from=${from}&to=${to}&limit=100`);
+
+			expect(response.data.length).toBe(6);
 
 			response.data.forEach((trx) => {
 				expect(trx.timestamp).toBeGreaterThanOrEqual(from);
@@ -169,7 +180,7 @@ xdescribe('Transactions API', () => {
 		});
 	});
 
-	describe('GET /transactions/last', () => {
+	xdescribe('GET /transactions/last', () => {
 		it('known transaction id -> ok', async () => {
 			const response = await api.get(`${endpoint}?id=${transaction.id}`);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -179,7 +190,7 @@ xdescribe('Transactions API', () => {
 		});
 	});
 
-	describe('GET /transaction/{transaction_id}', () => {
+	xdescribe('GET /transaction/{transaction_id}', () => {
 		it('known transaction id -> ok', async () => {
 			const response = await api.get(`${transactionEndpoint}/${transaction.id}`);
 			expect(response.data[0]).toMapRequiredSchema({
