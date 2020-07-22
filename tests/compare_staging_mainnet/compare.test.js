@@ -15,8 +15,8 @@
  */
 import { readFileSync } from 'fs';
 
-import api from '../../helpers/api';
-import config from '../../config';
+import api from '../helpers/api';
+import config from './config';
 
 const stagingUrl = config.SERVICE_STAGING;
 const prodUrl = config.SERVICE_PROD;
