@@ -31,6 +31,7 @@ module.exports = {
 			autorestart: true,
 			env: {
 				PORT: '9901',
+				SERVICE_BROKER: 'redis://localhost:6379/0',
 			},
 		},
 		{
@@ -46,7 +47,15 @@ module.exports = {
 			max_memory_restart: '512M',
 			instances: 1,
 			autorestart: true,
-			env: {},
+			env: {
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				LISK_CORE_HTTP: 'https://mainnet.lisk.io',
+				LISK_CORE_WS: 'wss://mainnet.lisk.io',
+				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
+				SERVICE_CORE_POSTGRES: 'postgres://lisk:password@localhost:5432/lisk',
+				LISK_STATIC: 'https://static-data.lisk.io',
+				GEOIP_JSON: 'https://geoip.lisk.io/json',
+			},
 		},
 	],
 };
