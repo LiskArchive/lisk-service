@@ -61,7 +61,7 @@ const wrongInputParamSchema = {
 	message: 'string',
 };
 
-describe('Blocks', () => {
+xdescribe('Blocks API', () => {
 	describe('GET /blocks', () => {
 		it('returns list of blocks when called with no params', async () => {
 			const response = await api.get(`${endpoint}?limit=1`);

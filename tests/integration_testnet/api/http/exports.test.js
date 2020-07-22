@@ -24,7 +24,7 @@ const util = require('util');
 
 const readFile = util.promisify(fs.readFile);
 
-describe('Export API', () => {
+xdescribe('Export API', () => {
 	describe('GET /<account>/transactions/json', () => {
 		it('Exports transactions to JSON when the account ID is correct', async () => {
 			const response = await api.get(`${baseUrlV1}/account/16313739661670634666L/transactions/json`);

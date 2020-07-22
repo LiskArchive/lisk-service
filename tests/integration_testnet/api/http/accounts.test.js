@@ -91,7 +91,7 @@ const notFoundSchema = {
 	message: 'string',
 };
 
-describe('Account API', () => {
+xdescribe('Accounts API', () => {
 	describe('GET /accounts', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${endpoint}`);

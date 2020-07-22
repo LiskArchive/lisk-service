@@ -51,7 +51,7 @@ describe('Network API', () => {
 		});
 	});
 
-	describe(`GET ${endpointStatistics}`, () => {
+	xdescribe(`GET ${endpointStatistics}`, () => {
 		it('retrieves network statistics -> ok', async () => {
 			const response = await api.get(endpointStatistics);
 			expect(response).toMap(goodRequestSchema);

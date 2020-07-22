@@ -46,7 +46,7 @@ const goodRequestSchema = Joi.object({
 
 const endpoint = `${config.SERVICE_ENDPOINT}/api/v1/search`;
 
-describe('Search API', () => {
+xdescribe('Search API', () => {
 	describe(endpoint, () => {
 		it('returns delegate by name ', async () => {
 			const q = 'genesis_11';
