@@ -15,10 +15,6 @@
  */
 import to from 'await-to-js';
 import io from 'socket.io-client';
-import config from '../config';
-
-const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlRpcV1 = `${baseUrl}/rpc`;
 
 const request = (endpoint, method, params) => new Promise((resolve, reject) => {
 	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
@@ -41,7 +37,7 @@ export const api = {
 		}
 		return response.result;
 	},
-	getJsonRpcV1: (...args) => api.get(baseUrlRpcV1, ...args),
+	getJsonRpcV1: (...args) => api.get(...args),
 };
 
 export default request;
