@@ -51,7 +51,7 @@ const notFoundSchema = {
 	message: 'string',
 };
 
-describe('Transactions API', () => {
+xdescribe('Transactions API', () => {
 	describe('GET /transactions', () => {
 		it('known transaction id -> ok', async () => {
 			const response = await api.get(`${endpoint}?id=${transaction.id}`);
