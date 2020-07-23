@@ -42,7 +42,7 @@ The default port for REST API requests and Socket.io-based communication is `990
  
 WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
 
-To continue the installation make sure that you have the following dependencies installed:
+To continue the installation ensure that you have the following dependencies installed:
 - [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
 - [GNU Make](https://www.gnu.org/software/make/) and [GNU Tar](https://www.gnu.org/software/tar/)
 
