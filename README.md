@@ -78,6 +78,8 @@ make build
 
 The default configuration is sufficient to run Lisk Service against the [mainnet network](https://explorer.lisk.io/).
 
+To change the default config in Docker, modify the file `docker/custom.env` and replace line 9 in `Makefile` from `-f docker-compose.mainnet.yml` to `-f docker-compose.custom.yml`.
+
 Configuration options are described [in this document](./docs/config_options.md).
 
 > Optional: Check your configuration with the command `make print-config`
