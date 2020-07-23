@@ -81,11 +81,11 @@ pipeline {
 			}
 		}
 
-		// stage('Run integration tests') {
-		// 	steps {
-		// 		dir('./docker') { sh "make -f ${Makefile} test-integration" }
-		// 	}
-		// }
+		stage('Run integration tests') {
+			steps {
+				dir('./docker') { sh "make -f ${Makefile} test-integration" }
+			}
+		}
 	}
 	post {
 		failure {
