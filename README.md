@@ -11,7 +11,7 @@ The project implementation is based on Microservices. The technical stack is des
 
 Lisk Service consists of several separate modules, that can be run independently from the others. Gateway is required to expose the APIs provided by particular services.
 
-Each service is independent part of the repository and is placed in a separate directory in the `./services/` directory. Each of them contains its own `package.json` and `Dockerfile` that are needed to run the module.
+Each service is an independent part of the repository and is placed in a separate directory in the `./services/` directory. Each of them contains its own `package.json` and `Dockerfile` that are needed to run the module.
 
 
 | Service                  | Description                                                                                                       |
