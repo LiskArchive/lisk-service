@@ -95,6 +95,46 @@ npm stop
 make clean
 ```
 
+## Running tests
+
+Once the application is running it is now possible to run automated tests.
+
+### Unit tests (framework)
+
+Unit tests are implemented in the framework part of the project. They are meant to test the most fundamental, product-independent logic that is used to build a micro-service on top of it.
+
+```
+cd framework
+npm test
+```
+
+### Functional tests
+
+Functional tests ensure that a project build on the top of the framework is able to process requests and collect responses involving the API gateway.
+
+In order to run them successfully, they the template component running alongside.
+
+```
+cd service/template
+node app.js
+```
+
+When the template micro-service and the gateway are running, it is possible to run the functional tests from the `tests/` directory:
+
+```
+cd tests
+npm run test:functional
+```
+
+### Integration tests
+
+Integration tests work similar way to functional tests, in this case the real blockchain data coming from the testnet network are used. Make sure that the API gateway and Lisk micro-service are running.
+
+```
+cd tests
+npm run test:integration
+```
+
 ## Next steps
 
 It is now possible to use your preferred editor to make changes in the source files. Take a look at the [template](../services/template) project in order to find some suitable examples.
