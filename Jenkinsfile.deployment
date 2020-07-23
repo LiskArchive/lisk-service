@@ -8,7 +8,6 @@ pipeline {
 			steps {
 				sh 'make build-core'
 				sh 'make build-gateway'
-				sh 'make build-template'
 			}
 		}
 		stage('Deploy lisk-service') {
