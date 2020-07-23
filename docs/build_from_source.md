@@ -101,7 +101,7 @@ Once the application is running it is now possible to run automated tests.
 
 ### Unit tests (framework)
 
-Unit tests are implemented in the framework part of the project. They are meant to test the most fundamental, product-independent logic that is used to build a micro-service on top of it.
+Unit tests are implemented in the framework part of the project. They are designed to test the most fundamental, product-independent logic that is used to build a micro-service on top of the framework.
 
 ```
 cd framework
@@ -112,7 +112,7 @@ npm test
 
 Functional tests ensure that a project build on the top of the framework is able to process requests and collect responses involving the API gateway.
 
-In order to run them successfully, they the template component running alongside.
+In order to run them successfully, they need to have the template component running alongside.
 
 ```
 cd service/template
@@ -128,7 +128,7 @@ npm run test:functional
 
 ### Integration tests
 
-Integration tests work similar way to functional tests, in this case the real blockchain data coming from the testnet network are used. Make sure that the API gateway and Lisk micro-service are running.
+Integration tests work in a similar manner to functional tests. In this case the real blockchain data coming from the testnet network is used. Please ensure that the API gateway and Lisk micro-service are running.
 
 ```
 cd tests
