@@ -23,13 +23,13 @@ module.exports = [
 		name: 'refresh.delegates',
 		description: 'Keep the delegate list up-to-date',
 		schedule: '*/5 * * * *', // Every 5 min
-		updateOnInit: true, 
+		updateOnInit: true,
 		init: () => {
-			logger.info(`Scheduling initial list update...`);
+			logger.info('Scheduling initial list update...');
 			delegateCache.init(core);
 		},
 		controller: () => {
-			logger.info(`Scheduling delegate list reload...`);
+			logger.info('Scheduling delegate list reload...');
 			delegateCache.reload(core);
 		},
 	},

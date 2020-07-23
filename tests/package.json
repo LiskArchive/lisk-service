@@ -26,12 +26,11 @@
   "scripts": {
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:integration",
-    "test:integration": "jest --config=integration/jest.config.js",
+    "test:integration": "jest --config=integration_testnet/jest.config.js",
     "test:functional": "jest --config=functional/jest.config.js",
     "start": "node app.js"
   },
   "dependencies": {
-    "@liskhq/lisk-cryptography": "^2.2.0",
     "chai": "^4.2.0",
     "express": "^4.17.1",
     "http-proxy": "^1.18.0",

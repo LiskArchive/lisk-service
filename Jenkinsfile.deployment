@@ -1,0 +1,26 @@
+@Library('lisk-jenkins') _
+
+pipeline {
+	agent { node { label 'lisk-service-dev' } }
+	stages {
+		stage('Build docker images') {
+			when { branch 'development' }
+			steps {
+				sh 'make build-core'
+				sh 'make build-gateway'
+			}
+		}
+		stage('Deploy lisk-service') {
+			when { branch 'development' }
+			steps {
+				ansiColor('xterm') {
+					dir('docker') {
+						sh 'make -f Makefile.deployment mrproper'
+						sh 'make -f Makefile.deployment up'
+					}
+				}
+			}
+		}
+	}
+}
+// vim: filetype=groovy

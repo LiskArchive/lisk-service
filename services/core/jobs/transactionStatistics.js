@@ -15,6 +15,8 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
+const config = require('../config');
+
 const transactionStatistics = require('../shared/transactionStatistics');
 
 module.exports = [
@@ -24,11 +26,11 @@ module.exports = [
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
 		init: () => {
-			logger.info(`Scheduling delegate list init...`);
+			logger.info('Scheduling delegate list init...');
 			transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 		},
 		controller: async () => {
-			logger.info(`Scheduling delegate list reload...`);
+			logger.info('Scheduling delegate list reload...');
 			transactionStatistics.updateTodayStats();
 		},
 	},

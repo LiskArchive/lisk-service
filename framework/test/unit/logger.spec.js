@@ -13,4 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// TODO: Implement tests for logger
+xdescribe('Logger', () => {
+	xtest('exists', async () => {
+
+	});
+});

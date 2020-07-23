@@ -18,6 +18,7 @@ const { SocketClient } = require('lisk-service-framework');
 
 const core = require('../shared/core');
 const recentBlocksCache = require('../shared/recentBlocksCache');
+const delegateCache = require('../shared/delegateCache');
 
 const config = require('../config');
 
@@ -32,9 +33,7 @@ module.exports = [
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			coreSocket.socket.on('blocks/change', async data => {
-				logger.info(`Scheduling block list reload...`);
-	
-				logger.info(`Returning block list to the socket.io client...`);
+				logger.info('Returning block list to the socket.io client...');
 				const restData = await core.getBlocks({ blockId: data.id });
 				callback(restData.data[0]);
 			});
@@ -45,6 +44,7 @@ module.exports = [
 		description: '',
 		controller: callback => {
 			coreSocket.socket.on('blocks/change', async data => {
+				logger.info('Scheduling block list reload...');
 				const emitData = await core.getBlocks({ blockId: data.id });
 
 				if (emitData.data[0].numberOfTransactions > 0) {

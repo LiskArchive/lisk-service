@@ -14,6 +14,6 @@
  *
  */
 module.exports = {
-	SERVICE_ENDPOINT_HTTP: process.env.SERVICE_ENDPOINT || 'http://localhost:3011',
-	SERVICE_ENDPOINT_RPC: process.env.SERVICE_ENDPOINT || 'ws://localhost:3011',
+	SERVICE_ENDPOINT_HTTP: process.env.SERVICE_ENDPOINT || 'http://localhost:9901',
+	SERVICE_ENDPOINT_RPC: process.env.SERVICE_ENDPOINT || 'ws://localhost:9901',
 };

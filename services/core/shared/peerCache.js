@@ -19,7 +19,7 @@ const requestAll = require('./requestAll');
 
 const logger = Logger();
 
-const peerStates = CoreService.peerStates;
+const { peerStates } = CoreService;
 
 const peerStore = {
 	peers: [],

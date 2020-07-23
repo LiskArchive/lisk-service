@@ -6,14 +6,9 @@ services:
     networks:
       - services_network
     restart: always
-    environment:
-      - PORT=9901
-      - SERVICE_BROKER=${SERVICE_BROKER}
-      - SERVICE_LOG_LEVEL=${SERVICE_LOG_LEVEL}
-      - SERVICE_LOG_CONSOLE=${SERVICE_LOG_CONSOLE}
-      - SERVICE_LOG_FILE=${SERVICE_LOG_FILE}
-      - SERVICE_LOG_GELF=${SERVICE_LOG_GELF}
-      - SERVICE_LOG_STDOUT=${SERVICE_LOG_STDOUT}
+    env_file:
+      - ./lisk_service/env/common.env
+      - ./lisk_service/env/gateway.env
 
     healthcheck:
-      test: curl --fail http://localhost:9901/api/status
+      test: curl --fail http://gateway:9901/api/v1/transactions

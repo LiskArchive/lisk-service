@@ -22,8 +22,7 @@ const CoreService = require('../../shared/core.js');
 const GeoService = require('../../shared/geolocation.js');
 const peerCache = require('../../shared/peerCache.js');
 
-const isEmptyArray = ObjectUtilService.isEmptyArray;
-const isEmptyObject = ObjectUtilService.isEmptyObject;
+const { isEmptyArray, isEmptyObject } = ObjectUtilService;
 
 const addLocation = async (ipaddress) => {
 	try {
@@ -36,7 +35,7 @@ const addLocation = async (ipaddress) => {
 
 const getPeers = async (params) => {
 	const res = await CoreService.getPeers(params);
-	const data = res.data;
+	const { data } = res;
 
 	if (isEmptyObject(res) || isEmptyArray(data)) {
 		return { status: NOT_FOUND, data: { error: 'Not found' } };
