@@ -1,6 +1,6 @@
 # Lisk Service prerequisites for Ubuntu
 
-Those requirements are needed to perform the recommended way of running Lisk Service on the server.
+The following requirements are needed to perform the recommended method of running Lisk Service on the server.
 
 ## Prerequisites
 
