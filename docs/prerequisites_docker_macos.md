@@ -1,6 +1,6 @@
 # Lisk Service prerequisites for MacOS
 
-Those requirements are needed to perform the recommended way of running Lisk Service on the server.
+Those requirements are necessary in order to perform the recommended method of running Lisk Service on the server.
 
 ## Prerequisites
 
