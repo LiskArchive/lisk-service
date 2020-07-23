@@ -46,7 +46,7 @@ To continue the installation ensure that you have the following dependencies ins
 - [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
 - [GNU Make](https://www.gnu.org/software/make/) and [GNU Tar](https://www.gnu.org/software/tar/)
 
-Follow these instructions to get detailed information about installation of required dependencies on various operating systems.
+Follow the instructions listed below, in order to acquire detailed information regarding the installation of required dependencies for various operating systems.
 
 - [Ubuntu 18.04 LTS Bionic Beaver](./docs/prerequisites_docker_ubuntu.md)
 - [Ubuntu 20.04 LTS Focal Fossa](./docs/prerequisites_docker_ubuntu.md)
