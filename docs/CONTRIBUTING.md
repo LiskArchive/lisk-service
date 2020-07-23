@@ -172,7 +172,7 @@ Provide more context by answering these questions:
 	the problem doesn’t happen? You can download older versions of lisk-explorer
 	from [the releases page](https://github.com/LiskHQ/lisk-explorer/releases).
 * **Can you reliably reproduce the issue?** If not, provide details about how
-	often the problem happens and under which conditions it normally happens.
+	often the problem happens and under which conditions it normally occurs.
 
 ### Suggesting Enhancements
 
@@ -224,7 +224,7 @@ following information:
 
 ### JavaScript Styleguide
 
-On lisk-explorer we are using [Prettier](https://prettier.io/) and
+In Lisk-explorer we are using [Prettier](https://prettier.io/) and
 [ESLint](https://eslint.org/). Our ESLint style expands
 [Airbnb’s](https://github.com/airbnb/javascript) style settings and expresses
 some opinions not covered by Prettier’s formatting concerns. You can find more
