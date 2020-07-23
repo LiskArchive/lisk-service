@@ -1,6 +1,6 @@
 # Lisk Service Development Dependencies for MacOS
 
-Note that those requirements are needed only if you want to build the project from sources, without support for Docker. This is useful if you are going to develop the project for your own blockchain or you cannot run Docker on your target machine. In other scenarios such as running stable version of Lisk Service against mainnet network it is highly recommended to follow [the Docker-based instruction](./prerequisites_docker_macos.md).
+Note that those requirements are needed only if you want to build the project from sources, without support for Docker. This is useful if you are going to develop the project for your own blockchain or you cannot run Docker on your target machine. In other scenarios such as running a stable version of Lisk Service against the mainnet network, it is highly recommended to follow [the Docker-based instruction](./prerequisites_docker_macos.md).
 
 ## Prerequisites
 
@@ -37,7 +37,7 @@ xcode-select --install
 brew install redis
 ```
 
-> Note: you can change your port at this step if you want to have more Redis instances in the future. Remember to adjust the environment variable `REDIS_PORT` accordingly.
+> Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variable `REDIS_PORT` accordingly.
 
 ### PostgreSQL
 
@@ -47,7 +47,7 @@ brew install redis
 brew install postgres@10
 ```
 
-> Note: you can change your port at this step if you want to have more Redis instances in the future. Remeber to adjust the environment variable `REDIS_PORT` accordingly.
+> Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variable `REDIS_PORT` accordingly.
 
 ### Node.js
 
@@ -69,4 +69,4 @@ npm install -g pm2
 
 ## Next steps
 
-If you have all dependencies installed properly, you can undertake the build process.
+If you have all dependencies installed properly, you can start the build process.

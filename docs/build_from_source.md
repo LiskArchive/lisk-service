@@ -1,10 +1,10 @@
 # Build Lisk Service from Source
 
-Building and running Lisk Service from source is an alternative way to run it on the server or development environment. This technique is useful on systems where there no possibility of using Docker and for development purposes.
+Building and running Lisk Service from source is an alternative way to run it on the server or development environment. This technique is useful on systems whereby there is no possibility of using Docker, and also for development purposes.
 
 ## Prerequisites
 
-In order to run a local version of Lisk Service, the following development dependencies have to be installed.
+In order to run a local version of Lisk Service, the following development dependencies listed below have to be installed:
 
 - [Ubuntu 18.04 LTS Bionic Beaver Development Dependencies](./prerequisites_development_ubuntu.md)
 - [Ubuntu 20.04 LTS Focal Fossa Development Dependencies](./prerequisites_development_ubuntu.md)
@@ -15,7 +15,7 @@ In order to run a local version of Lisk Service, the following development depen
 
 In the contrary to the production version, make sure that the whole Git repository is cloned on your machine.
 
-Instead of getting the tar.gz archive with the last version, as described in the main README, clone the whole repository with git version control system.
+Instead of getting the tar.gz archive with the previous version as described in the main README, clone the entire repository with the git version control system.
 
 ```bash
 # Clone Lisk Service repository
@@ -36,7 +36,7 @@ Where `x.y.z` is the latest release version, ex. 1.0.1
 
 ## Installation
 
-Install all npm dependencies from root directory.
+Install all npm dependencies from the root directory.
 
 ```bash
 make build-local
@@ -44,7 +44,7 @@ make build-local
 
 ## Configuration
 
-The `ecosystem.config.js` contains a sample configuration. Make sure it does reflect your local environment. All configuration parameters are described in the document [Configuration Options](./config_options.md).
+The `ecosystem.config.js` contains a sample configuration. Ensure it reflects your local environment. All configuration parameters are described in the document [Configuration Options](./config_options.md).
 
 ## Managing Lisk Service
 
@@ -62,7 +62,7 @@ To check the service status, navigate to the URL <http://localhost:9901/api/stat
 
 ### Lisk Service Status
 
-After the process is started its runtime status and log location can be found by issuing this statement:
+After starting the process, the runtime status and log location can be found by executing the following command:
 ```bash
 pm2 list
 ```
@@ -99,6 +99,6 @@ make clean
 
 ## Next steps
 
-Now you can use you favorite editor to make changes in the source files. Take a look at the [template](../services/template) project to find some nice examples.
+It is now possible to use your preferred editor to make changes in the source files. Take a look at the [template](../services/template) project in order to find some suitable examples.
 
-Once done you can also build Docker images with `make build` and run them using the method from the main [README](../README.md).
+Once completed, it is also possible to build Docker images with `make build` and run them using the method from the main [README](../README.md).

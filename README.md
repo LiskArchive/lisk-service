@@ -55,24 +55,24 @@ Follow the instructions listed below, in order to acquire detailed information r
 
 Retrieve the latest release from [the official repository](https://github.com/LiskHQ/lisk-service/releases).
 
-Unpack the source code archive:
+Unpack the source code archive by executing the following commands listed below:
 
 ```bash
 tar xf lisk-service-x.y.z.tar.gz
 cd lisk-service
 ```
 
-> Although the above commands retrieve the whole source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
+> Although the above commands retrieve the entire source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
 
 ### Docker image build (Optional) 
 
-If you want to build the local version of Lisk Service use the following command.
+If you wish to build the local version of Lisk Service execute the following command below.
 
 ```bash
 make build
 ```
 
-> This step is needed only if you want to build a custom or pre-release version that does not have a pre-built  Docker image in the Docker Hub. The installation script choses the last available stable version on Docker Hub, **unless** there is no local image. If you are unsure about any local builds, use `make clean` command to remove all locally build docker images.
+> This step is only necessary if you wish to build a custom or pre-release version that does not have a pre-built  Docker image in the Docker Hub. The installation script chooses the last available stable version on Docker Hub, **unless** there is no local image. If you are unsure about any local builds, use `make clean` command to remove all locally built docker images.
 
 ## Configuration
 
@@ -84,13 +84,13 @@ Configuration options are described [in this document](./docs/config_options.md)
 
 ## Management
 
-Run the application:
+To run the application execute the following command:
 
 ```bash
 make up
 ```
 
-Stop the application:
+To stop the application execute the following command:
 
 ```bash
 make down
@@ -98,7 +98,7 @@ make down
 
 ## Further development
 
-The possibility of customization and building Lisk Service from local source is described in the document [Building Lisk Service from source](./docs/build_from_source.md). It might be also useful for PM2-based installation.
+The possibility to customize and build Lisk Service from a local source is described in the following document [Building Lisk Service from source](./docs/build_from_source.md). This may also be also useful for PM2-based installations.
 
 ## Contributors
 

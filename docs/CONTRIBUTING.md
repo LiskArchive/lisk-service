@@ -1,10 +1,10 @@
 # Contributing to Lisk Service
 
-First off, thanks for taking the time to contribute! :raised_hands:
+Firstly, many thanks for taking the time to contribute! :raised_hands:
 
 The following is a set of guidelines for contributing to Lisk Service, which
 are hosted in the [LiskHQ Organization](https://github.com/LiskHQ) on GitHub.
-These are mostly guidelines, not rules. Use your best judgment, and feel free to
+These are mostly guidelines, not rules. Use your best judgement, and feel free to
 propose changes to this document in a pull request.
 
 #### Table Of Contents
@@ -111,7 +111,7 @@ Before creating bug reports, please check
 [this list](#before-submitting-a-bug-report) as you might find out that you
 don’t need to create one. When you are creating a bug report, please
 [include as many details as possible](#how-do-i-submit-a-good-bug-report). Fill
-out [the required template](ISSUE_TEMPLATE.md), the information it asks for
+out [the required template](ISSUE_TEMPLATE.md), the requested information
 helps us resolve issues faster.
 
 > **Note:** If you find a **Closed** issue that seems like it is the same thing
@@ -141,7 +141,7 @@ Explain the problem and include additional details to help maintainers reproduce
 the problem:
 
 * **Use a clear and descriptive title** for the issue to identify the problem.
-* **Describe the exact steps which reproduce the problem** in as many details as
+* **Describe the exact steps in order to reproduce the problem** in as many details as
 	possible. When listing steps, **don’t just say what you did, but explain how
 	you did it**. **Make sure to erase sensitive information from the
 	configuration or details you are passing - NEVER SHARE YOUR SECRET PASSPHRASES
@@ -227,7 +227,7 @@ following information:
 On lisk-explorer we are using [Prettier](https://prettier.io/) and
 [ESLint](https://eslint.org/). Our ESLint style expands
 [Airbnb’s](https://github.com/airbnb/javascript) style settings and expresses
-some opinions not covered by Prettier’s formatting concerns. You can get more
+some opinions not covered by Prettier’s formatting concerns. You can find more
 details here: https://github.com/LiskHQ/eslint-config-lisk-base
 
 These contribution guidelines were inspired by and are based on Atom’s
