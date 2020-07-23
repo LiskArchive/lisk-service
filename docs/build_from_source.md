@@ -13,8 +13,6 @@ In order to run a local version of Lisk Service, the following development depen
 
 ## Get sources with version control
 
-In the contrary to the production version, make sure that the whole Git repository is cloned on your machine.
-
 Instead of getting the tar.gz archive with the last version, as described in the main README, clone the whole repository with git version control system.
 
 ```bash
