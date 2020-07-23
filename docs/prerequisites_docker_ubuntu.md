@@ -1,6 +1,6 @@
 # Lisk Service prerequisites for Ubuntu
 
-Those requirements are needed to perform the recommended way of running Lisk Service on the server.
+The following requirements are needed to perform the recommended method of running Lisk Service on the server.
 
 ## Prerequisites
 
@@ -24,7 +24,7 @@ apt install build-essential git
 
 ### Docker
 
-[Docker](https://www.docker.com/) is used as a run-time environment for Lisk Service. It takes care of most dependencies and makes simplifies the required configuration.
+[Docker](https://www.docker.com/) is used as a run-time environment for Lisk Service. It takes care of most dependencies and simplifies the required configuration.
 
 Follow the official documentation to install the most recent version of [Docker](https://docs.docker.com/engine/install/ubuntu/) on Ubuntu.
 

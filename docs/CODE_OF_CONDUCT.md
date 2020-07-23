@@ -4,7 +4,7 @@
 
 In the interest of fostering an open and welcoming environment, we as
 contributors and maintainers pledge to making participation in our project and
-our community a harassment-free experience for everyone, regardless of age, body
+our community a harassment-free experience for everyone. This is regardless of age, body
 size, disability, ethnicity, gender identity and expression, level of
 experience, nationality, personal appearance, race, religion, or sexual identity
 and orientation.
@@ -12,7 +12,7 @@ and orientation.
 ## Our Standards
 
 Examples of behavior that contributes to creating a positive environment
-include:
+include the following:
 
 * Using welcoming and inclusive language
 * Being respectful of differing viewpoints and experiences
@@ -20,7 +20,7 @@ include:
 * Focusing on what is best for the community
 * Showing empathy towards other community members
 
-Examples of unacceptable behavior by participants include:
+Examples of unacceptable behavior by participants include the following:
 
 * The use of sexualized language or imagery and unwelcome sexual attention or
 	advances

@@ -23,7 +23,7 @@ SERVICE_LOG_LEVEL=debug   # Default log level
 ## Gateway settings
 
 ```bash
-# Port that makes possible to connect with Lisk Service
+# Port that provides the possibility to connect with Lisk Service
 # For HTTP and WebSocket
 PORT=9901
 ```

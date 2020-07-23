@@ -11,15 +11,15 @@ The project implementation is based on Microservices. The technical stack is des
 
 Lisk Service consists of several separate modules, that can be run independently from the others. Gateway is required to expose the APIs provided by particular services.
 
-Each service is independent part of the repository and is placed in a separate directory in the `./services/` directory. Each of them contains its own `package.json` and `Dockerfile` that are needed to run the module.
+Each service is an independent part of the repository and is placed in a separate directory in the `./services/` directory. Each of them contains its own `package.json` and `Dockerfile` that are needed to run the module.
 
 
 | Service                  | Description                                                                                                       |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [Gateway](services/gateway) | The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides users with a central point of data access that never breaks existing application compatibility.|
-| [Lisk](services/core) | The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, efficient and reliable access to the Lisk Core API. |
-| Bitcoin _(planned)_ | The Bitcoin service communicates with [ElectrumX](https://electrumx.readthedocs.io/en/latest/) to retrieve data from the Bitcoin network. The Bitcoin service provides bitcoin data from Electrum server and acts as a bridge for the Lisk Service API. |
-| [Template](services/template) | The Template service is an abstract service that the all Lisk Service services inherit from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, simplifying code maintenance and testing. |
+| [Lisk](services/core) | The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
+| Bitcoin _(planned)_ | The Bitcoin service communicates with [ElectrumX](https://electrumx.readthedocs.io/en/latest/) to retrieve data from the Bitcoin network. The Bitcoin service provides Bitcoin data from the Electrum server and acts as a bridge for the Lisk Service API. |
+| [Template](services/template) | The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing. |
 
 **Remarks**
 
@@ -34,7 +34,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | [HTTP API](https://app.swaggerhub.com/apis/LiskHQ/lisk-service-api/1.0#/)     | HTTP API is the public RESTful API that provides blockchain data in standardized JSON format.   |
 | [WebSocket JSON-RPC API](docs/api/websocket_json_rpc_api.md)     | The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format. The API uses the socket.io library and it is compatible with JSON-RPC 2.0 standard.   |
-| [Subscribe API](docs/api/websocket_subscribe_api.md)     | The Subscribe API is an event-driven API. It uses two-way streaming connection, which can notify the client about new data instantly as they arrive. It is responsible for updating users about changes in the blockchain network and markets.   |
+| [Subscribe API](docs/api/websocket_subscribe_api.md)     | The Subscribe API is an event-driven API. It uses a two-way streaming connection, which can notify the client about new data instantly as it arrives. It is responsible for updating users regarding changes in the blockchain network and markets.   |
 
 ## Installation
 
@@ -42,11 +42,11 @@ The default port for REST API requests and Socket.io-based communication is `990
  
 WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
 
-To continue the installation make sure that you have the following dependencies installed:
+To continue the installation ensure that you have the following dependencies installed:
 - [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
 - [GNU Make](https://www.gnu.org/software/make/) and [GNU Tar](https://www.gnu.org/software/tar/)
 
-Follow these instructions to get detailed information about installation of required dependencies on various operating systems.
+Follow the instructions listed below, in order to acquire detailed information regarding the installation of required dependencies for various operating systems.
 
 - [Ubuntu 18.04 LTS Bionic Beaver](./docs/prerequisites_docker_ubuntu.md)
 - [Ubuntu 20.04 LTS Focal Fossa](./docs/prerequisites_docker_ubuntu.md)
@@ -55,24 +55,24 @@ Follow these instructions to get detailed information about installation of requ
 
 Retrieve the latest release from [the official repository](https://github.com/LiskHQ/lisk-service/releases).
 
-Unpack the source code archive:
+Unpack the source code archive by executing the following commands listed below:
 
 ```bash
 tar xf lisk-service-x.y.z.tar.gz
 cd lisk-service
 ```
 
-> Although the above commands retrieve the whole source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
+> Although the above commands retrieve the entire source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
 
 ### Docker image build (Optional) 
 
-If you want to build the local version of Lisk Service use the following command.
+If you wish to build the local version of Lisk Service execute the following command below.
 
 ```bash
 make build
 ```
 
-> This step is needed only if you want to build a custom or pre-release version that does not have a pre-built  Docker image in the Docker Hub. The installation script choses the last available stable version on Docker Hub, **unless** there is no local image. If you are unsure about any local builds, use `make clean` command to remove all locally build docker images.
+> This step is only necessary if you wish to build a custom or pre-release version that does not have a pre-built  Docker image in the Docker Hub. The installation script chooses the last available stable version on Docker Hub, **unless** there is no local image. If you are unsure about any local builds, use `make clean` command to remove all locally built docker images.
 
 ## Configuration
 
@@ -84,13 +84,13 @@ Configuration options are described [in this document](./docs/config_options.md)
 
 ## Management
 
-Run the application:
+To run the application execute the following command:
 
 ```bash
 make up
 ```
 
-Stop the application:
+To stop the application execute the following command:
 
 ```bash
 make down
@@ -98,7 +98,7 @@ make down
 
 ## Further development
 
-The possibility of customization and building Lisk Service from local source is described in the document [Building Lisk Service from source](./docs/build_from_source.md). It might be also useful for PM2-based installation.
+The possibility to customize and build Lisk Service from a local source is described in the following document [Building Lisk Service from source](./docs/build_from_source.md). This may also be also useful for PM2-based installations.
 
 ## Contributors
 
