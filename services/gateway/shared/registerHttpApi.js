@@ -151,9 +151,9 @@ const registerApi = (apiName, config) => {
 				return;
 			}
 
-			const invalidList = Object.keys(paramReport.invalid);
+			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
-				sendResponse(BAD_REQUEST, `Invalid input parameter values: ${invalidList.join(', ')}`);
+				sendResponse(BAD_REQUEST, `Invalid input: ${invalidList.join(', ')}`);
 				return;
 			}
 

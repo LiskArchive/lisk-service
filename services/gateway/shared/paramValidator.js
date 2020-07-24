@@ -17,7 +17,7 @@
 const getTimestamp = () => Math.floor(Date.now() / 1000);
 
 const mapObjectWithProperty = (obj, propName) => Object.keys(obj).reduce((acc, cur) => {
-	if (obj[cur][propName]) acc[cur] = obj[cur][propName];
+	if (typeof obj[cur][propName] !== 'undefined') acc[cur] = obj[cur][propName];
 	return acc;
 }, {});
 
