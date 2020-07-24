@@ -1,5 +1,5 @@
 /*
- * LiskHQ/lisk-explorer
+ * LiskHQ/lisk-service
  * Copyright © 2018 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
