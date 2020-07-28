@@ -61,13 +61,12 @@ const wrongInputParamSchema = {
 	message: 'string',
 };
 
-xdescribe('Blocks API', () => {
+describe('Blocks API', () => {
 	describe('GET /blocks', () => {
 		it('returns list of blocks when called with no params', async () => {
 			const response = await api.get(`${endpoint}?limit=1`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...blockSchema,
-				id: '10045158952652080687',
 			});
 		});
 
@@ -90,23 +89,23 @@ xdescribe('Blocks API', () => {
 		});
 
 		it('known block by account -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.address}`);
+			const response = await api.get(`${endpoint}?address=${delegate.generatorAddress}`);
 			response.data.forEach(blockData => {
-				expect(blockData.generatorAddress).toEqual(delegate.address);
+				expect(blockData.generatorAddress).toEqual(delegate.generatorAddress);
 			});
 		});
 
 		it('known block by publickey -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.publicKey}`);
+			const response = await api.get(`${endpoint}?address=${delegate.generatorPublicKey}`);
 			response.data.forEach(blockData => {
-				expect(blockData.generatorAddress).toEqual(delegate.address);
+				expect(blockData.generatorPublicKey).toEqual(delegate.generatorPublicKey);
 			});
 		});
 
 		it('known block by username -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.username}`);
+			const response = await api.get(`${endpoint}?address=${delegate.generatorUsername}`);
 			response.data.forEach(blockData => {
-				expect(blockData.generatorAddress).toEqual(delegate.address);
+				expect(blockData.generatorUsername).toEqual(delegate.generatorUsername);
 			});
 		});
 
@@ -147,7 +146,7 @@ xdescribe('Blocks API', () => {
 		it('empty limit -> 400', () => expect(api.get(`${endpoint}?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 	});
 
-	describe('GET /blocks/last', () => {
+	xdescribe('GET /blocks/last', () => {
 		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/last?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
@@ -159,7 +158,7 @@ xdescribe('Blocks API', () => {
 		it('empty limit -> 400', () => expect(api.get(`${endpoint}/last?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 	});
 
-	describe('GET /blocks/best', () => {
+	xdescribe('GET /blocks/best', () => {
 		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/best?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
@@ -170,7 +169,7 @@ xdescribe('Blocks API', () => {
 		it('empty limit -> 400', () => expect(api.get(`${endpoint}/best?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 	});
 
-	describe('GET /block/{blockId}', () => {
+	xdescribe('GET /block/{blockId}', () => {
 		it('gets genesis block', async () => {
 			const response = await api.get(`${blockEndpoint}/${genesisBlockId}`);
 			expect(response.data).toEqual([{
@@ -202,7 +201,7 @@ xdescribe('Blocks API', () => {
 	});
 
 
-	describe('GET /block/{blockId}/transactions', () => {
+	xdescribe('GET /block/{blockId}/transactions', () => {
 		it('Transactions for genesis block -> ok', async () => {
 			const response = await api.get(`${blockEndpoint}/${genesisBlockId}/transactions`);
 			expect(response.data).toBeArrayOfSize(10);
