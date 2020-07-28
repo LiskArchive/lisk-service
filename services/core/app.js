@@ -36,7 +36,7 @@ const logger = Logger();
 const app = Microservice({
 	name: 'core',
 	transporter: config.transporter,
-	timeout: config.brokerTimeout,
+	timeout: config.brokerTimeout * 1000, // ms
 	logger: Logger('lisk:moleculer'),
 });
 
