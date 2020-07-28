@@ -172,7 +172,7 @@ const registerApi = (apiName, config) => {
 
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
-				sendResponse(BAD_REQUEST, `Invalid input: ${invalidList.join(', ')}`);
+				sendResponse(BAD_REQUEST, `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
 				return;
 			}
 

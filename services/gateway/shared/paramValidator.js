@@ -13,6 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const Validator = require('fastest-validator');
+
+const validator = new Validator();
 
 const getTimestamp = () => Math.floor(Date.now() / 1000);
 
@@ -63,15 +66,16 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 			return acc;
 		}, {});
 
-	const convertStringsToNumbers = (input, specPar) => Object.keys(input).reduce((acc, cur) => {
-		if (specPar[cur].type === 'number') acc[cur] = Number.isNaN(Number(input[cur])) ? input[cur] : Number(input[cur]);
-		else acc[cur] = input[cur];
-		return acc;
-	}, {});
-
 	const specParams = specs.params || {};
 
-	const inputParams = convertStringsToNumbers(rawInputParams, specParams);
+	const looseSpecParams = (specPar) => Object.keys(specPar).reduce((acc, cur) => {
+		if (specPar[cur].type === 'number' || specPar[cur].type === 'boolean') {
+			acc[cur] = { convert: true, ...specPar[cur] };
+		} else acc[cur] = specPar[cur];
+		return acc;
+	}, {}); // adds convert: true
+
+	const inputParams = rawInputParams;
 
 	const paramReport = parseParams({
 		swaggerParams: parseAllParams(specParams, inputParams),
@@ -83,50 +87,8 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 	if (paramReport.missing.length > 0) return paramReport;
 	if (Object.keys(paramReport.unknown).length > 0) return paramReport;
 
-	const isAllowedValue = (param, value) => (
-		!param.enum || value === undefined
-			|| (!Array.isArray(value) && param.enum.includes(value))
-			|| (
-				param.allowMultiple && Array.isArray(value)
-				&& value.filter(v => !param.enum.includes(v)).length === 0
-			)
-	);
-
-	const getInvalidParamValues = () => (
-		Object.entries(paramReport.valid).reduce((accumulator, [key, value]) => ([
-			...accumulator,
-			...(specParams[key].type !== undefined
-					// eslint-disable-next-line valid-typeof
-					&& typeof value !== specParams[key].type
-				? [`Type of '${key}' is ${typeof value} instead of expected ${specParams[key].type}`]
-				: []
-			),
-			...(specParams[key].max !== undefined
-					&& value !== undefined
-					&& value > specParams[key].max
-				? [`Value of '${key}' bigger than allowed maximum ${specParams[key].max}`]
-				: []
-			),
-			...(specParams[key].min !== undefined
-					&& value !== undefined
-					&& value < specParams[key].min
-				? [`Value of '${key}' smaller than allowed minimum ${specParams[key].min}`]
-				: []
-			),
-			...(!isAllowedValue(specParams[key], value)
-				? [`Value of '${key}' is not one of allowed values: ${specParams[key].enum.join(', ')}`]
-				: []
-			),
-			...(specParams[key].minLength
-					&& typeof value === 'string'
-					&& value.length < specParams[key].minLength
-				? [`Length of '${key}' smaller than allowed minimum ${specParams[key].minLength}`]
-				: []
-			),
-		]), [])
-	);
-
-	paramReport.invalid = getInvalidParamValues();
+	paramReport.invalid = validator.validate(inputParams, looseSpecParams(specParams));
+	if (paramReport.invalid === true) paramReport.invalid = [];
 
 	return paramReport;
 };
