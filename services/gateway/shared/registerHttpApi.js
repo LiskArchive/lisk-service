@@ -75,6 +75,18 @@ const configureApi = (apiName, apiPrefix) => {
 	return { aliases, whitelist, methodPaths };
 };
 
+const typeMappings = {
+	string_number: (input) => Number(input),
+	number_string: (input) => String(input),
+	array_string: (input) => input.join(','),
+};
+
+const convertType = (item, type) => {
+	const typeMatch = `${(typeof item)}_${type}`;
+	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
+	return item;
+};
+
 const mapParam = (source, originalKey, mappingKey) => {
 	if (mappingKey) {
 		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
@@ -84,10 +96,17 @@ const mapParam = (source, originalKey, mappingKey) => {
 	return {};
 };
 
+const mapParamWithType = (source, originalSetup, mappingKey) => {
+	const [originalKey, type] = originalSetup.split(',');
+	const mapObject = mapParam(source, originalKey, mappingKey);
+	if (typeof type === 'string') return { key: mappingKey, value: convertType(mapObject.value, type) };
+	return mapObject;
+};
+
 const transformParams = (params = {}, specs) => {
 	const output = {};
 	Object.keys(specs).forEach((specParam) => {
-		const result = mapParam(params, specs[specParam], specParam);
+		const result = mapParamWithType(params, specs[specParam], specParam);
 		if (result.key) output[result.key] = result.value;
 	});
 	return output;

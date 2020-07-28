@@ -46,7 +46,7 @@ const parseParams = (p) => {
 	};
 };
 
-const validateInputParams = (inputParams = {}, specs) => {
+const validateInputParams = (rawInputParams = {}, specs) => {
 	const checkMissingParams = (routeParams, requestParams) => {
 		const requiredParamList = Object.keys(routeParams)
 			.filter(o => routeParams[o].required === true);
@@ -63,7 +63,17 @@ const validateInputParams = (inputParams = {}, specs) => {
 			return acc;
 		}, {});
 
+	const convertStringsToNumbers = (input, specPar) => {
+		return Object.keys(input).reduce((acc, cur) => {
+			if (specPar[cur].type === 'number') acc[cur] = Number.isNaN(Number(input[cur])) ? input[cur] : Number(input[cur]);
+			else acc[cur] = input[cur];
+			return acc;
+		}, {});
+	};
+
 	const specParams = specs.params || {};
+
+	const inputParams = convertStringsToNumbers(rawInputParams, specParams);
 
 	const paramReport = parseParams({
 		swaggerParams: parseAllParams(specParams, inputParams),
