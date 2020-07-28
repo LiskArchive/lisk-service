@@ -63,13 +63,11 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 			return acc;
 		}, {});
 
-	const convertStringsToNumbers = (input, specPar) => {
-		return Object.keys(input).reduce((acc, cur) => {
-			if (specPar[cur].type === 'number') acc[cur] = Number.isNaN(Number(input[cur])) ? input[cur] : Number(input[cur]);
-			else acc[cur] = input[cur];
-			return acc;
-		}, {});
-	};
+	const convertStringsToNumbers = (input, specPar) => Object.keys(input).reduce((acc, cur) => {
+		if (specPar[cur].type === 'number') acc[cur] = Number.isNaN(Number(input[cur])) ? input[cur] : Number(input[cur]);
+		else acc[cur] = input[cur];
+		return acc;
+	}, {});
 
 	const specParams = specs.params || {};
 
