@@ -19,7 +19,7 @@ module.exports = {
 	swaggerApiPath: '/hello/{path_name}',
 	rpcMethod: 'get.hello.param',
 	params: {
-		path_name: { required: true, type: 'string', minLength: 3 },
+		path_name: { optional: false, type: 'string', min: 3 },
 	},
 	envelope: {
 		data: [],

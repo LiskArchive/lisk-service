@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/search',
 	params: {
-		q: { required: true },
+		q: { optional: false, type: 'string' },
 	},
 	source: networkSearchSource,
 	envelope,
