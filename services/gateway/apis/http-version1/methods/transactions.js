@@ -22,7 +22,7 @@ module.exports = {
 	rpcMethod: 'get.transactions',
 	params: {
 		id: { optional: true, type: 'string', min: 1 },
-		type: { optional: true, type: 'number', min: 0, max: 12 },
+		type: { optional: true, type: 'number', integer: true, min: 0 },
 		address: { optional: true, type: 'string', min: 1 },
 		sender: { optional: true, type: 'string', min: 1 },
 		recipient: { optional: true, type: 'string', min: 1 },
