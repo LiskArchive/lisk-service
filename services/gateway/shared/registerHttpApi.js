@@ -182,6 +182,22 @@ const registerApi = (apiName, config) => {
 
 		async onAfterCall(ctx, route, req, res, data) {
 			// TODO: Add support for ETag
+
+			if (data && data.status) {
+				ctx.meta.$statusCode = data.status;
+
+				let message = `The request ended up with error ${data.status}`;
+
+				if (typeof data.data === 'object' && typeof data.data.error === 'string') {
+					message = data.data.error;
+				}
+
+				return {
+					error: true,
+					message,
+				};
+			}
+
 			return transformResponse(`${req.method.toUpperCase()} ${req.$alias.path}`, data);
 		},
 	};
