@@ -83,7 +83,7 @@ describe('Gateway', () => {
 		expect(response).toEqual({
 			jsonrpc: '2.0',
 			code: INVALID_REQUEST[0],
-			message: 'Invalid input parameter(s): wrong_param_name', // TODO: update
+			message: 'Invalid input: The \'path_name\' field length must be greater than or equal to 3 characters long.',
 		});
 	});
 
