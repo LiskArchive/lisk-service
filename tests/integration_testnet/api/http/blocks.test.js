@@ -41,13 +41,13 @@ const blockSchema = {
 };
 
 const delegate = {
-	address: '9528507096611161860L',
-	username: 'genesis_71',
-	publicKey: 'fab7b58be4c1e9542c342023b52e9d359ea89a3af34440bdb97318273e8555f0',
+	address: '5201600508578320196L',
+	username: 'cc001',
+	publicKey: '473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c',
 };
 
 const badRequestSchema = {
-	errors: 'array',
+	error: 'boolean',
 	message: 'string',
 };
 
@@ -89,23 +89,23 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by account -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.generatorAddress}`);
+			const response = await api.get(`${endpoint}?address=${delegate.address}`);
 			response.data.forEach(blockData => {
-				expect(blockData.generatorAddress).toEqual(delegate.generatorAddress);
+				expect(blockData.generatorAddress).toEqual(delegate.address);
 			});
 		});
 
 		it('known block by publickey -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.generatorPublicKey}`);
+			const response = await api.get(`${endpoint}?address=${delegate.publicKey}`);
 			response.data.forEach(blockData => {
-				expect(blockData.generatorPublicKey).toEqual(delegate.generatorPublicKey);
+				expect(blockData.generatorPublicKey).toEqual(delegate.publicKey);
 			});
 		});
 
 		it('known block by username -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.generatorUsername}`);
+			const response = await api.get(`${endpoint}?address=${delegate.username}`);
 			response.data.forEach(blockData => {
-				expect(blockData.generatorUsername).toEqual(delegate.generatorUsername);
+				expect(blockData.generatorUsername).toEqual(delegate.username);
 			});
 		});
 
@@ -114,16 +114,16 @@ describe('Blocks API', () => {
 			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 
-		xit('too long block id -> 400', () => expect(api.get(`${endpoint}?id=fkfkfkkkffkfkfk10101010101010101010`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('too long block id -> 400', () => expect(api.get(`${endpoint}?id=fkfkfkkkffkfkfk10101010101010101010`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-		xit('empty block id -> 400', () => expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('empty block id -> 400', () => expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
 		xit('non-existent block id -> 404', () => expect(api.get(`${endpoint}?id=12602944501676077162`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 
-		xit('invalid query parameter -> 400', () => expect(api.get(`${endpoint}?block=12602944501676077162`, 400)).resolves.toMapRequiredSchema(wrongInputParamSchema));
+		it('invalid query parameter -> 400', () => expect(api.get(`${endpoint}?block=12602944501676077162`, 400)).resolves.toMapRequiredSchema(wrongInputParamSchema));
 
 
-		xit('known height -> ok', async () => {
+		it('known height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=${block.height}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...blockSchema,
@@ -133,17 +133,17 @@ describe('Blocks API', () => {
 
 		xit('non-existent height -> 404', () => expect(api.get(`${endpoint}?height=2000000000`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 
-		xit('empty height -> 400', () => expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('empty height -> 400', () => expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-		xit('limit=100 -> ok', async () => {
+		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(blockSchema);
 		});
 
-		xit('0 -> 400', () => expect(api.get(`${endpoint}?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('limit=0 -> 400', () => expect(api.get(`${endpoint}?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-		xit('empty limit -> 400', () => expect(api.get(`${endpoint}?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('empty limit -> 400', () => expect(api.get(`${endpoint}?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 	});
 
 	xdescribe('GET /blocks/last', () => {
