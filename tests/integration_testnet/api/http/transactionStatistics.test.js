@@ -22,16 +22,16 @@ import {
 } from '../../schemas/transactionStatistics.schema';
 
 const invalidRequestSchema = {
+	error: 'boolean',
 	message: 'string',
-	errors: 'array',
 };
 
 const notFoundSchema = {
-	error: 'string',
-	url: 'string',
+	error: 'boolean',
+	message: 'string',
 };
 
-xdescribe('Transaction statistics API', () => {
+describe('Transaction statistics API', () => {
 	describe('GET /transactions/statistics/{aggregateBy}', () => {
 		const baseUrl = `${config.SERVICE_ENDPOINT}/api/v1/transactions/statistics`;
 
@@ -116,10 +116,6 @@ xdescribe('Transaction statistics API', () => {
 				it('returns error 400 if called with ?limit=101 or higher', async () => {
 					const response = await api.get(`${endpoint}?limit=101`, 400);
 					expect(response).toMapRequiredSchema(invalidRequestSchema);
-					expect(response.errors[0]).toMapRequiredSchema({
-						...invalidRequestSchema,
-						code: 'INVALID_REQUEST_PARAMETER',
-					});
 				});
 
 				// TODO implement this case in the API
