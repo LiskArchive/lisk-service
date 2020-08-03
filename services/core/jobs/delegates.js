@@ -25,11 +25,11 @@ module.exports = [
 		schedule: '*/5 * * * *', // Every 5 min
 		updateOnInit: true,
 		init: () => {
-			logger.info('Scheduling initial list update...');
+			logger.debug('Scheduling initial list update...');
 			delegateCache.reload(core);
 		},
 		controller: () => {
-			logger.info('Scheduling delegate list reload...');
+			logger.debug('Scheduling delegate list reload...');
 			delegateCache.reload(core);
 		},
 	},
