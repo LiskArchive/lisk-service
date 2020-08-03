@@ -18,7 +18,6 @@ const { Logger } = require('lisk-service-framework');
 const logger = Logger();
 
 const moment = require('moment');
-const core = require('./core');
 const transactionStatisticsQueue = require('./transactionStatisticsQueue');
 const { getDatabase, dbQueries } = require('./postgres');
 
@@ -83,21 +82,8 @@ const fetchTransactionsForPastNDays = n => {
 	});
 };
 
-const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-const liskCoreIsReady = async () => {
-	try {
-		logger.debug('Waiting for lisk-core...');
-		await core.getNetworkStatus();
-	} catch (e) {
-		await timeout(5000);
-		await liskCoreIsReady();
-	}
-};
-
 const init = async historyLengthDays => {
 	await ensureDbTableIsCreated();
-	await liskCoreIsReady();
 	fetchTransactionsForPastNDays(historyLengthDays);
 };
 
