@@ -22,8 +22,8 @@ module.exports = {
 	swaggerApiPath: '/peers',
 	params: {
 		ip: { optional: true, type: 'string' },
-		httpPort: { optional: true, type: 'number' },
-		wsPort: { optional: true, type: 'number' },
+		httpPort: { optional: true, type: 'number', integer: true, min: 1, max: 65535 },
+		wsPort: { optional: true, type: 'number', integer: true, min: 1, max: 65535 },
 		os: { optional: true, type: 'string' },
 		version: { optional: true, min: 5, type: 'string' },
 		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
