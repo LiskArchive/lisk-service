@@ -20,15 +20,15 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/delegates',
 	params: {
-		address: { required: false, type: 'string', minLength: 2 },
-		publickey: { required: false, type: 'string', minLength: 1 },
-		secpubkey: { required: false, type: 'string', minLength: 1 },
-		username: { required: false, type: 'string', minLength: 1 },
-		search: { required: false, type: 'string', minLength: 1 },
-		limit: { required: false, type: 'number', min: 1, max: 101, default: 10 },
-		offset: { required: false, type: 'number', min: 0, default: 0 },
+		address: { optional: true, type: 'string', min: 2 },
+		publickey: { optional: true, type: 'string', min: 1 },
+		secpubkey: { optional: true, type: 'string', min: 1 },
+		username: { optional: true, type: 'string', min: 1 },
+		search: { optional: true, type: 'string', min: 1 },
+		limit: { optional: true, type: 'number', min: 1, max: 101, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
-			required: false,
+			optional: true,
 			type: 'string',
 			enum: [
 				'username:asc', 'username:desc',

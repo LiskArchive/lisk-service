@@ -20,8 +20,8 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions/statistics/day',
 	params: {
-		offset: { required: false, default: 0, min: 0 },
-		limit: { required: false, default: 10, min: 1, max: 100 },
+		offset: { optional: true, type: 'number', default: 0, min: 0 },
+		limit: { optional: true, type: 'number', default: 10, min: 1, max: 100 },
 	},
 	source: transactionsStatisticsDaySource,
 	envelope,

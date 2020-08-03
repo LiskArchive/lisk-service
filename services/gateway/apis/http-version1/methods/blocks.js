@@ -20,15 +20,15 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blocks',
 	params: {
-		id: { required: false, type: 'string', minLength: 1 },
-		height: { required: false, type: 'number' },
-		from: { required: false, type: 'number' },
-		to: { required: false, type: 'number' },
-		address: { required: false, type: 'string', minLength: 1 },
-		limit: { required: false, type: 'number', min: 1, max: 100, default: 10 },
-		offset: { required: false, type: 'number', min: 0, default: 0 },
+		id: { optional: true, type: 'string', min: 1, max: 24 },
+		height: { optional: true, type: 'number', min: 1 },
+		from: { optional: true, type: 'number' },
+		to: { optional: true, type: 'number' },
+		address: { optional: true, type: 'string', min: 2 },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
-			required: false,
+			optional: true,
 			type: 'string',
 			enum: [
 				'height:asc', 'height:desc',

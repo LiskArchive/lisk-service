@@ -25,7 +25,7 @@ const defaultConfig = {
 	},
 
 	callOptions: {
-		timeout: 3000,
+		timeout: 30000,
 		retries: 3,
 	},
 

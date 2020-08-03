@@ -20,8 +20,8 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/delegates/next_forgers',
 	params: {
-		limit: { required: false, min: 1, max: 101, type: 'number' },
-		offset: { required: false, min: 0, type: 'number' },
+		limit: { optional: true, min: 1, max: 101, type: 'number' },
+		offset: { optional: true, min: 0, type: 'number' },
 	},
 	source: {
 		...delegatesSource,

@@ -19,9 +19,9 @@ module.exports = {
 	type: 'moleculer',
 	method: 'core.blocks',
 	params: {
-		offset: '=',
-		limit: '=',
-		height: '=',
+		offset: '=,number',
+		limit: '=,number',
+		height: '=,number',
 		blockId: 'id',
 		sort: '=',
 		address: '=',

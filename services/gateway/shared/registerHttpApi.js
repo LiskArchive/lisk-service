@@ -75,6 +75,18 @@ const configureApi = (apiName, apiPrefix) => {
 	return { aliases, whitelist, methodPaths };
 };
 
+const typeMappings = {
+	string_number: (input) => Number(input),
+	number_string: (input) => String(input),
+	array_string: (input) => input.join(','),
+};
+
+const convertType = (item, type) => {
+	const typeMatch = `${(typeof item)}_${type}`;
+	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
+	return item;
+};
+
 const mapParam = (source, originalKey, mappingKey) => {
 	if (mappingKey) {
 		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
@@ -84,10 +96,17 @@ const mapParam = (source, originalKey, mappingKey) => {
 	return {};
 };
 
+const mapParamWithType = (source, originalSetup, mappingKey) => {
+	const [originalKey, type] = originalSetup.split(',');
+	const mapObject = mapParam(source, originalKey, mappingKey);
+	if (typeof type === 'string') return { key: mappingKey, value: convertType(mapObject.value, type) };
+	return mapObject;
+};
+
 const transformParams = (params = {}, specs) => {
 	const output = {};
 	Object.keys(specs).forEach((specParam) => {
-		const result = mapParam(params, specs[specParam], specParam);
+		const result = mapParamWithType(params, specs[specParam], specParam);
 		if (result.key) output[result.key] = result.value;
 	});
 	return output;
@@ -151,9 +170,9 @@ const registerApi = (apiName, config) => {
 				return;
 			}
 
-			const invalidList = Object.keys(paramReport.invalid);
+			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
-				sendResponse(BAD_REQUEST, `Invalid input parameter values: ${invalidList.join(', ')}`);
+				sendResponse(BAD_REQUEST, `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
 				return;
 			}
 
@@ -163,6 +182,22 @@ const registerApi = (apiName, config) => {
 
 		async onAfterCall(ctx, route, req, res, data) {
 			// TODO: Add support for ETag
+
+			if (data && data.status) {
+				ctx.meta.$statusCode = data.status;
+
+				let message = `The request ended up with error ${data.status}`;
+
+				if (typeof data.data === 'object' && typeof data.data.error === 'string') {
+					message = data.data.error;
+				}
+
+				return {
+					error: true,
+					message,
+				};
+			}
+
 			return transformResponse(`${req.method.toUpperCase()} ${req.$alias.path}`, data);
 		},
 	};

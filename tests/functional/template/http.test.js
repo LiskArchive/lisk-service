@@ -69,12 +69,12 @@ describe('Gateway', () => {
 		});
 	});
 
-	xit('client error returns 400 when param value is too short', async () => {
+	it('client error returns 400 when param value is too short', async () => {
 		const expectedStatus = 400;
 		const response = await api.get(`${baseUrl}/hello/ab`, expectedStatus);
 		expect(response).toEqual({
 			error: true,
-			message: 'Invalid input parameter(s): wrong_param_name', // TODO: update
+			message: 'Invalid input: The \'path_name\' field length must be greater than or equal to 3 characters long.',
 		});
 	});
 
