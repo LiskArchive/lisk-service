@@ -140,15 +140,13 @@ const getPeersStatistics = async () => {
 
 	return {
 		data: {
-			data: {
-				basic: basicStats,
-				height: heightStats,
-				coreVer: coreVerStats,
-				os: osStats,
-			},
-			meta: {},
-			links: {},
+			basic: basicStats,
+			height: heightStats,
+			coreVer: coreVerStats,
+			os: osStats,
 		},
+		meta: {},
+		links: {},
 	};
 };
 
