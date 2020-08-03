@@ -26,7 +26,7 @@ module.exports = {
 		wsPort: { optional: true, type: 'number' },
 		os: { optional: true, type: 'string' },
 		version: { optional: true, min: 5, type: 'string' },
-		state: { optional: true, type: 'number', enum: [0, 1, 2] },
+		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
 		height: { optional: true, type: 'number' },
 		broadhash: { optional: true, type: 'string' },
 		limit: { optional: true, min: 1, max: 100, type: 'number' },
