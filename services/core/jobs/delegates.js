@@ -26,7 +26,7 @@ module.exports = [
 		updateOnInit: true,
 		init: () => {
 			logger.info('Scheduling initial list update...');
-			delegateCache.init(core);
+			delegateCache.reload(core);
 		},
 		controller: () => {
 			logger.info('Scheduling delegate list reload...');
