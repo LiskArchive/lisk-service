@@ -54,11 +54,9 @@ const getPeers = async (params) => {
 	};
 
 	return {
-		data: {
-			data: dataWithLocation,
-			meta,
-			links: {},
-		},
+		data: dataWithLocation,
+		meta,
+		links: {},
 	};
 };
 
