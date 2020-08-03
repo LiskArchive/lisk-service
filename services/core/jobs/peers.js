@@ -28,7 +28,7 @@ module.exports = [
 		// interval: 45 * 1000, // ms
 		updateOnInit: true,
 		controller: () => {
-			logger.info('Scheduling peer list reload...');
+			logger.debug('Scheduling peer list reload...');
 			peerCache.reload(core);
 		},
 	},
