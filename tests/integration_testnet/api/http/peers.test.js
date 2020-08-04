@@ -19,7 +19,6 @@ import config from '../../config';
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/peers`;
-const peerEndpoint = `${baseUrlV1}/peer`;
 const networkEndpoint = `${baseUrlV1}/network`;
 
 const peerSchema = {
