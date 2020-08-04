@@ -72,13 +72,16 @@ describe('Transactions API', () => {
 			...badRequestSchema,
 		}));
 
-		xit('invalid transaction id -> 404', () => expect(api.get(`${endpoint}?id=41287`, 404)).resolves.toMapRequiredSchema({
+		it('invalid transaction id -> 404', () => expect(api.get(`${endpoint}?id=41287`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
-		it('empty transaction id -> 400', () => expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('empty transaction id -> ok', async () => {
+			const response = await api.get(`${endpoint}?block=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+			});
+		});
 
 		it('returns transactions with known transaction type', async () => {
 			const response = await api.get(`${endpoint}?type=${transaction.type}`);
@@ -145,9 +148,12 @@ describe('Transactions API', () => {
 			...badRequestSchema,
 		}));
 
-		it('empty block -> 400', () => expect(api.get(`${endpoint}?block=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('empty block -> ok', async () => {
+			const response = await api.get(`${endpoint}?block=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+			});
+		});
 
 		it('known height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=${transaction.height}`);
@@ -161,10 +167,12 @@ describe('Transactions API', () => {
 			...badRequestSchema,
 		}));
 
-		it('empty height -> 400', () => expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
-
+		it('empty height -> ok', async () => {
+			const response = await api.get(`${endpoint}?height=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+			});
+		});
 
 		it('transactions within set timestamps are returned', async () => {
 			const from = 1556181000; // 2019-04-25T08:30:00+00:00
@@ -178,33 +186,5 @@ describe('Transactions API', () => {
 				expect(trx.timestamp).toBeLessThanOrEqual(to);
 			});
 		});
-	});
-
-	xdescribe('GET /transactions/last', () => {
-		it('known transaction id -> ok', async () => {
-			const response = await api.get(`${endpoint}?id=${transaction.id}`);
-			expect(response.data[0]).toMapRequiredSchema({
-				...transactionSchema,
-				id: transaction.id,
-			});
-		});
-	});
-
-	xdescribe('GET /transaction/{transaction_id}', () => {
-		it('known transaction id -> ok', async () => {
-			const response = await api.get(`${transactionEndpoint}/${transaction.id}`);
-			expect(response.data[0]).toMapRequiredSchema({
-				...transactionSchema,
-				id: transaction.id,
-			});
-		});
-
-		it('incorrect transaction id -> 400', () => expect(api.get(`${transactionEndpoint}/123abc`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
-
-		it('non-existing transaction id -> 400', () => expect(api.get(`${transactionEndpoint}/123456789`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
 	});
 });
