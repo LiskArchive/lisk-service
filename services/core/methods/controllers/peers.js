@@ -68,7 +68,7 @@ const getPeers = async (params) => {
 
 	if (params.offset || params.limit) {
 		sortedPeers = filteredPeers.slice(params.offset || 0,
-			(params.limit + params.offset) || filteredPeers.length);
+			(params.limit || filteredPeers.length) + params.offset);
 	}
 
 	const dataWithLocation = await Promise.all(sortedPeers.map(async (elem) => {
