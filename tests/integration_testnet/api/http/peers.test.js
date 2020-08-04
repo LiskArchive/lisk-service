@@ -128,7 +128,7 @@ describe('Peers API', () => {
 			expect(response.data[0]).toMapRequiredSchema(peerSchema);
 		});
 
-		it('empty offset -> get all', async () => {
+		it('empty offset -> return all', async () => {
 			const response = await api.get(`${endpoint}?offset=`);
 			expect(response.data[0]).toMapRequiredSchema(peerSchema);
 		});
@@ -155,7 +155,7 @@ describe('Peers API', () => {
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('retrieves connected peers by state name', async () => {
+		it('retrieves disconnected peers by state name', async () => {
 			const response = await api.get(`${endpoint}?state=disconnected`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
