@@ -31,7 +31,7 @@ const notFoundSchema = {
 	message: 'string',
 };
 
-describe('Transaction statistics API', () => {
+xdescribe('Transaction statistics API', () => {
 	describe('GET /transactions/statistics/{aggregateBy}', () => {
 		const baseUrl = `${config.SERVICE_ENDPOINT}/api/v1/transactions/statistics`;
 
