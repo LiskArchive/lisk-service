@@ -21,7 +21,7 @@ const {
 
 const path = require('path');
 
-const { validate } = require('./paramValidator');
+const { validate, dropEmptyProps } = require('./paramValidator');
 
 const apiMeta = [];
 
@@ -176,7 +176,7 @@ const registerApi = (apiName, config) => {
 				return;
 			}
 
-			const params = transformRequest(routeAlias, req.$params);
+			const params = transformRequest(routeAlias, dropEmptyProps(req.$params));
 			req.$params = params;
 		},
 
