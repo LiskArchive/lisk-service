@@ -72,15 +72,14 @@ const responseEnvelopeSchema = {
 
 describe('Peers API', () => {
 	describe('GET /peers', () => {
-		// mockserver
-		it('required and optional properties  -> ok', async () => {
+		it('required and optional properties -> ok', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		xit('wrong ip -> not found error', () => expect(api.get(`${endpoint}?ip=0`, 404)).resolves.toMapRequiredSchema({
+		it('wrong ip -> not found error', () => expect(api.get(`${endpoint}?ip=0`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
@@ -96,75 +95,73 @@ describe('Peers API', () => {
 			...badRequestSchema,
 		}));
 
-		xit('wrong os -> not found error', () => expect(api.get(`${endpoint}?os=linux4.4.0-134-generic0000000`, 404)).resolves.toMapRequiredSchema({
+		it('wrong os -> not found error', () => expect(api.get(`${endpoint}?os=linux4.4.0-134-generic0000000`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
-		xit('non-existent version -> not found error', () => expect(api.get(`${endpoint}?version=`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('empty version -> ignore', async () => {
+			const response = await api.get(`${endpoint}?version=`);
+			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
+			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
+			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
+		});
 
 		it('invalid version -> bad request error', () => expect(api.get(`${endpoint}?state=3`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
-		xit('non-existent height -> not found error', () => expect(api.get(`${endpoint}?height=1000000000`, 404)).resolves.toMapRequiredSchema({
+		it('non-existent height -> not found error', () => expect(api.get(`${endpoint}?height=1000000000`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
-		xit('non-existent broadhash -> not found error', () => expect(api.get(`${endpoint}?broadhash=bf8b9d02a2167933be8c4a22b90992aee55204dca4452b3844208754a3baeb7b000000`, 404)).resolves.toMapRequiredSchema({
+		it('non-existent broadhash -> not found error', () => expect(api.get(`${endpoint}?broadhash=bf8b9d02a2167933be8c4a22b90992aee55204dca4452b3844208754a3baeb7b000000`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
-		xit('limit=100 -> ok', async () => {
+		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(peerSchema);
 		});
 
-		xit('empty limit -> bad request error', () => expect(api.get(`${endpoint}?limit=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('empty limit -> return all', async () => {
+			const response = await api.get(`${endpoint}?limit=`);
+			expect(response.data[0]).toMapRequiredSchema(peerSchema);
+		});
 
-		xit('empty offset -> bad request error', () => expect(api.get(`${endpoint}?offset=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('empty offset -> get all', async () => {
+			const response = await api.get(`${endpoint}?offset=`);
+			expect(response.data[0]).toMapRequiredSchema(peerSchema);
+		});
 
-		xit('too big offset -> not found error', () => expect(api.get(`${endpoint}?offset=1000000`, 404)).resolves.toMapRequiredSchema({
+		it('too big offset -> not found error', () => expect(api.get(`${endpoint}?offset=1000000`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
-		xit('empty sort -> bad request error', () => expect(api.get(`${endpoint}?sort=`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('empty sort -> ignore', async () => {
+			const response = await api.get(`${endpoint}?sort=`);
+			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
+			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
+			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
+		});
 
 		it('wrong sort -> bad request error', () => expect(api.get(`${endpoint}?sort=height:ascc`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
-	});
 
-	xdescribe('GET /peers/connected', () => {
-		it('/peers/connected -> ok', async () => {
-			const response = await api.get(`${endpoint}/connected`);
+		it('retrieves connected peers by state name', async () => {
+			const response = await api.get(`${endpoint}?state=connected`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
-	});
 
-	xdescribe('GET /peers/disconnected', () => {
-		it('/peers/disconnected -> ok', async () => {
-			const response = await api.get(`${endpoint}/disconnected`);
+		it('retrieves connected peers by state name', async () => {
+			const response = await api.get(`${endpoint}?state=disconnected`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
-	});
-
-	xdescribe('GET /peer/{ip}', () => {
-		it('wrong ip -> not found error', () => expect(api.get(`${peerEndpoint}/0`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
 	});
 
 	describe('GET /network/statistics', () => {
