@@ -40,7 +40,7 @@ const getPeers = async (params) => {
 		return [...new Set(a)].filter(x => setB.has(x));
 	};
 
-	const filterParams = ['ip', 'httpPort', 'wsPort', 'os', 'version', 'state', 'height', 'broadhash'];
+	const filterParams = ['ip', 'httpPort', 'wsPort', 'os', 'version', 'height', 'broadhash'];
 	const activeParams = Object.keys(params).filter(item => params[item]);
 	const activeFilters = intersect(filterParams, activeParams);
 
@@ -64,7 +64,14 @@ const getPeers = async (params) => {
 
 	if (params.sort && /^.+:(asc|desc)$/.test(params.sort)) sortBy(filteredPeers, params.sort);
 
-	const dataWithLocation = await Promise.all(filteredPeers.map(async (elem) => {
+	let sortedPeers = filteredPeers;
+
+	if (params.offset || params.limit) {
+		sortedPeers = filteredPeers.slice(params.offset || 0,
+			(params.limit + params.offset) || filteredPeers.length);
+	}
+
+	const dataWithLocation = await Promise.all(sortedPeers.map(async (elem) => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
