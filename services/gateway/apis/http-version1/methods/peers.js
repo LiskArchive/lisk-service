@@ -29,7 +29,7 @@ module.exports = {
 		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
 		height: { optional: true, type: 'number' },
 		broadhash: { optional: true, type: 'string' },
-		limit: { optional: true, min: 1, max: 100, type: 'number' },
+		limit: { optional: true, type: 'number', integer: true },
 		offset: { optional: true, min: 0, type: 'number' },
 		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'version:asc', 'version:desc'] },
 	},
