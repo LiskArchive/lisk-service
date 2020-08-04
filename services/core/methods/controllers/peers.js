@@ -35,16 +35,43 @@ const getPeers = async (params) => {
 	else if (state === '0' || state === 'unknown') peers = []; // not supported anymore
 	else peers = await peerCache.get();
 
-	// TODO: Write support for other parameters
+	const intersect = (a, b) => {
+		const setB = new Set(b);
+		return [...new Set(a)].filter(x => setB.has(x));
+	};
 
-	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
+	const filterParams = ['ip', 'httpPort', 'wsPort', 'os', 'version', 'state', 'height', 'broadhash'];
+	const activeParams = Object.keys(params).filter(item => params[item]);
+	const activeFilters = intersect(filterParams, activeParams);
+
+	const filteredPeers = peers.filter(peer => {
+		let result = true;
+
+		activeFilters.forEach(property => {
+			if (params[property] !== peer[property]) result = false;
+		});
+
+		return result;
+	});
+
+	const sortBy = (array, p) => {
+		const [property, direction] = p.split(':');
+		if (property === 'version') array.sort((a, b) => a[property] > b[property]);
+		if (property === 'height') array.sort((a, b) => Number(a[property]) < Number(b[property]));
+		if (direction === 'asc') array.reverse();
+		return array;
+	};
+
+	if (params.sort && /^.+:(asc|desc)$/.test(params.sort)) sortBy(filteredPeers, params.sort);
+
+	const dataWithLocation = await Promise.all(filteredPeers.map(async (elem) => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
 
 	const meta = {
-		count: peers.length,
-		offset: 0,
+		count: dataWithLocation.length,
+		offset: params.offset || 0,
 		total: peers.length,
 	};
 
