@@ -113,7 +113,12 @@ describe('Blocks API', () => {
 
 		it('too long block id -> 400', () => expect(api.get(`${endpoint}?id=fkfkfkkkffkfkfk10101010101010101010`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-		it('empty block id -> 400', () => expect(api.get(`${endpoint}?id=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('empty block ID -> retrieve all', async () => {
+			const response = await api.get(`${endpoint}?id=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...blockSchema,
+			});
+		});
 
 		it('non-existent block id -> 404', () => expect(api.get(`${endpoint}?id=12602944501676077162`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 
@@ -130,7 +135,12 @@ describe('Blocks API', () => {
 
 		it('non-existent height -> 404', () => expect(api.get(`${endpoint}?height=2000000000`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
 
-		it('empty height -> 400', () => expect(api.get(`${endpoint}?height=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('empty height -> retrieve all', async () => {
+			const response = await api.get(`${endpoint}?height=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...blockSchema,
+			});
+		});
 
 		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
@@ -140,6 +150,11 @@ describe('Blocks API', () => {
 
 		it('limit=0 -> 400', () => expect(api.get(`${endpoint}?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-		it('empty limit -> 400', () => expect(api.get(`${endpoint}?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('empty block ID -> retrieve all', async () => {
+			const response = await api.get(`${endpoint}?limit=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...blockSchema,
+			});
+		});
 	});
 });
