@@ -67,7 +67,8 @@ const getPeers = async (params) => {
 	let sortedPeers = filteredPeers;
 
 	if (params.offset || params.limit) {
-		sortedPeers = filteredPeers.slice(params.offset || 0,
+		if (!params.offset) params.offset = 0;
+		sortedPeers = filteredPeers.slice(params.offset,
 			(params.limit || filteredPeers.length) + params.offset);
 	}
 
