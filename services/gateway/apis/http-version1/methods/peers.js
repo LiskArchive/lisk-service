@@ -25,7 +25,7 @@ module.exports = {
 		httpPort: { optional: true, type: 'number', integer: true, min: 1, max: 65535 },
 		wsPort: { optional: true, type: 'number', integer: true, min: 1, max: 65535 },
 		os: { optional: true, type: 'string' },
-		version: { optional: true, min: 5, type: 'string' },
+		version: { optional: true, type: 'string' },
 		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
 		height: { optional: true, type: 'number' },
 		broadhash: { optional: true, type: 'string' },
