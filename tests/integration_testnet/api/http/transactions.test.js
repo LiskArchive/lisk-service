@@ -20,7 +20,6 @@ import config from '../../config';
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/transactions`;
-const transactionEndpoint = `${baseUrlV1}/transaction`;
 const { transaction } = transactions;
 
 const transactionSchema = {
