@@ -124,7 +124,6 @@ describe('Blocks API', () => {
 
 		it('invalid query parameter -> 400', () => expect(api.get(`${endpoint}?block=12602944501676077162`, 400)).resolves.toMapRequiredSchema(wrongInputParamSchema));
 
-
 		it('known height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=${block.height}`);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -150,7 +149,7 @@ describe('Blocks API', () => {
 
 		it('limit=0 -> 400', () => expect(api.get(`${endpoint}?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
-		it('empty block ID -> retrieve all', async () => {
+		it('empty limit -> retrieve all', async () => {
 			const response = await api.get(`${endpoint}?limit=`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...blockSchema,
