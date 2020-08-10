@@ -144,7 +144,7 @@ describe('Delegates API', () => {
 						'02bb04b8b15f10edcd5fbc067c6107841b527a39d57dd33156de616714863bae',
 					rank: 1,
 					username: 'cc001',
-				})
+				}),
 			);
 		});
 

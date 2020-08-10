@@ -10,7 +10,7 @@ const delegates = {
 		rank: 1,
 		rewards: '45191200000000',
 		username: 'cc001',
-		vote: '12544660158854742'
+		vote: '12544660158854742',
 	},
 	standbyDelegate: {
 		address: '15432127119086351058L',
@@ -23,7 +23,7 @@ const delegates = {
 		rewards: '26047500000000',
 		secondPublicKey: '0015fa18c5f80c32d6db5e9b3287398e98f8af7d897236879e738dea80ec8826',
 		username: 'nimbus76',
-		vote: '1251068885918735'
+		vote: '1251068885918735',
 	},
 };
 
