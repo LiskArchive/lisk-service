@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-alert, no-console */
 import api from '../../helpers/api';
 import delegates from './constants/delegates';
 import accounts from './constants/accounts';
@@ -61,7 +60,6 @@ describe('Delegates API', () => {
 	describe('GET /delegates', () => {
 		it('known delegate by address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${delegates.activeDelegate.address}`);
-			console.log('response', response);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
 				address: delegates.activeDelegate.address,
