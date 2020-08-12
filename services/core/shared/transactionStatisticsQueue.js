@@ -17,14 +17,29 @@ const { Logger } = require('lisk-service-framework');
 const BigNumber = require('big-number');
 const Queue = require('bull');
 const moment = require('moment');
+const util = require('util');
 
 const core = require('./core');
 const { getDatabase, dbQueries } = require('./postgres');
 const config = require('../config');
+const requestAll = require('./requestAll');
 
 const logger = Logger();
 
-const statsQueue = new Queue('statsQueue', config.endpoints.redis);
+const statsQueue = new Queue('statsQueue', {
+	redis: config.endpoints.redis,
+	limiter: {
+		max: 8,
+		duration: 20,
+	},
+	prefix: 'bullStatsQueue',
+	defaultJobOptions: {
+		attempts: 5,
+		timeout: 5 * 60 * 1000, // ms
+		removeOnComplete: true,
+	},
+	settings: {},
+});
 
 const getWithFallback = (acc, type, range) => {
 	const defaultValue = {
@@ -101,15 +116,8 @@ const fetchTransactions = async (date, offset = 0) => {
 		limit,
 		offset,
 	};
-	const transactions = await core.getTransactions(params);
-	let { data } = transactions;
-	if (transactions.meta.count > offset + limit) {
-		data = [
-			...data,
-			...(await fetchTransactions(date, offset + limit)),
-		];
-	}
-	return data;
+	const transactions = await requestAll(core.getTransactions, params, 20000);
+	return transactions;
 };
 
 statsQueue.process(async job => {
@@ -137,5 +145,10 @@ statsQueue.on('failed', (job, error) => {
 	statsQueue.add({ ...job.data, attempt }, { delay });
 	job.remove();
 });
+
+setInterval(async () => {
+	const jobCounts = await statsQueue.getJobCounts();
+	logger.debug(`Queue counters: ${util.inspect(jobCounts)}`);
+}, 30000);
 
 module.exports = statsQueue;
