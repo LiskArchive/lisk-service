@@ -27,6 +27,12 @@ const mapObjectWithProperty = (obj, propName) => Object.keys(obj).reduce((acc, c
 const objDiff = (reference, testedObject) => Object.keys(testedObject).filter(o => typeof reference[o] === 'undefined');
 const arrDiff = (arr1, arr2) => arr2.filter(x => !arr1.includes(x));
 
+const dropEmptyProps = p => Object.keys(p)
+.reduce((acc, cur) => {
+	if (p[cur] !== '') acc[cur] = p[cur];
+	return acc;
+}, {});
+
 const parseParams = (p) => {
 	const combinedParams = { ...p.swaggerParams, ...p.inputParams };
 	const paramsDiff = (allParams, swaggerParams) => allParams.filter(
@@ -87,7 +93,9 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 	if (paramReport.missing.length > 0) return paramReport;
 	if (Object.keys(paramReport.unknown).length > 0) return paramReport;
 
-	paramReport.invalid = validator.validate(inputParams, looseSpecParams(specParams));
+	paramReport.invalid = validator.validate(
+		dropEmptyProps(inputParams),
+		looseSpecParams(specParams));
 	if (paramReport.invalid === true) paramReport.invalid = [];
 
 	return paramReport;
@@ -98,5 +106,5 @@ module.exports = {
 	objDiff,
 	arrDiff,
 	getTimestamp,
-
+	dropEmptyProps,
 };
