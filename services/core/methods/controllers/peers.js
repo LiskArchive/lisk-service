@@ -13,16 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Utils } = require('lisk-service-framework');
-
-const { StatusCodes: { NOT_FOUND } } = HTTP;
-const ObjectUtilService = Utils.Data;
-
-const CoreService = require('../../shared/core.js');
 const GeoService = require('../../shared/geolocation.js');
 const peerCache = require('../../shared/peerCache.js');
-
-const { isEmptyArray, isEmptyObject } = ObjectUtilService;
 
 const addLocation = async (ipaddress) => {
 	try {
@@ -34,75 +26,67 @@ const addLocation = async (ipaddress) => {
 };
 
 const getPeers = async (params) => {
-	const res = await CoreService.getPeers(params);
-	const { data } = res;
+	let peers = {};
 
-	if (isEmptyObject(res) || isEmptyArray(data)) {
-		return { status: NOT_FOUND, data: { error: 'Not found' } };
+	const state = params.state ? params.state.toString().toLowerCase() : undefined;
+
+	if (state === '2' || state === 'connected') peers = await peerCache.get('connected');
+	else if (state === '1' || state === 'disconnected') peers = await peerCache.get('disconnected');
+	else if (state === '0' || state === 'unknown') peers = []; // not supported anymore
+	else peers = await peerCache.get();
+
+	const intersect = (a, b) => {
+		const setB = new Set(b);
+		return [...new Set(a)].filter(x => setB.has(x));
+	};
+
+	const filterParams = ['ip', 'httpPort', 'wsPort', 'os', 'version', 'height', 'broadhash'];
+	const activeParams = Object.keys(params).filter(item => params[item]);
+	const activeFilters = intersect(filterParams, activeParams);
+
+	const filteredPeers = peers.filter(peer => {
+		let result = true;
+
+		activeFilters.forEach(property => {
+			if (params[property] !== peer[property]) result = false;
+		});
+
+		return result;
+	});
+
+	const sortBy = (array, p) => {
+		const [property, direction] = p.split(':');
+		if (property === 'version') array.sort((a, b) => a[property] > b[property]);
+		if (property === 'height') array.sort((a, b) => Number(a[property]) < Number(b[property]));
+		if (direction === 'asc') array.reverse();
+		return array;
+	};
+
+	if (params.sort && /^.+:(asc|desc)$/.test(params.sort)) sortBy(filteredPeers, params.sort);
+
+	let sortedPeers = filteredPeers;
+
+	if (params.offset || params.limit) {
+		if (!params.offset) params.offset = 0;
+		sortedPeers = filteredPeers.slice(params.offset,
+			(params.limit || filteredPeers.length) + params.offset);
 	}
 
-	const dataWithLocation = await Promise.all(data.map(async (elem) => {
+	const dataWithLocation = await Promise.all(sortedPeers.map(async (elem) => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
 
 	const meta = {
-		count: res.data.length,
-		limit: res.meta.limit,
-		offset: res.meta.offset,
-		total: res.meta.count,
+		count: dataWithLocation.length,
+		offset: params.offset || 0,
+		total: peers.length,
 	};
 
 	return {
 		data: dataWithLocation,
 		meta,
 		links: {},
-	};
-};
-
-const getConnectedPeers = async () => {
-	const peers = await peerCache.get('connected');
-
-	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
-		elem.location = await addLocation(elem.ip);
-		return elem;
-	}));
-
-	const meta = {
-		count: peers.length,
-		offset: 0,
-		total: peers.length,
-	};
-
-	return {
-		data: {
-			data: dataWithLocation,
-			meta,
-			links: {},
-		},
-	};
-};
-
-const getDisconnectedPeers = async () => {
-	const peers = await peerCache.get('disconnected');
-
-	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
-		elem.location = await addLocation(elem.ip);
-		return elem;
-	}));
-
-	const meta = {
-		count: peers.length,
-		offset: 0,
-		total: peers.length,
-	};
-
-	return {
-		data: {
-			data: dataWithLocation,
-			meta,
-			links: {},
-		},
 	};
 };
 
@@ -150,7 +134,5 @@ const getPeersStatistics = async () => {
 
 module.exports = {
 	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
 	getPeersStatistics,
 };

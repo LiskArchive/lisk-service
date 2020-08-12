@@ -40,7 +40,7 @@
     "commander": "=5.0.0",
     "compression": "^1.7.4",
     "debug": "=4.1.1",
-    "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-0.1.2.tgz",
+    "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-0.2.0.tgz",
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
     "pg-promise": "=10.5.0",
