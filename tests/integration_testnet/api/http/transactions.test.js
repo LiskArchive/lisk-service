@@ -15,6 +15,7 @@
  */
 import api from '../../helpers/api';
 import transactions from './constants/transactions';
+import accounts from './constants/accounts';
 import config from '../../config';
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -51,7 +52,7 @@ const notFoundSchema = {
 };
 
 describe('Transactions API', () => {
-	describe('GET /transactions', () => {
+	describe('Retrieve transaction lists', () => {
 		it('returns list of transactions', async () => {
 			const response = await api.get(`${endpoint}`);
 			response.data.forEach(element => {
@@ -59,6 +60,26 @@ describe('Transactions API', () => {
 			});
 		});
 
+		it('returns transactions with known transaction type', async () => {
+			const response = await api.get(`${endpoint}?type=${transaction.type}`);
+			response.data.forEach(element => {
+				expect(element).toMapRequiredSchema({
+					...transactionSchema,
+					type: transaction.type,
+				});
+			});
+		});
+
+		it('invalid transaction type -> 400', () => expect(api.get(`${endpoint}?type=-124`, 400)).resolves.toMapRequiredSchema({
+			...badRequestSchema,
+		}));
+
+		xit('empty transaction type -> 400', () => expect(api.get(`${endpoint}?type=`, 400)).resolves.toMapRequiredSchema({
+			...badRequestSchema,
+		}));
+	});
+
+	describe('Retrieve a transaction by transaction ID', () => {
 		it(`returns requested transaction when known transaction id=${transaction.id}`, async () => {
 			const response = await api.get(`${endpoint}?id=${transaction.id}`);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -81,25 +102,52 @@ describe('Transactions API', () => {
 				...transactionSchema,
 			});
 		});
+	});
 
-		it('returns transactions with known transaction type', async () => {
-			const response = await api.get(`${endpoint}?type=${transaction.type}`);
-			response.data.forEach(element => {
-				expect(element).toMapRequiredSchema({
-					...transactionSchema,
-					type: transaction.type,
-				});
+
+	describe('Retrieve transaction list by block ID', () => {
+		it('known block -> ok', async () => {
+			const response = await api.get(`${endpoint}?block=${transaction.blockId}`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+				blockId: transaction.blockId,
 			});
 		});
 
-		it('invalid transaction type -> 400', () => expect(api.get(`${endpoint}?type=-124`, 400)).resolves.toMapRequiredSchema({
+		xit('invalid block -> 400', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
-		xit('empty transaction type -> 400', () => expect(api.get(`${endpoint}?type=`, 400)).resolves.toMapRequiredSchema({
+		it('empty block -> ok', async () => {
+			const response = await api.get(`${endpoint}?block=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+			});
+		});
+	});
+
+	describe('Retrieve transaction list by height', () => {
+		it('known height -> ok', async () => {
+			const response = await api.get(`${endpoint}?height=${transaction.height}`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+				height: transaction.height,
+			});
+		});
+
+		xit('invalid height -> 400', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
+		it('empty height -> ok', async () => {
+			const response = await api.get(`${endpoint}?height=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+			});
+		});
+	});
+
+	describe('Retrieve transaction list by address', () => {
 		it('known address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${transaction.recipientId}`);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -135,44 +183,64 @@ describe('Transactions API', () => {
 			...notFoundSchema,
 		}));
 
-		it('known block -> ok', async () => {
-			const response = await api.get(`${endpoint}?block=${transaction.blockId}`);
+		it('existing sender public key -> ok', async () => {
+			const response = await api.get(`${endpoint}?sender=address:${accounts.delegate.address}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
-				blockId: transaction.blockId,
+				senderPublicKey: accounts.delegate.publicKey,
 			});
 		});
 
-		xit('invalid block -> 400', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
-
-		it('empty block -> ok', async () => {
-			const response = await api.get(`${endpoint}?block=`);
+		it('existing recipient public key -> ok', async () => {
+			const response = await api.get(`${endpoint}?recipient=address:${accounts.delegate.address}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
+				recipientPublicKey: accounts.delegate.publicKey,
+			});
+		});
+	});
+
+	describe('Retrieve transaction list by public key', () => {
+		it('existing sender public key -> ok', async () => {
+			const response = await api.get(`${endpoint}?sender=publickey:${accounts.delegate.publicKey}`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+				senderPublicKey: accounts.delegate.publicKey,
 			});
 		});
 
-		it('known height -> ok', async () => {
-			const response = await api.get(`${endpoint}?height=${transaction.height}`);
+		it('existing recipient public key -> ok', async () => {
+			const response = await api.get(`${endpoint}?recipient=publickey:${accounts.delegate.publicKey}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
-				height: transaction.height,
+				recipientPublicKey: accounts.delegate.publicKey,
+			});
+		});
+	});
+
+	describe('Retrieve transaction list by username', () => {
+		it('existing sender username -> ok', async () => {
+			const response = await api.get(`${endpoint}?sender=username:${accounts.delegate.delegate.username}`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...transactionSchema,
+				senderPublicKey: accounts.delegate.publicKey,
 			});
 		});
 
-		xit('invalid height -> 400', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
-
-		it('empty height -> ok', async () => {
-			const response = await api.get(`${endpoint}?height=`);
+		it('existing recipient username -> ok', async () => {
+			const response = await api.get(`${endpoint}?recipient=username:${accounts.delegate.delegate.username}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
+				recipientPublicKey: accounts.delegate.publicKey,
 			});
 		});
+	});
 
+	xdescribe('Retrieve transaction list by second public key', () => {
+
+	});
+
+	describe('Retrieve transaction list within timestamps', () => {
 		it('transactions within set timestamps are returned', async () => {
 			const from = 1556181000; // 2019-04-25T08:30:00+00:00
 			const to = from + (30 * 60); // +30 mins
