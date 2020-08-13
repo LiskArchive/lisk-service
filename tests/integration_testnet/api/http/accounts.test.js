@@ -62,7 +62,7 @@ const notFoundSchema = {
 };
 
 describe('Accounts API', () => {
-	describe('GET /accounts', () => {
+	describe('Retrieve account list', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response.data.length).toEqual(10);
@@ -84,7 +84,9 @@ describe('Accounts API', () => {
 				},
 			});
 		});
+	});
 
+	describe('Retrieve account list by address', () => {
 		it('known address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${accounts.genesis.address}`);
 			expect(response.data.length).toEqual(1);
@@ -119,6 +121,15 @@ describe('Accounts API', () => {
 
 		xit('empty address -> 400', () => expect(api.get(`${endpoint}?address=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
 
+		it('wrong address -> 404', async () => {
+			const url = `${accountEndpoint}/999999999L`;
+			const expectedStatus = 404;
+			const response = api.get(url, expectedStatus);
+			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+		});
+	});
+
+	describe('Retrieve account list by public key', () => {
 		it('known address by publickey', async () => {
 			const url = `${endpoint}?publickey=${accounts.genesis.publicKey}`;
 			const expectedStatus = 200;
@@ -127,17 +138,6 @@ describe('Accounts API', () => {
 			expect(response.data[0]).toMapRequiredSchema({
 				...accountSchema,
 				publicKey: accounts.genesis.publicKey,
-			});
-		});
-
-		xit('known address by second public key', async () => {
-			const url = `${endpoint}?secpubkey=${accounts['second passphrase account'].secondPublicKey}`;
-			const expectedStatus = 200;
-			const response = await api.get(url, expectedStatus);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMapRequiredSchema({
-				...accountSchema,
-				secondPublicKey: accounts['second passphrase account'].secondPublicKey,
 			});
 		});
 
@@ -155,6 +155,28 @@ describe('Accounts API', () => {
 			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
 		});
 
+		xit('empty publicKey -> 400', async () => {
+			const url = `${endpoint}?publickey=`;
+			const expectedStatus = 400;
+			const response = api.get(url, expectedStatus);
+			expect(response).resolves.toMapRequiredSchema(badRequestSchema);
+		});
+	});
+
+	describe('Retrieve account list by second public key', () => {
+		xit('known address by second public key', async () => {
+			const url = `${endpoint}?secpubkey=${accounts['second passphrase account'].secondPublicKey}`;
+			const expectedStatus = 200;
+			const response = await api.get(url, expectedStatus);
+			expect(response.data.length).toEqual(1);
+			expect(response.data[0]).toMapRequiredSchema({
+				...accountSchema,
+				secondPublicKey: accounts['second passphrase account'].secondPublicKey,
+			});
+		});
+	});
+
+	describe('Retrieve a delegate', () => {
 		it('known delegate by address -> contain delegate data', async () => {
 			const response = await api.get(`${endpoint}?address=${accounts.delegate.address}`);
 			expect(response.data.length).toEqual(1);
@@ -166,7 +188,7 @@ describe('Accounts API', () => {
 			});
 		});
 
-		it('known delegate by name -> contain delegate data', async () => {
+		it('known delegate by username -> contain delegate data', async () => {
 			const response = await api.get(`${endpoint}?username=${accounts.delegate.delegate.username}`);
 			expect(response.data.length).toEqual(1);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -177,15 +199,15 @@ describe('Accounts API', () => {
 			});
 		});
 
-		xit('empty publicKey -> 400', async () => {
-			const url = `${endpoint}?publickey=`;
-			const expectedStatus = 400;
+		it('existing account by username with wrong param: -> ok', async () => {
+			const url = `${accountEndpoint}/address:${accounts.delegate.username}`;
+			const expectedStatus = 404;
 			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(badRequestSchema);
+			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
 		});
 	});
 
-	xdescribe('GET /accounts/top', () => {
+	xdescribe('Retrieve top accounts', () => {
 		it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
 			const response = await api.get(`${endpoint}/top?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
@@ -205,7 +227,7 @@ describe('Accounts API', () => {
 			});
 		});
 
-		it('returns BAD_REQUEST (400) when limit=0', async () => {
+		it('returns BAD_REQUEST (400) when pagination limit=0', async () => {
 			const response = await api.get(`${endpoint}/top?limit=0`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
@@ -216,57 +238,7 @@ describe('Accounts API', () => {
 		});
 	});
 
-	xdescribe('GET /accounts', () => {
-		it('existing account by address -> ok', async () => {
-			const response = await api.get(`${accountEndpoint}/${accounts.genesis.address}`);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
-		});
-
-		it('existing account by username -> ok', async () => {
-			const response = await api.get(`${accountEndpoint}/${accounts.delegate.username}`);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
-		});
-
-		it('existing account by public key -> ok', async () => {
-			const response = await api.get(`${accountEndpoint}/${accounts.delegate.publicKey}`);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
-		});
-
-		it('existing account by address with address: -> ok', async () => {
-			const response = await api.get(`${accountEndpoint}/address:${accounts.genesis.address}`);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
-		});
-
-		it('existing account by username with username: -> ok', async () => {
-			const response = await api.get(`${accountEndpoint}/username:${accounts.delegate.username}`);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
-		});
-
-		it('existing account by public key with publickey: -> ok', async () => {
-			const response = await api.get(`${accountEndpoint}/publickey:${accounts.delegate.publicKey}`);
-			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
-		});
-
-		it('existing account by username with wrong param: -> ok', async () => {
-			const url = `${accountEndpoint}/address:${accounts.delegate.username}`;
-			const expectedStatus = 404;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
-		});
-
-		it('wrong address -> 404', async () => {
-			const url = `${accountEndpoint}/999999999L`;
-			const expectedStatus = 404;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
-		});
-
+	xdescribe('Retrieve accounts with off-chain knowlegde entry', () => {
 		it('existing known account by address -> ok with knowledge', async () => {
 			const address = '13795892230918963229L';
 			const response = await api.get(`${endpoint}?address=${address}`);
