@@ -32,14 +32,6 @@ const accountSchema = {
 	knowledge: 'object',
 };
 
-const topAccountSchema = {
-	address: 'string',
-	publicKey: 'string',
-	balance: 'string',
-	secondPublicKey: 'string',
-	transactionCount: 'object',
-};
-
 const delegateSchema = {
 	approval: 'string',
 	missedBlocks: 'number',
@@ -52,14 +44,11 @@ const delegateSchema = {
 };
 
 const badRequestSchema = {
-	errors: 'array',
-	message: 'string',
-};
-
-const notFoundSchema = {
 	error: 'boolean',
 	message: 'string',
 };
+
+const notFoundSchema = badRequestSchema;
 
 describe('Accounts API', () => {
 	describe('Retrieve account list', () => {
@@ -207,39 +196,31 @@ describe('Accounts API', () => {
 		});
 	});
 
-	xdescribe('Retrieve top accounts', () => {
+	describe('Retrieve top accounts', () => {
 		it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
-			const response = await api.get(`${endpoint}/top?limit=100`);
+			const response = await api.get(`${endpoint}?sort=balance:desc&limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
-			expect(response.data[0]).toMapRequiredSchema(topAccountSchema);
-			expect(response.data[0]).toEqual({
-				address: '16313739661670634666L',
-				balance: '9967545010836600',
-				delegate: {},
-				knowledge: {},
-				multisignatureAccount: {},
-				publicKey: 'c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f',
-				secondPublicKey: '',
-				transactionCount: {
-					incoming: '2',
-					outgoing: '1329',
-				},
+			expect(response.data[0]).toMapRequiredSchema({
+				...accountSchema,
+				address: '13795892230918963229L',
+				publicKey: '865d8a1596ad40cf8f06485ecb076a407f8532180ccff5028a6afc7ef4f92665',
 			});
 		});
 
 		it('returns BAD_REQUEST (400) when pagination limit=0', async () => {
-			const response = await api.get(`${endpoint}/top?limit=0`, 400);
+			const response = await api.get(`${endpoint}?sort=balance:desc&limit=0`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
-		it('returns BAD_REQUEST (400) when given empty limit', async () => {
-			const response = await api.get(`${endpoint}/top?limit=`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+		it('returns a list when given empty limit', async () => {
+			const response = await api.get(`${endpoint}?sort=balance:desc&limit=`, 400);
+			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data[0]).toMapRequiredSchema(accountSchema);
 		});
 	});
 
-	xdescribe('Retrieve accounts with off-chain knowlegde entry', () => {
-		it('existing known account by address -> ok with knowledge', async () => {
+	describe('Retrieve accounts with off-chain knowlegde entry', () => {
+		xit('existing known account by address -> ok with knowledge', async () => {
 			const address = '13795892230918963229L';
 			const response = await api.get(`${endpoint}?address=${address}`);
 			expect(response.data.length).toEqual(1);
