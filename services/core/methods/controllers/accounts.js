@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Utils } = require('lisk-service-framework');
+const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray } = Utils.Data;
@@ -21,6 +21,8 @@ const { isEmptyArray } = Utils.Data;
 const CoreService = require('../../shared/core.js');
 
 const config = require('../../config.js');
+
+const logger = Logger();
 
 const getKnownAccounts = async () => {
 	const { nethash } = await CoreService.getConstants();
@@ -85,13 +87,21 @@ const getAccounts = async params => {
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
 	delete params.anyId;
-	const response = await getDataForAccounts(params);
 
-	return {
-		data: response.data,
-		meta: response.meta,
-		links: response.links,
-	};
+	try {
+		const response = await getDataForAccounts(params);
+
+		return {
+			data: response.data,
+			meta: response.meta,
+		};
+	} catch (err) {
+		logger.error(err.stack);
+		return {
+			data: [],
+			meta: {},
+		};
+	}
 };
 
 const getTopAccounts = async params => {
