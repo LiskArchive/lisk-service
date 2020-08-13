@@ -97,24 +97,29 @@ describe('Accounts API', () => {
 		it('unknown address -> 404', async () => {
 			const url = `${endpoint}?address=999999999L`;
 			const expectedStatus = 404;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+			const response = await api.get(url, expectedStatus);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 
 		it('invalid address -> 400', async () => {
 			const url = `${endpoint}?address=L`;
 			const expectedStatus = 400;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+			const response = await api.get(url, expectedStatus);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 
-		xit('empty address -> 400', () => expect(api.get(`${endpoint}?address=`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('empty address returns a default list', async () => {
+			const url = `${endpoint}?publickey=`;
+			const response = await api.get(url);
+			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data[0]).toMapRequiredSchema(accountSchema);
+		});
 
 		it('wrong address -> 404', async () => {
 			const url = `${accountEndpoint}/999999999L`;
 			const expectedStatus = 404;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+			const response = await api.get(url, expectedStatus);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 	});
 
@@ -133,22 +138,22 @@ describe('Accounts API', () => {
 		it('invalid publicKey -> 404', async () => {
 			const url = `${endpoint}?publickey=invalid_pk`;
 			const expectedStatus = 404;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+			const response = await api.get(url, expectedStatus);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 
 		it('unknown publicKey -> 404', async () => {
 			const url = `${endpoint}?publickey=ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff`;
 			const expectedStatus = 404;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+			const response = await api.get(url, expectedStatus);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 
-		xit('empty publicKey -> 400', async () => {
+		it('empty public key parameter returns a default list', async () => {
 			const url = `${endpoint}?publickey=`;
-			const expectedStatus = 400;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(badRequestSchema);
+			const response = await api.get(url);
+			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data[0]).toMapRequiredSchema(accountSchema);
 		});
 	});
 
@@ -213,7 +218,7 @@ describe('Accounts API', () => {
 		});
 
 		it('returns a list when given empty limit', async () => {
-			const response = await api.get(`${endpoint}?sort=balance:desc&limit=`, 400);
+			const response = await api.get(`${endpoint}?sort=balance:desc&limit=`);
 			expect(response.data).toBeArrayOfSize(10);
 			expect(response.data[0]).toMapRequiredSchema(accountSchema);
 		});
