@@ -56,7 +56,7 @@ const swaggerWrongInput = {
 	message: 'string',
 };
 
-xdescribe('Delegates API', () => {
+describe('Delegates API', () => {
 	describe('GET /delegates', () => {
 		it('known delegate by address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${delegates.activeDelegate.address}`);
@@ -112,7 +112,7 @@ xdescribe('Delegates API', () => {
 		}));
 
 		it('known delegate username -> ok', async () => {
-			const response = await api.get(`${endpoint}?username=genesis_51`);
+			const response = await api.get(`${endpoint}?username=cc001`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
 				username: delegates.activeDelegate.username,
@@ -133,19 +133,19 @@ xdescribe('Delegates API', () => {
 				address: delegates.activeDelegate.address,
 			});
 
-			expect(response.data[0]).toEqual({
-				address: '2581762640681118072L',
-				approval: '99.58',
-				missedBlocks: 0,
-				producedBlocks: 241,
-				productivity: '100',
-				publicKey: '01389197bbaf1afb0acd47bbfeabb34aca80fb372a8f694a1c0716b3398db746',
-				rank: 1,
-				rewards: '109000000000',
-				secondPublicKey: '',
-				username: 'genesis_51',
-				vote: '9968542110836600',
-			});
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					address: '5201600508578320196L',
+					missedBlocks: 194,
+					productivity: '99.85',
+					publicKey:
+						'473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c',
+					secondPublicKey:
+						'02bb04b8b15f10edcd5fbc067c6107841b527a39d57dd33156de616714863bae',
+					rank: 1,
+					username: 'cc001',
+				}),
+			);
 		});
 
 		it('limit = 0 -> 400', async () => {
