@@ -225,7 +225,7 @@ describe('Accounts API', () => {
 	});
 
 	describe('Retrieve accounts with off-chain knowlegde entry', () => {
-		xit('existing known account by address -> ok with knowledge', async () => {
+		it('existing known account by address -> ok with knowledge', async () => {
 			const address = '13795892230918963229L';
 			const response = await api.get(`${endpoint}?address=${address}`);
 			expect(response.data.length).toEqual(1);
