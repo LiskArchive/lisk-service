@@ -22,6 +22,8 @@ services:
     networks:
       - core_network
     restart: always
+    env_file:
+      - ./lisk_service/env/core-postgres.env
 
   redis_core:
     image: redis:5-alpine

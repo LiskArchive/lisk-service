@@ -69,7 +69,7 @@ const addNewItem = (type, item) => {
 	].slice(0, 200);
 };
 
-const addNewBlock = (block, transactions) => {
+const addNewBlock = (block, transactions = []) => {
 	const previousBlock = recent[types.blocks][0];
 	if (!previousBlock) {
 		logger.warn('Not yet initialized.');

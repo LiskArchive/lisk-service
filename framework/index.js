@@ -27,6 +27,7 @@ module.exports = {
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
 		Data: require('./src/data'),
+		...(require('./src/data')),
 	},
 	Constants: {
 		...require('./constants/ErrorCodes'),

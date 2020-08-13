@@ -123,18 +123,16 @@ const getTransactionsStatistics = async ({ aggregateBy, limit = 10, offset = 0 }
 
 	return {
 		data: {
-			data: {
-				timeline,
-				distributionByType,
-				distributionByAmount,
-			},
-			meta: {
-				limit,
-				offset,
-				dateFormat,
-				dateFrom: dateFrom.format(dateFormat),
-				dateTo: dateTo.format(dateFormat),
-			},
+			timeline,
+			distributionByType,
+			distributionByAmount,
+		},
+		meta: {
+			limit,
+			offset,
+			dateFormat,
+			dateFrom: dateFrom.format(dateFormat),
+			dateTo: dateTo.format(dateFormat),
 		},
 	};
 };

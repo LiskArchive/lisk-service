@@ -33,7 +33,7 @@ module.exports = [
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			coreSocket.socket.on('blocks/change', async data => {
-				logger.info('Returning block list to the socket.io client...');
+				logger.debug('Returning block list to the socket.io client...');
 				const restData = await core.getBlocks({ blockId: data.id });
 				callback(restData.data[0]);
 			});
@@ -41,16 +41,17 @@ module.exports = [
 	},
 	{
 		name: 'transactions.confirmed',
-		description: '',
+		description: 'Keep confirmed transaction list up-to-date',
 		controller: callback => {
 			coreSocket.socket.on('blocks/change', async data => {
-				logger.info('Scheduling block list reload...');
+				logger.debug('Scheduling block list reload...');
 				const emitData = await core.getBlocks({ blockId: data.id });
 
-				if (emitData.data[0].numberOfTransactions > 0) {
-					const transactionData = await core.getTransactions({ blockId: data.id });
-					recentBlocksCache.addNewBlock(emitData.data[0], transactionData);
-					callback(transactionData);
+				if (Array.isArray(emitData.data) && emitData.data.length > 0
+					&& emitData.data[0].numberOfTransactions > 0) {
+						const transactionData = await core.getTransactions({ blockId: data.id });
+						recentBlocksCache.addNewBlock(emitData.data[0], transactionData);
+						callback(transactionData);
 				} else {
 					recentBlocksCache.addNewBlock(emitData.data[0], []);
 				}
@@ -59,9 +60,10 @@ module.exports = [
 	},
 	{
 		name: 'round.change',
-		description: '',
+		description: 'Track round change updates',
 		controller: callback => {
 			coreSocket.socket.on('round/change', async data => {
+				logger.debug('New round, updating delegates...');
 				delegateCache.init(core);
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);

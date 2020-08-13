@@ -38,8 +38,10 @@ const eventSchema = {
 const jobSchema = {
 	name: { type: 'string' },
 	description: { type: 'string', optional: true },
-	schedule: { type: 'string' },
+	schedule: { type: 'string', optional: true },
+	interval: { type: 'number', integer: true, optional: true },
 	controller: { type: 'function' },
+	init: { type: 'function', optional: true },
 };
 
 const validator = new Validator();
@@ -116,7 +118,25 @@ const Microservice = (config = {}) => {
 			return;
 		}
 
-		cron.schedule(job.schedule, job.controller);
+		if (!job.schedule && !job.interval) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+
+		if (job.init) {
+			job.init();
+		}
+
+		if (job.interval) {
+			setInterval(job.controller, job.interval * 1000);
+		} else {
+			cron.schedule(job.schedule, job.controller);
+		}
+
 		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
 	};
 
