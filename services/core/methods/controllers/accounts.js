@@ -19,28 +19,24 @@ const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray } = Utils.Data;
 
 const CoreService = require('../../shared/core.js');
-
 const config = require('../../config.js');
 
 const logger = Logger();
 
+const knownExpireMiliseconds = 5 * 60 * 1000;
+const staticUrl = config.endpoints.liskStatic;
+
 const getKnownAccounts = async () => {
 	const { nethash } = await CoreService.getConstants();
 
-	const knownAccountsRequest = async route => {
-		const expireMiliseconds = 5 * 60 * 1000;
-		return JSON.parse(
-			await HTTP.request(`${config.endpoints.liskStatic}${route}`,
-			{ cacheTTL: expireMiliseconds },
-			));
-	};
+	const cacheTTL = knownExpireMiliseconds;
 
 	try {
-		const knownNetworks = await knownAccountsRequest('/networks.json');
-		if (knownNetworks[nethash]) {
-			return knownAccountsRequest(`/known_${knownNetworks[nethash]}.json`);
+		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`, { cacheTTL });
+		if (knownNetworks.data[nethash]) {
+			return (await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`, { cacheTTL })).data;
 		}
-		return {};
+		return { };
 	} catch (err) {
 		return {};
 	}
