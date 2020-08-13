@@ -16,12 +16,12 @@
 const {
 	mapper,
 	Utils,
-	Constants: { errorCodes: { BAD_REQUEST } },
+	Constants: { HTTP: { INVALID_REQUEST, NOT_FOUND } },
 } = require('lisk-service-framework');
 
 const path = require('path');
 
-const { validate } = require('./paramValidator');
+const { validate, dropEmptyProps } = require('./paramValidator');
 
 const apiMeta = [];
 
@@ -160,38 +160,45 @@ const registerApi = (apiName, config) => {
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
 			if (paramReport.missing.length > 0) {
-				sendResponse(BAD_REQUEST, `Missing parameter(s): ${paramReport.missing.join(', ')}`);
+				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
 				return;
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
-				sendResponse(BAD_REQUEST, `Unknown input parameter(s): ${unknownList.join(', ')}`);
+				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join(', ')}`);
 				return;
 			}
 
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
-				sendResponse(BAD_REQUEST, `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
+				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
 				return;
 			}
 
-			const params = transformRequest(routeAlias, req.$params);
+			const params = transformRequest(routeAlias, dropEmptyProps(req.$params));
 			req.$params = params;
 		},
 
 		async onAfterCall(ctx, route, req, res, data) {
 			// TODO: Add support for ETag
 
-			if (data && data.status) {
+			if (data.data && data.status) {
 				ctx.meta.$statusCode = data.status;
-
 				let message = `The request ended up with error ${data.status}`;
 
 				if (typeof data.data === 'object' && typeof data.data.error === 'string') {
 					message = data.data.error;
 				}
+				return {
+					error: true,
+					message,
+				};
+			}
 
+			if (Utils.Data.isEmptyArray(data.data) || Utils.Data.isEmptyObject(data.data)) {
+				[ctx.meta.$statusCode] = NOT_FOUND;
+				const message = 'Data not found';
 				return {
 					error: true,
 					message,

@@ -28,11 +28,11 @@ const peerStore = {
 };
 
 const reload = async (core) => {
-	logger.info('Refreshing peer cache...');
+	logger.debug('Refreshing peer cache...');
 	peerStore.peers = await requestAll(core.getPeers, {});
 	peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
 	peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
-	logger.info('Updated peer cache.');
+	logger.debug('Updated peer cache.');
 };
 
 const get = (type = 'peers') => new Promise((resolve) => {

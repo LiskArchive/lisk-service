@@ -15,8 +15,14 @@ up:
 down:
 	$(compose) down --volumes --remove-orphans
 
+print-config:
+	$(compose) config
+
 ready:
+	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/v1/blocks' >/dev/null
 	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/v1/transactions' >/dev/null
+	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/v1/peers' >/dev/null
+	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/v1/transactions/statistics/month' >/dev/null
 
 test: test-functional
 
