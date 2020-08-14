@@ -85,7 +85,7 @@ describe('Blocks API', () => {
 			expect(response.data[0].height).toEqual(block.height);
 		});
 
-		it('known block by account -> ok', async () => {
+		xit('known block by account -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${delegate.address}`);
 			response.data.forEach(blockData => {
 				expect(blockData.generatorAddress).toEqual(delegate.address);
