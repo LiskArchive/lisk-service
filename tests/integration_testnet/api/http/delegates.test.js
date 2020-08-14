@@ -204,7 +204,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	describe.only('GET /delegates/next_forgers', () => {
+	describe('GET /delegates/next_forgers', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
