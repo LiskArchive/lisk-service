@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP } = require('lisk-service-framework');
 const coreApi = require('./coreApi');
 
 const {
@@ -21,10 +20,10 @@ const {
 	...coreApiGetters
 } = coreApi;
 
-const coreApiCached = Object.entries(coreApiGetters).reduce((accumulator, key) => ({
+const coreApiCached = Object.keys(coreApiGetters).reduce((accumulator, key) => ({
 	...accumulator,
 	[key]: (requestParams, { expireMiliseconds } = {}) => (
-		HTTP.request(key, {
+		coreApi[key]({
 			...requestParams,
 			cacheTTL: expireMiliseconds,
 		})

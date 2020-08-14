@@ -13,8 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP } = require('lisk-service-framework');
+const { HTTP, Logger } = require('lisk-service-framework');
 
+const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
 
 const { mapResponse, mapParams } = require('./coreProtocolCompatibility.js');
@@ -35,19 +36,28 @@ const validateCoreResponse = body => {
 };
 
 const request = (url, params) => new Promise((resolve, reject) => {
+	logger.info(`Requesting ${liskAddress}${url}`);
 	requestLib(`${liskAddress}${url}`, {
 		params: mapParams(params, url),
 	}).then(body => {
+		if (!body) resolve({});
+
 		let jsonContent;
-		if (typeof body === 'string') jsonContent = JSON.parse(body);
-		else jsonContent = body.data;
+		try {
+			if (typeof body === 'string') jsonContent = JSON.parse(body);
+			else jsonContent = body.data;
+		} catch (err) {
+			logger.error(err.stack);
+			return reject(err);
+		}
+
 		if (validateCoreResponse(jsonContent)) {
 			return resolve(mapResponse(jsonContent, url));
 		}
 		return reject(body.error || 'Response was unsuccessful');
 	}).catch(err => {
-		if (err.statusCode === 400 || err.statusCode === 404) resolve({});
-		else reject(err);
+		logger.error(err.stack);
+		resolve({});
 	});
 });
 
