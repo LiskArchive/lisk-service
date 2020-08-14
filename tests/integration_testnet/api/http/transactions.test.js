@@ -237,7 +237,6 @@ describe('Transactions API', () => {
 	});
 
 	xdescribe('Retrieve transaction list by second public key', () => {
-
 	});
 
 	describe('Retrieve transaction list within timestamps', () => {
