@@ -32,6 +32,7 @@ const delegateSchema = {
 	publicKey: 'string',
 	rank: 'number',
 	rewards: 'number',
+	secondPublicKey: 'string',
 	username: 'string',
 	vote: 'string',
 };
@@ -124,9 +125,9 @@ describe('Delegates API', () => {
 		}));
 	});
 
-	xdescribe('GET /delegates/active', () => {
+	describe('GET /delegates/active', () => {
 		it('default -> ok', async () => {
-			const response = await api.get(`${endpoint}/active`);
+			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`);
 			expect(response.data).toBeArrayOfSize(101);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
@@ -149,17 +150,20 @@ describe('Delegates API', () => {
 		});
 
 		it('limit = 0 -> 400', async () => {
-			expect(api.get(`${endpoint}/active?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+			expect(api.get(`${endpoint}?sort=rank:asc&limit=101`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
 		});
 
-		it('empty limit -> 400', async () => {
-			expect(api.get(`${endpoint}/active?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+		it('empty limit -> ok', async () => {
+			const response = await api.get(`${endpoint}?sort=rank:asc&limit=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...delegateSchema,
+			});
 		});
 	});
 
-	xdescribe('GET /delegates/standby', () => {
+	describe('GET /delegates/standby', () => {
 		it('default -> ok', async () => {
-			const response = await api.get(`${endpoint}/standby`);
+			const response = await api.get(`${endpoint}?sort=rank:asc&offset=101&limit=101`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
 				address: delegates.standbyDelegate.address,
@@ -167,21 +171,24 @@ describe('Delegates API', () => {
 		});
 
 		it('limit = 100 -> ok', async () => {
-			const response = await api.get(`${endpoint}/standby?limit=100`);
+			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(delegateSchema);
 		});
 
 		it('limit = 0 -> 400', async () => {
-			expect(api.get(`${endpoint}/standby?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+			expect(api.get(`${endpoint}?sort=rank:asc&offset=102&limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
 		});
 
-		it('empty limit -> 400', async () => {
-			expect(api.get(`${endpoint}/standby?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+		it('empty limit -> ok', async () => {
+			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...delegateSchema,
+			});
 		});
 	});
 
-	xdescribe('GET /delegates/latest_registrations', () => {
+	describe('GET /delegates/latest_registrations', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
@@ -197,7 +204,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	xdescribe('GET /delegates/next_forgers', () => {
+	describe('GET /delegates/next_forgers', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
