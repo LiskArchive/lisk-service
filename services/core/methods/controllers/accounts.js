@@ -134,7 +134,6 @@ const getVotes = async params => {
 			votesAvailable: response.data.votesAvailable,
 			votesUsed: response.data.votesUsed,
 		},
-		links: {},
 	};
 };
 
@@ -156,7 +155,6 @@ const getVoters = async params => {
 			total: response.data.votes,
 			count: response.data.voters.length,
 		},
-		links: {},
 	};
 };
 
