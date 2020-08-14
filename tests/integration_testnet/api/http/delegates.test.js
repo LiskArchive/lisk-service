@@ -53,7 +53,7 @@ const wrongInputParamSchema = {
 };
 
 const swaggerWrongInput = {
-	errors: 'array',
+	error: 'array',
 	message: 'string',
 };
 
