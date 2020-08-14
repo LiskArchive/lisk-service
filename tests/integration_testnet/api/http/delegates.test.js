@@ -67,14 +67,6 @@ describe('Delegates API', () => {
 			});
 		});
 
-		it('known delegate by public key -> ok', async () => {
-			const response = await api.get(`${endpoint}?publickey=${delegates.activeDelegate.publicKey}`);
-			expect(response.data[0]).toMapRequiredSchema({
-				...delegateSchema,
-				publicKey: delegates.activeDelegate.publicKey,
-			});
-		});
-
 		// FIXME: This test is disabled due to lack of the right account in the test blockchain
 		// Type 1+2 reqiured to make this test passing
 		xit('known address by second public key', async () => {
@@ -87,15 +79,7 @@ describe('Delegates API', () => {
 			});
 		});
 
-		it('known delegate by username -> ok', async () => {
-			const response = await api.get(`${endpoint}?username=${delegates.activeDelegate.username}`);
-			expect(response.data[0]).toMapRequiredSchema({
-				...delegateSchema,
-				username: delegates.activeDelegate.username,
-			});
-		});
-
-		xit('invalid address -> 400', () => expect(api.get(`${endpoint}?address=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
+		it('invalid address -> 400', () => expect(api.get(`${endpoint}?address=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
 			...swaggerWrongInput,
 		}));
 
@@ -107,13 +91,26 @@ describe('Delegates API', () => {
 			const response = await api.get(`${endpoint}?search=genesis`);
 			expect(response.data.length).toEqual(10);
 		});
+	});
+
+	describe('GET /delegates?publickey', () => {
+		it('known delegate by public key -> ok', async () => {
+			const response = await api.get(`${endpoint}?publickey=${delegates.activeDelegate.publicKey}`);
+			expect(response.data[0]).toMapRequiredSchema({
+				...delegateSchema,
+				publicKey: delegates.activeDelegate.publicKey,
+			});
+		});
 
 		it('wrong delegate publickey -> 404', () => expect(api.get(`${endpoint}?publickey=412875216073141752800000`, 404)).resolves.toMapRequiredSchema({
 			...notFoundErrorSchema,
 		}));
+	});
 
-		it('known delegate username -> ok', async () => {
-			const response = await api.get(`${endpoint}?username=cc001`);
+
+	describe('GET /delegates?username', () => {
+		it('known delegate by username -> ok', async () => {
+			const response = await api.get(`${endpoint}?username=${delegates.activeDelegate.username}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
 				username: delegates.activeDelegate.username,
@@ -180,7 +177,7 @@ describe('Delegates API', () => {
 			expect(api.get(`${endpoint}?sort=rank:asc&offset=102&limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
 		});
 
-		xit('empty limit -> ok', async () => {
+		it('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
