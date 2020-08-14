@@ -42,7 +42,7 @@ const transactionSchema = {
 };
 
 const badRequestSchema = {
-	errors: 'boolean',
+	error: 'boolean',
 	message: 'string',
 };
 
@@ -74,7 +74,7 @@ describe('Transactions API', () => {
 			...badRequestSchema,
 		}));
 
-		xit('empty transaction type -> 400', () => expect(api.get(`${endpoint}?type=`, 400)).resolves.toMapRequiredSchema({
+		it('empty transaction type -> 400', () => expect(api.get(`${endpoint}?type=`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 	});
@@ -88,7 +88,7 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('long transaction id -> 400', () => expect(api.get(`${endpoint}?id=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
+		it('long transaction id -> 404', () => expect(api.get(`${endpoint}?id=412875216073141752800000`, 404)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
@@ -135,7 +135,7 @@ describe('Transactions API', () => {
 			});
 		});
 
-		xit('invalid height -> 400', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
+		it('invalid height -> 400', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
