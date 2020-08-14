@@ -57,7 +57,7 @@ const swaggerWrongInput = {
 	message: 'string',
 };
 
-xdescribe('Delegates API', () => {
+describe('Delegates API', () => {
 	describe('GET /delegates', () => {
 		it('known delegate by address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${delegates.activeDelegate.address}`);
