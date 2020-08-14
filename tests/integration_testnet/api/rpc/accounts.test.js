@@ -19,8 +19,7 @@ import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import accounts from './constants/accounts';
 
-const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlRpcV1 = `${baseUrl}/rpc-v1`;
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
 const accountSchema = Joi.object({
 	address: Joi.string().required(),
@@ -49,7 +48,7 @@ const invalidParamsSchema = Joi.object({
 	message: Joi.string().required(),
 });
 
-const getAccounts = async params => request(baseUrlRpcV1, 'get.accounts', params);
+const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 
 describe('Method get.accounts', () => {
 	describe('is able to retrieve account lists', () => {
