@@ -21,7 +21,7 @@ import config from '../../config';
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/delegates`;
-const delegateEndpoint = `${baseUrlV1}/delegate`;
+//const delegateEndpoint = `${baseUrlV1}/delegate`;
 
 const delegateSchema = {
 	address: 'string',
