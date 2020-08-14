@@ -19,6 +19,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blocks',
+	rpcMethod: 'get.blocks',
 	params: {
 		id: { optional: true, type: 'string', min: 1, max: 24 },
 		height: { optional: true, type: 'number', min: 1 },
