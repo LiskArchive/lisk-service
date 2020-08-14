@@ -159,7 +159,7 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid address -> 404', () => expect(api.get(`${endpoint}?address=000000000L`, 404)).resolves.toMapRequiredSchema({
+		it('invalid address -> 404', () => expect(api.get(`${endpoint}?address=000002345`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
@@ -171,7 +171,7 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid sender address -> 404', () => expect(api.get(`${endpoint}?sender=000000000L`, 404)).resolves.toMapRequiredSchema({
+		it('invalid sender address -> 404', () => expect(api.get(`${endpoint}?sender=000002345`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
@@ -183,7 +183,7 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid recipient address -> 404', () => expect(api.get(`${endpoint}?recipient=000000000L`, 404)).resolves.toMapRequiredSchema({
+		it('invalid recipient address -> 404', () => expect(api.get(`${endpoint}?recipient=000002345`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
