@@ -13,32 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Utils } = require('lisk-service-framework');
+const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray } = Utils.Data;
 
 const CoreService = require('../../shared/core.js');
-
 const config = require('../../config.js');
+
+const logger = Logger();
+
+const knownExpireMiliseconds = 5 * 60 * 1000;
+const staticUrl = config.endpoints.liskStatic;
 
 const getKnownAccounts = async () => {
 	const { nethash } = await CoreService.getConstants();
 
-	const knownAccountsRequest = async route => {
-		const expireMiliseconds = 5 * 60 * 1000;
-		return JSON.parse(
-			await HTTP.request(`${config.endpoints.liskStatic}${route}`,
-			{ cacheTTL: expireMiliseconds },
-			));
-	};
+	const cacheTTL = knownExpireMiliseconds;
 
 	try {
-		const knownNetworks = await knownAccountsRequest('/networks.json');
-		if (knownNetworks[nethash]) {
-			return knownAccountsRequest(`/known_${knownNetworks[nethash]}.json`);
+		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`, { cacheTTL });
+		if (knownNetworks.data[nethash]) {
+			return (await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`, { cacheTTL })).data;
 		}
-		return {};
+		return { };
 	} catch (err) {
 		return {};
 	}
@@ -85,13 +83,21 @@ const getAccounts = async params => {
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
 	delete params.anyId;
-	const response = await getDataForAccounts(params);
 
-	return {
-		data: response.data,
-		meta: response.meta,
-		links: response.links,
-	};
+	try {
+		const response = await getDataForAccounts(params);
+
+		return {
+			data: response.data,
+			meta: response.meta,
+		};
+	} catch (err) {
+		logger.error(err.stack);
+		return {
+			data: [],
+			meta: {},
+		};
+	}
 };
 
 const getTopAccounts = async params => {
