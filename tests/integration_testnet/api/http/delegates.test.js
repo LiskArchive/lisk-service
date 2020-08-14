@@ -95,7 +95,7 @@ describe('Delegates API', () => {
 			});
 		});
 
-		it('invalid address -> 400', () => expect(api.get(`${endpoint}?address=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
+		xit('invalid address -> 400', () => expect(api.get(`${endpoint}?address=412875216073141752800000`, 400)).resolves.toMapRequiredSchema({
 			...swaggerWrongInput,
 		}));
 
@@ -180,7 +180,7 @@ describe('Delegates API', () => {
 			expect(api.get(`${endpoint}?sort=rank:asc&offset=102&limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
 		});
 
-		it('empty limit -> ok', async () => {
+		xit('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
@@ -204,7 +204,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	describe('GET /delegates/next_forgers', () => {
+	describe.only('GET /delegates/next_forgers', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
