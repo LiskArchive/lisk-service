@@ -117,7 +117,7 @@ describe('Transactions API', () => {
 			});
 		});
 
-		xit('invalid block -> 400', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 400)).resolves.toMapRequiredSchema({
+		it('invalid block -> 404', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 404)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
@@ -151,6 +151,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Retrieve transaction list by address', () => {
+		// Given test fails during CI pahse
 		xit('known address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${transaction.recipientId}`);
 			expect(response.data[0]).toMapRequiredSchema({

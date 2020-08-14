@@ -40,7 +40,7 @@ const parseAddress = address => {
 	if (typeof address !== 'string') return '';
 	return address.toUpperCase();
 };
-const validateAddress = address => (typeof address === 'string' && address.match(/^[0-9]{20}[L|l]$/g));
+const validateAddress = address => (typeof address === 'string' && address.match(/^[0-9]{1,20}[L|l]$/g));
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 const { isProperObject } = ObjectUtilService;
 const { isEmptyArray } = ObjectUtilService;
