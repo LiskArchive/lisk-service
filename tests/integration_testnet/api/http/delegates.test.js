@@ -177,7 +177,7 @@ describe('Delegates API', () => {
 		it('limit = 0 -> 400', async () => {
 			expect(api.get(`${endpoint}?sort=rank:asc&offset=102&limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
 		});
-		
+
 		// Given test fails during CI phase
 		xit('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=`);
