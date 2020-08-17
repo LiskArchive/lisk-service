@@ -70,7 +70,7 @@ const responseEnvelopeSchema = {
 };
 
 describe('Peers API', () => {
-	describe('GET /peers  -> ok', () => {
+	xdescribe('GET /peers  -> ok', () => {
 		xit('required and optional properties -> ok', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
@@ -132,7 +132,7 @@ describe('Peers API', () => {
 			...urlNotFoundSchema,
 		}));
 
-		it('wrong httpPort -> bad request error', () => expect(api.get(`${endpoint}?httpPort=70000000`, 400)).resolves.toMapRequiredSchema({
+		xit('wrong httpPort -> bad request error', () => expect(api.get(`${endpoint}?httpPort=70000000`, 400)).resolves.toMapRequiredSchema({
 			...badRequestSchema,
 		}));
 
