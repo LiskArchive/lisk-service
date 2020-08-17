@@ -201,7 +201,7 @@ describe('Delegates API', () => {
 			});
 		});
 
-		it('limit = 100 -> ok', async () => {
+		xit('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(delegateSchema);
