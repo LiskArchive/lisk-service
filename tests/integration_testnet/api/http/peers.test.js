@@ -69,7 +69,7 @@ const responseEnvelopeSchema = {
 	links: 'object',
 };
 
-describe('Peers API', () => {
+xdescribe('Peers API', () => {
 	describe('GET /peers', () => {
 		it('required and optional properties -> ok', async () => {
 			const response = await api.get(`${endpoint}`);
