@@ -71,21 +71,21 @@ const responseEnvelopeSchema = {
 
 describe('Peers API', () => {
 	describe('GET /peers  -> ok', () => {
-		it('required and optional properties -> ok', async () => {
+		xit('required and optional properties -> ok', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('empty version -> ignore', async () => {
+		xit('empty version -> ignore', async () => {
 			const response = await api.get(`${endpoint}?version=`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('limit=100 -> ok', async () => {
+		xit('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(peerSchema);
@@ -108,14 +108,14 @@ describe('Peers API', () => {
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('retrieves connected peers by state name', async () => {
+		xit('retrieves connected peers by state name', async () => {
 			const response = await api.get(`${endpoint}?state=connected`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('retrieves disconnected peers by state name', async () => {
+		xit('retrieves disconnected peers by state name', async () => {
 			const response = await api.get(`${endpoint}?state=disconnected`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
@@ -148,7 +148,7 @@ describe('Peers API', () => {
 			...badRequestSchema,
 		}));
 
-		it('non-existent height -> not found error', () => expect(api.get(`${endpoint}?height=1000000000`, 404)).resolves.toMapRequiredSchema({
+		xit('non-existent height -> not found error', () => expect(api.get(`${endpoint}?height=1000000000`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
