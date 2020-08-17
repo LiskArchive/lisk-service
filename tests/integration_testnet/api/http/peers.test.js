@@ -71,18 +71,18 @@ const responseEnvelopeSchema = {
 
 describe('Peers API', () => {
 	describe('GET /peers', () => {
-		xit('required and optional properties -> ok', async () => {
+		it('required and optional properties -> ok', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		xit('wrong ip -> not found error', () => expect(api.get(`${endpoint}?ip=0`, 404)).resolves.toMapRequiredSchema({
+		it('wrong ip -> not found error', () => expect(api.get(`${endpoint}?ip=0`, 404)).resolves.toMapRequiredSchema({
 			...notFoundSchema,
 		}));
 
-		xit('wrong url -> not found error', () => expect(api.get(`${endpoint}/112`, 404)).resolves.toMapRequiredSchema({
+		it('wrong url -> not found error', () => expect(api.get(`${endpoint}/112`, 404)).resolves.toMapRequiredSchema({
 			...urlNotFoundSchema,
 		}));
 
@@ -128,7 +128,7 @@ describe('Peers API', () => {
 			expect(response.data[0]).toMapRequiredSchema(peerSchema);
 		});
 
-		xit('empty offset -> return all', async () => {
+		it('empty offset -> return all', async () => {
 			const response = await api.get(`${endpoint}?offset=`);
 			expect(response.data[0]).toMapRequiredSchema(peerSchema);
 		});
@@ -137,7 +137,7 @@ describe('Peers API', () => {
 			...notFoundSchema,
 		}));
 
-		xit('empty sort -> ignore', async () => {
+		it('empty sort -> ignore', async () => {
 			const response = await api.get(`${endpoint}?sort=`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
