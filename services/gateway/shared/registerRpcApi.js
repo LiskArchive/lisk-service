@@ -16,7 +16,7 @@
 const {
 	mapper,
 	Utils,
-	Constants: { JSON_RPC: { INVALID_REQUEST } },
+	Constants: { JSON_RPC: { INVALID_PARAMS } },
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
@@ -150,17 +150,17 @@ const registerApi = (apiName, config) => {
 					const paramReport = validate(request.params, methodPaths[request.method]);
 
 					if (paramReport.missing.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Missing parameter(s): ${paramReport.missing.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Missing parameter(s): ${paramReport.missing.join(', ')}` });
 					}
 
 					const unknownList = Object.keys(paramReport.unknown);
 					if (unknownList.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
 					}
 
 					const invalidList = Object.keys(paramReport.invalid);
 					if (invalidList.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Invalid input parameter values: ${invalidList.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.join(', ')}` });
 					}
 
 					request.params = transformRequest(request.method, request.params);
