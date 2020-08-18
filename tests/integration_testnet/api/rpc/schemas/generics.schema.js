@@ -15,15 +15,18 @@
  */
 
 import Joi from '@hapi/joi';
+import { JSON_RPC } from '../../../helpers/errorCodes';
 
 const invalidParamsSchema = Joi.object({
-	code: Joi.number().required(),
+	jsonrpc: Joi.string().equal('2.0'),
+	code: Joi.number().required().equal(JSON_RPC.INVALID_PARAMS[0]),
 	message: Joi.string().required(),
 });
 
 const metaSchema = Joi.object({
 	count: Joi.number(),
 	total: Joi.number(),
+	offset: Joi.number(),
 }).required();
 
 const envelopeSchema = Joi.object({
@@ -36,9 +39,16 @@ const emptyEnvelopeSchema = Joi.object({
 	meta: Joi.object().required(),
 }).required();
 
+const jsonRpcEnvelopeSchema = Joi.object({
+	jsonrpc: Joi.string().equal('2.0'),
+	result: Joi.object().required(),
+	id: Joi.number().required(),
+}).required();
+
 module.exports = {
 	invalidParamsSchema,
 	metaSchema,
 	envelopeSchema,
 	emptyEnvelopeSchema,
+	jsonRpcEnvelopeSchema,
 };
