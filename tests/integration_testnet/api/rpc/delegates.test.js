@@ -21,7 +21,7 @@ import {
 	badRequestSchema, goodRequestSchema, delegateSchema, delegateListSchema, metaSchema,
 } from '../../helpers/schemas';
 
-const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc`;
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
 const getDelegates = async params => request(wsRpcUrl, 'get.delegates', params);
 
