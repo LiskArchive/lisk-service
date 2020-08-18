@@ -16,7 +16,7 @@
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
-const { isEmptyArray } = Utils.Data;
+const { isEmptyArray, isEmptyObject } = Utils.Data;
 
 const CoreService = require('../../shared/core.js');
 const config = require('../../config.js');
@@ -127,7 +127,7 @@ const getVotes = async params => {
 
 	const response = await CoreService.getVotes(params);
 
-	if (response && !response.data) return {};
+	if (isEmptyObject(response)) return {};
 
 	return {
 		data: response.data.votes,
@@ -155,7 +155,7 @@ const getVoters = async params => {
 
 	const response = await CoreService.getVoters(params);
 
-	if (response && !response.data) return {};
+	if (isEmptyObject(response)) return {};
 
 	return {
 		data: response.data.voters,
