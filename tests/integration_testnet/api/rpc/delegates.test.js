@@ -114,15 +114,15 @@ describe('Method get.delegates', () => {
 
 	describe('returns INVALID_PARAMS', () => {
 		// current response is -32600 as invalid parameter response
-		it(`returns INVALID_PARAMS (${JSON_RPC.INVALID_REQUEST[0]}) when invalid param name`, async () => {
+		it(`returns INVALID_PARAMS (${JSON_RPC.INVALID_PARAMS[0]}) when invalid param name`, async () => {
 			const error = await getDelegates({ id: '412875216073141752800000' });
-			expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_REQUEST[0] });
+			expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
 		});
 
 		// current response is -32600 as invalid parameter response
-		it(`returns INVALID_PARAMS error (${JSON_RPC.INVALID_REQUEST[0]}) with limit = 0`, async () => {
+		it(`returns INVALID_PARAMS error (${JSON_RPC.INVALID_PARAMS[0]}) with limit = 0`, async () => {
 			const error = await getDelegates({ limit: 0 });
-			expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_REQUEST[0] });
+			expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
 		});
 
 		xit(`returns INVALID_PARAMS error (${JSON_RPC.INVALID_PARAMS[0]}) with empty limit ('')`, async () => {
