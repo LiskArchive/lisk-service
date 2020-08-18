@@ -15,21 +15,15 @@
  */
 /* eslint-disable quotes, quote-props, comma-dangle */
 
-import Joi from '@hapi/joi';
 import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
-import { block } from './constants/blocks';
+import block from './constants/blocks';
 
 import { JSON_RPC } from '../../helpers/errorCodes';
 import blockSchema from './schemas/block.schema';
+import { invalidParamsSchema, emptyEnvelopeSchema } from './schemas/generics.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
-
-const invalidParamsSchema = Joi.object({
-	code: Joi.number().required(),
-	message: Joi.string().required(),
-});
-
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
 
 describe('Method get.blocks', () => {
@@ -57,22 +51,22 @@ describe('Method get.blocks', () => {
 		// To Do : current response is server error, does not get correct invalid params
 		it('too long block id -> empty response', async () => {
 			const { result } = await getBlocks({ id: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e);
-			expect(result).toEqual({});
+			expect(result).toMap(invalidParamsSchema);
 		});
 
 		it('too short block id -> -32602', async () => {
 			const { error } = await getBlocks({ id: '' }).catch(e => e);
-			expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+			expect(error).toMap(invalidParamsSchema);
 		});
 
-		it('invalid block id -> -empty response', async () => {
+		it('invalid block id -> empty response', async () => {
 			const { result } = await getBlocks({ id: '12602944501676077162' }).catch(e => e);
-			expect(result).toEqual({});
+			expect(result).toMap(emptyEnvelopeSchema);
 		});
 
 		it('invalid query parameter -> -32602', async () => {
 			const { error } = await getBlocks({ block: '12602944501676077162' }).catch(e => e);
-			expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+			expect(error).toMap(invalidParamsSchema);
 		});
 	});
 
@@ -85,7 +79,7 @@ describe('Method get.blocks', () => {
 
 		it('non-existent height -> empty response', async () => {
 			const { result } = await getBlocks({ height: 2000000000 });
-			expect(result).toEqual({});
+			expect(result).toMap(emptyEnvelopeSchema);
 		});
 
 		it('height = 0 -> -32602', async () => {
@@ -109,7 +103,7 @@ describe('Method get.blocks', () => {
 
 		it('block list by invalid account ID returns empty list', async () => {
 			const { result } = await getBlocks({ address: '122233344455667L' });
-			expect(result).toEqual({});
+			expect(result).toMap(emptyEnvelopeSchema);
 		});
 	});
 
