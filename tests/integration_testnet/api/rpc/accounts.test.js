@@ -18,6 +18,7 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import accounts from './constants/accounts';
+import { invalidParamsSchema, emptyEnvelopeSchema } from './schemas/generics.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
@@ -41,26 +42,6 @@ const delegateSchema = Joi.object({
 	username: Joi.string(),
 	vote: Joi.string(),
 	rewards: Joi.string(),
-}).required();
-
-const invalidParamsSchema = Joi.object({
-	code: Joi.number().required(),
-	message: Joi.string().required(),
-});
-
-// const metaSchema = Joi.object({
-// 	count: Joi.number(),
-// 	total: Joi.number(),
-// }).required();
-
-// const envelopeSchema = Joi.object({
-// 	data: Joi.array().required(),
-// 	meta: metaSchema,
-// }).required();
-
-const emptyEnvelopeSchema = Joi.object({
-	data: Joi.array().required(),
-	meta: Joi.object().required(),
 }).required();
 
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
