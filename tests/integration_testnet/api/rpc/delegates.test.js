@@ -93,7 +93,7 @@ describe('Method get.delegates', () => {
 		const response = await getDelegates({ publickey: '412875216073141752800000' });
 		expect(response.result).toMap(goodRequestSchema);
 		expect(response.result.data).toBeArrayOfSize(0);
-		expect(response.result.meta).toEqual({});	
+		expect(response.result.meta).toEqual({});
 	});
 
 	it('returns empty object ({}) on wrong username', async () => {
