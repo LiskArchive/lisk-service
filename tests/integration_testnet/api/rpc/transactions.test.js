@@ -162,7 +162,7 @@ describe('Method get.transactions', () => {
 
 	describe('is able to retrieve transaction using transaction ID', () => {
 		it('known transaction id -> ok', async () => {
-			const id = transaction.id;
+			const { id } = transaction;
 			const response = await requestTransactions({ id });
 			expect(response.data[0]).toMap(transactionSchema, { id });
 		});
