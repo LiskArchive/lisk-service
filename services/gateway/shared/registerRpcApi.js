@@ -158,9 +158,9 @@ const registerApi = (apiName, config) => {
 						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
 					}
 
-					const invalidList = Object.keys(paramReport.invalid);
+					const invalidList = paramReport.invalid;
 					if (invalidList.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
 					}
 
 					request.params = transformRequest(request.method, request.params);
