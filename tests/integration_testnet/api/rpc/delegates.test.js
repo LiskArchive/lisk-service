@@ -17,9 +17,13 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import delegates from './constants/delegates';
-import {
-	badRequestSchema, goodRequestSchema, delegateSchema, delegateListSchema, metaSchema,
+import { delegateSchema, delegateListSchema, metaSchema,
 } from '../../helpers/schemas';
+import {
+	envelopeSchema,
+	emptyEnvelopeSchema,
+	invalidParamsSchema,
+} from './schemas/generics.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
@@ -29,7 +33,7 @@ describe('Method get.delegates', () => {
 	describe('returns delegates lists', () => {
 		it('returns top 10 delegates by default', async () => {
 			const { result } = await getDelegates();
-			expect(result).toMap(goodRequestSchema);
+			expect(result).toMap(envelopeSchema);
 			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
 			expect(Object.keys(result.meta)).toEqual(Object.keys({ count: 10, offset: 0, total: 403 }));
 			expect(result.data).toMap(delegateListSchema.length(10));
@@ -39,7 +43,7 @@ describe('Method get.delegates', () => {
 			const limit = 100;
 			const total = 13;
 			const { result } = await getDelegates({ search: 'genesis_1', limit });
-			expect(result).toMap(goodRequestSchema);
+			expect(result).toMap(envelopeSchema);
 			expect(result.meta).toMap(metaSchema, { count: total, offset: 0 });
 			expect(Object.keys(result.meta)).toEqual(Object.keys({ count: 10, offset: 0, total: 403 }));
 			expect(result.data).toMap(delegateListSchema.length(total));
@@ -49,7 +53,7 @@ describe('Method get.delegates', () => {
 			const limit = 10;
 			// const total = 13;
 			const { result } = await getDelegates({ search: 'genesis_1', limit });
-			expect(result).toMap(goodRequestSchema);
+			expect(result).toMap(envelopeSchema);
 			expect(result.meta).toMap(metaSchema, { count: limit, offset: 0 });
 			expect(result.data).toMap(delegateListSchema.length(limit));
 		});
@@ -78,9 +82,7 @@ describe('Method get.delegates', () => {
 
 		it('returns empty data ([]) when invalid address', async () => {
 			const { result } = await getDelegates({ address: '412875216073141752800000' });
-			expect(result).toMap(goodRequestSchema);
-			expect(result.data).toBeArrayOfSize(0);
-			expect(result.meta).toEqual({});
+			expect(result).toMap(emptyEnvelopeSchema);
 		});
 	});
 
@@ -92,9 +94,7 @@ describe('Method get.delegates', () => {
 
 		it('returns empty data ([]) on wrong username', async () => {
 			const response = await getDelegates({ username: 'genesis_510000000' });
-			expect(response.result).toMap(goodRequestSchema);
-			expect(response.result.data).toBeArrayOfSize(0);
-			expect(response.result.meta).toEqual({});
+			expect(response.result).toMap(emptyEnvelopeSchema);
 		});
 	});
 
@@ -106,28 +106,26 @@ describe('Method get.delegates', () => {
 
 		it('returns empty object ({}) on wrong delegate public key', async () => {
 			const response = await getDelegates({ publickey: '412875216073141752800000' });
-			expect(response.result).toMap(goodRequestSchema);
-			expect(response.result.data).toBeArrayOfSize(0);
-			expect(response.result.meta).toEqual({});
+			expect(response.result).toMap(emptyEnvelopeSchema);
 		});
 	});
 
 	describe('returns INVALID_PARAMS', () => {
 		// current response is -32600 as invalid parameter response
-		it(`returns INVALID_PARAMS (${JSON_RPC.INVALID_REQUEST[0]}) when invalid param name`, async () => {
-			const error = await getDelegates({ id: '412875216073141752800000' });
-			expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_REQUEST[0] });
+		it(`returns INVALID_PARAMS (${JSON_RPC.INVALID_PARAMS[0]}) when invalid param name`, async () => {
+			const response = await getDelegates({ id: '412875216073141752800000' });
+			expect(response).toMap(invalidParamsSchema);
 		});
 
 		// current response is -32600 as invalid parameter response
-		it(`returns INVALID_PARAMS error (${JSON_RPC.INVALID_REQUEST[0]}) with limit = 0`, async () => {
-			const error = await getDelegates({ limit: 0 });
-			expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_REQUEST[0] });
+		it(`returns INVALID_PARAMS error (${JSON_RPC.INVALID_PARAMS[0]}) with limit = 0`, async () => {
+			const response = await getDelegates({ limit: 0 });
+			expect(response).toMap(invalidParamsSchema);
 		});
 
 		xit(`returns INVALID_PARAMS error (${JSON_RPC.INVALID_PARAMS[0]}) with empty limit ('')`, async () => {
-			const error = await getDelegates({ limit: '' });
-			expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+			const response = await getDelegates({ limit: '' });
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 });
