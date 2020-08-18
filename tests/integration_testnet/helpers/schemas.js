@@ -19,7 +19,6 @@ import Joi from '@hapi/joi';
 export const goodRequestSchema = Joi.object({
 	data: Joi.array().required(),
 	meta: Joi.object().required(),
-	links: Joi.object().required(),
 }).required();
 
 export const metaSchema = Joi.object({
@@ -29,6 +28,7 @@ export const metaSchema = Joi.object({
 }).required();
 
 export const badRequestSchema = Joi.object({
+	jsonrpc: Joi.string().required(),
 	code: Joi.number().required(),
 	message: Joi.string().required(),
 }).required();
