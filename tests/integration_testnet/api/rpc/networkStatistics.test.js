@@ -21,7 +21,6 @@ import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
 const goodRequestSchema = Joi.object({
 	data: Joi.object().required(),
 	meta: Joi.object().required(),
-	links: Joi.object().required(),
 });
 
 const requestNetworkStatistics = async params => api.getJsonRpcV1('get.network.statistics', params);
