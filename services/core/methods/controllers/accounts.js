@@ -127,6 +127,8 @@ const getVotes = async params => {
 
 	const response = await CoreService.getVotes(params);
 
+	if (response && !response.data) return {};
+
 	return {
 		data: response.data.votes,
 		meta: {
@@ -152,6 +154,8 @@ const getVoters = async params => {
 	delete params.anyId;
 
 	const response = await CoreService.getVoters(params);
+
+	if (response && !response.data) return {};
 
 	return {
 		data: response.data.voters,
