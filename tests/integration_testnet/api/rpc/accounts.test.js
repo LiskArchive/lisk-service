@@ -48,6 +48,21 @@ const invalidParamsSchema = Joi.object({
 	message: Joi.string().required(),
 });
 
+// const metaSchema = Joi.object({
+// 	count: Joi.number(),
+// 	total: Joi.number(),
+// }).required();
+
+// const envelopeSchema = Joi.object({
+// 	data: Joi.array().required(),
+// 	meta: metaSchema,
+// }).required();
+
+const emptyEnvelopeSchema = Joi.object({
+	data: Joi.array().required(),
+	meta: Joi.object().required(),
+}).required();
+
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 
 describe('Method get.accounts', () => {
@@ -70,7 +85,7 @@ describe('Method get.accounts', () => {
 
 		it('returns empty response when unknown address', async () => {
 			const { result } = await getAccounts({ address: '99999L' });
-			expect(result).toEqual({});
+			expect(result).toMap(emptyEnvelopeSchema);
 		});
 
 		it('returns INVALID_PARAMS error (-32602) on invalid address', async () => {
@@ -98,7 +113,7 @@ describe('Method get.accounts', () => {
 
 		it('returns empty response on unknown public key', async () => {
 			const { result } = await getAccounts({ publickey: 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' });
-			expect(result).toEqual({});
+			expect(result).toMap(emptyEnvelopeSchema);
 		});
 
 		it('throws INVALID_PARAMS error (-32602) on empty public key', async () => {
