@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { badRequestSchema } from '../../helpers/schemas';
 import accountSchema from './schemas/account.schema';
@@ -22,8 +22,7 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcMultiRequest';
 import transactionSchema from './schemas/transaction.schema';
 
-const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlRpcV1 = `${baseUrl}/rpc`;
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 // const { transaction } = transactions;
 
 const metaSchema = Joi.object({
@@ -78,9 +77,9 @@ const accountsResponseSchema = Joi.object({
 	links: Joi.object(),
 }).required();
 
-describe('Multi-Request API', () => {
+xdescribe('Multi-Request API', () => {
 	it('responds to a correct request', async () => {
-		const response = await request(baseUrlRpcV1, [
+		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', method: 'get.transactions', params: { limit: 1 } },
 			{ jsonrpc: '2.0', method: 'get.blocks', params: { limit: 1 } },
 			{ jsonrpc: '2.0', method: 'get.accounts', params: { limit: 1 } },
@@ -99,7 +98,7 @@ describe('Multi-Request API', () => {
 	});
 
 	it('responds to a correct request with numerical IDs', async () => {
-		const response = await request(baseUrlRpcV1, [
+		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', id: 4, method: 'get.transactions', params: { limit: 1 } },
 			{ jsonrpc: '2.0', id: 5, method: 'get.blocks', params: { limit: 1 } },
 			{ jsonrpc: '2.0', id: 6, method: 'get.accounts', params: { limit: 1 } },
@@ -118,7 +117,7 @@ describe('Multi-Request API', () => {
 	});
 
 	it('responds to a correct request with numerical UUIDs', async () => {
-		const response = await request(baseUrlRpcV1, [
+		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', id: uuid[0], method: 'get.transactions', params: { limit: 1 } },
 			{ jsonrpc: '2.0', id: uuid[1], method: 'get.blocks', params: { limit: 1 } },
 			{ jsonrpc: '2.0', id: uuid[2], method: 'get.accounts', params: { limit: 1 } },
@@ -137,7 +136,7 @@ describe('Multi-Request API', () => {
 	});
 
 	it('returns data despite a mix of correct and incorrect requests', async () => {
-		const response = await request(baseUrlRpcV1, [
+		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', method: 'get.transactions', params: { limit: 1 } },
 			{ jsonrpc: '2.0', method: 'wrong_method', params: { } },
 			{ jsonrpc: '2.0', method: 'get.accounts', params: { limit: 1 } },
@@ -149,7 +148,7 @@ describe('Multi-Request API', () => {
 	});
 
 	it('supports requests with no params', async () => {
-		const response = await request(baseUrlRpcV1, [
+		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', method: 'get.transactions' },
 		]);
 
@@ -158,7 +157,7 @@ describe('Multi-Request API', () => {
 	});
 
 	it('fails on request without the JSON-RPC envelope', async () => {
-		const response = await request(baseUrlRpcV1, [
+		const response = await request(wsRpcUrl, [
 			{ method: 'get.transactions', params: { limit: 1 } },
 		]);
 
@@ -167,7 +166,7 @@ describe('Multi-Request API', () => {
 	});
 
 	it('fails on request without specified method', async () => {
-		const response = await request(baseUrlRpcV1, [
+		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', params: { } },
 		]);
 

@@ -14,7 +14,7 @@
  *
  */
 
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { JSON_RPC } from '../../../helpers/errorCodes';
 
 const invalidParamsSchema = Joi.object({

@@ -14,7 +14,7 @@
  *
  */
 
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 const accountSchema = Joi.object({
 	address: Joi.string().required(),

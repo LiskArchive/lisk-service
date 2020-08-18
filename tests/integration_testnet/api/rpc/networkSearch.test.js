@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import to from 'await-to-js';
 
 import { api } from '../../helpers/socketIoRpcRequest';
@@ -40,7 +40,6 @@ const dataSchema = Joi.array().items(searchItemSchema);
 const goodRequestSchema = Joi.object({
 	data: Joi.array().required(),
 	meta: metaSchema,
-	links: Joi.object().required(),
 }).required();
 
 const endpoint = 'get.search';

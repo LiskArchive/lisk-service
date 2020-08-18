@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 const networkStatusSchema = Joi.object({
 	broadhash: Joi.string().required(),
