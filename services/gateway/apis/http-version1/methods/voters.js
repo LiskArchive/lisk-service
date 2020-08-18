@@ -19,7 +19,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/voters',
-	method: 'get.voters',
+	rpcMethod: 'get.voters',
 	envelope,
 	params: {
 		address: { optional: true, type: 'string', min: 1, max: 21 },
