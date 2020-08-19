@@ -28,7 +28,7 @@ module.exports = {
 			description: '=',
 			name: '=',
 			version: '=',
-			liskProtocol: '=',
+			network: '=',
 		},
 	},
 };

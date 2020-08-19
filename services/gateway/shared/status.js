@@ -15,12 +15,31 @@
  */
 const packageJson = require('../package.json');
 
+const getBuildTimestamp = () => {
+	let timestamp;
+	try {
+		// eslint-disable-next-line import/no-unresolved
+		timestamp = require('../build.json').timestamp;
+	} catch (e) {
+		//  build.json is only generated in docker
+	}
+	if (!timestamp) {
+		timestamp = new Date().toISOString();
+	}
+	return timestamp;
+};
+
+const buildTimestamp = getBuildTimestamp();
+
 const getStatus = () => ({
-	build: 'latest',
+	build: buildTimestamp,
     description: 'Lisk Service Gateway',
     name: packageJson.name,
 	version: packageJson.version,
-	liskProtocol: 'unknown',
+	network: {
+		networkId: 'unknown',
+		protocolVersion: 'unknown',
+	},
 });
 
 const getReady = () => ({
