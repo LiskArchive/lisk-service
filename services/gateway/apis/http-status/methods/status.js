@@ -24,7 +24,11 @@ module.exports = {
 		method: 'gateway.status',
 		params: {},
 		definition: {
-			status: '=',
+			build: '=',
+			description: '=',
+			name: '=',
+			version: '=',
+			liskProtocol: '=',
 		},
 	},
 };
