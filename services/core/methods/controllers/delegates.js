@@ -130,11 +130,9 @@ const getNextForgers = async params => {
 	nextForgers.meta.total = params.limit;
 
 	return {
-		data: {
 			data: delegates,
 			meta: nextForgers.meta,
 			link: nextForgers.link,
-		},
 	};
 };
 
@@ -159,11 +157,9 @@ const getLatestRegistrations = async params => {
 	registrationsRes.meta.count = params.limit;
 
 	return {
-		data: {
 			data: delegates,
 			meta: registrationsRes.meta,
 			link: registrationsRes.link,
-		},
 	};
 };
 
