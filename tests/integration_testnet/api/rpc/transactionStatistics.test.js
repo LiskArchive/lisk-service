@@ -48,7 +48,7 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 
 				// expect(response.data.timeline).toHaveLength(10);
 				response.data.timeline.forEach((item, i) => {
-					const date = moment(startOfUnitUtc).subtract(i, aggregateBy);
+					// const date = moment(startOfUnitUtc).subtract(i, aggregateBy);
 					expect(item).toMap(timelineItemSchema);
 				});
 			});
