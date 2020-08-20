@@ -17,38 +17,31 @@
 import Joi from 'joi';
 import { JSON_RPC } from '../../../helpers/errorCodes';
 
-const invalidParamsSchema = Joi.object({
+export const invalidParamsSchema = Joi.object({
 	jsonrpc: Joi.string().equal('2.0'),
 	code: Joi.number().required().equal(JSON_RPC.INVALID_PARAMS[0]),
 	message: Joi.string().required(),
 });
 
-const metaSchema = Joi.object({
+export const metaSchema = Joi.object({
 	count: Joi.number(),
 	total: Joi.number(),
 	offset: Joi.number(),
 }).required();
 
-const envelopeSchema = Joi.object({
+export const envelopeSchema = Joi.object({
 	data: Joi.array().required(),
 	meta: metaSchema,
 }).required();
 
-const emptyEnvelopeSchema = Joi.object({
+export const emptyEnvelopeSchema = Joi.object({
 	data: Joi.array().required(),
 	meta: Joi.object().required(),
 }).required();
 
-const jsonRpcEnvelopeSchema = Joi.object({
+export const jsonRpcEnvelopeSchema = Joi.object({
 	jsonrpc: Joi.string().equal('2.0'),
 	result: Joi.object().required(),
 	id: Joi.number().required(),
 }).required();
 
-module.exports = {
-	invalidParamsSchema,
-	metaSchema,
-	envelopeSchema,
-	emptyEnvelopeSchema,
-	jsonRpcEnvelopeSchema,
-};
