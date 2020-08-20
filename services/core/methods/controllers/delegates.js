@@ -113,6 +113,9 @@ const getStandbyDelegates = async params => {
 
 const getNextForgers = async params => {
 	const nextForgers = await CoreService.getNextForgers(params);
+	
+	if (isEmptyObject(nextForgers)) return {};
+
 	const nextForgersData = nextForgers.data;
 
 	const makeDelegatesArr = forgers => {
@@ -126,6 +129,7 @@ const getNextForgers = async params => {
 	};
 
 	const delegates = await makeDelegatesArr(nextForgersData);
+
 	nextForgers.meta.count = params.limit;
 	nextForgers.meta.total = params.limit;
 

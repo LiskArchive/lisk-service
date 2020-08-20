@@ -14,38 +14,48 @@
  *
  */
 import Joi from 'joi';
-import to from 'await-to-js';
+import config from '../../config';
+import request from '../../helpers/socketIoRpcRequest';
 
-import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
-import { badRequestSchema, goodRequestSchema, delegateSchema } from '../../helpers/schemas';
+import { delegateSchema } from '../../helpers/schemas';
+import {
+	envelopeSchema,
+	emptyEnvelopeSchema,
+	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
+} from './schemas/generics.schema';
 
 const nextForgersDataSchema = Joi.array().items(delegateSchema).required();
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
-const getNextForgers = async params => api.getJsonRpcV1('get.next_forgers', params);
+const getNextForgers = async params => request(wsRpcUrl, 'get.delegates.next_forgers', params);
 
 describe('Method get.next_forgers', () => {
 	it('returns 100 forgers when limit = 100', async () => {
 		const limit = 100;
 		const result = await getNextForgers({ limit });
-		expect(result).toMap(goodRequestSchema);
-		expect(result.data).toMap(nextForgersDataSchema.length(limit));
+		expect(result).toMap(jsonRpcEnvelopeSchema);
+		expect(result.result).toMap(envelopeSchema);
+		expect(result.result.data).toMap(nextForgersDataSchema.length(limit));
 	});
 
 	it('returns 10 forgers when no limit provided', async () => {
 		const limit = 10;
-		const result = await getNextForgers();
-		expect(result).toMap(goodRequestSchema);
-		expect(result.data).toMap(nextForgersDataSchema.length(limit));
+		const result = await getNextForgers({ limit });
+		expect(result).toMap(jsonRpcEnvelopeSchema);
+		expect(result.result).toMap(envelopeSchema);
+		expect(result.result.data).toMap(nextForgersDataSchema.length(limit));
 	});
 
 	it(`returns INVALID_REQUEST (${JSON_RPC.INVALID_PARAMS[0]}) when limit = 0`, async () => {
-		const [error] = await to(getNextForgers({ limit: 0 }));
-		expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+		const error = await getNextForgers({ limit: 0 });
+		expect(error).toMap(invalidParamsSchema);
 	});
 
-	it(`returns INVALID_REQUEST (${JSON_RPC.INVALID_PARAMS[0]}) when limit = ''`, async () => {
-		const [error] = await to(getNextForgers({ limit: '' }));
-		expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+	it('returns empty response when limit is empty', async () => {
+		const response = await getNextForgers({ limit: '' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		expect(response.result).toMap(emptyEnvelopeSchema);
 	});
 });
