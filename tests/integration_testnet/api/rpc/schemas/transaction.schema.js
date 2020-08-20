@@ -29,6 +29,7 @@ const transactionSchema = Joi.object({
 	senderId: Joi.string().required(),
 	senderPublicKey: Joi.string().required(),
 	signature: Joi.string().required(),
+	signSignature: Joi.string().optional(),
 	signatures: Joi.array().required(),
 	timestamp: Joi.number().required(),
 	type: Joi.number().required(),
