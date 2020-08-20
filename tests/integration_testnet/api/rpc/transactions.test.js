@@ -118,7 +118,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('is able to retrieve list of transactions using block ID', () => {
-		it('known block -> ok', async () => {
+		xit('known block -> ok', async () => {
 			const response = await requestTransactions({ block: block.id });
 			expect(response.result.data[0]).toMap(transactionSchema, { blockId: block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -139,7 +139,7 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('is able to retrieve list of transactions using height', () => {
-		it('known height -> ok', async () => {
+		xit('known height -> ok', async () => {
 			const response = await requestTransactions({ height: transaction.height });
 			expect(response.result.data[0]).toMap(transactionSchema, { height: transaction.height });
 			expect(response).toMap(jsonRpcEnvelopeSchema);

@@ -38,7 +38,7 @@ const delegateSchema = {
 };
 
 const badRequestSchema = {
-	errors: 'array',
+	error: 'array',
 	message: 'string',
 };
 

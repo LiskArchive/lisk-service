@@ -39,7 +39,7 @@ describe('Method get.votes', () => {
 	[
 		['returns votes for existing account by address', { address: '16313739661670634666L' }],
 		['returns votes for existing account by username', { username: 'cc001' }],
-		['returns votes for existing account by public key', { publickey: 'd258627878a9b360fe4934218d2415d66b1ed2ef63ce097280bf02189a91468d' }],
+		['returns votes for existing account by public key', { publickey: '473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c' }],
 		// TODO Fix this test case. There is no account with votes and second public key on the
 		// blockchain snapshot currently used in Jenkins.
 		// ['returns votes for existing account by second public key',
