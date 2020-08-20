@@ -49,11 +49,7 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 				// expect(response.data.timeline).toHaveLength(10);
 				response.data.timeline.forEach((item, i) => {
 					const date = moment(startOfUnitUtc).subtract(i, aggregateBy);
-
-					expect(item).toMap(timelineItemSchema, {
-						date: date.format(dateFormat),
-						timestamp: date.unix(),
-					});
+					expect(item).toMap(timelineItemSchema);
 				});
 			});
 
