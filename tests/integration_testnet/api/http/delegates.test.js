@@ -116,7 +116,7 @@ describe('Delegates API', () => {
 		});
 
 		it('wrong username -> 404', async () => {
-			const response = await api.get(`${endpoint}?username=genesis_510000000`, 404)
+			const response = await api.get(`${endpoint}?username=genesis_510000000`, 404);
 			expect(response).toMapRequiredSchema(notFoundErrorSchema);
 		});
 	});
@@ -134,7 +134,7 @@ describe('Delegates API', () => {
 		});
 
 		it('empty limit -> 400', async () => {
-		    const response = await api.get(`${endpoint}/latest_registrations?limit=`, 400);
+			const response = await api.get(`${endpoint}/latest_registrations?limit=`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 	});
