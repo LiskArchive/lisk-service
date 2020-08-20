@@ -113,7 +113,6 @@ const getStandbyDelegates = async params => {
 
 const getNextForgers = async params => {
 	const nextForgers = await CoreService.getNextForgers(params);
-	
 	if (isEmptyObject(nextForgers)) return {};
 
 	const nextForgersData = nextForgers.data;
