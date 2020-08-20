@@ -22,6 +22,7 @@ const baseUrl = `${baseUrlRoot}/rpc-test`;
 
 const {
 	INVALID_REQUEST,
+	INVALID_PARAMS,
 	METHOD_NOT_FOUND,
 	SERVER_ERROR,
 } = JSON_RPC;
@@ -64,7 +65,7 @@ describe('Gateway', () => {
 		const response = await request(baseUrl, 'get.hello', { wrong_param_name: 'user1' });
 		expect(response).toEqual({
 			jsonrpc: '2.0',
-			code: INVALID_REQUEST[0],
+			code: INVALID_PARAMS[0],
 			message: 'Unknown input parameter(s): wrong_param_name',
 		});
 	});
@@ -73,7 +74,7 @@ describe('Gateway', () => {
 		const response = await request(baseUrl, 'get.hello', { wrong_param_name: null });
 		expect(response).toEqual({
 			jsonrpc: '2.0',
-			code: INVALID_REQUEST[0],
+			code: INVALID_PARAMS[0],
 			message: 'Unknown input parameter(s): wrong_param_name',
 		});
 	});
