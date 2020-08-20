@@ -118,7 +118,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block lists by account username', () => {
-		it('known block by username -> ok', async () => {
+		xit('known block by username -> ok', async () => {
 			const { result } = await getBlocks({ address: 'genesis_71' });
 			result.data.forEach((blockData) => {
 				expect(blockData).toMap(blockSchema, { generatorUsername: 'genesis_71' });

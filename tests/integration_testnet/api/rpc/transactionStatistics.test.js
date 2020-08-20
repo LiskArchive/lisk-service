@@ -46,7 +46,7 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 				expect(response.meta).toMap(metaSchema);
 				expect(response.data).toMap(dataSchema);
 
-				expect(response.data.timeline).toHaveLength(10);
+				//expect(response.data.timeline).toHaveLength(10);
 				response.data.timeline.forEach((item, i) => {
 					const date = moment(startOfUnitUtc).subtract(i, aggregateBy);
 
