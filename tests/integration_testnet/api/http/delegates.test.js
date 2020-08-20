@@ -90,7 +90,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	xdescribe('GET /delegates?publickey', () => {
+	describe('GET /delegates?publickey', () => {
 		it('known delegate by public key -> ok', async () => {
 			const response = await api.get(`${endpoint}?publickey=${delegates.activeDelegate.publicKey}`);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -99,13 +99,14 @@ describe('Delegates API', () => {
 			});
 		});
 
-		it('wrong delegate publickey -> 404', () => expect(api.get(`${endpoint}?publickey=412875216073141752800000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundErrorSchema,
-		}));
+		it('wrong delegate publickey -> 404', async () => {
+			const response = await api.get(`${endpoint}?publickey=412875216073141752800000`, 404);
+			expect(response).toMapRequiredSchema(notFoundErrorSchema);
+		});
 	});
 
 
-	xdescribe('GET /delegates?username', () => {
+	describe('GET /delegates?username', () => {
 		it('known delegate by username -> ok', async () => {
 			const response = await api.get(`${endpoint}?username=${delegates.activeDelegate.username}`);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -114,12 +115,13 @@ describe('Delegates API', () => {
 			});
 		});
 
-		it('wrong username -> 404', () => expect(api.get(`${endpoint}?username=genesis_510000000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundErrorSchema,
-		}));
+		it('wrong username -> 404', async () => {
+			const response = await api.get(`${endpoint}?username=genesis_510000000`, 404)
+			expect(response).toMapRequiredSchema(notFoundErrorSchema);
+		});
 	});
 
-	xdescribe('GET /delegates/latest_registrations', () => {
+	describe('GET /delegates/latest_registrations', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
@@ -127,15 +129,17 @@ describe('Delegates API', () => {
 		});
 
 		it('limit = 0 -> 400', async () => {
-			expect(api.get(`${endpoint}/latest_registrations?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+			const response = await api.get(`${endpoint}/latest_registrations?limit=0`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
 		it('empty limit -> 400', async () => {
-			expect(api.get(`${endpoint}/latest_registrations?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+		    const response = await api.get(`${endpoint}/latest_registrations?limit=`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 	});
 
-	xdescribe('GET /delegates/next_forgers', () => {
+	describe('GET /delegates/next_forgers', () => {
 		xit('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
@@ -143,15 +147,17 @@ describe('Delegates API', () => {
 		});
 
 		it('limit = 0 -> 400', async () => {
-			expect(api.get(`${endpoint}/next_forgers?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+			const response = await api.get(`${endpoint}/next_forgers?limit=0`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
 		it('empty limit -> 400', async () => {
-			expect(api.get(`${endpoint}/next_forgers?limit=`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+			const response = await api.get(`${endpoint}/next_forgers?limit=`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 	});
 
-	xdescribe('GET /delegates/active', () => {
+	describe('GET /delegates/active', () => {
 		xit('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`);
 			expect(response.data).toBeArrayOfSize(101);
@@ -176,7 +182,8 @@ describe('Delegates API', () => {
 		});
 
 		it('limit = 0 -> 400', async () => {
-			expect(api.get(`${endpoint}?sort=rank:asc&limit=101`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
 		// Given test fails during CI phase
@@ -188,7 +195,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	xdescribe('GET /delegates/standby', () => {
+	describe('GET /delegates/standby', () => {
 		xit('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=101&limit=101`);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -204,7 +211,8 @@ describe('Delegates API', () => {
 		});
 
 		it('limit = 0 -> 400', async () => {
-			expect(api.get(`${endpoint}?sort=rank:asc&offset=102&limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema);
+			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=0`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
 		// Given test fails during CI phase
