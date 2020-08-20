@@ -18,7 +18,6 @@ import Joi from 'joi';
 export const goodRequestSchema = Joi.object({
 	data: Joi.object().required(),
 	meta: Joi.object().required(),
-	links: Joi.object().required(),
 });
 
 export const dataSchema = Joi.object({

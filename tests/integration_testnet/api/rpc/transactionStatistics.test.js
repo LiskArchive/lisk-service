@@ -14,7 +14,6 @@
  *
  */
 import moment from 'moment';
-import to from 'await-to-js';
 
 import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
@@ -22,6 +21,10 @@ import { badRequestSchema } from '../../helpers/schemas';
 import {
 	goodRequestSchema, dataSchema, metaSchema, timelineItemSchema,
 } from '../../schemas/transactionStatistics.schema';
+
+import {
+	invalidParamsSchema,
+} from './schemas/generics.schema';
 
 describe('get.transactions.statistics.{aggregateBy}', () => {
 	const baseMethod = 'get.transactions.statistics';
@@ -105,8 +108,8 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 			});
 
 			it('returns error 400 if called with ?limit=101 or higher', async () => {
-				const [error] = await to(api.getJsonRpcV1(endpoint, { limit: 101 }));
-				expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+				const error = await api.getJsonRpcV1(endpoint, { limit: 101 });
+				expect(error).toMap(invalidParamsSchema);
 			});
 
 			// TODO implement this case in the API
@@ -114,12 +117,12 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 		});
 	});
 
-	describe('GET /transactions/statistics/year', () => {
+	xdescribe('GET /transactions/statistics/year', () => {
 		const endpoint = `${baseMethod}.year`;
 
-		it('returns error 404 if called without any params as years are not supported', async () => {
-			const [error] = await to(api.getJsonRpcV1(endpoint));
-			expect(error).toMap(badRequestSchema);
+		it(`returns error METHOD_NOT_FOUND ${JSON_RPC.METHOD_NOT_FOUND[0]}) if called without any params as years are not supported`, async () => {
+			const error = await api.getJsonRpcV1(endpoint);
+			expect(error).toMap(badRequestSchema, { code: JSON_RPC.METHOD_NOT_FOUND[0] });
 		});
 	});
 });
