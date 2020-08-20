@@ -44,4 +44,3 @@ export const jsonRpcEnvelopeSchema = Joi.object({
 	result: Joi.object().required(),
 	id: Joi.number().required(),
 }).required();
-

@@ -21,6 +21,13 @@ import { transaction } from './constants/transactions';
 import { block } from './constants/blocks';
 import { goodRequestSchema } from '../../helpers/schemas';
 
+import {
+	envelopeSchema,
+	emptyEnvelopeSchema,
+	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
+} from './schemas/generics.schema';
+
 const transactionSchema = Joi.object({
 	amount: Joi.string().required(),
 	asset: Joi.object().required(),
@@ -39,13 +46,6 @@ const transactionSchema = Joi.object({
 	type: Joi.number().required(),
 	senderSecondPublicKey: Joi.string(),
 }).required();
-
-import {
-	envelopeSchema,
-	emptyEnvelopeSchema,
-	invalidParamsSchema,
-	jsonRpcEnvelopeSchema,
-} from './schemas/generics.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
