@@ -15,7 +15,7 @@
  */
 /* eslint-disable quotes, quote-props, comma-dangle */
 
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { block } from './constants/blocks';

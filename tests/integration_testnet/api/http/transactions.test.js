@@ -70,9 +70,10 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid transaction type -> 400', () => expect(api.get(`${endpoint}?type=-124`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('invalid transaction type -> 400', async () => {
+			const response = await api.get(`${endpoint}?type=-124`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
 		it('empty transaction type ->  ok', async () => {
 			const response = await api.get(`${endpoint}?type=`);
@@ -91,13 +92,15 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('long transaction id -> 404', () => expect(api.get(`${endpoint}?id=412875216073141752800000`, 404)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('long transaction id -> 404', async () => {
+			const response = await api.get(`${endpoint}?id=412875216073141752800000`, 404);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
-		it('invalid transaction id -> 404', () => expect(api.get(`${endpoint}?id=41287`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('invalid transaction id -> 404', async () => {
+			const response = await api.get(`${endpoint}?id=41287`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		it('empty transaction id -> ok', async () => {
 			const response = await api.get(`${endpoint}?block=`);
@@ -117,9 +120,10 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid block -> 404', () => expect(api.get(`${endpoint}?block=1000000000000000000000000'`, 404)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('invalid block -> 404', async () => {
+			const response = await api.get(`${endpoint}?block=1000000000000000000000000'`, 404);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
 		it('empty block -> ok', async () => {
 			const response = await api.get(`${endpoint}?block=`);
@@ -138,9 +142,10 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid height -> 404', () => expect(api.get(`${endpoint}?height=1000000000000000000000000'`, 404)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('invalid height -> 404', async () => {
+			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 404);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
 		it('empty height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=`);
@@ -159,9 +164,10 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid address -> 404', () => expect(api.get(`${endpoint}?address=000002345`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('invalid address -> 404', async () => {
+			const response = await api.get(`${endpoint}?address=000002345`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		it('known sender address -> ok', async () => {
 			const response = await api.get(`${endpoint}?sender=${transaction.senderId}`);
@@ -171,9 +177,10 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid sender address -> 404', () => expect(api.get(`${endpoint}?sender=000002345`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('invalid sender address -> 404', async () => {
+			const response = await api.get(`${endpoint}?sender=000002345`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		xit('known recipient address -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipient=${transaction.recipientId}`);
@@ -183,9 +190,10 @@ describe('Transactions API', () => {
 			});
 		});
 
-		it('invalid recipient address -> 404', () => expect(api.get(`${endpoint}?recipient=000002345`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('invalid recipient address -> 404', async () => {
+			const response = await api.get(`${endpoint}?recipient=000002345`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		it('existing sender public key -> ok', async () => {
 			const response = await api.get(`${endpoint}?sender=address:${accounts.delegate.address}`);

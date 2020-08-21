@@ -1,36 +1,21 @@
-/*
- * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
- *
- * See the LICENSE file at the top-level directory of this distribution
- * for licensing information.
- *
- * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
- * no part of this software, including this file, may be copied, modified,
- * propagated, or distributed except according to the terms contained in the
- * LICENSE file.
- *
- * Removal or modification of this copyright notice is prohibited.
- *
- */
-
-// eslint-disable-next-line import/prefer-default-export
-export const block = {
-	id: '12602944501666077167',
-	height: 24245,
-	version: 0,
-	timestamp: 1497856650,
-	generatorAddress: '9528507096611161860L',
-	generatorPublicKey: 'fab7b58be4c1e9542c342023b52e9d359ea89a3af34440bdb97318273e8555f0',
-	generatorUsername: 'genesis_71',
-	payloadLength: 117,
-	payloadHash: '1550422e3b76c5b9c94c79fe6d06b8f5e264b1ae44ba0f817b309d58f1a24096',
-	blockSignature: 'b54d65b91adc86bbff884ca6def219a9ad15bd721d91b47a2da63e32825054b30780c81b26f805a4d0acc9f0af953008655ab0d7881047e679affb39a4c9de0c',
-	confirmations: 10,
-	previousBlockId: '9409104256546022465',
-	numberOfTransactions: 1,
-	totalAmount: '12345000000',
-	totalFee: '10000000',
+const block = {
+	blockSignature: '0e687b84bce1ae513eec83e6e85e84d5ef9ad86e58cb996745672a09ce97ad842b00eb63b67c98efec2c51dc109e15fddd8be37088c02cbda858feb6b748480a',
+	confirmations: 11322927,
+	generatorAddress: '8644388734936320844L',
+	generatorPublicKey: '77123552d4b1942526f7c8f4880b8305d88fd3aa5ca62ba7ccb5e7bf6fd9c121',
+	generatorUsername: 'bangomatic_test',
+	height: 30949,
+	id: '17263862003562119301',
+	numberOfTransactions: 0,
+	payloadHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+	payloadLength: 0,
+	previousBlockId: '14671743728575610712',
 	reward: '500000000',
-	totalForged: '510000000',
+	timestamp: 1466128490,
+	totalAmount: '0',
+	totalFee: '0',
+	totalForged: '500000000',
+	version: 0,
 };
+
+module.exports = block;

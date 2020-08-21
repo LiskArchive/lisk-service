@@ -25,7 +25,6 @@ const getNetworkStatus = async () => {
 	return {
 		data: result,
 		meta: {},
-		links: {},
 	};
 };
 

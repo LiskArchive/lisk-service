@@ -20,6 +20,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/search',
+	rpcMethod: 'get.search',
 	params: {
 		q: { optional: false, type: 'string' },
 	},

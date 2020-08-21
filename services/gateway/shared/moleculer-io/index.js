@@ -89,7 +89,7 @@ module.exports = {
       let handlers = this.settings.io.handlers[nsp];
       namespace.on('connection', socket => {
         socket.$service = this;
-        this.logger.info(`(nsp:'${nsp}') Client connected:`, socket.id);
+        this.logger.debug(`(nsp:'${nsp}') Client connected:`, socket.id);
         if (item.packetMiddlewares) {
           //socketmiddlewares
           for (let middleware of item.packetMiddlewares) {
@@ -364,7 +364,7 @@ function makeHandler(svc, handlerItem) {
   return async function (jsonRpcInput, respond) {
     const action = jsonRpcInput.method;
     const params = jsonRpcInput.params;
-    svc.logger.info(`   => Client '${this.id}' call '${action}'`);
+    svc.logger.debug(`   => Client '${this.id}' call '${action}'`);
     if (svc.settings.logRequestParams && svc.settings.logRequestParams in svc.logger) svc.logger[svc.settings.logRequestParams]("   Params:", params);
     try {
       if (_.isFunction(params)) {
@@ -372,7 +372,7 @@ function makeHandler(svc, handlerItem) {
         params = null;
       }
       let res = await svc.actions.call({ socket: this, action, params: jsonRpcInput, handlerItem });
-      svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
+      svc.logger.debug(`   <= ${chalk.green.bold('Success')} ${action}`);
       if (_.isFunction(respond)) respond(addJsonRpcEnvelope(res, 1));
     } catch (err) {
       if (svc.settings.log4XXResponses || err && !_.inRange(err.code, 400, 500)) {

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 export const goodRequestSchema = Joi.object({
 	data: Joi.object().required(),

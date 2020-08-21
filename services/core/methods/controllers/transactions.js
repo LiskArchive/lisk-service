@@ -53,7 +53,6 @@ const getTransactions = async params => {
 	return {
 		data: result.data,
 		meta,
-		links: {},
 	};
 };
 
@@ -65,7 +64,6 @@ const getTransactionsByAddress = async params => {
 		data: {
 			data: result.data,
 			meta: result.meta,
-			links: {},
 		},
 	};
 };
@@ -84,7 +82,6 @@ const getLastTransactions = async params => {
 		data: {
 			data: result.data,
 			meta,
-			links: {},
 		},
 	};
 };

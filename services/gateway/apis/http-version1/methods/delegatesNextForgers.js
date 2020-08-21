@@ -19,6 +19,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/delegates/next_forgers',
+	rpcMethod: 'get.delegates.next_forgers',
 	params: {
 		limit: { optional: true, min: 1, max: 101, type: 'number' },
 		offset: { optional: true, min: 0, type: 'number' },

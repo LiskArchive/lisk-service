@@ -58,7 +58,7 @@ const wrongInputParamSchema = {
 	message: 'string',
 };
 
-xdescribe('Blocks API', () => {
+describe('Blocks API', () => {
 	describe('GET /blocks', () => {
 		it('returns list of blocks when called with no params', async () => {
 			const response = await api.get(`${endpoint}?limit=1`);
@@ -111,7 +111,10 @@ xdescribe('Blocks API', () => {
 			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 
-		it('too long block id -> 400', () => expect(api.get(`${endpoint}?id=fkfkfkkkffkfkfk10101010101010101010`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('too long block id -> 400', async () => {
+			const response = await api.get(`${endpoint}?id=fkfkfkkkffkfkfk10101010101010101010`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
 		it('empty block ID -> retrieve all', async () => {
 			const response = await api.get(`${endpoint}?id=`);
@@ -120,9 +123,15 @@ xdescribe('Blocks API', () => {
 			});
 		});
 
-		it('non-existent block id -> 404', () => expect(api.get(`${endpoint}?id=12602944501676077162`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
+		it('non-existent block id -> 404', async () => {
+			const response = await api.get(`${endpoint}?id=12602944501676077162`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
-		it('invalid query parameter -> 400', () => expect(api.get(`${endpoint}?block=12602944501676077162`, 400)).resolves.toMapRequiredSchema(wrongInputParamSchema));
+		it('invalid query parameter -> 400', async () => {
+			const response = await api.get(`${endpoint}?block=12602944501676077162`, 400);
+			expect(response).toMapRequiredSchema(wrongInputParamSchema);
+		});
 
 		it('known height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=${block.height}`);
@@ -132,7 +141,10 @@ xdescribe('Blocks API', () => {
 			});
 		});
 
-		it('non-existent height -> 404', () => expect(api.get(`${endpoint}?height=2000000000`, 404)).resolves.toMapRequiredSchema(notFoundSchema));
+		it('non-existent height -> 404', async () => {
+			const response = await api.get(`${endpoint}?height=2000000000`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		it('empty height -> retrieve all', async () => {
 			const response = await api.get(`${endpoint}?height=`);
@@ -147,7 +159,10 @@ xdescribe('Blocks API', () => {
 			expect(response.data[0]).toMapRequiredSchema(blockSchema);
 		});
 
-		it('limit=0 -> 400', () => expect(api.get(`${endpoint}?limit=0`, 400)).resolves.toMapRequiredSchema(badRequestSchema));
+		it('limit=0 -> 400', async () => {
+			const response = await api.get(`${endpoint}?limit=0`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
 		it('empty limit -> retrieve all', async () => {
 			const response = await api.get(`${endpoint}?limit=`);

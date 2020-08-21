@@ -14,7 +14,7 @@
  *
  */
 
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 export const goodRequestSchema = Joi.object({
 	data: Joi.array().required(),
