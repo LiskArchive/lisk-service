@@ -39,7 +39,5 @@
     "eslint-plugin-jest": "^23.16.0",
     "eslint-plugin-mocha": "^7.0.1"
   },
-  "dependencies": {
-    "joi": "^17.2.0"
-  }
+  "dependencies": {}
 }
