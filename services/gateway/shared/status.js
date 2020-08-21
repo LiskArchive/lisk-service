@@ -13,7 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP, Logger } = require('lisk-service-framework');
 const packageJson = require('../package.json');
+
+const logger = Logger('CustomAPI');
+const requestLib = HTTP.request;
+const config = require('../config.js');
+
+const gateway = `http://${config.host}:${config.port}/api/v1`;
 
 const getBuildTimestamp = () => {
 	let timestamp;
@@ -42,14 +49,32 @@ const getStatus = () => ({
 	},
 });
 
-const getReady = () => ({
+const checkAPI = (url) => new Promise((resolve, reject) => {
+	requestLib(`${gateway}${url}`).then(body => {
+		if (!body) resolve(false);
+		try {
+			if (body.status === 200) {
+				return resolve(true);
+			}
+		} catch (err) {
+			logger.error(err.stack);
+			return reject(err);
+		}
+		return resolve(false);
+	}).catch(err => {
+		logger.error(err.stack);
+		resolve({});
+	});
+});
+
+const getReady = async () => ({
 	services: {
-		lisk_blocks: true,
-		lisk_peers: true,
-		lisk_transations: true,
-		lisk_transation_statistics: true,
-		lisk_accounts: true,
-		lisk_delegates: true,
+		lisk_blocks: await checkAPI('/blocks'),
+		lisk_transations: await checkAPI('/transactions'),
+		lisk_transation_statistics: await checkAPI('/transactions/statistics/day'),
+		lisk_accounts: await checkAPI('/accounts'),
+		lisk_delegates: await checkAPI('/delegates'),
+		lisk_peers: await checkAPI('/peers'),
 	},
 });
 
