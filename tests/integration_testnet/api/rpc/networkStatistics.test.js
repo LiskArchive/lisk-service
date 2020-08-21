@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import { api } from '../../helpers/socketIoRpcRequest';
 import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
@@ -21,7 +21,6 @@ import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
 const goodRequestSchema = Joi.object({
 	data: Joi.object().required(),
 	meta: Joi.object().required(),
-	links: Joi.object().required(),
 });
 
 const requestNetworkStatistics = async params => api.getJsonRpcV1('get.network.statistics', params);

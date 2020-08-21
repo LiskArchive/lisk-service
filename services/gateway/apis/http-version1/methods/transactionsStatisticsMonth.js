@@ -19,6 +19,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions/statistics/month',
+	rpcMethod: 'get.transactions.statistics.month',
 	params: {
 		offset: { optional: true, type: 'number', default: 0, min: 0 },
 		limit: { optional: true, type: 'number', default: 10, min: 1, max: 12 },

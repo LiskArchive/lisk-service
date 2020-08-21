@@ -86,7 +86,6 @@ const getPeers = async (params) => {
 	return {
 		data: dataWithLocation,
 		meta,
-		links: {},
 	};
 };
 
@@ -128,7 +127,6 @@ const getPeersStatistics = async () => {
 			os: osStats,
 		},
 		meta: {},
-		links: {},
 	};
 };
 

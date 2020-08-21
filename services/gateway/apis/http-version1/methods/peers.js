@@ -20,6 +20,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/peers',
+	rpcMethod: 'get.peers',
 	params: {
 		ip: { optional: true, type: 'string' },
 		httpPort: { optional: true, type: 'number', integer: true, min: 1, max: 65535 },

@@ -23,7 +23,7 @@ const jsome = require('jsome');
 jsome.params.colored = true;
 
 /* Usage:
- * node socket_io_rpc_client.js http://localhost:3011/rpc-test get.hello.param '{"path_name1": "user1"}'
+ * node socket_io_rpc_client.js http://localhost:9901/rpc-test get.hello.param '{"path_name1": "user1"}'
  */
 
 if (process.argv.length < 4) {

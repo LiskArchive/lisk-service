@@ -66,10 +66,9 @@ const notFoundSchema = {
 const responseEnvelopeSchema = {
 	meta: 'object',
 	data: 'array',
-	links: 'object',
 };
 
-xdescribe('Peers API', () => {
+describe('Peers API', () => {
 	describe('GET /peers', () => {
 		it('required and optional properties -> ok', async () => {
 			const response = await api.get(`${endpoint}`);
@@ -78,25 +77,30 @@ xdescribe('Peers API', () => {
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('wrong ip -> not found error', () => expect(api.get(`${endpoint}?ip=0`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('wrong ip -> not found error', async () => {
+			const response = await api.get(`${endpoint}?ip=0`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
-		it('wrong url -> not found error', () => expect(api.get(`${endpoint}/112`, 404)).resolves.toMapRequiredSchema({
-			...urlNotFoundSchema,
-		}));
+		it('wrong url -> not found error', async () => {
+			const response = await api.get(`${endpoint}/112`, 404);
+			expect(response).toMapRequiredSchema(urlNotFoundSchema);
+		});
 
-		it('wrong httpPort -> bad request error', () => expect(api.get(`${endpoint}?httpPort=70000000`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('wrong httpPort -> bad request error', async () => {
+			const response = await api.get(`${endpoint}?httpPort=70000000`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+	});
 
-		it('wrong wsPort -> bad request error', () => expect(api.get(`${endpoint}?wsPort=70000000`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('wrong wsPort -> bad request error', async () => {
+			const response = await api.get(`${endpoint}?wsPort=70000000`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
-		it('wrong os -> not found error', () => expect(api.get(`${endpoint}?os=linux4.4.0-134-generic0000000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('wrong os -> not found error', async () => {
+			const response = await api.get(`${endpoint}?os=linux4.4.0-134-generic0000000`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		it('empty version -> ignore', async () => {
 			const response = await api.get(`${endpoint}?version=`);
@@ -105,17 +109,20 @@ xdescribe('Peers API', () => {
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('invalid version -> bad request error', () => expect(api.get(`${endpoint}?state=3`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('invalid version -> bad request error', async () => {
+			const response = await api.get(`${endpoint}?state=3`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
-		it('non-existent height -> not found error', () => expect(api.get(`${endpoint}?height=1000000000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('non-existent height -> not found error', async () => {
+			const response = await api.get(`${endpoint}?height=1000000000`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
-		it('non-existent broadhash -> not found error', () => expect(api.get(`${endpoint}?broadhash=bf8b9d02a2167933be8c4a22b90992aee55204dca4452b3844208754a3baeb7b000000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('non-existent broadhash -> not found error', async () => {
+			const response = await api.get(`${endpoint}?broadhash=bf8b9d02a2167933be8c4a22b90992aee55204dca4452b3844208754a3baeb7b000000`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
@@ -133,9 +140,10 @@ xdescribe('Peers API', () => {
 			expect(response.data[0]).toMapRequiredSchema(peerSchema);
 		});
 
-		it('too big offset -> not found error', () => expect(api.get(`${endpoint}?offset=1000000`, 404)).resolves.toMapRequiredSchema({
-			...notFoundSchema,
-		}));
+		it('too big offset -> not found error', async () => {
+			const response = await api.get(`${endpoint}?offset=1000000`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
 
 		it('empty sort -> ignore', async () => {
 			const response = await api.get(`${endpoint}?sort=`);
@@ -144,9 +152,10 @@ xdescribe('Peers API', () => {
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('wrong sort -> bad request error', () => expect(api.get(`${endpoint}?sort=height:ascc`, 400)).resolves.toMapRequiredSchema({
-			...badRequestSchema,
-		}));
+		it('wrong sort -> bad request error', async () => {
+			const response = await api.get(`${endpoint}?sort=height:ascc`, 400);
+			expect(response).toMapRequiredSchema(badRequestSchema);
+		});
 
 		it('retrieves connected peers by state name', async () => {
 			const response = await api.get(`${endpoint}?state=connected`);

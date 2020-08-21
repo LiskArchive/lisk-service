@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 const networkStatisticsSchema = Joi.object({
 	basic: Joi.object({

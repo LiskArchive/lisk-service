@@ -16,7 +16,7 @@
 const {
 	mapper,
 	Utils,
-	Constants: { JSON_RPC: { INVALID_REQUEST } },
+	Constants: { JSON_RPC: { INVALID_PARAMS } },
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
@@ -74,6 +74,18 @@ const configureApi = (apiName, apiPrefix) => {
 	return { aliases, whitelist, methodPaths };
 };
 
+const typeMappings = {
+	string_number: (input) => Number(input),
+	number_string: (input) => String(input),
+	array_string: (input) => input.join(','),
+};
+
+const convertType = (item, type) => {
+	const typeMatch = `${(typeof item)}_${type}`;
+	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
+	return item;
+};
+
 const mapParam = (source, originalKey, mappingKey) => {
 	if (mappingKey) {
 		if (originalKey === '=') return { key: mappingKey, value: source[mappingKey] };
@@ -83,15 +95,21 @@ const mapParam = (source, originalKey, mappingKey) => {
 	return {};
 };
 
+const mapParamWithType = (source, originalSetup, mappingKey) => {
+	const [originalKey, type] = originalSetup.split(',');
+	const mapObject = mapParam(source, originalKey, mappingKey);
+	if (typeof type === 'string') return { key: mappingKey, value: convertType(mapObject.value, type) };
+	return mapObject;
+};
+
 const transformParams = (params = {}, specs) => {
 	const output = {};
 	Object.keys(specs).forEach((specParam) => {
-		const result = mapParam(params, specs[specParam], specParam);
+		const result = mapParamWithType(params, specs[specParam], specParam);
 		if (result.key) output[result.key] = result.value;
 	});
 	return output;
 };
-
 
 const registerApi = (apiName, config) => {
 	const { aliases, whitelist, methodPaths } = configureApi(apiName, config.path);
@@ -132,17 +150,17 @@ const registerApi = (apiName, config) => {
 					const paramReport = validate(request.params, methodPaths[request.method]);
 
 					if (paramReport.missing.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Missing parameter(s): ${paramReport.missing.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Missing parameter(s): ${paramReport.missing.join(', ')}` });
 					}
 
 					const unknownList = Object.keys(paramReport.unknown);
 					if (unknownList.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
 					}
 
-					const invalidList = Object.keys(paramReport.invalid);
+					const invalidList = paramReport.invalid;
 					if (invalidList.length > 0) {
-						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Invalid input parameter values: ${invalidList.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
 					}
 
 					request.params = transformRequest(request.method, request.params);

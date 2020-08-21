@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 const peerSchema = Joi.object({
 	ip: Joi.string().ip().required(),
@@ -27,10 +27,10 @@ const peerSchema = Joi.object({
 	os: Joi.string().optional(),
 	location: Joi.object({
 		countryCode: Joi.string().optional(),
-		ip: Joi.string().ip().required(),
-		latitude: Joi.string().required(),
-		longitude: Joi.string().required(),
-	}).required(),
+		ip: Joi.string().ip().optional(),
+		latitude: Joi.string().optional(),
+		longitude: Joi.string().optional(),
+	}).optional(),
 }).required();
 
 export default peerSchema;

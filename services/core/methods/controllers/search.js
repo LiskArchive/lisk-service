@@ -113,7 +113,6 @@ const getSearch = async params => {
 			count: response.data.length,
 			total: Math.max(response.total, response.data.length),
 		},
-		links: {},
 	};
 };
 

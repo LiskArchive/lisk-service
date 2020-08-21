@@ -15,7 +15,7 @@
  */
 
 
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 const blockSchema = Joi.object({
 	height: Joi.number().required(),
