@@ -28,6 +28,7 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
+const { getStatus, getReady } = require('./shared/status');
 
 const { host, port } = config;
 
@@ -39,23 +40,20 @@ LoggerConfig({
 
 const logger = Logger();
 
-const app = Microservice({
+const broker = Microservice({
 	name: 'gateway',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout * 1000, // ms
 	logger: Logger('lisk-service-gateway'),
-});
-
-const broker = app.getBroker();
+}).getBroker();
 
 broker.createService({
 	transporter: config.transporter,
 	mixins: [ApiService, SocketIOService],
-	name: 'status',
+	name: 'gateway',
 	actions: {
-		status() {
-			return 'OK';
-		},
+		status() { return getStatus(); },
+		ready() { return getReady(); },
 	},
 	settings: {
 		host,
@@ -70,7 +68,7 @@ broker.createService({
 		// If false, it will start without server in middleware mode
 		server: true,
 
-		logRequestParams: 'info',
+		logRequestParams: 'debug',
 		logResponseData: 'debug',
 		httpServerTimeout: 30 * 1000, // ms
 		optimizeOrder: true,
