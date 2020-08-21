@@ -18,5 +18,6 @@ const networkStatusSource = require('../../../sources/networkStatus');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/network/status',
+	rpcMethod: 'get.network.status',
 	source: networkStatusSource,
 };

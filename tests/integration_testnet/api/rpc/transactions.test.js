@@ -13,149 +13,172 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
-import to from 'await-to-js';
-
-import { api } from '../../helpers/socketIoRpcRequest';
+import config from '../../config';
+import request from '../../helpers/socketIoRpcRequest';
 import { transaction } from './constants/transactions';
-import { JSON_RPC } from '../../helpers/errorCodes';
+import { block } from './constants/blocks';
 import { goodRequestSchema } from '../../helpers/schemas';
 
-const transactionSchema = Joi.object({
-	amount: Joi.string().required(),
-	asset: Joi.object().required(),
-	blockId: Joi.string().required(),
-	confirmations: Joi.number().required(),
-	fee: Joi.string().required(),
-	height: Joi.number().required(),
-	id: Joi.string().required(),
-	recipientId: Joi.string().allow('').required(),
-	recipientPublicKey: Joi.string().allow('').required(),
-	senderId: Joi.string().required(),
-	senderPublicKey: Joi.string().required(),
-	signature: Joi.string().required(),
-	signatures: Joi.array().required(),
-	timestamp: Joi.number().required(),
-	type: Joi.number().required(),
-	senderSecondPublicKey: Joi.string(),
-}).required();
+import {
+	envelopeSchema,
+	emptyEnvelopeSchema,
+	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
+} from './schemas/generics.schema';
 
-const invalidParamsSchema = Joi.object({
-	code: Joi.number().required(),
-	message: Joi.string().required(),
-}).required();
+import transactionSchema from './schemas/transaction.schema';
 
-const requestTransactions = async params => api.getJsonRpcV1('get.transactions', params);
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
-describe('get.transactions', () => {
-	it('known transaction id -> ok', async () => {
-		const id = '3634383815892709956';
-		const response = await requestTransactions({ id });
-		expect(response.data[0]).toMap(transactionSchema, { id });
+const requestTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
+
+describe('Method get.transactions', () => {
+	describe('is able to retrieve list of transactions by address', () => {
+		it('known address -> ok', async () => {
+			const response = await requestTransactions({ address: transaction.recipientId });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(envelopeSchema);
+		});
+
+		it('invalid address -> empty response', async () => {
+			const response = await requestTransactions({ id: '000000000L' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 	});
 
-	// To Do: current response => {}
-	it('long transaction id -> -32600', async () => {
-		const response = await requestTransactions({ id: '412875216073141752800000' });
-		expect(response).toEqual({});
+	describe('is able to retrieve list of transactions using sender attributes', () => {
+		it('known sender address -> ok', async () => {
+			const response = await requestTransactions({ sender: `address:${transaction.senderId}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(envelopeSchema);
+		});
+
+		it('invalid sender address -> empty response', async () => {
+			const response = await requestTransactions({ sender: 'address:000000000L' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 	});
 
-	it('invalid transaction id -> empty response', async () => {
-		const response = await requestTransactions({ id: '41287' });
-		expect(response).toEqual({});
+	describe('is able to retrieve list of transactions using recipient attributes', () => {
+		it('known recipient address -> ok', async () => {
+			const response = await requestTransactions({ recipient: transaction.recipientId });
+			expect(response.result.data[0])
+				.toMap(transactionSchema, { recipientId: transaction.recipientId });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(envelopeSchema);
+		});
+
+		it('invalid recipient address -> empty response', async () => {
+			const response = await requestTransactions({ recipient: '000000000L' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 	});
 
-	it('empty transaction id -> invalid params', async () => {
-		const [error] = await to(requestTransactions({ id: '' }));
-		expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+	describe('is able to retrieve list of transactions using type', () => {
+		it('known transaction type -> ok', async () => {
+			const response = await requestTransactions({ type: `${transaction.type}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(envelopeSchema);
+			expect(response.result.data[0]).toMap(transactionSchema, { type: transaction.type });
+		});
+
+		it('invalid transaction type -> empty response', async () => {
+			const response = await requestTransactions({ type: '13' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
+
+		it('empty transaction type -> invalid params', async () => {
+			const response = await requestTransactions({ type: '' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 	});
 
-	it('known transaction type -> ok', async () => {
-		const response = await requestTransactions({ type: `${transaction.type}` });
-		expect(response.data[0]).toMap(transactionSchema, { type: transaction.type });
+	describe('is able to retrieve list of transactions using block ID', () => {
+		xit('known block -> ok', async () => {
+			const response = await requestTransactions({ block: block.id });
+			expect(response.result.data[0]).toMap(transactionSchema, { blockId: block.id });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(envelopeSchema);
+		});
+
+		it('invalid block -> empty response', async () => {
+			const response = await requestTransactions({ block: '1000000000000000000000000' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
+
+		it('empty block ->  empty response', async () => {
+			const response = await requestTransactions({ block: '' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 	});
 
-	it('invalid transaction type -> -32602', async () => {
-		const [error] = await to(requestTransactions({ type: '13' }));
-		expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+	describe('is able to retrieve list of transactions using height', () => {
+		xit('known height -> ok', async () => {
+			const response = await requestTransactions({ height: transaction.height });
+			expect(response.result.data[0]).toMap(transactionSchema, { height: transaction.height });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(envelopeSchema);
+		});
+
+		xit('invalid height -> empty response', async () => {
+			const response = await requestTransactions({ height: '1000000000000000000000000' });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('empty height -> ', async () => {
+			const response = await requestTransactions({ height: '' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 	});
 
-	it('empty transaction type -> invalid params', async () => {
-		const [error] = await to(requestTransactions({ type: '' }));
-		expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+	xdescribe('is able to retrieve list of transactions using timestamps', () => {
+		it('from to -> ok', async () => {
+			const from = 1497856679;
+			const toTimestamp = 1554283209;
+			const response = await requestTransactions({ from, to: toTimestamp });
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data.length).toEqual(2);
+			response.data.forEach(trx => {
+				expect(trx.timestamp).toBeGreaterThanOrEqual(from);
+				expect(trx.timestamp).toBeLessThanOrEqual(toTimestamp);
+			});
+		});
 	});
 
-	it('known address -> ok', async () => {
-		const response = await requestTransactions({ address: transaction.recipientId });
-		expect(response.data[0]).toMap(transactionSchema);
-	});
+	describe('is able to retrieve transaction using transaction ID', () => {
+		it('known transaction id -> ok', async () => {
+			const { id } = transaction;
+			const response = await requestTransactions({ id });
+			expect(response.result.data[0]).toMap(transactionSchema, { id });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(envelopeSchema);
+		});
 
-	it('invalid address -> empty response', async () => {
-		const response = await requestTransactions({ id: '000000000L' });
-		expect(response).toEqual({});
-	});
+		// To Do: current response => {}
+		it('long transaction id -> empty response', async () => {
+			const response = await requestTransactions({ id: '412875216073141752800000' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 
-	it('known sender address -> ok', async () => {
-		const response = await requestTransactions({ sender: transaction.senderId });
-		expect(response.data[0]).toMap(transactionSchema, { senderId: transaction.senderId });
-	});
+		it('invalid transaction id -> empty response', async () => {
+			const response = await requestTransactions({ id: '41287' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
+		});
 
-	it('invalid sender address -> empty response', async () => {
-		const response = await requestTransactions({ sender: '000000000L' });
-		expect(response).toEqual({});
-	});
-
-	it('known recipient address -> ok', async () => {
-		const response = await requestTransactions({ recipient: transaction.recipientId });
-		expect(response.data[0])
-			.toMap(transactionSchema, { recipientId: transaction.recipientId });
-	});
-
-	it('invalid recipient address -> empty response', async () => {
-		const response = await requestTransactions({ recipient: '000000000L' });
-		expect(response).toEqual({});
-	});
-
-	it('known block -> ok', async () => {
-		const blockId = '6524861224470851795';
-		const response = await requestTransactions({ block: blockId });
-		expect(response.data[0]).toMap(transactionSchema, { blockId });
-	});
-
-	it('invalid block -> empty response', async () => {
-		const response = await requestTransactions({ block: '1000000000000000000000000' });
-		expect(response).toEqual({});
-	});
-
-	it('empty block -> -32602', async () => {
-		const [error] = await to(requestTransactions({ block: '' }));
-		expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
-	});
-
-	it('known height -> ok', async () => {
-		const response = await requestTransactions({ height: transaction.height });
-		expect(response.data[0]).toMap(transactionSchema, { height: transaction.height });
-	});
-
-	it('invalid height -> empty response', async () => {
-		const response = await requestTransactions({ height: '1000000000000000000000000' });
-		expect(response).toEqual({});
-	});
-
-	it('empty height -> -32602', async () => {
-		const [error] = await to(requestTransactions({ height: '' }));
-		expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
-	});
-
-	it('from to -> ok', async () => {
-		const from = 1497856679;
-		const toTimestamp = 1554283209;
-		const response = await requestTransactions({ from, to: toTimestamp });
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data.length).toEqual(2);
-		response.data.forEach(trx => {
-			expect(trx.timestamp).toBeGreaterThanOrEqual(from);
-			expect(trx.timestamp).toBeLessThanOrEqual(toTimestamp);
+		it('empty transaction id -> empty response', async () => {
+			const response = await requestTransactions({ id: '' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			expect(response.result).toMap(emptyEnvelopeSchema);
 		});
 	});
 });

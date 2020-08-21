@@ -1,94 +1,51 @@
-/*
- * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
- *
- * See the LICENSE file at the top-level directory of this distribution
- * for licensing information.
- *
- * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
- * no part of this software, including this file, may be copied, modified,
- * propagated, or distributed except according to the terms contained in the
- * LICENSE file.
- *
- * Removal or modification of this copyright notice is prohibited.
- *
- */
-
 const accounts = {
 	genesis: {
-		address: '1085993630748340485L',
-		balance: '-9999999664752476',
-		publicKey: 'c96dec3595ff6041c3bd28b76b8cf75dce8225173d1bd00241624ee89b50f2a8',
+		address: '16009998050678037905L',
+		balance: '-9999989700000000',
+		delegate: {},
+		knowledge: {},
+		multisignatureAccount: {},
+		publicKey: '73ec4adbd8f99f0d46794aeda3c3d86b245bd9d27be2b282cdd38ad21988556b',
+		secondPublicKey: '',
 		transactionCount: {
-			incoming: '0',
+			incoming: '3',
 			outgoing: '1',
 		},
 	},
 	delegate: {
-		address: '16108573387293654084L',
-		username: 'standby_130',
-		publicKey: 'dbe0a5c88fe97b38a72c4b766e0c70fa603dc5122efc778ab43026714a606c5e',
-	},
-	voted_account: {
-		address: '16313739661670634666L',
-		username: 'gottavoteemall',
-		publicKey: 'd258627878a9b360fe4934218d2415d66b1ed2ef63ce097280bf02189a91468d',
-	},
-	'votes account': {
-		address: '16313739661670634666L',
-		username: 'gottavoteemall',
-		publicKey: 'd258627878a9b360fe4934218d2415d66b1ed2ef63ce097280bf02189a91468d',
-	},
-	'voters account': {
-		address: '2581762640681118072L',
-		username: 'genesis_14',
-		publicKey: '1af35b29ca515ff5b805a5e3a0ab8c518915b780d5988e76b0672a71b5a3be02',
-	},
-	'empty account': {
-		passphrase: 'stay undo beyond powder sand laptop grow gloom apology hamster primary arrive',
-		publicKey: '197cf311f678406bc72a8edfdc3dffe6f59f49c4550a860e4b68fb20382211d0',
-		serverPublicKey: '197cf311f678406bc72a8edfdc3dffe6f59f49c4550a860e4b68fb20382211d0',
-		address: '5932438298200837883L',
-		balance: 0,
-	},
-	'delegate candidate': {
-		passphrase: 'right cat soul renew under climb middle maid powder churn cram coconut',
-		publicKey: '35c6b25520fc868b56c83fed6e1c89bb350fb7994a5da0bcea7a4f621f948c7f',
-		serverPublicKey: '35c6b25520fc868b56c83fed6e1c89bb350fb7994a5da0bcea7a4f621f948c7f',
-		address: '544792633152563672L',
-		username: 'test',
-	},
-	'second passphrase candidate': {
-		passphrase: 'dolphin inhale planet talk insect release maze engine guilt loan attend lawn',
-		publicKey: 'ecf6a5cc0b7168c7948ccfaa652cce8a41256bdac1be62eb52f68cde2fb69f2d',
-		serverPublicKey: 'ecf6a5cc0b7168c7948ccfaa652cce8a41256bdac1be62eb52f68cde2fb69f2d',
-		address: '4264113712245538326L',
-	},
-	'send all account': {
-		passphrase: 'oyster flush inquiry bright leopard gas replace ball hold pudding teach swear',
-		publicKey: 'c5e64031407c3ca8d526bf7404f7c78ab60ea0792e90393a73b3b06a8c8841d4',
-		serverPublicKey: 'c5e64031407c3ca8d526bf7404f7c78ab60ea0792e90393a73b3b06a8c8841d4',
-		address: '16422276087748907680L',
-	},
-	'second passphrase account': {
-		passphrase: 'awkward service glimpse punch genre calm grow life bullet boil match like',
-		publicKey: 'fab9d261ea050b9e326d7e11587eccc343a20e64e29d8781b50fd06683cacc88',
-		serverPublicKey: 'fab9d261ea050b9e326d7e11587eccc343a20e64e29d8781b50fd06683cacc88',
-		secondPassphrase: 'forest around decrease farm vanish permit hotel clay senior matter endorse domain',
-		secondPublicKey: 'ec057d8816b18b83a2baac387eebf8af707f8fb565c963476a0e4533e8481eaf',
-		address: '1155682438012955434L',
-		balance: 1000e8,
-	},
-	'without initialization': {
-		passphrase: 'traffic woman skull forest nerve luggage traffic wrestle ensure organ moon century',
-		publicKey: 'a1fa251b368939ed2aa8c620e955cb4537c06a351fa50e928ec21e89372e7494',
-		address: '94495548317450502L',
-		balance: 0,
+		address: '5201600508578320196L',
+		balance: '180575678451785',
+		delegate: {
+			approval: '88.83',
+			missedBlocks: 194,
+			producedBlocks: 127987,
+			productivity: '99.85',
+			rank: 1,
+			rewards: '45343200000000',
+			username: 'cc001',
+			vote: '12522207004079810',
+		},
+		knowledge: {},
+		multisignatureAccount: {},
+		publicKey: '473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c',
+		secondPublicKey: '02bb04b8b15f10edcd5fbc067c6107841b527a39d57dd33156de616714863bae',
+		transactionCount: {
+			incoming: '4616',
+			outgoing: '2420',
+		},
 	},
 	'testnet guy': {
-		passphrase: 'call scene goat common morning immune oxygen reunion skirt amazing current hire',
 		address: '9819477579273755847L',
 		balance: 200000000,
+		delegate: {},
+		knowledge: {},
+		multisignatureAccount: {},
+		publicKey: '44b414eb2ac09a878feb677972cb57160d3d286fc0c32c9a608c32c40c979f63',
+		secondPublicKey: '',
+		transactionCount: {
+			incoming: '6',
+			outgoing: '4',
+		},
 	},
 	'mainnet delegate': {
 		address: '2433857930558702776L',

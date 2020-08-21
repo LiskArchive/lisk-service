@@ -19,6 +19,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/network/statistics',
+	rpcMethod: 'get.network.statistics',
 	source: networkStatisticsSource,
 	envelope,
 };

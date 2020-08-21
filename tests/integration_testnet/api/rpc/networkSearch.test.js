@@ -13,12 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import to from 'await-to-js';
 
 import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import { badRequestSchema } from '../../helpers/schemas';
+import accounts from './constants/accounts';
+import blocks from './constants/blocks';
+import transactions from './constants/transactions';
 
 const metaSchema = Joi.object({
 	count: Joi.number().required(),
@@ -37,7 +40,6 @@ const dataSchema = Joi.array().items(searchItemSchema);
 const goodRequestSchema = Joi.object({
 	data: Joi.array().required(),
 	meta: metaSchema,
-	links: Joi.object().required(),
 }).required();
 
 const endpoint = 'get.search';
@@ -61,7 +63,7 @@ describe(endpoint, () => {
 	});
 
 	it('returns account by address ', async () => {
-		const q = '1478505779553195737L';
+		const q = accounts.genesis.address;
 		const response = await api.getJsonRpcV1(endpoint, { q });
 
 		expect(response).toMap(goodRequestSchema);
@@ -70,8 +72,8 @@ describe(endpoint, () => {
 	});
 
 	it('returns account by public key ', async () => {
-		const id = '1478505779553195737L';
-		const q = '5c4af5cb0c1c92df2ed4feeb9751e54e951f9d3f77196511f13e636cf6064e74';
+		const id = accounts.genesis.address;
+		const q = accounts.genesis.publicKey;
 		const response = await api.getJsonRpcV1(endpoint, { q });
 
 		expect(response).toMap(goodRequestSchema);
@@ -79,7 +81,7 @@ describe(endpoint, () => {
 		expect(response.data[0]).toMap(searchItemSchema, { id, type: 'address' });
 	});
 
-	it('returns block by height ', async () => {
+	it('returns block by height', async () => {
 		const q = '400';
 		const response = await api.getJsonRpcV1(endpoint, { q });
 
@@ -88,8 +90,8 @@ describe(endpoint, () => {
 		expect(response.data[0]).toMap(searchItemSchema, { description: q, type: 'block' });
 	});
 
-	it('returns block by id ', async () => {
-		const q = '6524861224470851795';
+	xit('returns block by id', async () => {
+		const q = blocks.id;
 		const response = await api.getJsonRpcV1(endpoint, { q });
 
 		expect(response).toMap(goodRequestSchema);
@@ -97,8 +99,8 @@ describe(endpoint, () => {
 		expect(response.data[0]).toMap(searchItemSchema, { id: q, type: 'block' });
 	});
 
-	it('returns transaction by id ', async () => {
-		const q = '3634383815892709956';
+	xit('returns transaction by id ', async () => {
+		const q = transactions.id;
 		const response = await api.getJsonRpcV1(endpoint, { q });
 
 		expect(response).toMap(goodRequestSchema);
@@ -106,7 +108,7 @@ describe(endpoint, () => {
 		expect(response.data[0]).toMap(searchItemSchema, { id: q, type: 'tx' });
 	});
 
-	it('returns a proper error when called without q param', async () => {
+	xit('returns a proper error when called without q param', async () => {
 		const [error] = await to(api.getJsonRpcV1(endpoint));
 		expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
 	});

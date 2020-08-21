@@ -14,7 +14,7 @@
  *
  */
 
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 const transactionSchema = Joi.object({
 	amount: Joi.string().required(),

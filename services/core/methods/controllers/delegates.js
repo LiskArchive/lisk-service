@@ -113,6 +113,8 @@ const getStandbyDelegates = async params => {
 
 const getNextForgers = async params => {
 	const nextForgers = await CoreService.getNextForgers(params);
+	if (isEmptyObject(nextForgers)) return {};
+
 	const nextForgersData = nextForgers.data;
 
 	const makeDelegatesArr = forgers => {
@@ -126,15 +128,14 @@ const getNextForgers = async params => {
 	};
 
 	const delegates = await makeDelegatesArr(nextForgersData);
+
 	nextForgers.meta.count = params.limit;
 	nextForgers.meta.total = params.limit;
 
 	return {
-		data: {
 			data: delegates,
 			meta: nextForgers.meta,
 			link: nextForgers.link,
-		},
 	};
 };
 
@@ -159,11 +160,9 @@ const getLatestRegistrations = async params => {
 	registrationsRes.meta.count = params.limit;
 
 	return {
-		data: {
 			data: delegates,
 			meta: registrationsRes.meta,
 			link: registrationsRes.link,
-		},
 	};
 };
 

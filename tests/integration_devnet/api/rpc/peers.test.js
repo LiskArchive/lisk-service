@@ -14,7 +14,7 @@
  *
  */
 import to from 'await-to-js';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 import peerSchema from '../../schemas/peer.schema';
 import { api } from '../../helpers/socketIoRpcRequest';

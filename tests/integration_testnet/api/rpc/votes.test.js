@@ -13,12 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from '@hapi/joi';
-import to from 'await-to-js';
+import Joi from 'joi';
+import request from '../../../helpers/socketIoRpcRequest';
+import config from '../../config';
+import {
+	envelopeSchema,
+	emptyEnvelopeSchema,
+	invalidParamsSchema,
+	jsonRpcEnvelopeSchema,
+} from './schemas/generics.schema';
+import { goodRequestSchema } from '../../helpers/schemas';
 
-import { api } from '../../helpers/socketIoRpcRequest';
-import { JSON_RPC } from '../../helpers/errorCodes';
-import { badRequestSchema, goodRequestSchema } from '../../helpers/schemas';
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
 const votesSchema = Joi.array().items(Joi.object({
 	address: Joi.string(),
@@ -27,43 +33,46 @@ const votesSchema = Joi.array().items(Joi.object({
 	username: Joi.string(),
 }).required()).required();
 
-const getVotes = async params => api.getJsonRpcV1('get.votes', params);
+const getVotes = async params => request(wsRpcUrl, 'get.voters', params);
 
 describe('Method get.votes', () => {
 	[
 		['returns votes for existing account by address', { address: '16313739661670634666L' }],
-		['returns votes for existing account by username', { username: 'gottavoteemall' }],
-		['returns votes for existing account by public key', { publickey: 'd258627878a9b360fe4934218d2415d66b1ed2ef63ce097280bf02189a91468d' }],
+		['returns votes for existing account by username', { username: 'cc001' }],
+		['returns votes for existing account by public key', { publickey: '473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c' }],
 		// TODO Fix this test case. There is no account with votes and second public key on the
 		// blockchain snapshot currently used in Jenkins.
 		// ['returns votes for existing account by second public key',
 		// { secpubkey: 'ec057d8816b18b83a2baac387eebf8af707f8fb565c963476a0e4533e8481eaf' }],
 	]
-		.forEach(([name, body, length = 10]) => {
+		.forEach(([name, body]) => {
 			it(name, async () => {
-				const result = await getVotes(body);
-				expect(result.data).toMap(votesSchema.length(length));
+				const response = await getVotes(body);
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(envelopeSchema);
+				expect(result.data).toMap(votesSchema);
 			});
 		});
 
 	it('returns voters when called with an address', async () => {
 		const result = await getVotes({ address: '16313739661670634666L' });
-		expect(result).toMap(goodRequestSchema);
-		expect(result.data).toMap(votesSchema);
+		expect(result.result).toMap(goodRequestSchema);
 	});
 
 	it('returns empty response when called with unused address', async () => {
-		const result = await getVotes({ address: '999999999L' });
-		expect(result).toEqual({});
+		const response = await getVotes({ address: '999999999L' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		expect(response.result).toMap(emptyEnvelopeSchema);
 	});
 
 	it('returns INVALID_PARAMS error (-32602) when called with invalid address', async () => {
-		const [error] = await to(getVotes({ address: 999999999999999 }));
-		expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+		const response = await getVotes({ address: 999999999999999 });
+		expect(response).toMap(invalidParamsSchema);
 	});
 
 	it('returns INVALID_PARAMS error (-32602) when called with account_id param', async () => {
-		const [error] = await to(getVotes({ account_id: '999999999L' }));
-		expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+		const response = await getVotes({ account_id: '999999999L' });
+		expect(response).toMap(invalidParamsSchema);
 	});
 });
