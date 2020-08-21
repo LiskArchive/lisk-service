@@ -112,15 +112,6 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 		});
 	});
 
-	describe('GET /transactions/statistics/month', () => {
-		const endpoint = `${baseMethod}.year`;
-
-		it(`returns error METHOD_NOT_FOUND ${JSON_RPC.METHOD_NOT_FOUND[0]}) if called without any params as years are not supported`, async () => {
-			const error = await api.getJsonRpcV1(endpoint);
-			expect(error).toMap(badRequestSchema, { code: JSON_RPC.METHOD_NOT_FOUND[0] });
-		});
-	});
-
 	xdescribe('GET /transactions/statistics/year', () => {
 		const endpoint = `${baseMethod}.year`;
 
