@@ -28,7 +28,6 @@ import {
 
 describe('get.transactions.statistics.{aggregateBy}', () => {
 	const baseMethod = 'get.transactions.statistics';
-
 	[{
 		aggregateBy: 'day',
 		dateFormat: 'YYYY-MM-DD',
@@ -67,7 +66,7 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 				});
 			});
 
-			it(`returns stats for previous ${aggregateBy} if called with ?limit=1&offset=1`, async () => {
+			xit(`returns stats for previous ${aggregateBy} if called with ?limit=1&offset=1`, async () => {
 				const limit = 1;
 				const offset = 1;
 				const starOfYestarday = moment(startOfUnitUtc).subtract(1, aggregateBy);
@@ -88,7 +87,7 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 				});
 			});
 
-			it(`returns stats for previous ${aggregateBy} and the ${aggregateBy} before if called with ?limit=2&offset=1`, async () => {
+			xit(`returns stats for previous ${aggregateBy} and the ${aggregateBy} before if called with ?limit=2&offset=1`, async () => {
 				const offset = 1;
 				const response = await api.getJsonRpcV1(endpoint, { limit: 2, offset });
 
@@ -110,6 +109,15 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 
 			// TODO implement this case in the API
 			it.todo('returns error 404 if called with ?offset=365 or higher as only last year is guarantied');
+		});
+	});
+
+	describe('GET /transactions/statistics/month', () => {
+		const endpoint = `${baseMethod}.year`;
+
+		it(`returns error METHOD_NOT_FOUND ${JSON_RPC.METHOD_NOT_FOUND[0]}) if called without any params as years are not supported`, async () => {
+			const error = await api.getJsonRpcV1(endpoint);
+			expect(error).toMap(badRequestSchema, { code: JSON_RPC.METHOD_NOT_FOUND[0] });
 		});
 	});
 
