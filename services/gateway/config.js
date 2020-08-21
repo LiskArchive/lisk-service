@@ -30,36 +30,6 @@ config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30; // in seconds
 
 /**
- * Inter-service message broker
- */
-config.apis = [
-	{
-		name: 'http-test',
-		description: 'Test API',
-		enabled: false,
-		apiPath: '/api/test',
-	},
-	{
-		name: 'http-version1',
-		description: 'Version 1 API',
-		enabled: true,
-		apiPath: '/api/v1',
-	},
-	{
-		name: 'socketio-jsonrpc-version1',
-		description: 'Socket.io API',
-		enabled: true,
-		apiPath: '/rpc',
-	},
-	{
-		name: 'socketio-blockchain-updates',
-		description: 'Socket.io API',
-		enabled: true,
-		apiPath: '/blockchain',
-	},
-];
-
-/**
  * LOGGING
  *
  * log.level   - TRACE < DEBUG < INFO < WARN < ERROR < FATAL < MARK

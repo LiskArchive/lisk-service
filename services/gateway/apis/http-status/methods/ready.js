@@ -13,12 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const path = require('path');
 
 module.exports = {
-	apiType: 'swagger2',
-	swagger: {
-		appRoot: __dirname,
-		swaggerFile: path.resolve(__dirname, './swagger/version1.yaml'),
+	version: '2.0',
+	swaggerApiPath: '/ready',
+	rpcMethod: 'get.ready',
+	envelope: {},
+	source: {
+		type: 'moleculer',
+		method: 'gateway.ready',
+		params: {},
+		definition: {
+			services: '=',
+		},
 	},
 };
