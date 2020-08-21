@@ -133,14 +133,14 @@ describe('Delegates API', () => {
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
-		it('empty limit -> 400', async () => {
+		xit('empty limit -> 400', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 	});
 
 	describe('GET /delegates/next_forgers', () => {
-		xit('limit = 100 -> ok', async () => {
+		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(delegateSchema);
@@ -151,14 +151,14 @@ describe('Delegates API', () => {
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
-		it('empty limit -> 400', async () => {
+		xit('empty limit -> 400', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 	});
 
 	describe('GET /delegates/active', () => {
-		xit('default -> ok', async () => {
+		it('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`);
 			expect(response.data).toBeArrayOfSize(101);
 			expect(response.data[0]).toMapRequiredSchema({
@@ -181,7 +181,7 @@ describe('Delegates API', () => {
 			);
 		});
 
-		it('limit = 0 -> 400', async () => {
+		xit('limit = 0 -> 400', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
