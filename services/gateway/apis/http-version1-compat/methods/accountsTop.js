@@ -13,27 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const account = require('./mappings/account');
+const accountsSource = require('../../../sources/accounts');
+const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
-	type: 'moleculer',
-	method: 'core.accounts.top',
-	params: {
-		address: '=',
-		publicKey: 'publickey',
-		secondPublicKey: 'secpubkey',
-		username: '=',
-		limit: '=',
-		offset: '=',
-		sort: '=',
-	},
-	definition: {
-		data: ['data', account],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	version: '2.0',
+    swaggerApiPath: '/accounts/top',
+    params: {
+        limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+        offset: { optional: true, type: 'number', min: 0, default: 0 },
+    },
+    source: accountsSource,
+	envelope,
 };
