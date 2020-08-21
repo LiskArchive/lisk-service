@@ -66,7 +66,6 @@ const notFoundSchema = {
 const responseEnvelopeSchema = {
 	meta: 'object',
 	data: 'array',
-	links: 'object',
 };
 
 describe('Peers API', () => {
