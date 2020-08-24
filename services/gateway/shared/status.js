@@ -67,9 +67,9 @@ const checkAPI = (url) => new Promise((resolve, reject) => {
 	});
 });
 
-const isAvailable = async () => ({
+const getReady = async () => ({
 	services: {
-		lisk_blocks: await checkAPI('/block'),
+		lisk_blocks: await checkAPI('/blocks'),
 		lisk_transations: await checkAPI('/transactions'),
 		lisk_transation_statistics: await checkAPI('/transactions/statistics/day'),
 		lisk_accounts: await checkAPI('/accounts'),
@@ -77,15 +77,6 @@ const isAvailable = async () => ({
 		lisk_peers: await checkAPI('/peers'),
 	},
 });
-
-// returns true if any of the services is not available
-const getReady = async () => {
-const services = await isAvailable();
-const response = {
-	services: Object.keys(services.services).some(value => !services.services[value]),
-};
-return response;
-};
 
 module.exports = {
 	getReady,

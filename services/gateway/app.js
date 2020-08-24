@@ -53,7 +53,17 @@ broker.createService({
 	name: 'gateway',
 	actions: {
 		status() { return getStatus(); },
-		ready() { return getReady(); },
+		async ready() {
+			const services = await getReady();
+			const response = {};
+			const isReady = Object.keys(services.services).some(value => !services.services[value]);
+			if (isReady === true) {
+				response.status = '503 Unavailable';
+			} else {
+				response.status = '200 OK';
+			}
+		return response;
+		},
 	},
 	settings: {
 		host,
