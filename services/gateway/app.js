@@ -22,6 +22,8 @@ const {
 
 const SocketIOService = require('./shared/moleculer-io');
 
+const { MoleculerError } = require("moleculer").Errors;
+
 const ApiService = Libs['moleculer-web'];
 
 const config = require('./config');
@@ -58,11 +60,11 @@ broker.createService({
 			const response = {};
 			const isReady = Object.keys(services.services).some(value => !services.services[value]);
 			if (isReady === true) {
-				response.status = '503 Unavailable';
+				throw new MoleculerError("503 Not available", 503, "ERR_SOMETHING");
 			} else {
 				response.status = '200 OK';
+				return response;
 			}
-		return response;
 		},
 	},
 	settings: {
