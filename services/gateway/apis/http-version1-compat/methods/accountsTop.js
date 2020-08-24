@@ -18,14 +18,14 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
-    swaggerApiPath: '/accounts/top',
-    params: {
-        limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
-        offset: { optional: true, type: 'number', min: 0, default: 0 },
-    },
-    source: {
-        ...accountsSource,
-        method: 'core.accounts.top', // Override the method to be invoked
-    },
+	swaggerApiPath: '/accounts/top',
+	params: {
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
+	},
+	source: {
+		...accountsSource,
+		method: 'core.accounts.top', // Override the method to be invoked
+	},
 	envelope,
 };

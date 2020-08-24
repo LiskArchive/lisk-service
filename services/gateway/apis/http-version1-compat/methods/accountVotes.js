@@ -19,9 +19,9 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/account/{address}/votes',
-    params: {
-        address: { optional: true, type: 'string', min: 1, max: 24 },
-    },
+	params: {
+		address: { optional: false, type: 'string', min: 1, max: 24 },
+	},
 	source: votesSource,
 	envelope,
 };

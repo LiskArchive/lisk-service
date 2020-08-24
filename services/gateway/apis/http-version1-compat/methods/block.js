@@ -18,10 +18,10 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
-    swaggerApiPath: '/block/{id}',
-    params: {
-        id: { optional: true, type: 'string', min: 1, max: 24 },
-    },
+	swaggerApiPath: '/block/{id}',
+	params: {
+		id: { optional: false, type: 'string', min: 1, max: 24 },
+	},
 	source: blocksSource,
 	envelope,
 };

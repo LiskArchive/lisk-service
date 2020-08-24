@@ -20,14 +20,23 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/block/{block}/transactions',
 	params: {
-		block: { optional: true, type: 'string', min: 1, max: 24 },
-        offset: { optional: true, type: 'number', min: 0 },
-        limit: { optional: true, type: 'number', min: 1, max: 100 },
+		block: { optional: false, type: 'string', min: 1, max: 24 },
+		offset: { optional: true, type: 'number', min: 0 },
+		limit: { optional: true, type: 'number', min: 1, max: 100 },
 		min: { optional: true, type: 'string', min: 1 },
 		max: { optional: true, type: 'string', min: 1 },
 		from: { optional: true, type: 'string', min: 1 },
 		to: { optional: true, type: 'string', min: 1 },
-        sort: { optional: true, type: 'string', min: 1 }, // TODO: Convert to enum
+		sort: {
+			optional: true,
+			type: 'string',
+			min: 1,
+			enum: [
+				'amount:asc', 'amount:desc', 'fee:asc', 'fee:desc',
+				'type:asc', 'type:desc', 'timestamp:asc', 'timestamp:desc',
+			],
+			default: 'amount:asc',
+		},
 	},
 	source: transactionsSource,
 	envelope,

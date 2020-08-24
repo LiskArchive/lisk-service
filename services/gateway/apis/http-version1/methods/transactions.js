@@ -34,7 +34,16 @@ module.exports = {
 		height: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 100 },
 		offset: { optional: true, type: 'number', min: 0 },
-		sort: { optional: true, type: 'string', min: 1 }, // TODO: Convert to enum
+		sort: {
+			optional: true,
+			type: 'string',
+			min: 1,
+			enum: [
+				'amount:asc', 'amount:desc', 'fee:asc', 'fee:desc',
+				'type:asc', 'type:desc', 'timestamp:asc', 'timestamp:desc',
+			],
+			default: 'amount:asc',
+		},
 	},
 	source: transactionsSource,
 	envelope,
