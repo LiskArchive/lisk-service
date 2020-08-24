@@ -91,7 +91,7 @@ describe('Accounts Compatibility API', () => {
 			expect(response.data.length).toEqual(10);
 			expect(response.data[0]).toMapRequiredSchema(accountSchema);
         });
-        
+
         it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
@@ -113,13 +113,13 @@ describe('Accounts Compatibility API', () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=101`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
         });
-        
+
         it('returns a list when given empty offset', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?offset=`);
 			expect(response.data).toBeArrayOfSize(10);
 			expect(response.data[0]).toMapRequiredSchema(accountSchema);
 		});
-        
+
         it('returns a list when given offset=1', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?offset=1`);
 			expect(response.data).toBeArrayOfSize(10);
