@@ -89,9 +89,9 @@ describe('Accounts Compatibility API', () => {
 			const response = await api.get(`${accountsTopEndpoint}`);
 			expect(response.data.length).toEqual(10);
 			expect(response.data[0]).toMapRequiredSchema(accountSchema);
-        });
+		});
 
-        it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
+		it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(accountSchema);
@@ -111,25 +111,25 @@ describe('Accounts Compatibility API', () => {
 		it('returns BAD_REQUEST (400) when pagination limit=101', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=101`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
-        });
+		});
 
-        it('returns a list when given empty offset', async () => {
+		it('returns a list when given empty offset', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?offset=`);
 			expect(response.data).toBeArrayOfSize(10);
 			expect(response.data[0]).toMapRequiredSchema(accountSchema);
 		});
 
-        it('returns a list when given offset=1', async () => {
+		it('returns a list when given offset=1', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?offset=1`);
 			expect(response.data).toBeArrayOfSize(10);
 			expect(response.data[0]).toMapRequiredSchema(accountSchema);
 		});
-    });
+	});
 });
 
 describe('Votes Compatibility API', () => {
-    describe('GET /account/{address}/votes', () => {
-        it('fetch votes for existing account address', async () => {
+	describe('GET /account/{address}/votes', () => {
+		it('fetch votes for existing account address', async () => {
 			const response = await api.get(`${accountEndpoint}/${accounts.delegate.address}/votes`);
 			expect(response.data.length).toBeTruthy();
 			expect(response.data[0]).toMapRequiredSchema(votesSchema);
@@ -149,12 +149,12 @@ describe('Votes Compatibility API', () => {
 			const response = await api.get(`${accountEndpoint}/1631373966167063466666666L/votes`, 400);
 			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
-    });
+	});
 });
 
 describe('Blocks Compatibility API', () => {
-    describe('Retrieve block identified by block_id', () => {
-        it('fetch block for known blockId', async () => {
+	describe('Retrieve block identified by block_id', () => {
+		it('fetch block for known blockId', async () => {
 			const response = await api.get(`${blockEndpoint}/${block.id}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...blockSchema,
@@ -181,10 +181,10 @@ describe('Blocks Compatibility API', () => {
 			const response = await api.get(`${blockEndpoint}/${block.id}?block=12602944501676077162`, 400);
 			expect(response).toMapRequiredSchema(wrongInputParamSchema);
 		});
-    });
+	});
 
-    describe('Retrieve transactions contained within an identified block', () => {
-        it('fetch block for known blockId', async () => {
+	describe('Retrieve transactions contained within an identified block', () => {
+		it('fetch block for known blockId', async () => {
 			const response = await api.get(`${blockEndpoint}/${transaction.blockId}/transactions`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
@@ -201,5 +201,5 @@ describe('Blocks Compatibility API', () => {
 			const response = await api.get(`${blockEndpoint}//transactions`, 404);
 			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
-    });
+	});
 });
