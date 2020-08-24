@@ -64,6 +64,12 @@ broker.createService({
 			// cookieParser()
 		],
 
+		// Global CORS settings for all routes
+		cors: {
+			// Configure the Access-Control-Allow-Origin CORS header
+			origin: '*',
+		},
+
 		// Used server instance. If null, it will create a new HTTP(s)(2) server
 		// If false, it will start without server in middleware mode
 		server: true,
