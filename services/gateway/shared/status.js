@@ -20,7 +20,7 @@ const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
 // const config = require('../config.js');
 
-// const gateway = `http://${config.host}:${config.port}/api/v1`;
+const gateway = process.env.SERVICE_ENDPOINT || 'http://localhost:9901';
 
 const getBuildTimestamp = () => {
 	let timestamp;
@@ -50,7 +50,7 @@ const getStatus = () => ({
 });
 
 const checkAPI = (url) => new Promise((resolve, reject) => {
-	requestLib(`http://gateway:9901/api/v1${url}`).then(body => {
+	requestLib(`${gateway}/api/v1${url}`).then(body => {
 		if (!body) resolve(false);
 		try {
 			if (body.status === 200) {
