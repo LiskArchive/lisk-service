@@ -47,6 +47,7 @@ const defaultConfig = {
 
 module.exports = [
 	registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
+	registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
 	registerApi('http-test', { ...defaultConfig, path: '/test' }),
 	registerApi('http-status', { ...defaultConfig, path: '/' }),
 ];
