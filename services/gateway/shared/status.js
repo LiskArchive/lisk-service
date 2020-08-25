@@ -18,7 +18,7 @@ const packageJson = require('../package.json');
 
 const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
-const config = require('../config.js');
+// const config = require('../config.js');
 
 // const gateway = `http://${config.host}:${config.port}/api/v1`;
 
@@ -50,7 +50,7 @@ const getStatus = () => ({
 });
 
 const checkAPI = (url) => new Promise((resolve, reject) => {
-	requestLib(`http://gateway:9901${url}`).then(body => {
+	requestLib(`http://gateway:9901/api/v1${url}`).then(body => {
 		if (!body) resolve(false);
 		try {
 			if (body.status === 200) {
