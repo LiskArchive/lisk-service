@@ -25,7 +25,6 @@ module.exports = {
 		params: {},
 		definition: {
 			services: '=',
-			status: '=',
 		},
 	},
 };
