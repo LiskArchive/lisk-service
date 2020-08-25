@@ -50,7 +50,7 @@ const getStatus = () => ({
 });
 
 const checkAPI = (url) => new Promise((resolve, reject) => {
-	requestLib(`${gateway}${url}`).then(body => {
+	requestLib(`http://gateway:9901${url}`).then(body => {
 		if (!body) resolve(false);
 		try {
 			if (body.status === 200) {
@@ -69,7 +69,7 @@ const checkAPI = (url) => new Promise((resolve, reject) => {
 
 const getReady = async () => ({
 	services: {
-		lisk_blocks: await checkAPI('/block'),
+		lisk_blocks: await checkAPI('/blocks'),
 		lisk_transations: await checkAPI('/transactions'),
 		lisk_transation_statistics: await checkAPI('/transactions/statistics/day'),
 		lisk_accounts: await checkAPI('/accounts'),
