@@ -59,10 +59,8 @@ broker.createService({
 			const services = await getReady();
 			const isReady = Object.keys(services.services).some(value => !services.services[value]);
 			if (isReady === true) {
-				return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', {services}));
-			} else {
-				return Promise.resolve(services);
-			}
+				return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
+			} return Promise.resolve(services);
 		},
 	},
 	settings: {

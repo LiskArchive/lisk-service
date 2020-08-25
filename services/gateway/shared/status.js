@@ -69,7 +69,7 @@ const checkAPI = (url) => new Promise((resolve, reject) => {
 
 const getReady = async () => ({
 	services: {
-		lisk_blocks: await checkAPI('/blocks'),
+		lisk_blocks: await checkAPI('/block'),
 		lisk_transations: await checkAPI('/transactions'),
 		lisk_transation_statistics: await checkAPI('/transactions/statistics/day'),
 		lisk_accounts: await checkAPI('/accounts'),
