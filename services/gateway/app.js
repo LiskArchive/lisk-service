@@ -57,6 +57,7 @@ broker.createService({
 		status() { return getStatus(); },
 		async ready() {
 			const services = await getReady();
+			// isReady: returns true if any one of service is unavailable
 			const isReady = Object.keys(services.services).some(value => !services.services[value]);
 			if (isReady === true) {
 				return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
