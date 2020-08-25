@@ -70,8 +70,8 @@ const checkAPI = (url) => new Promise((resolve, reject) => {
 const getReady = async () => ({
 	services: {
 		lisk_blocks: await checkAPI('/blocks'),
-		lisk_transations: await checkAPI('/transactions'),
-		lisk_transation_statistics: await checkAPI('/transactions/statistics/day'),
+		lisk_transactions: await checkAPI('/transactions'),
+		lisk_transaction_statistics: await checkAPI('/transactions/statistics/day'),
 		lisk_accounts: await checkAPI('/accounts'),
 		lisk_delegates: await checkAPI('/delegates'),
 		lisk_peers: await checkAPI('/peers'),
