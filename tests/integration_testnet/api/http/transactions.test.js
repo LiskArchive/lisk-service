@@ -157,7 +157,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by address', () => {
 		// Given test fails during CI phase
-		xit('known address -> ok', async () => {
+		it('known address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${transaction.recipientId}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
@@ -182,7 +182,7 @@ describe('Transactions API', () => {
 			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 
-		xit('known recipient address -> ok', async () => {
+		it('known recipient address -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipient=${transaction.recipientId}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
