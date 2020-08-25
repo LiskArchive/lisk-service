@@ -196,7 +196,7 @@ describe('Delegates API', () => {
 	});
 
 	describe('GET /delegates/standby', () => {
-		xit('default -> ok', async () => {
+		it('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=101&limit=101`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
@@ -204,7 +204,7 @@ describe('Delegates API', () => {
 			});
 		});
 
-		xit('limit = 100 -> ok', async () => {
+		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(delegateSchema);
