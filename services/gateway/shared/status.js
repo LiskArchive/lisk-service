@@ -51,9 +51,9 @@ const getStatus = () => ({
 
 const checkAPI = (url) => new Promise((resolve, reject) => {
 	requestLib(`${gateway}/api/v1${url}`).then(body => {
-		if (!body) resolve(false);
 		try {
-			if (body.status === 200) {
+			if (!body) resolve(false);
+			else if (body.status === 200) {
 				return resolve(true);
 			}
 		} catch (err) {
