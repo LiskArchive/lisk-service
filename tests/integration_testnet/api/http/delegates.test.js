@@ -215,7 +215,6 @@ describe('Delegates API', () => {
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
-		// Given test fails during CI phase
 		it('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=`);
 			expect(response.data[0]).toMapRequiredSchema({

@@ -156,7 +156,6 @@ describe('Transactions API', () => {
 	});
 
 	describe('Retrieve transaction list by address', () => {
-		// Given test fails during CI phase
 		it('known address -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${transaction.recipientId}`);
 			expect(response.data[0]).toMapRequiredSchema({
