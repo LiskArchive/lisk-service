@@ -133,7 +133,7 @@ describe('Delegates API', () => {
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
-		xit('empty limit -> 400', async () => {
+		it('empty limit -> 400', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
