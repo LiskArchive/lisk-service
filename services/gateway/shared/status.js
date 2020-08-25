@@ -20,7 +20,7 @@ const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
 const config = require('../config.js');
 
-const gateway = `http://${config.host}:${config.port}/api/v1`;
+// const gateway = `http://${config.host}:${config.port}/api/v1`;
 
 const getBuildTimestamp = () => {
 	let timestamp;
