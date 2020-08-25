@@ -39,6 +39,7 @@ const request = (url, params) => new Promise((resolve, reject) => {
 	logger.info(`Requesting ${liskAddress}${url}`);
 	requestLib(`${liskAddress}${url}`, {
 		params: mapParams(params, url),
+		timeout: (config.httpTimeout || 15) * 1000, // ms
 	}).then(body => {
 		if (!body) resolve({});
 

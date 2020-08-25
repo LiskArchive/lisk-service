@@ -56,7 +56,21 @@ const Microservice = (config = {}) => {
 		transporter: moleculerConfig.transporter,
 		requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
 		logLevel: 'info', // broken
-		logger: moleculerConfig.logger,
+		logger: {
+			type: 'Log4js',
+			// options: {
+			// 	// Logging level
+			// 	level: "info",
+			// 	log4js: {
+			// 		appenders: {
+			// 			app: { type: "file", filename: "/logs/moleculer.log" }
+			// 		},
+			// 		categories: {
+			// 			default: { appenders: [ "app" ], level: "debug" }
+			// 		}
+			// 	}
+			// }
+		},
 	});
 
 	const getBroker = () => broker;

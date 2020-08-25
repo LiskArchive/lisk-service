@@ -38,11 +38,6 @@ const defaultConfig = {
 		json: true,
 		urlencoded: { extended: true },
 	},
-
-	uses: [],
-
-	log4XXResponses: true,
-	httpServerTimeout: 30000,
 };
 
 module.exports = [

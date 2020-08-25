@@ -33,6 +33,7 @@ PORT=9901
 ```bash
 LISK_CORE_HTTP=https://mainnet.lisk.io # Lisk Core HTTP URL
 LISK_CORE_WS=wss://mainnet.lisk.io     # Lisk Core WebSocket URL
+LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
 ```
 
 ```bash
