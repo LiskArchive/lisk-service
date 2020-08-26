@@ -33,7 +33,7 @@ sudo apt install build-essential git-core make
 sudo apt install redis-server
 ```
 
-> Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variable `REDIS_PORT` accordingly.
+> Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variables `SERVICE_BROKER` and `SERVICE_CORE_REDIS` accordingly.
 
 ### PostgreSQL
 
@@ -47,7 +47,8 @@ sudo apt update
 sudo apt install postgres-10
 ```
 
-> Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variable `REDIS_PORT` accordingly.
+> Note: During this step it is possible to change your port if you wish to have more Postgres instances in the future. Remember to adjust the environment variable `SERVICE_CORE_POSTGRES` accordingly.
+
 
 ### Node.js
 
