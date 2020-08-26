@@ -18,6 +18,7 @@ const Validator = require('fastest-validator');
 const { ServiceBroker } = require('moleculer');
 const cron = require('node-cron');
 const requireAllJs = require('./requireAllJs');
+const loggerLib = require('./logger');
 const {
 	isProperObject,
 } = require('./data');
@@ -52,24 +53,17 @@ const Microservice = (config = {}) => {
 
 	const { logger } = moleculerConfig;
 
+	const log4jsConfig = loggerLib.getConfig();
+
 	const broker = new ServiceBroker({
 		transporter: moleculerConfig.transporter,
 		requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
-		logLevel: 'info', // broken
 		logger: {
 			type: 'Log4js',
-			// options: {
-			// 	// Logging level
-			// 	level: "info",
-			// 	log4js: {
-			// 		appenders: {
-			// 			app: { type: "file", filename: "/logs/moleculer.log" }
-			// 		},
-			// 		categories: {
-			// 			default: { appenders: [ "app" ], level: "debug" }
-			// 		}
-			// 	}
-			// }
+			options: {
+				level: config.logger.level || 'info',
+				log4js: log4jsConfig,
+			},
 		},
 	});
 
