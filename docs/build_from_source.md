@@ -42,14 +42,14 @@ make build-local
 
 ## Configuration
 
-The `ecosystem.config.js` contains a sample configuration. Ensure it reflects your local environment. All configuration parameters are described in the document [Configuration Options](./config_options.md).
+The `ecosystem.mainnet.config.js` contains a sample configuration, which refers to the mainnet. Ensure it reflects your local environment. All configuration parameters are described in the document [Configuration Options](./config_options.md).
 
 ## Managing Lisk Service
 
 ### Start Lisk Service
 
 ```bash
-pm2 start ecosystem.config.js
+pm2 start ecosystem.mainnet.config.js
 
 # or
 
@@ -68,7 +68,7 @@ pm2 list
 ### Stop Lisk Service
 
 ```bash
-pm2 stop ecosystem.config.js
+pm2 stop ecosystem.mainnet.config.js
 ```
 
 ### Restart Lisk Service
@@ -76,13 +76,13 @@ pm2 stop ecosystem.config.js
 Restart all components of Lisk Service simultaneously.
 
 ```bash
-pm2 restart ecosystem.config.js
+pm2 restart ecosystem.mainnet.config.js
 ```
 
 ### Remove all processes from PM2 list
 
 ```bash
-pm2 delete ecosystem.config.js
+pm2 delete ecosystem.mainnet.config.js
 
 # or
 
