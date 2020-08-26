@@ -32,11 +32,13 @@ const { getStatus, getReady } = require('./shared/status');
 
 const { host, port } = config;
 
-LoggerConfig({
+const loggerConf = {
 	...config.log,
 	name: packageJson.name,
 	version: packageJson.version,
-});
+};
+
+LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -44,7 +46,7 @@ const broker = Microservice({
 	name: 'gateway',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout * 1000, // ms
-	logger: Logger('lisk-service-gateway'),
+	logger: loggerConf,
 }).getBroker();
 
 broker.createService({

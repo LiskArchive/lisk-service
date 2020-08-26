@@ -25,11 +25,13 @@ const packageJson = require('./package.json');
 
 const nodeStatus = require('./shared/nodeStatus');
 
-LoggerConfig({
+const loggerConf = {
 	...config.log,
 	name: packageJson.name,
 	version: packageJson.version,
-});
+};
+
+LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -37,7 +39,7 @@ const app = Microservice({
 	name: 'core',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout * 1000, // ms
-	logger: Logger('lisk:moleculer'),
+	logger: loggerConf,
 });
 
 nodeStatus.waitForNode().then(() => {

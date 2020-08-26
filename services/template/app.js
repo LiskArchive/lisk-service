@@ -24,11 +24,13 @@ const config = require('./config');
 const packageJson = require('./package.json');
 
 // Configure logger
-LoggerConfig({
+const loggerConf = {
 	...config.log,
 	name: packageJson.name,
 	version: packageJson.version,
-});
+};
+
+LoggerConfig(loggerConf);
 
 const logger = Logger();
 
@@ -38,7 +40,7 @@ const app = Microservice({
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
-	logger: Logger('lisk-moleculer'),
+	logger: loggerConf,
 });
 
 // Add routes, events & jobs
