@@ -51,8 +51,7 @@ const Microservice = (config = {}) => {
 	const moleculerConfig = config;
 	moleculerConfig.actions = {};
 
-	const { logger } = moleculerConfig;
-
+	const logger = loggerLib.get();
 	const log4jsConfig = loggerLib.getConfig();
 
 	const broker = new ServiceBroker({
