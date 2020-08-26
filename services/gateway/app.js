@@ -20,6 +20,8 @@ const {
 	Libs,
 } = require('lisk-service-framework');
 
+const { MoleculerError } = require('moleculer').Errors;
+
 const SocketIOService = require('./shared/moleculer-io');
 
 const ApiService = Libs['moleculer-web'];
@@ -55,7 +57,14 @@ broker.createService({
 	name: 'gateway',
 	actions: {
 		status() { return getStatus(); },
-		ready() { return getReady(); },
+		async ready() {
+			const services = await getReady();
+			// isReady: returns true if any one of service is unavailable
+			const isReady = Object.keys(services.services).some(value => !services.services[value]);
+			if (isReady === true) {
+				return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
+			} return Promise.resolve(services);
+		},
 	},
 	settings: {
 		host,

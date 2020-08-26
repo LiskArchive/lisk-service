@@ -181,13 +181,13 @@ describe('Delegates API', () => {
 			);
 		});
 
-		xit('limit = 0 -> 400', async () => {
-			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`, 400);
+		it('limit = 0 -> 400', async () => {
+			const response = await api.get(`${endpoint}?sort=rank:asc&limit=0`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
 		// Given test fails during CI phase
-		xit('empty limit -> ok', async () => {
+		it('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
@@ -196,7 +196,7 @@ describe('Delegates API', () => {
 	});
 
 	describe('GET /delegates/standby', () => {
-		xit('default -> ok', async () => {
+		it('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=101&limit=101`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,
@@ -204,7 +204,7 @@ describe('Delegates API', () => {
 			});
 		});
 
-		xit('limit = 100 -> ok', async () => {
+		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=100`);
 			expect(response.data).toBeArrayOfSize(100);
 			expect(response.data[0]).toMapRequiredSchema(delegateSchema);
@@ -215,8 +215,7 @@ describe('Delegates API', () => {
 			expect(response).toMapRequiredSchema(badRequestSchema);
 		});
 
-		// Given test fails during CI phase
-		xit('empty limit -> ok', async () => {
+		it('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...delegateSchema,

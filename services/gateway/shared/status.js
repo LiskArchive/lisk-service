@@ -13,7 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP, Logger } = require('lisk-service-framework');
 const packageJson = require('../package.json');
+
+const logger = Logger('CustomAPI');
+const requestLib = HTTP.request;
+const config = require('../config.js');
+
+// const gateway = process.env.SERVICE_ENDPOINT || 'http://localhost:9901';
 
 const getBuildTimestamp = () => {
 	let timestamp;
@@ -33,8 +40,8 @@ const buildTimestamp = getBuildTimestamp();
 
 const getStatus = () => ({
 	build: buildTimestamp,
-    description: 'Lisk Service Gateway',
-    name: packageJson.name,
+	description: 'Lisk Service Gateway',
+	name: packageJson.name,
 	version: packageJson.version,
 	network: {
 		networkId: 'unknown',
@@ -42,14 +49,40 @@ const getStatus = () => ({
 	},
 });
 
-const getReady = () => ({
+const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
+		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+			.then((response) => {
+				try {
+					if (!response) resolve(false);
+					else if (response.status === 200) {
+						if (dataCheck === true) {
+							if (response.data.data.length > 0) {
+								return resolve(true);
+							}
+							return resolve(false);
+						}
+						return resolve(true);
+					}
+				} catch (err) {
+					logger.error(err.stack);
+					return reject(err);
+				}
+				return resolve(false);
+			})
+			.catch((err) => {
+				logger.error(err.stack);
+				resolve({});
+			});
+	});
+
+const getReady = async () => ({
 	services: {
-		lisk_blocks: true,
-		lisk_peers: true,
-		lisk_transations: true,
-		lisk_transation_statistics: true,
-		lisk_accounts: true,
-		lisk_delegates: true,
+		lisk_blocks: await checkAPI('/blocks', true),
+		lisk_transactions: await checkAPI('/transactions', true),
+		lisk_transaction_statistics: await checkAPI('/transactions/statistics/day', false),
+		lisk_accounts: await checkAPI('/accounts', true),
+		lisk_delegates: await checkAPI('/delegates', true),
+		lisk_peers: await checkAPI('/peers', true),
 	},
 });
 
