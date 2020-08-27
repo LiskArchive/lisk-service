@@ -173,4 +173,5 @@ module.exports = {
 	init: configure,
 	get: getLogger,
 	debug: getDebug,
+	getConfig: () => log4jsConfig,
 };

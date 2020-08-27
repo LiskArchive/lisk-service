@@ -26,9 +26,10 @@
     "npm": "6.14.4"
   },
   "dependencies": {
+    "bluebird": "^3.7.2",
     "fastest-validator": "^1.5.1",
     "ioredis": "^4.16.3",
-    "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-0.1.2.tgz",
+    "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-1.0.0-beta.0.tgz",
     "moleculer": "^0.14.8",
     "moleculer-io": "^1.1.3"
   }
