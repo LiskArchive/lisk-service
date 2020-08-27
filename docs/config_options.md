@@ -43,7 +43,9 @@ LISK_CORE_WS=wss://mainnet.lisk.io     # Lisk Core WebSocket URL
 SERVICE_CORE_REDIS=redis://localhost:6379/1
 
 # Postgres persistent database for Lisk micro-service
-SERVICE_CORE_POSTGRES=postgres://lisk:password@postgres_core:5432/lisk 
+# Postgres Connection URI string is customisable as per the convention listed
+# here: https://www.postgresql.org/docs/10/libpq-connect.html#id-1.7.3.8.3.6
+SERVICE_CORE_POSTGRES=postgres://lisk:password@localhost:5432/lisk
 ENV_LISK_DB_DATABASE=lisk     # Must match the path above
 ENV_LISK_DB_USER=lisk         # Must match the path above
 ENV_LISK_DB_PASSWORD=password # Must match the path above
