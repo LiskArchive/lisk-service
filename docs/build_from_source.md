@@ -42,7 +42,7 @@ make build-local
 
 ## Configuration
 
-The `ecosystem.mainnet.config.js` contains a sample configuration, which refers to the mainnet. Ensure it reflects your local environment. All configuration parameters are described in the document [Configuration Options](./config_options.md).
+The `ecosystem.mainnet.config.js` contains a sample configuration, which refers to the mainnet. Please ensure it reflects your local environment. All configuration parameters are described in the document [Configuration Options](./config_options.md).
 
 ## Managing Lisk Service
 
