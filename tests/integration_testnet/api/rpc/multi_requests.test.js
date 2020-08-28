@@ -17,32 +17,12 @@ import Joi from 'joi';
 
 import accountSchema from './schemas/account.schema';
 import blockSchema from './schemas/block.schema';
+import { jsonRpcEnvelopeSchema, metaSchema, invalidParamsSchema, invalidRequestSchema, wrongMethodSchema } from './schemas/generics.schema';
 import config from '../../config';
 import request from '../../helpers/socketIoRpcMultiRequest';
 import transactionSchema from './schemas/transaction.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
-// const { transaction } = transactions;
-
-const metaSchema = Joi.object({
-	count: Joi.number().required(),
-	offset: Joi.number().required(),
-	total: Joi.number().required(),
-}).required();
-
-const metaWithoutTotalSchema = Joi.object({
-	count: Joi.number().required(),
-	offset: Joi.number().required(),
-}).required();
-
-const idSchema = Joi.alternatives(Joi.number(), Joi.string(), null).required();
-
-const invalidParamsSchema = Joi.object({
-	jsonrpc: Joi.string().required(),
-	id: idSchema,
-	message: Joi.string().required(),
-	code: Joi.number().required(),
-}).required();
 
 const uuid = [
 	'748d6b38-0614-414a-93a0-ab941e933788',
@@ -50,13 +30,7 @@ const uuid = [
 	'69cbee14-87c6-443f-bf92-0d500d1daa54',
 ];
 
-const jsonRpcSchema = Joi.object({
-	jsonrpc: Joi.string().required(),
-	id: idSchema,
-	result: Joi.object(),
-}).required();
-
-const jsonRpcListSchema = Joi.array().items(jsonRpcSchema);
+const jsonRpcListSchema = Joi.array().items(jsonRpcEnvelopeSchema);
 
 const transactionsResponseSchema = Joi.object({
 	data: Joi.array().items(transactionSchema),
@@ -72,7 +46,7 @@ const blocksResponseSchema = Joi.object({
 
 const accountsResponseSchema = Joi.object({
 	data: Joi.array().items(accountSchema),
-	meta: metaWithoutTotalSchema,
+	meta: metaSchema,
 	links: Joi.object(),
 }).required();
 
@@ -86,13 +60,13 @@ describe('Multi-Request API', () => {
 
 		expect(response).toMap(jsonRpcListSchema.length(3));
 
-		expect(response[0]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: 1 });
+		expect(response[0]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 1 });
 		expect(response[0].result).toMap(transactionsResponseSchema);
 
-		expect(response[1]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: 2 });
+		expect(response[1]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 2 });
 		expect(response[1].result).toMap(blocksResponseSchema);
 
-		expect(response[2]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: 3 });
+		expect(response[2]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 3 });
 		expect(response[2].result).toMap(accountsResponseSchema);
 	});
 
@@ -105,13 +79,13 @@ describe('Multi-Request API', () => {
 
 		expect(response).toMap(jsonRpcListSchema.length(3));
 
-		expect(response[0]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: 4 });
+		expect(response[0]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 4 });
 		expect(response[0].result).toMap(transactionsResponseSchema);
 
-		expect(response[1]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: 5 });
+		expect(response[1]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 5 });
 		expect(response[1].result).toMap(blocksResponseSchema);
 
-		expect(response[2]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: 6 });
+		expect(response[2]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 6 });
 		expect(response[2].result).toMap(accountsResponseSchema);
 	});
 
@@ -124,13 +98,13 @@ describe('Multi-Request API', () => {
 
 		expect(response).toMap(jsonRpcListSchema.length(3));
 
-		expect(response[0]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: uuid[0] });
+		expect(response[0]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: uuid[0] });
 		expect(response[0].result).toMap(transactionsResponseSchema);
 
-		expect(response[1]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: uuid[1] });
+		expect(response[1]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: uuid[1] });
 		expect(response[1].result).toMap(blocksResponseSchema);
 
-		expect(response[2]).toMap(jsonRpcSchema, { jsonrpc: '2.0', id: uuid[2] });
+		expect(response[2]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: uuid[2] });
 		expect(response[2].result).toMap(accountsResponseSchema);
 	});
 
@@ -138,12 +112,12 @@ describe('Multi-Request API', () => {
 		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', method: 'get.transactions', params: { limit: 1 } },
 			{ jsonrpc: '2.0', method: 'wrong_method', params: { } },
-			{ jsonrpc: '2.0', method: 'get.accounts', params: { limit: 1 } },
+			{ jsonrpc: '2.0', method: 'get.accounts', params: { limit_wrong: 1 } },
 		]);
 
 		expect(response[0].result).toMap(transactionsResponseSchema);
-		expect(response[1]).toMap(invalidParamsSchema);
-		expect(response[2].result).toMap(accountsResponseSchema);
+		expect(response[1]).toMap(wrongMethodSchema);
+		expect(response[2]).toMap(invalidParamsSchema);
 	});
 
 	it('supports requests with no params', async () => {
@@ -155,21 +129,21 @@ describe('Multi-Request API', () => {
 		expect(response[0].result).toMap(transactionsResponseSchema);
 	});
 
-	xit('fails on request without the JSON-RPC envelope', async () => {
+	it('fails on request without the JSON-RPC envelope', async () => {
 		const response = await request(wsRpcUrl, [
-			{ method: 'get.transactions', params: { limit: 1 } },
+			{ method: 'get.transactions' },
 		]);
 
-		expect(response).toMap(jsonRpcListSchema.length(1));
-		expect(response[0]).toMap(invalidParamsSchema);
+		expect(response).toHaveLength(1);
+		expect(response[0]).toMap(invalidRequestSchema);
 	});
 
-	xit('fails on request without specified method', async () => {
+	it('fails on request without specified method', async () => {
 		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', params: { } },
 		]);
 
-		expect(response).toMap(jsonRpcListSchema.length(1));
-		expect(response[0]).toMap(invalidParamsSchema);
+		expect(response).toHaveLength(1);
+		expect(response[0]).toMap(invalidRequestSchema);
 	});
 });
