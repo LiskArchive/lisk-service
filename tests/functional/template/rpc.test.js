@@ -64,20 +64,7 @@ describe('Gateway', () => {
 	});
 
 	it('client error returns INVALID_REQUEST on wrong param name', async () => {
-		const response = await request(baseUrl, 'get.hello', { wrong_param_name: 'user1' });
-		expect(response).toEqual({
-			jsonrpc: '2.0',
-			id: 1,
-			error: {
-				code: METHOD_NOT_FOUND[0],
-				message: 'Unknown input parameter(s): wrong_param_name',
-			},
-		});
-	});
-
-	xit('client error returns INVALID_REQUEST when no param value is defined', async () => {
-		const response = await request(baseUrl, 'get.hello', { wrong_param_name: null });
-		expect(response).toEqual({
+		await expect(request(baseUrl, 'get.hello', { wrong_param_name: 'user1' })).rejects.toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
@@ -87,21 +74,30 @@ describe('Gateway', () => {
 		});
 	});
 
-	xit('client error returns INVALID_REQUEST when param value is too short', async () => {
-		const response = await request(baseUrl, 'get.hello', { path_name: 'ab' });
-		expect(response).toEqual({
+	it('client error returns INVALID_REQUEST when no param value is defined', async () => {
+		await expect(request(baseUrl, 'get.hello', { wrong_param_name: null })).rejects.toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
-				code: INVALID_REQUEST[0],
-				message: 'Invalid input: The \'path_name\' field length must be greater than or equal to 3 characters long.',
+				code: INVALID_PARAMS[0],
+				message: 'Unknown input parameter(s): wrong_param_name',
 			},
 		});
 	});
 
-	xit('server error returns SERVER_ERROR', async () => {
-		const response = await request(baseUrl, 'get.server_error', {});
-		expect(response).toEqual({
+	it('client error returns INVALID_REQUEST when param value is too short', async () => {
+		await expect(request(baseUrl, 'get.hello', { path_name: 'ab' })).rejects.toStrictEqual({
+			jsonrpc: '2.0',
+			id: 1,
+			error: {
+				code: INVALID_PARAMS[0],
+				message: 'Unknown input parameter(s): path_name',
+			},
+		});
+	});
+
+	it('server error returns SERVER_ERROR', async () => {
+		await expect(request(baseUrl, 'get.server_error', {})).rejects.toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
@@ -111,9 +107,8 @@ describe('Gateway', () => {
 		});
 	});
 
-	xit('handles METHOD_NOT_FOUND error properly', async () => {
-		const response = await request(baseUrl, 'get.wrong_path', {});
-		expect(response).toEqual({
+	it('handles METHOD_NOT_FOUND error properly', async () => {
+		await expect(request(baseUrl, 'get.wrong_path', {})).rejects.toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
