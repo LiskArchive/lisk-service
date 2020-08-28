@@ -394,7 +394,7 @@ function makeHandler(svc, handlerItem) {
         svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
         return addJsonRpcEnvelope(id, res);
       } catch (err) {
-        if (svc.settings.log4XXResponses || err && Utils.isProperObject(err) && !_.inRange(err.code, 400, 500)) {
+        if (svc.settings.log4XXResponses || Utils.isProperObject(err) && !_.inRange(err.code, 400, 500)) {
           svc.logger.error("   Request error!", err.name, ":", err.message, "\n", err.stack, "\nData:", err.data);
         }
         if (typeof err.message === 'string') {
