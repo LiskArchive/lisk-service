@@ -21,7 +21,6 @@ const baseUrlRoot = config.SERVICE_ENDPOINT_RPC;
 const baseUrl = `${baseUrlRoot}/rpc-test`;
 
 const {
-	INVALID_REQUEST,
 	INVALID_PARAMS,
 	METHOD_NOT_FOUND,
 	SERVER_ERROR,
