@@ -11,7 +11,8 @@ const chalk = require('chalk');
 const BluebirdPromise = require('bluebird');
 
 const {
-	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
+  Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
+  Utils,
 } = require('lisk-service-framework');
 
 module.exports = {
@@ -336,7 +337,7 @@ function makeAuthorizeMiddleware(svc, handlerItem) {
   };
 }
 
-function addJsonRpcEnvelope(result, id = 1) {
+function addJsonRpcEnvelope(id = null, result) {
   return {
     jsonrpc: "2.0",   // standard JSON-RPC envelope
     result,           // response content
@@ -344,11 +345,14 @@ function addJsonRpcEnvelope(result, id = 1) {
   }
 }
 
-function addErrorEnvelope(code, message, id = 1) {
+function addErrorEnvelope(id = null, code, message, data) {
   return {
     jsonrpc: "2.0",   // standard JSON-RPC envelope
-    code,           // response content
-    message,
+    error: {
+      code,           // error code
+      message,        // error message
+      data,           // error data (optional)
+    },
     id,               // Number of response in chain
   }
 }
@@ -376,18 +380,18 @@ function makeHandler(svc, handlerItem) {
         }
         let res = await svc.actions.call({ socket: this, action, params: jsonRpcInput, handlerItem });
         svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
-        return addJsonRpcEnvelope(res, id);
+        return addJsonRpcEnvelope(id, res);
       } catch (err) {
-        if (svc.settings.log4XXResponses || err && !_.inRange(err.code, 400, 500)) {
+        if (svc.settings.log4XXResponses || err && Utils.isProperObject(err) && !_.inRange(err.code, 400, 500)) {
           svc.logger.error("   Request error!", err.name, ":", err.message, "\n", err.stack, "\nData:", err.data);
         }
         if (typeof err.message === 'string') {
           if (!err.code || err.code === 500) {
-            return addErrorEnvelope(translateHttpToRpcCode(err.code), `Server error: ${err.message}`, null);
+            return addErrorEnvelope(id, translateHttpToRpcCode(err.code), `Server error: ${err.message}`);
           }
-          return addErrorEnvelope(translateHttpToRpcCode(err.code), err.message, null);
+          return addErrorEnvelope(id, translateHttpToRpcCode(err.code), err.message);
         } else {
-          return addErrorEnvelope(err.message.code, err.message.message, null);
+          return addErrorEnvelope(id, err.message.code, err.message.message);
         }
       }
     };
@@ -414,7 +418,7 @@ function makeHandler(svc, handlerItem) {
       if (singleResponse) respond(responses[0]);
       else respond(responses);
     } catch (err) {
-      svc.socketOnError(addErrorEnvelope(translateHttpToRpcCode(err.code), `Server error: ${err.message}`, null), respond);
+      svc.socketOnError(addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message}`), respond);
     }
   };
 }
