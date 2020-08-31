@@ -72,10 +72,10 @@ const apiJson = {
 	},
 };
 
-const allMethods = Utils.requireAllJs(path.resolve(__dirname, './methods'));
-const apiSchemas = Object.keys(allMethods);
+const services = Utils.requireAllJs(path.resolve(__dirname, './methods'));
+const apiSchemas = Object.keys(services);
 apiSchemas.forEach((key) => {
-	Object.assign(apiJson.paths, allMethods[key]);
+	Object.assign(apiJson.paths, services[key]);
 });
 apiJson.parameters = parameters;
 apiJson.definitions = definitions;
