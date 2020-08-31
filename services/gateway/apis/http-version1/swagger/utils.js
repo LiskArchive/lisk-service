@@ -32,6 +32,15 @@ const transformParams = (type, params) => {
 				enum: params[paramKey].enum,
 				default: params[paramKey].default,
 			};
+		} else if (paramKey === 'search') {
+			value = {
+				name: 'search',
+				in: 'query',
+				description: 'Delegate name full text search phrase',
+				type: 'string',
+				minLength: 1,
+				maxLength: 20,
+			};
 		}
 		data.push(value);
 	});
@@ -39,5 +48,5 @@ const transformParams = (type, params) => {
 };
 
 module.exports = {
-    transformParams,
+	transformParams,
 };
