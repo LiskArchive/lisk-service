@@ -60,8 +60,8 @@ const apiJson = {
 			description: 'Lisk Network transaction API calls',
 		},
 		{
-			"name": "Network",
-			"description": "Lisk Network utils"
+			name: 'Network',
+			description: 'Lisk Network utils'
 		},
 	],
 	schemes: ['http', 'https'],
