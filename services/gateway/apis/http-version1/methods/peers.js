@@ -32,7 +32,7 @@ module.exports = {
 		broadhash: { optional: true, type: 'string' },
 		limit: { optional: true, min: 1, type: 'number', integer: true },
 		offset: { optional: true, min: 0, type: 'number', integer: true },
-		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'version:asc', 'version:desc'] },
+		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'version:asc', 'version:desc'], default: 'height:desc' },
 	},
 	source: peersSource,
 	envelope,

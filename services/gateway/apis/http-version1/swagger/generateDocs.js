@@ -14,13 +14,44 @@
  *
  */
 /* eslint-disable */
-
 const fs = require('fs');
 const YAML = require('yaml');
 
 const convertToYaml = new YAML.Document();
 const accounts = require('../methods/accounts');
+const voters = require('../methods/voters');
+const votes = require('../methods/votes');
 
+const blocks = require('../methods/blocks');
+
+const transactions = require('../methods/transactions');
+const transactionsStatisticsDay = require('../methods/transactionsStatisticsDay');
+const transactionsStatisticsMonth = require('../methods/transactionsStatisticsMonth');
+
+const peers = require('../methods/peers');
+const peersConnected = require('../methods/peersConnected');
+const peersDisconnected = require('../methods/peersDisconnected');
+
+const delegates = require('../methods/delegates');
+const delegatesLatest = require('../methods/delegatesLatest');
+const delegatesNextForgers = require('../methods/delegatesNextForgers');
+
+
+const services = [
+	accounts,
+	blocks,
+	delegates,
+	transactions,
+	peers,
+	delegatesNextForgers,
+	delegatesLatest,
+	peersConnected,
+	peersDisconnected,
+	transactionsStatisticsDay,
+	transactionsStatisticsMonth,
+	voters,
+	votes,
+];
 const { parameters, definitions } = require('./apiSchema');
 
 const apiJson = {
@@ -44,6 +75,22 @@ const apiJson = {
 			name: 'Accounts',
 			description: 'Lisk Network account API calls',
 		},
+		{
+			name: 'Blocks',
+			description: 'Lisk Network block API calls',
+		},
+		{
+			name: 'Delegates',
+			description: 'Lisk Network delegate API calls',
+		},
+		{
+			name: 'Peers',
+			description: 'Lisk Network peer API calls',
+		},
+		{
+			name: 'Transactions',
+			description: 'Lisk Network transaction API calls',
+		},
 	],
 	schemes: ['http', 'https'],
 	paths: {
@@ -53,49 +100,250 @@ const apiJson = {
 	},
 };
 
-const accountSchema = {};
-for (const key in accounts) {
-  if (key === 'swaggerApiPath') {
-    accountSchema[accounts[key]] = { get: { tags: ['Accounts'] } };
-    const allParams = [];
-    for (const key in accounts.params) {
-      let value = { $ref: `#/parameters/${key}` };
-      if (key === 'sort') {
-        value = {
-          name: 'sort',
-          in: 'query',
-          description: 'Fields to sort results by',
-          required: false,
-          type: accounts.params[key].type,
-          enum: accounts.params[key].enum,
-          default: accounts.params[key].default,
-        };
-      }
-      allParams.push(value);
-    }
-    accountSchema[accounts[key]].get.parameters = allParams;
-    accountSchema[accounts[key]].get.responses = {
-      200: {
-        description: 'array of accounts with details',
-        schema: {
-          type: 'array',
-          items: {
-            $ref: '#/definitions/AccountsWithEnvelope',
-          },
-        },
-      },
-      400: {
-        description: 'bad input parameter',
-      },
-      404: {
-        description: 'Not found',
-      },
-    };
-  }
-}
+const transformParams = (item) => {
+	const data = [];
+	const params = Object.keys(item.params);
+	params.forEach((paramKey) => {
+		let value = {};
+		if (item === blocks && paramKey === 'id') {
+			value = { $ref: '#/parameters/block' };
+		} else value = { $ref: `#/parameters/${paramKey}` };
+		if (paramKey === 'sort') {
+			value = {
+				name: 'sort',
+				in: 'query',
+				description: 'Fields to sort results by',
+				required: false,
+				type: item.params[paramKey].type,
+				enum: item.params[paramKey].enum,
+				default: item.params[paramKey].default,
+			};
+		}
+		data.push(value);
+	});
+	return data;
+};
 
-Object.assign(apiJson.paths, accountSchema);
+services.forEach((item) => {
+	const schemas = {};
+	const key = 'swaggerApiPath';
+	schemas[item[key]] = { get: {} };
+	const responses = {
+		200: {
+			description: '',
+			schema: {
+				type: 'array',
+				items: {
+					$ref: '',
+				},
+			},
+		},
+		400: {
+			description: 'bad input parameter',
+		},
+		404: {
+			description: 'Not found',
+		},
+	};
+	switch (item) {
+		case accounts:
+			schemas[item[key]] = { get: { tags: ['Accounts'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of accounts with details',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/AccountsWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case blocks:
+			schemas[item[key]] = { get: { tags: ['Blocks'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of blocks',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/BlocksWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case delegates:
+			schemas[item[key]] = { get: { tags: ['Delegates'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of delegates matching filter criteria',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/DelegatesWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case peers:
+			schemas[item[key]] = { get: { tags: ['Peers'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of peers',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/PeersWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case transactions:
+			schemas[item[key]] = { get: { tags: ['Transactions'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of transactions',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/TransactionsWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case delegatesNextForgers:
+			schemas[item[key]] = { get: { tags: ['Delegates'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of next forgers',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/DelegatesWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case delegatesLatest:
+			schemas[item[key]] = { get: { tags: ['Delegates'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of recently registered delegates',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/DelegatesWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case peersConnected:
+			schemas[item[key]] = { get: { tags: ['Peers'] } };
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of connected peers',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/PeersWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case peersDisconnected:
+			schemas[item[key]] = { get: { tags: ['Peers'] } };
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of disconnected peers',
+					schema: {
+						type: 'array',
+						items: {
+							$ref: '#/definitions/PeersWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case transactionsStatisticsDay:
+			schemas[item[key]] = { get: { tags: ['Transactions'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'object with transaction statistics',
+					schema: {
+						items: {
+							$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case transactionsStatisticsMonth:
+			schemas[item[key]] = { get: { tags: ['Transactions'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'object with transaction statistics',
+					schema: {
+						items: {
+							$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case voters:
+			schemas[item[key]] = { get: { tags: ['Accounts'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of votes',
+					schema: {
+						items: {
+							$ref: '#/definitions/VotesWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		case votes:
+			schemas[item[key]] = { get: { tags: ['Accounts'] } };
+			schemas[item[key]].get.parameters = transformParams(item);
+			schemas[item[key]].get.responses = Object.assign(responses, {
+				200: {
+					description: 'array of votes',
+					schema: {
+						items: {
+							$ref: '#/definitions/VotesWithEnvelope',
+						},
+					},
+				},
+			});
+			break;
+		default:
+	}
+	Object.assign(apiJson.paths, schemas);
+});
+
 apiJson.parameters = parameters;
 apiJson.definitions = definitions;
 convertToYaml.contents = apiJson;
-fs.writeFileSync('services/gateway/apis/http-version1/swagger/apidocs.yaml', convertToYaml);
+fs.writeFileSync(
+	'services/gateway/apis/http-version1/swagger/apidocs.yaml',
+	convertToYaml,
+);

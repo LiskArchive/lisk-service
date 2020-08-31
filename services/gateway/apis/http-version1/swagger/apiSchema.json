@@ -132,7 +132,7 @@
       "minLength": 1,
       "maxLength": 20
     },
-    "id": {
+    "block": {
       "name": "block",
       "in": "query",
       "description": "Block id to query",
@@ -151,7 +151,7 @@
       "minLength": 1,
       "maxLength": 20
     },
-    "transactionId": {
+    "id": {
       "name": "id",
       "in": "query",
       "description": "Transaction id to query",
@@ -187,21 +187,21 @@
       "type": "string",
       "minLength": 1
     },
-    "recipientAddressPublicKeyUsername": {
+    "recipient": {
       "name": "recipient",
       "in": "query",
       "description": "Lisk address, public key or account name (recipientId)",
       "type": "string",
       "minLength": 1
     },
-    "senderAddressPublicKeyUsername": {
+    "sender": {
       "name": "sender",
       "in": "query",
       "description": "Lisk address, public key or account name (senderId)",
       "type": "string",
       "minLength": 1
     },
-    "transactionType": {
+    "type": {
       "name": "type",
       "in": "query",
       "description": "Transaction type (0-12)",
@@ -216,14 +216,14 @@
       "type": "string",
       "minLength": 1
     },
-    "minAmount": {
+    "min": {
       "name": "min",
       "in": "query",
       "description": "Minimum transaction amount in Beddows",
       "type": "integer",
       "minimum": 0
     },
-    "maxAmount": {
+    "max": {
       "name": "max",
       "in": "query",
       "description": "Maximum transaction amount in Beddows",
