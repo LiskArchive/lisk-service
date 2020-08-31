@@ -69,7 +69,6 @@ const apiJson = {
 };
 
 const allMethods = Utils.requireAllJs(path.resolve(__dirname, './methods'));
-
 const apiSchemas = Object.keys(allMethods);
 apiSchemas.forEach((key) => {
 	Object.assign(apiJson.paths, allMethods[key]);
