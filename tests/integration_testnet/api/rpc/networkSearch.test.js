@@ -18,15 +18,17 @@ import to from 'await-to-js';
 
 import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
-import { badRequestSchema } from '../../helpers/schemas';
+
+// Schemas
+import {
+	metaSchema,
+	invalidRequestSchema,
+} from './schemas/generics.schema';
+
+// Sample data
 import accounts from './constants/accounts';
 import blocks from './constants/blocks';
 import transactions from './constants/transactions';
-
-const metaSchema = Joi.object({
-	count: Joi.number().required(),
-	total: Joi.number().required(),
-}).required();
 
 const searchItemSchema = Joi.object({
 	score: Joi.number().required(),
@@ -109,7 +111,7 @@ describe(endpoint, () => {
 	});
 
 	xit('returns a proper error when called without q param', async () => {
-		const [error] = await to(api.getJsonRpcV1(endpoint));
-		expect(error).toMap(badRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+		const error = await to(api.getJsonRpcV1(endpoint));
+		expect(error).toMap(invalidRequestSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
 	});
 });

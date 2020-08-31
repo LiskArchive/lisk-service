@@ -14,8 +14,10 @@
  *
  */
 import Joi from 'joi';
-import request from '../../../helpers/socketIoRpcRequest';
+import request from '../../helpers/socketIoRpcRequest';
 import config from '../../config';
+
+// Schemas
 import {
 	envelopeSchema,
 	emptyEnvelopeSchema,

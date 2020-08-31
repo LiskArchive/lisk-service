@@ -18,7 +18,11 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import accounts from './constants/accounts';
-import { invalidParamsSchema, emptyEnvelopeSchema } from './schemas/generics.schema';
+import {
+	invalidParamsSchema,
+	emptyEnvelopeSchema,
+	jsonRpcEnvelopeSchema,
+} from './schemas/generics.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
@@ -65,13 +69,14 @@ describe('Method get.accounts', () => {
 		});
 
 		it('returns empty response when unknown address', async () => {
-			const { result } = await getAccounts({ address: '99999L' });
-			expect(result).toMap(emptyEnvelopeSchema);
+			const result = await getAccounts({ address: '99999L' });
+			expect(result).toMap(jsonRpcEnvelopeSchema);
+			expect(result.result).toMap(emptyEnvelopeSchema);
 		});
 
 		it('returns INVALID_PARAMS error (-32602) on invalid address', async () => {
-			const { error } = await getAccounts({ address: 'L' }).catch(e => e);
-			expect(error).toMap(invalidParamsSchema, { code: JSON_RPC.INVALID_PARAMS[0] });
+			const { result } = await getAccounts({ address: 'L' }).catch(e => e);
+			expect(result).toMap(invalidParamsSchema);
 		});
 
 		it('returns empty response when given empty address', async () => {
