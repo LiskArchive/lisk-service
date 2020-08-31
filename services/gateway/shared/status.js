@@ -20,15 +20,13 @@ const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
 const config = require('../config.js');
 
-// const gateway = process.env.SERVICE_ENDPOINT || 'http://localhost:9901';
-
 const getBuildTimestamp = () => {
 	let timestamp;
 	try {
 		// eslint-disable-next-line import/no-unresolved
 		timestamp = require('../build.json').timestamp;
 	} catch (e) {
-		//  build.json is only generated in docker
+		// build.json is only generated in docker
 	}
 	if (!timestamp) {
 		timestamp = new Date().toISOString();
