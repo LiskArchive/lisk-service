@@ -150,7 +150,11 @@ module.exports = {
         }
         // get callOptions
         let opts = _.assign({
-          meta: this.socketGetMeta(socket)
+          meta: this.socketGetMeta(socket),
+          callOptions: {
+            timeout: 30000,
+            retries: 3,
+          },
         }, handlerItem.callOptions);
         this.logger.debug('Call action:', action, params, opts);
         const request = {
