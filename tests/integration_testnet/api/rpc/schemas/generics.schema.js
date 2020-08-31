@@ -65,3 +65,9 @@ export const jsonRpcEnvelopeSchema = Joi.object({
 	result: Joi.object().required(),
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 }).required();
+
+export const emptyResponseSchema = Joi.object({
+	jsonrpc: Joi.string().equal('2.0'),
+	result: emptyEnvelopeSchema,
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+}).required();

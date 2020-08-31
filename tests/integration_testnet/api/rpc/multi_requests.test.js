@@ -13,13 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// Libs
 import Joi from 'joi';
 
-import accountSchema from './schemas/account.schema';
-import blockSchema from './schemas/block.schema';
-import { jsonRpcEnvelopeSchema, metaSchema, invalidParamsSchema, invalidRequestSchema, wrongMethodSchema } from './schemas/generics.schema';
+// Imports
 import config from '../../config';
 import request from '../../helpers/socketIoRpcMultiRequest';
+
+// Schemas
+import {
+	jsonRpcEnvelopeSchema,
+	metaSchema,
+	invalidParamsSchema,
+	invalidRequestSchema,
+	wrongMethodSchema,
+} from './schemas/generics.schema';
+import accountSchema from './schemas/account.schema';
+import blockSchema from './schemas/block.schema';
 import transactionSchema from './schemas/transaction.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;

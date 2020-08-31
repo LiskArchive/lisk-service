@@ -22,7 +22,7 @@ import {
 	jsonRpcEnvelopeSchema,
 } from './schemas/generics.schema';
 
-import request from '../../../helpers/socketIoRpcRequest';
+import request from '../../helpers/socketIoRpcRequest';
 import config from '../../config';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
