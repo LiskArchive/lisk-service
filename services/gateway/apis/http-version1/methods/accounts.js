@@ -29,12 +29,7 @@ module.exports = {
 		username: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
-		sort: {
-			optional: true,
-			type: 'string',
-			enum: ['balance:asc', 'balance:desc'],
-			default: 'balance:asc',
-		},
+		sort: { optional: true, type: 'string', enum: ['balance:asc', 'balance:desc'], default: 'balance:asc' },
 	},
 	get schema() {
 		const accountSchema = {};
