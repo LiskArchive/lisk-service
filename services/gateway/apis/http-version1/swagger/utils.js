@@ -21,6 +21,8 @@ const transformParams = (type, params) => {
 		let value = {};
 		if (type === 'blocks' && paramKey === 'id') {
 			value = { $ref: '#/parameters/block' };
+		} else if (type === 'network' && paramKey === 'q') {
+			value = { $ref: '#/parameters/searchQuery' };
 		} else value = { $ref: `#/parameters/${paramKey}` };
 		if (paramKey === 'sort') {
 			value = {
