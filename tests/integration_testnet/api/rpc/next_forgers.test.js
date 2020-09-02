@@ -48,8 +48,8 @@ describe('Method get.next_forgers', () => {
 		expect(result.result.data).toMap(nextForgersDataSchema.length(limit));
 	});
 
-	it(`returns INVALID_REQUEST (${JSON_RPC.INVALID_PARAMS[0]}) when limit = 0`, async () => {
-		const error = await getNextForgers({ limit: 0 });
+	it(`returns INVALID_PARAMS (${JSON_RPC.INVALID_PARAMS[0]}) when limit = 0`, async () => {
+		const error = await getNextForgers({ limit: 0 }).catch(e => e);
 		expect(error).toMap(invalidParamsSchema);
 	});
 
