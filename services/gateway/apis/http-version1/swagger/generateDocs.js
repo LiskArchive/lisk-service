@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 const YAML = require('yaml');
 
-const { parameters, definitions } = require('./apiSchema');
+const { parameters, definitions, responses } = require('./apiSchema');
 
 const apiJson = {
 	swagger: '2.0',
@@ -83,6 +83,7 @@ apiSchemas.forEach((key) => {
 });
 apiJson.parameters = parameters;
 apiJson.definitions = definitions;
+apiJson.responses = responses;
 const convertToYaml = new YAML.Document();
 convertToYaml.contents = apiJson;
 

@@ -29,13 +29,21 @@ module.exports = {
 		username: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
-		sort: { optional: true, type: 'string', enum: ['balance:asc', 'balance:desc'], default: 'balance:asc' },
+		sort: {
+			optional: true,
+			type: 'string',
+			enum: ['balance:asc', 'balance:desc'],
+			default: 'balance:asc',
+		},
 	},
 	get schema() {
 		const accountSchema = {};
 		accountSchema[this.swaggerApiPath] = { get: {} };
 		accountSchema[this.swaggerApiPath].get.tags = this.tags;
-		accountSchema[this.swaggerApiPath].get.parameters = transformParams('accounts', this.params);
+		accountSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'accounts',
+			this.params,
+		);
 		accountSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of accounts with details',
@@ -47,10 +55,10 @@ module.exports = {
 				},
 			},
 			400: {
-				description: 'bad input parameter',
+				$ref: '#/responses/badParameter',
 			},
 			404: {
-				description: 'Not found',
+				$ref: '#/responses/notFound',
 			},
 		};
 		return accountSchema;

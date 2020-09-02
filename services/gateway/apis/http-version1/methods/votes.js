@@ -47,10 +47,10 @@ module.exports = {
 				},
 			},
 			400: {
-				description: 'bad input parameter',
+				$ref: '#/responses/badParameter',
 			},
 			404: {
-				description: 'Not found',
+				$ref: '#/responses/notFound',
 			},
 		};
 		return votesSchema;

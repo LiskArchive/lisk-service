@@ -1967,6 +1967,29 @@
           "type": "object"
         }
       }
+    },
+    "AccountsResponseOk": {
+      "type": "object",
+      "required": [
+        "200"
+      ],
+      "properties": {
+        "200": {
+          "description": "array of accounts with details",
+            "type": "array",
+            "items": {
+              "$ref": "#/definitions/AccountsWithEnvelope"
+          }
+        }
+      }
+    }
+  },
+  "responses": {
+    "badParameter": {
+      "description": "Bad input parameter"
+    },
+    "notFound": {
+      "description": "Not found"
     }
   }
 }
