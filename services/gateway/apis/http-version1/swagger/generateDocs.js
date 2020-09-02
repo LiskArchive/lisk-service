@@ -37,6 +37,7 @@ const apiJson = {
 			url: 'https://www.gnu.org/licenses/gpl-3.0.en.html',
 		},
 	},
+	// host: localhost:9901
 	basePath: '/api/v1',
 	tags: [
 		{
