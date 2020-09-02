@@ -164,7 +164,7 @@ describe('Peers API', () => {
 			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
 		});
 
-		it('retrieves disconnected peers by state name', async () => {
+		xit('retrieves disconnected peers by state name', async () => {
 			const response = await api.get(`${endpoint}?state=disconnected`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
