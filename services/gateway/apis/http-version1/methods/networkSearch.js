@@ -16,13 +16,39 @@
 
 const networkSearchSource = require('../../../sources/networkSearch');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/search',
 	rpcMethod: 'get.search',
+	tags: ['Network'],
 	params: {
 		q: { optional: false, type: 'string' },
+	},
+	get schema() {
+		const networkSchema = {};
+		networkSchema[this.swaggerApiPath] = { get: {} };
+		networkSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkSchema[this.swaggerApiPath].get.parameters = transformParams('network', this.params);
+		networkSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of peers',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/UnifiedSearch',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return networkSchema;
 	},
 	source: networkSearchSource,
 	envelope,

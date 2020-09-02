@@ -15,12 +15,13 @@
  */
 const peersSource = require('../../../sources/peers');
 const envelope = require('../../../sources/mappings/stdEnvelope');
-
+const { transformParams } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/peers',
 	rpcMethod: 'get.peers',
+	tags: ['Peers'],
 	params: {
 		ip: { optional: true, type: 'string' },
 		httpPort: { optional: true, type: 'number', integer: true, min: 1, max: 65535 },
@@ -33,6 +34,30 @@ module.exports = {
 		limit: { optional: true, min: 1, type: 'number', integer: true },
 		offset: { optional: true, min: 0, type: 'number', integer: true },
 		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'version:asc', 'version:desc'], default: 'height:desc' },
+	},
+	get schema() {
+		const peerSchema = {};
+		peerSchema[this.swaggerApiPath] = { get: {} };
+		peerSchema[this.swaggerApiPath].get.tags = this.tags;
+		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
+		peerSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of peers with details',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/PeersWithEnvelope',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return peerSchema;
 	},
 	source: peersSource,
 	envelope,

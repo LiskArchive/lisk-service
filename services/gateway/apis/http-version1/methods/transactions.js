@@ -15,11 +15,13 @@
  */
 const transactionsSource = require('../../../sources/transactions');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions',
 	rpcMethod: 'get.transactions',
+	tags: ['Transactions'],
 	params: {
 		id: { optional: true, type: 'string', min: 1 },
 		type: { optional: true, type: 'number', integer: true, min: 0 },
@@ -44,6 +46,30 @@ module.exports = {
 			],
 			default: 'amount:asc',
 		},
+	},
+	get schema() {
+		const transactionSchema = {};
+		transactionSchema[this.swaggerApiPath] = { get: {} };
+		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of transactions with details',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/TransactionsWithEnvelope',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return transactionSchema;
 	},
 	source: transactionsSource,
 	envelope,

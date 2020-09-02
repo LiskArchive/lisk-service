@@ -15,11 +15,13 @@
  */
 const accountsSource = require('../../../sources/accounts');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/accounts',
 	rpcMethod: 'get.accounts',
+	tags: ['Accounts'],
 	params: {
 		address: { optional: true, type: 'string', min: 2 },
 		publickey: { optional: true, type: 'string', min: 1 },
@@ -28,6 +30,30 @@ module.exports = {
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: { optional: true, type: 'string', enum: ['balance:asc', 'balance:desc'], default: 'balance:asc' },
+	},
+	get schema() {
+		const accountSchema = {};
+		accountSchema[this.swaggerApiPath] = { get: {} };
+		accountSchema[this.swaggerApiPath].get.tags = this.tags;
+		accountSchema[this.swaggerApiPath].get.parameters = transformParams('accounts', this.params);
+		accountSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of accounts with details',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/AccountsWithEnvelope',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return accountSchema;
 	},
 	source: accountsSource,
 	envelope,

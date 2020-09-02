@@ -15,13 +15,39 @@
  */
 const delegatesSource = require('../../../sources/delegates');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/delegates/latest_registrations',
+	tags: ['Delegates'],
 	params: {
 		limit: { optional: true, min: 1, max: 101, type: 'number' },
 		offset: { optional: true, min: 0, type: 'number' },
+	},
+	get schema() {
+		const delegateSchema = {};
+		delegateSchema[this.swaggerApiPath] = { get: {} };
+		delegateSchema[this.swaggerApiPath].get.tags = this.tags;
+		delegateSchema[this.swaggerApiPath].get.parameters = transformParams('delegates', this.params);
+		delegateSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of ecently registered delegates',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/DelegatesWithEnvelope',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return delegateSchema;
 	},
 	source: {
 		...delegatesSource,

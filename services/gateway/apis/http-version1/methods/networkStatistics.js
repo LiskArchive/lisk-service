@@ -20,6 +20,30 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/network/statistics',
 	rpcMethod: 'get.network.statistics',
+	tags: ['Network'],
+	get schema() {
+		const networkSchema = {};
+		networkSchema[this.swaggerApiPath] = { get: {} };
+		networkSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of peers',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/NetworkStatistics',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return networkSchema;
+	},
 	source: networkStatisticsSource,
 	envelope,
 };

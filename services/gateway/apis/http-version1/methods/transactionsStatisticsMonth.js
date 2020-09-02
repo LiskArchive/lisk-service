@@ -15,14 +15,40 @@
  */
 const transactionsStatisticsMonthSource = require('../../../sources/transactionsStatisticsMonth');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions/statistics/month',
 	rpcMethod: 'get.transactions.statistics.month',
+	tags: ['Transactions'],
 	params: {
 		offset: { optional: true, type: 'number', default: 0, min: 0 },
 		limit: { optional: true, type: 'number', default: 10, min: 1, max: 12 },
+	},
+	get schema() {
+		const transactionSchema = {};
+		transactionSchema[this.swaggerApiPath] = { get: {} };
+		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of transactions with details',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return transactionSchema;
 	},
 	source: transactionsStatisticsMonthSource,
 	envelope,

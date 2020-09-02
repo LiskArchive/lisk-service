@@ -61,7 +61,7 @@ const apiJson = {
 		},
 		{
 			name: 'Network',
-			description: 'Lisk Network utils'
+			description: 'Lisk Network utils',
 		},
 	],
 	schemes: ['http', 'https'],
@@ -72,10 +72,14 @@ const apiJson = {
 	},
 };
 
-const services = Utils.requireAllJs(path.resolve(__dirname, './methods'));
-const apiSchemas = Object.keys(services);
+const services = Utils.requireAllJs(path.resolve(__dirname, '../methods'));
+const methods = Object.keys(services).reduce((acc, key) => {
+	const method = services[key];
+	return { ...acc, [key]: method.schema };
+}, {});
+const apiSchemas = Object.keys(methods);
 apiSchemas.forEach((key) => {
-	Object.assign(apiJson.paths, services[key]);
+	Object.assign(apiJson.paths, methods[key]);
 });
 apiJson.parameters = parameters;
 apiJson.definitions = definitions;

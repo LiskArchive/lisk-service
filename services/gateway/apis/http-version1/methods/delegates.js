@@ -15,11 +15,13 @@
  */
 const delegatesSource = require('../../../sources/delegates');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/delegates',
 	rpcMethod: 'get.delegates',
+	tags: ['Delegates'],
 	params: {
 		address: { optional: true, type: 'string', min: 2 },
 		publickey: { optional: true, type: 'string', min: 1 },
@@ -39,6 +41,30 @@ module.exports = {
 			],
 			default: 'rank:asc',
 		},
+	},
+	get schema() {
+		const delegateSchema = {};
+		delegateSchema[this.swaggerApiPath] = { get: {} };
+		delegateSchema[this.swaggerApiPath].get.tags = this.tags;
+		delegateSchema[this.swaggerApiPath].get.parameters = transformParams('delegates', this.params);
+		delegateSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of delegates with details',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/DelegatesWithEnvelope',
+					},
+				},
+			},
+			400: {
+				description: 'bad input parameter',
+			},
+			404: {
+				description: 'Not found',
+			},
+		};
+		return delegateSchema;
 	},
 	source: delegatesSource,
 	envelope,
