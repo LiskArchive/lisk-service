@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable */
 const { Utils } = require('lisk-service-framework');
 
 const fs = require('fs');
