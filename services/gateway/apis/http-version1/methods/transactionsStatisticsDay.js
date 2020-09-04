@@ -15,7 +15,7 @@
  */
 const transactionsStatisticsDaySource = require('../../../sources/transactionsStatisticsDay');
 const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams } = require('../swagger/utils');
+const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
@@ -41,13 +41,8 @@ module.exports = {
 					},
 				},
 			},
-			400: {
-				$ref: '#/responses/badParameter',
-			},
-			404: {
-				$ref: '#/responses/notFound',
-			},
 		};
+		Object.assign(transactionSchema[this.swaggerApiPath].get.responses, response);
 		return transactionSchema;
 	},
 	source: transactionsStatisticsDaySource,

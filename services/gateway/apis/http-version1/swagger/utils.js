@@ -49,6 +49,16 @@ const transformParams = (type, params) => {
 	return data;
 };
 
+const response = {
+	400: {
+		description: 'Bad input parameter',
+	},
+	404: {
+		description: 'Not found',
+	},
+};
+
 module.exports = {
 	transformParams,
+	response,
 };

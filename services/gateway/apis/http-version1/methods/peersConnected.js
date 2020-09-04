@@ -34,9 +34,6 @@ module.exports = {
 					},
 				},
 			},
-			400: {
-				$ref: '#/responses/badParameter',
-			},
 			404: {
 				$ref: '#/responses/notFound',
 			},
