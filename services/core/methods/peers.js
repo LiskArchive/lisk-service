@@ -46,9 +46,7 @@ module.exports = [
 	{
 		name: 'peers.disconnected',
 		controller: getDisconnectedPeers,
-		params: {
-			ip: { type: 'any', optional: true },
-		},
+		params: { },
 	},
 	{
 		name: 'peers.statistics',

@@ -90,27 +90,20 @@ const getPeers = async (params) => {
 };
 
 const getConnectedPeers = async params => {
-	const response = await getPeers(Object.assign(params, {
-		state: 'connected',
-	}));
+	const response = await getPeers(Object.assign(params, { state: 'connected' }));
 
 	return {
 		data: response.data,
 		meta: response.meta,
-		links: response.links,
 	};
 };
 
 const getDisconnectedPeers = async params => {
-	const response = await getPeers(Object.assign(params, {
-		state: 'disconnected',
-		ip: params.ip,
-	}));
+	const response = await getPeers(Object.assign(params, { state: 'disconnected' }));
 
 	return {
 		data: response.data,
 		meta: response.meta,
-		links: response.links,
 	};
 };
 
