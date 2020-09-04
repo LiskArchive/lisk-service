@@ -23,7 +23,7 @@ const baseUrlRpcV1 = `${baseUrl}/rpc`;
 const request = (endpoint, method, params) => new Promise((resolve, reject) => {
 	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
 
-	socket.emit('request', { method, params }, answer => {
+	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
 		socket.close();
 		if (answer.error) {
 			reject(answer);

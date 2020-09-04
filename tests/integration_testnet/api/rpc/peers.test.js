@@ -40,7 +40,7 @@ describe('get.peers', () => {
 		expect(response.result.data).toMap(peerListSchema);
 	});
 
-	it('invalid IP fails', async () => {
+	it('invalid type fails', async () => {
 		const error = await requestPeers({ ip: 0 });
 		expect(error).toMap(invalidParamsSchema);
 	});

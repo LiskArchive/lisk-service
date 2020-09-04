@@ -19,7 +19,10 @@ import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import { badRequestSchema } from '../../helpers/schemas';
 import {
-	goodRequestSchema, dataSchema, metaSchema, timelineItemSchema,
+	goodRequestSchema,
+	dataSchema,
+	metaSchema,
+	timelineItemSchema,
 } from '../../schemas/transactionStatistics.schema';
 
 import {

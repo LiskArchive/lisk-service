@@ -19,8 +19,29 @@ import { JSON_RPC } from '../../../helpers/errorCodes';
 
 export const invalidParamsSchema = Joi.object({
 	jsonrpc: Joi.string().equal('2.0'),
-	code: Joi.number().required().equal(JSON_RPC.INVALID_PARAMS[0]),
-	message: Joi.string().required(),
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+	error: {
+		code: Joi.number().required().equal(JSON_RPC.INVALID_PARAMS[0]),
+		message: Joi.string().required(),
+	},
+});
+
+export const invalidRequestSchema = Joi.object({
+	jsonrpc: Joi.string().equal('2.0'),
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+	error: {
+		code: Joi.number().required().equal(JSON_RPC.INVALID_REQUEST[0]),
+		message: Joi.string().required(),
+	},
+});
+
+export const wrongMethodSchema = Joi.object({
+	jsonrpc: Joi.string().equal('2.0'),
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+	error: {
+		code: Joi.number().required().equal(JSON_RPC.METHOD_NOT_FOUND[0]),
+		message: Joi.string().required(),
+	},
 });
 
 export const metaSchema = Joi.object({
@@ -42,5 +63,11 @@ export const emptyEnvelopeSchema = Joi.object({
 export const jsonRpcEnvelopeSchema = Joi.object({
 	jsonrpc: Joi.string().equal('2.0'),
 	result: Joi.object().required(),
-	id: Joi.number().required(),
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+}).required();
+
+export const emptyResponseSchema = Joi.object({
+	jsonrpc: Joi.string().equal('2.0'),
+	result: emptyEnvelopeSchema,
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 }).required();

@@ -21,7 +21,6 @@ const baseUrlRoot = config.SERVICE_ENDPOINT_RPC;
 const baseUrl = `${baseUrlRoot}/rpc-test`;
 
 const {
-	INVALID_REQUEST,
 	INVALID_PARAMS,
 	METHOD_NOT_FOUND,
 	SERVER_ERROR,
@@ -31,6 +30,7 @@ describe('Gateway', () => {
 	it('provides basic RPC route', async () => {
 		const response = await request(baseUrl, 'get.hello', {});
 		expect(response.jsonrpc).toEqual('2.0');
+		expect(response.id).toEqual(1);
 		expect(response.result).toEqual({
 			data: [
 				{
@@ -47,6 +47,7 @@ describe('Gateway', () => {
 	it('provides RPC route with parameters', async () => {
 		const response = await request(baseUrl, 'get.hello.param', { path_name: 'user1' });
 		expect(response.jsonrpc).toEqual('2.0');
+		expect(response.id).toEqual(1);
 		expect(response.result).toEqual({
 			data: [
 				{
@@ -62,48 +63,57 @@ describe('Gateway', () => {
 	});
 
 	it('client error returns INVALID_REQUEST on wrong param name', async () => {
-		const response = await request(baseUrl, 'get.hello', { wrong_param_name: 'user1' });
-		expect(response).toEqual({
+		await expect(request(baseUrl, 'get.hello', { wrong_param_name: 'user1' })).rejects.toStrictEqual({
 			jsonrpc: '2.0',
-			code: INVALID_PARAMS[0],
-			message: 'Unknown input parameter(s): wrong_param_name',
+			id: 1,
+			error: {
+				code: INVALID_PARAMS[0],
+				message: 'Unknown input parameter(s): wrong_param_name',
+			},
 		});
 	});
 
 	it('client error returns INVALID_REQUEST when no param value is defined', async () => {
-		const response = await request(baseUrl, 'get.hello', { wrong_param_name: null });
-		expect(response).toEqual({
+		await expect(request(baseUrl, 'get.hello', { wrong_param_name: null })).rejects.toStrictEqual({
 			jsonrpc: '2.0',
-			code: INVALID_PARAMS[0],
-			message: 'Unknown input parameter(s): wrong_param_name',
+			id: 1,
+			error: {
+				code: INVALID_PARAMS[0],
+				message: 'Unknown input parameter(s): wrong_param_name',
+			},
 		});
 	});
 
-	xit('client error returns INVALID_REQUEST when param value is too short', async () => {
-		const response = await request(baseUrl, 'get.hello', { path_name: 'ab' });
-		expect(response).toEqual({
+	it('client error returns INVALID_REQUEST when param value is too short', async () => {
+		await expect(request(baseUrl, 'get.hello', { path_name: 'ab' })).rejects.toStrictEqual({
 			jsonrpc: '2.0',
-			code: INVALID_REQUEST[0],
-			message: 'Invalid input: The \'path_name\' field length must be greater than or equal to 3 characters long.',
+			id: 1,
+			error: {
+				code: INVALID_PARAMS[0],
+				message: 'Unknown input parameter(s): path_name',
+			},
 		});
 	});
 
 	it('server error returns SERVER_ERROR', async () => {
-		const response = await request(baseUrl, 'get.server_error', {});
-		expect(response).toEqual({
+		await expect(request(baseUrl, 'get.server_error', {})).rejects.toStrictEqual({
 			jsonrpc: '2.0',
-			code: SERVER_ERROR[0],
-			message: 'Server error: Called server.error',
-			// message: 'Called server.error',
+			id: 1,
+			error: {
+				code: SERVER_ERROR[0],
+				message: 'Server error: Called server.error',
+			},
 		});
 	});
 
 	it('handles METHOD_NOT_FOUND error properly', async () => {
-		const response = await request(baseUrl, 'get.wrong_path', {});
-		expect(response).toEqual({
+		await expect(request(baseUrl, 'get.wrong_path', {})).rejects.toStrictEqual({
 			jsonrpc: '2.0',
-			code: METHOD_NOT_FOUND[0],
-			message: 'Service \'get.wrong_path\' is not found.',
+			id: 1,
+			error: {
+				code: METHOD_NOT_FOUND[0],
+				message: 'Service \'get.wrong_path\' is not found.',
+			},
 		});
 	});
 });
