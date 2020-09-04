@@ -144,6 +144,15 @@ const getLatestRegistrations = async params => {
 		type: 2,
 		sort: 'timestamp:desc',
 	}));
+	const registrationsRes1 = await CoreService.getTransactions(Object.assign(params, {
+		type: 10,
+		sort: 'timestamp:desc',
+	}));
+
+	// Enhance compatibility: Merge the dataset fetched for transactionTypes: { 2, 10 }
+	registrationsRes.data = registrationsRes.data.concat(registrationsRes1.data);
+	registrationsRes.meta.count += registrationsRes1.meta.count;
+
 	const registrations = registrationsRes.data;
 	const makeDelegatesArr = regis => {
 		const promises = regis.map(async registration => {
