@@ -32,7 +32,7 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	'1.1': coreProtocol20.paramMappers11,
+	1.1: coreProtocol20.paramMappers11,
 	'2.0': coreProtocol20.paramMappers20,
 };
 

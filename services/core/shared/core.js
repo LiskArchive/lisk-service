@@ -267,7 +267,7 @@ const validateTimestamp = async timestamp => {
 
 const updateTransactionType = params => {
 	let url;
-	const transactionTypes = [ 'transfer', 'registerSecondPassphrase', 'registerDelegate', 'castVotes', 'registerMultisignature' ];
+	const transactionTypes = ['transfer', 'registerSecondPassphrase', 'registerDelegate', 'castVotes', 'registerMultisignature'];
 	if (params.type === 'registerDelegate') url = '/delegates/latest_registrations';
 	params.type = (typeof (params.type) === 'string' && transactionTypes.includes(params.type)) ? params.type.toUpperCase() : params.type;
 	params = mapParams(params, url);
@@ -288,7 +288,7 @@ const getTransactions = async params => {
 		}
 		return Promise.resolve();
 	}));
-	
+
 	params = updateTransactionType(params);
 	const transactions = await recentBlocksCache.getCachedTransactions(params)
 	|| await coreApi.getTransactions(params);
