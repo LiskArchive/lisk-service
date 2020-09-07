@@ -28,6 +28,23 @@ const peerStates = {
 	},
 };
 
+const transactionTypes = {
+	1.1: {
+		TRANSFER: 0,
+		REGISTERSECONDPASSPHRASE: 1,
+		REGISTERDELEGATE: 2,
+		CASTVOTES: 3,
+		REGISTERMULTISIGNATURE: 4,
+	},
+	'2.0': {
+		TRANSFER: 8,
+		REGISTERSECONDPASSPHRASE: 9,
+		REGISTERDELEGATE: 10,
+		CASTVOTES: 11,
+		REGISTERMULTISIGNATURE: 12,
+	},
+};
+
 const peerStateParamMap = {
 	[peerStates['1.1'].DISCONNECTED]: peerStates['2.0'].DISCONNECTED,
 	[peerStates['1.1'].CONNECTED]: peerStates['2.0'].CONNECTED,
@@ -39,6 +56,20 @@ const mapState = state => {
 		[peerStates['2.0'].DISCONNECTED]: peerStates['1.1'].DISCONNECTED,
 	};
 	return stateMapping[state] !== undefined ? stateMapping[state] : state;
+};
+
+const transactionTypeParamMap = {
+	TRANSFER: transactionTypes['2.0'].TRANSFER,
+	REGISTERSECONDPASSPHRASE: transactionTypes['2.0'].REGISTERSECONDPASSPHRASE,
+	REGISTERDELEGATE: transactionTypes['2.0'].REGISTERDELEGATE,
+	CASTVOTES: transactionTypes['2.0'].CASTVOTES,
+	REGISTERMULTISIGNATURE: transactionTypes['2.0'].REGISTERMULTISIGNATURE,
+
+	[transactionTypes['2.0'].TRANSFER]: transactionTypes['1.1'].TRANSFER,
+	[transactionTypes['2.0'].REGISTERSECONDPASSPHRASE]: transactionTypes['1.1'].REGISTERSECONDPASSPHRASE,
+	[transactionTypes['2.0'].REGISTERDELEGATE]: transactionTypes['1.1'].REGISTERDELEGATE,
+	[transactionTypes['2.0'].CASTVOTES]: transactionTypes['1.1'].CASTVOTES,
+	[transactionTypes['2.0'].REGISTERMULTISIGNATURE]: transactionTypes['1.1'].REGISTERMULTISIGNATURE,
 };
 
 const mapTransaction = transaction => {
@@ -101,7 +132,17 @@ const responseMappers = {
 	},
 };
 
-const paramMappers = {
+const paramMappers11 = {
+	'/delegates/latest_registrations': params => {
+		if (params.type) {
+			params.type = transactionTypeParamMap[params.type];
+		}
+		return params;
+	},
+};
+
+const paramMappers20 = {
+	...paramMappers11,
 	'/peers': params => {
 		if (params.state) {
 			params.state = peerStateParamMap[params.state];
@@ -120,5 +161,6 @@ const paramMappers = {
 
 module.exports = {
 	responseMappers,
-	paramMappers,
+	paramMappers11,
+	paramMappers20,
 };

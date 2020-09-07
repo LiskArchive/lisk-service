@@ -21,7 +21,7 @@ const recentBlocksCache = require('./recentBlocksCache');
 const coreCache = require('./coreCache');
 const coreApi = require('./coreApi');
 const coreApiCached = require('./coreApiCached');
-const { setProtocolVersion } = require('./coreProtocolCompatibility.js');
+const { setProtocolVersion, getProtocolVersion, mapParams } = require('./coreProtocolCompatibility.js');
 
 const config = require('../config.js');
 
@@ -265,6 +265,20 @@ const validateTimestamp = async timestamp => {
 	return true;
 };
 
+const updateTransactionType = params => {
+	let url;
+	const transactionTypes = [ 'transfer', 'registerSecondPassphrase', 'registerDelegate', 'castVotes', 'registerMultisignature' ];
+	if (params.type === 'registerDelegate') url = '/delegates/latest_registrations';
+	params.type = (typeof (params.type) === 'string' && transactionTypes.includes(params.type)) ? params.type.toUpperCase() : params.type;
+	params = mapParams(params, url);
+
+	// Check for backward compatibility
+	const protocolVersion = Number(getProtocolVersion().charAt(0));
+	if (protocolVersion < 2 && params.type >= 8) params = mapParams(params, url);
+
+	return params;
+};
+
 const getTransactions = async params => {
 	if (epochUnixTime === undefined) await getEpochUnixTime();
 
@@ -274,9 +288,10 @@ const getTransactions = async params => {
 		}
 		return Promise.resolve();
 	}));
-
+	
+	params = updateTransactionType(params);
 	const transactions = await recentBlocksCache.getCachedTransactions(params)
-    || await coreApi.getTransactions(params);
+	|| await coreApi.getTransactions(params);
 	let result = [];
 
 	if (transactions.data) {
