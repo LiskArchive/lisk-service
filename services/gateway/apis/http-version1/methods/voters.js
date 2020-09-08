@@ -15,11 +15,13 @@
  */
 const votersSource = require('../../../sources/voters');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/voters',
 	rpcMethod: 'get.voters',
+	tags: ['Accounts'],
 	envelope,
 	params: {
 		address: { optional: true, type: 'string', min: 1, max: 21 },
@@ -28,6 +30,25 @@ module.exports = {
 		secpubkey: { optional: true, type: 'string', min: 64, max: 64 },
 		limit: { optional: true, min: 1, max: 100, type: 'number' },
 		offset: { optional: true, min: 0, type: 'number' },
+	},
+	get schema() {
+		const votersSchema = {};
+		votersSchema[this.swaggerApiPath] = { get: {} };
+		votersSchema[this.swaggerApiPath].get.tags = this.tags;
+		votersSchema[this.swaggerApiPath].get.parameters = transformParams('voters', this.params);
+		votersSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of votes',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/VotesWithEnvelope',
+					},
+				},
+			},
+		};
+		Object.assign(votersSchema[this.swaggerApiPath].get.responses, response);
+		return votersSchema;
 	},
 	source: votersSource,
 };

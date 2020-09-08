@@ -31,6 +31,7 @@ const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus, getReady } = require('./shared/status');
+const { genDocs } = require('./apis/http-version1/swagger/generateDocs');
 
 const { host, port } = config;
 
@@ -56,6 +57,7 @@ broker.createService({
 	mixins: [ApiService, SocketIOService],
 	name: 'gateway',
 	actions: {
+		spec() { return genDocs(); },
 		status() { return getStatus(); },
 		async ready() {
 			const services = await getReady();

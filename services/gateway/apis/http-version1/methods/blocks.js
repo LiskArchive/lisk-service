@@ -15,11 +15,13 @@
  */
 const blocksSource = require('../../../sources/blocks');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blocks',
 	rpcMethod: 'get.blocks',
+	tags: ['Blocks'],
 	params: {
 		id: { optional: true, type: 'string', min: 1, max: 24 },
 		height: { optional: true, type: 'number', min: 1 },
@@ -39,6 +41,25 @@ module.exports = {
 			],
 			default: 'height:desc',
 		},
+	},
+	get schema() {
+		const blockSchema = {};
+		blockSchema[this.swaggerApiPath] = { get: {} };
+		blockSchema[this.swaggerApiPath].get.tags = this.tags;
+		blockSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
+		blockSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of blocks',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/BlocksWithEnvelope',
+					},
+				},
+			},
+		};
+		Object.assign(blockSchema[this.swaggerApiPath].get.responses, response);
+		return blockSchema;
 	},
 	source: blocksSource,
 	envelope,

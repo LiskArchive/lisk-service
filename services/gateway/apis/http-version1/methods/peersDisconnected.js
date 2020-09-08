@@ -19,9 +19,31 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/peers/disconnected',
-	params: {
-		ip: { optional: true, type: 'string' },
+	tags: ['Peers'],
+	get schema() {
+		const peerSchema = {};
+		peerSchema[this.swaggerApiPath] = { get: {} };
+		peerSchema[this.swaggerApiPath].get.tags = this.tags;
+		peerSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of connected peers',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/PeersWithEnvelope',
+					},
+				},
+			},
+			400: {
+				$ref: '#/responses/badParameter',
+			},
+			404: {
+				$ref: '#/responses/notFound',
+			},
+		};
+		return peerSchema;
 	},
+	params: {},
 	source: {
 		...peersSource,
 		method: 'core.peers.disconnected',
