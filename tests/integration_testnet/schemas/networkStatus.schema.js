@@ -22,6 +22,7 @@ const networkStatusSchema = Joi.object({
 	epoch: Joi.string().required(),
 	milestone: Joi.string().required(),
 	nethash: Joi.string().required(),
+	version: Joi.string().required(),
 	supply: Joi.string().required(),
 	reward: Joi.string().required(),
 	fees: Joi.object({
