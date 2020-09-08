@@ -32,7 +32,8 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	'2.0': coreProtocol20.paramMappers,
+	1.1: coreProtocol20.paramMappers11,
+	'2.0': coreProtocol20.paramMappers20,
 };
 
 const mapParams = (params, url) => {
@@ -48,9 +49,11 @@ const setProtocolVersion = version => {
 	protocolVersion = version;
 };
 
+const getProtocolVersion = () => protocolVersion;
 
 module.exports = {
 	mapResponse,
 	mapParams,
 	setProtocolVersion,
+	getProtocolVersion,
 };

@@ -141,9 +141,10 @@ const getNextForgers = async params => {
 
 const getLatestRegistrations = async params => {
 	const registrationsRes = await CoreService.getTransactions(Object.assign(params, {
-		type: 2,
+		type: 'registerDelegate',
 		sort: 'timestamp:desc',
 	}));
+
 	const registrations = registrationsRes.data;
 	const makeDelegatesArr = regis => {
 		const promises = regis.map(async registration => {
