@@ -52,7 +52,7 @@ const getNetworkNodeVersion = (url) => new Promise((resolve, reject) => {
 		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
 			.then((response) => {
 				if (response) {
-					const coreVer = response.data.data.coreVer;
+					const { coreVer } = response.data.data;
 					const versionCount = Object.values(coreVer);
 					const networkNodeVersion = Object.keys(coreVer)[
 						versionCount.indexOf(Math.max(...versionCount))
