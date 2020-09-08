@@ -89,6 +89,24 @@ const getPeers = async (params) => {
 	};
 };
 
+const getConnectedPeers = async params => {
+	const response = await getPeers(Object.assign(params, { state: 'connected' }));
+
+	return {
+		data: response.data,
+		meta: response.meta,
+	};
+};
+
+const getDisconnectedPeers = async params => {
+	const response = await getPeers(Object.assign(params, { state: 'disconnected' }));
+
+	return {
+		data: response.data,
+		meta: response.meta,
+	};
+};
+
 const getPeersStatistics = async () => {
 	const basicStats = {};
 	const heightStats = {};
@@ -132,5 +150,7 @@ const getPeersStatistics = async () => {
 
 module.exports = {
 	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
 	getPeersStatistics,
 };

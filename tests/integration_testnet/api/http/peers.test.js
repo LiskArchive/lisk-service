@@ -172,6 +172,24 @@ describe('Peers API', () => {
 		});
 	});
 
+	describe('GET /peers/connected', () => {
+		it('returns connected peers', async () => {
+			const response = await api.get(`${endpoint}/connected`);
+			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
+			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
+			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
+		});
+	});
+
+	describe('GET /peers/disconnected', () => {
+		it('returns disconnected peers', async () => {
+			const response = await api.get(`${endpoint}/disconnected`);
+			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
+			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
+			response.data.map(peer => expect(peer).toMapOptionalSchema(peerOptionalSchema));
+		});
+	});
+
 	describe('GET /network/statistics', () => {
 		it('returns statistics', async () => {
 			const url = `${networkEndpoint}/statistics`;
