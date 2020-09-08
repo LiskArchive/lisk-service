@@ -19,5 +19,26 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/network/status',
 	rpcMethod: 'get.network.status',
+	tags: ['Network'],
+	get schema() {
+		const networkSchema = {};
+		networkSchema[this.swaggerApiPath] = { get: {} };
+		networkSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of peers',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/NetworkStatistics',
+					},
+				},
+			},
+			404: {
+				$ref: '#/responses/notFound',
+			},
+		};
+		return networkSchema;
+	},
 	source: networkStatusSource,
 };

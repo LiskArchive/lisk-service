@@ -6,6 +6,7 @@ const _ = require('lodash');
 const { match } = require('moleculer').Utils;
 const { ServiceNotFoundError } = require("moleculer").Errors;
 const { BadRequestError } = require('./errors');
+const config = require('../../config');
 const chalk = require('chalk');
 
 const util = require('util');
@@ -375,7 +376,7 @@ function makeHandler(svc, handlerItem) {
   svc.logger.debug('makeHandler:', handlerItem);
   return async function (requests, respond) {
     const performClientRequest = async (jsonRpcInput, id = 1) => {
-      if (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0') {
+      if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
         const message = `The given data is not a proper JSON-RPC 2.0 request: ${util.inspect(jsonRpcInput)}`;
         svc.logger.debug(message);
         return addErrorEnvelope(id, INVALID_REQUEST[0], `Client input error: ${message}`);

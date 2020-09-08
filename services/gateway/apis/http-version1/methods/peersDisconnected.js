@@ -13,27 +13,40 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peer = require('../../../sources/mappings/peer');
+const peersSource = require('../../../sources/peers');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/peers/disconnected',
-	source: [{
-		type: 'moleculer',
-		method: 'core.peers.disconnected',
-		params: {
-			ip: '=',
-		},
-		definition: {
-			data: ['data', peer],
-			meta: {
-				count: '=,number',
-				offset: '=,number',
-				total: '=,number',
+	tags: ['Peers'],
+	get schema() {
+		const peerSchema = {};
+		peerSchema[this.swaggerApiPath] = { get: {} };
+		peerSchema[this.swaggerApiPath].get.tags = this.tags;
+		peerSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of connected peers',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/PeersWithEnvelope',
+					},
+				},
 			},
-			links: {},
-		},
-	}],
+			400: {
+				$ref: '#/responses/badParameter',
+			},
+			404: {
+				$ref: '#/responses/notFound',
+			},
+		};
+		return peerSchema;
+	},
+	params: {},
+	source: {
+		...peersSource,
+		method: 'core.peers.disconnected',
+	},
 	envelope,
 };

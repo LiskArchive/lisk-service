@@ -30,6 +30,11 @@ config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30; // in seconds
 
 /**
+ * Compatibility
+ */
+config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
+
+/**
  * LOGGING
  *
  * log.level   - TRACE < DEBUG < INFO < WARN < ERROR < FATAL < MARK

@@ -15,14 +15,35 @@
  */
 const transactionsStatisticsDaySource = require('../../../sources/transactionsStatisticsDay');
 const envelope = require('../../../sources/mappings/stdEnvelope');
+const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions/statistics/day',
 	rpcMethod: 'get.transactions.statistics.day',
+	tags: ['Transactions'],
 	params: {
 		offset: { optional: true, type: 'number', default: 0, min: 0 },
 		limit: { optional: true, type: 'number', default: 10, min: 1, max: 100 },
+	},
+	get schema() {
+		const transactionSchema = {};
+		transactionSchema[this.swaggerApiPath] = { get: {} };
+		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of transactions with details',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
+					},
+				},
+			},
+		};
+		Object.assign(transactionSchema[this.swaggerApiPath].get.responses, response);
+		return transactionSchema;
 	},
 	source: transactionsStatisticsDaySource,
 	envelope,
