@@ -36,15 +36,37 @@ const getBuildTimestamp = () => {
 
 const buildTimestamp = getBuildTimestamp();
 
-const getStatus = () => ({
+const getNetworkId = (url) => new Promise((resolve, reject) => {
+		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+			.then((response) => {
+				if (response) return resolve(response.data.nethash);
+				return resolve(false);
+			})
+			.catch((err) => {
+				logger.error(err.stack);
+				reject(err);
+			});
+	});
+
+const getNetworkNodeVersion = (url) => new Promise((resolve, reject) => {
+		requestLib(` https://testnet.lisk.io/api${url}`)
+			.then((response) => {
+				if (response) return resolve(response.data.data.version);
+				return resolve(false);
+			})
+			.catch((err) => {
+				logger.error(err.stack);
+				reject(err);
+			});
+	});
+
+const getStatus = async () => ({
 	build: buildTimestamp,
 	description: 'Lisk Service Gateway',
 	name: packageJson.name,
 	version: packageJson.version,
-	network: {
-		networkId: 'unknown',
-		protocolVersion: 'unknown',
-	},
+	networkId: await getNetworkId('/network/status'),
+	networkNodeVersion: await getNetworkNodeVersion('/node/constants'),
 });
 
 const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
