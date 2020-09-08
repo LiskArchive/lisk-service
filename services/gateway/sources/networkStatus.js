@@ -24,6 +24,7 @@ module.exports = {
 		epoch: 'data.constants.epoch,string',
 		milestone: 'data.constants.milestone,string',
 		nethash: 'data.constants.nethash,string',
+		version: 'data.constants.version,string',
 		supply: 'data.constants.supply,string',
 		reward: 'data.constants.reward,string',
 		fees: {
