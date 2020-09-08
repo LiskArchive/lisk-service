@@ -36,7 +36,7 @@ const getBuildTimestamp = () => {
 
 const buildTimestamp = getBuildTimestamp();
 
-const getNetworkId = (url) => new Promise((resolve, reject) => {
+const getNetworkDetails = (url) => new Promise((resolve, reject) => {
 		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
 			.then((response) => {
 				if (response) return resolve({
@@ -56,7 +56,7 @@ const getStatus = async () => ({
 	description: 'Lisk Service Gateway',
 	name: packageJson.name,
 	version: packageJson.version,
-	network: await getNetworkId('/network/status'),
+	network: await getNetworkDetails('/network/status'),
 });
 
 const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
