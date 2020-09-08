@@ -71,4 +71,5 @@ setTimeout(() => {
 
 // request('request', { method: 'get.hello', params: { name: 'michal' } });
 // request('request', { jsonrpc: '2.0', params: cliParams });
-request('request', { jsonrpc: '2.0', method: cliProcedureName, params: cliParams });
+// request('request', { jsonrpc: '2.0', method: cliProcedureName, params: cliParams });
+request('request', { method: cliProcedureName, params: cliParams });

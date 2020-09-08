@@ -139,7 +139,7 @@ describe('Multi-Request API', () => {
 		expect(response[0].result).toMap(transactionsResponseSchema);
 	});
 
-	it('fails on request without the JSON-RPC envelope', async () => {
+	xit('fails on request without the JSON-RPC envelope', async () => {
 		const response = await request(wsRpcUrl, [
 			{ method: 'get.transactions' },
 		]);
