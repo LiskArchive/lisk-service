@@ -49,7 +49,7 @@ const getNetworkId = (url) => new Promise((resolve, reject) => {
 	});
 
 const getNetworkNodeVersion = (url) => new Promise((resolve, reject) => {
-		requestLib(` https://testnet.lisk.io/api${url}`)
+		requestLib(`https://testnet.lisk.io/api${url}`)
 			.then((response) => {
 				if (response) return resolve(response.data.data.version);
 				return resolve(false);
