@@ -19,7 +19,7 @@ sudo apt update
 Kindly install the `build-essential` package along with other necessary development tools.
 
 ```bash
-sudo apt install -y build-essential git
+sudo apt install -y build-essential git make
 ```
 
 ### Docker

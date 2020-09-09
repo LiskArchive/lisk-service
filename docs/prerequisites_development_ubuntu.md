@@ -11,18 +11,18 @@ These programs and resources are required to install and run Lisk Service.
 In Ubuntu and its derivatives APT is the base package management application. Make sure your local APT registry is up-to-date.
 
 ```bash
-apt update
+sudo apt update
 ```
 
 ### Linux development dependencies
 
-Install the `build-essential` package alongside with several development tools.
+Kindly install the `build-essential` package along with other necessary development tools.
 
 > - GNU Tar is already installed with the standard distribution.
 > - GNU Make and Git have to be installed explicitly.
 
 ```bash
-sudo apt install build-essential git make
+sudo apt install -y build-essential git make
 ```
 
 ### Redis
@@ -30,7 +30,7 @@ sudo apt install build-essential git make
 4. [Redis](http://redis.io) is used for caching temporary data.
 
 ```bash
-sudo apt install redis-server
+sudo apt install -y redis-server
 ```
 
 > Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variables `SERVICE_BROKER` and `SERVICE_CORE_REDIS` accordingly.
@@ -40,11 +40,12 @@ sudo apt install redis-server
 [Postgres 10](https://www.postgresql.org/) is used for storing persistent data.
 
 ```bash
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
 
 sudo apt update
-sudo apt install postgres-10
+sudo apt install -y postgresql-10
 ```
 
 > Note: During this step it is possible to change your port if you wish to have more Postgres instances in the future. Remember to adjust the environment variable `SERVICE_CORE_POSTGRES` accordingly.
@@ -70,6 +71,8 @@ sudo apt install -y nodejs
 npm install -g pm2
 ```
 
+> In case of `EACCES` error, we recommend you to check: [Resolving EACCES permissions errors when installing packages globally](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally).
+
 ## Alternative: quick one-step install
 
 Copy and paste the following snippet to complete the installation in one step:
@@ -77,12 +80,13 @@ Copy and paste the following snippet to complete the installation in one step:
 ```bash
 # Add external repositories
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
 wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
 sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
 
 # APT-based dependencies
 sudo apt update
-sudo apt install build-essential git make redis-server postgres nodejs
+sudo apt install -y build-essential git make redis-server postgresql-10 nodejs
 
 # NPM-based dependencies
 npm install -g pm2
