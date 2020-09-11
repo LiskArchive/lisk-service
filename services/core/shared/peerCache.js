@@ -67,7 +67,7 @@ const refreshStatistics = async () => {
 	});
 	mappedOs.forEach(elem => osStats[elem] = (osStats[elem] || 0) + 1);
 
-	peerStore.statistics = {
+	return {
 		basic: basicStats,
 		height: heightStats,
 		coreVer: coreVerStats,
@@ -82,7 +82,7 @@ const reload = async (core) => {
 	peerStore.peers = await requestAll(core.getPeers, {});
 	peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
 	peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
-	refreshStatistics();
+	peerStore.statistics = await refreshStatistics();
 	logger.debug('Updated peer cache.');
 };
 
