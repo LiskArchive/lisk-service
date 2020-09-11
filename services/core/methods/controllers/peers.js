@@ -107,46 +107,10 @@ const getDisconnectedPeers = async params => {
 	};
 };
 
-const getPeersStatistics = async () => {
-	const basicStats = {};
-	const heightStats = {};
-	const coreVerStats = {};
-	const osStats = {};
-
-	const peers = await peerCache.get();
-	const connected = await peerCache.get('connected');
-	const disconnected = await peerCache.get('disconnected');
-
-	basicStats.totalPeers = peers.length;
-	basicStats.connectedPeers = connected.length;
-	basicStats.disconnectedPeers = disconnected.length;
-
-	const heightArr = connected.map(elem => elem.height);
-	heightArr.forEach(elem => heightStats[elem] = (heightStats[elem] || 0) + 1);
-
-	const coreVerArr = connected.map(elem => elem.version);
-	coreVerArr.forEach(elem => coreVerStats[elem] = (coreVerStats[elem] || 0) + 1);
-
-	const osArr = connected.map(elem => elem.os);
-	const mappedOs = osArr.map((elem) => {
-		if (elem.match(/^linux(.*)/)) {
-			const splitOsString = elem.split('.');
-			elem = `${splitOsString[0]}.${splitOsString[1].split('-')[0]}`;
-		}
-		return elem;
-	});
-	mappedOs.forEach(elem => osStats[elem] = (osStats[elem] || 0) + 1);
-
-	return {
-		data: {
-			basic: basicStats,
-			height: heightStats,
-			coreVer: coreVerStats,
-			os: osStats,
-		},
-		meta: {},
-	};
-};
+const getPeersStatistics = () => ({
+	data: peerCache.getStatistics(),
+	meta: {},
+});
 
 module.exports = {
 	getPeers,
