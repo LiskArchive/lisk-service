@@ -59,5 +59,16 @@ clean:
 	cd ./tests && rm -rf node_modules
 	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests
 
+tag-%:
+	npm version --no-git-tag-version $*
+	cd services/gateway && npm version --no-git-tag-version $*
+	cd services/core && npm version --no-git-tag-version $*
+	cd services/template && npm version --no-git-tag-version $*
+	git add ./services/gateway/package*.json
+	git add ./services/core/package*.json
+	git add ./services/template/package*.json
+	git add ./package*.json
+	git commit -m "Version bump to $*"
+	git tag v$*
 
 mrproper: down clean
