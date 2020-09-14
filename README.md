@@ -62,11 +62,11 @@ tar xf lisk-service-x.y.z.tar.gz
 cd lisk-service
 ```
 
-> Although the above commands retrieve the entire source code, this instruction does not mention building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
+> Although the above commands retrieve the entire source code, this instruction does not cover building a custom version of Lisk Service. For more information refer to this document: [Building Lisk Service from source](./docs/build_from_source.md)
 
 ### Docker image build (Optional)
 
-If you wish to build the local version of Lisk Service execute the following command below.
+If you wish to build the local version of Lisk Service execute the following command below:
 
 ```bash
 make build

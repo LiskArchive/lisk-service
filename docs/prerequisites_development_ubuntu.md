@@ -8,7 +8,7 @@ These programs and resources are required to install and run Lisk Service.
 
 ### APT 
 
-In Ubuntu and its derivatives APT is the base package management application. Make sure your local APT registry is up-to-date.
+In Ubuntu and its derivatives APT is the base package management application. Please ensure your local APT registry is up-to-date.
 
 ```bash
 sudo apt update
@@ -16,7 +16,7 @@ sudo apt update
 
 ### Linux development dependencies
 
-Kindly install the `build-essential` package along with other necessary development tools.
+Please install the `build-essential` package together with the other necessary development tools.
 
 > - GNU Tar is already installed with the standard distribution.
 > - GNU Make and Git have to be installed explicitly.
@@ -71,7 +71,7 @@ sudo apt install -y nodejs
 npm install -g pm2
 ```
 
-> In case of `EACCES` error, we recommend you to check: [Resolving EACCES permissions errors when installing packages globally](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally).
+> In case of an `EACCES` error, it is recommended to check the following: [Resolving EACCES permissions errors when installing packages globally](https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally).
 
 ## Alternative: quick one-step install
 

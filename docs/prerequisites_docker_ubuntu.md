@@ -8,7 +8,7 @@ These programs and resources are required to install and run Lisk Service.
 
 ### APT 
 
-In Ubuntu and its derivatives, APT is the base package management application. Kindly make sure your local APT registry is up-to-date.
+In Ubuntu and its derivatives, APT is the base package management application. Please ensure your local APT registry is up-to-date.
 
 ```bash
 sudo apt update
@@ -16,7 +16,7 @@ sudo apt update
 
 ### Linux development dependencies
 
-Kindly install the `build-essential` package along with other necessary development tools.
+Please install the `build-essential` package together with the other necessary development tools.
 
 ```bash
 sudo apt install -y build-essential git make
@@ -26,7 +26,7 @@ sudo apt install -y build-essential git make
 
 [Docker](https://www.docker.com/) is used as a run-time environment for Lisk Service. It takes care of most dependencies and simplifies the required configuration.
 
-Please follow the official documentation to install the most recent version of [Docker](https://docs.docker.com/engine/install/ubuntu/) on Ubuntu. Kindly continue with the post-installation steps to [Manage Docker as a non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
+Please follow the official documentation to install the most recent version of [Docker](https://docs.docker.com/engine/install/ubuntu/) on Ubuntu. Please continue with the post-installation steps to [Manage Docker as a non-root user](https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user).
 
 ### Docker-compose
 
@@ -34,6 +34,6 @@ Please follow the official [documentation](https://docs.docker.com/compose/insta
 
 ## Next steps
 
-With all the dependencies installed properly, it is possible to run pre-build Docker images with Lisk Service. It is also possible to build those images locally by executing the `make build` command from within the `lisk-service` directory.
+When all of the dependencies are correctly installed, it will then be possible to run pre-build Docker images with Lisk Service. It is also possible to build those images locally by executing the `make build` command from within the `lisk-service` directory.
 
 Refer to the main [README](../README.md) file regarding the next steps.
