@@ -384,9 +384,9 @@ const getReadyStatus = () => readyStatus;
 
 const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
 	const feeEst = {};
-	const α = config.α;
+	const αlpha = config.alpha;
 	for (const property in feePerByte) {
-		feeEst[property] =	α * feePerByte[property] + (1 - α) * prevFeeEstPerByte[property];
+		feeEst[property] =	αlpha * feePerByte[property] + (1 - αlpha) * prevFeeEstPerByte[property];
 	}
 	return feeEst;
 };
