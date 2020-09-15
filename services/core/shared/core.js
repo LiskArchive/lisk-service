@@ -13,7 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
+const { BaseTransaction } = require('@liskhq/lisk-transactions');
+const { CacheRedis, Utils } = require('lisk-service-framework');
 
 const ObjectUtilService = Utils.Data;
 
@@ -22,7 +23,6 @@ const coreCache = require('./coreCache');
 const coreApi = require('./coreApi');
 const coreApiCached = require('./coreApiCached');
 const { setProtocolVersion, getProtocolVersion, mapParams } = require('./coreProtocolCompatibility.js');
-
 const config = require('../config.js');
 
 const numOfActiveDelegates = 101;
@@ -52,7 +52,6 @@ const getConstants = async () => {
 	if (!isProperObject(result)) return {};
 	return result.data;
 };
-
 
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
@@ -123,7 +122,7 @@ const getAddressByAny = async param => {
 	if (!hasPrefix(param)) {
 		const parsedAddress = parseAddress(param);
 		if (validateAddress(parsedAddress)
-		&& await confirmAddress(parsedAddress)) return parsedAddress;
+			&& await confirmAddress(parsedAddress)) return parsedAddress;
 		if (validatePublicKey(param)) return getAddressByPublicKey(param);
 		return getAddressByUsername(param);
 	}
@@ -155,7 +154,7 @@ const getAccounts = async params => {
 
 	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
 		if (!validatePublicKey(params.secondPublicKey)
-		|| (!await confirmSecondPublicKey(params.secondPublicKey))) {
+			|| (!await confirmSecondPublicKey(params.secondPublicKey))) {
 			return {};
 		}
 		reqeustParams.secondPublicKey = params.secondPublicKey;
@@ -208,8 +207,8 @@ const getIncomingTxsCount = async address => {
 		limit: 1,
 	});
 	if (!isProperObject(result)
-	|| !isProperObject(result.meta)
-	|| !Number.isInteger(result.meta.count)) {
+		|| !isProperObject(result.meta)
+		|| !Number.isInteger(result.meta.count)) {
 		throw new Error('Could not retrieve incoming transaction count.');
 	}
 	return result.meta.count;
@@ -291,7 +290,7 @@ const getTransactions = async params => {
 
 	params = updateTransactionType(params);
 	const transactions = await recentBlocksCache.getCachedTransactions(params)
-	|| await coreApi.getTransactions(params);
+		|| await coreApi.getTransactions(params);
 	let result = [];
 
 	if (transactions.data) {
@@ -324,6 +323,178 @@ const getBlocks = async params => {
 
 	blocks.data = result;
 	return blocks;
+};
+
+const calculateBlockSize = block => {
+	let blockSize = 0;
+	if (block.numberOfTransactions === 0) return blockSize;
+
+	const payload = block.transactions.data;
+	payload.forEach(transaction => {
+		const transactionBytes = new BaseTransaction(transaction).getBytes();
+		const transactionSize = Buffer.byteLength(transactionBytes);
+		blockSize += transactionSize;
+	});
+
+	return blockSize;
+};
+
+const calculateWeightedAvg = blocks => {
+	const blockSizes = [];
+
+	blocks.forEach(block => blockSizes.push(calculateBlockSize(block)));
+
+	const decayFactor = 0.1;
+	let weight = 1;
+	const wavgLastBlocks = blockSizes.reduce((a, b) => {
+		weight *= 1 - decayFactor;
+		return a + (b * weight);
+	});
+
+	return wavgLastBlocks;
+};
+
+const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
+	if (blockSize === 0) return 0;
+
+	const allowedModes = ['med', 'high'];
+	const lowerPercentile = mode in allowedModes && mode === 'med' ? 0.25 : 0.80;
+	const upperPercentile = mode in allowedModes && mode === 'med' ? 0.75 : 1.00;
+	const lowerBytePos = Math.ceil(lowerPercentile * blockSize);
+	const upperBytePos = Math.floor(upperPercentile * blockSize);
+
+	let currentPos = 0;
+	let totalFeePriority = 0;
+	transactionDetails.forEach(transaction => {
+		if (currentPos <= lowerBytePos && lowerBytePos < currentPos + transaction.size
+			&& currentPos + transaction.size <= upperBytePos) {
+			totalFeePriority += transaction.feePriority * (currentPos + transaction.size - lowerBytePos);
+		}
+
+		if (lowerBytePos <= currentPos && currentPos + transaction.size <= upperBytePos) {
+			totalFeePriority += transaction.feePriority * transaction.size;
+		}
+
+		if (lowerBytePos <= currentPos && upperBytePos <= currentPos + transaction.size) {
+			totalFeePriority += transaction.feePriority * (upperBytePos - currentPos);
+		}
+
+		currentPos += transaction.size;
+	});
+
+	const avgFeePriority = totalFeePriority / (upperBytePos - lowerBytePos);
+	return avgFeePriority;
+};
+
+const calculateFeePerByte = async block => {
+	const feePerByte = {};
+	const payload = block.transactions.data;
+	const transactionDetails = [];
+	payload.forEach(transaction => {
+		const transactionBytes = new BaseTransaction(transaction).getBytes();
+		const transactionSize = Buffer.byteLength(transactionBytes);
+
+		// Update with correct value
+		let minFee;
+		switch (transaction.type) {
+			case 0:
+			case 8:
+				minFee = 0;
+				break;
+			case 1:
+			case 9:
+				minFee = 0;
+				break;
+			case 2:
+			case 10:
+				minFee = 0;
+				break;
+			case 3:
+			case 11:
+				minFee = 0;
+				break;
+			case 4:
+			case 12:
+				minFee = 0;
+				break;
+			default:
+				minFee = 0;
+		}
+		const feePriority = (transaction.fee - minFee) / transactionSize;
+		transactionDetails.push({
+			id: transaction.id,
+			size: transactionSize,
+			feePriority,
+		});
+	});
+	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
+
+	const blockSize = calculateBlockSize(block);
+
+	feePerByte.low = (blockSize < 12.5 * 2 ** 10) ? 0 : transactionDetails[0].feePriority;
+	feePerByte.med = calulateAvgFeePerByte('med', blockSize, transactionDetails);
+	feePerByte.high = Math.max(calulateAvgFeePerByte('high', blockSize, transactionDetails), (1.3 * feePerByte.med + 1));
+
+	return feePerByte;
+};
+
+const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
+	// TODO
+	const alpha = 0.03406;
+	const EMAoutput = {};
+
+	EMAoutput.feeEstLow = alpha * feePerByte.low + (1 - alpha) * prevFeeEstPerByte.low;
+	EMAoutput.feeEstMed = alpha * feePerByte.med + (1 - alpha) * prevFeeEstPerByte.med;
+	EMAoutput.feeEstHigh = alpha * feePerByte.high + (1 - alpha) * prevFeeEstPerByte.high;
+
+	return EMAoutput;
+};
+
+const getEstimateFeeByte = async () => {
+	const cacheRedis = CacheRedis('fees', config.endpoints.redis);
+	const cacheKey = 'lastFeeEstimate';
+
+	const prevFeeEstPerByte = {};
+	const cachedFeeEstPerByte = await cacheRedis.get(cacheKey);
+	if (cachedFeeEstPerByte
+		&& ['low', 'med', 'high', 'updated', 'blockHeight'].every(key => key in Object.keys(cachedFeeEstPerByte))) {
+		// Verify if this approach is correct
+		if (Date.now() - cachedFeeEstPerByte.updated <= 10) return cachedFeeEstPerByte;
+
+		const latestBlock = await getBlocks({ sort: 'height:desc', limit: 1 });
+		if (latestBlock.data.id === cachedFeeEstPerByte.blockHeight) return cachedFeeEstPerByte;
+
+		Object.assign(prevFeeEstPerByte, cachedFeeEstPerByte);
+	}
+
+	const blockBatch = await getBlocks({ sort: 'height:desc', limit: 20 });
+	await Promise.all(blockBatch.data.map(async o => (Object.assign(o, {
+		transactions: await getTransactions({ blockId: o.id }),
+	}))));
+
+	const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
+	const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
+	const feePerByte = await calculateFeePerByte(blockBatch.data[0]);
+	const feeEstPerByte = {};
+
+	if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
+		const EMAoutput = await EMAcalc(feePerByte, prevFeeEstPerByte);
+
+		feeEstPerByte.low = EMAoutput.feeEstLow;
+		feeEstPerByte.med = EMAoutput.feeEstMed;
+		feeEstPerByte.high = EMAoutput.feeEstHigh;
+	} else {
+		feeEstPerByte.low = 0;
+		feeEstPerByte.med = 0;
+		feeEstPerByte.high = 0;
+	}
+
+	feeEstPerByte.updated = Date.now(); // Replace with appropriate method
+	feeEstPerByte.blockHeight = blockBatch.data[0].id;
+
+	await cacheRedis.set(cacheKey, feeEstPerByte);
+
+	return feeEstPerByte;
 };
 
 const setReadyStatus = status => { readyStatus = status; };
@@ -369,4 +540,5 @@ module.exports = {
 	setProtocolVersion,
 	getReadyStatus,
 	getUnixTime,
+	getEstimateFeeByte,
 };
