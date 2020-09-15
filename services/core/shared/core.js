@@ -457,12 +457,12 @@ const getEstimateFeeByte = async () => {
 	const prevFeeEstPerByte = {};
 	const cachedFeeEstPerByte = await cacheRedis.get(cacheKey);
 	if (cachedFeeEstPerByte
-		&& ['low', 'med', 'high', 'updated', 'blockHeight'].every(key => key in Object.keys(cachedFeeEstPerByte))) {
+		&& ['low', 'med', 'high', 'updated', 'blockHeight'].every(key => Object.keys(cachedFeeEstPerByte).includes(key))) {
 		// Verify if this approach is correct
-		if (Date.now() - cachedFeeEstPerByte.updated <= 10) return cachedFeeEstPerByte;
+		if (Date.now() - cachedFeeEstPerByte.updated <= 10 * 10 ** 3) return cachedFeeEstPerByte;
 
 		const latestBlock = await getBlocks({ sort: 'height:desc', limit: 1 });
-		if (latestBlock.data.id === cachedFeeEstPerByte.blockHeight) return cachedFeeEstPerByte;
+		if (Number(latestBlock.data.id) === cachedFeeEstPerByte.blockHeight) return cachedFeeEstPerByte;
 
 		Object.assign(prevFeeEstPerByte, cachedFeeEstPerByte);
 	}
