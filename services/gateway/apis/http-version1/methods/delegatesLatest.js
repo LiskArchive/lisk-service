@@ -32,7 +32,7 @@ module.exports = {
 		delegateSchema[this.swaggerApiPath].get.parameters = transformParams('delegates', this.params);
 		delegateSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of ecently registered delegates',
+				description: 'array of recently registered delegates',
 				schema: {
 					type: 'array',
 					items: {
