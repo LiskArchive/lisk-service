@@ -394,7 +394,7 @@ const calculateFeePerByte = async block => {
 		const transactionBytes = new BaseTransaction(transaction).getBytes();
 		const transactionSize = Buffer.byteLength(transactionBytes);
 
-		// Update with correct value
+		// Update with correct values
 		let minFee;
 		switch (transaction.type) {
 			case 0:
