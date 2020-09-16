@@ -19,7 +19,7 @@ const envelope = require('../../../sources/mappings/stdEnvelope');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/fee_estimates',
-	rpcMethod: 'get.fee.estimates',
+	rpcMethod: 'get.fee_estimates',
 	tags: ['Fee'],
 	get schema() {
 		const feeEstimatePerByteSchema = {};
