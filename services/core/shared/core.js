@@ -383,12 +383,18 @@ const setReadyStatus = (status) => {
 const getReadyStatus = () => readyStatus;
 
 const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
+	//TO DO check for prevFeeEstPerByte if empty
 	const feeEst = {};
 	const αlpha = config.alpha;
 	for (const property in feePerByte) {
 		feeEst[property] =	αlpha * feePerByte[property] + (1 - αlpha) * prevFeeEstPerByte[property];
 	}
-	return feeEst;
+	const EMAoutput = {
+		feeEstLow: feeEst.low,
+		feeEstMed: feeEst.med,
+		feeEstHigh: feeEst.high,
+	  };
+	return EMAoutput;
 };
 
 module.exports = {
