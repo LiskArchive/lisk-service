@@ -394,31 +394,27 @@ const calculateFeePerByte = async block => {
 		const transactionBytes = new BaseTransaction(transaction).getBytes();
 		const transactionSize = Buffer.byteLength(transactionBytes);
 
-		// Update with correct values
 		let minFee;
 		switch (transaction.type) {
-			case 0:
-			case 8:
-				minFee = 0;
-				break;
-			case 1:
-			case 9:
-				minFee = 0;
-				break;
 			case 2:
 			case 10:
-				minFee = 0;
+				minFee = 1000000000 + 1000 * transactionSize;
 				break;
+			// Future ready for dApp registration transactions
+			case 5:
+			case 13:
+				minFee = 2500000000 + 1000 * transactionSize;
+				break;
+			case 0:
+			case 1:
 			case 3:
-			case 11:
-				minFee = 0;
-				break;
 			case 4:
+			case 8:
+			case 9:
+			case 11:
 			case 12:
-				minFee = 0;
-				break;
 			default:
-				minFee = 0;
+				minFee = 1000 * transactionSize;
 		}
 		const feePriority = (transaction.fee - minFee) / transactionSize;
 		transactionDetails.push({
