@@ -13,21 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
+const { Utils } = require("lisk-service-framework");
 
 const ObjectUtilService = Utils.Data;
 
-const recentBlocksCache = require('./recentBlocksCache');
-const coreCache = require('./coreCache');
-const coreApi = require('./coreApi');
-const coreApiCached = require('./coreApiCached');
+const recentBlocksCache = require("./recentBlocksCache");
+const coreCache = require("./coreCache");
+const coreApi = require("./coreApi");
+const coreApiCached = require("./coreApiCached");
 const {
 	setProtocolVersion,
 	getProtocolVersion,
 	mapParams,
-} = require('./coreProtocolCompatibility.js');
+} = require("./coreProtocolCompatibility.js");
 
-const config = require('../config.js');
+const config = require("../config.js");
 
 const numOfActiveDelegates = 101;
 const peerStates = {
@@ -41,11 +41,13 @@ let epochUnixTime;
 
 // Utils & helpers
 const parseAddress = (address) => {
-	if (typeof address !== 'string') return '';
+	if (typeof address !== "string") return "";
 	return address.toUpperCase();
 };
-const validateAddress = (address) => typeof address === 'string' && address.match(/^[0-9]{1,20}[L|l]$/g);
-const validatePublicKey = (publicKey) => typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g);
+const validateAddress = (address) =>
+	typeof address === "string" && address.match(/^[0-9]{1,20}[L|l]$/g);
+const validatePublicKey = (publicKey) =>
+	typeof publicKey === "string" && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g);
 const { isProperObject } = ObjectUtilService;
 const { isEmptyArray } = ObjectUtilService;
 
@@ -60,29 +62,29 @@ const getConstants = async () => {
 };
 
 const confirmAddress = async (address) => {
-	if (!address || typeof address !== 'string') return false;
+	if (!address || typeof address !== "string") return false;
 	const account = await coreCache.getCachedAccountByAddress(
-		parseAddress(address),
+		parseAddress(address)
 	);
 	return account && account.address === address;
 };
 
 const confirmPublicKey = async (publicKey) => {
-	if (!publicKey || typeof publicKey !== 'string') return false;
+	if (!publicKey || typeof publicKey !== "string") return false;
 	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
 	return account && account.publicKey === publicKey;
 };
 
 const confirmSecondPublicKey = async (secondPublicKey) => {
-	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
+	if (!secondPublicKey || typeof secondPublicKey !== "string") return false;
 	const account = await coreCache.getCachedAccountBySecondPublicKey(
-		secondPublicKey,
+		secondPublicKey
 	);
 	return account && account.secondPublicKey === secondPublicKey;
 };
 
 const confirmUsername = async (username) => {
-	if (!username || typeof username !== 'string') return false;
+	if (!username || typeof username !== "string") return false;
 	const result = await coreApi.getDelegates({ username });
 	if (!Array.isArray(result.data) || isEmptyArray(result.data)) return false;
 	return result.data[0].username === username;
@@ -90,57 +92,61 @@ const confirmUsername = async (username) => {
 
 const confirmAnyId = async (params) => {
 	if (
-		(typeof params.username === 'string'
-			&& !(await confirmUsername(params.username)))
-		|| (typeof params.address === 'string'
-			&& !(await confirmAddress(parseAddress(params.address))))
-		|| (typeof params.publicKey === 'string'
-			&& !(await confirmPublicKey(params.publicKey)))
-		|| (typeof params.secondPublicKey === 'string'
-			&& !(await confirmSecondPublicKey(params.secondPublicKey)))
-	) return false;
+		(typeof params.username === "string" &&
+			!(await confirmUsername(params.username))) ||
+		(typeof params.address === "string" &&
+			!(await confirmAddress(parseAddress(params.address)))) ||
+		(typeof params.publicKey === "string" &&
+			!(await confirmPublicKey(params.publicKey))) ||
+		(typeof params.secondPublicKey === "string" &&
+			!(await confirmSecondPublicKey(params.secondPublicKey)))
+	)
+		return false;
 
 	return true;
 };
 
 const getUsernameByAddress = async (address) => {
 	const account = await coreCache.getCachedAccountByAddress(
-		parseAddress(address),
+		parseAddress(address)
 	);
 	return account && account.username;
 };
 
 const getAddressByPublicKey = async (publicKey) => {
-	if (!publicKey || typeof publicKey !== 'string') return '';
+	if (!publicKey || typeof publicKey !== "string") return "";
 	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
-	return account ? account.address : '';
+	return account ? account.address : "";
 };
 
 const getAddressByUsername = async (username) => {
-	if (!username || typeof username !== 'string') return '';
+	if (!username || typeof username !== "string") return "";
 	const account = await coreCache.getCachedAccountByUsername(username);
-	return account ? account.address : '';
+	return account ? account.address : "";
 };
 
 const getAddressByAny = async (param) => {
 	const paramNames = {
-		'username:': getAddressByUsername,
-		'address:': parseAddress,
-		'publickey:': getAddressByPublicKey,
+		"username:": getAddressByUsername,
+		"address:": parseAddress,
+		"publickey:": getAddressByPublicKey,
 	};
 
-	const hasPrefix = (p) => !!Object.keys(paramNames).filter((item) => p.indexOf(item) === 0).length;
+	const hasPrefix = (p) =>
+		!!Object.keys(paramNames).filter((item) => p.indexOf(item) === 0).length;
 
-	const separateParam = (p) => Object.keys(paramNames)
+	const separateParam = (p) =>
+		Object.keys(paramNames)
 			.filter((prefix) => p.indexOf(prefix) === 0)
 			.reduce(
 				(array, prefix) => [...array, prefix, p.slice(prefix.length)],
-				[],
+				[]
 			);
 
 	if (!hasPrefix(param)) {
 		const parsedAddress = parseAddress(param);
-		if (validateAddress(parsedAddress) && (await confirmAddress(parsedAddress))) return parsedAddress;
+		if (validateAddress(parsedAddress) && (await confirmAddress(parsedAddress)))
+			return parsedAddress;
 		if (validatePublicKey(param)) return getAddressByPublicKey(param);
 		return getAddressByUsername(param);
 	}
@@ -157,26 +163,26 @@ const getAccounts = async (params) => {
 		username: params.username,
 	};
 
-	if (params.address && typeof params.address === 'string') {
+	if (params.address && typeof params.address === "string") {
 		const parsedAddress = parseAddress(params.address);
 		if (!(await confirmAddress(parsedAddress))) return {};
 		reqeustParams.address = parsedAddress;
 	}
 
-	if (params.publicKey && typeof params.publicKey === 'string') {
+	if (params.publicKey && typeof params.publicKey === "string") {
 		if (
-			!validatePublicKey(params.publicKey)
-			|| !(await confirmPublicKey(params.publicKey))
+			!validatePublicKey(params.publicKey) ||
+			!(await confirmPublicKey(params.publicKey))
 		) {
 			return {};
 		}
 		reqeustParams.publicKey = params.publicKey;
 	}
 
-	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
+	if (params.secondPublicKey && typeof params.secondPublicKey === "string") {
 		if (
-			!validatePublicKey(params.secondPublicKey)
-			|| !(await confirmSecondPublicKey(params.secondPublicKey))
+			!validatePublicKey(params.secondPublicKey) ||
+			!(await confirmSecondPublicKey(params.secondPublicKey))
 		) {
 			return {};
 		}
@@ -188,22 +194,22 @@ const getAccounts = async (params) => {
 };
 
 const getPublicKeyByAddress = async (address) => {
-	if (!address || typeof address !== 'string') return '';
+	if (!address || typeof address !== "string") return "";
 	const account = await getAccounts({ address });
-	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
+	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return "";
 	return account.data[0].publicKey;
 };
 
 const getPublicKeyByUsername = async (username) => {
-	if (!username || typeof username !== 'string') return '';
+	if (!username || typeof username !== "string") return "";
 	const account = await getAccounts({ username });
-	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
+	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return "";
 	const { publicKey } = account.data[0];
 	return publicKey;
 };
 
 const getPublicKeyByAny = async (param) => {
-	if (!param || typeof param !== 'string') return '';
+	if (!param || typeof param !== "string") return "";
 	if (validatePublicKey(param) && (await confirmPublicKey(param))) return param;
 	if (validateAddress(param)) return getPublicKeyByAddress(param);
 	return getPublicKeyByUsername(param);
@@ -223,7 +229,7 @@ const getMultisignatureGroups = async (address) => {
 
 const getMultisignatureMemberships = async (address) => {
 	const result = await coreApi.getMultisignatureMemberships(
-		parseAddress(address),
+		parseAddress(address)
 	);
 	return isProperObject(result) && Array.isArray(result.data)
 		? result.data
@@ -236,11 +242,11 @@ const getIncomingTxsCount = async (address) => {
 		limit: 1,
 	});
 	if (
-		!isProperObject(result)
-		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)
+		!isProperObject(result) ||
+		!isProperObject(result.meta) ||
+		!Number.isInteger(result.meta.count)
 	) {
-		throw new Error('Could not retrieve incoming transaction count.');
+		throw new Error("Could not retrieve incoming transaction count.");
 	}
 	return result.meta.count;
 };
@@ -251,18 +257,18 @@ const getOutgoingTxsCount = async (address) => {
 		limit: 1,
 	});
 	if (
-		!isProperObject(result)
-		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)
+		!isProperObject(result) ||
+		!isProperObject(result.meta) ||
+		!Number.isInteger(result.meta.count)
 	) {
-		throw new Error('Could not retrieve outgoing transaction count.');
+		throw new Error("Could not retrieve outgoing transaction count.");
 	}
 
 	return result.meta.count;
 };
 
 const getForgingStats = async (address) => {
-	if (!validateAddress(address)) throw new Error('Missing/Invalid address');
+	if (!validateAddress(address)) throw new Error("Missing/Invalid address");
 	try {
 		const result = await coreApi.getForgingStats(parseAddress(address));
 		return { ...result.data, ...result.meta };
@@ -300,14 +306,16 @@ const validateTimestamp = async (timestamp) => {
 const updateTransactionType = (params) => {
 	let url;
 	const transactionTypes = [
-		'transfer',
-		'registerSecondPassphrase',
-		'registerDelegate',
-		'castVotes',
-		'registerMultisignature',
+		"transfer",
+		"registerSecondPassphrase",
+		"registerDelegate",
+		"castVotes",
+		"registerMultisignature",
 	];
-	if (params.type === 'registerDelegate') url = '/delegates/latest_registrations';
-	params.type =		typeof params.type === 'string' && transactionTypes.includes(params.type)
+	if (params.type === "registerDelegate")
+		url = "/delegates/latest_registrations";
+	params.type =
+		typeof params.type === "string" && transactionTypes.includes(params.type)
 			? params.type.toUpperCase()
 			: params.type;
 	params = mapParams(params, url);
@@ -323,25 +331,27 @@ const getTransactions = async (params) => {
 	if (epochUnixTime === undefined) await getEpochUnixTime();
 
 	await Promise.all(
-		['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
+		["fromTimestamp", "toTimestamp"].map(async (timestamp) => {
 			if (await validateTimestamp(params[timestamp])) {
 				params[timestamp] = await getBlockchainTime(params[timestamp]);
 			}
 			return Promise.resolve();
-		}),
+		})
 	);
 
 	params = updateTransactionType(params);
-	const transactions =		(await recentBlocksCache.getCachedTransactions(params))
-		|| (await coreApi.getTransactions(params));
+	const transactions =
+		(await recentBlocksCache.getCachedTransactions(params)) ||
+		(await coreApi.getTransactions(params));
 	let result = [];
 
 	if (transactions.data) {
 		result = await Promise.all(
-			transactions.data.map(async (o) => Object.assign(o, {
+			transactions.data.map(async (o) =>
+				Object.assign(o, {
 					unixTimestamp: await getUnixTime(o.timestamp),
-				}),
-			),
+				})
+			)
 		);
 	}
 
@@ -353,23 +363,25 @@ const getBlocks = async (params) => {
 	if (epochUnixTime === undefined) await getEpochUnixTime();
 
 	await Promise.all(
-		['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
+		["fromTimestamp", "toTimestamp"].map(async (timestamp) => {
 			if (await validateTimestamp(params[timestamp])) {
 				params[timestamp] = await getBlockchainTime(params[timestamp]);
 			}
 			return Promise.resolve();
-		}),
+		})
 	);
-	const blocks =		(await recentBlocksCache.getCachedBlocks(params))
-		|| (await coreApi.getBlocks(params));
+	const blocks =
+		(await recentBlocksCache.getCachedBlocks(params)) ||
+		(await coreApi.getBlocks(params));
 	let result = [];
 
 	if (blocks.data) {
 		result = await Promise.all(
-			blocks.data.map(async (o) => Object.assign(o, {
+			blocks.data.map(async (o) =>
+				Object.assign(o, {
 					unixTimestamp: await getUnixTime(o.timestamp),
-				}),
-			),
+				})
+			)
 		);
 	}
 
@@ -383,17 +395,24 @@ const setReadyStatus = (status) => {
 const getReadyStatus = () => readyStatus;
 
 const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
-	//TO DO check for prevFeeEstPerByte if empty
 	const feeEst = {};
+	if (Object.keys(prevFeeEstPerByte).length === 0) {
+		prevFeeEstPerByte = {
+			low: 0,
+			med: 0,
+			high: 0,
+		};
+	}
 	const αlpha = config.alpha;
 	for (const property in feePerByte) {
-		feeEst[property] =	αlpha * feePerByte[property] + (1 - αlpha) * prevFeeEstPerByte[property];
+		feeEst[property] =
+			αlpha * feePerByte[property] + (1 - αlpha) * prevFeeEstPerByte[property];
 	}
 	const EMAoutput = {
 		feeEstLow: feeEst.low,
 		feeEstMed: feeEst.med,
 		feeEstHigh: feeEst.high,
-	  };
+	};
 	return EMAoutput;
 };
 
