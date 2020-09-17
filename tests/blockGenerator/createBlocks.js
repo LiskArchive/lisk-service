@@ -55,23 +55,28 @@ const blockMocker = (blockData, batchSize) => mocker()
 
           let txPayloadLength;
           switch (transaction.type) {
-            case (0, 8):
+            case 0:
+            case 8:
               txPayloadLength = 117;
               break;
 
-            case (1, 9):
+            case 1:
+            case 9:
               txPayloadLength = 117;
               break;
 
-            case (2, 10):
+            case 2:
+            case 10:
               txPayloadLength = 117;
               break;
 
-            case (3, 11):
+            case 3:
+            case 11:
               txPayloadLength = 117;
               break;
 
-            case (4, 12):
+            case 4:
+            case 12:
               txPayloadLength = 117;
               break;
 
@@ -92,7 +97,7 @@ const blockMocker = (blockData, batchSize) => mocker()
       }
     } while (--blockIndex >= 0);
 
-	return data;
+    return data;
   });
 
 module.exports = blockMocker;
