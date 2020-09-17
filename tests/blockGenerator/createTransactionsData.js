@@ -28,7 +28,6 @@ const generateHex = (size) => {
     return resultHex;
   };
 
-
 const transactionData = {
   id: {
     function: () => Math.floor(Math.random() * 10 ** 19),
