@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-template-moleculer",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0",
   "description": "Lisk Serivce Template Component",
   "keywords": [
     "lisk",
