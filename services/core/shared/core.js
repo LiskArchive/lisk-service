@@ -16,14 +16,15 @@
 const { BaseTransaction } = require('@liskhq/lisk-transactions');
 const { CacheRedis, Utils } = require('lisk-service-framework');
 
-const ObjectUtilService = Utils.Data;
-
 const recentBlocksCache = require('./recentBlocksCache');
 const coreCache = require('./coreCache');
 const coreApi = require('./coreApi');
 const coreApiCached = require('./coreApiCached');
 const { setProtocolVersion, getProtocolVersion, mapParams } = require('./coreProtocolCompatibility.js');
 const config = require('../config.js');
+
+const ObjectUtilService = Utils.Data;
+const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 
 const numOfActiveDelegates = 101;
 const peerStates = {
@@ -368,7 +369,7 @@ const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
 	transactionDetails.forEach(transaction => {
 		if (currentPos <= lowerBytePos && lowerBytePos < currentPos + transaction.size
 			&& currentPos + transaction.size <= upperBytePos) {
-			totalFeePriority += transaction.feePriority * (currentPos + transaction.size - lowerBytePos);
+			totalFeePriority += transaction.feePriority * (currentPos + transaction.size - lowerBytePos + 1);
 		}
 
 		if (lowerBytePos <= currentPos && currentPos + transaction.size <= upperBytePos) {
@@ -382,7 +383,7 @@ const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
 		currentPos += transaction.size;
 	});
 
-	const avgFeePriority = totalFeePriority / (upperBytePos - lowerBytePos);
+	const avgFeePriority = totalFeePriority / (upperBytePos - lowerBytePos + 1);
 	return avgFeePriority;
 };
 
@@ -447,48 +448,68 @@ const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
 };
 
 const getEstimateFeeByte = async () => {
-	const cacheRedis = CacheRedis('fees', config.endpoints.redis);
-	const cacheKey = 'lastFeeEstimate';
+	const cacheKeyFeeEst = 'lastFeeEstimate';
 
-	const prevFeeEstPerByte = {};
-	const cachedFeeEstPerByte = await cacheRedis.get(cacheKey);
+	const prevFeeEstPerByte = { blockHeight: 13360776 }; // Set hardfork height from config
+	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
+	const latestBlock = await getBlocks({ sort: 'height:desc', limit: 1 });
 	if (cachedFeeEstPerByte
-		&& ['low', 'med', 'high', 'updated', 'blockHeight'].every(key => Object.keys(cachedFeeEstPerByte).includes(key))) {
-		// Verify if this approach is correct
-		if (Date.now() - cachedFeeEstPerByte.updated <= 10 * 10 ** 3) return cachedFeeEstPerByte;
-
-		const latestBlock = await getBlocks({ sort: 'height:desc', limit: 1 });
-		if (Number(latestBlock.data.id) === cachedFeeEstPerByte.blockHeight) return cachedFeeEstPerByte;
+		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
+			.every(key => Object.keys(cachedFeeEstPerByte).includes(key))) {
+		if (Date.now() - cachedFeeEstPerByte.updated <= 10 * 10 ** 3
+			|| Number(latestBlock.data.id) === cachedFeeEstPerByte.blockHeight) {
+			return cachedFeeEstPerByte;
+		}
 
 		Object.assign(prevFeeEstPerByte, cachedFeeEstPerByte);
 	}
 
-	const blockBatch = await getBlocks({ sort: 'height:desc', limit: 20 });
-	await Promise.all(blockBatch.data.map(async o => (Object.assign(o, {
-		transactions: await getTransactions({ blockId: o.id }),
-	}))));
+	const coreLogic = async (blockBatch, innerPrevFeeEstPerByte) => {
+		await Promise.all(blockBatch.data.map(async o => (Object.assign(o, {
+			transactions: await getTransactions({ blockId: o.id }),
+		}))));
 
-	const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
-	const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
-	const feePerByte = await calculateFeePerByte(blockBatch.data[0]);
+		const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
+		const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
+		const feePerByte = await calculateFeePerByte(blockBatch.data[0]);
+		const innerFeeEstPerByte = {};
+
+		if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
+			const EMAoutput = await EMAcalc(feePerByte, innerPrevFeeEstPerByte);
+
+			innerFeeEstPerByte.low = EMAoutput.feeEstLow;
+			innerFeeEstPerByte.med = EMAoutput.feeEstMed;
+			innerFeeEstPerByte.high = EMAoutput.feeEstHigh;
+		} else {
+			innerFeeEstPerByte.low = 0;
+			innerFeeEstPerByte.med = 0;
+			innerFeeEstPerByte.high = 0;
+		}
+
+		innerFeeEstPerByte.updated = Date.now();
+		innerFeeEstPerByte.blockHeight = blockBatch.data[0].height;
+		innerFeeEstPerByte.blockId = blockBatch.data[0].id;
+
+		return innerFeeEstPerByte;
+	};
+
 	const feeEstPerByte = {};
+	const blockBatch = {};
+	do {
+		blockBatch.data = [];
+		/* eslint-disable no-await-in-loop */
+		for (let i = 0; i < 20; i++) {
+			const block = await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i });
+			blockBatch.data.push(block.data[0]);
+		}
+		Object.assign(prevFeeEstPerByte, await coreLogic(blockBatch, prevFeeEstPerByte));
+		// TODO: Remove in production (Now, only to mitigate request timeout)
+		await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
+		/* eslint-enable no-await-in-loop */
+	} while (latestBlock.data[0].height > prevFeeEstPerByte.blockHeight);
 
-	if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
-		const EMAoutput = await EMAcalc(feePerByte, prevFeeEstPerByte);
-
-		feeEstPerByte.low = EMAoutput.feeEstLow;
-		feeEstPerByte.med = EMAoutput.feeEstMed;
-		feeEstPerByte.high = EMAoutput.feeEstHigh;
-	} else {
-		feeEstPerByte.low = 0;
-		feeEstPerByte.med = 0;
-		feeEstPerByte.high = 0;
-	}
-
-	feeEstPerByte.updated = Date.now(); // Replace with appropriate method
-	feeEstPerByte.blockHeight = blockBatch.data[0].id;
-
-	await cacheRedis.set(cacheKey, feeEstPerByte);
+	Object.assign(feeEstPerByte, prevFeeEstPerByte);
+	await cacheRedisFees.set(cacheKeyFeeEst, feeEstPerByte);
 
 	return feeEstPerByte;
 };

@@ -24,6 +24,7 @@ module.exports = {
 		meta: {
 			updated: '=,number',
 			blockHeight: '=,number',
+			blockId: '=,string',
 		},
 		links: {},
 	},

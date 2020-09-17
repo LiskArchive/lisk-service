@@ -26,6 +26,7 @@ const getEstimateFeeByte = async () => {
 	const meta = {};
 	meta.updated = response.updated;
 	meta.blockHeight = response.blockHeight;
+	meta.blockId = response.blockId;
 
 	return {
 		data: result,
