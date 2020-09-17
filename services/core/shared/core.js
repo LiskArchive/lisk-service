@@ -334,7 +334,7 @@ const calculateExpDecay = (NUM_BLOCKS, DECAY_RATE) => {
 	return expDecay;
 };
 const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
-	const αlpha = calculateExpDecay(config.FEE_ESTIMATES_EMA_NUM_BLOCKS, config.FEE_ESTIMATES_EMA_DECAY_RATE);
+	const αlpha = calculateExpDecay(config.emaBatchSize, config.emaDecayRate);
 	const feeEst = {};
 	if (Object.keys(prevFeeEstPerByte).length === 0) {
 		prevFeeEstPerByte = {
