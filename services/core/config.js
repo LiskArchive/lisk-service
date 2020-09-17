@@ -94,5 +94,6 @@ config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
 config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
-config.alpha = 0.03406;
+config.FEE_ESTIMATES_EMA_NUM_BLOCKS = 20;
+config.FEE_ESTIMATES_EMA_DECAY_RATE = 0.5;
 module.exports = config;
