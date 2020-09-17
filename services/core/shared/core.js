@@ -460,7 +460,7 @@ const getEstimateFeeByte = async () => {
 	if (cachedFeeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
 			.every(key => Object.keys(cachedFeeEstPerByte).includes(key))) {
-		if (Date.now() - cachedFeeEstPerByte.updated <= 10 * 10 ** 3
+		if ((Date.now() / 1000) - cachedFeeEstPerByte.updated < 10
 			|| Number(latestBlock.data.id) === cachedFeeEstPerByte.blockHeight) {
 			// Verify logic: '||' (can return stale info) or '&&' (if very stale, can timeout)
 			return cachedFeeEstPerByte;
