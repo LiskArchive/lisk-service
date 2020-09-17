@@ -62,8 +62,7 @@ config.ttl = {
 };
 
 config.feeEstimates = {
-	hardforkBlockHeight: 13360776,
-	emaBatchSize: 20,
+	hardforkBlockHeight: Number(process.env.FEE_EST_HARDFORK_BLOCK_HEIGHT || 13360776),
 	minFeePerByte: 1000,
 	delegateFee: 1000000000,
 	dappFee: 2500000000,
@@ -71,7 +70,9 @@ config.feeEstimates = {
 	medEstUpperPercentile: 75,
 	highEstLowerPercentile: 80,
 	highEstUpperPercentile: 100,
-	wavgDecayPercentage: 10,
+	emaBatchSize: Number(process.env.FEE_EST_EMA_BATCH_SIZE || 20),
+	emaDecayRate: Number(process.env.FEE_EST_EMA_DECAY_RATE || 0.5),
+	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE || 10),
 };
 
 /**
