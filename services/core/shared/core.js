@@ -491,7 +491,7 @@ const getEstimateFeeByte = async () => {
 			innerFeeEstPerByte.high = 0;
 		}
 
-		innerFeeEstPerByte.updated = Date.now();
+		innerFeeEstPerByte.updated = Math.floor(Date.now() / 1000);
 		innerFeeEstPerByte.blockHeight = blockBatch.data[0].height;
 		innerFeeEstPerByte.blockId = blockBatch.data[0].id;
 
