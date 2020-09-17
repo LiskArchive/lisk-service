@@ -369,7 +369,8 @@ const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
 	transactionDetails.forEach(transaction => {
 		if (currentPos <= lowerBytePos && lowerBytePos < currentPos + transaction.size
 			&& currentPos + transaction.size <= upperBytePos) {
-			totalFeePriority += transaction.feePriority * (currentPos + transaction.size - lowerBytePos + 1);
+			totalFeePriority += transaction.feePriority
+				* (currentPos + transaction.size - lowerBytePos + 1);
 		}
 
 		if (lowerBytePos <= currentPos && currentPos + transaction.size <= upperBytePos) {
