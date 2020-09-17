@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { default: mocker } = require('mocker-data-generator');
+const mocker = require('mocker-data-generator').default;
 
 const generateHex = (size) => {
     let resultHex = '';

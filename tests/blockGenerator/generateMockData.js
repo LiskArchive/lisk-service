@@ -89,7 +89,10 @@ const blockData = {
 		function: () => [],
 	},
 };
-const args = Number(process.argv.slice(2)[0]);
+let args = Number(process.argv.slice(2)[0]);
+if (!args) {
+	args = 20;
+}
 const lowNetwork = () => {
 	blockData.numberOfTransactions = { function: () => randomNumber(0, 10) };
 	const res = blockMocker(blockData, args);
