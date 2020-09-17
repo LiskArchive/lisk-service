@@ -39,6 +39,7 @@
     "jest-watch-typeahead": "^0.4.2",
     "jsome": "^2.5.0",
     "log4js": "^4.3.1",
+    "mocker-data-generator": "^2.9.0",
     "mockserver": "^3.0.0",
     "multimatch": "^3.0.0",
     "popsicle": "^10.0.1",
