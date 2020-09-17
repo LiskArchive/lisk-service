@@ -61,6 +61,20 @@ config.ttl = {
 	stable: 60 * 60, // seconds
 };
 
+config.feeEstimates = {
+	hardforkBlockHeight: Number(process.env.FEE_EST_HARDFORK_BLOCK_HEIGHT || 13360776),
+	minFeePerByte: 1000,
+	delegateFee: 1000000000,
+	dappFee: 2500000000,
+	medEstLowerPercentile: 25,
+	medEstUpperPercentile: 75,
+	highEstLowerPercentile: 80,
+	highEstUpperPercentile: 100,
+	emaBatchSize: Number(process.env.FEE_EST_EMA_BATCH_SIZE || 20),
+	emaDecayRate: Number(process.env.FEE_EST_EMA_DECAY_RATE || 0.5),
+	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE || 10),
+};
+
 /**
  * Lisk Core socket.io events
  */
@@ -94,6 +108,5 @@ config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
 config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
-config.FEE_ESTIMATES_EMA_NUM_BLOCKS = 20;
-config.FEE_ESTIMATES_EMA_DECAY_RATE = 0.5;
+
 module.exports = config;
