@@ -394,33 +394,21 @@ const calculateFeePerByte = block => {
 	const feePerByte = {};
 	const payload = block.transactions.data;
 	const transactionDetails = [];
+
+	const getNameFee = (transactionType) => {
+		let nameFee = 0;
+
+		if ([2, 10].includes(transactionType)) nameFee = config.feeEstimates.delegateFee;
+		if ([5, 13].includes(transactionType)) nameFee = config.feeEstimates.dappFee;
+
+		return nameFee;
+	};
+
 	payload.forEach(transaction => {
 		const transactionBytes = new BaseTransaction(transaction).getBytes();
 		const transactionSize = Buffer.byteLength(transactionBytes);
-
-		let minFee;
-		switch (transaction.type) {
-			case 2:
-			case 10:
-				minFee = config.feeEstimates.delegateFee
-					+ config.feeEstimates.minFeePerByte * transactionSize;
-				break;
-			case 5:
-			case 13:
-				minFee = config.feeEstimates.dappFee
-					+ config.feeEstimates.minFeePerByte * transactionSize;
-				break;
-			case 0:
-			case 1:
-			case 3:
-			case 4:
-			case 8:
-			case 9:
-			case 11:
-			case 12:
-			default:
-				minFee = config.feeEstimates.minFeePerByte * transactionSize;
-		}
+		const minFee = getNameFee(transaction.type)
+			+ config.feeEstimates.minFeePerByte * transactionSize;
 		const feePriority = (transaction.fee - minFee) / transactionSize;
 		transactionDetails.push({
 			id: transaction.id,
