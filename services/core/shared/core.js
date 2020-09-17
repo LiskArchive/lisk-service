@@ -345,7 +345,7 @@ const calculateWeightedAvg = blocks => {
 
 	blocks.forEach(block => blockSizes.push(calculateBlockSize(block)));
 
-	const decayFactor = 0.1;
+	const decayFactor = config.feeEstimates.wavgDecayPercentage / 100;
 	let weight = 1;
 	const wavgLastBlocks = blockSizes.reduce((a, b) => {
 		weight *= 1 - decayFactor;
@@ -359,10 +359,12 @@ const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
 	if (blockSize === 0) return 0;
 
 	const allowedModes = ['med', 'high'];
-	const lowerPercentile = mode in allowedModes && mode === 'med' ? 0.25 : 0.80;
-	const upperPercentile = mode in allowedModes && mode === 'med' ? 0.75 : 1.00;
-	const lowerBytePos = Math.ceil(lowerPercentile * blockSize);
-	const upperBytePos = Math.floor(upperPercentile * blockSize);
+	const lowerPercentile = mode in allowedModes && mode === 'med'
+		? config.feeEstimates.medEstLowerPercentile : config.feeEstimates.highEstLowerPercentile;
+	const upperPercentile = mode in allowedModes && mode === 'med'
+		? config.feeEstimates.medEstUpperPercentile : config.feeEstimates.highEstUpperPercentile;
+	const lowerBytePos = Math.ceil((lowerPercentile / 100) * blockSize);
+	const upperBytePos = Math.floor((upperPercentile / 100) * blockSize);
 
 	let currentPos = 0;
 	let totalFeePriority = 0;
@@ -388,7 +390,7 @@ const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
 	return avgFeePriority;
 };
 
-const calculateFeePerByte = async block => {
+const calculateFeePerByte = block => {
 	const feePerByte = {};
 	const payload = block.transactions.data;
 	const transactionDetails = [];
@@ -400,12 +402,13 @@ const calculateFeePerByte = async block => {
 		switch (transaction.type) {
 			case 2:
 			case 10:
-				minFee = 1000000000 + 1000 * transactionSize;
+				minFee = config.feeEstimates.delegateFee
+					+ config.feeEstimates.minFeePerByte * transactionSize;
 				break;
-			// Future ready for dApp registration transactions
 			case 5:
 			case 13:
-				minFee = 2500000000 + 1000 * transactionSize;
+				minFee = config.feeEstimates.dappFee
+					+ config.feeEstimates.minFeePerByte * transactionSize;
 				break;
 			case 0:
 			case 1:
@@ -416,7 +419,7 @@ const calculateFeePerByte = async block => {
 			case 11:
 			case 12:
 			default:
-				minFee = 1000 * transactionSize;
+				minFee = config.feeEstimates.minFeePerByte * transactionSize;
 		}
 		const feePriority = (transaction.fee - minFee) / transactionSize;
 		transactionDetails.push({
@@ -451,7 +454,7 @@ const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
 const getEstimateFeeByte = async () => {
 	const cacheKeyFeeEst = 'lastFeeEstimate';
 
-	const prevFeeEstPerByte = { blockHeight: 13360776 }; // Set hardfork height from config
+	const prevFeeEstPerByte = { blockHeight: config.feeEstimates.hardforkBlockHeight };
 	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
 	const latestBlock = await getBlocks({ sort: 'height:desc', limit: 1 });
 	if (cachedFeeEstPerByte
@@ -459,6 +462,7 @@ const getEstimateFeeByte = async () => {
 			.every(key => Object.keys(cachedFeeEstPerByte).includes(key))) {
 		if (Date.now() - cachedFeeEstPerByte.updated <= 10 * 10 ** 3
 			|| Number(latestBlock.data.id) === cachedFeeEstPerByte.blockHeight) {
+			// Verify logic: '||' (can return stale info) or '&&' (if very stale, can timeout)
 			return cachedFeeEstPerByte;
 		}
 
@@ -472,7 +476,7 @@ const getEstimateFeeByte = async () => {
 
 		const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
 		const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
-		const feePerByte = await calculateFeePerByte(blockBatch.data[0]);
+		const feePerByte = calculateFeePerByte(blockBatch.data[0]);
 		const innerFeeEstPerByte = {};
 
 		if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
@@ -499,7 +503,7 @@ const getEstimateFeeByte = async () => {
 	do {
 		blockBatch.data = [];
 		/* eslint-disable no-await-in-loop */
-		for (let i = 0; i < 20; i++) {
+		for (let i = 0; i < config.feeEstimates.emaBatchSize; i++) {
 			const block = await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i });
 			blockBatch.data.push(block.data[0]);
 		}

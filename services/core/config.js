@@ -61,6 +61,19 @@ config.ttl = {
 	stable: 60 * 60, // seconds
 };
 
+config.feeEstimates = {
+	hardforkBlockHeight: 13360776,
+	emaBatchSize: 20,
+	minFeePerByte: 1000,
+	delegateFee: 1000000000,
+	dappFee: 2500000000,
+	medEstLowerPercentile: 25,
+	medEstUpperPercentile: 75,
+	highEstLowerPercentile: 80,
+	highEstUpperPercentile: 100,
+	wavgDecayPercentage: 10,
+};
+
 /**
  * Lisk Core socket.io events
  */
