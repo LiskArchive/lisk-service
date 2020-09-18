@@ -329,12 +329,11 @@ const getBlocks = async params => {
 const setReadyStatus = status => { readyStatus = status; };
 const getReadyStatus = () => readyStatus;
 
-const calcExpDecay = (NUM_BLOCKS, DECAY_RATE) => {
-	const expDecay = (1 - Math.pow(1 - DECAY_RATE, 1 / NUM_BLOCKS)).toFixed(5);
-	return expDecay;
-};
-
-const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
+const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
+	const calcExpDecay = (emaBatchSize, emaDecayRate) => {
+		const expDecay = (1 - Math.pow(1 - emaDecayRate, 1 / emaBatchSize)).toFixed(5);
+		return expDecay;
+	};
 	const alpha = calcExpDecay(
 		config.feeEstimates.emaBatchSize,
 		config.feeEstimates.emaDecayRate,
