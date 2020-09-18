@@ -329,12 +329,12 @@ const getBlocks = async params => {
 const setReadyStatus = status => { readyStatus = status; };
 const getReadyStatus = () => readyStatus;
 
-const calculateExpDecay = (NUM_BLOCKS, DECAY_RATE) => {
-	const expDecay = 1 - Math.pow((1 - DECAY_RATE), 1 / NUM_BLOCKS);
+const calcExpDecay = (NUM_BLOCKS, DECAY_RATE) => {
+	const expDecay = (1 - Math.pow(1 - DECAY_RATE, 1 / NUM_BLOCKS)).toFixed(5);
 	return expDecay;
 };
 const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
-	const αlpha = calculateExpDecay(config.emaBatchSize, config.emaDecayRate);
+	const alpha = calcExpDecay(config.feeEstimates.emaBatchSize, config.feeEstimates.emaDecayRate);
 	const feeEst = {};
 	if (Object.keys(prevFeeEstPerByte).length === 0) {
 		prevFeeEstPerByte = {
@@ -344,7 +344,7 @@ const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
 		};
 	}
 	for (const property in feePerByte) {
-		feeEst[property] = αlpha * feePerByte[property] + (1 - αlpha) * prevFeeEstPerByte[property];
+		feeEst[property] = alpha * feePerByte[property] + (1 - alpha) * prevFeeEstPerByte[property];
 	}
 	const EMAoutput = {
 		feeEstLow: feeEst.low,
