@@ -329,6 +329,33 @@ const getBlocks = async params => {
 const setReadyStatus = status => { readyStatus = status; };
 const getReadyStatus = () => readyStatus;
 
+const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
+	const calcExpDecay = (emaBatchSize, emaDecayRate) => (
+		1 - Math.pow(1 - emaDecayRate, 1 / emaBatchSize)).toFixed(5);
+	const alpha = calcExpDecay(
+		config.feeEstimates.emaBatchSize,
+		config.feeEstimates.emaDecayRate,
+	);
+	const feeEst = {};
+	if (Object.keys(prevFeeEstPerByte).length === 0) {
+		prevFeeEstPerByte = {
+			low: 0,
+			med: 0,
+			high: 0,
+		};
+	}
+	Object.keys(feePerByte).forEach((property) => {
+		feeEst[property] = alpha * feePerByte[property] + (1 - alpha) * prevFeeEstPerByte[property];
+	});
+	const EMAoutput = {
+		feeEstLow: feeEst.low,
+		feeEstMed: feeEst.med,
+		feeEstHigh: feeEst.high,
+	};
+	return EMAoutput;
+};
+
+
 module.exports = {
 	get: coreApi.request,
 	request: coreApi.request,
@@ -369,4 +396,5 @@ module.exports = {
 	setProtocolVersion,
 	getReadyStatus,
 	getUnixTime,
+	EMAcalc,
 };
