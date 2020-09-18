@@ -330,10 +330,8 @@ const setReadyStatus = status => { readyStatus = status; };
 const getReadyStatus = () => readyStatus;
 
 const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
-	const calcExpDecay = (emaBatchSize, emaDecayRate) => {
-		const expDecay = (1 - Math.pow(1 - emaDecayRate, 1 / emaBatchSize)).toFixed(5);
-		return expDecay;
-	};
+	const calcExpDecay = (emaBatchSize, emaDecayRate) => (
+		1 - Math.pow(1 - emaDecayRate, 1 / emaBatchSize)).toFixed(5);
 	const alpha = calcExpDecay(
 		config.feeEstimates.emaBatchSize,
 		config.feeEstimates.emaDecayRate,
