@@ -427,15 +427,29 @@ const calculateFeePerByte = block => {
 	return feePerByte;
 };
 
-const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
-	// TODO
-	const alpha = 0.03406;
-	const EMAoutput = {};
-
-	EMAoutput.feeEstLow = alpha * feePerByte.low + (1 - alpha) * prevFeeEstPerByte.low;
-	EMAoutput.feeEstMed = alpha * feePerByte.med + (1 - alpha) * prevFeeEstPerByte.med;
-	EMAoutput.feeEstHigh = alpha * feePerByte.high + (1 - alpha) * prevFeeEstPerByte.high;
-
+const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
+	const calcExpDecay = (emaBatchSize, emaDecayRate) => (
+		1 - Math.pow(1 - emaDecayRate, 1 / emaBatchSize)).toFixed(5);
+	const alpha = calcExpDecay(
+		config.feeEstimates.emaBatchSize,
+		config.feeEstimates.emaDecayRate,
+	);
+	const feeEst = {};
+	if (Object.keys(prevFeeEstPerByte).length === 0) {
+		prevFeeEstPerByte = {
+			low: 0,
+			med: 0,
+			high: 0,
+		};
+	}
+	Object.keys(feePerByte).forEach((property) => {
+		feeEst[property] = alpha * feePerByte[property] + (1 - alpha) * prevFeeEstPerByte[property];
+	});
+	const EMAoutput = {
+		feeEstLow: feeEst.low,
+		feeEstMed: feeEst.med,
+		feeEstHigh: feeEst.high,
+	};
 	return EMAoutput;
 };
 
@@ -468,7 +482,7 @@ const getEstimateFeeByte = async () => {
 		const innerFeeEstPerByte = {};
 
 		if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
-			const EMAoutput = await EMAcalc(feePerByte, innerPrevFeeEstPerByte);
+			const EMAoutput = EMAcalc(feePerByte, innerPrevFeeEstPerByte);
 
 			innerFeeEstPerByte.low = EMAoutput.feeEstLow;
 			innerFeeEstPerByte.med = EMAoutput.feeEstMed;
@@ -550,5 +564,6 @@ module.exports = {
 	setProtocolVersion,
 	getReadyStatus,
 	getUnixTime,
+	EMAcalc,
 	getEstimateFeeByte,
 };
