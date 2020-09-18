@@ -333,8 +333,12 @@ const calcExpDecay = (NUM_BLOCKS, DECAY_RATE) => {
 	const expDecay = (1 - Math.pow(1 - DECAY_RATE, 1 / NUM_BLOCKS)).toFixed(5);
 	return expDecay;
 };
+
 const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
-	const alpha = calcExpDecay(config.feeEstimates.emaBatchSize, config.feeEstimates.emaDecayRate);
+	const alpha = calcExpDecay(
+		config.feeEstimates.emaBatchSize,
+		config.feeEstimates.emaDecayRate,
+	);
 	const feeEst = {};
 	if (Object.keys(prevFeeEstPerByte).length === 0) {
 		prevFeeEstPerByte = {
@@ -343,9 +347,9 @@ const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
 			high: 0,
 		};
 	}
-	for (const property in feePerByte) {
+	Object.keys(feePerByte).forEach((property) => {
 		feeEst[property] = alpha * feePerByte[property] + (1 - alpha) * prevFeeEstPerByte[property];
-	}
+	});
 	const EMAoutput = {
 		feeEstLow: feeEst.low,
 		feeEstMed: feeEst.med,
@@ -353,6 +357,7 @@ const EMAcalc = async (feePerByte, prevFeeEstPerByte) => {
 	};
 	return EMAoutput;
 };
+
 
 module.exports = {
 	get: coreApi.request,
