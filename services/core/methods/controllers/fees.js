@@ -26,8 +26,6 @@ const getEstimateFeeByte = async () => {
 
 	const response = await CoreService.getEstimateFeeByte();
 
-	if (response.data.error) return response;
-
 	const result = { feeEstimatePerByte: {} };
 	result.feeEstimatePerByte.low = response.low;
 	result.feeEstimatePerByte.medium = response.med;

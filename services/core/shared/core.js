@@ -14,7 +14,7 @@
  *
  */
 const { BaseTransaction } = require('@liskhq/lisk-transactions');
-const { CacheRedis, Utils } = require('lisk-service-framework');
+const { CacheRedis, Logger, LoggerConfig, Utils } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
 const recentBlocksCache = require('./recentBlocksCache');
@@ -26,6 +26,9 @@ const config = require('../config.js');
 
 const ObjectUtilService = Utils.Data;
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
+
+LoggerConfig(config.log);
+const logger = Logger();
 
 const numOfActiveDelegates = 101;
 const peerStates = {
@@ -431,21 +434,16 @@ const calculateFeePerByte = block => {
 const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 	const calcExpDecay = (emaBatchSize, emaDecayRate) => (
 		1 - Math.pow(1 - emaDecayRate, 1 / emaBatchSize)).toFixed(5);
-	const alpha = calcExpDecay(
-		config.feeEstimates.emaBatchSize,
-		config.feeEstimates.emaDecayRate,
-	);
+
+	const alpha = calcExpDecay(config.feeEstimates.emaBatchSize, config.feeEstimates.emaDecayRate);
+	logger.info(`Estimating fees with 'α' for EMA set to ${alpha}.`);
+
 	const feeEst = {};
-	if (Object.keys(prevFeeEstPerByte).length === 0) {
-		prevFeeEstPerByte = {
-			low: 0,
-			med: 0,
-			high: 0,
-		};
-	}
+	if (Object.keys(prevFeeEstPerByte).length === 0) prevFeeEstPerByte = { low: 0, med: 0, high: 0 };
 	Object.keys(feePerByte).forEach((property) => {
 		feeEst[property] = alpha * feePerByte[property] + (1 - alpha) * prevFeeEstPerByte[property];
 	});
+
 	const EMAoutput = {
 		feeEstLow: feeEst.low,
 		feeEstMed: feeEst.med,
