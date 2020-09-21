@@ -15,6 +15,7 @@
  */
 const { BaseTransaction } = require('@liskhq/lisk-transactions');
 const { CacheRedis, Utils } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
 
 const recentBlocksCache = require('./recentBlocksCache');
 const coreCache = require('./coreCache');
@@ -472,9 +473,9 @@ const getEstimateFeeByte = async () => {
 	}
 
 	const coreLogic = async (blockBatch, innerPrevFeeEstPerByte) => {
-		await Promise.all(blockBatch.data.map(async o => (Object.assign(o, {
-			transactions: await getTransactions({ blockId: o.id }),
-		}))));
+		blockBatch.data = await BluebirdPromise.map(blockBatch.data, async block => Object
+			.assign(block, { transactions: await getTransactions({ blockId: block.id }) }),
+			{ concurrency: blockBatch.data.length });
 
 		const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
 		const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
@@ -500,17 +501,17 @@ const getEstimateFeeByte = async () => {
 		return innerFeeEstPerByte;
 	};
 
+	const range = size => Array(size).fill().map((_, index) => index);
 	const feeEstPerByte = {};
 	const blockBatch = {};
 	do {
-		blockBatch.data = [];
 		/* eslint-disable no-await-in-loop */
-		for (let i = 0; i < config.feeEstimates.emaBatchSize; i++) {
-			const block = await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i });
-			blockBatch.data.push(block.data[0]);
-		}
+		const batchSize = config.feeEstimates.emaBatchSize;
+		blockBatch.data = await BluebirdPromise.map(range(batchSize), async i => (await getBlocks({
+			height: prevFeeEstPerByte.blockHeight + 1 - i,
+		})).data[0], { concurrency: batchSize });
 		Object.assign(prevFeeEstPerByte, await coreLogic(blockBatch, prevFeeEstPerByte));
-		// TODO: Remove in production (Now, only to mitigate request timeout)
+		// TODO: Remove in production (Dev fix for local testing)
 		await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
 		/* eslint-enable no-await-in-loop */
 	} while (latestBlock.data[0].height > prevFeeEstPerByte.blockHeight);
