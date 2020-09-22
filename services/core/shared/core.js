@@ -463,7 +463,7 @@ const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 const getEstimateFeeByte = async () => {
 	const cacheKeyFeeEst = 'lastFeeEstimate';
 
-	const prevFeeEstPerByte = { blockHeight: config.feeEstimates.hardforkBlockHeight };
+	const prevFeeEstPerByte = { blockHeight: config.feeEstimates.defaultStartBlockHeight };
 	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
 	const latestBlock = await getBlocks({ sort: 'height:desc', limit: 1 });
 	if (cachedFeeEstPerByte
