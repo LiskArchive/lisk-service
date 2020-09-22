@@ -377,16 +377,16 @@ const calculateWeightedAvg = blocks => {
 	return wavgLastBlocks;
 };
 
-const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
-	if (blockSize === 0) return 0;
-
+const calulateAvgFeePerByte = (mode, transactionDetails) => {
+	const maxBlockSize = 15 * 2 ** 10;
 	const allowedModes = ['med', 'high'];
+
 	const lowerPercentile = allowedModes.includes(mode) && mode === 'med'
 		? config.feeEstimates.medEstLowerPercentile : config.feeEstimates.highEstLowerPercentile;
 	const upperPercentile = allowedModes.includes(mode) && mode === 'med'
 		? config.feeEstimates.medEstUpperPercentile : config.feeEstimates.highEstUpperPercentile;
-	const lowerBytePos = Math.ceil((lowerPercentile / 100) * blockSize);
-	const upperBytePos = Math.floor((upperPercentile / 100) * blockSize);
+	const lowerBytePos = Math.ceil((lowerPercentile / 100) * maxBlockSize);
+	const upperBytePos = Math.floor((upperPercentile / 100) * maxBlockSize);
 
 	let currentBytePos = 0;
 	let totalFeePriority = 0;
@@ -433,8 +433,8 @@ const calculateFeePerByte = block => {
 	const blockSize = calculateBlockSize(block);
 
 	feePerByte.low = (blockSize < 12.5 * 2 ** 10) ? 0 : transactionDetails[0].feePriority;
-	feePerByte.med = calulateAvgFeePerByte('med', blockSize, transactionDetails);
-	feePerByte.high = Math.max(calulateAvgFeePerByte('high', blockSize, transactionDetails), (1.3 * feePerByte.med + 1));
+	feePerByte.med = calulateAvgFeePerByte('med', transactionDetails);
+	feePerByte.high = Math.max(calulateAvgFeePerByte('high', transactionDetails), (1.3 * feePerByte.med + 1));
 
 	return feePerByte;
 };
