@@ -363,31 +363,31 @@ const calulateAvgFeePerByte = (mode, blockSize, transactionDetails) => {
 	if (blockSize === 0) return 0;
 
 	const allowedModes = ['med', 'high'];
-	const lowerPercentile = mode in allowedModes && mode === 'med'
+	const lowerPercentile = allowedModes.includes(mode) && mode === 'med'
 		? config.feeEstimates.medEstLowerPercentile : config.feeEstimates.highEstLowerPercentile;
-	const upperPercentile = mode in allowedModes && mode === 'med'
+	const upperPercentile = allowedModes.includes(mode) && mode === 'med'
 		? config.feeEstimates.medEstUpperPercentile : config.feeEstimates.highEstUpperPercentile;
 	const lowerBytePos = Math.ceil((lowerPercentile / 100) * blockSize);
 	const upperBytePos = Math.floor((upperPercentile / 100) * blockSize);
 
-	let currentPos = 0;
+	let currentBytePos = 0;
 	let totalFeePriority = 0;
 	transactionDetails.forEach(transaction => {
-		if (currentPos <= lowerBytePos && lowerBytePos < currentPos + transaction.size
-			&& currentPos + transaction.size <= upperBytePos) {
+		if (currentBytePos <= lowerBytePos && lowerBytePos < currentBytePos + transaction.size
+			&& currentBytePos + transaction.size <= upperBytePos) {
 			totalFeePriority += transaction.feePriority
-				* (currentPos + transaction.size - lowerBytePos + 1);
+				* (currentBytePos + transaction.size - lowerBytePos + 1);
 		}
 
-		if (lowerBytePos <= currentPos && currentPos + transaction.size <= upperBytePos) {
+		if (lowerBytePos <= currentBytePos && currentBytePos + transaction.size <= upperBytePos) {
 			totalFeePriority += transaction.feePriority * transaction.size;
 		}
 
-		if (lowerBytePos <= currentPos && upperBytePos <= currentPos + transaction.size) {
-			totalFeePriority += transaction.feePriority * (upperBytePos - currentPos);
+		if (lowerBytePos <= currentBytePos && upperBytePos <= currentBytePos + transaction.size) {
+			totalFeePriority += transaction.feePriority * (upperBytePos - currentBytePos + 1);
 		}
 
-		currentPos += transaction.size;
+		currentBytePos += transaction.size;
 	});
 
 	const avgFeePriority = totalFeePriority / (upperBytePos - lowerBytePos + 1);
