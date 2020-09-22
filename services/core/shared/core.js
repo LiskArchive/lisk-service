@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { BaseTransaction } = require('@liskhq/lisk-transactions');
+const {
+	TransferTransaction,
+	DelegateTransaction,
+	MultisignatureTransaction,
+	VoteTransaction,
+} = require('@liskhq/lisk-transactions');
 const { CacheRedis, Logger, LoggerConfig, Utils } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
@@ -330,14 +335,27 @@ const getBlocks = async params => {
 	return blocks;
 };
 
+const getTransactionInstanceByType = transaction => {
+	const transactionMap = {
+		8: TransferTransaction,
+		10: DelegateTransaction,
+		12: MultisignatureTransaction,
+		13: VoteTransaction,
+	};
+
+	const TransactionClass = transactionMap[transaction.type];
+	const tx = new TransactionClass(transaction);
+	return tx;
+};
+
 const calculateBlockSize = block => {
 	let blockSize = 0;
 	if (block.numberOfTransactions === 0) return blockSize;
 
 	const payload = block.transactions.data;
 	payload.forEach(transaction => {
-		const transactionBytes = new BaseTransaction(transaction).getBytes();
-		const transactionSize = Buffer.byteLength(transactionBytes);
+		const tx = getTransactionInstanceByType(transaction);
+		const transactionSize = tx.getBytes().length;
 		blockSize += transactionSize;
 	});
 
@@ -399,20 +417,10 @@ const calculateFeePerByte = block => {
 	const payload = block.transactions.data;
 	const transactionDetails = [];
 
-	const getNameFee = (transactionType) => {
-		let nameFee = 0;
-
-		if ([2, 10].includes(transactionType)) nameFee = config.feeEstimates.delegateFee;
-		if ([5, 13].includes(transactionType)) nameFee = config.feeEstimates.dappFee;
-
-		return nameFee;
-	};
-
 	payload.forEach(transaction => {
-		const transactionBytes = new BaseTransaction(transaction).getBytes();
-		const transactionSize = Buffer.byteLength(transactionBytes);
-		const minFee = getNameFee(transaction.type)
-			+ config.feeEstimates.minFeePerByte * transactionSize;
+		const tx = getTransactionInstanceByType(transaction);
+		const transactionSize = tx.getBytes().length;
+		const { minFee } = tx;
 		const feePriority = (transaction.fee - minFee) / transactionSize;
 		transactionDetails.push({
 			id: transaction.id,
@@ -463,7 +471,6 @@ const getEstimateFeeByte = async () => {
 			.every(key => Object.keys(cachedFeeEstPerByte).includes(key))) {
 		if ((Date.now() / 1000) - cachedFeeEstPerByte.updated < 10
 			|| Number(latestBlock.data.id) === cachedFeeEstPerByte.blockHeight) {
-			// Verify logic: '||' (can return stale info) or '&&' (if very stale, can timeout)
 			return cachedFeeEstPerByte;
 		}
 
@@ -509,8 +516,11 @@ const getEstimateFeeByte = async () => {
 			height: prevFeeEstPerByte.blockHeight + 1 - i,
 		})).data[0], { concurrency: batchSize });
 		Object.assign(prevFeeEstPerByte, await coreLogic(blockBatch, prevFeeEstPerByte));
-		// TODO: Remove in production (Dev fix for local testing)
-		await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
+
+		if (prevFeeEstPerByte.blockHeight !== latestBlock.data[0].height) {
+			// Store intermediate values, in case of a long running loop
+			await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
+		}
 		/* eslint-enable no-await-in-loop */
 	} while (latestBlock.data[0].height > prevFeeEstPerByte.blockHeight);
 

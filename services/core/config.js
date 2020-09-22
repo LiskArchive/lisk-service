@@ -62,10 +62,7 @@ config.ttl = {
 };
 
 config.feeEstimates = {
-	hardforkBlockHeight: Number(process.env.FEE_EST_HARDFORK_BLOCK_HEIGHT || 13360776),
-	minFeePerByte: 1000,
-	delegateFee: 1000000000,
-	dappFee: 2500000000,
+	hardforkBlockHeight: Number(process.env.FEE_EST_HARDFORK_BLOCK_HEIGHT || 1837616),
 	medEstLowerPercentile: 25,
 	medEstUpperPercentile: 75,
 	highEstLowerPercentile: 80,
