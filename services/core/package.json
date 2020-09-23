@@ -33,7 +33,7 @@
     "test:unit": "./node_modules/.bin/jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-transactions": "https://npm.lisk.io/@liskhq%2flisk-transactions/-/lisk-transactions-4.0.0-alpha.1.tgz",
+    "@liskhq/lisk-transactions": "^4.0.0-alpha.1",
     "async": "^3.2.0",
     "big-number": "=2.0.0",
     "bluebird": "^3.7.2",
