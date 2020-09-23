@@ -18,6 +18,8 @@ const {
 	DelegateTransaction,
 	MultisignatureTransaction,
 	VoteTransaction,
+	UnlockTransaction,
+	ProofOfMisbehaviorTransaction,
 } = require('@liskhq/lisk-transactions');
 const { CacheRedis, Logger, LoggerConfig, Utils } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
@@ -346,6 +348,8 @@ const getTransactionInstanceByType = transaction => {
 		10: DelegateTransaction,
 		12: MultisignatureTransaction,
 		13: VoteTransaction,
+		14: UnlockTransaction,
+		15: ProofOfMisbehaviorTransaction,
 	};
 
 	const TransactionClass = transactionMap[transaction.type];
