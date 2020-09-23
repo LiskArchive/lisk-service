@@ -358,20 +358,18 @@ const calculateBlockSize = block => {
 	if (block.numberOfTransactions === 0) return blockSize;
 
 	const payload = block.transactions.data;
-	payload.forEach(transaction => {
+	const transactionSizes = payload.map(transaction => {
 		const tx = getTransactionInstanceByType(transaction);
 		const transactionSize = tx.getBytes().length;
-		blockSize += transactionSize;
+		return transactionSize;
 	});
 
+	blockSize = transactionSizes.reduce((a, b) => a + b);
 	return blockSize;
 };
 
 const calculateWeightedAvg = blocks => {
-	const blockSizes = [];
-
-	blocks.forEach(block => blockSizes.push(calculateBlockSize(block)));
-
+	const blockSizes = blocks.map(block => calculateBlockSize(block));
 	const decayFactor = config.feeEstimates.wavgDecayPercentage / 100;
 	let weight = 1;
 	const wavgLastBlocks = blockSizes.reduce((a, b) => {
@@ -420,18 +418,16 @@ const calulateAvgFeePerByte = (mode, transactionDetails) => {
 const calculateFeePerByte = block => {
 	const feePerByte = {};
 	const payload = block.transactions.data;
-	const transactionDetails = [];
-
-	payload.forEach(transaction => {
+	const transactionDetails = payload.map(transaction => {
 		const tx = getTransactionInstanceByType(transaction);
 		const transactionSize = tx.getBytes().length;
 		const { minFee } = tx;
 		const feePriority = (transaction.fee - minFee) / transactionSize;
-		transactionDetails.push({
+		return {
 			id: transaction.id,
 			size: transactionSize,
 			feePriority,
-		});
+		};
 	});
 	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
 
