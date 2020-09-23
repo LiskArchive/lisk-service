@@ -42,6 +42,11 @@ const peerStates = {
 	CONNECTED: 2,
 };
 
+const calcAvgFeeByteModes = {
+	MEDIUM: 'med',
+	HIGH: 'high',
+};
+
 let readyStatus = false;
 let epochUnixTime;
 
@@ -379,11 +384,11 @@ const calculateWeightedAvg = blocks => {
 
 const calulateAvgFeePerByte = (mode, transactionDetails) => {
 	const maxBlockSize = 15 * 2 ** 10;
-	const allowedModes = ['med', 'high'];
+	const allowedModes = Object.values(calcAvgFeeByteModes);
 
-	const lowerPercentile = allowedModes.includes(mode) && mode === 'med'
+	const lowerPercentile = allowedModes.includes(mode) && mode === calcAvgFeeByteModes.MEDIUM
 		? config.feeEstimates.medEstLowerPercentile : config.feeEstimates.highEstLowerPercentile;
-	const upperPercentile = allowedModes.includes(mode) && mode === 'med'
+	const upperPercentile = allowedModes.includes(mode) && mode === calcAvgFeeByteModes.MEDIUM
 		? config.feeEstimates.medEstUpperPercentile : config.feeEstimates.highEstUpperPercentile;
 	const lowerBytePos = Math.ceil((lowerPercentile / 100) * maxBlockSize);
 	const upperBytePos = Math.floor((upperPercentile / 100) * maxBlockSize);
@@ -433,8 +438,9 @@ const calculateFeePerByte = block => {
 	const blockSize = calculateBlockSize(block);
 
 	feePerByte.low = (blockSize < 12.5 * 2 ** 10) ? 0 : transactionDetails[0].feePriority;
-	feePerByte.med = calulateAvgFeePerByte('med', transactionDetails);
-	feePerByte.high = Math.max(calulateAvgFeePerByte('high', transactionDetails), (1.3 * feePerByte.med + 1));
+	feePerByte.med = calulateAvgFeePerByte(calcAvgFeeByteModes.MEDIUM, transactionDetails);
+	feePerByte.high = Math.max(calulateAvgFeePerByte(calcAvgFeeByteModes.HIGH, transactionDetails),
+		(1.3 * feePerByte.med + 1));
 
 	return feePerByte;
 };
