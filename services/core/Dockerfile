@@ -7,7 +7,7 @@ USER builder
 RUN mkdir /home/builder/build
 WORKDIR /home/builder/build
 
-COPY ./package-lock.json ./package.json ./
+COPY ./package-lock.json ./package.json ./.npmrc ./
 RUN npm ci
 
 
