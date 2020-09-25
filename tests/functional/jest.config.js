@@ -1,6 +1,7 @@
 module.exports = {
 	verbose: true,
 	testMatch: [
+		'<rootDir>/core/*.test.js',
 		'<rootDir>/template/*.test.js',
 	],
 	testEnvironment: 'node',

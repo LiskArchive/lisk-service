@@ -25,7 +25,7 @@ const goodRequestSchema = Joi.object({
 
 const requestFeeEstimate = async () => api.getJsonRpcV1('get.fee_estimates');
 
-describe('get.fee_estimates', () => {
+xdescribe('get.fee_estimates', () => {
 	it('returns estimated fees', async () => {
 		const response = await requestFeeEstimate();
 		expect(response).toMap(goodRequestSchema);

@@ -34,7 +34,7 @@ const metaSchema = {
 
 // Use schema from swagger instead
 
-describe('Fee estimates API', () => {
+xdescribe('Fee estimates API', () => {
 	describe('GET /fee_estimates', () => {
 		it('estimate fees true -> 200 ok', async () => {
 			const response = await api.get(`${endpoint}`);
