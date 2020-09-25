@@ -31,4 +31,7 @@ describe('get.fee_estimates', () => {
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(feeSchema);
 	});
+
+	// Negative test for 404 - Compare schema, error message
+	// Negative test with params - Compare schema, error message
 });

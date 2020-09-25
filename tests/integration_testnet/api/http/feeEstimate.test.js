@@ -27,20 +27,26 @@ const feeSchema = {
 };
 
 const metaSchema = {
-    updated: 'number',
-    blockHeight: 'number',
-    blockId: 'string',
+	updated: 'number',
+	blockHeight: 'number',
+	blockId: 'string',
 };
+
+// Use schema from swagger instead
+
 describe('Fee estimates API', () => {
 	describe('GET /fee_estimates', () => {
 		it('estimate fees true -> 200 ok', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response.data.feeEstimatePerByte).toMapRequiredSchema({
 				...feeSchema,
-            });
-            expect(response.meta).toMapRequiredSchema({
+			});
+			expect(response.meta).toMapRequiredSchema({
 				...metaSchema,
 			});
 		});
 	});
+
+	// Negative test for 404 - Compare schema, error message
+	// Negative test with params - Compare schema, error message
 });
