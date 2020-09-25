@@ -16,76 +16,76 @@
 const mocker = require('mocker-data-generator').default;
 
 const generateHex = (size) => {
-    let resultHex = '';
-    const characters = 'abcdef0123456789';
+	let resultHex = '';
+	const hexCharacters = 'abcdef0123456789';
 
-    for (let i = 0; i < size; i++) {
-      resultHex += characters.charAt(
-        Math.floor(Math.random() * characters.length),
-      );
-    }
+	for (let i = 0; i < size; i++) {
+		resultHex += hexCharacters.charAt(
+			Math.floor(Math.random() * hexCharacters.length),
+		);
+	}
 
-    return resultHex;
-  };
+	return resultHex;
+};
 
 const transactionData = {
-  id: {
-    function: () => Math.floor(Math.random() * 10 ** 19),
-  },
-  amount: {
-    function: () => Math.floor(Math.random() * 10),
-  },
-  fee: {
-    function: () => 10 ** 7,
-  },
-  type: {
-    function: () => {
-      const validTypes = [8, 9, 10, 11, 12];
-      let index = Math.floor(Math.random() * 10) % validTypes.length;
-      if (index > 0 && Math.floor(Math.random() * 100) % 9) index = 0;
-      return validTypes[index];
-    },
-  },
-  height: {
-    function: () => null,
-  },
-  blockId: {
-    function: () => null,
-  },
-  timestamp: {
-    function: () => null,
-  },
-  senderId: {
-    function: () => `${Math.floor(Math.random() * 10 ** 20)}L`,
-  },
-  senderPublicKey: {
-    function: () => generateHex(64),
-  },
-  recipientId: {
-    function: () => `${Math.floor(Math.random() * 10 ** 20)}L`,
-  },
-  recipientPublicKey: {
-    function: () => generateHex(64),
-  },
-  signature: {
-    function: () => generateHex(128),
-  },
-  confirmations: {
-    function: () => null,
-  },
+	id: {
+		function: () => Math.floor(Math.random() * 10 ** 19),
+	},
+	amount: {
+		function: () => Math.floor(Math.random() * 10),
+	},
+	fee: {
+		function: () => 10 ** 7,
+	},
+	type: {
+		function: () => {
+			const validTypes = [8, 10, 12, 13, 14, 15];
+			let index = Math.floor(Math.random() * 10) % validTypes.length;
+			if (index > 0 && Math.floor(Math.random() * 100) % 9) index = 0;
+			return validTypes[index];
+		},
+	},
+	height: {
+		function: () => null,
+	},
+	blockId: {
+		function: () => null,
+	},
+	timestamp: {
+		function: () => null,
+	},
+	senderId: {
+		function: () => `${Math.floor(Math.random() * 10 ** 20)}L`,
+	},
+	senderPublicKey: {
+		function: () => generateHex(64),
+	},
+	recipientId: {
+		function: () => `${Math.floor(Math.random() * 10 ** 20)}L`,
+	},
+	recipientPublicKey: {
+		function: () => generateHex(64),
+	},
+	signature: {
+		function: () => generateHex(128),
+	},
+	confirmations: {
+		function: () => null,
+	},
 };
 
 const txMocker = (batchSize) => mocker()
-    .schema('transactions', transactionData, batchSize)
-    .build((err, data) => {
-      if (err) throw err;
+	.schema('transactions', transactionData, batchSize)
+	.build((err, data) => {
+		if (err) throw err;
 
-      data.transactions.forEach((transaction) => {
-        transaction.signatures = [];
-        transaction.asset = {};
-      });
+		data.transactions.forEach((transaction) => {
+			transaction.signatures = [];
+			transaction.asset = {};
+		});
 
-      return data.transactions;
-    });
+		return data.transactions;
+	});
 
 module.exports = txMocker;
