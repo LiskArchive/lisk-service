@@ -13,31 +13,82 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { EMAcalc } = require("../../../services/core/shared/core");
+const {
+	TransferTransaction,
+	DelegateTransaction,
+	MultisignatureTransaction,
+	VoteTransaction,
+	UnlockTransaction,
+	ProofOfMisbehaviorTransaction,
+} = require('../../../services/core/node_modules/@liskhq/lisk-transactions');
 
-describe("Fee estimation tests", () => {
-	describe("getTransactionInstanceByType", () => {
-		it("", async () => {});
+const {
+	EMAcalc,
+	getTransactionInstanceByType,
+} = require('../../../services/core/shared/core');
+
+describe('Fee estimation tests', () => {
+	describe('getTransactionInstanceByType', () => {
+		it('TransferTransaction', async () => {
+			const transaction = getTransactionInstanceByType({ type: 8 });
+			expect(transaction).toBeInstanceOf(TransferTransaction);
+		});
+
+		it('DelegateTransaction', async () => {
+			const transaction = getTransactionInstanceByType({ type: 10 });
+			expect(transaction).toBeInstanceOf(DelegateTransaction);
+		});
+
+		it('MultisignatureTransaction', async () => {
+			const transaction = getTransactionInstanceByType({ type: 12 });
+			expect(transaction).toBeInstanceOf(MultisignatureTransaction);
+		});
+
+		it('VoteTransaction', async () => {
+			const transaction = getTransactionInstanceByType({ type: 13 });
+			expect(transaction).toBeInstanceOf(VoteTransaction);
+		});
+
+		it('UnlockTransaction', async () => {
+			const transaction = getTransactionInstanceByType({ type: 14 });
+			expect(transaction).toBeInstanceOf(UnlockTransaction);
+		});
+
+		it('ProofOfMisbehaviorTransaction', async () => {
+			const transaction = getTransactionInstanceByType({ type: 15 });
+			expect(transaction).toBeInstanceOf(ProofOfMisbehaviorTransaction);
+		});
+
+		it('Invalid Transaction Type', async () => {
+			try {
+				getTransactionInstanceByType({ type: 999 });
+			} catch (err) {
+				expect(err).toBeInstanceOf(TypeError);
+				expect(err.message).toEqual('TransactionClass is not a constructor');
+			}
+		});
 	});
 
-	describe("calculateBlockSize", () => {
-		it("", async () => {});
+	describe('calculateBlockSize', () => {
+		it('Zero transactions', async () => { });
+		it('Non-zero transactions', async () => { });
 	});
 
-	describe("calculateWeightedAvg", () => {
-		it("", async () => {});
+	describe('calculateWeightedAvg', () => {
+		it('Batch of empty blocks', async () => { });
+		it('Batch of non-empty blocks', async () => { });
 	});
 
-	describe("calulateAvgFeePerByte", () => {
-		it("", async () => {});
+	describe('calulateAvgFeePerByte', () => {
+		it('', async () => { });
 	});
 
-	describe("calculateFeePerByte", () => {
-		it("", async () => {});
+	describe('calculateFeePerByte', () => {
+		it('', async () => { });
 	});
 
-	describe("EMA computation", () => {
-		it("With 0 offset", async () => {
+	describe('EMA computation', () => {
+		it('Zero offset', async () => {
 			const feePerByte = {
 				low: 3,
 				med: 4,
@@ -53,7 +104,7 @@ describe("Fee estimation tests", () => {
 			});
 		});
 
-		it("With non-zero offset", async () => {
+		it('Non-zero offset', async () => {
 			const feePerByte = {
 				low: 0,
 				med: 301.9,

@@ -384,7 +384,7 @@ const calculateWeightedAvg = blocks => {
 	return wavgLastBlocks;
 };
 
-const calulateAvgFeePerByte = (mode, transactionDetails) => {
+const calculateAvgFeePerByte = (mode, transactionDetails) => {
 	const maxBlockSize = 15 * 2 ** 10;
 	const allowedModes = Object.values(calcAvgFeeByteModes);
 
@@ -438,8 +438,8 @@ const calculateFeePerByte = block => {
 	const blockSize = calculateBlockSize(block);
 
 	feePerByte.low = (blockSize < 12.5 * 2 ** 10) ? 0 : transactionDetails[0].feePriority;
-	feePerByte.med = calulateAvgFeePerByte(calcAvgFeeByteModes.MEDIUM, transactionDetails);
-	feePerByte.high = Math.max(calulateAvgFeePerByte(calcAvgFeeByteModes.HIGH, transactionDetails),
+	feePerByte.med = calculateAvgFeePerByte(calcAvgFeeByteModes.MEDIUM, transactionDetails);
+	feePerByte.high = Math.max(calculateAvgFeePerByte(calcAvgFeeByteModes.HIGH, transactionDetails),
 		(1.3 * feePerByte.med + 1));
 
 	return feePerByte;
@@ -581,4 +581,9 @@ module.exports = {
 	getUnixTime,
 	EMAcalc,
 	getEstimateFeeByte,
+	getTransactionInstanceByType,
+	calculateBlockSize,
+	calculateFeePerByte,
+	calculateAvgFeePerByte,
+	calculateWeightedAvg,
 };
