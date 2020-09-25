@@ -103,7 +103,7 @@ const lowNetwork = () => {
 };
 
 const moderateNetwork = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(0, 30) };
+	blockData.numberOfTransactions = { function: () => randomNumber(30, 80) };
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/moderateTraffic.json`,
@@ -112,7 +112,7 @@ const moderateNetwork = () => {
 };
 
 const highNetwork = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(0, 100) };
+	blockData.numberOfTransactions = { function: () => randomNumber(120, 134) };
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/highTraffic.json`,
