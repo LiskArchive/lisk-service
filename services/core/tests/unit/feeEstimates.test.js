@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 const {
 	TransferTransaction,
 	DelegateTransaction,
@@ -34,10 +33,17 @@ const {
 } = require('../constants/transactions');
 
 const {
-	EMAcalc,
 	getTransactionInstanceByType,
 	calculateBlockSize,
+	calculateWeightedAvg,
+	calcAvgFeeByteModes,
+	calculateAvgFeePerByte,
+	calculateFeePerByte,
+	EMAcalc,
 } = require('../../shared/core');
+
+const noTrafficMockup = require('../blockGenerator/noTraffic.json');
+const highTrafficMockup = require('../blockGenerator/highTraffic.json');
 
 
 describe('Fee estimation tests', () => {
@@ -88,23 +94,66 @@ describe('Fee estimation tests', () => {
 			expect(blockSize).toBe(0);
 		});
 
-		it('Non-zero transactions', async () => {
+		xit('Non-zero transactions', async () => {
 			const blockSize = calculateBlockSize(nonEmptyBlock);
 			expect(blockSize).not.toBe(0);
 		});
 	});
 
 	describe('calculateWeightedAvg', () => {
-		it('Batch of empty blocks', async () => { });
-		it('Batch of non-empty blocks', async () => { });
+		it('Batch of empty blocks', async () => {
+			const wavg = calculateWeightedAvg(noTrafficMockup.blocks);
+			expect(wavg).toBe(0);
+		});
+
+		xit('Batch of non-empty blocks', async () => {
+			const wavg = calculateWeightedAvg(highTrafficMockup.blocks);
+			expect(wavg).not.toBe(0);
+		});
 	});
 
-	describe('calulateAvgFeePerByte', () => {
-		it('', async () => { });
+	describe('calulateAvgFeePerByte for Transactions', () => {
+		xit('Mode: \'med\'', async () => {
+			const avgFeeByte = calculateAvgFeePerByte(
+				calcAvgFeeByteModes.MEDIUM,
+				transactionType8,
+			);
+			expect(avgFeeByte).not.toBe(0);
+		});
+
+		xit('Mode: \'high\'', async () => {
+			const avgFeeByte = calculateAvgFeePerByte(
+				calcAvgFeeByteModes.HIGH,
+				transactionType8,
+			);
+			expect(avgFeeByte).not.toBe(0);
+		});
 	});
 
-	describe('calculateFeePerByte', () => {
-		it('', async () => { });
+	describe('calculateFeePerByte for Blocks', () => {
+		it('Empty block', async () => {
+			const feePerByte = calculateFeePerByte(noTrafficMockup.blocks[0]);
+			expect(feePerByte.low).toBe(0);
+			expect(feePerByte.med).toBe(0);
+			expect(feePerByte.high).toBe(1);
+			expect(feePerByte).toEqual({
+				low: 0,
+				med: 0,
+				high: 1,
+			});
+		});
+
+		xit('Non-empty block', async () => {
+			const feePerByte = calculateFeePerByte(highTrafficMockup.blocks[0]);
+			expect(feePerByte.low).toBeCloseTo(0.10217999999999999);
+			expect(feePerByte.med).toBeCloseTo(0.13624);
+			expect(feePerByte.high).toBeCloseTo(0.1703);
+			expect(feePerByte).toEqual({
+				low: 0.10217999999999999,
+				med: 0.13624,
+				high: 0.1703,
+			});
+		});
 	});
 
 	describe('EMA computation', () => {
@@ -116,8 +165,11 @@ describe('Fee estimation tests', () => {
 			};
 			const prevFeeEstPerByte = {};
 
-			const response = await EMAcalc(feePerByte, prevFeeEstPerByte);
-			expect(response).toEqual({
+			const EMAoutput = EMAcalc(feePerByte, prevFeeEstPerByte);
+			expect(EMAoutput.feeEstLow).toBeCloseTo(0.10217999999999999);
+			expect(EMAoutput.feeEstMed).toBeCloseTo(0.13624);
+			expect(EMAoutput.feeEstHigh).toBeCloseTo(0.1703);
+			expect(EMAoutput).toEqual({
 				feeEstLow: 0.10217999999999999,
 				feeEstMed: 0.13624,
 				feeEstHigh: 0.1703,
@@ -136,8 +188,11 @@ describe('Fee estimation tests', () => {
 				high: 2000,
 			};
 
-			const response = await EMAcalc(feePerByte, prevFeeEstPerByte);
-			expect(response).toEqual({
+			const EMAoutput = EMAcalc(feePerByte, prevFeeEstPerByte);
+			expect(EMAoutput.feeEstLow).toBeCloseTo(0);
+			expect(EMAoutput.feeEstMed).toBeCloseTo(976.222714);
+			expect(EMAoutput.feeEstHigh).toBeCloseTo(2012.411464);
+			expect(EMAoutput).toEqual({
 				feeEstLow: 0,
 				feeEstMed: 976.222714,
 				feeEstHigh: 2012.411464,

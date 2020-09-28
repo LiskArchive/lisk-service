@@ -584,6 +584,7 @@ module.exports = {
 	getTransactionInstanceByType,
 	calculateBlockSize,
 	calculateFeePerByte,
+	calcAvgFeeByteModes,
 	calculateAvgFeePerByte,
 	calculateWeightedAvg,
 };

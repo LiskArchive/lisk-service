@@ -70,6 +70,8 @@ const blockMocker = (blockData, batchSize) => mocker()
 
 					blockPayloadLength += txPayloadLength;
 				} while (--transactionIndex >= 0);
+			} else {
+				block.transactions = { data: [] };
 			}
 
 			block.totalAmount = String(blockTotalAmount);
