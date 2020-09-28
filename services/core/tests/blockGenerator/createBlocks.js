@@ -40,14 +40,6 @@ const blockMocker = (blockData, batchSize) => mocker()
 					const transaction = block.transactions.data[transactionIndex];
 					transaction.height = block.height;
 					transaction.blockId = block.id;
-
-					if (transactionIndex < block.transactions.data.length - 1) {
-						transaction.timestamp = block.transactions.data[transactionIndex + 1].timestamp
-							- (Math.floor(Math.random() * 100) % 5);
-					} else {
-						transaction.timestamp = block.timestamp - (Math.floor(Math.random() * 100) % 30);
-					}
-
 					transaction.confirmations = block.confirmations;
 
 					if ([8, 14].includes(transaction.type)) {
@@ -58,7 +50,7 @@ const blockMocker = (blockData, batchSize) => mocker()
 							blockTotalAmount += Number(transaction.asset.votes[voteIndex].amount);
 						} while (--voteIndex >= 0);
 					}
-					blockTotalFee += transaction.fee;
+					blockTotalFee += Number(transaction.fee);
 
 					let txPayloadLength;
 					if (transaction.type === 8) txPayloadLength = 117;

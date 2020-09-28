@@ -47,7 +47,7 @@ const blockData = {
 		function: () => Math.floor(Date.now() / 10) * 10,
 	},
 	generatorAddress: {
-		function: () => `${Math.floor(Math.random() * 10 ** 20)}L`,
+		function: () => `${Math.floor(Math.random() * 10 ** 19)}L`,
 	},
 	generatorPublicKey: {
 		function: () => generateHex(64),

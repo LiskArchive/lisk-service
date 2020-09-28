@@ -30,7 +30,7 @@ const generateHex = (size) => {
 
 const transactionData = {
 	id: {
-		function: () => Math.floor(Math.random() * 10 ** 19),
+		function: () => String(Math.floor(Math.random() * 10 ** 20)),
 	},
 	type: {
 		function: () => {
@@ -41,31 +41,13 @@ const transactionData = {
 		},
 	},
 	fee: {
-		function: () => 10 ** 7,
-	},
-	nonce: {
-		function: () => String(Math.floor(Math.random() * 10 ** 3)),
-	},
-	height: {
-		function: () => null,
-	},
-	blockId: {
-		function: () => null,
-	},
-	timestamp: {
-		function: () => null,
-	},
-	senderId: {
-		function: () => `${Math.floor(Math.random() * 10 ** 20)}L`,
+		function: () => String(10 ** 7),
 	},
 	senderPublicKey: {
 		function: () => generateHex(64),
 	},
-	recipientPublicKey: {
-		function: () => generateHex(64),
-	},
-	signatures: {
-		function: () => [generateHex(128)],
+	nonce: {
+		function: () => String(Math.floor(Math.random() * 10 ** 3)),
 	},
 	asset: {
 		username: { faker: 'name.firstName' },
@@ -73,31 +55,49 @@ const transactionData = {
 		address: { function: () => null },
 		min: { function: () => 1 },
 		lifetime: { function: () => Math.floor(Math.random() * 100) },
-		keysgroup: { function: () => `+${generateHex(64)}` },
+		keysgroup: { function: () => [`+${generateHex(64)}`] },
+		mandatoryKeys: { function: () => [`+${generateHex(64)}`] },
+		optionalKeys: { function: () => [`+${generateHex(64)}`] },
+		numberOfSignatures: { function: () => 0 },
 		votes: {
 			function: () => [{
 				amount: String((Math.floor(Math.random() * 10) * 10 ** 7)),
-				delegateAddress: `${Math.floor(Math.random() * 10 ** 20)}L`,
+				delegateAddress: `${Math.floor(Math.random() * 10 ** 19)}L`,
 			}],
 		},
 		unlockingObjects: {
 			function: () => [{
-				delegateAddress: `${Math.floor(Math.random() * 10 ** 20)}L`,
+				delegateAddress: `${Math.floor(Math.random() * 10 ** 19)}L`,
 				amount: String((Math.floor(Math.random() * 10) * 10 ** 7)),
 				unvoteHeight: Math.floor(Math.random() * 10),
 			}],
 		},
 		amount: { function: () => String(Math.floor(Math.random() * 10)) },
-		recipientId: { function: () => `${Math.floor(Math.random() * 10 ** 20)}L` },
+		recipientId: { function: () => `${Math.floor(Math.random() * 10 ** 19)}L` },
+	},
+	signatures: {
+		function: () => [generateHex(128)],
+	},
+	height: {
+		function: () => null,
+	},
+	blockId: {
+		function: () => null,
+	},
+	senderId: {
+		function: () => `${Math.floor(Math.random() * 10 ** 19)}L`,
+	},
+	recipientPublicKey: {
+		function: () => generateHex(64),
 	},
 	confirmations: {
 		function: () => null,
-	},
+	}
 };
 
 const assetsTransactionType8 = ['amount', 'recipientId'];
 const assetsTransactionType10 = ['username', 'publicKey', 'address'];
-const assetsTransactionType12 = ['min', 'lifetime', 'keysgroup'];
+const assetsTransactionType12 = ['mandatoryKeys', 'optionalKeys', 'numberOfSignatures'];
 const assetsTransactionType13 = ['votes'];
 const assetsTransactionType14 = ['unlockingObjects'];
 const assetsTransactionType15 = [];
@@ -118,6 +118,12 @@ const txMocker = (batchSize) => mocker()
 				};
 			} else if (transaction.type === 12) {
 				containAssets = assetsTransactionType12;
+
+				let n = Math.floor(Math.random() * 10) % 5;
+				let m = Math.floor(Math.random() * 10) % 5;
+				transaction.asset.numberOfSignatures = n + (m > 2 ? m % 2 : 0);
+				while (--n > 0) transaction.asset.mandatoryKeys.push(generateHex(128));
+				while (--m > 0) transaction.asset.optionalKeys.push(generateHex(128));
 			} else if (transaction.type === 13) {
 				containAssets = assetsTransactionType13;
 			} else if (transaction.type === 14) {
@@ -127,6 +133,7 @@ const txMocker = (batchSize) => mocker()
 
 				let n = Math.floor(Math.random() * 10) % 5;
 				while (--n > 0) transaction.signatures.push(generateHex(128));
+				transaction['ready'] = true;
 			}
 
 			Object.keys(transaction.asset).forEach(key => {
