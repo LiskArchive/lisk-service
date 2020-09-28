@@ -34,7 +34,7 @@ const blockMocker = (blockData, batchSize) => mocker()
 			}
 
 			if (block.numberOfTransactions) {
-				block.transactions = { data: txMocker(block.numberOfTransactions)};
+				block.transactions = { data: txMocker(block.numberOfTransactions) };
 				let transactionIndex = block.transactions.data.length - 1;
 				do {
 					const transaction = block.transactions.data[transactionIndex];

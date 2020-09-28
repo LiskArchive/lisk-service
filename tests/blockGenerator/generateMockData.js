@@ -91,14 +91,14 @@ const blockData = {
 };
 let args = Number(process.argv.slice(2)[0]);
 if (!args) {
-	args = 20;
+	args = 50;
 }
 const lowNetwork = () => {
 	blockData.numberOfTransactions = { function: () => randomNumber(0, 10) };
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/lowTraffic.json`,
-		JSON.stringify(res, null, 2),
+		JSON.stringify(res, null, '\t'),
 	);
 };
 
@@ -107,7 +107,7 @@ const moderateNetwork = () => {
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/moderateTraffic.json`,
-		JSON.stringify(res, null, 2),
+		JSON.stringify(res, null, '\t'),
 	);
 };
 
@@ -116,7 +116,7 @@ const highNetwork = () => {
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/highTraffic.json`,
-		JSON.stringify(res, null, 2),
+		JSON.stringify(res, null, '\t'),
 	);
 };
 

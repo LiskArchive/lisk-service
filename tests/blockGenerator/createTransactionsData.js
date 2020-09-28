@@ -67,8 +67,13 @@ const transactionData = {
 	recipientPublicKey: {
 		function: () => generateHex(64),
 	},
-	signature: {
-		function: () => generateHex(128),
+	signatures: {
+		function: () => [generateHex(128)],
+	},
+	asset: {
+		username: { faker: 'name.firstName' },
+		publicKey: { function: () => null },
+		address: { function: () => null },
 	},
 	confirmations: {
 		function: () => null,
@@ -81,8 +86,16 @@ const txMocker = (batchSize) => mocker()
 		if (err) throw err;
 
 		data.transactions.forEach((transaction) => {
-			transaction.signatures = [];
-			transaction.asset = {};
+			transaction.asset = {
+				...transaction.asset,
+				publicKey: transaction.senderPublicKey,
+				address: transaction.senderId,
+			};
+
+			if (transaction.type === 15) {
+				let n = Math.floor(Math.random() * 10) % 5;
+				while (--n > 0) transaction.signatures.push(generateHex(128));
+			}
 		});
 
 		return data.transactions;
