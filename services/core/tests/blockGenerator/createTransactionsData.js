@@ -80,10 +80,15 @@ const transactionData = {
 				delegateAddress: `${Math.floor(Math.random() * 10 ** 20)}L`,
 			}],
 		},
-		delegateAddress: { function: () => `${Math.floor(Math.random() * 10 ** 20)}L` },
+		unlockingObjects: {
+			function: () => [{
+				delegateAddress: `${Math.floor(Math.random() * 10 ** 20)}L`,
+				amount: String((Math.floor(Math.random() * 10) * 10 ** 7)),
+				unvoteHeight: Math.floor(Math.random() * 10),
+			}],
+		},
 		amount: { function: () => String(Math.floor(Math.random() * 10)) },
 		recipientId: { function: () => `${Math.floor(Math.random() * 10 ** 20)}L` },
-		unvoteHeight: { function: () => Math.floor(Math.random() * 10) },
 	},
 	confirmations: {
 		function: () => null,
@@ -94,7 +99,7 @@ const assetsTransactionType8 = ['amount', 'recipientId'];
 const assetsTransactionType10 = ['username', 'publicKey', 'address'];
 const assetsTransactionType12 = ['min', 'lifetime', 'keysgroup'];
 const assetsTransactionType13 = ['votes'];
-const assetsTransactionType14 = ['delegateAddress', 'amount', 'unvoteHeight'];
+const assetsTransactionType14 = ['unlockingObjects'];
 const assetsTransactionType15 = [];
 
 const txMocker = (batchSize) => mocker()
