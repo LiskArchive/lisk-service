@@ -31,56 +31,57 @@ const generateHex = (size) => {
 const blockSchema = {
 	blockSignature: {
 		function: () => generateHex(128),
-    },
+	},
 	generatorPublicKey: {
 		function: () => generateHex(64),
-    },
-    height: {
+	},
+	height: {
 		faker: 'random.number',
 	},
-    maxHeightPreviouslyForged: {
+	maxHeightPreviouslyForged: {
 		faker: 'random.number',
 	},
-    maxHeightPrevoted: {
+	maxHeightPrevoted: {
 		faker: 'random.number',
-    },
-    numberOfTransactions: {
-		faker: 'random.number',
-    },
-    payloadHash: {
+	},
+	numberOfTransactions: {
+		function: () => Math.floor(Math.random() * 1000) % 135,
+	},
+	payloadHash: {
 		function: () => generateHex(64),
-    },
-    payloadLength: {
-		function: () => 0,
-    },
-    previousBlockId: {
+	},
+	payloadLength: {
+		function: () => Math.floor(Math.random() * 1000),
+	},
+	previousBlockId: {
 		function: () => Math.floor(Math.random() * 10 ** 19),
 	},
-    reward: {
-		function: () => '200000000',
-    },
-    seedReveal: {
+	reward: {
+		function: () => String(1 * 10 ** 8),
+	},
+	seedReveal: {
 		function: () => 1,
-    },
-    timestamp: {
+	},
+	timestamp: {
 		function: () => Math.floor(Date.now() / 10) * 10,
-    },
-    totalAmount: {
-		function: () => 0,
-    },
-    totalFee: {
-		function: () => 0,
-    },
+	},
+	totalAmount: {
+		function: () => Math.floor(Math.random() * 10 ** 8),
+	},
+	totalFee: {
+		function: () => Math.floor(Math.random() * 10 ** 8),
+	},
 	version: {
 		function: () => 1,
-    },
+	},
 };
 
 const blockSchemaMocker = () => mocker()
 	.schema('blockSchema', blockSchema, 1)
 	.build((err, data) => {
-        if (err) throw err;
-		return data;
+		if (err) throw err;
+
+		return data.blockSchema[0];
 	});
 
 module.exports = blockSchemaMocker;

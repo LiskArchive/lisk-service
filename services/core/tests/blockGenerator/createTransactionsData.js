@@ -141,6 +141,7 @@ const txMocker = (batchSize) => mocker()
 				containAssets = assetsTransactionType15;
 				minFee = 134000;
 
+				transaction.asset.header2.generatorPublicKey = transaction.asset.header1.generatorPublicKey;
 				let n = Math.floor(Math.random() * 10) % 5;
 				while (--n > 0) transaction.signatures.push(generateHex(128));
 				transaction.ready = true;

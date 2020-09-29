@@ -44,7 +44,7 @@ const blockData = {
 		function: () => 1,
 	},
 	timestamp: {
-		function: () => Math.floor(Date.now() / 10) * 10,
+		function: () => Math.floor(Date.now() / 1000),
 	},
 	generatorAddress: {
 		function: () => `${Math.floor(Math.random() * 10 ** 19)}L`,
@@ -56,7 +56,7 @@ const blockData = {
 		faker: 'name.firstName',
 	},
 	payloadLength: {
-		function: () => Math.floor(Math.random() * 10),
+		function: () => Math.floor(Math.random() * 1000),
 	},
 	payloadHash: {
 		function: () => generateHex(64),
