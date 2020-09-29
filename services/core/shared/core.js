@@ -426,7 +426,7 @@ const calculateFeePerByte = block => {
 		const tx = getTransactionInstanceByType(transaction);
 		const transactionSize = tx.getBytes().length;
 		const { minFee } = tx;
-		const feePriority = (transaction.fee - minFee) / transactionSize;
+		const feePriority = (Number(transaction.fee) - Number(minFee)) / transactionSize;
 		return {
 			id: transaction.id,
 			size: transactionSize,

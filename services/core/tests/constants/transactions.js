@@ -1,26 +1,23 @@
 const transactionType8 = {
     data: [
         {
-            id: 9560138035265935000,
-            amount: 4,
-            fee: 10000000,
+            id: '80544247215742220000',
             type: 8,
-            height: 66944,
-            blockId: 8996907679177373000,
-            timestamp: 1600072201825,
-            senderId: '7346337108188417000L',
-            senderPublicKey: '2bad7284b6ca813f9becaba86bacdffbe52b29514220df0797190a4d04b1c0d1',
-            recipientId: '8731679391414571000L',
-            recipientPublicKey: '655639a55ccf806d1339a15fbf0b071501aab22de7debdd7873ba148c641b30b',
-            signatures: [
-                '6a2ba5436e06de1b7525b4689cb1203e21d390d12d8a0a79526842a3d9cb465f18b155f846914b3819589145438bf8c4928bafdae98519d83e62b87dfbc1c089',
-            ],
+            fee: '10000000',
+            senderPublicKey: '2812796a99c4fb40a8286300d4ae6e7ce298182195b5a615f94c8f3a01d0990f',
+            nonce: '478',
             asset: {
-                username: 'Eleonore',
-                publicKey: '2bad7284b6ca813f9becaba86bacdffbe52b29514220df0797190a4d04b1c0d1',
-                address: '7346337108188417000L',
+                amount: '9',
+                recipientId: '4353474835841562000L',
             },
-            confirmations: 1,
+            signatures: [
+                '989c8b061eaf8b0431f13b3fcc7460953d0e572284f6ca40c3a751cbe7564d473afb5274f5db4f6bdcfa30c2d55b790aa2b4226d3c6f81e684374df61bcac7ac',
+            ],
+            height: 89147,
+            blockId: 2637208369895531500,
+            senderId: '7383044458621549000L',
+            recipientPublicKey: '4c27f56a37b84867fdd8def971dae43b3c523d8b19c0d1c560fd27881a15066b',
+            confirmations: 5,
         },
     ],
 };
@@ -28,26 +25,24 @@ const transactionType8 = {
 const transactionType10 = {
     data: [
         {
-            id: 1221673716140152600,
-            amount: 7,
-            fee: 10000000,
+            id: '64844300463420490000',
             type: 10,
-            height: 17852,
-            blockId: 2250392940125805000,
-            timestamp: 1600072201866,
-            senderId: '22932909379026190000L',
-            senderPublicKey: '450609c2a40dcc7b90b7b9007b7f196f0f9a42282b0848e0e85c7eda91cc2819',
-            recipientId: '86132029727485350000L',
-            recipientPublicKey: 'de53491e2fdc2cfacb9b55f27366430ef7499b353696615e9d60756515acb0d6',
-            signatures: [
-                '749815f02787f41c12feefa14ddb6cca5b677bb4a393fd84b0efd2dece8cee1138be32612656eb80674f44a1c90eda951ceac364f7bdfed44b37151047e97a30',
-            ],
+            fee: '10000000',
+            senderPublicKey: '15143bcd54b0ab0a3a870ec856532d5b9284cc3d3106b7d152a259ef21426713',
+            nonce: '770',
             asset: {
-                username: 'Misael',
-                publicKey: '450609c2a40dcc7b90b7b9007b7f196f0f9a42282b0848e0e85c7eda91cc2819',
-                address: '22932909379026190000L',
+                username: 'Trevor',
+                publicKey: '15143bcd54b0ab0a3a870ec856532d5b9284cc3d3106b7d152a259ef21426713',
+                address: '56798510627744660L',
             },
-            confirmations: 5,
+            signatures: [
+                '8cf4b0aa737b172aaa5b3cf89af9a32f82e4aa2a831647aff6c5633487e8418a41d80da024703aec46aa9d0e8f8b071d2bb92e7d3811b45e7b260e5426279399',
+            ],
+            height: 87334,
+            blockId: 5870895076660847000,
+            senderId: '56798510627744660L',
+            recipientPublicKey: 'd192055abc8add8390eeb57c69305bd4ab7f20778dbc0422499d95f561f00267',
+            confirmations: 6,
         },
     ],
 };
@@ -55,26 +50,32 @@ const transactionType10 = {
 const transactionType12 = {
     data: [
         {
-            id: 4380649472968938500,
-            amount: 1,
-            fee: 10000000,
+            id: '46809518124682320000',
             type: 12,
-            height: 66944,
-            blockId: 8996907679177373000,
-            timestamp: 1600072201834,
-            senderId: '29540662794950935000L',
-            senderPublicKey: 'cf65f026b9d01f953b7703bd93f831a999d1ca733d4c44c1eb450af26874772d',
-            recipientId: '35763262285372166000L',
-            recipientPublicKey: 'ed91027e996b8962727c571f7d4744222998856902279ddc4fe03f8aae17d612',
-            signatures: [
-                'fc8bd2e511e165ac0713a5e5184b61708060b4aeea5b5cda141a9956311fede46f0ca68a477329021b0a89f00e5fc43e49764ef419d6696f601ecc53700b76ae',
-            ],
+            fee: '10000000',
+            senderPublicKey: 'da8fd2f60ff50153b759ccd142481fcd0c0ee4c0c6f2eb99e900900e936b41af',
+            nonce: '369',
             asset: {
-                username: 'Sim',
-                publicKey: 'cf65f026b9d01f953b7703bd93f831a999d1ca733d4c44c1eb450af26874772d',
-                address: '29540662794950935000L',
+                mandatoryKeys: [
+                    '+f19a88e89b21f29bb5c08217fba69268205cf8d5615e43621dbef3f509143914',
+                    'c6943b5a2b1f79da56ce3c1b54c001dcbbc28bd907ca25c2e8365d7ad9815bd2b944743a09a4504b475d6848f980d27ba9690b56507f887e11154484dcfbb966',
+                ],
+                optionalKeys: [
+                    '+5712e0d17a02e1f4225e214108f6ad4d806765ac3d5d436acae2715e20b82250',
+                    '39c48f1220e9da589894546938d3a9f7d5a3bd06b8d07a066c374e341ec3cfdd44736d88efcfbe795c4fd079b42989a7709d3653179ec21ff451476ea2ad2d7c',
+                    '6692dfacbf0018bd0e3a78782e64c26a10070f67f6cd22bf45441ff768c617c303d65b9443725392b37b564e674c7c128a128f559976331084191d6f9fdd23dd',
+                    'd07de76f9399f376273213911cc2d3431f84743cdbd238eb0307f4e3a9e2de614422f635fb41e1bb905bded6c80346d47c786a20fee9861246fadaca457ab46e',
+                ],
+                numberOfSignatures: 2,
             },
-            confirmations: 1,
+            signatures: [
+                '9df4b29e2e1157eec29d0676a456bfe5fc27f25cc2632e4d578750b189e83d6aacfc6feafd2375f6f4f5ff637c7ab52e72e84436d850a57c718abbb03dde4249',
+            ],
+            height: 87334,
+            blockId: 5870895076660847000,
+            senderId: '749317707444539000L',
+            recipientPublicKey: 'e98636507d226fb65c035450ea187cdefd6cb5dd92692fdbc18968f759a4a97a',
+            confirmations: 6,
         },
     ],
 };
@@ -82,28 +83,27 @@ const transactionType12 = {
 const transactionType13 = {
     data: [
         {
-            id: 4443041135218204000,
+            id: '79587104062815160000',
             type: 13,
-            fee: 10000000,
-            nonce: '926',
-            height: 41154,
-            blockId: 4972122516885654000,
-            timestamp: 1601293500674,
-            senderId: '75778598273265390000L',
-            senderPublicKey: 'e4d5e7b4e4226de2289ca26e64b1e9d4f99dae5b66e22a3f394257b4d6e6f2e1',
-            recipientPublicKey: '2c379ba1414f7e050153ee4c465cbe79e522b34ddf096ac4b59d10ada2786ba3',
-            signatures: [
-                '08f0e5877eb2399fdbcc994cda235ad00b5ec304035fddfc4513bab1f195033531624a05703a9ab928bea0cb17ee64c07116b3e84aa289350d8acd7a8d965a02',
-            ],
+            fee: '10000000',
+            senderPublicKey: 'dbd57dcb0ebe3137667d381f2696c99ac275ea66bc75ab483b39e4750532f463',
+            nonce: '534',
             asset: {
                 votes: [
                     {
-                        amount: '90000000',
-                        delegateAddress: '71833934915136455000L',
+                        amount: '30000000',
+                        delegateAddress: '765293573230843000L',
                     },
                 ],
             },
-            confirmations: 8,
+            signatures: [
+                '879a1ae65295cc136f425b834596169ff6efc7f0d1b574fb1b01f56420124583c5919dbe29cc0fb84f0c43d4e5220463e637576ebfaf4618e399d81cf0fdbdbd',
+            ],
+            height: 87334,
+            blockId: 5870895076660847000,
+            senderId: '6050153614645346000L',
+            recipientPublicKey: '8fa7e0f2421b1c7dbd81288a4ca8342f9c02ebd908fb13b95c97ca8cb36be132',
+            confirmations: 6,
         },
     ],
 };
@@ -111,29 +111,28 @@ const transactionType13 = {
 const transactionType14 = {
     data: [
         {
-            "id": 9970673334637838000,
-            "type": 14,
-            "fee": 10000000,
-            "nonce": "406",
-            "height": 15781,
-            "blockId": 4370245395991423500,
-            "timestamp": 1601304370455,
-            "senderId": "63123881523319490000L",
-            "senderPublicKey": "0935f0ff73574e8d2e6ddbed7718dd2319346cd2ded087d9716c9d6f8f60bb63",
-            "recipientPublicKey": "76cb9d87a571845434fb1a5d76e4df256598807ca342a57d79fecfbc55acd566",
-            "signatures": [
-                "15ef1c93c79f8fed2028897a90e722bb005c62cd3af4c5fc4d8aac495b0e012125829a1b8bdc2baaa0e96f39055c346436be9a99e83c6c62a1fce8abe4f8d1e2"
-            ],
-            "asset": {
-                "unlockingObjects": [
+            id: '60370643771103500000',
+            type: 14,
+            fee: '10000000',
+            senderPublicKey: 'b51dd0f3cb20aa20bffd4cdb8e357e672f597d7d3189b90e18d61eb495584ab0',
+            nonce: '93',
+            asset: {
+                unlockingObjects: [
                     {
-                        "delegateAddress": "57235820868719970000L",
-                        "amount": "50000000",
-                        "unvoteHeight": 7
-                    }
-                ]
+                        delegateAddress: '678634396835107200L',
+                        amount: '80000000',
+                        unvoteHeight: 9,
+                    },
+                ],
             },
-            "confirmations": 9
+            signatures: [
+                '589713efec06cec889dd782ac6ee0ba9ebd78a6c95f05a95adc2c2920ee16fbcc80e3996b5540a27c625fa6e9f79eb36b2530b25ff6c8fc1bd1e46ca2a14a0d7',
+            ],
+            height: 37865,
+            blockId: 2772216074399567400,
+            senderId: '5232834087244418000L',
+            recipientPublicKey: '9e4001243db07de00a4ee1df68884f03db4f002121e5347ae6956de20933656c',
+            confirmations: 3,
         },
     ],
 };
