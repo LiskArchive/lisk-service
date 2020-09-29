@@ -94,7 +94,7 @@ describe('Fee estimation tests', () => {
 			expect(blockSize).toBe(0);
 		});
 
-		xit('Non-zero transactions', async () => {
+		it('Non-zero transactions', async () => {
 			const blockSize = calculateBlockSize(nonEmptyBlock);
 			expect(blockSize).not.toBe(0);
 		});
@@ -106,13 +106,18 @@ describe('Fee estimation tests', () => {
 			expect(wavg).toBe(0);
 		});
 
-		xit('Batch of non-empty blocks', async () => {
+		it('Batch of non-empty blocks', async () => {
 			const wavg = calculateWeightedAvg(highTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
 		});
 	});
 
 	describe('calulateAvgFeePerByte for Transactions', () => {
+		it('Available computation modes', async () => {
+			expect(calcAvgFeeByteModes.MEDIUM).toBe('med');
+			expect(calcAvgFeeByteModes.HIGH).toBe('high');
+		});
+
 		xit('Mode: \'med\'', async () => {
 			const avgFeeByte = calculateAvgFeePerByte(
 				calcAvgFeeByteModes.MEDIUM,
@@ -143,13 +148,19 @@ describe('Fee estimation tests', () => {
 			});
 		});
 
-		xit('Non-empty block', async () => {
-			const feePerByte = calculateFeePerByte(highTrafficMockup.blocks[0]);
-			expect(feePerByte.low).toBeCloseTo(0.10217999999999999);
+		it('Non-empty block', async () => {
+			const block = highTrafficMockup.blocks[0];
+			block.transactions.data = block.transactions.data.map(transaction => {
+				transaction.fee = BigInt(transaction.fee);
+				return transaction;
+			});
+
+			const feePerByte = calculateFeePerByte(block);
+			expect(feePerByte.low).toBeCloseTo(0);
 			expect(feePerByte.med).toBeCloseTo(0.13624);
 			expect(feePerByte.high).toBeCloseTo(0.1703);
 			expect(feePerByte).toEqual({
-				low: 0.10217999999999999,
+				low: 0,
 				med: 0.13624,
 				high: 0.1703,
 			});

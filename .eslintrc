@@ -8,7 +8,8 @@
 	"globals": {
 		"ipc": true,
 		"PRODUCTION": true,
-		"TEST": true
+		"TEST": true,
+		"BigInt": true
 	},
 	"env": {
 		"node": true,
@@ -18,31 +19,40 @@
 		"arrow-parens": "off",
 		"func-names": "off",
 		"global-require": "off",
-		"new-cap": ["error", {
-		"newIsCap": false,
-		"capIsNew": false,
-		"capIsNewExceptions" : [
-			"When",
-			"Then",
-			"Given",
-			"After",
-			"Before"
-		]
-		}],
+		"new-cap": [
+			"error",
+			{
+				"newIsCap": false,
+				"capIsNew": false,
+				"capIsNewExceptions": [
+					"When",
+					"Then",
+					"Given",
+					"After",
+					"Before"
+				]
+			}
+		],
 		"no-loop-func": "off",
 		"no-plusplus": "off",
 		"no-restricted-properties": "off",
 		"no-return-assign": "off",
 		"no-underscore-dangle": "off",
-		"import/no-extraneous-dependencies": ["error",
-		{
-			"devDependencies": true,
-			"optionalDependencies": false,
-			"peerDependencies": false
-		}
+		"import/no-extraneous-dependencies": [
+			"error",
+			{
+				"devDependencies": true,
+				"optionalDependencies": false,
+				"peerDependencies": false
+			}
 		],
 		"no-param-reassign": "off",
-		"camelcase": [ "error", { "properties": "never" }],
+		"camelcase": [
+			"error",
+			{
+				"properties": "never"
+			}
+		],
 		"mocha/no-skipped-tests": "off"
 	}
 }

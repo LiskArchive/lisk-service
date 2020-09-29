@@ -42,7 +42,7 @@ const transactionData = {
 		},
 	},
 	fee: {
-		function: () => String(10 ** 7),
+		function: () => Math.floor(Math.random() * 10 ** ((Math.random() * 10) % 8)),
 	},
 	senderPublicKey: {
 		function: () => generateHex(64),
@@ -112,8 +112,11 @@ const txMocker = (batchSize) => mocker()
 
 		data.transactions.forEach((transaction) => {
 			let containAssets = assetsTransactionType8;
+			let minFee = 130000;
 			if (transaction.type === 10) {
 				containAssets = assetsTransactionType10;
+				minFee = 1000120000;
+
 				transaction.asset = {
 					...transaction.asset,
 					publicKey: transaction.senderPublicKey,
@@ -121,6 +124,7 @@ const txMocker = (batchSize) => mocker()
 				};
 			} else if (transaction.type === 12) {
 				containAssets = assetsTransactionType12;
+				minFee = 117000;
 
 				let n = Math.floor(Math.random() * 10) % 5;
 				let m = Math.floor(Math.random() * 10) % 5;
@@ -129,16 +133,20 @@ const txMocker = (batchSize) => mocker()
 				while (--m > 0) transaction.asset.optionalKeys.push(generateHex(128));
 			} else if (transaction.type === 13) {
 				containAssets = assetsTransactionType13;
+				minFee = 130000;
 			} else if (transaction.type === 14) {
 				containAssets = assetsTransactionType14;
+				minFee = 134000;
 			} else if (transaction.type === 15) {
 				containAssets = assetsTransactionType15;
+				minFee = 134000;
 
 				let n = Math.floor(Math.random() * 10) % 5;
 				while (--n > 0) transaction.signatures.push(generateHex(128));
 				transaction.ready = true;
 			}
 
+			transaction.fee = String(minFee + transaction.fee);
 			Object.keys(transaction.asset).forEach(key => {
 				if (!containAssets.includes(key)) delete transaction.asset[key];
 			});
