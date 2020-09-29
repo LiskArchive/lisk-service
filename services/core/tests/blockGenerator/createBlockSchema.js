@@ -43,16 +43,34 @@ const blockSchema = {
 	},
     maxHeightPrevoted: {
 		faker: 'random.number',
-	},
+    },
+    numberOfTransactions: {
+		faker: 'random.number',
+    },
+    payloadHash: {
+		function: () => generateHex(64),
+    },
+    payloadLength: {
+		function: () => 0,
+    },
     previousBlockId: {
 		function: () => Math.floor(Math.random() * 10 ** 19),
 	},
     reward: {
 		function: () => '200000000',
-	},
+    },
+    seedReveal: {
+		function: () => 1,
+    },
     timestamp: {
 		function: () => Math.floor(Date.now() / 10) * 10,
-	},
+    },
+    totalAmount: {
+		function: () => 0,
+    },
+    totalFee: {
+		function: () => 0,
+    },
 	version: {
 		function: () => 1,
     },
