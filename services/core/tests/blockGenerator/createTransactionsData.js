@@ -14,6 +14,7 @@
  *
  */
 const mocker = require('mocker-data-generator').default;
+const blockSchemaMocker = require('./createBlockSchema');
 
 const generateHex = (size) => {
 	let resultHex = '';
@@ -74,6 +75,8 @@ const transactionData = {
 		},
 		amount: { function: () => String(Math.floor(Math.random() * 10)) },
 		recipientId: { function: () => `${Math.floor(Math.random() * 10 ** 19)}L` },
+		header1: { function: () => blockSchemaMocker() },
+		header2: { function: () => blockSchemaMocker() },
 	},
 	signatures: {
 		function: () => [generateHex(128)],
@@ -92,7 +95,7 @@ const transactionData = {
 	},
 	confirmations: {
 		function: () => null,
-	}
+	},
 };
 
 const assetsTransactionType8 = ['amount', 'recipientId'];
@@ -100,7 +103,7 @@ const assetsTransactionType10 = ['username', 'publicKey', 'address'];
 const assetsTransactionType12 = ['mandatoryKeys', 'optionalKeys', 'numberOfSignatures'];
 const assetsTransactionType13 = ['votes'];
 const assetsTransactionType14 = ['unlockingObjects'];
-const assetsTransactionType15 = [];
+const assetsTransactionType15 = ['header1', 'header2'];
 
 const txMocker = (batchSize) => mocker()
 	.schema('transactions', transactionData, batchSize)
@@ -133,7 +136,7 @@ const txMocker = (batchSize) => mocker()
 
 				let n = Math.floor(Math.random() * 10) % 5;
 				while (--n > 0) transaction.signatures.push(generateHex(128));
-				transaction['ready'] = true;
+				transaction.ready = true;
 			}
 
 			Object.keys(transaction.asset).forEach(key => {
