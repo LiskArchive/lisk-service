@@ -13,32 +13,36 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { cachedRequest } = require('../../services/cachedRequest');
-const { isEmptyArray } = require('../../services/object.js');
-const CoreService = require('../../services/core.js');
+const { HTTP, Utils, Logger } = require('lisk-service-framework');
+
+const { StatusCodes: { NOT_FOUND } } = HTTP;
+const { isEmptyArray, isEmptyObject } = Utils.Data;
+
+const CoreService = require('../../shared/core.js');
 const config = require('../../config.js');
-const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
+
+const logger = Logger();
+
+const knownExpireMiliseconds = 5 * 60 * 1000;
+const staticUrl = config.endpoints.liskStatic;
 
 const getKnownAccounts = async () => {
 	const { nethash } = await CoreService.getConstants();
 
-	const knownAccountsRequest = async (route) => {
-		const expireMiliseconds = 5 * 60 * 1000;
-		return JSON.parse(await cachedRequest(`${config.endpoints.liskStatic}${route}`, { expireMiliseconds }));
-	};
+	const cacheTTL = knownExpireMiliseconds;
 
 	try {
-		const knownNetworks = await knownAccountsRequest('/networks.json');
-		if (knownNetworks[nethash]) {
-			return knownAccountsRequest(`/known_${knownNetworks[nethash]}.json`);
+		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`, { cacheTTL });
+		if (knownNetworks.data[nethash]) {
+			return (await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`, { cacheTTL })).data;
 		}
-		return {};
+		return { };
 	} catch (err) {
 		return {};
 	}
 };
 
-const getDataForAccounts = async (params) => {
+const getDataForAccounts = async params => {
 	const accounts = await CoreService.getAccounts(params);
 
 	const response = {};
@@ -51,12 +55,12 @@ const getDataForAccounts = async (params) => {
 		response.meta.total = 0;
 	} else {
 		const knownAccounts = await getKnownAccounts();
-		const data = await Promise.all(accounts.data.map(async (account) => {
+		const data = await Promise.all(accounts.data.map(async account => {
 			account.multisignatureGroups = await CoreService.getMultisignatureGroups(account.address);
 			account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
 			account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
-			account.multisignatureMemberships
-			= await CoreService.getMultisignatureMemberships(account.address);
+			account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
+				account.address);
 			account.knowledge = knownAccounts[account.address] || {};
 			return account;
 		}));
@@ -69,7 +73,7 @@ const getDataForAccounts = async (params) => {
 	return response;
 };
 
-const getAccounts = async (params) => {
+const getAccounts = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
 	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.anyId} not found.` } };
@@ -79,18 +83,24 @@ const getAccounts = async (params) => {
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
 	delete params.anyId;
-	const response = await getDataForAccounts(params);
 
-	return {
-		data: {
+	try {
+		const response = await getDataForAccounts(params);
+
+		return {
 			data: response.data,
 			meta: response.meta,
-			links: response.links,
-		},
-	};
+		};
+	} catch (err) {
+		logger.error(err.stack);
+		return {
+			data: [],
+			meta: {},
+		};
+	}
 };
 
-const getTopAccounts = async (params) => {
+const getTopAccounts = async params => {
 	const response = await getDataForAccounts(Object.assign(params, {
 		sort: 'balance:desc',
 		limit: params.limit,
@@ -98,60 +108,62 @@ const getTopAccounts = async (params) => {
 	}));
 
 	return {
-		data: {
-			data: response.data,
-			meta: response.meta,
-			links: response.links,
-		},
+		data: response.data,
+		meta: response.meta,
+		links: response.links,
 	};
 };
 
-const getVotes = async (params) => {
+const getVotes = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
-
 	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.anyId} not found.` } };
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account ${params.address} not found.` } };
+	if (!isFound && params.username) return { status: NOT_FOUND, data: { error: `Account ${params.username} not found.` } };
+	if (!isFound && params.publicKey) return { status: NOT_FOUND, data: { error: `Account with a public key ${params.publicKey} not found.` } };
+	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
+
 	delete params.anyId;
 
 	const response = await CoreService.getVotes(params);
 
+	if (isEmptyObject(response)) return {};
+
 	return {
-		data: {
-			data: response.data.votes,
-			meta: {
-				limit: response.meta.limit,
-				offset: response.meta.offset,
-				total: response.data.votesUsed,
-				count: response.data.votes.length,
-				votesAvailable: response.data.votesAvailable,
-				votesUsed: response.data.votesUsed,
-			},
-			links: {},
+		data: response.data.votes,
+		meta: {
+			limit: response.meta.limit,
+			offset: response.meta.offset,
+			total: response.data.votesUsed,
+			count: response.data.votes.length,
+			votesAvailable: response.data.votesAvailable,
+			votesUsed: response.data.votesUsed,
 		},
 	};
 };
 
-const getVoters = async (params) => {
+const getVoters = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
-
 	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.anyId} not found.` } };
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account ${params.address} not found.` } };
+	if (!isFound && params.username) return { status: NOT_FOUND, data: { error: `Account ${params.username} not found.` } };
+	if (!isFound && params.publicKey) return { status: NOT_FOUND, data: { error: `Account with a public key ${params.publicKey} not found.` } };
+	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
 	delete params.anyId;
+
 	const response = await CoreService.getVoters(params);
 
+	if (isEmptyObject(response)) return {};
+
 	return {
-		data: {
-			data: response.data.voters,
-			meta: {
-				limit: response.meta.limit,
-				offset: response.meta.offset,
-				total: response.data.votes,
-				count: response.data.voters.length,
-			},
-			links: {},
+		data: response.data.voters,
+		meta: {
+			limit: response.meta.limit,
+			offset: response.meta.offset,
+			total: response.data.votes,
+			count: response.data.voters.length,
 		},
 	};
 };

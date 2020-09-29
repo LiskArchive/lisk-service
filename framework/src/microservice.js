@@ -13,85 +13,185 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// 3rd party libraries
+const util = require('util');
+const Validator = require('fastest-validator');
 const { ServiceBroker } = require('moleculer');
 const cron = require('node-cron');
 const requireAllJs = require('./requireAllJs');
-const loggerContext = require('./logger.js');
-const cacheRedis = require('./cacheRedis.js');
+const loggerLib = require('./logger');
+const {
+	isProperObject,
+} = require('./data');
 
-class Microservice {
-	constructor(config = {}) {
-		this.moleculerConfig = config;
-		this.logger = loggerContext('Microservice');
-		this.moleculerConfig.actions = {};
-		loggerContext.configure(config);
-		cacheRedis.configure(config);
-	}
+const methodSchema = {
+	name: { type: 'string' },
+	description: { type: 'string', optional: true },
+	controller: { type: 'function' },
+	params: { type: 'object', optional: true },
+};
 
-	_addItems(folderPath, type) {
+const eventSchema = {
+	name: { type: 'string' },
+	description: { type: 'string', optional: true },
+	controller: { type: 'function' },
+};
+
+const jobSchema = {
+	name: { type: 'string' },
+	description: { type: 'string', optional: true },
+	schedule: { type: 'string', optional: true },
+	interval: { type: 'number', integer: true, optional: true },
+	controller: { type: 'function' },
+	init: { type: 'function', optional: true },
+};
+
+const validator = new Validator();
+
+const Microservice = (config = {}) => {
+	const moleculerConfig = config;
+	moleculerConfig.actions = {};
+
+	const logger = loggerLib.get();
+	const log4jsConfig = loggerLib.getConfig();
+
+	const broker = new ServiceBroker({
+		transporter: moleculerConfig.transporter,
+		requestTimeout: (moleculerConfig.brokerTimeout || 5) * 1000,
+		logger: {
+			type: 'Log4js',
+			options: {
+				level: config.logger.level || 'info',
+				log4js: log4jsConfig,
+			},
+		},
+	});
+
+	const getBroker = () => broker;
+	const nop = () => {};
+
+	const addMethod = item => {
+		const validDefinition = validator.validate(item, methodSchema);
+		if (validDefinition !== true) {
+			logger.warn([
+				`Invalid method definition in ${moleculerConfig.name}:`,
+				`${util.inspect(item)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+
+		try {
+			nop(isProperObject(item.params) ? validator.validate({}, item.params) : true);
+		} catch (err) {
+			logger.warn([
+				`Invalid parameter definition in ${moleculerConfig.name}:`,
+				`${util.inspect(item)}`,
+			].join('\n'));
+			return;
+		}
+
+		moleculerConfig.actions[item.name] = {
+			params: item.params,
+			handler: ctx => item.controller(ctx.params),
+		};
+		logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
+	};
+
+	const addEvent = event => {
+		const validDefinition = validator.validate(event, eventSchema);
+		if (validDefinition !== true) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}:`,
+				`${util.inspect(event)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+
+		event.controller(data => {
+			broker.emit(event.name, data, 'gateway');
+		});
+		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
+	};
+
+	const addJob = job => {
+		const validDefinition = validator.validate(job, jobSchema);
+		if (validDefinition !== true) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+
+		if (!job.schedule && !job.interval) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+
+		if (job.init) {
+			job.init();
+		}
+
+		if (job.interval) {
+			setInterval(job.controller, job.interval * 1000);
+		} else {
+			cron.schedule(job.schedule, job.controller);
+		}
+
+		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
+	};
+
+	const _addItems = (folderPath, type) => {
 		const items = requireAllJs(folderPath);
 		const fnMap = {
-			'method': this.addMethod,
-			'event': this.addEvent,
-			'job': this.addJob,
-		}
+			method: addMethod,
+			event: addEvent,
+			job: addJob,
+		};
 
 		Object.keys(items)
 			.forEach(itemGroup => items[itemGroup]
 				.forEach(item => fnMap[type].call(this, item)));
-	}
+	};
 
-	addMethods(folderPath) {
-		this._addItems(folderPath, 'method');
-	}
+	const addMethods = folderPath => {
+		_addItems(folderPath, 'method');
+	};
 
-	addEvents(folderPath) {
-		this._addItems(folderPath, 'event');
-	}
+	const addEvents = folderPath => {
+		_addItems(folderPath, 'event');
+	};
 
-	addJobs(folderPath) {
-		this._addItems(folderPath, 'job');
-	}
+	const addJobs = folderPath => {
+		_addItems(folderPath, 'job');
+	};
 
-	addMethod(item) {
-		this.moleculerConfig.actions[item.name] = {
-			params: item.params,
-			handler: ctx => item.controller(ctx.params),
-		};
-		this.logger.info(`Registered method ${this.moleculerConfig.name}.${item.name}`);
-	}
+	const run = () => {
+		logger.info(`Creating a Moleculer service through ${moleculerConfig.transporter}`);
 
-	addEvent(event) {
-		event.controller(data => {
-			this.broker.emit(event.name, data, 'gateway');
-		});
-		this.logger.info(`Registered event ${this.moleculerConfig.name}.${event.name}`);
-	}
-
-	addJob(job) {
-		cron.schedule(job.schedule, job.controller);
-		this.logger.info(`Registered job ${this.moleculerConfig.name}.${job.name}`);
-	}
-
-	getLogger(context) {
-		return loggerContext(context);
-	}
-
-	run() {
-		this.broker = new ServiceBroker({
-			transporter: this.moleculerConfig.transporter,
-			requestTimeout: this.moleculerConfig.brokerTimeout * 1000,
-			logLevel: 'info',
-			logger: loggerContext('ServiceBroker'),
-		});
-	
 		// Create a service
-		this.broker.createService(this.moleculerConfig);
-	
+		broker.createService(moleculerConfig);
+
 		// Start server
-		return this.broker.start();
-	}
-}
+		return broker.start();
+	};
+
+	return {
+		addMethods,
+		addEvents,
+		addJobs,
+		addMethod,
+		addEvent,
+		addJob,
+		getBroker,
+		run,
+	};
+};
 
 module.exports = Microservice;

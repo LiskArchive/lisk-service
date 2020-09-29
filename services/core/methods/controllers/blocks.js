@@ -13,13 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../services/core.js');
-const ObjectUtilService = require('../../services/object.js');
-const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
+const { HTTP, Utils } = require('lisk-service-framework');
 
-const isEmptyArray = ObjectUtilService.isEmptyArray;
+const { StatusCodes: { NOT_FOUND } } = HTTP;
+const ObjectUtilService = Utils.Data;
 
-const getBlocksData = async (params) => {
+const CoreService = require('../../shared/core.js');
+
+const { isEmptyArray } = ObjectUtilService;
+
+const getBlocksData = async params => {
 	const result = {
 		data: [],
 		meta: {
@@ -32,7 +35,7 @@ const getBlocksData = async (params) => {
 	if (!Array.isArray(response.data)) return result;
 	let total;
 
-	const data = await Promise.all(response.data.map(async (block) => {
+	const data = await Promise.all(response.data.map(async block => {
 		const username = await CoreService.getUsernameByAddress(block.generatorAddress);
 		if (username) {
 			block.generatorUsername = username;
@@ -60,7 +63,7 @@ const getBlocksData = async (params) => {
 	return result;
 };
 
-const getBlocks = async (params) => {
+const getBlocks = async params => {
 	if (typeof params.height === 'number') {
 		params.height = `${params.height}`;
 	}
@@ -84,41 +87,35 @@ const getBlocks = async (params) => {
 	}
 
 	return {
-		data: {
-			data: response.data,
-			meta: response.meta,
-			link: {},
-		},
+		data: response.data,
+		meta: response.meta,
+		link: {},
 	};
 };
 
-const getBestBlocks = async (params) => {
+const getBestBlocks = async params => {
 	const response = await getBlocksData(Object.assign(params, {
 		sort: 'totalAmount:desc',
 	}));
 	const blocks = response.data;
 
 	return {
-		data: {
-			data: blocks,
-			meta: response.meta,
-			link: response.link,
-		},
+		data: blocks,
+		meta: response.meta,
+		link: response.link,
 	};
 };
 
-const getLastBlocks = async (params) => {
+const getLastBlocks = async params => {
 	const response = await getBlocksData(Object.assign(params, {
 		sort: 'timestamp:desc',
 	}));
 	const blocks = response.data;
 
 	return {
-		data: {
-			data: blocks,
-			meta: response.meta,
-			link: {},
-		},
+		data: blocks,
+		meta: response.meta,
+		link: {},
 	};
 };
 

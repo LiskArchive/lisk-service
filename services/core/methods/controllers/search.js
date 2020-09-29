@@ -15,7 +15,7 @@
  */
 const stringSimilarity = require('string-similarity');
 
-const CoreService = require('../../services/core.js');
+const CoreService = require('../../shared/core.js');
 
 const regex = {
 	address: /^[1-9]\d{0,19}L$/,
@@ -38,17 +38,17 @@ const mapBlockFields = ({ id, height }) => ({
 });
 
 const searchBy = {
-	address: async (searchTerm) => {
+	address: async searchTerm => {
 		const response = await CoreService.getAccounts({ address: searchTerm });
 		return mapDataItems(response, mapAddressFields);
 	},
 
-	publicKey: async (searchTerm) => {
+	publicKey: async searchTerm => {
 		const response = await CoreService.getAccounts({ publicKey: searchTerm });
 		return mapDataItems(response, mapAddressFields);
 	},
 
-	delegateName: async (searchTerm) => {
+	delegateName: async searchTerm => {
 		const mapDelegateFields = ({ account, username }) => ({
 			id: account.address,
 			description: username,
@@ -67,19 +67,19 @@ const searchBy = {
 		};
 	},
 
-	transactionId: async (searchTerm) => {
+	transactionId: async searchTerm => {
 		const mapTransactionFields = ({ id }) => ({ id, score: 1, type: 'tx' });
 
 		const response = await CoreService.getTransactions({ id: searchTerm });
 		return mapDataItems(response, mapTransactionFields);
 	},
 
-	blockId: async (searchTerm) => {
+	blockId: async searchTerm => {
 		const response = await CoreService.getBlocks({ blockId: searchTerm });
 		return mapDataItems(response, mapBlockFields);
 	},
 
-	blockHeight: async (searchTerm) => {
+	blockHeight: async searchTerm => {
 		const response = await CoreService.getBlocks({ height: searchTerm });
 		return mapDataItems(response, mapBlockFields);
 	},
@@ -93,8 +93,7 @@ const getSearches = searchTerm => (
 );
 
 const resolveAll = (apiCalls, searchTerm) => {
-	const promises = apiCalls.map(apiCall =>
-		apiCall(searchTerm)
+	const promises = apiCalls.map(apiCall => apiCall(searchTerm)
 			.catch(err => err));
 
 	return Promise.all(promises)
@@ -104,18 +103,15 @@ const resolveAll = (apiCalls, searchTerm) => {
 		}), { data: [], total: 0 })));
 };
 
-const getSearch = async (params) => {
+const getSearch = async params => {
 	const apiCalls = getSearches(params.q);
 	const response = await resolveAll(apiCalls, params.q);
 
 	return {
-		data: {
-			data: response.data.sort((a, b) => b.score - a.score),
-			meta: {
-				count: response.data.length,
-				total: Math.max(response.total, response.data.length),
-			},
-			links: {},
+		data: response.data.sort((a, b) => b.score - a.score),
+		meta: {
+			count: response.data.length,
+			total: Math.max(response.total, response.data.length),
 		},
 	};
 };

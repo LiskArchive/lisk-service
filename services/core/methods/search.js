@@ -19,10 +19,8 @@ module.exports = [
 	{
 		name: 'search',
 		controller: getSearch,
-		method: 'GET',
 		params: {
-			q: { required: true },
+			q: { type: 'string', optional: false },
 		},
 	},
 ];
-

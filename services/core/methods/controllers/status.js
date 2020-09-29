@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const httpStatus = require('http-status-codes');
+const { HTTP } = require('lisk-service-framework');
 
-const CoreService = require('../../services/core.js');
+const httpStatus = HTTP.StatusCodes;
+
+const CoreService = require('../../shared/core.js');
 const packageJson = require('../../package.json');
 
 const getStatus = async () => {

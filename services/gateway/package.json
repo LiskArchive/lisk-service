@@ -1,0 +1,36 @@
+{
+  "name": "lisk-service-gateway",
+  "version": "0.1.0",
+  "description": "Lisk Serivce Gateway",
+  "keywords": [
+    "lisk",
+    "blockchain"
+  ],
+  "homepage": "https://github.com/LiskHQ/lisk-service",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LiskHQ/lisk-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LiskHQ/lisk-service/issues"
+  },
+  "private": true,
+  "author": "Lisk Foundation <admin@lisk.io>, lightcurve GmbH <admin@lightcurve.io>",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": "12.16.2",
+    "npm": "6.14.4"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "fastest-validator": "^1.5.1",
+    "ioredis": "^4.16.3",
+    "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-1.0.0-beta.0.tgz",
+    "moleculer": "^0.14.8",
+    "moleculer-io": "^1.1.3"
+  }
+}

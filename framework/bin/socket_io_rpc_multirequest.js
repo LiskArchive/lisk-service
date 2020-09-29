@@ -18,7 +18,8 @@
 
 const io = require('socket.io-client');
 const util = require('util');
-const prettyjson = require('prettyjson');
+// const prettyjson = require('prettyjson');
+const jsome = require('jsome');
 
 if (process.argv.length < 3) {
 	console.log('Usage: node socket_io_rpc_multirequest.js <endpoint>');
@@ -42,22 +43,22 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 	'reconnect', 'reconnect_attempt',
 	'reconnecting', 'reconnect_error', 'reconnect_failed',
 	// 'ping', 'pong',
-].forEach((item) => {
-	socket.on(item, (res) => {
+].forEach(item => {
+	socket.on(item, res => {
 		// Enable this to log all events
 		// console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
-['status'].forEach((eventName) => {
-	socket.on(eventName, (newData) => {
+['status'].forEach(eventName => {
+	socket.on(eventName, newData => {
 		// Enable this to log incoming data
 		// console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
 	});
 });
 
-const request = (path, params) => new Promise((resolve) => {
-	socket.emit(path, params, (answer) => {
+const request = (path, params) => new Promise(resolve => {
+	socket.emit(path, params, answer => {
 		// Enable this to log incoming data
 		// console.log(`Got answer: ${JSON.stringify(answer)}`);
 		// console.log(path);
@@ -78,17 +79,23 @@ setTimeout(() => {
 	*/
 	const results = [];
 
-	const response1 = await request('request', { method: 'get.blocks', params: { limit: 100 } });
+	// const response1 = await request('request', { method: 'get.blocks', params: { limit: 100 } });
 
-	results.push(response1);
-	// console.log(JSON.stringify(response1));
+	// results.push(response1);
+	// // console.log(JSON.stringify(response1));
 
-	const requests = response1.result.data
-		.filter(o => Number(o.numberOfTransactions) > 0)
-		.map(o => ({ method: 'get.transactions', params: { block: o.id } }));
+	// const requests = response1.result.data
+	// 	.filter(o => Number(o.numberOfTransactions) > 0)
+	// 	.map(o => ({ method: 'get.transactions', params: { block: o.id } }));
 
-	results.push(requests);
-	// console.log(JSON.stringify(requests));
+	// results.push(requests);
+	// // console.log(JSON.stringify(requests));
+
+	const requests = [
+		{ jsonrpc: '2.0', id: 4, method: 'get.transactions', params: { limit: 1 } },
+		{ jsonrpc: '2.0', id: 5, method: 'get.blocks', params: { limit: 1 } },
+		{ jsonrpc: '2.0', id: 6, method: 'get.accounts', params: { limit: 1 } },
+	];
 
 	const response2 = await request('request', requests);
 	// console.log(JSON.stringify(response2));
@@ -97,7 +104,8 @@ setTimeout(() => {
 	// console.log(JSON.stringify(results));
 
 	// This returns combined result
-	console.log(prettyjson.render(response2));
+	jsome(response2);
+	// console.log(prettyjson.render(response2));
 
 	process.exit(0);
 })();

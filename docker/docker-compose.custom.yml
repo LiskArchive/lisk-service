@@ -1,0 +1,10 @@
+version: "3"
+services:
+
+  core:
+    env_file:
+      - ./custom.env
+
+  gateway:
+    env_file:
+      - ./custom.env

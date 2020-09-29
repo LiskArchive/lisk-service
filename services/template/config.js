@@ -16,8 +16,8 @@
 const config = {};
 
 // Moleculer broker config
-config.transporter = process.env.LISK_SERVICE_TRANSPORTER || 'nats://localhost:4222';
-config.brokerTimeout = Number(process.env.LISK_SERVICE_BROKER_TIMEOUT) || 5; // in seconds
+config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
 // Logging
 config.log = {};
@@ -26,23 +26,23 @@ config.log = {};
  *             One fo the following in that order:
  *               TRACE < DEBUG < INFO < WARN < ERROR < FATAL < MARK
  */
-config.log.level = process.env.LISK_SERVICE_LOG_LEVEL || 'info';
+config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 
 /*
  * True / False outputs
  * log.console - Plain JavaScript console.log() output
  * log.stdout  - Writes directly to stdout
  */
-config.log.console = process.env.LISK_SERVICE_LOG_CONSOLE || 'false';
-config.log.stdout = process.env.LISK_SERVICE_LOG_STDOUT || 'true';
+config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';
+config.log.stdout = process.env.SERVICE_LOG_STDOUT || 'true';
 
 /*
  * Configurable outputs
  * log.file   - outputs to a file (ie. ./logs/app.log)
  * log.gelf   - Writes to GELF-compatible socket (ie. localhost:12201/udp)
  */
-config.log.gelf = process.env.LISK_SERVICE_LOG_GELF || 'false';
-config.log.file = process.env.LISK_SERVICE_LOG_FILE || 'false';
+config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
+config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';

@@ -20,15 +20,13 @@ const {
 
 module.exports = [
 	{
-		path: '/status',
+		name: 'status',
 		controller: getStatus,
-		method: 'GET',
 		params: {},
 	},
 	{
-		path: '/ready',
+		name: 'ready',
 		controller: getReadyStatus,
-		method: 'GET',
 		params: {},
 	},
 ];

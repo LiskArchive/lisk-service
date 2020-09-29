@@ -13,43 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../services/core.js');
-const GeoService = require('../../services/geolocation.js');
-const ObjectUtilService = require('../../services/object.js');
-const { errorCodes: { NOT_FOUND } } = require('../../errorCodes.js');
-
-const peerStates = CoreService.peerStates;
-const isEmptyArray = ObjectUtilService.isEmptyArray;
-const isEmptyObject = ObjectUtilService.isEmptyObject;
-
-const requestAll = async (fn, params, limit) => {
-	const defaultMaxAmount = limit || 10000;
-	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn(Object.assign({}, params, {
-		limit: oneRequestLimit,
-		offset: 0,
-	}));
-	const data = firstRequest.data;
-	const maxAmount = firstRequest.meta.count > defaultMaxAmount
-		? defaultMaxAmount
-		: firstRequest.meta.count;
-
-	if (maxAmount > oneRequestLimit) {
-		const pages = [...Array(Math.ceil(maxAmount / oneRequestLimit)).keys()];
-		pages.shift();
-
-		const collection = await pages.reduce((promise, page) => promise.then(() => fn(
-			Object.assign({}, params, {
-				limit: oneRequestLimit,
-				offset: oneRequestLimit * page,
-			}))).then((result) => {
-			result.data.forEach((item) => { data.push(item); });
-			return data;
-		}), Promise.resolve());
-		return collection;
-	}
-	return data;
-};
+const GeoService = require('../../shared/geolocation.js');
+const peerCache = require('../../shared/peerCache.js');
 
 const addLocation = async (ipaddress) => {
 	try {
@@ -61,123 +26,91 @@ const addLocation = async (ipaddress) => {
 };
 
 const getPeers = async (params) => {
-	const res = await CoreService.getPeers(params);
-	const data = res.data;
+	let peers = {};
 
-	if (isEmptyObject(res) || isEmptyArray(data)) {
-		return { status: NOT_FOUND, data: { error: 'Not found' } };
+	const state = params.state ? params.state.toString().toLowerCase() : undefined;
+
+	if (state === '2' || state === 'connected') peers = await peerCache.get('connected');
+	else if (state === '1' || state === 'disconnected') peers = await peerCache.get('disconnected');
+	else if (state === '0' || state === 'unknown') peers = []; // not supported anymore
+	else peers = await peerCache.get();
+
+	const intersect = (a, b) => {
+		const setB = new Set(b);
+		return [...new Set(a)].filter(x => setB.has(x));
+	};
+
+	const filterParams = ['ip', 'httpPort', 'wsPort', 'os', 'version', 'height', 'broadhash'];
+	const activeParams = Object.keys(params).filter(item => params[item]);
+	const activeFilters = intersect(filterParams, activeParams);
+
+	const filteredPeers = peers.filter(peer => {
+		let result = true;
+
+		activeFilters.forEach(property => {
+			if (params[property] !== peer[property]) result = false;
+		});
+
+		return result;
+	});
+
+	const sortBy = (array, p) => {
+		const [property, direction] = p.split(':');
+		if (property === 'version') array.sort((a, b) => a[property] > b[property]);
+		if (property === 'height') array.sort((a, b) => Number(a[property]) < Number(b[property]));
+		if (direction === 'asc') array.reverse();
+		return array;
+	};
+
+	if (params.sort && /^.+:(asc|desc)$/.test(params.sort)) sortBy(filteredPeers, params.sort);
+
+	let sortedPeers = filteredPeers;
+
+	if (params.offset || params.limit) {
+		if (!params.offset) params.offset = 0;
+		sortedPeers = filteredPeers.slice(params.offset,
+			(params.limit || filteredPeers.length) + params.offset);
 	}
 
-	const dataWithLocation = await Promise.all(data.map(async (elem) => {
+	const dataWithLocation = await Promise.all(sortedPeers.map(async (elem) => {
 		elem.location = await addLocation(elem.ip);
 		return elem;
 	}));
 
 	const meta = {
-		count: res.data.length,
-		limit: res.meta.limit,
-		offset: res.meta.offset,
-		total: res.meta.count,
-	};
-
-	return {
-		data: {
-			data: dataWithLocation,
-			meta,
-			links: {},
-		},
-	};
-};
-
-const getConnectedPeers = async () => {
-	const peers = await requestAll(CoreService.getPeers, { state: peerStates.CONNECTED });
-
-	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
-		elem.location = await addLocation(elem.ip);
-		return elem;
-	}));
-
-	const meta = {
-		count: peers.length,
-		offset: 0,
+		count: dataWithLocation.length,
+		offset: params.offset || 0,
 		total: peers.length,
 	};
 
 	return {
-		data: {
-			data: dataWithLocation,
-			meta,
-			links: {},
-		},
+		data: dataWithLocation,
+		meta,
 	};
 };
 
-const getDisconnectedPeers = async () => {
-	const peers = await requestAll(CoreService.getPeers, { state: peerStates.DISCONNECTED });
-
-	const dataWithLocation = await Promise.all(peers.map(async (elem) => {
-		elem.location = await addLocation(elem.ip);
-		return elem;
-	}));
-
-	const meta = {
-		count: peers.length,
-		offset: 0,
-		total: peers.length,
-	};
+const getConnectedPeers = async params => {
+	const response = await getPeers(Object.assign(params, { state: 'connected' }));
 
 	return {
-		data: {
-			data: dataWithLocation,
-			meta,
-			links: {},
-		},
+		data: response.data,
+		meta: response.meta,
 	};
 };
 
-const getPeersStatistics = async (params) => {
-	const basicStats = {};
-	const heightStats = {};
-	const coreVerStats = {};
-	const osStats = {};
-
-	const peers = await CoreService.getPeers(params);
-	const connected = await requestAll(CoreService.getPeers, { state: peerStates.CONNECTED });
-	const disconnected = await requestAll(CoreService.getPeers, { state: peerStates.DISCONNECTED });
-
-	basicStats.totalPeers = peers.meta.count;
-	basicStats.connectedPeers = connected.length;
-	basicStats.disconnectedPeers = disconnected.length;
-
-	const heightArr = connected.map(elem => elem.height);
-	heightArr.forEach(elem => heightStats[elem] = (heightStats[elem] || 0) + 1);
-
-	const coreVerArr = connected.map(elem => elem.version);
-	coreVerArr.forEach(elem => coreVerStats[elem] = (coreVerStats[elem] || 0) + 1);
-
-	const osArr = connected.map(elem => elem.os);
-	const mappedOs = osArr.map((elem) => {
-		if (elem.match(/^linux(.*)/)) {
-			const splitOsString = elem.split('.');
-			elem = `${splitOsString[0]}.${splitOsString[1]}`;
-		}
-		return elem;
-	});
-	mappedOs.forEach(elem => osStats[elem] = (osStats[elem] || 0) + 1);
+const getDisconnectedPeers = async params => {
+	const response = await getPeers(Object.assign(params, { state: 'disconnected' }));
 
 	return {
-		data: {
-			data: {
-				basic: basicStats,
-				height: heightStats,
-				coreVer: coreVerStats,
-				os: osStats,
-			},
-			meta: {},
-			links: {},
-		},
+		data: response.data,
+		meta: response.meta,
 	};
 };
+
+const getPeersStatistics = () => ({
+	data: peerCache.getStatistics(),
+	meta: {},
+});
 
 module.exports = {
 	getPeers,

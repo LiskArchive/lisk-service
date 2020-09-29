@@ -13,85 +13,45 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
+const {
+	Microservice,
+	Logger,
+	LoggerConfig,
+} = require('lisk-service-framework');
 
-// Services
-const logger = require('./services/logger')();
-const core = require('./services/core');
-const updaters = require('./services/updaters');
-const recentBlocksCache = require('./services/recentBlocksCache');
-const delegateCache = require('./services/delegateCache');
-const transactionStatistics = require('./services/transactionStatistics');
-
-// Configuration
 const config = require('./config');
-const SocketClient = require('./services/socketClient');
+const packageJson = require('./package.json');
 
-const molecler = require('./services/moleculer');
+const nodeStatus = require('./shared/nodeStatus');
 
-const broker = molecler.init(config);
-
-const liskCoreAddress = config.endpoints.liskHttp;
-const coreSocket = new SocketClient(config.endpoints.liskWs);
-const wsApiPath = '/blockchainUpdates';
-logger.info(`${wsApiPath} registered`);
-
-config.wsEvents.forEach((event) => {
-	coreSocket.socket.on(event, async (data) => {
-		if (event === 'blocks/change') {
-			const emitData = await core.getBlocks({ blockId: data.id });
-			broker.emit(event.replace('/', '.'), emitData.data[0], 'gateway');
-			recentBlocksCache.addNewBlock(emitData.data[0], data.transactions);
-
-			if (emitData.data[0].numberOfTransactions > 0) {
-				const transactionData = await core.getTransactions({ blockId: data.id });
-				broker.emit('transactions.confirmed', transactionData, 'gateway');
-			}
-		} else {
-			if (event === 'rounds/change') {
-				delegateCache.init(core);
-			}
-			if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
-			broker.emit(event.replace('/', '.'), data, 'gateway');
-			logger.debug(`event: ${event}, data: ${JSON.stringify(data)}`);
-		}
-	});
-});
-
-recentBlocksCache.init(core);
-delegateCache.init(core);
-
-transactionStatistics.init(config.transactionStatistics.historyLengthDays);
-setInterval(
-	transactionStatistics.updateTodayStats,
-	config.transactionStatistics.updateInterval * 1000);
-
-// Report the Lisk Core status
-const CORE_DISCOVERY_INTERVAL = 10 * 1000; // ms
-let logConnectStatus = true;
-
-const checkStatus = () => {
-	core.getNetworkConstants().then((result) => {
-		if (typeof result.data === 'object' && result.data.version) {
-			core.setProtocolVersion(result.data.protocolVersion);
-			core.setReadyStatus(true);
-			if (logConnectStatus) {
-				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${result.data.version}`);
-				logConnectStatus = false;
-			}
-		} else {
-			core.setReadyStatus(false);
-			logger.warn(`The node ${liskCoreAddress} has an incompatible API or is not available at the moment.`);
-			logConnectStatus = true;
-		}
-	}).catch(() => {
-		core.setReadyStatus(false);
-		logger.warn(`The node ${liskCoreAddress} not available at the moment.`);
-		logConnectStatus = true;
-	});
+const loggerConf = {
+	...config.log,
+	name: packageJson.name,
+	version: packageJson.version,
 };
 
-checkStatus();
-setInterval(checkStatus, CORE_DISCOVERY_INTERVAL);
+LoggerConfig(loggerConf);
 
-// Run Redis-based updaters
-updaters();
+const logger = Logger();
+
+const app = Microservice({
+	name: 'core',
+	transporter: config.transporter,
+	timeout: config.brokerTimeout * 1000, // ms
+	logger: loggerConf,
+});
+
+nodeStatus.waitForNode().then(() => {
+	app.addMethods(path.join(__dirname, 'methods'));
+	app.addEvents(path.join(__dirname, 'events'));
+	app.addJobs(path.join(__dirname, 'jobs'));
+
+	app.run().then(() => {
+		logger.info(`Service started ${packageJson.name}`);
+	}).catch(err => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});
+});

@@ -26,8 +26,8 @@ let log4jsConfig = {
 
 let packageName = '';
 
-const configure = ({ log: config, packageJson }) => {
-  packageName = packageJson.name;
+const configure = config => {
+	packageName = config.name;
 
 	LOG_LEVEL = (config.level || 'info').toLowerCase();
 
@@ -36,7 +36,7 @@ const configure = ({ log: config, packageJson }) => {
 		categories: { default: { appenders: [], level: LOG_LEVEL } },
 	};
 
-	const coverPasswords = input => input.replace(
+	const coverPasswords = input => `${input}`.replace(
 		/(\b(?!:\/\/\b)[^@/$]+(\b!?@)\b)/g,
 		`${Array(8).join('*')}:${Array(8).join('*')}@`);
 
@@ -110,8 +110,8 @@ const configure = ({ log: config, packageJson }) => {
 				type: '@log4js-node/gelf',
 				facility: 'lisk-service',
 				customFields: {
-					_component: packageJson.name,
-					_version: packageJson.version,
+					_component: config.name,
+					_version: config.version,
 					_docker_host: config.docker_host,
 				},
 				appendCategory: 'category',
@@ -124,7 +124,7 @@ const configure = ({ log: config, packageJson }) => {
 	}
 
 	if (Object.keys(log4jsConfig.appenders).length > 0) log4js.configure(log4jsConfig);
-}
+};
 
 const getFileNameWhichCalledGetLogger = () => {
 	const trace = stackTrace.get();
@@ -132,8 +132,12 @@ const getFileNameWhichCalledGetLogger = () => {
 	return filePath.slice(filePath.lastIndexOf('/') + 1, -3);
 };
 
-const getLogger = (entityName) => {
-	entityName = entityName || getFileNameWhichCalledGetLogger();
+const getLogger = configuration => {
+	let entityName;
+
+	if (typeof configuration === 'string') entityName = configuration;
+	else entityName = getFileNameWhichCalledGetLogger();
+
 	const debugInstance = debug(`${packageName}:${entityName}`);
 
 	if (Object.keys(log4jsConfig.appenders).length > 0) {
@@ -154,6 +158,20 @@ const getLogger = (entityName) => {
 	};
 };
 
-getLogger.configure = configure;
+const getDebug = entityName => {
+	if (!entityName) entityName = getFileNameWhichCalledGetLogger();
+	const debugInstance = debug(`${packageName}:${entityName}`);
 
-module.exports = getLogger;
+	return [
+		'trace', 'debug', 'info',
+		'warn', 'error', 'fatal',
+		'mark']
+		.reduce((acc, item) => (acc[item] = debugInstance) && acc, {});
+};
+
+module.exports = {
+	init: configure,
+	get: getLogger,
+	debug: getDebug,
+	getConfig: () => log4jsConfig,
+};

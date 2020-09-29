@@ -14,9 +14,9 @@
  *
  */
 const {
+	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
-	getPeers,
 	getPeersStatistics,
 } = require('./controllers/peers');
 
@@ -25,28 +25,28 @@ module.exports = [
 		name: 'peers',
 		controller: getPeers,
 		params: {
-			ip: {},
-			httpPort: {},
-			wsPort: {},
-			os: {},
-			version: {},
-			state: {},
-			height: {},
-			broadhash: {},
-			limit: {},
-			offset: {},
-			sort: {},
+			ip: { type: 'any', optional: true },
+			httpPort: { type: 'any', optional: true },
+			wsPort: { type: 'any', optional: true },
+			os: { type: 'any', optional: true },
+			version: { type: 'any', optional: true },
+			state: { type: 'any', optional: true },
+			height: { type: 'any', optional: true },
+			broadhash: { type: 'any', optional: true },
+			limit: { type: 'any', optional: true },
+			offset: { type: 'any', optional: true },
+			sort: { type: 'any', optional: true },
 		},
 	},
 	{
 		name: 'peers.connected',
 		controller: getConnectedPeers,
-		params: {},
+		params: { },
 	},
 	{
 		name: 'peers.disconnected',
 		controller: getDisconnectedPeers,
-		params: {},
+		params: { },
 	},
 	{
 		name: 'peers.statistics',

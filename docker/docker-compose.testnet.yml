@@ -1,0 +1,6 @@
+version: "3"
+services:
+
+  core:
+    env_file:
+      - ./lisk_service/env/network/testnet.env

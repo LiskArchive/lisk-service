@@ -13,9 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const { Constants: { errorCodes: { NOT_FOUND } } } = require('lisk-service-framework');
-
 module.exports = [
 	{
 		name: 'generic.hello',
@@ -36,9 +33,9 @@ module.exports = [
 		name: 'parametrized.hello',
 		description: 'Hello function with named parameters',
 		params: {
-			name: { type: 'string' },
+			name: { type: 'string', optional: true },
 		},
-		controller: async (param) => {
+		controller: async param => {
 			const response = {
 				data: [{
 					message: 'Hello World!',
@@ -55,7 +52,7 @@ module.exports = [
 		name: 'asynchronous.hello',
 		description: 'Hello function with asynchronous operations',
 		controller: () => {
-			const request = () => new Promise((resolve) => {
+			const request = () => new Promise(resolve => {
 				setTimeout(() => {
 					resolve({
 						data: ['one', 'two', 'three'],
@@ -66,23 +63,11 @@ module.exports = [
 			return request('https://some.data.source.com');
 		},
 	},
-	/* TODO: Fix not passing error */
-	{
-		name: 'client.error',
-		description: 'Dummy function returning error',
-		controller: async () => {
-			const response = {
-				error: 'Some random error',
-				status: NOT_FOUND,
-			};
-			return response;
-		},
-	},
 	{
 		name: 'server.error',
 		description: 'Dummy function throwing a server error',
 		controller: async () => {
-			throw new Error('Error from template');
+			throw new Error('Called server.error');
 		},
 	},
 ];

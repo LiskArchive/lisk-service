@@ -17,10 +17,14 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const prettyjson = require('prettyjson');
+// const prettyjson = require('prettyjson');
 const jsome = require('jsome');
 
 jsome.params.colored = true;
+
+/* Usage:
+ * node socket_io_rpc_client.js http://localhost:9901/rpc-test get.hello.param '{"path_name1": "user1"}'
+ */
 
 if (process.argv.length < 4) {
 	console.log('Usage: client.js <endpoint> <call> [json]');
@@ -40,22 +44,22 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 	'reconnect', 'reconnect_attempt',
 	'reconnecting', 'reconnect_error', 'reconnect_failed',
 	// 'ping', 'pong',
-].forEach((item) => {
-	socket.on(item, (res) => {
+].forEach(item => {
+	socket.on(item, res => {
 		// console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
-['status'].forEach((eventName) => {
-	socket.on(eventName, (newData) => {
+['status'].forEach(eventName => {
+	socket.on(eventName, newData => {
 		// console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
 	});
 });
 
 const request = (path, params) => {
-	socket.emit(path, params, (answer) => {
-		console.log(prettyjson.render(answer));
-		// jsome(answer);
+	socket.emit(path, params, answer => {
+		// console.log(prettyjson.render(answer));
+		jsome(answer);
 		process.exit(0);
 	});
 };
@@ -66,5 +70,6 @@ setTimeout(() => {
 }, TIMEOUT);
 
 // request('request', { method: 'get.hello', params: { name: 'michal' } });
-
+// request('request', { jsonrpc: '2.0', params: cliParams });
+// request('request', { jsonrpc: '2.0', method: cliProcedureName, params: cliParams });
 request('request', { method: cliProcedureName, params: cliParams });

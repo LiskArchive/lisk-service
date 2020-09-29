@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-framework",
-  "version": "0.1.0",
+  "version": "1.0.0-beta.0",
   "description": "Lisk Serivce Framework",
   "keywords": [
     "lisk",
@@ -14,32 +14,45 @@
   "bugs": {
     "url": "https://github.com/LiskHQ/lisk-service/issues"
   },
-  "private": true,
   "author": "Lisk Foundation <admin@lisk.io>, lightcurve GmbH <admin@lightcurve.io>",
   "license": "Apache-2.0",
+  "private": true,
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "release:static": "npm pack && s3cmd put lisk-service-framework-$npm_package_version.tgz s3://static-data.lisk.io/lisk-service-framework-$npm_package_version.tgz",
+    "test:unit": "./node_modules/.bin/jest --config=test/unit.config.js --detectOpenHandles  --forceExit",
+    "test:functional": "./node_modules/.bin/jest --config=test/functional.config.js --detectOpenHandles"
+  },
   "bin": {
     "moleculer_client": "./bin/moleculer_client.js"
   },
   "dependencies": {
+    "@keyv/redis": "^2.1.1",
     "@log4js-node/gelf": "github:MichalTuleja/log4js-node-gelf#89d9933",
-    "debug": "=4.1.1",
+    "axios": "^0.19.2",
+    "bull": "^3.13.0",
+    "debug": "^4.1.1",
+    "fastest-validator": "^1.3.0",
+    "http-status-codes": "^1.4.0",
     "jsome": "^2.5.0",
-    "keyv": "=4.0.0",
-    "log4js": "^5.1.0",
-    "moleculer": "^0.13.12",
+    "keyv": "^4.0.0",
+    "keyv-lru": "^3.0.3",
+    "knex": "^0.21.0",
+    "log4js": "^5.3.0",
+    "moleculer": "^0.14.10",
+    "moleculer-web": "^0.9.1",
+    "moment": "^2.26.0",
     "nats": "^1.3.2",
     "node-cron": "^2.0.3",
     "prettyjson": "^1.2.1",
     "require-all": "^3.0.0",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
     "stack-trace": "0.0.10"
   },
   "devDependencies": {
-    "eslint": "=6.8.0",
-    "eslint-config-airbnb-base": "=14.0.0",
-    "eslint-config-lisk-base": "=1.0.0",
-    "eslint-plugin-import": "=2.20.1",
-    "eslint-plugin-mocha": "=4.11.0"
+    "jest": "^26.0.1",
+    "jest-extended": "^0.11.5",
+    "redis-mock": "^0.49.0"
   }
 }
