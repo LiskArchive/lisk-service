@@ -60,10 +60,10 @@ const blockSchema = {
 		function: () => String(1 * 10 ** 8),
 	},
 	seedReveal: {
-		function: () => 1,
+		function: () => generateHex(32),
 	},
 	timestamp: {
-		function: () => Math.floor(Date.now() / 10) * 10,
+		function: () => Math.floor(Date.now()) % 4294967295,
 	},
 	totalAmount: {
 		function: () => Math.floor(Math.random() * 10 ** 8),

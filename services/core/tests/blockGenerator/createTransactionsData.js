@@ -139,8 +139,9 @@ const txMocker = (batchSize) => mocker()
 				minFee = 134000;
 			} else if (transaction.type === 15) {
 				containAssets = assetsTransactionType15;
-				minFee = 134000;
+				minFee = 522000;
 
+				transaction.asset.header2.seedReveal = transaction.asset.header1.seedReveal;
 				transaction.asset.header2.generatorPublicKey = transaction.asset.header1.generatorPublicKey;
 				let n = Math.floor(Math.random() * 10) % 5;
 				while (--n > 0) transaction.signatures.push(generateHex(128));
