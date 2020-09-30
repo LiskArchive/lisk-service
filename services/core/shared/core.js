@@ -408,7 +408,8 @@ const calculateAvgFeePerByte = (mode, transactionDetails) => {
 			totalFeePriority += transaction.feePriority * transaction.size;
 		}
 
-		if (lowerBytePos <= currentBytePos && upperBytePos <= currentBytePos + transaction.size) {
+		if (lowerBytePos <= currentBytePos && upperBytePos >= currentBytePos
+			&& upperBytePos <= currentBytePos + transaction.size) {
 			totalFeePriority += transaction.feePriority * (upperBytePos - currentBytePos + 1);
 		}
 
