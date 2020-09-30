@@ -28,7 +28,7 @@ const generateHex = (size) => {
 	return resultHex;
 };
 
-const blockSchema = {
+const blockHeaderSchema = {
 	blockSignature: {
 		function: () => generateHex(128),
 	},
@@ -76,12 +76,12 @@ const blockSchema = {
 	},
 };
 
-const blockSchemaMocker = () => mocker()
-	.schema('blockSchema', blockSchema, 1)
+const blockHeaderSchemaMocker = () => mocker()
+	.schema('blockHeaderSchema', blockHeaderSchema, 1)
 	.build((err, data) => {
 		if (err) throw err;
 
-		return data.blockSchema[0];
+		return data.blockHeaderSchema[0];
 	});
 
-module.exports = blockSchemaMocker;
+module.exports = blockHeaderSchemaMocker;

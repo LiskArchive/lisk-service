@@ -14,7 +14,7 @@
  *
  */
 const mocker = require('mocker-data-generator').default;
-const blockSchemaMocker = require('./createBlockSchema');
+const blockHeaderSchemaMocker = require('./createBlockHeaderSchema');
 
 const generateHex = (size) => {
 	let resultHex = '';
@@ -75,8 +75,8 @@ const transactionData = {
 		},
 		amount: { function: () => String(Math.floor(Math.random() * 10)) },
 		recipientId: { function: () => `${Math.floor(Math.random() * 10 ** 19)}L` },
-		header1: { function: () => blockSchemaMocker() },
-		header2: { function: () => blockSchemaMocker() },
+		header1: { function: () => blockHeaderSchemaMocker() },
+		header2: { function: () => blockHeaderSchemaMocker() },
 	},
 	signatures: {
 		function: () => [generateHex(128)],
