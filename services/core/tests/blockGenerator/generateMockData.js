@@ -91,7 +91,7 @@ const blockData = {
 };
 let args = Number(process.argv.slice(2)[0]);
 if (!args) {
-	args = 50;
+	args = 20;
 }
 const noNetworkTraffic = () => {
 	blockData.numberOfTransactions = { function: () => 0 };
@@ -121,7 +121,7 @@ const moderateNetworkTraffic = () => {
 };
 
 const highNetworkTraffic = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(125, 134) };
+	blockData.numberOfTransactions = { function: () => randomNumber(130, 150) };
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/highTraffic.json`,
