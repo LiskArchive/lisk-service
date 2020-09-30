@@ -22,7 +22,7 @@ const {
 	ProofOfMisbehaviorTransaction,
 } = require('@liskhq/lisk-transactions');
 
-const { emptyBlock, nonEmptyBlock } = require('../constants/blocks');
+const { emptyBlock, nonEmptyBlock, fullySaturatedBlock } = require('../constants/blocks');
 const {
 	transactionType8,
 	transactionType10,
@@ -43,6 +43,8 @@ const {
 } = require('../../shared/core');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
+const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
+const moderateTrafficMockup = require('../blockGenerator/moderateTraffic.json');
 const highTrafficMockup = require('../blockGenerator/highTraffic.json');
 
 
@@ -96,17 +98,37 @@ describe('Fee estimation tests', () => {
 
 		it('Non-zero transactions', async () => {
 			const blockSize = calculateBlockSize(nonEmptyBlock);
+			expect(blockSize).toBeGreaterThan(0);
+			expect(blockSize).toBeLessThanOrEqual(15 * 2 ** 10);
+		});
+
+		it('Non-zero transactions: Fully saturated block', async () => {
+			const blockSize = calculateBlockSize(fullySaturatedBlock);
 			expect(blockSize).not.toBe(0);
+			expect(blockSize).toBeGreaterThan(15 * 2 ** 10 - 130);
+			expect(blockSize).toBeLessThanOrEqual(15 * 2 ** 10);
 		});
 	});
 
 	describe('calculateWeightedAvg', () => {
-		it('Batch of empty blocks', async () => {
+		it('Batch of empty blocks (noTraffic)', async () => {
 			const wavg = calculateWeightedAvg(noTrafficMockup.blocks);
 			expect(wavg).toBe(0);
 		});
 
-		it('Batch of non-empty blocks', async () => {
+		it('Batch of non-empty blocks (lowTraffic)', async () => {
+			const wavg = calculateWeightedAvg(lowTrafficMockup.blocks);
+			expect(wavg).not.toBe(0);
+			expect(wavg).toBeCloseTo(6233.280377604083);
+		});
+
+		it('Batch of non-empty blocks (moderateTraffic)', async () => {
+			const wavg = calculateWeightedAvg(moderateTrafficMockup.blocks);
+			expect(wavg).not.toBe(0);
+			expect(wavg).toBeCloseTo(71227.69303107934);
+		});
+
+		it('Batch of non-empty blocks (highTraffic)', async () => {
 			const wavg = calculateWeightedAvg(highTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
 			expect(wavg).toBeCloseTo(134283.09572095712);

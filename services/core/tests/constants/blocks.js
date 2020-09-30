@@ -2327,4 +2327,5 @@ const nonEmptyBlock = {
 module.exports = {
     emptyBlock,
     nonEmptyBlock,
+    fullySaturatedBlock: nonEmptyBlock,
 };
