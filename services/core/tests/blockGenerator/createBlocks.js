@@ -33,39 +33,45 @@ const blockMocker = (blockData, batchSize) => mocker()
 				block.timestamp = data.blocks[blockIndex + 1].timestamp - 10;
 			}
 
-			if (block.numberOfTransactions) {
+			if (block.numberOfTransactions === 0) {
+				block.transactions = { data: [] };
+			} else {
 				block.transactions = { data: txMocker(block.numberOfTransactions) };
 				let transactionIndex = block.transactions.data.length - 1;
 				do {
 					const transaction = block.transactions.data[transactionIndex];
-					transaction.height = block.height;
-					transaction.blockId = block.id;
-					transaction.confirmations = block.confirmations;
-
-					if ([8, 14].includes(transaction.type)) {
-						blockTotalAmount += Number(transaction.asset.amount);
-					} else if (transaction.type === 13) {
-						let voteIndex = transaction.asset.votes.length - 1;
-						do {
-							blockTotalAmount += Number(transaction.asset.votes[voteIndex].amount);
-						} while (--voteIndex >= 0);
-					}
-					blockTotalFee += Number(transaction.fee);
 
 					let txPayloadLength;
-					if (transaction.type === 8) txPayloadLength = 117;
-					else if (transaction.type === 10) txPayloadLength = 117;
+					if (transaction.type === 8) txPayloadLength = 130;
+					else if (transaction.type === 10) txPayloadLength = 120;
 					else if (transaction.type === 12) txPayloadLength = 117;
-					else if (transaction.type === 13) txPayloadLength = 117;
-					else if (transaction.type === 14) txPayloadLength = 117;
-					else if (transaction.type === 15) txPayloadLength = 117;
+					else if (transaction.type === 13) txPayloadLength = 130;
+					else if (transaction.type === 14) txPayloadLength = 134;
+					else if (transaction.type === 15) txPayloadLength = 652;
 
-					blockPayloadLength += txPayloadLength;
+					if (blockPayloadLength + txPayloadLength > 15 * 2 ** 10) {
+						block.transactions.data.splice(transactionIndex, 1);
+					} else {
+						blockPayloadLength += txPayloadLength;
+
+						transaction.height = block.height;
+						transaction.blockId = block.id;
+						transaction.confirmations = block.confirmations;
+
+						if ([8, 14].includes(transaction.type)) {
+							blockTotalAmount += Number(transaction.asset.amount);
+						} else if (transaction.type === 13) {
+							let voteIndex = transaction.asset.votes.length - 1;
+							do {
+								blockTotalAmount += Number(transaction.asset.votes[voteIndex].amount);
+							} while (--voteIndex >= 0);
+						}
+						blockTotalFee += Number(transaction.fee);
+					}
 				} while (--transactionIndex >= 0);
-			} else {
-				block.transactions = { data: [] };
 			}
 
+			block.numberOfTransactions = block.transactions.data.length;
 			block.totalAmount = String(blockTotalAmount);
 			block.totalFee = String(blockTotalFee);
 			block.totalForged = String(Number(block.totalFee) + Number(block.reward));
