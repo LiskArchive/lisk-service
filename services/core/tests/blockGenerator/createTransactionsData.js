@@ -42,7 +42,7 @@ const transactionData = {
 		},
 	},
 	fee: {
-		function: () => Math.floor(Math.random() * 10 ** ((Math.random() * 10) % 8)),
+		function: () => Math.floor(Math.random() * 10 ** ((Math.random() * 10) % 4)),
 	},
 	senderPublicKey: {
 		function: () => generateHex(64),
@@ -112,10 +112,12 @@ const txMocker = (batchSize) => mocker()
 
 		data.transactions.forEach((transaction) => {
 			let containAssets = assetsTransactionType8;
-			let minFee = 130000;
+			let nameFee = 0;
+			let avgTxSize = 130;
 			if (transaction.type === 10) {
 				containAssets = assetsTransactionType10;
-				minFee = 1000120000;
+				nameFee = 10 * 10 ** 8;
+				avgTxSize = 120;
 
 				transaction.asset = {
 					...transaction.asset,
@@ -124,7 +126,7 @@ const txMocker = (batchSize) => mocker()
 				};
 			} else if (transaction.type === 12) {
 				containAssets = assetsTransactionType12;
-				minFee = 117000;
+				avgTxSize = 117;
 
 				let n = Math.floor(Math.random() * 10) % 5;
 				let m = Math.floor(Math.random() * 10) % 5;
@@ -133,13 +135,13 @@ const txMocker = (batchSize) => mocker()
 				while (--m > 0) transaction.asset.optionalKeys.push(generateHex(128));
 			} else if (transaction.type === 13) {
 				containAssets = assetsTransactionType13;
-				minFee = 130000;
+				avgTxSize = 130;
 			} else if (transaction.type === 14) {
 				containAssets = assetsTransactionType14;
-				minFee = 134000;
+				avgTxSize = 134;
 			} else if (transaction.type === 15) {
 				containAssets = assetsTransactionType15;
-				minFee = 522000;
+				avgTxSize = 652;
 
 				transaction.asset.header2.seedReveal = transaction.asset.header1.seedReveal;
 				transaction.asset.header2.generatorPublicKey = transaction.asset.header1.generatorPublicKey;
@@ -148,7 +150,8 @@ const txMocker = (batchSize) => mocker()
 				transaction.ready = true;
 			}
 
-			transaction.fee = String(minFee + transaction.fee);
+			const minFee = nameFee + avgTxSize * 10 ** 3;
+			transaction.fee = String(minFee + avgTxSize * transaction.fee);
 			Object.keys(transaction.asset).forEach(key => {
 				if (!containAssets.includes(key)) delete transaction.asset[key];
 			});
