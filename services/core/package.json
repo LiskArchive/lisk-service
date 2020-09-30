@@ -53,6 +53,7 @@
   "devDependencies": {
     "@babel/preset-env": "^7.9.5",
     "babel-jest": "^25.3.0",
+    "jest": "^26.4.2",
     "mocker-data-generator": "^2.9.0"
   }
 }
