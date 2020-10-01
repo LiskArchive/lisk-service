@@ -31,7 +31,7 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	'3.0.0-beta.0': coreVersion300.paramMappers300,
+	'3.0.0-beta.0': coreVersion300.paramMappersCoreV3,
 };
 
 const mapParams = (params, url) => {

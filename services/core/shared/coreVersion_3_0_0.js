@@ -132,7 +132,7 @@ const responseMappers = {
 	},
 };
 
-const paramMappers11 = {
+const paramMappersCoreV2 = {
 	'/delegates/latest_registrations': params => {
 		if (params.type) {
 			params.type = transactionTypeParamMap[params.type];
@@ -141,8 +141,8 @@ const paramMappers11 = {
 	},
 };
 
-const paramMappers20 = {
-	...paramMappers11,
+const paramMappersCoreV3 = {
+	...paramMappersCoreV2,
 	'/peers': params => {
 		if (params.state) {
 			params.state = peerStateParamMap[params.state];
@@ -161,6 +161,6 @@ const paramMappers20 = {
 
 module.exports = {
 	responseMappers,
-	paramMappers11,
-	paramMappers20,
+	paramMappersCoreV2,
+	paramMappersCoreV3,
 };
