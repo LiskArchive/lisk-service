@@ -267,7 +267,7 @@ describe('Fee estimation tests', () => {
 		describe('Zero prevFeeEstPerByte', () => {
 			const prevFeeEstPerByte = {};
 
-			it('No network traffic; ', async () => {
+			it('No network traffic', async () => {
 				const blockBatch = { data: noTrafficMockup.blocks };
 
 				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
