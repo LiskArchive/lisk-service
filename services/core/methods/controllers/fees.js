@@ -28,7 +28,7 @@ const getEstimateFeeByte = async () => {
 			status: NOT_FOUND,
 			data: { error: `Action not supported for Lisk Core version: ${coreVersion}.` },
 		};
-	};
+	}
 
 	const response = await CoreService.getEstimateFeeByte();
 
