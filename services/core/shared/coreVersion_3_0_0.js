@@ -17,26 +17,26 @@
 const { getDelegateRankByUsername } = require('./delegateCache.js');
 
 const peerStates = {
-	1.1: {
+	'2.1.6': {
 		UNKNOWN: 0,
 		DISCONNECTED: 1,
 		CONNECTED: 2,
 	},
-	'2.0': {
+	'3.0.0-beta.0': {
 		DISCONNECTED: 'disconnected',
 		CONNECTED: 'connected',
 	},
 };
 
 const transactionTypes = {
-	1.1: {
+	'2.1.6': {
 		TRANSFER: 0,
 		REGISTERSECONDPASSPHRASE: 1,
 		REGISTERDELEGATE: 2,
 		CASTVOTES: 3,
 		REGISTERMULTISIGNATURE: 4,
 	},
-	'2.0': {
+	'3.0.0-beta.0': {
 		TRANSFER: 8,
 		REGISTERSECONDPASSPHRASE: 9,
 		REGISTERDELEGATE: 10,
@@ -46,30 +46,30 @@ const transactionTypes = {
 };
 
 const peerStateParamMap = {
-	[peerStates['1.1'].DISCONNECTED]: peerStates['2.0'].DISCONNECTED,
-	[peerStates['1.1'].CONNECTED]: peerStates['2.0'].CONNECTED,
+	[peerStates['2.1.6'].DISCONNECTED]: peerStates['3.0.0-beta.0'].DISCONNECTED,
+	[peerStates['2.1.6'].CONNECTED]: peerStates['3.0.0-beta.0'].CONNECTED,
 };
 
 const mapState = state => {
 	const stateMapping = {
-		[peerStates['2.0'].CONNECTED]: peerStates['1.1'].CONNECTED,
-		[peerStates['2.0'].DISCONNECTED]: peerStates['1.1'].DISCONNECTED,
+		[peerStates['3.0.0-beta.0'].CONNECTED]: peerStates['2.1.6'].CONNECTED,
+		[peerStates['3.0.0-beta.0'].DISCONNECTED]: peerStates['2.1.6'].DISCONNECTED,
 	};
 	return stateMapping[state] !== undefined ? stateMapping[state] : state;
 };
 
 const transactionTypeParamMap = {
-	TRANSFER: transactionTypes['2.0'].TRANSFER,
-	REGISTERSECONDPASSPHRASE: transactionTypes['2.0'].REGISTERSECONDPASSPHRASE,
-	REGISTERDELEGATE: transactionTypes['2.0'].REGISTERDELEGATE,
-	CASTVOTES: transactionTypes['2.0'].CASTVOTES,
-	REGISTERMULTISIGNATURE: transactionTypes['2.0'].REGISTERMULTISIGNATURE,
+	TRANSFER: transactionTypes['3.0.0-beta.0'].TRANSFER,
+	REGISTERSECONDPASSPHRASE: transactionTypes['3.0.0-beta.0'].REGISTERSECONDPASSPHRASE,
+	REGISTERDELEGATE: transactionTypes['3.0.0-beta.0'].REGISTERDELEGATE,
+	CASTVOTES: transactionTypes['3.0.0-beta.0'].CASTVOTES,
+	REGISTERMULTISIGNATURE: transactionTypes['3.0.0-beta.0'].REGISTERMULTISIGNATURE,
 
-	[transactionTypes['2.0'].TRANSFER]: transactionTypes['1.1'].TRANSFER,
-	[transactionTypes['2.0'].REGISTERSECONDPASSPHRASE]: transactionTypes['1.1'].REGISTERSECONDPASSPHRASE,
-	[transactionTypes['2.0'].REGISTERDELEGATE]: transactionTypes['1.1'].REGISTERDELEGATE,
-	[transactionTypes['2.0'].CASTVOTES]: transactionTypes['1.1'].CASTVOTES,
-	[transactionTypes['2.0'].REGISTERMULTISIGNATURE]: transactionTypes['1.1'].REGISTERMULTISIGNATURE,
+	[transactionTypes['3.0.0-beta.0'].TRANSFER]: transactionTypes['2.1.6'].TRANSFER,
+	[transactionTypes['3.0.0-beta.0'].REGISTERSECONDPASSPHRASE]: transactionTypes['2.1.6'].REGISTERSECONDPASSPHRASE,
+	[transactionTypes['3.0.0-beta.0'].REGISTERDELEGATE]: transactionTypes['2.1.6'].REGISTERDELEGATE,
+	[transactionTypes['3.0.0-beta.0'].CASTVOTES]: transactionTypes['2.1.6'].CASTVOTES,
+	[transactionTypes['3.0.0-beta.0'].REGISTERMULTISIGNATURE]: transactionTypes['2.1.6'].REGISTERMULTISIGNATURE,
 };
 
 const mapTransaction = transaction => {

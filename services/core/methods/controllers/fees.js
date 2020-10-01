@@ -14,15 +14,21 @@
  *
  */
 const { HTTP } = require('lisk-service-framework');
+const semver = require('semver');
 
-const { getProtocolVersion } = require('../../shared/coreProtocolCompatibility.js');
+const { getCoreVersion } = require('../../shared/coreVersionCompatibility');
 const CoreService = require('../../shared/core.js');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const getEstimateFeeByte = async () => {
-	const protocolVersion = getProtocolVersion();
-	if (Number(protocolVersion) < 2) return { status: NOT_FOUND, data: { error: `Action not supported for Protocol version: ${protocolVersion}.` } };
+	const coreVersion = getCoreVersion();
+	if (semver.lt(semver.coerce(coreVersion), '3.0.0')) {
+		return {
+			status: NOT_FOUND,
+			data: { error: `Action not supported for Lisk Core version: ${coreVersion}.` },
+		};
+	};
 
 	const response = await CoreService.getEstimateFeeByte();
 

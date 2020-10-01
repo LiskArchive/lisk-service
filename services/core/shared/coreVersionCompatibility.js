@@ -13,18 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const coreVersion300 = require('./coreVersion_3_0_0');
 
-const coreProtocol20 = require('./coreProtocol_2_0');
-
-let protocolVersion = '1.1';
+let coreVersion = '2.1.6';
 
 const responseMappers = {
-	'2.0': coreProtocol20.responseMappers,
+	'3.0.0-beta.0': coreVersion300.responseMappers,
 };
 
 const mapResponse = (response, url) => {
-	const mapper = responseMappers[protocolVersion]
-    && responseMappers[protocolVersion][url];
+	const mapper = responseMappers[coreVersion]
+		&& responseMappers[coreVersion][url];
 	if (mapper) {
 		response = mapper(response);
 	}
@@ -32,28 +31,27 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	1.1: coreProtocol20.paramMappers11,
-	'2.0': coreProtocol20.paramMappers20,
+	'3.0.0-beta.0': coreVersion300.paramMappers300,
 };
 
 const mapParams = (params, url) => {
-	const mapper = paramMappers[protocolVersion]
-    && paramMappers[protocolVersion][url];
+	const mapper = paramMappers[coreVersion]
+		&& paramMappers[coreVersion][url];
 	if (mapper) {
 		params = mapper(params);
 	}
 	return params;
 };
 
-const setProtocolVersion = version => {
-	protocolVersion = version;
+const setCoreVersion = version => {
+	coreVersion = version;
 };
 
-const getProtocolVersion = () => protocolVersion;
+const getCoreVersion = () => coreVersion;
 
 module.exports = {
 	mapResponse,
 	mapParams,
-	setProtocolVersion,
-	getProtocolVersion,
+	setCoreVersion,
+	getCoreVersion,
 };

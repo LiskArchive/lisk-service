@@ -23,12 +23,13 @@ const {
 } = require('@liskhq/lisk-transactions');
 const { CacheRedis, Logger, LoggerConfig, Utils } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
+const semver = require('semver');
 
 const recentBlocksCache = require('./recentBlocksCache');
 const coreCache = require('./coreCache');
 const coreApi = require('./coreApi');
 const coreApiCached = require('./coreApiCached');
-const { setProtocolVersion, getProtocolVersion, mapParams } = require('./coreProtocolCompatibility.js');
+const { setCoreVersion, getCoreVersion, mapParams } = require('./coreVersionCompatibility');
 const config = require('../config.js');
 
 const ObjectUtilService = Utils.Data;
@@ -289,8 +290,8 @@ const updateTransactionType = params => {
 	params = mapParams(params, url);
 
 	// Check for backward compatibility
-	const protocolVersion = Number(getProtocolVersion().charAt(0));
-	if (protocolVersion < 2 && params.type >= 8) params = mapParams(params, url);
+	const coreVersion = getCoreVersion();
+	if (semver.lt(semver.coerce(coreVersion), '3.0.0') && params.type >= 8) params = mapParams(params, url);
 
 	return params;
 };
@@ -576,7 +577,7 @@ module.exports = {
 	numOfActiveDelegates,
 	peerStates,
 	setReadyStatus,
-	setProtocolVersion,
+	setCoreVersion,
 	getReadyStatus,
 	getUnixTime,
 	EMAcalc,
