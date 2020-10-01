@@ -40,6 +40,7 @@ const {
 	calculateAvgFeePerByte,
 	calculateFeePerByte,
 	EMAcalc,
+	getEstimateFeeByteCoreLogic,
 } = require('../../shared/core');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
@@ -249,6 +250,141 @@ describe('Fee estimation tests', () => {
 				feeEstLow: 0,
 				feeEstMed: 976.222714,
 				feeEstHigh: 2012.411464,
+			});
+		});
+	});
+
+	describe('getEstimateFeeByteCoreLogic', () => {
+		const feeEstPerByteKeys = [
+			'low',
+			'med',
+			'high',
+			'updated',
+			'blockHeight',
+			'blockId',
+		];
+
+		describe('Zero prevFeeEstPerByte', () => {
+			const prevFeeEstPerByte = {};
+
+			it('No network traffic; ', async () => {
+				const blockBatch = { data: noTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBe(0);
+				expect(feeEstPerByte.high).toBe(0);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
+			});
+
+			it('Low network traffic', async () => {
+				const blockBatch = { data: lowTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBe(0);
+				expect(feeEstPerByte.high).toBe(0);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
+			});
+
+			it('Moderate network traffic', async () => {
+				const blockBatch = { data: moderateTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBeCloseTo(4.4813044863950005);
+				expect(feeEstPerByte.high).toBeCloseTo(5.859755832313501);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
+			});
+
+			it('High network traffic', async () => {
+				const blockBatch = { data: highTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBeCloseTo(1.2432409946621534);
+				expect(feeEstPerByte.high).toBeCloseTo(58.84444119752685);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
+			});
+		});
+
+		describe('Non-zero prevFeeEstPerByte', () => {
+			const prevFeeEstPerByte = {
+				low: 0,
+				med: 1000,
+				high: 2000,
+			};
+
+			it('No network traffic; Non-zero prevFeeEstPerByte', async () => {
+				const blockBatch = { data: noTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBe(0);
+				expect(feeEstPerByte.high).toBe(0);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
+			});
+
+			it('Low network traffic', async () => {
+				const blockBatch = { data: lowTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBe(0);
+				expect(feeEstPerByte.high).toBe(0);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
+			});
+
+			it('Moderate network traffic; Non-zero prevFeeEstPerByte', async () => {
+				const blockBatch = { data: moderateTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBeCloseTo(970.421304486395);
+				expect(feeEstPerByte.high).toBeCloseTo(1937.7397558323137);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
+			});
+
+			it('High network traffic; Non-zero prevFeeEstPerByte', async () => {
+				const blockBatch = { data: highTrafficMockup.blocks };
+
+				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
+				expect(Object.keys(feeEstPerByte)).toEqual(feeEstPerByteKeys);
+				expect(feeEstPerByte.low).toBe(0);
+				expect(feeEstPerByte.med).toBeCloseTo(967.1832409946622);
+				expect(feeEstPerByte.high).toBeCloseTo(1990.7244411975269);
+				expect(feeEstPerByte.updated).toBeGreaterThan(Math.floor(Date.now() / 1000) - 1);
+				expect(feeEstPerByte.updated).toBeLessThanOrEqual(Math.floor(Date.now() / 1000));
+				expect(feeEstPerByte.blockHeight).toEqual(blockBatch.data[0].height);
+				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
 			});
 		});
 	});

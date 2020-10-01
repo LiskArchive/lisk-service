@@ -467,6 +467,31 @@ const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 	return EMAoutput;
 };
 
+const getEstimateFeeByteCoreLogic = async (blockBatch, innerPrevFeeEstPerByte) => {
+	const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
+	const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
+	const feePerByte = calculateFeePerByte(blockBatch.data[0]);
+	const feeEstPerByte = {};
+
+	if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
+		const EMAoutput = EMAcalc(feePerByte, innerPrevFeeEstPerByte);
+
+		feeEstPerByte.low = EMAoutput.feeEstLow;
+		feeEstPerByte.med = EMAoutput.feeEstMed;
+		feeEstPerByte.high = EMAoutput.feeEstHigh;
+	} else {
+		feeEstPerByte.low = 0;
+		feeEstPerByte.med = 0;
+		feeEstPerByte.high = 0;
+	}
+
+	feeEstPerByte.updated = Math.floor(Date.now() / 1000);
+	feeEstPerByte.blockHeight = blockBatch.data[0].height;
+	feeEstPerByte.blockId = blockBatch.data[0].id;
+
+	return feeEstPerByte;
+};
+
 const getEstimateFeeByte = async () => {
 	const cacheKeyFeeEst = 'lastFeeEstimate';
 
@@ -484,35 +509,6 @@ const getEstimateFeeByte = async () => {
 		Object.assign(prevFeeEstPerByte, cachedFeeEstPerByte);
 	}
 
-	const coreLogic = async (blockBatch, innerPrevFeeEstPerByte) => {
-		blockBatch.data = await BluebirdPromise.map(blockBatch.data, async block => Object
-			.assign(block, { transactions: await getTransactions({ blockId: block.id }) }),
-			{ concurrency: blockBatch.data.length });
-
-		const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
-		const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
-		const feePerByte = calculateFeePerByte(blockBatch.data[0]);
-		const innerFeeEstPerByte = {};
-
-		if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
-			const EMAoutput = EMAcalc(feePerByte, innerPrevFeeEstPerByte);
-
-			innerFeeEstPerByte.low = EMAoutput.feeEstLow;
-			innerFeeEstPerByte.med = EMAoutput.feeEstMed;
-			innerFeeEstPerByte.high = EMAoutput.feeEstHigh;
-		} else {
-			innerFeeEstPerByte.low = 0;
-			innerFeeEstPerByte.med = 0;
-			innerFeeEstPerByte.high = 0;
-		}
-
-		innerFeeEstPerByte.updated = Math.floor(Date.now() / 1000);
-		innerFeeEstPerByte.blockHeight = blockBatch.data[0].height;
-		innerFeeEstPerByte.blockId = blockBatch.data[0].id;
-
-		return innerFeeEstPerByte;
-	};
-
 	const range = size => Array(size).fill().map((_, index) => index);
 	const feeEstPerByte = {};
 	const blockBatch = {};
@@ -522,7 +518,13 @@ const getEstimateFeeByte = async () => {
 		blockBatch.data = await BluebirdPromise.map(range(batchSize), async i => (await getBlocks({
 			height: prevFeeEstPerByte.blockHeight + 1 - i,
 		})).data[0], { concurrency: batchSize });
-		Object.assign(prevFeeEstPerByte, await coreLogic(blockBatch, prevFeeEstPerByte));
+
+		blockBatch.data = await BluebirdPromise.map(blockBatch.data, async block => Object
+			.assign(block, { transactions: await getTransactions({ blockId: block.id }) }),
+			{ concurrency: blockBatch.data.length });
+
+		Object.assign(prevFeeEstPerByte,
+			await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte));
 
 		if (prevFeeEstPerByte.blockHeight !== latestBlock.data[0].height) {
 			// Store intermediate values, in case of a long running loop
@@ -582,6 +584,7 @@ module.exports = {
 	getUnixTime,
 	EMAcalc,
 	getEstimateFeeByte,
+	getEstimateFeeByteCoreLogic,
 	getTransactionInstanceByType,
 	calculateBlockSize,
 	calculateFeePerByte,
