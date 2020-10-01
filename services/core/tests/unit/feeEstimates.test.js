@@ -331,7 +331,7 @@ describe('Fee estimation tests', () => {
 				high: 2000,
 			};
 
-			it('No network traffic; Non-zero prevFeeEstPerByte', async () => {
+			it('No network traffic', async () => {
 				const blockBatch = { data: noTrafficMockup.blocks };
 
 				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
@@ -359,7 +359,7 @@ describe('Fee estimation tests', () => {
 				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
 			});
 
-			it('Moderate network traffic; Non-zero prevFeeEstPerByte', async () => {
+			it('Moderate network traffic', async () => {
 				const blockBatch = { data: moderateTrafficMockup.blocks };
 
 				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
@@ -373,7 +373,7 @@ describe('Fee estimation tests', () => {
 				expect(feeEstPerByte.blockId).toBe(blockBatch.data[0].id);
 			});
 
-			it('High network traffic; Non-zero prevFeeEstPerByte', async () => {
+			it('High network traffic', async () => {
 				const blockBatch = { data: highTrafficMockup.blocks };
 
 				const feeEstPerByte = await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte);
