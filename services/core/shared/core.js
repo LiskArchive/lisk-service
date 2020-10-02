@@ -468,6 +468,11 @@ const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 };
 
 const getEstimateFeeByte = async () => {
+	const coreVersion = getCoreVersion();
+	if (semver.lt(coreVersion, '3.0.0-beta.1')) {
+		return { data: { error: `Action not supported for Lisk Core version: ${coreVersion}.` } };
+	}
+
 	const cacheKeyFeeEst = 'lastFeeEstimate';
 
 	const prevFeeEstPerByte = { blockHeight: config.feeEstimates.defaultStartBlockHeight };
