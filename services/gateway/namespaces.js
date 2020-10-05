@@ -26,16 +26,16 @@ module.exports = {
 	'/rpc-test': registerApi('http-test', { ...defaultConfig }),
 	'/blockchain': {
 		events: {
-		  'call': {
-			mappingPolicy: 'restrict',
-			aliases: {
-			  'update.block': 'block.change'
+			call: {
+				mappingPolicy: 'restrict',
+				aliases: {
+					'update.block': 'block.change',
+				},
+				async onAfterCall(socket, data) {
+					socket.emit('update.block', data);
+				},
+				callOptions: {},
 			},
-			onAfterCall:async function(socket, data){
-				socket.emit('update.block', data)
-		    },
-			callOptions: {}
-		  }
-		}
-	  }
+		},
+	},
 };
