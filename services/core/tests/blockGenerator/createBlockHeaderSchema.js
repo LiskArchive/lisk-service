@@ -15,6 +15,10 @@
  */
 const mocker = require('mocker-data-generator').default;
 
+const minTransactionSize = 117;
+const maxBlockSize = 15 * (2 ** 10);
+const maxNumTransactionInABlock = Math.floor(maxBlockSize / minTransactionSize);
+
 const generateHex = (size) => {
 	let resultHex = '';
 	const hexCharacters = 'abcdef0123456789';
@@ -45,7 +49,7 @@ const blockHeaderSchema = {
 		faker: 'random.number',
 	},
 	numberOfTransactions: {
-		function: () => Math.floor(Math.random() * 1000) % 135,
+		function: () => Math.floor(Math.random() * 1000) % maxNumTransactionInABlock,
 	},
 	payloadHash: {
 		function: () => generateHex(64),
@@ -54,7 +58,8 @@ const blockHeaderSchema = {
 		function: () => Math.floor(Math.random() * 1000),
 	},
 	previousBlockId: {
-		function: () => Math.floor(Math.random() * 10 ** 19),
+		// blockId is a 64-bit value
+		function: () => Math.floor(Math.random() * 10 ** 20) % (2 ** 64),
 	},
 	reward: {
 		function: () => String(1 * 10 ** 8),
@@ -63,7 +68,8 @@ const blockHeaderSchema = {
 		function: () => generateHex(32),
 	},
 	timestamp: {
-		function: () => Math.floor(Date.now()) % 4294967295,
+		// Using the current mainnet epoch time for reference
+		function: () => Math.floor((Date.now() - new Date('2016-05-24T17:00:00.000Z')) / 1000),
 	},
 	totalAmount: {
 		function: () => Math.floor(Math.random() * 10 ** 8),
