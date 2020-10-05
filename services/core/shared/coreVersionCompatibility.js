@@ -17,15 +17,15 @@ const semver = require('semver');
 const coreVersion300 = require('./coreVersion_3_0_0');
 
 let coreVersion = '2.1.6';
-let coreMinVersion = '2.0.0';
+let referenceKey = '2.1.6';
 
 const responseMappers = {
-	'3.0.0': coreVersion300.responseMappers,
+	'3.0.0-beta.0': coreVersion300.responseMappers,
 };
 
 const mapResponse = (response, url) => {
-	const mapper = responseMappers[coreMinVersion]
-		&& responseMappers[coreMinVersion][url];
+	const mapper = responseMappers[referenceKey]
+		&& responseMappers[referenceKey][url];
 	if (mapper) {
 		response = mapper(response);
 	}
@@ -33,13 +33,13 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	'2.0.0': coreVersion300.paramMappersCoreV2,
-	'3.0.0': coreVersion300.paramMappersCoreV3,
+	'2.1.6': coreVersion300.paramMappersCoreV2,
+	'3.0.0-beta.0': coreVersion300.paramMappersCoreV3,
 };
 
 const mapParams = (params, url) => {
-	const mapper = paramMappers[coreMinVersion]
-		&& paramMappers[coreMinVersion][url];
+	const mapper = paramMappers[referenceKey]
+		&& paramMappers[referenceKey][url];
 	if (mapper) {
 		params = mapper(params);
 	}
@@ -47,9 +47,13 @@ const mapParams = (params, url) => {
 };
 
 const setCoreVersion = version => {
-	// Store '3.0.0-beta.0' as '3.0.0' for internal reference
-	coreMinVersion = semver.coerce(version).version.charAt(0).concat('.0.0');
+
 	coreVersion = version;
+
+	availableReferences = Object.keys(paramMappers);
+	availableReferences.forEach(key => {
+		if (semver.lte(coreVersion, key)) referenceKey = key;
+	});
 };
 
 const getCoreVersion = () => coreVersion;
