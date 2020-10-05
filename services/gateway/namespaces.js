@@ -31,7 +31,7 @@ module.exports = {
 			aliases: {
 			  'update.block': 'block.change'
 			},
-			onAfterCall:async function(ctx, socket, data){
+			onAfterCall:async function(socket, data){
 				socket.emit('update.block', data)
 		    },
 			callOptions: {}
