@@ -47,10 +47,9 @@ const mapParams = (params, url) => {
 };
 
 const setCoreVersion = version => {
-
 	coreVersion = version;
 
-	availableReferences = Object.keys(paramMappers);
+	const availableReferences = Object.keys(paramMappers);
 	availableReferences.forEach(key => {
 		if (semver.lte(coreVersion, key)) referenceKey = key;
 	});
