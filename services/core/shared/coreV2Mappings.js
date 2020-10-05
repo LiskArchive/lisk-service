@@ -35,8 +35,8 @@ const transactionTypes = {
 
 const mapState = state => {
 	const stateMapping = {
-		'connected': peerStates['2.1.6'].CONNECTED,
-		'disconnected': peerStates['2.1.6'].DISCONNECTED,
+		CONNECTED: peerStates['2.1.6'].CONNECTED,
+		DISCONNECTED: peerStates['2.1.6'].DISCONNECTED,
 	};
 	return stateMapping[state] !== undefined ? stateMapping[state] : state;
 };
@@ -85,7 +85,7 @@ const mapDelegate = ({ voteWeight, ...delegate }) => ({
 
 const responseMappers = {
 	'/peers': response => {
-		response.data = response.data.map(peer => ({ ...peer, state: mapState(peer.state) }));
+		response.data = response.data.map(peer => ({ ...peer, state: mapState(peer.state.toUpperCase()) }));
 		return response;
 	},
 	'/transactions': response => {
