@@ -24,5 +24,18 @@ module.exports = {
 	'/rpc': registerApi('http-version1', { ...defaultConfig }),
 	'/rpc-v1': registerApi('http-version1', { ...defaultConfig }),
 	'/rpc-test': registerApi('http-test', { ...defaultConfig }),
-	'/blockchain': registerApi('socketio-blockchain-updates', { ...defaultConfig }),
+	'/blockchain': {
+		events: {
+		  'call': {
+			mappingPolicy: 'restrict',
+			aliases: {
+			  'update.block': 'block.change'
+			},
+			onAfterCall:async function(ctx, socket, data){
+				socket.emit('update.block', data)
+		    },
+			callOptions: {}
+		  }
+		}
+	  }
 };
