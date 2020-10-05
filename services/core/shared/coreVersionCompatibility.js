@@ -14,13 +14,14 @@
  *
  */
 const semver = require('semver');
-const coreVersion300 = require('./coreVersion_3_0_0');
+const coreV2Mappings = require('./coreV2Mappings');
+const coreV3Mappings = require('./coreV3Mappings');
 
 let coreVersion = '2.1.6';
-let referenceKey = '2.1.6';
+let referenceKey = coreVersion;
 
 const responseMappers = {
-	'3.0.0-beta.0': coreVersion300.responseMappers,
+	'3.0.0-beta.0': coreV3Mappings.responseMappers,
 };
 
 const mapResponse = (response, url) => {
@@ -33,8 +34,8 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	'2.1.6': coreVersion300.paramMappersCoreV2,
-	'3.0.0-beta.0': coreVersion300.paramMappersCoreV3,
+	'2.1.6': coreV2Mappings.paramMappers,
+	'3.0.0-beta.0': coreV3Mappings.paramMappers,
 };
 
 const mapParams = (params, url) => {
@@ -49,8 +50,8 @@ const mapParams = (params, url) => {
 const setCoreVersion = version => {
 	coreVersion = version;
 
-	const availableReferences = Object.keys(paramMappers);
-	availableReferences.forEach(key => {
+	const availableReferenceKeys = Object.keys(paramMappers);
+	availableReferenceKeys.forEach(key => {
 		if (semver.lte(key, coreVersion)) referenceKey = key;
 	});
 };
