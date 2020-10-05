@@ -51,7 +51,7 @@ const setCoreVersion = version => {
 
 	const availableReferences = Object.keys(paramMappers);
 	availableReferences.forEach(key => {
-		if (semver.lte(coreVersion, key)) referenceKey = key;
+		if (semver.lte(key, coreVersion)) referenceKey = key;
 	});
 };
 
