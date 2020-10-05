@@ -13,16 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const registerApi = require('./shared/registerRpcApi');
-
-const defaultConfig = {
-	whitelist: [],
-	aliases: {},
-};
 
 module.exports = {
-	'/rpc': registerApi('http-version1', { ...defaultConfig }),
-	'/rpc-v1': registerApi('http-version1', { ...defaultConfig }),
-	'/rpc-test': registerApi('http-test', { ...defaultConfig }),
-	'/blockchain': registerApi('socketio-blockchain-updates', { ...defaultConfig }),
+	apiType: 'socket.io-subscribe',
+	events: [
+		{
+			name: 'update.block',
+			type: 'event',
+			cache: false,
+			params: {
+				limit: 1,
+			},
+			source: {
+				endpoint: 'moleculer',
+				event: 'blocks.change',
+				mapper: {
+					data: [require('../mappers/socketBlock')],
+					meta: {},
+				},
+			},
+		},
+	],
 };
