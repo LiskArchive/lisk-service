@@ -39,6 +39,16 @@ pipeline {
 			}
 		}
 
+		stage('Run services unit tests') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./services/core') {
+						sh "npm run test:unit"
+					}
+				}
+			}
+		}
+
 		stage('Run framework unit tests') {
 			steps {
 				nvm(getNodejsVersion()) {
