@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -44,10 +44,10 @@ const blockData = {
 		function: () => 1,
 	},
 	timestamp: {
-		function: () => Math.floor(Date.now() / 10) * 10,
+		function: () => Math.floor(Date.now() / 1000),
 	},
 	generatorAddress: {
-		function: () => `${Math.floor(Math.random() * 10 ** 20)}L`,
+		function: () => `${Math.floor(Math.random() * 10 ** 19)}L`,
 	},
 	generatorPublicKey: {
 		function: () => generateHex(64),
@@ -56,7 +56,7 @@ const blockData = {
 		faker: 'name.firstName',
 	},
 	payloadLength: {
-		function: () => Math.floor(Math.random() * 10),
+		function: () => Math.floor(Math.random() * 1000),
 	},
 	payloadHash: {
 		function: () => generateHex(64),
@@ -93,33 +93,43 @@ let args = Number(process.argv.slice(2)[0]);
 if (!args) {
 	args = 20;
 }
-const lowNetwork = () => {
+const noNetworkTraffic = () => {
+	blockData.numberOfTransactions = { function: () => 0 };
+	const res = blockMocker(blockData, args);
+	fs.writeFileSync(
+		`${path.dirname(__dirname)}/blockGenerator/noTraffic.json`,
+		JSON.stringify(res, null, '\t'),
+	);
+};
+
+const lowNetworkTraffic = () => {
 	blockData.numberOfTransactions = { function: () => randomNumber(0, 10) };
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/lowTraffic.json`,
-		JSON.stringify(res, null, 2),
+		JSON.stringify(res, null, '\t'),
 	);
 };
 
-const moderateNetwork = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(0, 30) };
+const moderateNetworkTraffic = () => {
+	blockData.numberOfTransactions = { function: () => randomNumber(30, 80) };
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/moderateTraffic.json`,
-		JSON.stringify(res, null, 2),
+		JSON.stringify(res, null, '\t'),
 	);
 };
 
-const highNetwork = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(0, 100) };
+const highNetworkTraffic = () => {
+	blockData.numberOfTransactions = { function: () => randomNumber(130, 150) };
 	const res = blockMocker(blockData, args);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/highTraffic.json`,
-		JSON.stringify(res, null, 2),
+		JSON.stringify(res, null, '\t'),
 	);
 };
 
-lowNetwork();
-moderateNetwork();
-highNetwork();
+noNetworkTraffic();
+lowNetworkTraffic();
+moderateNetworkTraffic();
+highNetworkTraffic();
