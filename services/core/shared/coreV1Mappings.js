@@ -16,7 +16,7 @@
 const { getDelegateRankByUsername } = require('./delegateCache.js');
 
 const peerStates = {
-	'2.1.6': {
+	'1.0.0-alpha.0': {
 		UNKNOWN: 0,
 		DISCONNECTED: 1,
 		CONNECTED: 2,
@@ -24,7 +24,7 @@ const peerStates = {
 };
 
 const transactionTypes = {
-	'2.1.6': {
+	'1.0.0-alpha.0': {
 		TRANSFER: 0,
 		REGISTERSECONDPASSPHRASE: 1,
 		REGISTERDELEGATE: 2,
@@ -35,18 +35,18 @@ const transactionTypes = {
 
 const mapState = state => {
 	const stateMapping = {
-		connected: peerStates['2.1.6'].CONNECTED,
-		disconnected: peerStates['2.1.6'].DISCONNECTED,
+		connected: peerStates['1.0.0-alpha.0'].CONNECTED,
+		disconnected: peerStates['1.0.0-alpha.0'].DISCONNECTED,
 	};
 	return stateMapping[state] !== undefined ? stateMapping[state] : state;
 };
 
 const transactionTypeParamMap = {
-	TRANSFER: transactionTypes['2.1.6'].TRANSFER,
-	REGISTERSECONDPASSPHRASE: transactionTypes['2.1.6'].REGISTERSECONDPASSPHRASE,
-	REGISTERDELEGATE: transactionTypes['2.1.6'].REGISTERDELEGATE,
-	CASTVOTES: transactionTypes['2.1.6'].CASTVOTES,
-	REGISTERMULTISIGNATURE: transactionTypes['2.1.6'].REGISTERMULTISIGNATURE,
+	TRANSFER: transactionTypes['1.0.0-alpha.0'].TRANSFER,
+	REGISTERSECONDPASSPHRASE: transactionTypes['1.0.0-alpha.0'].REGISTERSECONDPASSPHRASE,
+	REGISTERDELEGATE: transactionTypes['1.0.0-alpha.0'].REGISTERDELEGATE,
+	CASTVOTES: transactionTypes['1.0.0-alpha.0'].CASTVOTES,
+	REGISTERMULTISIGNATURE: transactionTypes['1.0.0-alpha.0'].REGISTERMULTISIGNATURE,
 };
 
 const mapTransaction = transaction => {

@@ -14,14 +14,14 @@
  *
  */
 const semver = require('semver');
-const coreV2Mappings = require('./coreV2Mappings');
+const coreV1Mappings = require('./coreV1Mappings');
 const coreV3Mappings = require('./coreV3Mappings');
 
-let coreVersion = '2.1.6';
+let coreVersion = '1.0.0-alpha.0';
 let referenceKey = coreVersion;
 
 const responseMappers = {
-	'3.0.0-beta.0': coreV3Mappings.responseMappers,
+	'3.0.0-alpha.0': coreV3Mappings.responseMappers,
 };
 
 const mapResponse = (response, url) => {
@@ -34,8 +34,8 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	'2.1.6': coreV2Mappings.paramMappers,
-	'3.0.0-beta.0': coreV3Mappings.paramMappers,
+	'1.0.0-alpha.0': coreV1Mappings.paramMappers,
+	'3.0.0-alpha.0': coreV3Mappings.paramMappers,
 };
 
 const mapParams = (params, url) => {
