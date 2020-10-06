@@ -13,18 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const semver = require('semver');
+const coreV1Mappings = require('./coreV1Mappings');
+const coreV3Mappings = require('./coreV3Mappings');
 
-const coreProtocol20 = require('./coreProtocol_2_0');
-
-let protocolVersion = '1.1';
+let coreVersion = '1.0.0-alpha.0';
+let referenceKey = coreVersion;
 
 const responseMappers = {
-	'2.0': coreProtocol20.responseMappers,
+	'3.0.0-alpha.0': coreV3Mappings.responseMappers,
 };
 
 const mapResponse = (response, url) => {
-	const mapper = responseMappers[protocolVersion]
-    && responseMappers[protocolVersion][url];
+	const mapper = responseMappers[referenceKey]
+		&& responseMappers[referenceKey][url];
 	if (mapper) {
 		response = mapper(response);
 	}
@@ -32,28 +34,33 @@ const mapResponse = (response, url) => {
 };
 
 const paramMappers = {
-	1.1: coreProtocol20.paramMappers11,
-	'2.0': coreProtocol20.paramMappers20,
+	'1.0.0-alpha.0': coreV1Mappings.paramMappers,
+	'3.0.0-alpha.0': coreV3Mappings.paramMappers,
 };
 
 const mapParams = (params, url) => {
-	const mapper = paramMappers[protocolVersion]
-    && paramMappers[protocolVersion][url];
+	const mapper = paramMappers[referenceKey]
+		&& paramMappers[referenceKey][url];
 	if (mapper) {
 		params = mapper(params);
 	}
 	return params;
 };
 
-const setProtocolVersion = version => {
-	protocolVersion = version;
+const setCoreVersion = version => {
+	coreVersion = version;
+
+	const availableReferenceKeys = Object.keys(paramMappers);
+	availableReferenceKeys.forEach(key => {
+		if (semver.lte(key, coreVersion)) referenceKey = key;
+	});
 };
 
-const getProtocolVersion = () => protocolVersion;
+const getCoreVersion = () => coreVersion;
 
 module.exports = {
 	mapResponse,
 	mapParams,
-	setProtocolVersion,
-	getProtocolVersion,
+	setCoreVersion,
+	getCoreVersion,
 };

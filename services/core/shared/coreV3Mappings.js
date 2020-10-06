@@ -13,30 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 const { getDelegateRankByUsername } = require('./delegateCache.js');
 
 const peerStates = {
-	1.1: {
-		UNKNOWN: 0,
-		DISCONNECTED: 1,
-		CONNECTED: 2,
-	},
-	'2.0': {
+	'3.0.0-alpha.0': {
 		DISCONNECTED: 'disconnected',
 		CONNECTED: 'connected',
 	},
 };
 
 const transactionTypes = {
-	1.1: {
-		TRANSFER: 0,
-		REGISTERSECONDPASSPHRASE: 1,
-		REGISTERDELEGATE: 2,
-		CASTVOTES: 3,
-		REGISTERMULTISIGNATURE: 4,
-	},
-	'2.0': {
+	'3.0.0-alpha.0': {
 		TRANSFER: 8,
 		REGISTERSECONDPASSPHRASE: 9,
 		REGISTERDELEGATE: 10,
@@ -46,60 +33,47 @@ const transactionTypes = {
 };
 
 const peerStateParamMap = {
-	[peerStates['1.1'].DISCONNECTED]: peerStates['2.0'].DISCONNECTED,
-	[peerStates['1.1'].CONNECTED]: peerStates['2.0'].CONNECTED,
+	1: peerStates['3.0.0-alpha.0'].DISCONNECTED,
+	2: peerStates['3.0.0-alpha.0'].CONNECTED,
 };
 
 const mapState = state => {
 	const stateMapping = {
-		[peerStates['2.0'].CONNECTED]: peerStates['1.1'].CONNECTED,
-		[peerStates['2.0'].DISCONNECTED]: peerStates['1.1'].DISCONNECTED,
+		[peerStates['3.0.0-alpha.0'].CONNECTED]: 2,
+		[peerStates['3.0.0-alpha.0'].DISCONNECTED]: 1,
 	};
 	return stateMapping[state] !== undefined ? stateMapping[state] : state;
 };
 
 const transactionTypeParamMap = {
-	TRANSFER: transactionTypes['2.0'].TRANSFER,
-	REGISTERSECONDPASSPHRASE: transactionTypes['2.0'].REGISTERSECONDPASSPHRASE,
-	REGISTERDELEGATE: transactionTypes['2.0'].REGISTERDELEGATE,
-	CASTVOTES: transactionTypes['2.0'].CASTVOTES,
-	REGISTERMULTISIGNATURE: transactionTypes['2.0'].REGISTERMULTISIGNATURE,
-
-	[transactionTypes['2.0'].TRANSFER]: transactionTypes['1.1'].TRANSFER,
-	[transactionTypes['2.0'].REGISTERSECONDPASSPHRASE]: transactionTypes['1.1'].REGISTERSECONDPASSPHRASE,
-	[transactionTypes['2.0'].REGISTERDELEGATE]: transactionTypes['1.1'].REGISTERDELEGATE,
-	[transactionTypes['2.0'].CASTVOTES]: transactionTypes['1.1'].CASTVOTES,
-	[transactionTypes['2.0'].REGISTERMULTISIGNATURE]: transactionTypes['1.1'].REGISTERMULTISIGNATURE,
+	TRANSFER: transactionTypes['3.0.0-alpha.0'].TRANSFER,
+	REGISTERSECONDPASSPHRASE: transactionTypes['3.0.0-alpha.0'].REGISTERSECONDPASSPHRASE,
+	REGISTERDELEGATE: transactionTypes['3.0.0-alpha.0'].REGISTERDELEGATE,
+	CASTVOTES: transactionTypes['3.0.0-alpha.0'].CASTVOTES,
+	REGISTERMULTISIGNATURE: transactionTypes['3.0.0-alpha.0'].REGISTERMULTISIGNATURE,
 };
 
 const mapTransaction = transaction => {
-	let changesByType = {
-		0: {
+	const changesByType = {
+		8: {
 			amount: transaction.asset.amount,
 			recipientId: transaction.asset.recipientId,
 			asset: { data: transaction.asset.data },
 		},
-		1: {
+		9: {
 			asset: { signature: transaction.asset },
 		},
-		2: {
+		10: {
 			asset: { delegate: transaction.asset },
 		},
-		3: {
+		11: {
 			recipientPublicKey: transaction.senderPublicKey,
 		},
-		4: {
+		12: {
 			asset: { multisignature: transaction.asset },
 		},
 	};
-	changesByType = {
-		...changesByType,
-		8: changesByType[0],
-		9: changesByType[1],
-		10: changesByType[2],
-		11: changesByType[3],
-		12: changesByType[4],
-	};
+
 	return ({
 		amount: '0',
 		...transaction,
@@ -132,17 +106,13 @@ const responseMappers = {
 	},
 };
 
-const paramMappers11 = {
+const paramMappers = {
 	'/delegates/latest_registrations': params => {
 		if (params.type) {
 			params.type = transactionTypeParamMap[params.type];
 		}
 		return params;
 	},
-};
-
-const paramMappers20 = {
-	...paramMappers11,
 	'/peers': params => {
 		if (params.state) {
 			params.state = peerStateParamMap[params.state];
@@ -161,6 +131,5 @@ const paramMappers20 = {
 
 module.exports = {
 	responseMappers,
-	paramMappers11,
-	paramMappers20,
+	paramMappers,
 };

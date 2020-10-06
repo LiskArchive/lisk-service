@@ -90,7 +90,7 @@ describe('Peers API', () => {
 		it('wrong httpPort -> bad request error', async () => {
 			const response = await api.get(`${endpoint}?httpPort=70000000`, 400);
 			expect(response).toMapRequiredSchema(badRequestSchema);
-	});
+		});
 
 		it('wrong wsPort -> bad request error', async () => {
 			const response = await api.get(`${endpoint}?wsPort=70000000`, 400);
@@ -182,7 +182,7 @@ describe('Peers API', () => {
 	});
 
 	describe('GET /peers/disconnected', () => {
-		it('returns disconnected peers', async () => {
+		xit('returns disconnected peers', async () => {
 			const response = await api.get(`${endpoint}/disconnected`);
 			expect(response).toMapRequiredSchema(responseEnvelopeSchema);
 			response.data.map(peer => expect(peer).toMapRequiredSchema(peerSchema));
