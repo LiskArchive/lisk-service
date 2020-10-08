@@ -52,6 +52,14 @@ const broker = Microservice({
 	logger: loggerConf,
 }).getBroker();
 
+const sendSocketIoEvent = (eventName, payload) => {
+	broker.call('gateway.broadcast', {
+		namespace: '/blockchain',
+		event: eventName,
+		args: [payload],
+	});
+};
+
 broker.createService({
 	transporter: config.transporter,
 	mixins: [ApiService, SocketIOService],
@@ -110,18 +118,13 @@ broker.createService({
 			namespaces,
 		},
 	},
+	events: {
+		'block.change': (payload) => sendSocketIoEvent('update.block', payload),
+		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
+		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', payload),
+		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
+	},
 });
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);
-
-setInterval(() => {
-	broker.call('gateway.broadcast', {
-		namespace: '/blockchain', // optional
-		event: 'core.blocks',
-		// args: ['my', 'friends','!'], //optional
-		volatile: true, // optional
-		// local: true, // optional
-		// rooms: ['room1', 'room2'] //optional
-	});
-}, 1 * 1000);
