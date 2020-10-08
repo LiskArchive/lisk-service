@@ -25,6 +25,7 @@ jsome.params.colored = true;
 const cliEndpoint = 'blockchain';
 const config = {
 	// endpoint: `wss://testnet-service-staging.lisk.io/${cliEndpoint}`,
+	// endpoint: `wss://betanet-service.lisk.io/${cliEndpoint}`,
 	// endpoint: `ws://testnet-service-dev.liskdev.net/${cliEndpoint}`,
 	endpoint: `ws://localhost:9901/${cliEndpoint}`,
 };
@@ -58,6 +59,9 @@ const subscribe = event => {
 };
 
 subscribe('update.block');
+subscribe('block.change');
+subscribe('get.blocks');
+subscribe('core.blocks');
 subscribe('update.transactions.unconfirmed');
 subscribe('update.transactions.confirmed');
 subscribe('update.moleculer.test');
