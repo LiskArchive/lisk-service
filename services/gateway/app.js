@@ -52,6 +52,14 @@ const broker = Microservice({
 	logger: loggerConf,
 }).getBroker();
 
+const sendSocketIoEvent = (eventName, payload) => {
+	broker.call('gateway.broadcast', {
+		namespace: '/blockchain',
+		event: eventName,
+		args: [payload],
+	});
+};
+
 broker.createService({
 	transporter: config.transporter,
 	mixins: [ApiService, SocketIOService],
@@ -109,6 +117,12 @@ broker.createService({
 		io: {
 			namespaces,
 		},
+	},
+	events: {
+		'block.change': (payload) => sendSocketIoEvent('update.block', payload),
+		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
+		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', payload),
+		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
 	},
 });
 

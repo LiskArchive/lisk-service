@@ -28,13 +28,7 @@ module.exports = {
 		events: {
 			call: {
 				mappingPolicy: 'restrict',
-				aliases: {
-					'update.block': 'block.change',
-				},
-				async onAfterCall(socket, data) {
-					socket.emit('update.block', data);
-				},
-				callOptions: {},
+				aliases: {},
 			},
 		},
 	},
