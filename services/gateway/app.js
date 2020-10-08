@@ -114,3 +114,14 @@ broker.createService({
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);
+
+setInterval(() => {
+	broker.call('gateway.broadcast', {
+		namespace: '/blockchain', // optional
+		event: 'core.blocks',
+		// args: ['my', 'friends','!'], //optional
+		volatile: true, // optional
+		// local: true, // optional
+		// rooms: ['room1', 'room2'] //optional
+	});
+}, 1 * 1000);
