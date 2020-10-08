@@ -14,17 +14,14 @@
  *
  */
 const { HTTP } = require('lisk-service-framework');
-
-const { getProtocolVersion } = require('../../shared/coreProtocolCompatibility.js');
 const CoreService = require('../../shared/core.js');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const getEstimateFeeByte = async () => {
-	const protocolVersion = getProtocolVersion();
-	if (Number(protocolVersion) < 2) return { status: NOT_FOUND, data: { error: `Action not supported for Protocol version: ${protocolVersion}.` } };
-
 	const response = await CoreService.getEstimateFeeByte();
+
+	if (response.data && response.data.error) return { status: NOT_FOUND, data: response.data };
 
 	const result = { feeEstimatePerByte: {} };
 	result.feeEstimatePerByte.low = response.low;
