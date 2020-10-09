@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('./config');
 const registerApi = require('./shared/registerHttpApi');
 
 const defaultConfig = {
@@ -40,9 +41,21 @@ const defaultConfig = {
 	},
 };
 
-module.exports = [
-	registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
-	registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
-	registerApi('http-test', { ...defaultConfig, path: '/test' }),
-	registerApi('http-status', { ...defaultConfig, path: '/' }),
-];
+const enableApiHTTP = config.api.http.split(',');
+
+const exportedApi = enableApiHTTP.map(apiName => {
+	if ('http-version1' === apiName) {
+		return registerApi('http-version1', { ...defaultConfig, path: '/v1' });
+	}
+	if ('http-version1-compat' === apiName) {
+		return registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' });
+	}
+	if ('http-test' === apiName) {
+		return registerApi('http-test', { ...defaultConfig, path: '/test' });
+	}
+	if ('http-status' === apiName) {
+		return registerApi('http-status', { ...defaultConfig, path: '/' });
+	}
+});
+
+module.exports = exportedApi;
