@@ -59,9 +59,6 @@ const subscribe = event => {
 };
 
 subscribe('update.block');
-subscribe('block.change');
-subscribe('get.blocks');
-subscribe('core.blocks');
-subscribe('update.transactions.unconfirmed');
+subscribe('update.round');
 subscribe('update.transactions.confirmed');
-subscribe('update.moleculer.test');
+subscribe('update.fee_estimates');
