@@ -21,21 +21,23 @@ const defaultConfig = {
 	aliases: {},
 };
 
-const enableApiWS = config.api.ws.split(',');
-const exportedApi = {};
+const filterApis = (requiredApis, availableApis) => {
+	const filteredApis = {};
 
-enableApiWS.forEach(apiName => {
-	if (apiName === 'rpc') {
-		exportedApi['/rpc'] = registerApi('http-version1', { ...defaultConfig });
-	}
-	if (apiName === 'rpc-v1') {
-		exportedApi['/rpc-v1'] = registerApi('http-version1', { ...defaultConfig });
-	}
-	if (apiName === 'rpc-test') {
-		exportedApi['/rpc-test'] = registerApi('http-version1', { ...defaultConfig });
-	}
-	if (apiName === 'blockchain') {
-		exportedApi['/blockchain'] = {
+	const requiredPaths = requiredApis.split(',').map(path => '/'.concat(path));
+	Object.keys(availableApis).forEach(key => {
+		if (requiredPaths.includes(key)) filteredApis[key] = availableApis[key]();
+	});
+
+	return filteredApis;
+};
+
+module.exports = filterApis(config.api.ws, {
+	'/rpc': () => registerApi('http-version1', { ...defaultConfig }),
+	'/rpc-v1': () => registerApi('http-version1', { ...defaultConfig }),
+	'/rpc-test': () => registerApi('http-test', { ...defaultConfig }),
+	'/blockchain': () => {
+		return {
 			events: {
 				call: {
 					mappingPolicy: 'restrict',
@@ -43,7 +45,5 @@ enableApiWS.forEach(apiName => {
 				},
 			},
 		};
-	}
+	},
 });
-
-module.exports = exportedApi;

@@ -41,23 +41,20 @@ const defaultConfig = {
 	},
 };
 
-const enableApiHTTP = config.api.http.split(',');
+const filterApis = (requiredApis, availableApis) => {
+	const filteredApis = [];
 
-const exportedApi = enableApiHTTP.map(apiName => {
-	let apiInfo;
-	if (apiName === 'http-version1') {
-		apiInfo = registerApi('http-version1', { ...defaultConfig, path: '/v1' });
-	}
-	if (apiName === 'http-version1-compat') {
-		apiInfo = registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' });
-	}
-	if (apiName === 'http-test') {
-		apiInfo = registerApi('http-test', { ...defaultConfig, path: '/test' });
-	}
-	if (apiName === 'http-status') {
-		apiInfo = registerApi('http-status', { ...defaultConfig, path: '/' });
-	}
-	return apiInfo;
+	requiredApis = requiredApis.split(',');
+	Object.keys(availableApis).forEach(key => {
+		if (requiredApis.includes(key)) filteredApis.push(availableApis[key]());
+	});
+
+	return filteredApis;
+};
+
+module.exports = filterApis(config.api.http, {
+	'http-version1': () => registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
+	'http-version1-compat': () => registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
+	'http-test': () => registerApi('http-test', { ...defaultConfig, path: '/test' }),
+	'http-status': () => registerApi('http-status', { ...defaultConfig, path: '/' }),
 });
-
-module.exports = exportedApi;
