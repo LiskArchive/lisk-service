@@ -15,8 +15,19 @@
  *
  */
 const cliEndpoint = 'blockchain';
-module.exports.webSocket = {
+
+const events = [
+	'connect', 'reconnect',
+	'connect_error', 'connect_timeout', 'error', 'disconnect',
+	'reconnect', 'reconnect_attempt',
+	'reconnecting', 'reconnect_error', 'reconnect_failed',
+];
+const webSocket = {
 	// endpoint: `wss://testnet-service-staging.lisk.io/${cliEndpoint}`,
 	// endpoint: `ws://testnet-service-dev.liskdev.net/${cliEndpoint}`,
 	endpoint: `ws://localhost:9901/${cliEndpoint}`,
+};
+module.exports = {
+	webSocket,
+	events,
 };
