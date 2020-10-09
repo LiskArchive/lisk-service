@@ -25,16 +25,16 @@ const enableApiWS = config.api.ws.split(',');
 const exportedApi = {};
 
 enableApiWS.forEach(apiName => {
-	if ('rpc' === apiName) {
+	if (apiName === 'rpc') {
 		exportedApi['/rpc'] = registerApi('http-version1', { ...defaultConfig });
 	}
-	if ('rpc-v1' === apiName) {
+	if (apiName === 'rpc-v1') {
 		exportedApi['/rpc-v1'] = registerApi('http-version1', { ...defaultConfig });
 	}
-	if ('rpc-test' === apiName) {
+	if (apiName === 'rpc-test') {
 		exportedApi['/rpc-test'] = registerApi('http-version1', { ...defaultConfig });
 	}
-	if ('blockchain' === apiName) {
+	if (apiName === 'blockchain') {
 		exportedApi['/blockchain'] = {
 			events: {
 				call: {

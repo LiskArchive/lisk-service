@@ -44,18 +44,20 @@ const defaultConfig = {
 const enableApiHTTP = config.api.http.split(',');
 
 const exportedApi = enableApiHTTP.map(apiName => {
-	if ('http-version1' === apiName) {
-		return registerApi('http-version1', { ...defaultConfig, path: '/v1' });
+	let apiInfo;
+	if (apiName === 'http-version1') {
+		apiInfo = registerApi('http-version1', { ...defaultConfig, path: '/v1' });
 	}
-	if ('http-version1-compat' === apiName) {
-		return registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' });
+	if (apiName === 'http-version1-compat') {
+		apiInfo = registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' });
 	}
-	if ('http-test' === apiName) {
-		return registerApi('http-test', { ...defaultConfig, path: '/test' });
+	if (apiName === 'http-test') {
+		apiInfo = registerApi('http-test', { ...defaultConfig, path: '/test' });
 	}
-	if ('http-status' === apiName) {
-		return registerApi('http-status', { ...defaultConfig, path: '/' });
+	if (apiName === 'http-status') {
+		apiInfo = registerApi('http-status', { ...defaultConfig, path: '/' });
 	}
+	return apiInfo;
 });
 
 module.exports = exportedApi;
