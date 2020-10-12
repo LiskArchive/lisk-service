@@ -12,7 +12,7 @@ compose := docker-compose \
 up:
 	echo 'printing'
 	echo ${ENABLE_HTTP_API}
-	$(compose) up --detach
+	$(compose) up --detach -e ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API}
 
 down:
 	$(compose) down --volumes --remove-orphans
