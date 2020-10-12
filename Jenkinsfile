@@ -75,7 +75,7 @@ pipeline {
 		stage('Run microservices') {
 			steps {
 				ansiColor('xterm') {
-					dir('./docker') { sh "make -f ${Makefile} up ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API}" }
+					dir('./docker') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} make -f ${Makefile} up" }
 				}
 			}
 		}
