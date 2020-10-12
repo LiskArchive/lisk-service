@@ -10,6 +10,8 @@ compose := docker-compose \
 	-f docker-compose.testnet.yml
 
 up:
+	echo 'printing'
+	echo ${ENABLE_HTTP_API}
 	$(compose) up --detach
 
 down:
