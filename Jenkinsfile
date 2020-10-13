@@ -17,6 +17,10 @@ def waitForHttp() {
 
 pipeline {
 	agent { node { label 'lisk-service' } }
+	environment {
+		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
+		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test'
+    }
 	stages {
 		stage ('Build deps') {
 			steps {
@@ -71,7 +75,7 @@ pipeline {
 		stage('Run microservices') {
 			steps {
 				ansiColor('xterm') {
-					dir('./docker') { sh "make -f ${Makefile} up" }
+					dir('./docker') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} make -f ${Makefile} up" }
 				}
 			}
 		}
