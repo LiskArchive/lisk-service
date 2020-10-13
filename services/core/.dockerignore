@@ -58,3 +58,5 @@ sftp-config.json
 xunit-report.xml
 
 Dockerfile
+
+db_data
