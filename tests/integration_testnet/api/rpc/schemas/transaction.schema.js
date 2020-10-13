@@ -34,6 +34,7 @@ const transactionSchema = Joi.object({
 	timestamp: Joi.number().required(),
 	type: Joi.number().required(),
 	senderSecondPublicKey: Joi.string(),
+	isFinal: Joi.boolean().required(),
 }).required();
 
 module.exports = transactionSchema;
