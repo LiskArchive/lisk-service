@@ -43,7 +43,7 @@ const createDb = async (name, idxList = []) => {
 };
 
 const getDbInstance = (collectionName) => {
-	const dbDataDir = `${config.databaseDir}/${collectionName}`;
+	const dbDataDir = `${config.db.directory}/${collectionName}`;
 	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
 	if (!connectionPool[collectionName]) {
