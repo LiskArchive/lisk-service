@@ -13,8 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
-const PouchDB = require('PouchDB');
+const PouchDB = require('pouchdb');
 
 PouchDB.plugin(require('pouchdb-upsert'));
 PouchDB.plugin(require('pouchdb-find'));
@@ -27,7 +28,7 @@ const connectionPool = {};
 
 const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
-	const db = new PouchDB(name);
+	const db = new PouchDB(name, { auto_compaction: true });
 
 	idxList.forEach(async idxName => {
 		logger.debug(`Setting up index ${idxName}...`);
@@ -42,13 +43,12 @@ const createDb = async (name, idxList = []) => {
 };
 
 const getDbInstance = (collectionName) => {
-	// make sure the directory exists on disk
-	// mkdir -p
-
 	const dbDataDir = `${config.databaseDir}/${collectionName}`;
+	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+
 	if (!connectionPool[collectionName]) {
 		connectionPool[collectionName] = createDb(dbDataDir);
-		logger.info(`Opened to PouchDB database: ${collectionName}`);
+		logger.info(`Opened PouchDB database: ${collectionName}`);
 	}
 
 	const db = connectionPool[collectionName];
@@ -68,9 +68,7 @@ const getDbInstance = (collectionName) => {
 		return db.get(id);
 	};
 
-	const find = (params) => {
-		return db.find(params);
-	};
+	const find = (params) => db.find(params);
 
 	const findOneByProperty = (property, value) => {
 		const selector = {};
