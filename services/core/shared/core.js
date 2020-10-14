@@ -321,7 +321,11 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const pouchdb = require('./pouchdb');
+
 const getBlocks = async params => {
+	const blockDb = await pouchdb('blocks');
+
 	if (epochUnixTime === undefined) await getEpochUnixTime();
 
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async timestamp => {
@@ -330,7 +334,41 @@ const getBlocks = async params => {
 		}
 		return Promise.resolve();
 	}));
-	const blocks = await recentBlocksCache.getCachedBlocks(params) || await coreApi.getBlocks(params);
+
+	let blocks = {
+		data: [],
+	};
+	let dbResult;
+
+	if (params.blockId) {
+		dbResult = await blockDb.findById(params.blockId);
+		if (dbResult !== null) blocks.data = [dbResult];
+	}
+
+	if (params.height) {
+		dbResult = await blockDb.findOneByProperty('height', Number(params.height));
+		if (dbResult.length > 0) blocks.data = dbResult;
+	}
+
+	if (params.generatorPublicKey) {
+		dbResult = await blockDb.find({
+			selector: { generatorAddress: params.generatorPublicKey },
+			limit: params.limit,
+			skip: params.offset,
+		});
+		if (dbResult.length > 0) blocks.data = dbResult;
+	}
+
+	if (blocks.data.length === 0) {
+		blocks = await recentBlocksCache.getCachedBlocks(params) || await coreApi.getBlocks(params);
+		if (blocks.data.length > 0) {
+			blocks.data.forEach(block => {
+				// drop confirmations
+				blockDb.writeOnce(block);
+			});
+		}
+	}
+
 	let result = [];
 
 	if (blocks.data) {
