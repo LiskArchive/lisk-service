@@ -549,6 +549,7 @@ const getEstimateFeeByte = async () => {
 const setFinalizedHeight = height => {
 	heightFinalized = height;
 };
+
 const getNetworkStatus = async () => {
 	const result = await coreApi.getNetworkStatus();
 	setFinalizedHeight(result.chainMaxHeightFinalized);
