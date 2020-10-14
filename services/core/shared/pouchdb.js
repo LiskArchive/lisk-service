@@ -14,7 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const PouchDB = require('PouchDB');
+const PouchDB = require('pouchdb');
 
 PouchDB.plugin(require('pouchdb-upsert'));
 PouchDB.plugin(require('pouchdb-find'));
@@ -41,13 +41,13 @@ const createDb = async (name, idxList = []) => {
 	return db;
 };
 
-const getDbInstance = (collectionName) => {
+const getDbInstance = async (collectionName) => {
 	// make sure the directory exists on disk
 	// mkdir -p
 
 	const dbDataDir = `${config.databaseDir}/${collectionName}`;
 	if (!connectionPool[collectionName]) {
-		connectionPool[collectionName] = createDb(dbDataDir);
+		connectionPool[collectionName] = await createDb(dbDataDir);
 		logger.info(`Opened to PouchDB database: ${collectionName}`);
 	}
 
@@ -63,19 +63,27 @@ const getDbInstance = (collectionName) => {
 		return db.putIfNotExists(obj);
 	};
 
-	const findById = (id) => {
+	const findById = async (id) => {
 		logger.debug(`Reading block ${id}...`);
-		return db.get(id);
+		try {
+			const res = await db.get(id);
+			return res;
+		} catch (err) {
+			if (err.message === 'missing') return null;
+			logger.error(err.message);
+		}
 	};
 
 	const find = (params) => {
-		return db.find(params);
+		const res = db.find(params);
+		return res.docs;
 	};
 
-	const findOneByProperty = (property, value) => {
+	const findOneByProperty = async (property, value) => {
 		const selector = {};
 		selector[property] = value;
-		return db.find({ selector, limit: 1 });
+		const res = await db.find({ selector, limit: 1 });
+		return res.docs;
 	};
 
 	return {
