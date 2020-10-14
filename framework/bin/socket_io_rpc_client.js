@@ -17,8 +17,9 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-// const prettyjson = require('prettyjson');
 const jsome = require('jsome');
+const { events } = require('../constants/event');
+// const prettyjson = require('prettyjson');
 
 jsome.params.colored = true;
 
@@ -38,13 +39,7 @@ const TIMEOUT = 15 * 1000;
 
 const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 
-[
-	'connect', 'reconnect',
-	'connect_error', 'connect_timeout', 'error', 'disconnect',
-	'reconnect', 'reconnect_attempt',
-	'reconnecting', 'reconnect_error', 'reconnect_failed',
-	// 'ping', 'pong',
-].forEach(item => {
+events.forEach(item => {
 	socket.on(item, res => {
 		// console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
