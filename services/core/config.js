@@ -49,9 +49,9 @@ config.db = {
 			name: 'transactions',
 			indexes: [],
 		},
-		transactionstats: {
+		transaction_statistics: {
 			name: 'transaction_statistics',
-			indexes: [],
+			indexes: ['date'],
 		},
 	},
 };
