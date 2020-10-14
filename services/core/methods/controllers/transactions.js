@@ -56,9 +56,10 @@ const getTransactions = async (params) => {
 	if (isEmptyObject(result) || isEmptyArray(result.data)) {
 		return { status: NOT_FOUND, data: { error: 'Not found.' } };
 	}
-	// check based on block is pending
+
+	const finalHeight = CoreService.getFinalizedHeight();
 	const data = result.data.map((transaction) => {
-		if (transaction.confirmations >= 202) {
+		if (transaction.height <= finalHeight) {
 			transaction.isFinal = true;
 		} else {
 			transaction.isFinal = false;

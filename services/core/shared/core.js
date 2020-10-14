@@ -52,6 +52,7 @@ const calcAvgFeeByteModes = {
 
 let readyStatus = false;
 let epochUnixTime;
+let heightFinalized = 2077908;
 
 // Utils & helpers
 const parseAddress = address => {
@@ -545,6 +546,16 @@ const getEstimateFeeByte = async () => {
 	return feeEstPerByte;
 };
 
+const setFinalizedHeight = height => {
+	heightFinalized = height;
+};
+const getNetworkStatus = async () => {
+	const result = await coreApi.getNetworkStatus();
+	setFinalizedHeight(result.chainMaxHeightFinalized);
+	return result;
+};
+
+const getFinalizedHeight = () => heightFinalized;
 const setReadyStatus = status => { readyStatus = status; };
 const getReadyStatus = () => readyStatus;
 
@@ -578,7 +589,8 @@ module.exports = {
 	getDelegates: coreApi.getDelegates,
 	getForgingStats,
 	getNextForgers,
-	getNetworkStatus: coreApi.getNetworkStatus,
+	getNetworkStatus,
+	getFinalizedHeight,
 	getNetworkConstants: coreApi.getNetworkConstants,
 	getTransactions,
 	getPeers: coreApi.getPeers,
