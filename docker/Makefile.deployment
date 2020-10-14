@@ -9,7 +9,7 @@ compose := docker-compose \
 	-f docker-compose.testnet.yml
 
 up:
-	$(compose) up --detach
+	(ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} $(compose) up --detach)
 
 down:
 	$(compose) down --volumes --remove-orphans

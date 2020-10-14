@@ -9,6 +9,8 @@ services:
     env_file:
       - ./lisk_service/env/common.env
       - ./lisk_service/env/gateway.env
-
+    environment:
+      - ENABLE_HTTP_API=${ENABLE_HTTP_API}
+      - ENABLE_WS_API=${ENABLE_WS_API}
     healthcheck:
       test: curl --fail http://gateway:9901/api/v1/transactions

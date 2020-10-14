@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('./config');
 const registerApi = require('./shared/registerRpcApi');
 
 const defaultConfig = {
@@ -20,8 +21,27 @@ const defaultConfig = {
 	aliases: {},
 };
 
-module.exports = {
-	'/rpc': registerApi('http-version1', { ...defaultConfig }),
-	'/rpc-v1': registerApi('http-version1', { ...defaultConfig }),
-	'/rpc-test': registerApi('http-test', { ...defaultConfig }),
+const filterApis = (requiredApis, availableApis) => {
+	const filteredApis = {};
+
+	const requiredPaths = requiredApis.split(',').map(path => '/'.concat(path));
+	Object.keys(availableApis).forEach(key => {
+		if (requiredPaths.includes(key)) filteredApis[key] = availableApis[key]();
+	});
+
+	return filteredApis;
 };
+
+module.exports = filterApis(config.api.ws, {
+	'/rpc': () => registerApi('http-version1', { ...defaultConfig }),
+	'/rpc-v1': () => registerApi('http-version1', { ...defaultConfig }),
+	'/rpc-test': () => registerApi('http-test', { ...defaultConfig }),
+	'/blockchain': () => ({
+		events: {
+			call: {
+				mappingPolicy: 'restrict',
+				aliases: {},
+			},
+		},
+	}),
+});
