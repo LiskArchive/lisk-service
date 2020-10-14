@@ -42,31 +42,38 @@ const createDb = async (name, idxList = []) => {
 	return db;
 };
 
-const getDbInstance = (collectionName) => {
+const getDbInstance = async (collectionName) => {
 	const dbDataDir = `${config.db.directory}/${collectionName}`;
 	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
 	if (!connectionPool[collectionName]) {
-		connectionPool[collectionName] = createDb(dbDataDir);
+		connectionPool[collectionName] = await createDb(
+			dbDataDir,
+			config.db.collections[collectionName].indexes,
+		);
 		logger.info(`Opened PouchDB database: ${collectionName}`);
 	}
 
 	const db = connectionPool[collectionName];
 
-	const write = (obj) => {
-		if (!obj._id) obj._id = obj.id;
-		return db.upsert(obj);
+	const write = (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.upsert(doc);
 	};
 
-	const writeOnce = (obj) => {
-		if (!obj._id) obj._id = obj.id;
-		return db.putIfNotExists(obj);
+	const writeOnce = (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.putIfNotExists(doc);
 	};
 
-	const findById = (id) => {
-		logger.debug(`Reading block ${id}...`);
-		return db.get(id);
-	};
+	const writeBatch = (docs) => {
+		docs.map(doc => {
+			if (!doc._id) doc._id = doc.id;
+		});
+		return db.bulkDocs(docs);
+	}
+
+	const findById = (id) => db.get(id);
 
 	const find = (params) => db.find(params);
 
@@ -76,12 +83,29 @@ const getDbInstance = (collectionName) => {
 		return db.find({ selector, limit: 1 });
 	};
 
+	const deleteById = async (id) => db.remove(await findById(id));
+
+	const deleteBatch = (docs) => {
+		if (docs instanceof Array && docs.length === 0) return;
+		docs.map(doc => {
+			if (!doc._id) doc._id = doc.id;
+			doc._deleted = true;
+		});
+		return db.bulkDocs(docs);
+	};
+
+	const deleteByProperty = async (property, value) => deleteBatch((await findOneByProperty(property, value)).docs);
+
 	return {
 		write,
 		writeOnce,
+		writeBatch,
 		find,
 		findById,
 		findOneByProperty,
+		deleteById,
+		deleteBatch,
+		deleteByProperty,
 	};
 };
 
