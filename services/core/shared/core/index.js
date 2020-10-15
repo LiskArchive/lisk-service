@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,22 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../shared/core');
 
-const getNetworkStatus = async () => {
-	const status = await CoreService.getNetworkStatus();
-	const constants = await CoreService.getNetworkConstants();
-	const result = {};
-	result.status = status.data;
-	result.constants = constants.data;
-
-	return {
-		data: result,
-		meta: {},
-	};
-};
-
-
-module.exports = {
-	getNetworkStatus,
-};
+// TODO: Fix to use coreVersionCompat and assign
+// a proper version of the SDK compatibility layer
+module.exports = require('./sdk_v2');

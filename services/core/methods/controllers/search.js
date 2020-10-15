@@ -15,7 +15,7 @@
  */
 const stringSimilarity = require('string-similarity');
 
-const CoreService = require('../../shared/core.js');
+const CoreService = require('../../shared/core');
 
 const regex = {
 	address: /^[1-9]\d{0,19}L$/,

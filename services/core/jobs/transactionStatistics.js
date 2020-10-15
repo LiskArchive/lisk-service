@@ -17,7 +17,7 @@ const logger = require('lisk-service-framework').Logger();
 
 const config = require('../config');
 
-const transactionStatistics = require('../shared/transactionStatistics');
+const transactionStatistics = require('../shared/core/transactionStatistics');
 
 module.exports = [
 	{

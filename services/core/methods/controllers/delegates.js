@@ -18,8 +18,8 @@ const { HTTP, Utils } = require('lisk-service-framework');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
-const { getTotalNumberOfDelegates } = require('../../shared/delegateCache');
-const CoreService = require('../../shared/core.js');
+const { getTotalNumberOfDelegates } = require('../../shared/core/delegateCache');
+const CoreService = require('../../shared/core');
 
 const { numOfActiveDelegates } = CoreService;
 

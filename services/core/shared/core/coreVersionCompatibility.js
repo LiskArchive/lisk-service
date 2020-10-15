@@ -14,8 +14,8 @@
  *
  */
 const semver = require('semver');
-const coreV1Mappings = require('./coreV1Mappings');
-const coreV3Mappings = require('./coreV3Mappings');
+const coreV1Mappings = require('./generic/coreV1Mappings');
+const coreV3Mappings = require('./generic/coreV3Mappings');
 
 let coreVersion = '1.0.0-alpha.0';
 let referenceKey = coreVersion;

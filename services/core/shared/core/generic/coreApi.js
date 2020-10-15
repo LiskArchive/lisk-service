@@ -18,8 +18,8 @@ const { HTTP, Logger } = require('lisk-service-framework');
 const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
 
-const { mapResponse, mapParams } = require('./coreVersionCompatibility.js');
-const config = require('../config.js');
+const { mapResponse, mapParams } = require('../coreVersionCompatibility.js');
+const config = require('../../../config.js');
 
 const liskAddress = config.endpoints.liskHttp;
 

@@ -18,7 +18,7 @@ const { HTTP, Utils } = require('lisk-service-framework');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
-const CoreService = require('../../shared/core.js');
+const CoreService = require('../../shared/core');
 
 const { isEmptyArray } = ObjectUtilService;
 

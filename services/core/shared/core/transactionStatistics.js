@@ -19,7 +19,7 @@ const logger = Logger();
 
 const moment = require('moment');
 const transactionStatisticsQueue = require('./transactionStatisticsQueue');
-const { getDatabase, dbQueries } = require('./postgres');
+const { getDatabase, dbQueries } = require('../postgres');
 
 const transformParamsForDb = ({ dateFrom, dateTo, ...rest }) => ({
 	...rest,

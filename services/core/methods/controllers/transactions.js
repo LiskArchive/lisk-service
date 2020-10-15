@@ -20,8 +20,8 @@ const { isEmptyArray, isEmptyObject } = Utils.Data;
 
 const moment = require('moment');
 
-const CoreService = require('../../shared/core.js');
-const txStatisticsService = require('../../shared/transactionStatistics');
+const CoreService = require('../../shared/core');
+const txStatisticsService = require('../../shared/core/transactionStatistics');
 
 const getTransactions = async params => {
 	const addressParam = ['senderId', 'recipientId', 'senderIdOrRecipientId'].filter(item => typeof params[item] === 'string');

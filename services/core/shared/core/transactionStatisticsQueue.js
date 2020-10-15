@@ -19,10 +19,10 @@ const Queue = require('bull');
 const moment = require('moment');
 const util = require('util');
 
-const core = require('./core');
-const { getDatabase, dbQueries } = require('./postgres');
-const config = require('../config');
-const requestAll = require('./requestAll');
+const core = require('./sdk_v2');
+const { getDatabase, dbQueries } = require('../postgres');
+const config = require('../../config');
+const requestAll = require('../requestAll');
 
 const logger = Logger();
 

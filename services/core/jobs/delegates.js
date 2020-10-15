@@ -16,7 +16,7 @@
 const logger = require('lisk-service-framework').Logger();
 
 const core = require('../shared/core');
-const delegateCache = require('../shared/delegateCache');
+const delegateCache = require('../shared/core/delegateCache');
 
 module.exports = [
 	{

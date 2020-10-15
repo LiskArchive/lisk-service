@@ -17,8 +17,8 @@ const logger = require('lisk-service-framework').Logger();
 const { SocketClient } = require('lisk-service-framework');
 
 const core = require('../shared/core');
-const recentBlocksCache = require('../shared/recentBlocksCache');
-const delegateCache = require('../shared/delegateCache');
+const recentBlocksCache = require('../shared/core/recentBlocksCache');
+const delegateCache = require('../shared/core/delegateCache');
 
 const config = require('../config');
 
@@ -77,7 +77,7 @@ module.exports = [
 			coreSocket.socket.on('blocks/change', async () => {
 				logger.debug('Returning latest fee_estimates to the socket.io client...');
 				const restData = await core.getEstimateFeeByte();
-				callback(restData.data);
+				callback(restData ? restData.data : null);
 			});
 		},
 	},
