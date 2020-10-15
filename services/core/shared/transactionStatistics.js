@@ -30,9 +30,9 @@ const getStatsTimeline = async params => {
 			date: {
 				$gte: params.dateFrom.toISOString(),
 				$lte: params.dateTo.toISOString(),
-			}
+			},
 			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		}
+		},
 	});
 
 	const unorderedfinalResult = {};
@@ -44,15 +44,16 @@ const getStatsTimeline = async params => {
 			unorderedfinalResult[currFormattedDate] = {
 				date: currFormattedDate,
 				transactionCount: 0,
-				volume: 0
+				volume: 0,
 			};
-		};
+		}
 		// 	GROUP BY to_char(timestamp, $<dateFormat>)
 
 		const statForDate = unorderedfinalResult[currFormattedDate];
 		statForDate.transactionCount += entry.count;
 		statForDate.volume += entry.volume;
-		// SELECT to_char(timestamp, $<dateFormat>) AS date, sum(count) AS "transactionCount", SUM(volume) AS volume FROM transaction_statistics
+		// SELECT to_char(timestamp, $<dateFormat>) AS date, sum(count) AS "transactionCount",
+		// SUM(volume) AS volume FROM transaction_statistics
 	});
 
 	Object.keys(unorderedfinalResult).sort((a, b) => a.date.localeCompare(b.date))
@@ -70,9 +71,9 @@ const getDistributionByAmount = async params => {
 			date: {
 				$gte: params.dateFrom.toISOString(),
 				$lte: params.dateTo.toISOString(),
-			}
+			},
 			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		}
+		},
 	});
 
 	const unorderedfinalResult = {};
@@ -80,12 +81,12 @@ const getDistributionByAmount = async params => {
 
 	result.forEach(entry => {
 		if (!unorderedfinalResult[entry.amount_range]) unorderedfinalResult[entry.amount_range] = 0;
-		unorderedfinalResult[entry.amount_range] += entry['count'];
+		unorderedfinalResult[entry.amount_range] += entry.count;
 		// SELECT amount_range, sum(count) AS count FROM transaction_statistics
 		// 	GROUP BY amount_range
 	});
 	Object.keys(unorderedfinalResult).sort().reverse()
-		.forEach(amount_range => orderedFinalResult[amount_range] = unorderedfinalResult[amount_range]);
+		.forEach(amountRange => orderedFinalResult[amountRange] = unorderedfinalResult.amount_range);
 	// 	ORDER BY amount_range DESC`, transformParamsForDb(params));
 
 	return orderedFinalResult;
@@ -99,9 +100,9 @@ const getDistributionByType = async params => {
 			date: {
 				$gte: params.dateFrom.toISOString(),
 				$lte: params.dateTo.toISOString(),
-			}
+			},
 			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		}
+		},
 	});
 
 	const unorderedfinalResult = {};
@@ -109,7 +110,7 @@ const getDistributionByType = async params => {
 
 	result.forEach(entry => {
 		if (!unorderedfinalResult[entry.type]) unorderedfinalResult[entry.type] = 0;
-		unorderedfinalResult[entry.type] += entry['count'];
+		unorderedfinalResult[entry.type] += entry.count;
 		// SELECT type, sum(count) AS count FROM transaction_statistics
 		// 	GROUP BY type
 	});

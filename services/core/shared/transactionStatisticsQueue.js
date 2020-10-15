@@ -102,7 +102,8 @@ const insertToDb = async (statsList, date) => {
 	await db.deleteByProperty('date', date);
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
-		delete statistic['range'];
+		delete statistic.range;
+		return statistic;
 	});
 	await db.writeBatch(statsList);
 
