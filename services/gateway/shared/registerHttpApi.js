@@ -124,9 +124,22 @@ const registerApi = (apiName, config) => {
 		} catch (e) { return params; }
 	};
 
+	const cleanEmptyObjects = obj => {
+		Object.getOwnPropertyNames(obj).forEach(property => {
+			const propValue = obj[property];
+			if (propValue instanceof Object && Object.entries(propValue).length) {
+				const values = Object.values(propValue);
+				if (values.some(value => value instanceof Object)) {
+					values.map(value => cleanEmptyObjects(value));
+				} else if (!values.some(value => value !== undefined)) delete obj[property];
+			}
+		});
+	};
+
 	const transformResponse = async (apiPath, data) => {
 		if (!methodPaths[apiPath]) return data;
 		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
+		transformedData.data.map(obj => cleanEmptyObjects(obj));
 		return {
 			...methodPaths[apiPath].envelope,
 			...transformedData,
