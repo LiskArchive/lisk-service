@@ -122,7 +122,7 @@ const registerApi = (apiName, config) => {
 		} catch (e) { return params; }
 	};
 
-	const cleanEmptyObjects = obj => {
+/* 	const cleanEmptyObjects = obj => {
 		Object.getOwnPropertyNames(obj).forEach(property => {
 			const propValue = obj[property];
 			if (propValue instanceof Object && Object.entries(propValue).length) {
@@ -132,12 +132,12 @@ const registerApi = (apiName, config) => {
 				} else if (!values.some(value => value !== undefined)) delete obj[property];
 			}
 		});
-	};
+	}; */
 
 	const transformResponse = async (apiPath, data) => {
 		if (!methodPaths[apiPath]) return data;
 		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
-		transformedData.data.map(obj => cleanEmptyObjects(obj));
+		// transformedData.data.map(obj => cleanEmptyObjects(obj));
 		return {
 			...methodPaths[apiPath].envelope,
 			...transformedData,

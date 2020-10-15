@@ -64,7 +64,8 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 			}
 		} else if (typeof definition[key] === 'object' && rootObj[key] !== null) {
 			const tempObj = mapObject(rootObj, definition[key], subObj[key]);
-			if (validate(tempObj)) acc[key] = tempObj;
+			const values = Object.values(tempObj);
+			if (!values.some(value => value !== undefined)) delete rootObj[key];
 		}
 		return acc;
 	}, {});
