@@ -50,6 +50,7 @@ po/*.pot
 dump.rdb
 Thumbs.db
 blockchain_explorer.db.gz
+db_data
 
 # Configs
 sftp-config.json
@@ -58,5 +59,3 @@ sftp-config.json
 xunit-report.xml
 
 Dockerfile
-
-db_data

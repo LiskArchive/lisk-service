@@ -51,11 +51,10 @@ po/*.pot
 dump.rdb
 Thumbs.db
 blockchain_explorer.db.gz
+db_data
 
 # Configs
 sftp-config.json
 
 # xUnit/Junit report
 xunit-report.xml
-
-db_data
