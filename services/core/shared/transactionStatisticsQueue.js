@@ -100,7 +100,10 @@ const insertToDb = async (statsList, date) => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 
 	await db.deleteByProperty('date', date);
-	statsList.map(statistic => Object.assign(statistic, { date }));
+	statsList.map(statistic => {
+		Object.assign(statistic, { date, amount_range: statistic.range });
+		delete statistic['range'];
+	});
 	await db.writeBatch(statsList);
 
 	const count = statsList.reduce((acc, row) => acc + row.count, 0);
