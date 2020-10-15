@@ -106,7 +106,7 @@ const getDbInstance = async (collectionName) => {
 			doc._deleted = true;
 			return doc;
 		});
-		return db.bulkDocs(docs);
+		db.bulkDocs(docs);
 	};
 
 	const deleteByProperty = async (property, value) => {

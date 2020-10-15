@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+// const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 
 const transactionStatisticsQueue = require('./transactionStatisticsQueue');
 const getDbInstance = require('./pouchdb');
 const config = require('../config');
 
-const logger = Logger();
+// const logger = Logger();
 
 const transformParamsForDb = ({ dateFrom, dateTo, ...rest }) => ({
 	...rest,
@@ -61,7 +61,8 @@ const getDistributionByType = async params => {
 const fetchTransactionsForPastNDays = async n => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 	[...Array(n)].forEach(async (_, i) => {
-		const date = moment().subtract(i, 'day').utc().startOf('day').toISOString();
+		const date = moment().subtract(i, 'day').utc().startOf('day')
+			.toISOString();
 		const shouldUpdate = i === 0 || !(await db.findOneByProperty('date', date));
 		if (shouldUpdate) {
 			transactionStatisticsQueue.add({ date });
