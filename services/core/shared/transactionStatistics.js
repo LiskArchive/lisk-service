@@ -28,9 +28,8 @@ const transformParamsForDb = ({ dateFrom, dateTo, ...rest }) => ({
 	dateTo: moment(dateTo).format('YYYY-MM-DD'),
 });
 
-const db = getDbInstance(config.db.collections.transaction_statistics.name);
-
 const getStatsTimeline = async params => {
+	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 	const result = await db.any(`SELECT to_char(timestamp, $<dateFormat>)
 		AS date, sum(count) AS "transactionCount", SUM(volume) AS volume
 		FROM transaction_statistics
@@ -41,6 +40,7 @@ const getStatsTimeline = async params => {
 };
 
 const getDistributionByAmount = async params => {
+	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 	const result = await db.any(`SELECT amount_range, sum(count)
 		AS count FROM transaction_statistics
 		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
@@ -50,6 +50,7 @@ const getDistributionByAmount = async params => {
 };
 
 const getDistributionByType = async params => {
+	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 	const result = await db.any(`SELECT type, sum(count) AS count FROM transaction_statistics
 		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
 		GROUP BY type
@@ -57,10 +58,11 @@ const getDistributionByType = async params => {
 	return result;
 };
 
-const fetchTransactionsForPastNDays = n => {
+const fetchTransactionsForPastNDays = async n => {
+	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 	[...Array(n)].forEach(async (_, i) => {
-		const date = moment().subtract(i, 'day').utc().startOf('day').toDate();
-		const shouldUpdate = i === 0 || !((await db.findOneByProperty('date', date)).length);
+		const date = moment().subtract(i, 'day').utc().startOf('day').toISOString();
+		const shouldUpdate = i === 0 || !(await db.findOneByProperty('date', date));
 		if (shouldUpdate) {
 			transactionStatisticsQueue.add({ date });
 		}

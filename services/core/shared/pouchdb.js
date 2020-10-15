@@ -39,15 +39,15 @@ const createDb = async (name, idxList = []) => {
 		});
 	});
 
-	return Promise.resolve(db);
+	return db;
 };
 
-const getDbInstance = (collectionName) => {
+const getDbInstance = async (collectionName) => {
 	const dbDataDir = `${config.db.directory}/${collectionName}`;
 	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
 	if (!connectionPool[collectionName]) {
-		connectionPool[collectionName] = createDb(
+		connectionPool[collectionName] = await createDb(
 			dbDataDir,
 			config.db.collections[collectionName].indexes,
 		);
