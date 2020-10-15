@@ -15,6 +15,7 @@
  */
 const { Logger } = require('lisk-service-framework');
 const PouchDB = require('pouchdb');
+const fs = require('fs');
 
 PouchDB.plugin(require('pouchdb-upsert'));
 PouchDB.plugin(require('pouchdb-find'));
@@ -27,7 +28,7 @@ const connectionPool = {};
 
 const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
-	const db = new PouchDB(name);
+	const db = new PouchDB(name, { auto_compaction: true });
 
 	idxList.forEach(async idxName => {
 		logger.debug(`Setting up index ${idxName}...`);
@@ -38,7 +39,7 @@ const createDb = async (name, idxList = []) => {
 		});
 	});
 
-	return db;
+	return Promise.resolve(db);
 };
 
 const getDbInstance = async (collectionName) => {
@@ -46,6 +47,7 @@ const getDbInstance = async (collectionName) => {
 	// mkdir -p
 
 	const dbDataDir = `${config.databaseDir}/${collectionName}`;
+	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 	if (!connectionPool[collectionName]) {
 		connectionPool[collectionName] = await createDb(dbDataDir);
 		logger.info(`Opened to PouchDB database: ${collectionName}`);
