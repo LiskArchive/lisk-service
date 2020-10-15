@@ -39,15 +39,15 @@ const createDb = async (name, idxList = []) => {
 		});
 	});
 
-	return db;
+	return Promise.resolve(db);
 };
 
-const getDbInstance = async (collectionName) => {
+const getDbInstance = (collectionName) => {
 	const dbDataDir = `${config.db.directory}/${collectionName}`;
 	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
 	if (!connectionPool[collectionName]) {
-		connectionPool[collectionName] = await createDb(
+		connectionPool[collectionName] = createDb(
 			dbDataDir,
 			config.db.collections[collectionName].indexes,
 		);
@@ -69,9 +69,10 @@ const getDbInstance = async (collectionName) => {
 	const writeBatch = async (docs) => {
 		docs.map(doc => {
 			if (!doc._id) doc._id = doc.id;
+			return doc;
 		});
 		return db.bulkDocs(docs);
-	}
+	};
 
 	const findById = async (id) => {
 		try {
@@ -81,6 +82,7 @@ const getDbInstance = async (collectionName) => {
 			if (err.message === 'missing') return null;
 			logger.error(err.message);
 		}
+		return null;
 	};
 
 	const find = async (params) => {
@@ -102,11 +104,15 @@ const getDbInstance = async (collectionName) => {
 		docs.map(doc => {
 			if (!doc._id) doc._id = doc.id;
 			doc._deleted = true;
+			return doc;
 		});
 		return db.bulkDocs(docs);
 	};
 
-	const deleteByProperty = async (property, value) => deleteBatch(await findOneByProperty(property, value));
+	const deleteByProperty = async (property, value) => {
+		const res = await findOneByProperty(property, value);
+		return deleteBatch(res);
+	};
 
 	return {
 		write,

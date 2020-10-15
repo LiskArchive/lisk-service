@@ -97,7 +97,7 @@ const transformStatsObjectToList = statsObject => (
 );
 
 const insertToDb = async (statsList, date) => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = getDbInstance(config.db.collections.transaction_statistics.name);
 
 	await db.deleteByProperty('date', date);
 	statsList.map(statistic => Object.assign(statistic, { date }));

@@ -14,12 +14,13 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const moment = require('moment');
+
+const transactionStatisticsQueue = require('./transactionStatisticsQueue');
+const getDbInstance = require('./pouchdb');
+const config = require('../config');
 
 const logger = Logger();
-
-const moment = require('moment');
-const transactionStatisticsQueue = require('./transactionStatisticsQueue');
-const { getDatabase, dbQueries } = require('./postgres');
 
 const transformParamsForDb = ({ dateFrom, dateTo, ...rest }) => ({
 	...rest,
@@ -27,12 +28,12 @@ const transformParamsForDb = ({ dateFrom, dateTo, ...rest }) => ({
 	dateTo: moment(dateTo).format('YYYY-MM-DD'),
 });
 
-const database = getDatabase();
+const db = getDbInstance(config.db.collections.transaction_statistics.name);
 
 const getStatsTimeline = async params => {
-	const result = await database.any(`SELECT to_char(timestamp, $<dateFormat>)
-		AS date, sum(count) AS "transactionCount", SUM(volume) AS volume 
-		FROM transaction_statistics 
+	const result = await db.any(`SELECT to_char(timestamp, $<dateFormat>)
+		AS date, sum(count) AS "transactionCount", SUM(volume) AS volume
+		FROM transaction_statistics
 		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
 		GROUP BY to_char(timestamp, $<dateFormat>)
 		ORDER BY to_char(timestamp, $<dateFormat>) DESC`, transformParamsForDb(params));
@@ -40,7 +41,7 @@ const getStatsTimeline = async params => {
 };
 
 const getDistributionByAmount = async params => {
-	const result = await database.any(`SELECT amount_range, sum(count)
+	const result = await db.any(`SELECT amount_range, sum(count)
 		AS count FROM transaction_statistics
 		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
 		GROUP BY amount_range
@@ -49,43 +50,24 @@ const getDistributionByAmount = async params => {
 };
 
 const getDistributionByType = async params => {
-	const result = await database.any(`SELECT type, sum(count) AS count FROM transaction_statistics
+	const result = await db.any(`SELECT type, sum(count) AS count FROM transaction_statistics
 		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
 		GROUP BY type
 		ORDER BY type ASC`, transformParamsForDb(params));
 	return result;
 };
 
-const ensureDbTableIsCreated = async () => {
-	try {
-		const db = getDatabase();
-		const tableExists = await db.any('SELECT to_regclass($1)', dbQueries.tableName);
-
-		if (!tableExists[0].to_regclass) {
-			await db.any(dbQueries.createTable);
-			logger.debug(`Initialized postgres table: ${dbQueries.tableName}`);
-		}
-	} catch (error) {
-		logger.error(`Failed to initialize postgres table: ${dbQueries.tableName}. Error: ${error}`);
-	}
-};
-
 const fetchTransactionsForPastNDays = n => {
-	const db = getDatabase();
 	[...Array(n)].forEach(async (_, i) => {
-		const date = moment().subtract(i, 'day').utc().startOf('day')
-			.toDate();
-		const shouldUpdate = i === 0 || !(await db.oneOrNone(dbQueries.selectDay, { date }));
+		const date = moment().subtract(i, 'day').utc().startOf('day').toDate();
+		const shouldUpdate = i === 0 || !((await db.findOneByProperty('date', date)).length);
 		if (shouldUpdate) {
 			transactionStatisticsQueue.add({ date });
 		}
 	});
 };
 
-const init = async historyLengthDays => {
-	await ensureDbTableIsCreated();
-	fetchTransactionsForPastNDays(historyLengthDays);
-};
+const init = async historyLengthDays => fetchTransactionsForPastNDays(historyLengthDays);
 
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1);
 
