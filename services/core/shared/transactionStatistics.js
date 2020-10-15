@@ -22,40 +22,102 @@ const config = require('../config');
 
 // const logger = Logger();
 
-const transformParamsForDb = ({ dateFrom, dateTo, ...rest }) => ({
-	...rest,
-	dateFrom: moment(dateFrom).format('YYYY-MM-DD'),
-	dateTo: moment(dateTo).format('YYYY-MM-DD'),
-});
-
 const getStatsTimeline = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
-	const result = await db.any(`SELECT to_char(timestamp, $<dateFormat>)
-		AS date, sum(count) AS "transactionCount", SUM(volume) AS volume
-		FROM transaction_statistics
-		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		GROUP BY to_char(timestamp, $<dateFormat>)
-		ORDER BY to_char(timestamp, $<dateFormat>) DESC`, transformParamsForDb(params));
-	return result;
+
+	const result = await db.find({
+		selector: {
+			date: {
+				$gte: params.dateFrom.toISOString(),
+				$lte: params.dateTo.toISOString(),
+			}
+			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
+		}
+	});
+
+	const unorderedfinalResult = {};
+	const finalResult = [];
+
+	result.forEach(entry => {
+		const currFormattedDate = moment(entry.date).format(params.dateFormat);
+		if (!unorderedfinalResult[currFormattedDate]) {
+			unorderedfinalResult[currFormattedDate] = {
+				date: currFormattedDate,
+				transactionCount: 0,
+				volume: 0
+			};
+		};
+		// 	GROUP BY to_char(timestamp, $<dateFormat>)
+
+		const statForDate = unorderedfinalResult[currFormattedDate];
+		statForDate.transactionCount += entry.count;
+		statForDate.volume += entry.volume;
+		// SELECT to_char(timestamp, $<dateFormat>) AS date, sum(count) AS "transactionCount", SUM(volume) AS volume FROM transaction_statistics
+	});
+
+	Object.keys(unorderedfinalResult).sort((a, b) => a.date.localeCompare(b.date))
+		.reverse().forEach(date => finalResult.push(unorderedfinalResult[date]));
+	// 	ORDER BY to_char(timestamp, $<dateFormat>) DESC`, transformParamsForDb(params));
+
+	return finalResult;
 };
 
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
-	const result = await db.any(`SELECT amount_range, sum(count)
-		AS count FROM transaction_statistics
-		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		GROUP BY amount_range
-		ORDER BY amount_range DESC`, transformParamsForDb(params));
-	return result;
+
+	const result = await db.find({
+		selector: {
+			date: {
+				$gte: params.dateFrom.toISOString(),
+				$lte: params.dateTo.toISOString(),
+			}
+			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
+		}
+	});
+
+	const unorderedfinalResult = {};
+	const orderedFinalResult = {};
+
+	result.forEach(entry => {
+		if (!unorderedfinalResult[entry.amount_range]) unorderedfinalResult[entry.amount_range] = 0;
+		unorderedfinalResult[entry.amount_range] += entry['count'];
+		// SELECT amount_range, sum(count) AS count FROM transaction_statistics
+		// 	GROUP BY amount_range
+	});
+	Object.keys(unorderedfinalResult).sort().reverse()
+		.forEach(amount_range => orderedFinalResult[amount_range] = unorderedfinalResult[amount_range]);
+	// 	ORDER BY amount_range DESC`, transformParamsForDb(params));
+
+	return orderedFinalResult;
 };
 
 const getDistributionByType = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
-	const result = await db.any(`SELECT type, sum(count) AS count FROM transaction_statistics
-		WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		GROUP BY type
-		ORDER BY type ASC`, transformParamsForDb(params));
-	return result;
+
+	const result = await db.find({
+		selector: {
+			date: {
+				$gte: params.dateFrom.toISOString(),
+				$lte: params.dateTo.toISOString(),
+			}
+			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
+		}
+	});
+
+	const unorderedfinalResult = {};
+	const orderedFinalResult = {};
+
+	result.forEach(entry => {
+		if (!unorderedfinalResult[entry.type]) unorderedfinalResult[entry.type] = 0;
+		unorderedfinalResult[entry.type] += entry['count'];
+		// SELECT type, sum(count) AS count FROM transaction_statistics
+		// 	GROUP BY type
+	});
+	Object.keys(unorderedfinalResult).sort((a, b) => Number(a) - Number(b))
+		.forEach(type => orderedFinalResult[type] = unorderedfinalResult[type]);
+	// 	ORDER BY type ASC`, transformParamsForDb(params));
+
+	return orderedFinalResult;
 };
 
 const fetchTransactionsForPastNDays = async n => {
