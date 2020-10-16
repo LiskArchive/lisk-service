@@ -13,14 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 
+const config = require('../config');
 const transactionStatisticsQueue = require('./transactionStatisticsQueue');
 const getDbInstance = require('./pouchdb');
-const config = require('../config');
-
-// const logger = Logger();
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
@@ -54,11 +51,11 @@ const getStatsTimeline = async params => {
 		// SUM(volume) AS volume FROM transaction_statistics
 	});
 
-	const finalResult = Object.values(unorderedfinalResult)
+	const orderedFinalResult = Object.values(unorderedfinalResult)
 		.sort((a, b) => a.date.localeCompare(b.date)).reverse();
 	// 	ORDER BY to_char(timestamp, $<dateFormat>) DESC`, transformParamsForDb(params));
 
-	return finalResult;
+	return orderedFinalResult;
 };
 
 const getDistributionByAmount = async params => {
