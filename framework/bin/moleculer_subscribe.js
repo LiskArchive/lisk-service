@@ -47,10 +47,10 @@ moleculerConfig.events = {
 	'event.hello': (payload, sender, event) => {
 		console.log(`Event '${event}' received from ${sender} node:`, payload);
 	},
-	'blocks.change': (payload, sender, event) => {
+	'block.change': (payload, sender, event) => {
 		console.log(`Event '${event}' received from ${sender} node:`, payload);
 	},
-	'rounds.change': (payload, sender, event) => {
+	'round.change': (payload, sender, event) => {
 		console.log(`Event '${event}' received from ${sender} node:`, payload);
 	},
 	'update.fee_estimates': (payload, sender, event) => {
