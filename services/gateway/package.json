@@ -31,6 +31,7 @@
     "ioredis": "^4.16.3",
     "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-1.0.0-beta.0.tgz",
     "moleculer": "^0.14.8",
-    "moleculer-io": "^1.1.3"
+    "moleculer-io": "^1.1.3",
+    "moment": "^2.29.1"
   }
 }

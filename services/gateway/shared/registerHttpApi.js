@@ -14,12 +14,12 @@
  *
  */
 const {
-	mapper,
 	Utils,
 	Constants: { HTTP: { INVALID_REQUEST, NOT_FOUND } },
 } = require('lisk-service-framework');
 
 const path = require('path');
+const mapper = require('./customMapper');
 
 const { validate, dropEmptyProps } = require('./paramValidator');
 
