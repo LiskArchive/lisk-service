@@ -76,8 +76,8 @@ const getDbInstance = async (collectionName) => {
 		}
 	};
 
-	const find = (params) => {
-		const res = db.find(params);
+	const find = async (params) => {
+		const res = await db.find(params);
 		return res.docs;
 	};
 
