@@ -126,8 +126,8 @@ describe('Method get.accounts', () => {
 			expect(result.data[0].delegate).toMap(delegateSchema);
 		});
 
-		xit('returns delegate data by delegate name', async () => {
-			const { result } = await getAccounts({ username: accounts.delegate.username });
+		it('returns delegate data by delegate name', async () => {
+			const { result } = await getAccounts({ username: accounts.delegate.delegate.username });
 			expect(result.data[0].delegate).toMap(delegateSchema);
 		});
 	});
