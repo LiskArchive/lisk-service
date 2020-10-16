@@ -26,14 +26,6 @@ const config = require('../config');
 
 const connectionPool = {};
 
-const ensureDBDataDirectories = () => {
-	const { collections } = config.db;
-	Object.getOwnPropertyNames(collections).forEach(collection => {
-		const dbDataDir = `${config.db.directory}/${collections[collection].name}`;
-		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
-	});
-};
-
 const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
 	const db = new PouchDB(name, { auto_compaction: true });
@@ -52,9 +44,9 @@ const createDb = async (name, idxList = []) => {
 
 const getDbInstance = async (collectionName) => {
 	if (!connectionPool[collectionName]) {
-		ensureDBDataDirectories();
-
 		const dbDataDir = `${config.db.directory}/${collectionName}`;
+		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+
 		connectionPool[collectionName] = await createDb(
 			dbDataDir,
 			config.db.collections[collectionName].indexes,
