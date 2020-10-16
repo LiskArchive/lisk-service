@@ -27,7 +27,7 @@ const config = require('../config');
 const connectionPool = {};
 
 const ensureDBDataDirectories = () => {
-	const collections = config.db.collections;
+	const { collections } = config.db;
 	Object.getOwnPropertyNames(collections).forEach(collection => {
 		const dbDataDir = `${config.db.directory}/${collections[collection].name}`;
 		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
