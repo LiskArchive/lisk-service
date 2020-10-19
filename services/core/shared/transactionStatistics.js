@@ -117,9 +117,9 @@ const fetchTransactionsForPastNDays = async n => {
 	});
 };
 
-const init = async historyLengthDays => await fetchTransactionsForPastNDays(historyLengthDays);
+const init = async historyLengthDays => fetchTransactionsForPastNDays(historyLengthDays);
 
-const updateTodayStats = async () => await fetchTransactionsForPastNDays(1);
+const updateTodayStats = async () => fetchTransactionsForPastNDays(1);
 
 module.exports = {
 	getStatsTimeline,
