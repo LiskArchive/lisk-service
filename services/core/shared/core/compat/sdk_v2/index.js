@@ -31,11 +31,15 @@ const {
 } = require('./epochTime');
 const { setCoreVersion, getCoreVersion, mapParams } = require('./coreVersionCompatibility');
 
-const { getBlocks } = coreApi;
+const { getConstants } = require('./constants');
+
+const {
+	getBlocks,
+	getNetworkStatus,
+	getNetworkConstants,
+ } = coreApi;
 
 const ObjectUtilService = Utils.Data;
-
-const { getConstants } = require('./constants');
 
 // LoggerConfig(config.log);
 // const logger = Logger();
@@ -320,8 +324,8 @@ module.exports = {
 	getDelegates: coreApi.getDelegates,
 	getForgingStats,
 	getNextForgers,
-	getNetworkStatus: coreApi.getNetworkStatus,
-	getNetworkConstants: coreApi.getNetworkConstants,
+	getNetworkStatus,
+	getNetworkConstants,
 	getTransactions,
 	getPeers: coreApi.getPeers,
 	numOfActiveDelegates,
@@ -329,7 +333,10 @@ module.exports = {
 	setReadyStatus,
 	setCoreVersion,
 	getReadyStatus,
+	getEpochUnixTime,
 	getUnixTime,
+	getBlockchainTime,
+	validateTimestamp,
 	EMAcalc: nop,
 	getEstimateFeeByte: nop,
 	getEstimateFeeByteCoreLogic: nop,

@@ -71,13 +71,14 @@ const getDbInstance = async (collectionName) => {
 			const res = await db.get(id);
 			return res;
 		} catch (err) {
-			if (err.message === 'missing') return null;
+			if (err.message === 'missing') return [];
 			logger.error(err.message);
 		}
+		return [];
 	};
 
-	const find = (params) => {
-		const res = db.find(params);
+	const find = async (params) => {
+		const res = await db.find(params);
 		return res.docs;
 	};
 

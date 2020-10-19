@@ -14,9 +14,7 @@
  *
  */
 const pouchdb = require('../pouchdb');
-
 const coreApi = require('./compat');
-const recentBlocksCache = require('./helpers/recentBlocksCache');
 const {
 	getEpochUnixTime,
 	getUnixTime,
@@ -60,7 +58,7 @@ const getBlocks = async params => {
 	}
 
 	if (blocks.data.length === 0) {
-		blocks = await recentBlocksCache.getCachedBlocks(params) || await coreApi.getBlocks(params);
+		blocks = await coreApi.getBlocks(params);
 		if (blocks.data.length > 0) {
 			blocks.data.forEach(block => {
 				// drop confirmations
