@@ -19,18 +19,23 @@ const config = require('../config');
 const transactionStatisticsQueue = require('./transactionStatisticsQueue');
 const getDbInstance = require('./pouchdb');
 
+const getSelector = (params) => {
+	const result = {};
+
+	const selector = {};
+	if (params.dateFrom || params.dateTo) selector.date = {};
+	if (params.dateFrom) Object.assign(selector.date, { $gte: params.dateFrom.toISOString() });
+	if (params.dateTo) Object.assign(selector.date, { $lte: params.dateTo.toISOString() });
+	// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
+	result.selector = selector;
+
+	return result;
+};
+
 const getStatsTimeline = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 
-	const result = await db.find({
-		selector: {
-			date: {
-				$gte: params.dateFrom.toISOString(),
-				$lte: params.dateTo.toISOString(),
-			},
-			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		},
-	});
+	const result = await db.find(getSelector(params));
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -61,15 +66,7 @@ const getStatsTimeline = async params => {
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 
-	const result = await db.find({
-		selector: {
-			date: {
-				$gte: params.dateFrom.toISOString(),
-				$lte: params.dateTo.toISOString(),
-			},
-			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		},
-	});
+	const result = await db.find(getSelector(params));
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -90,15 +87,7 @@ const getDistributionByAmount = async params => {
 const getDistributionByType = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
 
-	const result = await db.find({
-		selector: {
-			date: {
-				$gte: params.dateFrom.toISOString(),
-				$lte: params.dateTo.toISOString(),
-			},
-			// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-		},
-	});
+	const result = await db.find(getSelector(params));
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -128,9 +117,9 @@ const fetchTransactionsForPastNDays = async n => {
 	});
 };
 
-const init = async historyLengthDays => fetchTransactionsForPastNDays(historyLengthDays);
+const init = async historyLengthDays => await fetchTransactionsForPastNDays(historyLengthDays);
 
-const updateTodayStats = async () => fetchTransactionsForPastNDays(1);
+const updateTodayStats = async () => await fetchTransactionsForPastNDays(1);
 
 module.exports = {
 	getStatsTimeline,
