@@ -22,22 +22,36 @@ const {
 	validateTimestamp,
  } = require('./compat');
 
-const getBlocks = async params => {
+const getSelector = (params) => {
+	const selector = {};
+	const result = {};
+	if (params.height) selector.height = params.height;
+	if (params.blockId) selector.id = params.blockId;
+	if (params.fromTimestamp) selector.timestamp = { $gte: params.fromTimestamp };
+	if (params.toTimestamp) selector.timestamp = { $lte: params.toTimestamp };
+	result.selector = selector;
+	if (params.limit) result.limit = params.limit;
+	if (params.offset) result.skip = params.offset;
+	return result;
+};
+
+const getBlocks = async (params) => {
 	await getEpochUnixTime(); // TODO: Remove, but make sure the epochtime is initiated here
 	const blockDb = await pouchdb('blocks');
 
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async timestamp => {
-		if (await validateTimestamp(params[timestamp])) {
-			params[timestamp] = await getBlockchainTime(params[timestamp]);
-		}
-		return Promise.resolve();
-	}));
+	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
+			if (await validateTimestamp(params[timestamp])) {
+				params[timestamp] = await getBlockchainTime(params[timestamp]);
+			}
+			return Promise.resolve();
+		}),
+	);
 
 	let blocks = {
 		data: [],
 	};
-	let dbResult;
 
+/* 	let dbResult;
 	if (params.blockId) {
 		dbResult = await blockDb.findById(params.blockId);
 		if (dbResult !== null) blocks.data = [dbResult];
@@ -55,12 +69,16 @@ const getBlocks = async params => {
 			skip: params.offset,
 		});
 		if (dbResult.length > 0) blocks.data = dbResult;
-	}
+	} */
+
+	const inputData = await getSelector(params);
+	const dbResult = await blockDb.find(inputData);
+	if (dbResult.length > 0) blocks.data = dbResult;
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
 		if (blocks.data.length > 0) {
-			blocks.data.forEach(block => {
+			blocks.data.forEach((block) => {
 				// drop confirmations
 				blockDb.writeOnce(block);
 			});
@@ -70,9 +88,12 @@ const getBlocks = async params => {
 	let result = [];
 
 	if (blocks.data) {
-		result = await Promise.all(blocks.data.map(async o => (Object.assign(o, {
-			unixTimestamp: await getUnixTime(o.timestamp),
-		}))));
+		result = await Promise.all(
+			blocks.data.map(async (o) => Object.assign(o, {
+					unixTimestamp: await getUnixTime(o.timestamp),
+				}),
+			),
+		);
 	}
 
 	blocks.data = result;
