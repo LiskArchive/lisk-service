@@ -74,6 +74,7 @@ const getDbInstance = async (collectionName) => {
 			if (err.message === 'missing') return null;
 			logger.error(err.message);
 		}
+		return null;
 	};
 
 	const find = (params) => {

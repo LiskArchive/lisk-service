@@ -15,12 +15,11 @@
  */
 module.exports = require('../sdk_v2');
 
+// const getBlocks = (p) => {
+// 	require('../sdk_v2').getBlocks(p);
 
-const getBlocks = (p) => {
-	require('../sdk_v2').getBlocks(p);
-	
-};
+// };
 
-module.exports = {
-	...require('../sdk_v2'), getBlocks,
-};
+// module.exports = {
+// 	...require('../sdk_v2'), getBlocks,
+// };
