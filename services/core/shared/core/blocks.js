@@ -13,16 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const pouchdb = require('../../pouchdb');
+const pouchdb = require('../pouchdb');
 
-const coreApi = require('./coreApi');
-const recentBlocksCache = require('../recentBlocksCache');
+const coreApi = require('./compat');
+const recentBlocksCache = require('./helpers/recentBlocksCache');
 const {
 	getEpochUnixTime,
 	getUnixTime,
 	getBlockchainTime,
 	validateTimestamp,
- } = require('./epochTime');
+ } = require('./compat');
 
 const getBlocks = async params => {
 	await getEpochUnixTime(); // TODO: Remove, but make sure the epochtime is initiated here

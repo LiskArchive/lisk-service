@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegateRankByUsername } = require('../delegateCache.js');
+const { getDelegateRankByUsername } = require('./delegateCache.js');
 
 const peerStates = {
 	'3.0.0-alpha.0': {

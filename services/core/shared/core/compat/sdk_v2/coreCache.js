@@ -18,7 +18,7 @@ const { Utils, CacheLRU } = require('lisk-service-framework');
 const { isEmptyArray } = Utils.Data;
 const { getAccounts } = require('./coreApi');
 
-const config = require('../../../config');
+const config = require('../../../../config');
 
 const cache = CacheLRU();
 const getCacheKey = (key, value) => `account:${key}:${value}`;

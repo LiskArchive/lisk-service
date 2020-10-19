@@ -17,21 +17,25 @@ const { Utils } = require('lisk-service-framework');
 
 const semver = require('semver');
 
-const recentBlocksCache = require('../recentBlocksCache');
-const coreCache = require('../generic/coreCache');
-const coreApi = require('../generic/coreApi');
-const coreApiCached = require('../generic/coreApiCached');
+const recentBlocksCache = require('../../helpers/recentBlocksCache');
+const coreCache = require('./coreCache');
+const coreApi = require('./coreApi');
+
+const { getTotalNumberOfDelegates, getDelegateRankByUsername, reload } = require('./delegateCache');
+
 const {
 	getEpochUnixTime,
 	getUnixTime,
 	getBlockchainTime,
 	validateTimestamp,
-} = require('../generic/epochTime');
-const { setCoreVersion, getCoreVersion, mapParams } = require('../coreVersionCompatibility');
-const config = require('../../../config.js');
-const { getBlocks } = require('../generic/blocks');
+} = require('./epochTime');
+const { setCoreVersion, getCoreVersion, mapParams } = require('./coreVersionCompatibility');
+
+const { getBlocks } = coreApi;
 
 const ObjectUtilService = Utils.Data;
+
+const { getConstants } = require('./constants');
 
 // LoggerConfig(config.log);
 // const logger = Logger();
@@ -57,13 +61,6 @@ const { isProperObject } = ObjectUtilService;
 const { isEmptyArray } = ObjectUtilService;
 
 // Lisk Core API functions
-const getConstants = async () => {
-	const expireMiliseconds = Number(config.ttl.stable) * 1000;
-	const result = await coreApiCached.getNetworkConstants(null, { expireMiliseconds });
-	if (!isProperObject(result)) return {};
-	return result.data;
-};
-
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
 	const account = await coreCache.getCachedAccountByAddress(parseAddress(address));
@@ -342,4 +339,7 @@ module.exports = {
 	calcAvgFeeByteModes: nop,
 	calculateAvgFeePerByte: nop,
 	calculateWeightedAvg: nop,
+	getTotalNumberOfDelegates,
+	getDelegateRankByUsername,
+	reloadDelegateCache: reload,
 };

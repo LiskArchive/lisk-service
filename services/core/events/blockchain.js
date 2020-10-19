@@ -17,15 +17,15 @@ const logger = require('lisk-service-framework').Logger();
 const { SocketClient } = require('lisk-service-framework');
 
 const core = require('../shared/core');
-const recentBlocksCache = require('../shared/core/recentBlocksCache');
-const delegateCache = require('../shared/core/delegateCache');
+// const recentBlocksCache = require('../shared/core/recentBlocksCache');
+// const delegateCache = require('../shared/core/delegateCache');
 
 const config = require('../config');
 
 const coreSocket = SocketClient(config.endpoints.liskWs);
 logger.info(`Registering ${config.endpoints.liskWs}`);
 
-recentBlocksCache.init(core);
+// recentBlocksCache.init(core);
 
 module.exports = [
 	{
@@ -50,10 +50,10 @@ module.exports = [
 				if (Array.isArray(emitData.data) && emitData.data.length > 0
 					&& emitData.data[0].numberOfTransactions > 0) {
 						const transactionData = await core.getTransactions({ blockId: data.id });
-						recentBlocksCache.addNewBlock(emitData.data[0], transactionData);
+						// recentBlocksCache.addNewBlock(emitData.data[0], transactionData);
 						callback(transactionData);
 				} else {
-					recentBlocksCache.addNewBlock(emitData.data[0], []);
+					// recentBlocksCache.addNewBlock(emitData.data[0], []);
 				}
 			});
 		},
@@ -64,7 +64,7 @@ module.exports = [
 		controller: callback => {
 			coreSocket.socket.on('round/change', async data => {
 				logger.debug('New round, updating delegates...');
-				delegateCache.init(core);
+				core.reloadDelegateCache(core);
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
 			});

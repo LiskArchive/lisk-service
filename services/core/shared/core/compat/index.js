@@ -13,4 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = require('../sdk_v2');
+
+// TODO: Fix to use coreVersionCompat and assign
+// a proper version of the SDK compatibility layer
+module.exports = require('./sdk_v2');

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const coreApi = require('./coreApi');
+const coreApi = require('./index');
 
 let epochUnixTime;
 

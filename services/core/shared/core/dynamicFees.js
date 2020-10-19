@@ -27,8 +27,8 @@ const {
 
 const config = require('../../config.js');
 
-const { getCoreVersion } = require('./coreVersionCompatibility');
-const { getBlocks, getTransactions } = require('./sdk_v2');
+// const { getCoreVersion } = require('./helpers/coreVersionCompatibility');
+const { getCoreVersion, getBlocks, getTransactions } = require('./compat');
 
 const logger = Logger();
 

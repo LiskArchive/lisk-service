@@ -14,7 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const { peerStates } = require('./sdk_v2');
+const { peerStates } = require('./compat');
 const requestAll = require('../requestAll');
 
 const logger = Logger();
