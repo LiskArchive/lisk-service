@@ -18,7 +18,7 @@ const { Utils } = require('lisk-service-framework');
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
-const coreApiCached = require('./coreApiCached');
+const coreApiCached = require('../sdk_v2/coreApiCached');
 
 const config = require('../../../../config.js');
 

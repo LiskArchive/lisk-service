@@ -13,54 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger } = require('lisk-service-framework');
+const http = require('../common/httpRequest');
+const { mapResponse, mapParams } = require('./coreVersionCompatibility');
 
-const logger = Logger('CustomAPI');
-const requestLib = HTTP.request;
+const request = (url, params) => {
+	const transformedParams = mapParams(params, url);
+	const response = http.get(url, transformedParams);
+	const transformedResponse = mapResponse(response, url);
 
-const { mapResponse, mapParams } = require('./coreVersionCompatibility.js');
-const config = require('../../../../config.js');
-
-const liskAddress = config.endpoints.liskHttp;
-
-// HTTP request stack
-const validateCoreResponse = body => {
-	try {
-		if (typeof body === 'object') {
-			return true;
-		}
-		return false;
-	} catch (err) {
-		return false;
-	}
+	return transformedResponse;
 };
-
-const request = (url, params) => new Promise((resolve, reject) => {
-	logger.info(`Requesting ${liskAddress}${url}`);
-	requestLib(`${liskAddress}${url}`, {
-		params: mapParams(params, url),
-		timeout: (config.httpTimeout || 15) * 1000, // ms
-	}).then(body => {
-		if (!body) resolve({});
-
-		let jsonContent;
-		try {
-			if (typeof body === 'string') jsonContent = JSON.parse(body);
-			else jsonContent = body.data;
-		} catch (err) {
-			logger.error(err.stack);
-			return reject(err);
-		}
-
-		if (validateCoreResponse(jsonContent)) {
-			return resolve(mapResponse(jsonContent, url));
-		}
-		return reject(body.error || 'Response was unsuccessful');
-	}).catch(err => {
-		logger.error(err.stack);
-		resolve({});
-	});
-});
 
 const getAccounts = params => request('/accounts', params);
 const getBlocks = params => request('/blocks', params);

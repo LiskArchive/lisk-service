@@ -13,13 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const coreApi = require('./index');
+const { getConstants } = require('./constants');
 
 let epochUnixTime;
 
 const getEpochUnixTime = async () => {
-	const nodeConstants = await coreApi.getNetworkConstants();
-	const { epoch } = nodeConstants.data;
+	const nodeConstants = await getConstants();
+	const { epoch } = nodeConstants;
 	epochUnixTime = new Date(epoch).getTime() / 1000;
 	return epochUnixTime;
 };

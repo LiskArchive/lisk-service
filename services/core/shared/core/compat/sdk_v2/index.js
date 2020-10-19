@@ -28,14 +28,14 @@ const {
 	getUnixTime,
 	getBlockchainTime,
 	validateTimestamp,
-} = require('./epochTime');
+} = require('../common/time');
 const { setCoreVersion, getCoreVersion, mapParams } = require('./coreVersionCompatibility');
 
 const { getBlocks } = coreApi;
 
 const ObjectUtilService = Utils.Data;
 
-const { getConstants } = require('./constants');
+const { getConstants } = require('../common/constants');
 
 // LoggerConfig(config.log);
 // const logger = Logger();
@@ -288,7 +288,7 @@ const getTransactions = async params => {
 const setReadyStatus = status => { readyStatus = status; };
 const getReadyStatus = () => readyStatus;
 
-const nop = () => {};
+const nop = () => { };
 
 module.exports = {
 	get: coreApi.request,
@@ -328,7 +328,10 @@ module.exports = {
 	peerStates,
 	setReadyStatus,
 	setCoreVersion,
+	getCoreVersion,
 	getReadyStatus,
+	getEpochUnixTime,
+	validateTimestamp,
 	getUnixTime,
 	EMAcalc: nop,
 	getEstimateFeeByte: nop,
