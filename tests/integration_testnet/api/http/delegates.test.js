@@ -64,12 +64,9 @@ describe('Delegates API', () => {
 			});
 		});
 
-		// FIXME: This test is disabled due to lack of the right account in the test blockchain
-		// Type 1+2 reqiured to make this test passing
-		xit('known address by second public key', async () => {
+		it('known address by second public key', async () => {
 			const url = `${endpoint}?secpubkey=${delegates.activeDelegate.secondPublicKey}`;
-			const expectedStatus = 200;
-			const response = await api.get(url, expectedStatus);
+			const response = await api.get(url);
 			expect(response.data).toBeArrayOfSize(1);
 			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
 			expect(response.data[0]).toMapRequiredSchema({
