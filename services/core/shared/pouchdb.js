@@ -31,10 +31,12 @@ const createDb = async (name, idxList = []) => {
 	const db = new PouchDB(name, { auto_compaction: true });
 
 	idxList.forEach(async idxName => {
-		logger.debug(`Setting up index ${idxName}...`);
+		if (typeof idxName === 'string') idxName = [idxName];
+		logger.debug(`Setting up index ${name}/${idxName.join('-')}...`);
+
 		await db.createIndex({
 			index: {
-				fields: [idxName],
+				fields: idxName,
 			},
 		});
 	});
@@ -42,14 +44,14 @@ const createDb = async (name, idxList = []) => {
 	return db;
 };
 
-const getDbInstance = async (collectionName) => {
+const getDbInstance = async (collectionName, idxList) => {
 	if (!connectionPool[collectionName]) {
 		const dbDataDir = `${config.db.directory}/${collectionName}`;
 		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
 		connectionPool[collectionName] = await createDb(
 			dbDataDir,
-			config.db.collections[collectionName].indexes,
+			[...config.db.collections[collectionName].indexes, ...idxList],
 		);
 		logger.info(`Opened PouchDB database: ${collectionName}`);
 	}
