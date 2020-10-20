@@ -16,6 +16,18 @@
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 
+const indexList = [
+	'id',
+	'generatorPublicKey',
+	'generatorAddress',
+	'generatorUsername',
+	'height',
+	'numberOfTransactions',
+	'previousBlockId',
+	'totalAmount',
+	'totalFee',
+];
+
 const getSelector = (params) => {
 	const selector = {};
 	const result = {};
@@ -31,7 +43,7 @@ const getSelector = (params) => {
 };
 
 const getBlocks = async (params) => {
-	const blockDb = await pouchdb('blocks');
+	const blockDb = await pouchdb('blocks', indexList);
 
 	let blocks = {
 		data: [],
@@ -62,8 +74,8 @@ const getBlocks = async (params) => {
 		limit: params.limit || 10,
 		offset: params.offset || 0,
 	});
-	// const dbResult = await blockDb.find(inputData);
-	// if (dbResult.length > 0) blocks.data = dbResult;
+	const dbResult = await blockDb.find(inputData);
+	if (dbResult.length > 0) blocks.data = dbResult;
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
