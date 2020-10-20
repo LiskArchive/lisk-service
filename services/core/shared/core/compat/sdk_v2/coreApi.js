@@ -13,9 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { request } = require('./request');
+const http = require('../common/httpRequest');
+const { mapResponse, mapParams } = require('./coreVersionCompatibility');
+
+const request = (url, params) => {
+	const transformedParams = mapParams(params, url);
+	const response = http.get(url, transformedParams);
+	const transformedResponse = mapResponse(response, url);
+
+	return transformedResponse;
+};
 
 const getAccounts = params => request('/accounts', params);
+const getBlocks = params => request('/blocks', params);
 const getDelegates = params => request('/delegates', params);
 const getForgingStats = address => request(`/delegates/${address}/forging_statistics`);
 const getMultisignatureGroups = address => request(`/accounts/${address}/multisignature_groups`);
@@ -30,6 +40,7 @@ const getVotes = params => request('/votes', params);
 
 module.exports = {
 	getAccounts,
+	getBlocks,
 	getDelegates,
 	getForgingStats,
 	getMultisignatureGroups,

@@ -13,23 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const semver = require('semver');
-const { getCoreVersion } = require('./common');
+const http = require('./httpRequest');
 
-const sdkMappers = {
-	'1.0.0-alpha.0': 'sdk_v2',
-	'3.0.0-alpha.0': 'sdk_v3',
-	'3.0.0-beta.1': 'sdk_v4',
-	// '3.0.0-beta.1': sdk_v5,
-};
+const {
+    getNetworkConstants,
+    setCoreVersion,
+    getCoreVersion,
+} = require('./constants');
 
-let sdk;
-Object.keys(sdkMappers).forEach(key => {
-	if (semver.lte(key, getCoreVersion())) sdk = sdkMappers[key];
-});
+const {
+    getBlockchainTime,
+    getEpochUnixTime,
+    getUnixTime,
+    validateTimestamp,
+} = require('./time');
 
 module.exports = {
-	...require('./common'),
-	/* eslint-disable-next-line import/no-dynamic-require */
-	...require(`./${sdk}`),
+    http,
+
+    getNetworkConstants,
+    setCoreVersion,
+    getCoreVersion,
+
+    getBlockchainTime,
+    getEpochUnixTime,
+    getUnixTime,
+    validateTimestamp,
 };

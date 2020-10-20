@@ -14,19 +14,26 @@
  *
  */
 const { Utils } = require('lisk-service-framework');
+const http = require('./httpRequest');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
-const coreApiCached = require('./coreApiCached');
+// const config = require('../../../../config.js');
+// const coreApiCached = require('../sdk_v2/coreApiCached');
 
-const config = require('../../../../config.js');
+let coreVersion = '1.0.0-alpha.0';
 
-const getConstants = async () => {
-	const expireMiliseconds = Number(config.ttl.stable) * 1000;
-	const result = await coreApiCached.getNetworkConstants(null, { expireMiliseconds });
+const getNetworkConstants = async () => {
+	// const expireMiliseconds = Number(config.ttl.stable) * 1000;
+	// const result = await coreApiCached.getNetworkConstants(null, { expireMiliseconds });
+	const result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
 	if (!isProperObject(result)) return {};
-	return result.data;
+	return result;
 };
 
-module.exports = { getConstants };
+const setCoreVersion = version => coreVersion = version;
+
+const getCoreVersion = () => coreVersion;
+
+module.exports = { getNetworkConstants, setCoreVersion, getCoreVersion };

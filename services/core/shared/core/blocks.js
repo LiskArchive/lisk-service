@@ -16,7 +16,21 @@
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 
-/* const getSelector = (params) => {
+const indexList = [
+	'id',
+	'generatorPublicKey',
+	'generatorAddress',
+	'generatorUsername',
+	'height',
+	'numberOfTransactions',
+	'previousBlockId',
+	'totalAmount',
+	'totalFee',
+	['generatorPublicKey', 'numberOfTransactions'],
+	['generatorPublicKey', 'totalAmount'],
+];
+
+const getSelector = (params) => {
 	const selector = {};
 	const result = {};
 	if (params.height) selector.height = params.height;
@@ -28,42 +42,40 @@ const coreApi = require('./compat');
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
-}; */
+};
 
 const getBlocks = async (params) => {
-	const blockDb = await pouchdb('blocks');
+	const blockDb = await pouchdb('blocks', indexList);
 
 	let blocks = {
 		data: [],
 	};
 
-/* 	let dbResult;
-	if (params.blockId) {
-		dbResult = await blockDb.findById(params.blockId);
-		if (dbResult !== null) blocks.data = [dbResult];
-	}
+	/* 	let dbResult;
+		if (params.blockId) {
+			dbResult = await blockDb.findById(params.blockId);
+			if (dbResult !== null) blocks.data = [dbResult];
+		}
+		if (params.height) {
+			dbResult = await blockDb.findOneByProperty('height', Number(params.height));
+			if (dbResult.length > 0) blocks.data = dbResult;
+		}
+		if (params.generatorPublicKey) {
+			dbResult = await blockDb.find({
+				selector: { generatorAddress: params.generatorPublicKey },
+				limit: params.limit,
+				skip: params.offset,
+			});
+			if (dbResult.length > 0) blocks.data = dbResult;
+		} */
 
-	if (params.height) {
-		dbResult = await blockDb.findOneByProperty('height', Number(params.height));
-		if (dbResult.length > 0) blocks.data = dbResult;
-	}
-
-	if (params.generatorPublicKey) {
-		dbResult = await blockDb.find({
-			selector: { generatorAddress: params.generatorPublicKey },
-			limit: params.limit,
-			skip: params.offset,
-		});
-		if (dbResult.length > 0) blocks.data = dbResult;
-	} */
-
-/* 	const inputData = await getSelector({
+	const inputData = await getSelector({
 		...params,
 		limit: params.limit || 10,
 		offset: params.offset || 0,
-	}); */
-	// const dbResult = await blockDb.find(inputData);
-	// if (dbResult.length > 0) blocks.data = dbResult;
+	});
+	const dbResult = await blockDb.find(inputData);
+	if (dbResult.length > 0) blocks.data = dbResult;
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);

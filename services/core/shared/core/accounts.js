@@ -23,7 +23,7 @@ const {
 	confirmSecondPublicKey,
 } = require('./compat');
 
-/* const getSelector = (params) => {
+const getSelector = (params) => {
 	const selector = {};
 	const result = {};
 	if (params.address) selector.address = params.height;
@@ -34,7 +34,7 @@ const {
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
-}; */
+};
 
 const getAccounts = async (params) => {
 	const accountDb = await pouchdb('accounts');
@@ -67,12 +67,13 @@ const getAccounts = async (params) => {
 		}
 		requestParams.secondPublicKey = params.secondPublicKey;
 	}
-	/* 	const inputData = await getSelector({
+	const inputData = await getSelector({
 		...params,
 		limit: params.limit || 10,
 		offset: params.offset || 0,
 	});
-	// const dbResult = await accountDb.find(inputData); */
+	// const dbResult = await accountDb.find(inputData);
+	// if (dbResult.length > 0) blocks.data = dbResult;
 	const result = await coreApi.getAccounts(requestParams);
 	if (result.data.length > 0) {
 		result.data.forEach((account) => {

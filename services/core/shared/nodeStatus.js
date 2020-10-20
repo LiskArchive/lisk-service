@@ -29,6 +29,7 @@ const checkStatus = () => new Promise((resolve, reject) => {
 	core.getNetworkConstants().then(result => {
 		if (typeof result.data === 'object' && result.data.version) {
 			core.setCoreVersion(result.data.version);
+			core.getEpochUnixTime();
 			core.setReadyStatus(true);
 			if (logConnectStatus) {
 				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${result.data.version}`);
