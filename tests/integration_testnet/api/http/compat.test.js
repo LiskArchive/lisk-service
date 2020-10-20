@@ -33,7 +33,6 @@ const accountSchema = {
 	publicKey: 'string',
 	secondPublicKey: 'string',
 	transactionCount: 'object',
-	knowledge: 'object',
 };
 
 const votesSchema = {
