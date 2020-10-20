@@ -20,9 +20,9 @@ const moment = require('moment');
 const util = require('util');
 
 const core = require('./compat');
-const { getDatabase, dbQueries } = require('../postgres');
 const config = require('../../config');
 const requestAll = require('../requestAll');
+const getDbInstance = require('../pouchdb');
 
 const logger = Logger();
 
@@ -97,15 +97,18 @@ const transformStatsObjectToList = statsObject => (
 );
 
 const insertToDb = async (statsList, date) => {
-	const db = getDatabase();
-	await db.any(dbQueries.deleteDay, { date });
-	return db.tx(t => {
-		const queries = statsList.map(l => t.none(dbQueries.insert, { ...l, date }));
-		return t.batch(queries);
-	}).then(() => {
-		const count = statsList.reduce((acc, row) => acc + row.count, 0);
-		return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
+	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+
+	await db.deleteByProperty('date', date);
+	statsList.map(statistic => {
+		Object.assign(statistic, { date, amount_range: statistic.range });
+		delete statistic.range;
+		return statistic;
 	});
+	await db.writeBatch(statsList);
+
+	const count = statsList.reduce((acc, row) => acc + row.count, 0);
+	return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
 };
 
 const fetchTransactions = async (date, offset = 0) => {

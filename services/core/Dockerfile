@@ -17,6 +17,7 @@ RUN apk add --no-cache curl
 RUN adduser -D lisk
 
 COPY ./ /home/lisk/lisk-service/core/
+RUN chown -R lisk:lisk /home/lisk/
 COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/core/node_modules/
 
 USER lisk

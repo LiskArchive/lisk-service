@@ -58,4 +58,5 @@ sftp-config.json
 # xUnit/Junit report
 xunit-report.xml
 
+# Embedded DB directory
 db_data
