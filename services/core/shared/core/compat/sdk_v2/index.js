@@ -135,7 +135,7 @@ const getAddressByAny = async param => {
 };
 
 const getAccounts = async params => {
-	const reqeustParams = {
+	const requestParams = {
 		limit: params.limit,
 		offset: params.offset,
 		sort: params.sort,
@@ -145,14 +145,14 @@ const getAccounts = async params => {
 	if (params.address && typeof params.address === 'string') {
 		const parsedAddress = parseAddress(params.address);
 		if (!await confirmAddress(parsedAddress)) return {};
-		reqeustParams.address = parsedAddress;
+		requestParams.address = parsedAddress;
 	}
 
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey) || (!await confirmPublicKey(params.publicKey))) {
 			return {};
 		}
-		reqeustParams.publicKey = params.publicKey;
+		requestParams.publicKey = params.publicKey;
 	}
 
 	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
@@ -160,10 +160,10 @@ const getAccounts = async params => {
 			|| (!await confirmSecondPublicKey(params.secondPublicKey))) {
 			return {};
 		}
-		reqeustParams.secondPublicKey = params.secondPublicKey;
+		requestParams.secondPublicKey = params.secondPublicKey;
 	}
 
-	const result = coreApi.getAccounts(reqeustParams);
+	const result = coreApi.getAccounts(requestParams);
 	return result;
 };
 

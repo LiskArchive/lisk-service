@@ -15,7 +15,6 @@
  */
 const coreApi = require('./coreApi');
 const {
-	getEpochUnixTime,
 	getUnixTime,
 	getBlockchainTime,
 	validateTimestamp,
