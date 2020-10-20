@@ -41,14 +41,14 @@ const indexList = [
 const getSelector = (params) => {
 	const selector = {};
 	const result = {};
-	if (params.height) selector.height = params.height;
-	if (params.blockId) selector.id = params.blockId;
-	if (params.fromTimestamp) selector.timestamp = { $gte: params.fromTimestamp };
-	if (params.toTimestamp) selector.timestamp = { $lte: params.toTimestamp };
-	if (params.generatorPublicKey) selector.generatorPublicKey = params.generatorPublicKey;
+	if (params.height) selector.height = Number(params.height);
+	if (params.blockId) selector.id = String(params.blockId);
+	if (params.fromTimestamp) selector.timestamp = { $gte: Number(params.fromTimestamp) };
+	if (params.toTimestamp) selector.timestamp = { $lte: Number(params.toTimestamp) };
+	if (params.generatorPublicKey) selector.generatorPublicKey = String(params.generatorPublicKey);
 	result.selector = selector;
-	if (params.limit) result.limit = params.limit;
-	if (Number(params.offset) >= 0) result.skip = params.offset;
+	if (params.limit) result.limit = Number(params.limit);
+	if (Number(params.offset) >= 0) result.skip = Number(params.offset);
 	return result;
 };
 
@@ -58,6 +58,7 @@ const getBlocks = async (params) => {
 	let blocks = {
 		data: [],
 	};
+
 	const inputData = await getSelector({
 		...params,
 		limit: params.limit || 10,
