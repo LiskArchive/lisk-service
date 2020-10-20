@@ -31,10 +31,12 @@ const createDb = async (name, idxList = []) => {
 	const db = new PouchDB(name, { auto_compaction: true });
 
 	idxList.forEach(async idxName => {
-		logger.debug(`Setting up index ${name}/${idxName}...`);
+		if (typeof idxName === 'string') idxName = [idxName];
+		logger.debug(`Setting up index ${name}/${idxName.join('-')}...`);
+
 		await db.createIndex({
 			index: {
-				fields: [idxName],
+				fields: idxName,
 			},
 		});
 	});
