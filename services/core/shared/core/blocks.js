@@ -24,10 +24,18 @@ const indexList = [
 	'height',
 	'numberOfTransactions',
 	'previousBlockId',
+	'timestamp',
 	'totalAmount',
 	'totalFee',
 	['generatorPublicKey', 'numberOfTransactions'],
+	['generatorAddress', 'numberOfTransactions'],
+	['generatorUsername', 'numberOfTransactions'],
 	['generatorPublicKey', 'totalAmount'],
+	['generatorAddress', 'totalAmount'],
+	['generatorUsername', 'totalAmount'],
+	['generatorPublicKey', 'timestamp'],
+	['generatorAddress', 'timestamp'],
+	['generatorUsername', 'timestamp'],
 ];
 
 const getSelector = (params) => {
