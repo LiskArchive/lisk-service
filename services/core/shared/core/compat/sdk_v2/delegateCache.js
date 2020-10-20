@@ -21,7 +21,8 @@ let delegates = [];
 
 const loadAllDelegates = async (core, delegateList = []) => {
 	const limit = 100;
-	const response = await core.get('/delegates', { limit, offset: delegateList.length });
+	const { request } = require('./request');
+	const response = await request('/delegates', { limit, offset: delegateList.length });
 	delegateList = [...delegateList, ...response.data];
 	if (delegateList.length >= delegates.length) {
 	// this condition should speed up initial load but not break things on rounds/change

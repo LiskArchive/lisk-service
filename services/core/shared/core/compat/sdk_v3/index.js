@@ -14,13 +14,3 @@
  *
  */
 module.exports = require('../sdk_v2');
-
-
-const getBlocks = (p) => {
-	require('../sdk_v2').getBlocks(p);
-	
-};
-
-module.exports = {
-	...require('../sdk_v2'), getBlocks,
-};

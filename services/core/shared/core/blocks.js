@@ -15,12 +15,6 @@
  */
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-const {
-	getEpochUnixTime,
-	getUnixTime,
-	getBlockchainTime,
-	validateTimestamp,
- } = require('./compat');
 
 const getSelector = (params) => {
 	const selector = {};
@@ -29,23 +23,15 @@ const getSelector = (params) => {
 	if (params.blockId) selector.id = params.blockId;
 	if (params.fromTimestamp) selector.timestamp = { $gte: params.fromTimestamp };
 	if (params.toTimestamp) selector.timestamp = { $lte: params.toTimestamp };
+	if (params.generatorPublicKey) selector.generatorPublicKey = params.generatorPublicKey;
 	result.selector = selector;
 	if (params.limit) result.limit = params.limit;
-	if (params.offset) result.skip = params.offset;
+	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
 };
 
 const getBlocks = async (params) => {
-	await getEpochUnixTime(); // TODO: Remove, but make sure the epochtime is initiated here
 	const blockDb = await pouchdb('blocks');
-
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
-			if (await validateTimestamp(params[timestamp])) {
-				params[timestamp] = await getBlockchainTime(params[timestamp]);
-			}
-			return Promise.resolve();
-		}),
-	);
 
 	let blocks = {
 		data: [],
@@ -71,9 +57,13 @@ const getBlocks = async (params) => {
 		if (dbResult.length > 0) blocks.data = dbResult;
 	} */
 
-	const inputData = await getSelector(params);
-	const dbResult = await blockDb.find(inputData);
-	if (dbResult.length > 0) blocks.data = dbResult;
+	const inputData = await getSelector({
+		...params,
+		limit: params.limit || 10,
+		offset: params.offset || 0,
+	});
+	// const dbResult = await blockDb.find(inputData);
+	// if (dbResult.length > 0) blocks.data = dbResult;
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
@@ -85,18 +75,6 @@ const getBlocks = async (params) => {
 		}
 	}
 
-	let result = [];
-
-	if (blocks.data) {
-		result = await Promise.all(
-			blocks.data.map(async (o) => Object.assign(o, {
-					unixTimestamp: await getUnixTime(o.timestamp),
-				}),
-			),
-		);
-	}
-
-	blocks.data = result;
 	return blocks;
 };
 

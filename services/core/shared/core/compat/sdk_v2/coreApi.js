@@ -13,57 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger } = require('lisk-service-framework');
-
-const logger = Logger('CustomAPI');
-const requestLib = HTTP.request;
-
-const { mapResponse, mapParams } = require('./coreVersionCompatibility.js');
-const config = require('../../../../config.js');
-
-const liskAddress = config.endpoints.liskHttp;
-
-// HTTP request stack
-const validateCoreResponse = body => {
-	try {
-		if (typeof body === 'object') {
-			return true;
-		}
-		return false;
-	} catch (err) {
-		return false;
-	}
-};
-
-const request = (url, params) => new Promise((resolve, reject) => {
-	logger.info(`Requesting ${liskAddress}${url}`);
-	requestLib(`${liskAddress}${url}`, {
-		params: mapParams(params, url),
-		timeout: (config.httpTimeout || 15) * 1000, // ms
-	}).then(body => {
-		if (!body) resolve({});
-
-		let jsonContent;
-		try {
-			if (typeof body === 'string') jsonContent = JSON.parse(body);
-			else jsonContent = body.data;
-		} catch (err) {
-			logger.error(err.stack);
-			return reject(err);
-		}
-
-		if (validateCoreResponse(jsonContent)) {
-			return resolve(mapResponse(jsonContent, url));
-		}
-		return reject(body.error || 'Response was unsuccessful');
-	}).catch(err => {
-		logger.error(err.stack);
-		resolve({});
-	});
-});
+const { request } = require('./request');
 
 const getAccounts = params => request('/accounts', params);
-const getBlocks = params => request('/blocks', params);
 const getDelegates = params => request('/delegates', params);
 const getForgingStats = address => request(`/delegates/${address}/forging_statistics`);
 const getMultisignatureGroups = address => request(`/accounts/${address}/multisignature_groups`);
@@ -77,9 +29,7 @@ const getVoters = params => request('/voters', params);
 const getVotes = params => request('/votes', params);
 
 module.exports = {
-	request,
 	getAccounts,
-	getBlocks,
 	getDelegates,
 	getForgingStats,
 	getMultisignatureGroups,
