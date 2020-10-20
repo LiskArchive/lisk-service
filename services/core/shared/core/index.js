@@ -14,6 +14,7 @@
  *
  */
 const { getBlocks } = require('./blocks');
+const { getTransactions } = require('./transactions');
 
 const {
 	EMAcalc,
@@ -56,7 +57,6 @@ const {
 	getNextForgers,
 	getNetworkStatus,
 	getNetworkConstants,
-	getTransactions,
 	getPeers,
 	numOfActiveDelegates,
 	peerStates,

@@ -22,6 +22,8 @@ const coreApiCached = require('../sdk_v2/coreApiCached');
 
 const config = require('../../../../config.js');
 
+let coreVersion;
+
 const getConstants = async () => {
 	const expireMiliseconds = Number(config.ttl.stable) * 1000;
 	const result = await coreApiCached.getNetworkConstants(null, { expireMiliseconds });
@@ -29,4 +31,8 @@ const getConstants = async () => {
 	return result.data;
 };
 
-module.exports = { getConstants };
+const setCoreVersion = version => coreVersion = version;
+
+const getCoreVersion = () => coreVersion;
+
+module.exports = { getConstants, setCoreVersion, getCoreVersion };
