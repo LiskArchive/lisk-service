@@ -29,6 +29,7 @@ const {
 } = require('./dynamicFees');
 
 const {
+	get,
 	parseAddress,
 	validateAddress,
 	validatePublicKey,
@@ -62,6 +63,7 @@ const {
 	peerStates,
 	setReadyStatus,
 	setCoreVersion,
+	getCoreVersion,
 	getReadyStatus,
 	getUnixTime,
 	getTotalNumberOfDelegates,
@@ -70,6 +72,7 @@ const {
 } = require('./compat');
 
 module.exports = {
+	get,
 	parseAddress,
 	validateAddress,
 	validatePublicKey,
@@ -105,6 +108,7 @@ module.exports = {
 	peerStates,
 	setReadyStatus,
 	setCoreVersion,
+	getCoreVersion,
 	getReadyStatus,
 	getUnixTime,
 	EMAcalc,

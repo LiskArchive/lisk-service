@@ -332,6 +332,7 @@ module.exports = {
 	peerStates,
 	setReadyStatus,
 	setCoreVersion,
+	getCoreVersion,
 	getReadyStatus,
 	getEpochUnixTime,
 	getUnixTime,
