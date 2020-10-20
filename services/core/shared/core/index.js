@@ -14,6 +14,7 @@
  *
  */
 const { getBlocks } = require('./blocks');
+const { getAccounts } = require('./accounts.js');
 
 const {
 	EMAcalc,
@@ -43,7 +44,6 @@ const {
 	getPublicKeyByAddress,
 	getPublicKeyByUsername,
 	getUsernameByAddress,
-	getAccounts,
 	getConstants,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
