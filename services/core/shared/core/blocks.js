@@ -99,7 +99,7 @@ const getBlocks = async (params) => {
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
-		if (blocks.data.length > 0) await pushToDb(blockDb, blocks.data);
+		if (blocks.data.length > 0) pushToDb(blockDb, blocks.data);
 	}
 
 	return blocks;
