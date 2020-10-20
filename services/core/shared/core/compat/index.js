@@ -17,18 +17,19 @@ const semver = require('semver');
 const { getCoreVersion } = require('./common');
 
 const sdkMappers = {
-    '1.0.0-alpha.0': 'sdk_v2',
-    '3.0.0-alpha.0': 'sdk_v3',
-    '3.0.0-beta.1': 'sdk_v4',
-    // '3.0.0-beta.1': sdk_v5,
+	'1.0.0-alpha.0': 'sdk_v2',
+	'3.0.0-alpha.0': 'sdk_v3',
+	'3.0.0-beta.1': 'sdk_v4',
+	// '3.0.0-beta.1': sdk_v5,
 };
 
 let sdk;
 Object.keys(sdkMappers).forEach(key => {
-    if (semver.lte(key, getCoreVersion())) sdk = sdkMappers[key];
+	if (semver.lte(key, getCoreVersion())) sdk = sdkMappers[key];
 });
 
 module.exports = {
-    ...require('./common'),
-    ...require(`./${sdk}`),
+	...require('./common'),
+	/* eslint-disable-next-line import/no-dynamic-require */
+	...require(`./${sdk}`),
 };
