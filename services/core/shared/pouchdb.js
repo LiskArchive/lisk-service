@@ -31,7 +31,7 @@ const createDb = async (name, idxList = []) => {
 	const db = new PouchDB(name, { auto_compaction: true });
 
 	idxList.forEach(async idxName => {
-		logger.debug(`Setting up index ${idxName}...`);
+		logger.debug(`Setting up index ${name}/${idxName}...`);
 		await db.createIndex({
 			index: {
 				fields: [idxName],
@@ -42,14 +42,14 @@ const createDb = async (name, idxList = []) => {
 	return Promise.resolve(db);
 };
 
-const getDbInstance = async (collectionName) => {
+const getDbInstance = async (collectionName, idxList) => {
 	// make sure the directory exists on disk
 	// mkdir -p
 
 	const dbDataDir = `${config.databaseDir}/${collectionName}`;
 	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 	if (!connectionPool[collectionName]) {
-		connectionPool[collectionName] = await createDb(dbDataDir);
+		connectionPool[collectionName] = await createDb(dbDataDir, idxList);
 		logger.info(`Opened to PouchDB database: ${collectionName}`);
 	}
 
