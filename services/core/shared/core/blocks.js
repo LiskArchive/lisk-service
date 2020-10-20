@@ -58,27 +58,6 @@ const getBlocks = async (params) => {
 	let blocks = {
 		data: [],
 	};
-
-	/* 	let dbResult;
-		if (params.blockId) {
-			dbResult = await blockDb.findById(params.blockId);
-			if (dbResult !== null) blocks.data = [dbResult];
-		}
-
-		if (params.height) {
-			dbResult = await blockDb.findOneByProperty('height', Number(params.height));
-			if (dbResult.length > 0) blocks.data = dbResult;
-		}
-
-		if (params.generatorPublicKey) {
-			dbResult = await blockDb.find({
-				selector: { generatorAddress: params.generatorPublicKey },
-				limit: params.limit,
-				skip: params.offset,
-			});
-			if (dbResult.length > 0) blocks.data = dbResult;
-		} */
-
 	const inputData = await getSelector({
 		...params,
 		limit: params.limit || 10,
