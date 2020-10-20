@@ -28,6 +28,35 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; 
 config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in seconds
 
 /**
+ * Database config
+ */
+config.db = {
+	directory: 'db_data',
+	collections: {
+		accounts: {
+			name: 'accounts',
+			indexes: [],
+		},
+		blocks: {
+			name: 'blocks',
+			indexes: [],
+		},
+		delegates: {
+			name: 'delegates',
+			indexes: [],
+		},
+		transactions: {
+			name: 'transactions',
+			indexes: [],
+		},
+		transaction_statistics: {
+			name: 'transaction_statistics',
+			indexes: ['date'],
+		},
+	},
+};
+
+/**
  * External endpoints
  */
 config.endpoints.liskHttp = `${(process.env.LISK_CORE_HTTP || 'http://127.0.0.1:4000')}/api`;

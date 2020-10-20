@@ -106,17 +106,8 @@ const getTransactionsStatistics = async ({ aggregateBy, limit = 10, offset = 0 }
 		transactionCount: parseInt(el.transactionCount, 10),
 	}));
 
-	const distributionByTypeRaw = await txStatisticsService.getDistributionByType(params);
-	const distributionByType = distributionByTypeRaw.reduce((acc, curr) => {
-		acc[curr.type] = parseInt(curr.count, 10);
-		return acc;
-	}, {});
-
-	const distributionByAmountRaw = await txStatisticsService.getDistributionByAmount(params);
-	const distributionByAmount = distributionByAmountRaw.reduce((acc, curr) => {
-		acc[curr.amount_range] = parseInt(curr.count, 10);
-		return acc;
-	}, {});
+	const distributionByType = await txStatisticsService.getDistributionByType(params);
+	const distributionByAmount = await txStatisticsService.getDistributionByAmount(params);
 
 	return {
 		data: {
