@@ -39,7 +39,6 @@ const getVoters = params => request('/voters', params);
 const getVotes = params => request('/votes', params);
 
 module.exports = {
-	request,
 	getAccounts,
 	getBlocks,
 	getDelegates,

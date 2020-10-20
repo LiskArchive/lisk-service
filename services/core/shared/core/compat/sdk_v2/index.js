@@ -21,6 +21,8 @@ const recentBlocksCache = require('../../helpers/recentBlocksCache');
 const coreCache = require('./coreCache');
 const coreApi = require('./coreApi');
 
+const { request } = require('./request');
+
 const { getTotalNumberOfDelegates, getDelegateRankByUsername, reload } = require('./delegateCache');
 
 const {
@@ -31,9 +33,9 @@ const {
 } = require('../common/time');
 const { setCoreVersion, getCoreVersion, mapParams } = require('./coreVersionCompatibility');
 const { getConstants } = require('../common/constants');
+const { getBlocks } = require('./blocks');
 
 const {
-	getBlocks,
 	getNetworkStatus,
 	getNetworkConstants,
 } = coreApi;
@@ -294,8 +296,8 @@ const getReadyStatus = () => readyStatus;
 const nop = () => { };
 
 module.exports = {
-	get: coreApi.request,
-	request: coreApi.request,
+	get: request,
+	request,
 	parseAddress,
 	validateAddress,
 	validatePublicKey,

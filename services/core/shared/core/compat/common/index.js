@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { get } = require('./httpRequest');
+const http = require('./httpRequest');
 
 const {
     getConstants,
@@ -29,7 +29,7 @@ const {
 } = require('./time');
 
 module.exports = {
-    requestGet: get,
+    http,
 
     getConstants,
     setCoreVersion,
