@@ -24,7 +24,7 @@ const indexList = [
 	'height',
 	'numberOfTransactions',
 	'previousBlockId',
-	'timestamp',
+	'unixTimestamp',
 	'totalAmount',
 	'totalFee',
 	['generatorPublicKey', 'numberOfTransactions'],
@@ -33,9 +33,9 @@ const indexList = [
 	['generatorPublicKey', 'totalAmount'],
 	['generatorAddress', 'totalAmount'],
 	['generatorUsername', 'totalAmount'],
-	['generatorPublicKey', 'timestamp'],
-	['generatorAddress', 'timestamp'],
-	['generatorUsername', 'timestamp'],
+	['generatorPublicKey', 'unixTimestamp'],
+	['generatorAddress', 'unixTimestamp'],
+	['generatorUsername', 'unixTimestamp'],
 ];
 
 const getSelector = (params) => {
@@ -43,14 +43,42 @@ const getSelector = (params) => {
 	const result = {};
 	if (params.height) selector.height = Number(params.height);
 	if (params.blockId) selector.id = String(params.blockId);
-	if (params.fromTimestamp) selector.timestamp = { $gte: Number(params.fromTimestamp) };
-	if (params.toTimestamp) selector.timestamp = { $lte: Number(params.toTimestamp) };
+	if (params.fromTimestamp) selector.unixTimestamp = { $gte: Number(params.fromTimestamp) };
+	if (params.toTimestamp) selector.unixTimestamp = { $lte: Number(params.toTimestamp) };
 	if (params.generatorPublicKey) selector.generatorPublicKey = String(params.generatorPublicKey);
 	result.selector = selector;
 	if (params.limit) result.limit = Number(params.limit);
 	if (Number(params.offset) >= 0) result.skip = Number(params.offset);
 	return result;
 };
+
+const pushToDb = async (blockDb, blocks) => {
+	const propList = [
+		'blockSignature',
+		'confirmations',
+		'generatorAddress',
+		'generatorPublicKey',
+		'height',
+		'id',
+		'numberOfTransactions',
+		'payloadHash',
+		'payloadLength',
+		'previousBlockId',
+		'reward',
+		'totalAmount',
+		'totalFee',
+		'totalForged',
+		'unixTimestamp',
+		'version',
+	];
+	const out = blocks.map(o => {
+		const obj = {};
+		propList.map(prop => obj[prop] = o[prop]);
+		return obj;
+	});
+	return blockDb.writeBatch(out);
+};
+
 
 const getBlocks = async (params) => {
 	const blockDb = await pouchdb('blocks', indexList);
@@ -59,17 +87,19 @@ const getBlocks = async (params) => {
 		data: [],
 	};
 
-	const inputData = await getSelector({
-		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-	const dbResult = await blockDb.find(inputData);
-	if (dbResult.length > 0) blocks.data = dbResult;
+	if (params.blockId) { // try to get from cache
+		const inputData = await getSelector({
+			...params,
+			limit: params.limit || 10,
+			offset: params.offset || 0,
+		});
+		const dbResult = await blockDb.find(inputData);
+		if (dbResult.length > 0) blocks.data = dbResult;
+	}
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
-		if (blocks.data.length > 0) blockDb.writeBatch(blocks.data);
+		if (blocks.data.length > 0) await pushToDb(blockDb, blocks.data);
 	}
 
 	return blocks;

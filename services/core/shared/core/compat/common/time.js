@@ -19,25 +19,25 @@ let epochUnixTime;
 
 const getEpochUnixTime = async () => {
 	const nodeConstants = await getNetworkConstants();
-	const { epoch } = nodeConstants;
+	const { epoch } = nodeConstants.data;
 	epochUnixTime = new Date(epoch).getTime() / 1000;
 	return epochUnixTime;
 };
 
 const getUnixTime = async blockchainTime => {
-	if (epochUnixTime === undefined) await getEpochUnixTime();
+	if (!epochUnixTime) await getEpochUnixTime();
 	const unixTime = Number(blockchainTime) + Number(epochUnixTime);
 	return unixTime;
 };
 
 const getBlockchainTime = async unixTime => {
-	if (epochUnixTime === undefined) await getEpochUnixTime();
+	if (!epochUnixTime) await getEpochUnixTime();
 	const blockchainTime = Number(unixTime) - Number(epochUnixTime);
 	return blockchainTime;
 };
 
 const validateTimestamp = async timestamp => {
-	if (epochUnixTime === undefined) await getEpochUnixTime();
+	if (!epochUnixTime) await getEpochUnixTime();
 	const minUnixTime = await getUnixTime(0);
 	if (!timestamp) return false;
 	if (Number(timestamp) < Number(minUnixTime)) return false;
