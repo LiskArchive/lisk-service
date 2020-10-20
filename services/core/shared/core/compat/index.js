@@ -13,7 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 // TODO: Fix to use coreVersionCompat and assign
 // a proper version of the SDK compatibility layer
-module.exports = require('./sdk_v2');
+// module.exports = require('./sdk_v2');
+const semver = require('semver');
+const { getCoreVersion } = require('./sdk_v2/coreVersionCompatibility');
+
+const sdkMappers = {
+	'1.0.0-alpha.0': 'sdk_v2',
+    '3.0.0-alpha.0': 'sdk_v3',
+    '3.0.0-beta.1': 'sdk_v4',
+    // '3.0.0-beta.1': sdk_v5,
+};
+
+let sdk;
+const availableReferenceKeys = Object.keys(sdkMappers);
+availableReferenceKeys.forEach(key => {
+    if (semver.lte(key, getCoreVersion())) sdk = sdkMappers[key];
+});
+
+module.exports = require(`./${sdk}`);

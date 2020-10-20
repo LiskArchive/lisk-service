@@ -21,7 +21,7 @@ const {
 	confirmAddress,
 	validatePublicKey,
     confirmPublicKey,
-    confirmSecondPublicKey
+    confirmSecondPublicKey,
  } = require('./compat');
 
  const getAccounts = async params => {
