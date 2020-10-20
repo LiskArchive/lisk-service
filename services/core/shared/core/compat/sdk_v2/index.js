@@ -15,9 +15,6 @@
  */
 const { Utils } = require('lisk-service-framework');
 
-const semver = require('semver');
-
-const recentBlocksCache = require('../../helpers/recentBlocksCache');
 const coreCache = require('./coreCache');
 const coreApi = require('./coreApi');
 
@@ -25,20 +22,13 @@ const { request } = require('./request');
 
 const { getTotalNumberOfDelegates, getDelegateRankByUsername, reload } = require('./delegateCache');
 
-const {
-	getEpochUnixTime,
-	getUnixTime,
-	getBlockchainTime,
-	validateTimestamp,
-} = require('./epochTime');
-const { setCoreVersion, getCoreVersion, mapParams } = require('./coreVersionCompatibility');
-const { getConstants } = require('./constants');
+const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
+const { getTransactions } = require('./transactions');
 
 const {
 	getNetworkStatus,
-	getNetworkConstants,
- } = coreApi;
+} = coreApi;
 
 const ObjectUtilService = Utils.Data;
 
@@ -251,49 +241,10 @@ const getForgingStats = async address => {
 	}
 };
 
-const updateTransactionType = params => {
-	let url;
-	const transactionTypes = ['transfer', 'registerSecondPassphrase', 'registerDelegate', 'castVotes', 'registerMultisignature'];
-	if (params.type === 'registerDelegate') url = '/delegates/latest_registrations';
-	params.type = (typeof (params.type) === 'string' && transactionTypes.includes(params.type)) ? params.type.toUpperCase() : params.type;
-	params = mapParams(params, url);
-
-	// Check for backward compatibility
-	const coreVersion = getCoreVersion();
-	if (semver.lt(semver.coerce(coreVersion), '3.0.0') && params.type >= 8) params = mapParams(params, url);
-
-	return params;
-};
-
-const getTransactions = async params => {
-	await getEpochUnixTime(); // TODO: Remove, but make sure the epochtime is initiated here
-
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async timestamp => {
-		if (await validateTimestamp(params[timestamp])) {
-			params[timestamp] = await getBlockchainTime(params[timestamp]);
-		}
-		return Promise.resolve();
-	}));
-
-	params = updateTransactionType(params);
-	const transactions = await recentBlocksCache.getCachedTransactions(params)
-		|| await coreApi.getTransactions(params);
-	let result = [];
-
-	if (transactions.data) {
-		result = await Promise.all(transactions.data.map(async o => (Object.assign(o, {
-			unixTimestamp: await getUnixTime(o.timestamp),
-		}))));
-	}
-
-	transactions.data = result;
-	return transactions;
-};
-
 const setReadyStatus = status => { readyStatus = status; };
 const getReadyStatus = () => readyStatus;
 
-const nop = () => {};
+const nop = () => { };
 
 module.exports = {
 	get: request,
@@ -315,7 +266,6 @@ module.exports = {
 	getUsernameByAddress,
 	getAccounts,
 	getBlocks,
-	getConstants,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
@@ -326,19 +276,13 @@ module.exports = {
 	getForgingStats,
 	getNextForgers,
 	getNetworkStatus,
-	getNetworkConstants,
 	getTransactions,
 	getPeers: coreApi.getPeers,
 	numOfActiveDelegates,
 	peerStates,
 	setReadyStatus,
 	setCoreVersion,
-	getCoreVersion,
 	getReadyStatus,
-	getEpochUnixTime,
-	getUnixTime,
-	getBlockchainTime,
-	validateTimestamp,
 	EMAcalc: nop,
 	getEstimateFeeByte: nop,
 	getEstimateFeeByteCoreLogic: nop,

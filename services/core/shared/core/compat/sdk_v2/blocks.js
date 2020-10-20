@@ -13,17 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { request } = require('./request');
+const coreApi = require('./coreApi');
 const {
 	getEpochUnixTime,
 	getUnixTime,
 	getBlockchainTime,
 	validateTimestamp,
- } = require('./epochTime');
+} = require('../common');
 
 const getBlocks = async params => {
-	await getEpochUnixTime(); // TODO: Remove, but make sure the epochtime is initiated here
-
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 		if (await validateTimestamp(params[timestamp])) {
 			params[timestamp] = await getBlockchainTime(params[timestamp]);
@@ -32,12 +30,12 @@ const getBlocks = async params => {
 	}),
 	);
 
-	const blocks = await request('/blocks', params);
+	const blocks = await coreApi.getBlocks(params);
 
 	if (blocks.data) {
 		await Promise.all(blocks.data.map(async (o) => Object.assign(o, {
-				unixTimestamp: await getUnixTime(o.timestamp),
-			}),
+			unixTimestamp: await getUnixTime(o.timestamp),
+		}),
 		));
 	}
 

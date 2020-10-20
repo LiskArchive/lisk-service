@@ -13,13 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = require('../sdk_v2');
+const http = require('./httpRequest');
 
-// const getBlocks = (p) => {
-// 	require('../sdk_v2').getBlocks(p);
+const {
+    getNetworkConstants,
+    setCoreVersion,
+    getCoreVersion,
+} = require('./constants');
 
-// };
+const {
+    getBlockchainTime,
+    getEpochUnixTime,
+    getUnixTime,
+    validateTimestamp,
+} = require('./time');
 
-// module.exports = {
-// 	...require('../sdk_v2'), getBlocks,
-// };
+module.exports = {
+    http,
+
+    getNetworkConstants,
+    setCoreVersion,
+    getCoreVersion,
+
+    getBlockchainTime,
+    getEpochUnixTime,
+    getUnixTime,
+    validateTimestamp,
+};

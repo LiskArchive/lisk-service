@@ -14,6 +14,7 @@
  *
  */
 const semver = require('semver');
+const common = require('../common');
 const coreV1Mappings = require('./coreV1Mappings');
 const coreV3Mappings = require('./coreV3Mappings');
 
@@ -49,6 +50,7 @@ const mapParams = (params, url) => {
 
 const setCoreVersion = version => {
 	coreVersion = version;
+	common.setCoreVersion(coreVersion); // For smoother transition to new code
 
 	const availableReferenceKeys = Object.keys(paramMappers);
 	availableReferenceKeys.forEach(key => {

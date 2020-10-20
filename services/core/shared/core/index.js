@@ -14,6 +14,7 @@
  *
  */
 const { getBlocks } = require('./blocks');
+const { getTransactions } = require('./transactions');
 
 const {
 	EMAcalc,
@@ -44,7 +45,6 @@ const {
 	getPublicKeyByUsername,
 	getUsernameByAddress,
 	getAccounts,
-	getConstants,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
@@ -56,7 +56,6 @@ const {
 	getNextForgers,
 	getNetworkStatus,
 	getNetworkConstants,
-	getTransactions,
 	getPeers,
 	numOfActiveDelegates,
 	peerStates,
@@ -64,6 +63,7 @@ const {
 	setCoreVersion,
 	getCoreVersion,
 	getReadyStatus,
+	getEpochUnixTime,
 	getUnixTime,
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
@@ -88,7 +88,6 @@ module.exports = {
 	getUsernameByAddress,
 	getAccounts,
 	getBlocks,
-	getConstants,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
@@ -108,6 +107,7 @@ module.exports = {
 	setCoreVersion,
 	getCoreVersion,
 	getReadyStatus,
+	getEpochUnixTime,
 	getUnixTime,
 	EMAcalc,
 	getEstimateFeeByte,
