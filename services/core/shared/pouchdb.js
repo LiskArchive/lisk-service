@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
 const PouchDB = require('pouchdb');
-const fs = require('fs');
 
 PouchDB.plugin(require('pouchdb-upsert'));
 PouchDB.plugin(require('pouchdb-find'));
@@ -39,34 +39,42 @@ const createDb = async (name, idxList = []) => {
 		});
 	});
 
-	return Promise.resolve(db);
+	return db;
 };
 
 const getDbInstance = async (collectionName) => {
-	// make sure the directory exists on disk
-	// mkdir -p
-
-	const dbDataDir = `${config.databaseDir}/${collectionName}`;
-	if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 	if (!connectionPool[collectionName]) {
-		connectionPool[collectionName] = await createDb(dbDataDir);
-		logger.info(`Opened to PouchDB database: ${collectionName}`);
+		const dbDataDir = `${config.db.directory}/${collectionName}`;
+		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+
+		connectionPool[collectionName] = await createDb(
+			dbDataDir,
+			config.db.collections[collectionName].indexes,
+		);
+		logger.info(`Opened PouchDB database: ${collectionName}`);
 	}
 
 	const db = connectionPool[collectionName];
 
-	const write = (obj) => {
-		if (!obj._id) obj._id = obj.id;
-		return db.upsert(obj);
+	const write = async (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.upsert(doc);
 	};
 
-	const writeOnce = (obj) => {
-		if (!obj._id) obj._id = obj.id;
-		return db.putIfNotExists(obj);
+	const writeOnce = async (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.putIfNotExists(doc);
+	};
+
+	const writeBatch = async (docs) => {
+		docs.map(doc => {
+			if (!doc._id) doc._id = doc.id;
+			return doc;
+		});
+		return db.bulkDocs(docs);
 	};
 
 	const findById = async (id) => {
-		logger.debug(`Reading block ${id}...`);
 		try {
 			const res = await db.get(id);
 			return res;
@@ -89,12 +97,33 @@ const getDbInstance = async (collectionName) => {
 		return res.docs;
 	};
 
+	const deleteById = async (id) => db.remove(await findById(id));
+
+	const deleteBatch = async (docs) => {
+		if (docs instanceof Array && docs.length === 0) return;
+		docs.map(doc => {
+			if (!doc._id) doc._id = doc.id;
+			doc._deleted = true;
+			return doc;
+		});
+		db.bulkDocs(docs);
+	};
+
+	const deleteByProperty = async (property, value) => {
+		const res = await findOneByProperty(property, value);
+		return deleteBatch(res);
+	};
+
 	return {
 		write,
 		writeOnce,
+		writeBatch,
 		find,
 		findById,
 		findOneByProperty,
+		deleteById,
+		deleteBatch,
+		deleteByProperty,
 	};
 };
 

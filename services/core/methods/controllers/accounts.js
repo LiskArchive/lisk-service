@@ -27,7 +27,7 @@ const knownExpireMiliseconds = 5 * 60 * 1000;
 const staticUrl = config.endpoints.liskStatic;
 
 const getKnownAccounts = async () => {
-	const { nethash } = await CoreService.getConstants();
+	const { nethash } = await CoreService.getNetworkConstants();
 
 	const cacheTTL = knownExpireMiliseconds;
 

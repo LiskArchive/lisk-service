@@ -14,7 +14,7 @@
  *
  */
 const semver = require('semver');
-const { getCoreVersion } = require('./compat');
+const { getCoreVersion } = require('./common');
 
 const sdkMappers = {
     '1.0.0-alpha.0': 'sdk_v2',

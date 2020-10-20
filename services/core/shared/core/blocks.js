@@ -37,25 +37,25 @@ const getBlocks = async (params) => {
 		data: [],
 	};
 
-/* 	let dbResult;
-	if (params.blockId) {
-		dbResult = await blockDb.findById(params.blockId);
-		if (dbResult !== null) blocks.data = [dbResult];
-	}
+	/* 	let dbResult;
+		if (params.blockId) {
+			dbResult = await blockDb.findById(params.blockId);
+			if (dbResult !== null) blocks.data = [dbResult];
+		}
 
-	if (params.height) {
-		dbResult = await blockDb.findOneByProperty('height', Number(params.height));
-		if (dbResult.length > 0) blocks.data = dbResult;
-	}
+		if (params.height) {
+			dbResult = await blockDb.findOneByProperty('height', Number(params.height));
+			if (dbResult.length > 0) blocks.data = dbResult;
+		}
 
-	if (params.generatorPublicKey) {
-		dbResult = await blockDb.find({
-			selector: { generatorAddress: params.generatorPublicKey },
-			limit: params.limit,
-			skip: params.offset,
-		});
-		if (dbResult.length > 0) blocks.data = dbResult;
-	} */
+		if (params.generatorPublicKey) {
+			dbResult = await blockDb.find({
+				selector: { generatorAddress: params.generatorPublicKey },
+				limit: params.limit,
+				skip: params.offset,
+			});
+			if (dbResult.length > 0) blocks.data = dbResult;
+		} */
 
 	const inputData = await getSelector({
 		...params,
@@ -67,12 +67,7 @@ const getBlocks = async (params) => {
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
-		if (blocks.data.length > 0) {
-			blocks.data.forEach((block) => {
-				// drop confirmations
-				blockDb.writeOnce(block);
-			});
-		}
+		if (blocks.data.length > 0) blockDb.writeBatch(blocks.data);
 	}
 
 	return blocks;

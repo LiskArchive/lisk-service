@@ -13,12 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getConstants } = require('./constants');
+const { getNetworkConstants } = require('./constants');
 
 let epochUnixTime;
 
 const getEpochUnixTime = async () => {
-	const nodeConstants = await getConstants();
+	const nodeConstants = await getNetworkConstants();
 	const { epoch } = nodeConstants;
 	epochUnixTime = new Date(epoch).getTime() / 1000;
 	return epochUnixTime;

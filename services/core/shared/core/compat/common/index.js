@@ -16,7 +16,7 @@
 const http = require('./httpRequest');
 
 const {
-    getConstants,
+    getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
 } = require('./constants');
@@ -31,7 +31,7 @@ const {
 module.exports = {
     http,
 
-    getConstants,
+    getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
 

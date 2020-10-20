@@ -15,14 +15,8 @@
  */
 const semver = require('semver');
 const pouchdb = require('../pouchdb');
-
-const {
-	getEpochUnixTime,
-	getUnixTime,
-	getBlockchainTime,
-	validateTimestamp,
-} = require('./compat');
 const coreApi = require('./compat');
+
 const { getCoreVersion, mapParams } = require('./compat/sdk_v2/coreVersionCompatibility');
 
 const getSelector = (params) => {
@@ -56,51 +50,18 @@ const updateTransactionType = params => {
 };
 
 const getTransactions = async params => {
-	await getEpochUnixTime(); // TODO: Remove, but make sure the epochtime is initiated here
 	const db = await pouchdb('transactions');
-
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async timestamp => {
-		if (await validateTimestamp(params[timestamp])) {
-			params[timestamp] = await getBlockchainTime(params[timestamp]);
-		}
-		return Promise.resolve();
-	}));
 
 	let transactions = {
 		data: [],
 	};
 
 	params = updateTransactionType(params);
-	const inputData = getSelector(params);
-	const dbResult = await db.find(inputData);
-	if (dbResult.length > 0) transactions.data = dbResult;
-
 	if (transactions.data.length === 0) {
 		transactions = await coreApi.getTransactions(params);
-		if (transactions.data.length > 0) {
-			transactions.data.forEach((block) => {
-				// drop confirmations
-				db.writeOnce(block);
-			});
-		}
+		if (transactions.data.length > 0) db.writeBatch(transactions.data);
 	}
 
-	let result = [];
-	if (transactions.data) {
-		result = await Promise.all(
-			transactions.data.map(async (o) => Object.assign(o, {
-				unixTimestamp: await getUnixTime(o.timestamp),
-			}),
-			),
-		);
-	}
-
-	transactions.data = result;
-	transactions.meta = {
-		limit: transactions.data.length,
-		offset: inputData.offset,
-		count: 0, // TODO: Update
-	};
 	return transactions;
 };
 

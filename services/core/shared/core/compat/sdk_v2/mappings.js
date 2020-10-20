@@ -16,11 +16,9 @@
 const { getDelegateRankByUsername } = require('./delegateCache');
 
 const peerStates = {
-    '1.0.0-alpha.0': {
-        UNKNOWN: 0,
-        DISCONNECTED: 1,
-        CONNECTED: 2,
-    },
+    UNKNOWN: 0,
+    DISCONNECTED: 1,
+    CONNECTED: 2,
 };
 
 const transactionTypeParamMap = {
@@ -33,8 +31,8 @@ const transactionTypeParamMap = {
 
 const mapState = state => {
     const stateMapping = {
-        connected: peerStates['1.0.0-alpha.0'].CONNECTED,
-        disconnected: peerStates['1.0.0-alpha.0'].DISCONNECTED,
+        connected: peerStates.CONNECTED,
+        disconnected: peerStates.DISCONNECTED,
     };
     return stateMapping[state] !== undefined ? stateMapping[state] : state;
 };

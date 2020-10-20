@@ -22,8 +22,6 @@ const {
 } = require('../common');
 
 const getBlocks = async params => {
-	await getEpochUnixTime(); // TODO: Remove, but make sure the epochtime is initiated here
-
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 		if (await validateTimestamp(params[timestamp])) {
 			params[timestamp] = await getBlockchainTime(params[timestamp]);
