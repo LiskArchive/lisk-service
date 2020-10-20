@@ -56,12 +56,12 @@ const getDbInstance = async (collectionName) => {
 	const db = connectionPool[collectionName];
 
 	const write = (obj) => {
-		if (!obj._id) obj._id = obj.id;
+		if (!obj._id) obj._id = obj.id || obj.address;
 		return db.upsert(obj);
 	};
 
 	const writeOnce = (obj) => {
-		if (!obj._id) obj._id = obj.id;
+		if (!obj._id) obj._id = obj.id || obj.address;;
 		return db.putIfNotExists(obj);
 	};
 
