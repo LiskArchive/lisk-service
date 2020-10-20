@@ -61,7 +61,7 @@ const getDbInstance = async (collectionName) => {
 	};
 
 	const writeOnce = (obj) => {
-		if (!obj._id) obj._id = obj.id || obj.address;;
+		if (!obj._id) obj._id = obj.id || obj.address;
 		return db.putIfNotExists(obj);
 	};
 

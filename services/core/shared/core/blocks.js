@@ -16,7 +16,7 @@
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 
-const getSelector = (params) => {
+/* const getSelector = (params) => {
 	const selector = {};
 	const result = {};
 	if (params.height) selector.height = params.height;
@@ -28,7 +28,7 @@ const getSelector = (params) => {
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
-};
+}; */
 
 const getBlocks = async (params) => {
 	const blockDb = await pouchdb('blocks');
@@ -57,11 +57,11 @@ const getBlocks = async (params) => {
 		if (dbResult.length > 0) blocks.data = dbResult;
 	} */
 
-	const inputData = await getSelector({
+/* 	const inputData = await getSelector({
 		...params,
 		limit: params.limit || 10,
 		offset: params.offset || 0,
-	});
+	}); */
 	// const dbResult = await blockDb.find(inputData);
 	// if (dbResult.length > 0) blocks.data = dbResult;
 

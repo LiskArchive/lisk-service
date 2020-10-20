@@ -15,7 +15,7 @@
  */
 // TODO: Fix to use coreVersionCompat and assign
 // a proper version of the SDK compatibility layer
-// module.exports = require('./sdk_v2');
+/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 const semver = require('semver');
 const { getCoreVersion } = require('./sdk_v2/coreVersionCompatibility');
 

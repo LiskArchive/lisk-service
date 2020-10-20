@@ -13,17 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const pouchdb = require("../pouchdb");
-const coreApi = require("./compat");
+const pouchdb = require('../pouchdb');
+const coreApi = require('./compat');
 const {
 	parseAddress,
 	confirmAddress,
 	validatePublicKey,
 	confirmPublicKey,
 	confirmSecondPublicKey,
-} = require("./compat");
+} = require('./compat');
 
-const getSelector = (params) => {
+/* const getSelector = (params) => {
 	const selector = {};
 	const result = {};
 	if (params.address) selector.address = params.height;
@@ -34,49 +34,46 @@ const getSelector = (params) => {
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
-};
+}; */
 
 const getAccounts = async (params) => {
-	const accountDb = await pouchdb("accounts");
-	const reqeustParams = {
+	const accountDb = await pouchdb('accounts');
+	const requestParams = {
 		limit: params.limit,
 		offset: params.offset,
 		sort: params.sort,
 		username: params.username,
 	};
-
-	if (params.address && typeof params.address === "string") {
+	if (params.address && typeof params.address === 'string') {
 		const parsedAddress = parseAddress(params.address);
 		if (!(await confirmAddress(parsedAddress))) return {};
-		reqeustParams.address = parsedAddress;
+		requestParams.address = parsedAddress;
 	}
-
-	if (params.publicKey && typeof params.publicKey === "string") {
+	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (
-			!validatePublicKey(params.publicKey) ||
-			!(await confirmPublicKey(params.publicKey))
+			!validatePublicKey(params.publicKey)
+			|| !(await confirmPublicKey(params.publicKey))
 		) {
 			return {};
 		}
-		reqeustParams.publicKey = params.publicKey;
+		requestParams.publicKey = params.publicKey;
 	}
-
-	if (params.secondPublicKey && typeof params.secondPublicKey === "string") {
+	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
 		if (
-			!validatePublicKey(params.secondPublicKey) ||
-			!(await confirmSecondPublicKey(params.secondPublicKey))
+			!validatePublicKey(params.secondPublicKey)
+			|| !(await confirmSecondPublicKey(params.secondPublicKey))
 		) {
 			return {};
 		}
-		reqeustParams.secondPublicKey = params.secondPublicKey;
+		requestParams.secondPublicKey = params.secondPublicKey;
 	}
-	const inputData = await getSelector({
+	/* 	const inputData = await getSelector({
 		...params,
 		limit: params.limit || 10,
 		offset: params.offset || 0,
 	});
-	// const dbResult = await accountDb.find(inputData);
-	const result = await coreApi.getAccounts(reqeustParams);
+	// const dbResult = await accountDb.find(inputData); */
+	const result = await coreApi.getAccounts(requestParams);
 	if (result.data.length > 0) {
 		result.data.forEach((account) => {
 			accountDb.writeOnce(account);
