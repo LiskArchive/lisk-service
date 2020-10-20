@@ -14,6 +14,7 @@
  *
  */
 const { getBlocks } = require('./blocks');
+const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
 
 const {
@@ -89,6 +90,7 @@ module.exports = {
 	getUsernameByAddress,
 	getAccounts,
 	getBlocks,
+	getTransactions,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,

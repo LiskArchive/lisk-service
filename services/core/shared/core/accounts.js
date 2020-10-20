@@ -43,7 +43,11 @@ const getAccounts = async (params) => {
 		offset: params.offset,
 		sort: params.sort,
 		username: params.username,
-	};
+    };
+    let accounts = {
+		data: [],
+    };
+    
 	if (params.address && typeof params.address === 'string') {
 		const parsedAddress = parseAddress(params.address);
 		if (!(await confirmAddress(parsedAddress))) return {};
@@ -72,15 +76,14 @@ const getAccounts = async (params) => {
 		limit: params.limit || 10,
 		offset: params.offset || 0,
 	});
-	// const dbResult = await accountDb.find(inputData);
-	// if (dbResult.length > 0) blocks.data = dbResult;
-	const result = await coreApi.getAccounts(requestParams);
-	if (result.data.length > 0) {
-		result.data.forEach((account) => {
-			accountDb.writeOnce(account);
-		});
-	}
-	return result;
+	const dbResult = await accountDb.find(inputData);
+    if (dbResult.length > 0) accounts.data = dbResult;
+    
+    if (accounts.data.length === 0) {
+        accounts = await coreApi.getAccounts(requestParams);
+	if (accounts.data.length > 0) accountDb.writeBatch(accounts.data);
+    }
+	return accounts;
 };
 
 module.exports = {

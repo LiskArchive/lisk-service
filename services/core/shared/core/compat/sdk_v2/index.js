@@ -24,8 +24,8 @@ const { getTotalNumberOfDelegates, getDelegateRankByUsername, reload } = require
 
 const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
+const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
-
 const {
 	getNetworkStatus,
 } = coreApi;
@@ -243,6 +243,7 @@ module.exports = {
 	getForgingStats,
 	getNextForgers,
 	getNetworkStatus,
+	getTransactions,
 	getPeers: coreApi.getPeers,
 	numOfActiveDelegates,
 	peerStates,

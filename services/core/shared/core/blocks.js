@@ -79,12 +79,7 @@ const getBlocks = async (params) => {
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
-		if (blocks.data.length > 0) {
-			blocks.data.forEach((block) => {
-				// drop confirmations
-				blockDb.writeOnce(block);
-			});
-		}
+		if (blocks.data.length > 0) blockDb.writeBatch(blocks.data);
 	}
 
 	return blocks;
