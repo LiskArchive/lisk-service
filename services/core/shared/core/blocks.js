@@ -74,7 +74,7 @@ const getBlocks = async (params) => {
 			if (dbResult.length > 0) blocks.data = dbResult;
 		} */
 
-	const inputData = await getSelector({
+	const inputData = getSelector({
 		...params,
 		limit: params.limit || 10,
 		offset: params.offset || 0,
