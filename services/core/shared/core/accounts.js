@@ -15,13 +15,6 @@
  */
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-const {
-	parseAddress,
-	confirmAddress,
-	validatePublicKey,
-	confirmPublicKey,
-	confirmSecondPublicKey,
-} = require('./compat');
 
 const getSelector = (params) => {
 	const selector = {};
@@ -46,31 +39,8 @@ const getAccounts = async (params) => {
     };
     let accounts = {
 		data: [],
-    };
+	};
 
-	if (params.address && typeof params.address === 'string') {
-		const parsedAddress = parseAddress(params.address);
-		if (!(await confirmAddress(parsedAddress))) return {};
-		requestParams.address = parsedAddress;
-	}
-	if (params.publicKey && typeof params.publicKey === 'string') {
-		if (
-			!validatePublicKey(params.publicKey)
-			|| !(await confirmPublicKey(params.publicKey))
-		) {
-			return {};
-		}
-		requestParams.publicKey = params.publicKey;
-	}
-	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
-		if (
-			!validatePublicKey(params.secondPublicKey)
-			|| !(await confirmSecondPublicKey(params.secondPublicKey))
-		) {
-			return {};
-		}
-		requestParams.secondPublicKey = params.secondPublicKey;
-	}
 	const inputData = await getSelector({
 		...params,
 		limit: Number(params.limit) || 10,

@@ -14,6 +14,13 @@
  *
  */
 const coreApi = require('./coreApi');
+const {
+	parseAddress,
+	confirmAddress,
+	validatePublicKey,
+	confirmPublicKey,
+	confirmSecondPublicKey,
+} = require('./index');
 
 const getAccounts = async params => {
 	const requestParams = {
@@ -22,6 +29,30 @@ const getAccounts = async params => {
 		sort: params.sort,
 		username: params.username,
 	};
+
+	if (params.address && typeof params.address === 'string') {
+		const parsedAddress = parseAddress(params.address);
+		if (!(await confirmAddress(parsedAddress))) return {};
+		requestParams.address = parsedAddress;
+	}
+	if (params.publicKey && typeof params.publicKey === 'string') {
+		if (
+			!validatePublicKey(params.publicKey)
+			|| !(await confirmPublicKey(params.publicKey))
+		) {
+			return {};
+		}
+		requestParams.publicKey = params.publicKey;
+	}
+	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
+		if (
+			!validatePublicKey(params.secondPublicKey)
+			|| !(await confirmSecondPublicKey(params.secondPublicKey))
+		) {
+			return {};
+		}
+		requestParams.secondPublicKey = params.secondPublicKey;
+	}
 
 	const result = await coreApi.getAccounts(requestParams);
 	return result;
