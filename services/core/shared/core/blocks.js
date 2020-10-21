@@ -31,16 +31,19 @@ const indexList = [
 ];
 
 const getSelector = (params) => {
-	const selector = {};
 	const result = {};
+
+	const selector = {};
 	if (params.height) selector.height = params.height;
 	if (params.blockId) selector.id = params.blockId;
 	if (params.fromTimestamp) selector.timestamp = { $gte: params.fromTimestamp };
 	if (params.toTimestamp) selector.timestamp = { $lte: params.toTimestamp };
 	if (params.generatorPublicKey) selector.generatorPublicKey = params.generatorPublicKey;
 	result.selector = selector;
+
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
+
 	return result;
 };
 

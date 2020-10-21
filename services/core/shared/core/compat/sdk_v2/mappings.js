@@ -99,7 +99,23 @@ const paramMappers = {
     },
 };
 
+const mapResponse = (response, url) => {
+    const mapper = responseMappers[url];
+    if (mapper) {
+        response = mapper(response);
+    }
+    return response;
+};
+
+const mapParams = (params, url) => {
+    const mapper = paramMappers[url];
+    if (mapper) {
+        params = mapper(params);
+    }
+    return params;
+};
+
 module.exports = {
-    responseMappers,
-    paramMappers,
+    mapResponse,
+    mapParams,
 };

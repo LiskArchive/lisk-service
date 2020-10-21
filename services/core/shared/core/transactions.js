@@ -23,30 +23,25 @@ const getSelector = (params) => {
 	const result = {};
 
 	const selector = {};
+	if (params.id) selector.id = params.id;
+	if (params.type) selector.type = params.type;
+	if (params.address) selector.address = params.address;
+	if (params.sender) selector.sender = params.sender;
+	if (params.recipient) selector.recipient = params.recipient;
+	// if (params.min) selector.min = params.recipient;
+	// if (params.max) selector.max = params.recipient;
+	if (params.from || params.to) selector.timestamp = {};
+	if (params.from) Object.assign(selector.timestamp, { $gte: params.from });
+	if (params.to) Object.assign(selector.timestamp, { $lte: params.to });
+	if (params.block) selector.block = params.block;
 	if (params.height) selector.height = params.height;
-	if (params.blockId) selector.id = params.blockId;
-	if (params.fromTimestamp) selector.timestamp = { $gte: params.fromTimestamp };
-	if (params.toTimestamp) selector.timestamp = { $lte: params.toTimestamp };
+	// if (params.sort) selector.height = params.height;
 	result.selector = selector;
 
 	if (params.limit) result.limit = params.limit;
-	if (params.offset) result.skip = params.offset;
+	if (Number(params.offset) >= 0) result.skip = params.offset;
 
 	return result;
-};
-
-const updateTransactionType = params => {
-	let url;
-	const transactionTypes = ['transfer', 'registerSecondPassphrase', 'registerDelegate', 'castVotes', 'registerMultisignature'];
-	if (params.type === 'registerDelegate') url = '/delegates/latest_registrations';
-	params.type = (typeof (params.type) === 'string' && transactionTypes.includes(params.type)) ? params.type.toUpperCase() : params.type;
-	params = mapParams(params, url);
-
-	// Check for backward compatibility
-	const coreVersion = getCoreVersion();
-	if (semver.lt(semver.coerce(coreVersion), '3.0.0') && params.type >= 8) params = mapParams(params, url);
-
-	return params;
 };
 
 const getTransactions = async params => {
@@ -56,7 +51,6 @@ const getTransactions = async params => {
 		data: [],
 	};
 
-	params = updateTransactionType(params);
 	if (transactions.data.length === 0) {
 		transactions = await coreApi.getTransactions(params);
 		if (transactions.data.length > 0) db.writeBatch(transactions.data);

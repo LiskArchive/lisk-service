@@ -14,11 +14,11 @@
  *
  */
 const http = require('../common/httpRequest');
-const { mapResponse, mapParams } = require('./coreVersionCompatibility');
+const { mapParams, mapResponse } = require('./mappings');
 
-const request = (url, params) => {
+const request = async (url, params) => {
 	const transformedParams = mapParams(params, url);
-	const response = http.get(url, transformedParams);
+	const response = await http.get(url, transformedParams);
 	const transformedResponse = mapResponse(response, url);
 
 	return transformedResponse;

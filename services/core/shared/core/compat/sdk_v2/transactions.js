@@ -20,6 +20,17 @@ const {
 	validateTimestamp,
 } = require('../common');
 
+// const updateTransactionType = params => {
+// 	let url;
+// 	const transactionTypes = ['transfer', 'registerSecondPassphrase', 'registerDelegate', 'castVotes', 'registerMultisignature'];
+// 	if (params.type === 'registerDelegate') url = '/delegates/latest_registrations';
+// 	params.type = (typeof (params.type) === 'string' && transactionTypes.includes(params.type)) ? params.type.toUpperCase() : params.type;
+// 	params = mapParams(params, '/transactions');
+
+// 	return params;
+// };
+// params = updateTransactionType(params);
+
 const getTransactions = async params => {
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 		if (await validateTimestamp(params[timestamp])) {
@@ -36,7 +47,6 @@ const getTransactions = async params => {
 	// });
 
 	const transactions = await coreApi.getTransactions(params);
-
 	if (transactions.data) {
 		await Promise.all(transactions.data.map(async (o) => Object.assign(o, {
 			unixTimestamp: await getUnixTime(o.timestamp),
