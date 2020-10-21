@@ -59,4 +59,5 @@ xunit-report.xml
 
 Dockerfile
 
+# Embedded DB directory
 db_data

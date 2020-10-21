@@ -14,7 +14,6 @@
  *
  */
 const {
-	mapper,
 	Utils,
 	Constants: { JSON_RPC: { INVALID_PARAMS } },
 } = require('lisk-service-framework');
@@ -22,6 +21,7 @@ const {
 const { MoleculerClientError } = require('moleculer').Errors;
 const path = require('path');
 
+const mapper = require('./customMapper');
 const { validate } = require('./paramValidator');
 
 const apiMeta = [];

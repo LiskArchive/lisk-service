@@ -29,7 +29,17 @@ const accountSchema = {
 	publicKey: 'string',
 	secondPublicKey: 'string',
 	transactionCount: 'object',
+};
+
+const accountOptionalSchema = {
+	address: 'string',
+	balance: 'string',
+	publicKey: 'string',
+	secondPublicKey: 'string',
+	transactionCount: 'object',
+	delegate: 'object',
 	knowledge: 'object',
+	multisignatureAccount: 'object',
 };
 
 const delegateSchema = {
@@ -59,12 +69,12 @@ describe('Accounts API', () => {
 				...accountSchema,
 				address: accounts.genesis.address,
 			});
+			expect(response.data[0]).toMapOptionalSchema({
+				...accountOptionalSchema,
+			});
 			expect(response.data[0]).toEqual({
 				'address': '16009998050678037905L',
 				'balance': '-9999989700000000',
-				'delegate': {},
-				'knowledge': {},
-				'multisignatureAccount': {},
 				'publicKey': '73ec4adbd8f99f0d46794aeda3c3d86b245bd9d27be2b282cdd38ad21988556b',
 				'secondPublicKey': '',
 				'transactionCount': {
