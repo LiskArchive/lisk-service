@@ -73,8 +73,8 @@ const getAccounts = async (params) => {
 	}
 	const inputData = await getSelector({
 		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
+		limit: Number(params.limit) || 10,
+		offset: Number(params.offset) || 0,
 	});
 	const dbResult = await accountDb.find(inputData);
     if (dbResult.length > 0) accounts.data = dbResult;

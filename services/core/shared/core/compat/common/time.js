@@ -19,7 +19,7 @@ let epochUnixTime;
 
 const getEpochUnixTime = async () => {
 	const nodeConstants = await getNetworkConstants();
-	const { epoch } = nodeConstants;
+	const { epoch } = nodeConstants.data;
 	epochUnixTime = new Date(epoch).getTime() / 1000;
 	return epochUnixTime;
 };
