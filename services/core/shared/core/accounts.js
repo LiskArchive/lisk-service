@@ -47,7 +47,7 @@ const getAccounts = async (params) => {
     let accounts = {
 		data: [],
     };
-    
+
 	if (params.address && typeof params.address === 'string') {
 		const parsedAddress = parseAddress(params.address);
 		if (!(await confirmAddress(parsedAddress))) return {};
@@ -78,7 +78,7 @@ const getAccounts = async (params) => {
 	});
 	const dbResult = await accountDb.find(inputData);
     if (dbResult.length > 0) accounts.data = dbResult;
-    
+
     if (accounts.data.length === 0) {
         accounts = await coreApi.getAccounts(requestParams);
 	if (accounts.data.length > 0) accountDb.writeBatch(accounts.data);
