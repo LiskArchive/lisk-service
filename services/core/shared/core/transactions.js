@@ -42,13 +42,49 @@ const getSelector = (params) => {
 	if (params.height) selector.height = params.height;
 	result.selector = selector;
 
-	result.sort = [{ timestamp: 'desc' }];
+	result.sort = [];
+	if (params.sort) {
+		const sortBy = {};
+		const sortProp = params.sort.split(':')[0];
+		const sortOrder = params.sort.split(':')[1];
+		sortBy[sortProp] = sortOrder;
+		result.sort.push(sortBy);
+	} else {
+		result.sort.push({ timestamp: 'desc' });
+	}
 
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 
 	return result;
 };
+
+// const sortDBResult = (dbResult, sortBy) => {
+// 	const sortProp = sortBy.split(':')[0];
+// 	const sortOrder = sortBy.split(':')[1];
+// 	if (sortOrder === 'asc') {
+// 		dbResult.sort((a, b) => {
+// 			let compareResult;
+// 			if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+// 				compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+// 			} else {
+// 				compareResult = a[sortProp].localCompare(b[sortProp]);
+// 			}
+// 			return compareResult;
+// 		})
+// 	} else {
+// 		dbResult.sort((a, b) => {
+// 			let compareResult;
+// 			if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+// 				compareResult = Number(b[sortProp]) - Number(a[sortProp]);
+// 			} else {
+// 				compareResult = b[sortProp].localCompare(a[sortProp]);
+// 			}
+// 			return compareResult;
+// 		});
+// 	}
+// 	return dbResult;
+// };
 
 const getTransactions = async params => {
 	const db = await pouchdb(config.db.collections.transactions.name);
@@ -64,17 +100,18 @@ const getTransactions = async params => {
 	});
 	const dbResult = await db.find(inputData);
 	if (dbResult.length > 0) {
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-		if (sortOrder === 'asc') dbResult.sort((a, b) => {
-			let compareResult;
-			if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-				compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-			} else {
-				compareResult = a[sortProp].localCompare(b[sortProp]);
-			}
-			return compareResult;
-		});
+		// sortDBResult(dbResult, params.sort);
+		// const sortProp = params.sort.split(':')[0];
+		// const sortOrder = params.sort.split(':')[1];
+		// if (sortOrder === 'asc') dbResult.sort((a, b) => {
+		// 	let compareResult;
+		// 	if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+		// 		compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+		// 	} else {
+		// 		compareResult = a[sortProp].localCompare(b[sortProp]);
+		// 	}
+		// 	return compareResult;
+		// });
 
 		const latestBlock = (await getBlocks({ limit: 1 })).data[0];
 		dbResult.map(tx => {
