@@ -31,26 +31,19 @@ const getSelector = (params) => {
 
 const getAccounts = async (params) => {
 	const accountDb = await pouchdb('accounts');
-	const requestParams = {
-		limit: params.limit,
-		offset: params.offset,
-		sort: params.sort,
-		username: params.username,
-    };
     let accounts = {
 		data: [],
 	};
-
-	const inputData = await getSelector({
+	const inputData = getSelector({
 		...params,
-		limit: Number(params.limit) || 10,
-		offset: Number(params.offset) || 0,
+		limit: params.limit || 10,
+		offset: params.offset || 0,
 	});
 	const dbResult = await accountDb.find(inputData);
     if (dbResult.length > 0) accounts.data = dbResult;
 
     if (accounts.data.length === 0) {
-        accounts = await coreApi.getAccounts(requestParams);
+        accounts = await coreApi.getAccounts(params);
 	if (accounts.data.length > 0) accountDb.writeBatch(accounts.data);
     }
 	return accounts;
