@@ -42,11 +42,7 @@ const getSelector = (params) => {
 	if (params.height) selector.height = params.height;
 	result.selector = selector;
 
-	result.sort = [
-		{ timestamp: 'desc' },
-		{ amount: 'desc' },
-		{ fee: 'desc' },
-	];
+	result.sort = [{ timestamp: 'desc' }];
 
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
@@ -75,7 +71,6 @@ const getTransactions = async params => {
 			if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
 				compareResult = Number(a[sortProp]) - Number(b[sortProp]);
 			} else {
-				// Fallback plan (Ideally not required)
 				compareResult = a[sortProp].localCompare(b[sortProp]);
 			}
 			return compareResult;
