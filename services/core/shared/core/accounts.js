@@ -26,7 +26,7 @@ const getSelector = (params) => {
 	if (params.username) selector.username = params.username;
 	result.selector = selector;
 
-	result.sort = [{ balance: 'asc' }];;
+	result.sort = [{ balance: 'asc' }];
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
@@ -34,7 +34,7 @@ const getSelector = (params) => {
 
 const getAccounts = async (params) => {
 	const db = await pouchdb(config.db.collections.accounts.name);
-	
+
 	let accounts = {
 		data: [],
 	};
