@@ -69,8 +69,10 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	};
 
 	const writeBatch = async (docs) => {
-		docs.map(doc => {
+		docs.map(async doc => {
 			if (!doc._id) doc._id = doc.id;
+			const dbResult = await findById(doc._id);
+			if (dbResult._rev) doc._rev = dbResult._rev;
 			return doc;
 		});
 		return db.bulkDocs(docs);

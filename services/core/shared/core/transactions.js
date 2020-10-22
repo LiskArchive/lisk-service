@@ -16,6 +16,7 @@
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
+const { getBlocks } = require('./blocks');
 
 const getSelector = (params) => {
 	const result = {};
@@ -87,13 +88,18 @@ const getTransactions = async params => {
 			}
 			return compareResult;
 		});
-		// TODO: Update transient properties such as confirmations
+
+		const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+		dbResult.map(transaction => {
+			transaction.confirmations = latestBlock.confirmations + latestBlock.height - transaction.height;
+			return transaction;
+		});
 		transactions.data = dbResult;
 	}
 
 	if (transactions.data.length === 0) {
 		transactions = await coreApi.getTransactions(params);
-		if (transactions.data.length > 0) db.writeBatch(transactions.data);
+		if (transactions.data.length > 0) await db.writeBatch(transactions.data);
 	}
 
 	return transactions;
