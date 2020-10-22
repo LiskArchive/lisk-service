@@ -58,26 +58,6 @@ const getDbInstance = async (collectionName, idxList = []) => {
 
 	const db = connectionPool[collectionName];
 
-	const write = async (doc) => {
-		if (!doc._id) doc._id = doc.id;
-		return db.upsert(doc);
-	};
-
-	const writeOnce = async (doc) => {
-		if (!doc._id) doc._id = doc.id;
-		return db.putIfNotExists(doc);
-	};
-
-	const writeBatch = async (docs) => {
-		docs.map(async doc => {
-			if (!doc._id) doc._id = doc.id;
-			const dbResult = await findById(doc._id);
-			if (dbResult._rev) doc._rev = dbResult._rev;
-			return doc;
-		});
-		return db.bulkDocs(docs);
-	};
-
 	const findById = async (id) => {
 		try {
 			const res = await db.get(id);
@@ -99,6 +79,26 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		selector[property] = value;
 		const res = await db.find({ selector, limit: 1 });
 		return res.docs;
+	};
+
+	const write = async (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.upsert(doc);
+	};
+
+	const writeOnce = async (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.putIfNotExists(doc);
+	};
+
+	const writeBatch = async (docs) => {
+		docs.map(async doc => {
+			if (!doc._id) doc._id = doc.id;
+			const dbResult = await findById(doc._id);
+			if (dbResult._rev) doc._rev = dbResult._rev;
+			return doc;
+		});
+		return db.bulkDocs(docs);
 	};
 
 	const deleteById = async (id) => db.remove(await findById(id));

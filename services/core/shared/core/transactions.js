@@ -26,10 +26,10 @@ const getSelector = (params) => {
 	if (params.type) selector.type = params.type;
 	if (params.senderIdOrRecipientId) {
 		selector.$or = [
-			{ 'senderId': params.senderIdOrRecipientId },
-			{ 'recipientId': params.senderIdOrRecipientId },
-		]
-	};
+			{ senderId: params.senderIdOrRecipientId },
+			{ recipientId: params.senderIdOrRecipientId },
+		];
+	}
 	if (params.senderId) selector.senderId = params.senderId;
 	if (params.recipientId) selector.recipientId = params.recipientId;
 	if (params.minAmount || params.maxAmount) selector.amount = {};
@@ -90,9 +90,9 @@ const getTransactions = async params => {
 		});
 
 		const latestBlock = (await getBlocks({ limit: 1 })).data[0];
-		dbResult.map(transaction => {
-			transaction.confirmations = latestBlock.confirmations + latestBlock.height - transaction.height;
-			return transaction;
+		dbResult.map(tx => {
+			tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
+			return tx;
 		});
 		transactions.data = dbResult;
 	}
