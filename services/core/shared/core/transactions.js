@@ -23,16 +23,21 @@ const getSelector = (params) => {
 	const selector = {};
 	if (params.id) selector.id = params.id;
 	if (params.type) selector.type = params.type;
-	if (params.address) selector.address = params.address;
-	if (params.sender) selector.sender = params.sender;
-	if (params.recipient) selector.recipient = params.recipient;
-	if (params.min || params.max) selector.amount = {};
-	if (params.min) Object.assign(selector.amount, { $gte: params.min });
-	if (params.max) Object.assign(selector.amount, { $lte: params.max });
-	if (params.from || params.to) selector.timestamp = {};
-	if (params.from) Object.assign(selector.timestamp, { $gte: params.from });
-	if (params.to) Object.assign(selector.timestamp, { $lte: params.to });
-	if (params.block) selector.block = params.block;
+	if (params.senderIdOrRecipientId) {
+		selector.$or = [
+			{ 'senderId': params.senderIdOrRecipientId },
+			{ 'recipientId': params.senderIdOrRecipientId },
+		]
+	};
+	if (params.senderId) selector.senderId = params.senderId;
+	if (params.recipientId) selector.recipientId = params.recipientId;
+	if (params.minAmount || params.maxAmount) selector.amount = {};
+	if (params.minAmount) Object.assign(selector.amount, { $gte: params.minAmount });
+	if (params.maxAmount) Object.assign(selector.amount, { $lte: params.maxAmount });
+	if (params.fromTimestamp || params.toTimestamp) selector.timestamp = {};
+	if (params.fromTimestamp) Object.assign(selector.timestamp, { $gte: params.fromTimestamp });
+	if (params.toTimestamp) Object.assign(selector.timestamp, { $lte: params.toTimestamp });
+	if (params.blockId) selector.blockId = params.blockId;
 	if (params.height) selector.height = params.height;
 	result.selector = selector;
 
