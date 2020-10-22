@@ -65,7 +65,7 @@ const getAccounts = async (params) => {
 
     if (accounts.data.length === 0) {
         accounts = await coreApi.getAccounts(params);
-	if (accounts.data.length > 0) accountDb.writeBatch(accounts.data);
+	if (accounts.data.length > 0) db.writeBatch(accounts.data);
     }
 	return accounts;
 };
