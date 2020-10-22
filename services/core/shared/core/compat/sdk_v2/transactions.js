@@ -20,6 +20,29 @@ const {
 	validateTimestamp,
 } = require('../common');
 
+const getTransactions = async params => {
+	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
+		if (await validateTimestamp(params[timestamp])) {
+			params[timestamp] = await getBlockchainTime(params[timestamp]);
+		}
+		return Promise.resolve();
+	}),
+	);
+
+	const transactions = await coreApi.getTransactions(params);
+
+	if (transactions.data) {
+		await Promise.all(transactions.data.map(async (o) => Object.assign(o, {
+			unixTimestamp: await getUnixTime(o.timestamp),
+		}),
+		));
+	}
+
+	return transactions;
+};
+
+module.exports = { getTransactions };
+
 // const updateTransactionType = params => {
 // 	let url;
 // 	const transactionTypes = [
@@ -38,54 +61,20 @@ const {
 // };
 // params = updateTransactionType(params);
 
-const getTransactions = async params => {
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
-		if (await validateTimestamp(params[timestamp])) {
-			params[timestamp] = await getBlockchainTime(params[timestamp]);
-		}
-		return Promise.resolve();
-	}),
-	);
-
-	// const inputData = getSelector({
-	// 	...params,
-	// 	limit: params.limit || 10,
-	// 	offset: params.offset || 0,
-	// });
-
-	const transactions = await coreApi.getTransactions(params);
-	if (transactions.data) {
-		await Promise.all(transactions.data.map(async (o) => Object.assign(o, {
-			unixTimestamp: await getUnixTime(o.timestamp),
-		}),
-		));
-	}
-
-	return transactions;
-};
+// =============================================================================
 
 // const recentBlocksCache = require('../../helpers/recentBlocksCache');
 // const getTransactions = async params => {
-// 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async timestamp => {
-// 		if (await validateTimestamp(params[timestamp])) {
-// 			params[timestamp] = await getBlockchainTime(params[timestamp]);
-// 		}
-// 		return Promise.resolve();
-// 	}));
 
 // 	params = updateTransactionType(params);
 // 	const transactions = await recentBlocksCache.getCachedTransactions(params)
 // 		|| await coreApi.getTransactions(params);
-// 	let result = [];
 
 // 	if (transactions.data) {
-// 		result = await Promise.all(transactions.data.map(async o => (Object.assign(o, {
+// 		await Promise.all(transactions.data.map(async o => (Object.assign(o, {
 // 			unixTimestamp: await getUnixTime(o.timestamp),
 // 		}))));
 // 	}
 
-// 	transactions.data = result;
 // 	return transactions;
 // };
-
-module.exports = { getTransactions };
