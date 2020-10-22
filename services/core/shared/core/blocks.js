@@ -13,39 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 
-const indexList = [
-	'id',
-	'generatorPublicKey',
-	'generatorAddress',
-	'generatorUsername',
-	'height',
-	'numberOfTransactions',
-	'previousBlockId',
-	'totalAmount',
-	'totalFee',
-	['generatorPublicKey', 'numberOfTransactions'],
-	['generatorPublicKey', 'totalAmount'],
-];
-
 const getSelector = (params) => {
-	const selector = {};
 	const result = {};
+
+	const selector = {};
 	if (params.height) selector.height = params.height;
 	if (params.blockId) selector.id = params.blockId;
 	if (params.fromTimestamp) selector.timestamp = { $gte: params.fromTimestamp };
 	if (params.toTimestamp) selector.timestamp = { $lte: params.toTimestamp };
 	if (params.generatorPublicKey) selector.generatorPublicKey = params.generatorPublicKey;
 	result.selector = selector;
+
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
+
 	return result;
 };
 
 const getBlocks = async (params) => {
-	const blockDb = await pouchdb('blocks', indexList);
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
 	let blocks = {
 		data: [],
@@ -69,7 +59,7 @@ const getBlocks = async (params) => {
 			if (dbResult.length > 0) blocks.data = dbResult;
 		} */
 
-	const inputData = await getSelector({
+	const inputData = getSelector({
 		...params,
 		limit: params.limit || 10,
 		offset: params.offset || 0,

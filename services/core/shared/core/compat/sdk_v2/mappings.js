@@ -40,7 +40,7 @@ const mapState = state => {
 const mapTransaction = transaction => {
     const changesByType = {
         0: {
-            amount: transaction.asset.amount,
+            amount: transaction.asset.amount || transaction.amount,
             recipientId: transaction.asset.recipientId,
             asset: { data: transaction.asset.data },
         },
@@ -59,7 +59,6 @@ const mapTransaction = transaction => {
     };
 
     return ({
-        amount: '0',
         ...transaction,
         ...changesByType[transaction.type] || {},
     });
@@ -99,7 +98,23 @@ const paramMappers = {
     },
 };
 
+const mapResponse = (response, url) => {
+    const mapper = responseMappers[url];
+    if (mapper) {
+        response = mapper(response);
+    }
+    return response;
+};
+
+const mapParams = (params, url) => {
+    const mapper = paramMappers[url];
+    if (mapper) {
+        params = mapper(params);
+    }
+    return params;
+};
+
 module.exports = {
-    responseMappers,
-    paramMappers,
+    mapResponse,
+    mapParams,
 };

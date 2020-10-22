@@ -20,9 +20,9 @@ const moment = require('moment');
 const util = require('util');
 
 const core = require('./compat');
-const getDbInstance = require('../pouchdb');
 const config = require('../../config');
 const requestAll = require('../requestAll');
+const getDbInstance = require('../pouchdb');
 
 const logger = Logger();
 

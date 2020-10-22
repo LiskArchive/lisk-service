@@ -16,7 +16,6 @@
 const coreApi = require('./coreApi');
 
 const {
-	request,
 	...coreApiGetters
 } = coreApi;
 
