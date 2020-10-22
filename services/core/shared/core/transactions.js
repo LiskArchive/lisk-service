@@ -42,19 +42,11 @@ const getSelector = (params) => {
 	if (params.height) selector.height = params.height;
 	result.selector = selector;
 
-	result.sort = [];
-	if (params.sort) {
-		const sortBy = {};
-		const sortProp = params.sort.split(':')[0];
-		sortBy[sortProp] = 'desc';
-		result.sort.push(sortBy);
-	} else {
-		result.sort.push(
-			{ timestamp: 'desc' },
-			{ amount: 'desc' },
-			{ fee: 'desc' },
-		);
-	}
+	result.sort = [
+		{ timestamp: 'desc' },
+		{ amount: 'desc' },
+		{ fee: 'desc' },
+	];
 
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
