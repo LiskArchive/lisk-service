@@ -101,7 +101,7 @@ const getTransactions = async params => {
 		logger.debug(err.message);
 
 		transactions = await coreApi.getTransactions(params);
-		if (transactions.data.length > 0) await db.writeBatch(transactions.data);
+		if (transactions.data && transactions.data.length > 0) await db.writeBatch(transactions.data);
 	}
 
 	return transactions;
