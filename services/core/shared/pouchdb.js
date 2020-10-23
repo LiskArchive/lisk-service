@@ -59,18 +59,18 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	const db = connectionPool[collectionName];
 
 	const write = async (doc) => {
-		if (!doc._id) doc._id = doc.id || doc.address;
+		if (!doc._id) doc._id = doc.id;
 		return db.upsert(doc);
 	};
 
 	const writeOnce = async (doc) => {
-		if (!doc._id) doc._id = doc.id || doc.address;
+		if (!doc._id) doc._id = doc.id;
 		return db.putIfNotExists(doc);
 	};
 
 	const writeBatch = async (docs) => {
 		docs.map(doc => {
-			if (!doc._id) doc._id = doc.id || doc.address;
+			if (!doc._id) doc._id = doc.id;
 			return doc;
 		});
 		return db.bulkDocs(docs);

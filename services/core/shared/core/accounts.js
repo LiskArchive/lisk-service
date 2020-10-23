@@ -50,23 +50,26 @@ const getAccounts = async (params) => {
 		const sortProp = params.sort.split(':')[0];
 		const sortOrder = params.sort.split(':')[1];
 		if (sortOrder === 'desc') dbResult.sort((a, b) => {
-			let compareResult;
-			if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-				compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-			} else {
-				// Fallback plan (Ideally not required)
-				compareResult = a[sortProp].localCompare(b[sortProp]);
-			}
-			return compareResult;
-		});
+				let compareResult;
+				if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+					compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+				} else {
+					// Fallback plan (Ideally not required)
+					compareResult = a[sortProp].localCompare(b[sortProp]);
+				}
+				return compareResult;
+			});
 		// TODO: Update transient properties such as confirmations
 		accounts.data = dbResult;
 	}
 
-    if (accounts.data.length === 0) {
-        accounts = await coreApi.getAccounts(params);
-	if (accounts.data.length > 0) db.writeBatch(accounts.data);
-    }
+	if (accounts.data.length === 0) {
+		accounts = await coreApi.getAccounts(params);
+		if (accounts.data.length > 0) {
+			accounts.data.id = accounts.data.address;
+			db.writeBatch(accounts.data);
+		}
+	}
 	return accounts;
 };
 
