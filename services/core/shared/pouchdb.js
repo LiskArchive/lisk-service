@@ -30,13 +30,39 @@ const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
 	const db = new PouchDB(name, { auto_compaction: true });
 
-	idxList.forEach(async idxName => {
-		if (typeof idxName === 'string') idxName = [idxName];
-		logger.debug(`Setting up index ${name}/${idxName.join('-')}...`);
+	// const availableIndexes = [];
+	// (await db.getIndexes())
+	// 	.indexes.forEach(index => availableIndexes.push(index.name));
+	// console.log(availableIndexes);
+
+	idxList.forEach(async propName => {
+		let idxName = 'idx-'.concat(db.name.split('/')[1]).concat('-');
+		if (typeof propName === 'string') {
+			idxName = idxName.concat(propName);
+			if (['timestamp', 'date'].includes(propName)) {
+				const propObj = {};
+				propObj[propName] = 'desc';
+				propName = [propObj];
+			} else propName = [propName];
+		} else {
+			idxName = idxName.concat(propName.join('-'));
+			propName.map(prop => {
+				if (['timestamp', 'date'].includes(prop)) {
+					const propObj = {};
+					propObj[prop] = 'desc';
+					prop = [propObj];
+					return prop;
+				}
+				return prop;
+			});
+		}
+
+		logger.debug(`Setting up index ${name}/${idxName.split('-').slice(2).join('-')}...`);
 
 		await db.createIndex({
 			index: {
-				fields: idxName,
+				fields: propName,
+				name: idxName,
 			},
 		});
 	});
@@ -82,18 +108,18 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	};
 
 	const write = async (doc) => {
-		if (!doc._id) doc._id = doc.id;
+		if (!doc._id) doc._id = doc.id || doc.address;
 		return db.upsert(doc);
 	};
 
 	const writeOnce = async (doc) => {
-		if (!doc._id) doc._id = doc.id;
+		if (!doc._id) doc._id = doc.id || doc.address;
 		return db.putIfNotExists(doc);
 	};
 
 	const writeBatch = async (docs) => {
 		docs.map(async doc => {
-			if (!doc._id) doc._id = doc.id;
+			if (!doc._id) doc._id = doc.id || doc.address;
 			const dbResult = await findById(doc._id);
 			if (dbResult._rev) doc._rev = dbResult._rev;
 			return doc;
