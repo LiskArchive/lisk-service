@@ -19,6 +19,8 @@ const {
     getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
+    getReadyStatus,
+    setReadyStatus,
 } = require('./constants');
 
 const {
@@ -34,6 +36,8 @@ module.exports = {
     getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
+    getReadyStatus,
+    setReadyStatus,
 
     getBlockchainTime,
     getEpochUnixTime,

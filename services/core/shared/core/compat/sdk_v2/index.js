@@ -43,8 +43,6 @@ const peerStates = {
 	CONNECTED: 2,
 };
 
-let readyStatus = false;
-
 
 // Utils & helpers
 const parseAddress = address => {
@@ -209,8 +207,6 @@ const getForgingStats = async address => {
 	}
 };
 
-const setReadyStatus = status => { readyStatus = status; };
-const getReadyStatus = () => readyStatus;
 
 const nop = () => { };
 
@@ -248,9 +244,7 @@ module.exports = {
 	getPeers: coreApi.getPeers,
 	numOfActiveDelegates,
 	peerStates,
-	setReadyStatus,
 	setCoreVersion,
-	getReadyStatus,
 	EMAcalc: nop,
 	getEstimateFeeByte: nop,
 	getEstimateFeeByteCoreLogic: nop,

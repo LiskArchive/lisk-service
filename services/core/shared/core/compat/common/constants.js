@@ -22,7 +22,8 @@ const { isProperObject } = ObjectUtilService;
 // const config = require('../../../../config.js');
 // const coreApiCached = require('../sdk_v2/coreApiCached');
 
-let coreVersion = '1.0.0-alpha.0';
+let coreVersion;
+let readyStatus;
 
 const getNetworkConstants = async () => {
 	// const expireMiliseconds = Number(config.ttl.stable) * 1000;
@@ -36,4 +37,14 @@ const setCoreVersion = version => coreVersion = version;
 
 const getCoreVersion = () => coreVersion;
 
-module.exports = { getNetworkConstants, setCoreVersion, getCoreVersion };
+const setReadyStatus = status => { readyStatus = status; };
+
+const getReadyStatus = () => readyStatus;
+
+module.exports = {
+	getNetworkConstants,
+	setCoreVersion,
+	getCoreVersion,
+	setReadyStatus,
+	getReadyStatus,
+};
