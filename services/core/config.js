@@ -68,10 +68,9 @@ config.db = {
 				'blockId',
 				'timestamp',
 				'senderId',
-				'senderPublicKey',
 				'recipientId',
-				'recipientPublicKey',
-				['timestamp', 'amount', 'fee'],
+				['senderId', 'timestamp'],
+				['recipientId', 'timestamp'],
 			],
 		},
 		transaction_statistics: {

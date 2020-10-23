@@ -20,6 +20,10 @@ const { getBlocks } = require('./blocks');
 
 const getSelector = (params) => {
 	const result = {};
+	result.sort = [];
+
+	if (params.limit) result.limit = params.limit;
+	if (Number(params.offset) >= 0) result.skip = params.offset;
 
 	const selector = {};
 	if (params.id) selector.id = params.id;
@@ -30,8 +34,14 @@ const getSelector = (params) => {
 			{ recipientId: params.senderIdOrRecipientId },
 		];
 	}
-	if (params.senderId) selector.senderId = params.senderId;
-	if (params.recipientId) selector.recipientId = params.recipientId;
+	if (params.senderId) {
+		selector.senderId = params.senderId;
+		result.sort.push('senderId', 'timestamp');
+	}
+	if (params.recipientId) {
+		selector.recipientId = params.recipientId;
+		result.sort.push('recipientId', 'timestamp');
+	}
 	if (params.minAmount || params.maxAmount) selector.amount = {};
 	if (params.minAmount) Object.assign(selector.amount, { $gte: params.minAmount });
 	if (params.maxAmount) Object.assign(selector.amount, { $lte: params.maxAmount });
@@ -42,19 +52,17 @@ const getSelector = (params) => {
 	if (params.height) selector.height = params.height;
 	result.selector = selector;
 
-	result.sort = [];
-	if (params.sort) {
-		const sortBy = {};
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-		sortBy[sortProp] = sortOrder;
-		result.sort.push(sortBy);
-	} else {
-		result.sort.push({ timestamp: 'desc' });
-	}
-
-	if (params.limit) result.limit = params.limit;
-	if (Number(params.offset) >= 0) result.skip = params.offset;
+	if (Object.getOwnPropertyNames(result.selector).length === 0) {
+		if (params.sort) {
+			const sortBy = {};
+			const sortProp = params.sort.split(':')[0];
+			const sortOrder = params.sort.split(':')[1];
+			sortBy[sortProp] = sortOrder;
+			result.sort.push(sortBy);
+		} else {
+			result.sort.push({ timestamp: 'desc' });
+		}
+	} else if (!result.sort.length) delete result.sort;
 
 	return result;
 };
