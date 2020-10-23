@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger, LoggerConfig } = require('lisk-service-framework');
+
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');
+
+LoggerConfig(config.log);
+const logger = Logger();
 
 const formatSortString = sortString => {
 	const sortObj = {};
@@ -91,8 +96,10 @@ const getTransactions = async params => {
 				return tx;
 			});
 			transactions.data = dbResult;
-		} else throw Exception('Request data from Lisk Core');
-	} catch {
+		} else throw new Error('Request data from Lisk Core');
+	} catch (err) {
+		logger.debug(err.message);
+
 		transactions = await coreApi.getTransactions(params);
 		if (transactions.data.length > 0) await db.writeBatch(transactions.data);
 	}
