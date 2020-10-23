@@ -19,9 +19,6 @@ const http = require('./httpRequest');
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
-// const config = require('../../../../config.js');
-// const coreApiCached = require('../sdk_v2/coreApiCached');
-
 let coreVersion;
 let readyStatus;
 
