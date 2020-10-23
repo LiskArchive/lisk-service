@@ -81,17 +81,18 @@ const getTransactions = async params => {
 		limit: params.limit || 10,
 		offset: params.offset || 0,
 	});
-	const dbResult = await db.find(inputData);
-	if (dbResult.length > 0) {
-		const latestBlock = (await getBlocks({ limit: 1 })).data[0];
-		dbResult.map(tx => {
-			tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
-			return tx;
-		});
-		transactions.data = dbResult;
-	}
 
-	if (transactions.data.length === 0) {
+	try {
+		const dbResult = await db.find(inputData);
+		if (dbResult.length > 0) {
+			const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+			dbResult.map(tx => {
+				tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
+				return tx;
+			});
+			transactions.data = dbResult;
+		} else throw Exception('Request data from Lisk Core');
+	} catch {
 		transactions = await coreApi.getTransactions(params);
 		if (transactions.data.length > 0) await db.writeBatch(transactions.data);
 	}
