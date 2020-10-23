@@ -39,22 +39,9 @@ const createDb = async (name, idxList = []) => {
 		let idxName = 'idx-'.concat(db.name.split('/')[1]).concat('-');
 		if (typeof propName === 'string') {
 			idxName = idxName.concat(propName);
-			if (['timestamp', 'date'].includes(propName)) {
-				const propObj = {};
-				propObj[propName] = 'desc';
-				propName = [propObj];
-			} else propName = [propName];
+			propName = [propName];
 		} else {
 			idxName = idxName.concat(propName.join('-'));
-			propName.map(prop => {
-				if (['timestamp', 'date'].includes(prop)) {
-					const propObj = {};
-					propObj[prop] = 'desc';
-					prop = [propObj];
-					return prop;
-				}
-				return prop;
-			});
 		}
 
 		logger.debug(`Setting up index ${name}/${idxName.split('-').slice(2).join('-')}...`);
