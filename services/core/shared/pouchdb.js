@@ -108,18 +108,18 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	};
 
 	const write = async (doc) => {
-		if (!doc._id) doc._id = doc.id || doc.address;
+		if (!doc._id) doc._id = doc.id;
 		return db.upsert(doc);
 	};
 
 	const writeOnce = async (doc) => {
-		if (!doc._id) doc._id = doc.id || doc.address;
+		if (!doc._id) doc._id = doc.id;
 		return db.putIfNotExists(doc);
 	};
 
 	const writeBatch = async (docs) => {
 		docs.map(async doc => {
-			if (!doc._id) doc._id = doc.id || doc.address;
+			if (!doc._id) doc._id = doc.id;
 			const dbResult = await findById(doc._id);
 			if (dbResult._rev) doc._rev = dbResult._rev;
 			return doc;
