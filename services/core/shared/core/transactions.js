@@ -18,6 +18,15 @@ const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');
 
+const formatSortString = sortString => {
+	const sortObj = {};
+	const sortProp = sortString.split(':')[0];
+	const sortOrder = sortString.split(':')[1];
+	sortObj[sortProp] = sortOrder;
+
+	return sortObj;
+};
+
 const getSelector = (params) => {
 	const result = {};
 	result.sort = [];
@@ -36,11 +45,11 @@ const getSelector = (params) => {
 	}
 	if (params.senderId) {
 		selector.senderId = params.senderId;
-		result.sort.push('senderId', 'timestamp');
+		result.sort.push('senderId', formatSortString(params.sort));
 	}
 	if (params.recipientId) {
 		selector.recipientId = params.recipientId;
-		result.sort.push('recipientId', 'timestamp');
+		result.sort.push('recipientId', formatSortString(params.sort));
 	}
 	if (params.minAmount || params.maxAmount) selector.amount = {};
 	if (params.minAmount) Object.assign(selector.amount, { $gte: params.minAmount });
@@ -53,16 +62,9 @@ const getSelector = (params) => {
 	result.selector = selector;
 
 	if (Object.getOwnPropertyNames(result.selector).length === 0) {
-		if (params.sort) {
-			const sortBy = {};
-			const sortProp = params.sort.split(':')[0];
-			const sortOrder = params.sort.split(':')[1];
-			sortBy[sortProp] = sortOrder;
-			result.sort.push(sortBy);
-		} else {
-			result.sort.push({ timestamp: 'desc' });
-		}
-	} else if (!result.sort.length) delete result.sort;
+		if (params.sort) result.sort.push(formatSortString(params.sort));
+		else result.sort.push({ timestamp: 'desc' });
+	} else if (result.sort.length === 0) delete result.sort;
 
 	return result;
 };
