@@ -20,6 +20,7 @@ const peerSchema = Joi.object({
 	httpPort: Joi.number().port().optional(),
 	wsPort: Joi.number().port().optional(),
 	state: Joi.number().required(),
+	stateName: Joi.string().required(),
 	version: Joi.string().required(),
 	broadhash: Joi.string().optional(),
 	height: Joi.number().optional(),

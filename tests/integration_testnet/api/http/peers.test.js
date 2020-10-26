@@ -24,6 +24,7 @@ const networkEndpoint = `${baseUrlV1}/network`;
 const peerSchema = {
 	ip: 'string',
 	state: 'number',
+	stateName: 'string',
 	version: 'string',
 };
 
@@ -36,6 +37,7 @@ const peerStatistics = {
 
 const peerOptionalSchema = {
 	state: 'number',
+	stateName: 'string',
 	version: 'string',
 	broadhash: 'string',
 	height: 'number',
