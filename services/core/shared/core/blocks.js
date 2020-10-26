@@ -13,8 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
+
+const logger = Logger();
+
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
+const config = require('../../config');
 
 const indexList = [
 	'id',
@@ -110,18 +115,21 @@ const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
 const preloadBlocks = async (n) => {
-	let blockId = getLastBlock().previousBlockId;
+	let blockId = (await getLastBlock()).previousBlockId;
 	for (let i = 0; i <= n; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		const block = await getBlocks({ blockId });
-		blockId = block.previousBlockId;
+		blockId = (await getBlocks({ blockId })).data[0].previousBlockId;
 	}
 };
 
 const initBlocks = async () => {
 	await pouchdb('blocks', indexList);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
-	setLastBlock(block.data);
+	logger.info('Storing the first block');
+	setLastBlock(block.data[0]);
+	const numOfBlocksPrefetch = config.cacheNumOfBlocks;
+	logger.info(`Preloading first ${numOfBlocksPrefetch} blocks`);
+	await preloadBlocks(numOfBlocksPrefetch);
 };
 
 module.exports = {
