@@ -16,6 +16,12 @@
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
+const {
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
+} = require('./peers');
 
 const {
 	EMAcalc,
@@ -57,7 +63,6 @@ const {
 	getNextForgers,
 	getNetworkStatus,
 	getNetworkConstants,
-	getPeers,
 	numOfActiveDelegates,
 	peerStates,
 	setReadyStatus,
@@ -103,6 +108,9 @@ module.exports = {
 	getNetworkStatus,
 	getNetworkConstants,
 	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
 	numOfActiveDelegates,
 	peerStates,
 	setReadyStatus,
