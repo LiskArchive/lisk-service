@@ -22,6 +22,7 @@ let coreVersion = '1.0.0-alpha.0';
 let referenceKey = coreVersion;
 
 const responseMappers = {
+	'1.0.0-alpha.0': coreV1Mappings.responseMappers,
 	'3.0.0-alpha.0': coreV3Mappings.responseMappers,
 };
 
