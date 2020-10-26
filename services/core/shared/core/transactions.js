@@ -81,27 +81,29 @@ const getTransactions = async params => {
 		data: [],
 	};
 
-	const inputData = getSelector({
-		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-
 	try {
-		const dbResult = await db.find(inputData);
-		if (dbResult.length > 0) {
-			const latestBlock = (await getBlocks({ limit: 1 })).data[0];
-			dbResult.map(tx => {
-				tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
-				return tx;
+		if (!params.id) throw new Error('No param: \'id\'. Falling back to Lisk Core');
+		else {
+			const inputData = getSelector({
+				...params,
+				limit: params.limit || 10,
+				offset: params.offset || 0,
 			});
-			transactions.data = dbResult;
-		} else throw new Error('Request data from Lisk Core');
+			const dbResult = await db.find(inputData);
+			if (dbResult.length > 0) {
+				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+				dbResult.map(tx => {
+					tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
+					return tx;
+				});
+				transactions.data = dbResult;
+			} else throw new Error('Request data from Lisk Core');
+		}
 	} catch (err) {
 		logger.debug(err.message);
 
 		transactions = await coreApi.getTransactions(params);
-		if (transactions.data && transactions.data.length > 0) await db.writeBatch(transactions.data);
+		if (transactions.data && transactions.data.length) await db.writeBatch(transactions.data);
 	}
 
 	return transactions;

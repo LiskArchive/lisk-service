@@ -15,6 +15,7 @@
  */
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
+const { getAccounts } = require('./accounts');
 
 const {
 	EMAcalc,
@@ -29,6 +30,7 @@ const {
 } = require('./dynamicFees');
 
 const {
+	http,
 	parseAddress,
 	validateAddress,
 	validatePublicKey,
@@ -44,7 +46,6 @@ const {
 	getPublicKeyByAddress,
 	getPublicKeyByUsername,
 	getUsernameByAddress,
-	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
@@ -71,6 +72,7 @@ const {
 } = require('./compat');
 
 module.exports = {
+	http,
 	parseAddress,
 	validateAddress,
 	validatePublicKey,
@@ -88,6 +90,7 @@ module.exports = {
 	getUsernameByAddress,
 	getAccounts,
 	getBlocks,
+	getTransactions,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
@@ -99,7 +102,6 @@ module.exports = {
 	getNextForgers,
 	getNetworkStatus,
 	getNetworkConstants,
-	getTransactions,
 	getPeers,
 	numOfActiveDelegates,
 	peerStates,

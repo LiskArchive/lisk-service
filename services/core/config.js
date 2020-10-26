@@ -35,7 +35,16 @@ config.db = {
 	collections: {
 		accounts: {
 			name: 'accounts',
-			indexes: [],
+			indexes: [
+				'address',
+				'publicKey',
+				'secondPublicKey',
+				'balance',
+				'delegate',
+				'knowledge',
+				'multisignatureAccount',
+				'transactionCount',
+			],
 		},
 		blocks: {
 			name: 'blocks',
