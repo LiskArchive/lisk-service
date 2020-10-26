@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getBlocks } = require('./blocks');
+const {
+	getBlocks,
+	setLastBlock,
+	getLastBlock,
+	initBlocks,
+} = require('./blocks');
 const { getTransactions } = require('./transactions');
 
 const {
@@ -70,6 +75,10 @@ const {
 	reloadDelegateCache,
 } = require('./compat');
 
+const init = async () => {
+	await initBlocks();
+};
+
 module.exports = {
 	parseAddress,
 	validateAddress,
@@ -121,4 +130,7 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache,
+	setLastBlock,
+	getLastBlock,
+	init,
 };

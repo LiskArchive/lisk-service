@@ -38,6 +38,8 @@ const indexList = [
 	['generatorUsername', 'unixTimestamp'],
 ];
 
+let lastBlock = {};
+
 const getSelector = (params) => {
 	const selector = {};
 	const result = {};
@@ -79,8 +81,7 @@ const pushToDb = async (blockDb, blocks) => {
 	return blockDb.writeBatch(out);
 };
 
-
-const getBlocks = async (params) => {
+const getBlocks = async (params = {}) => {
 	const blockDb = await pouchdb('blocks', indexList);
 
 	let blocks = {
@@ -105,6 +106,28 @@ const getBlocks = async (params) => {
 	return blocks;
 };
 
+const setLastBlock = block => lastBlock = block;
+const getLastBlock = () => lastBlock;
+
+const preloadBlocks = async (n) => {
+	let blockId = getLastBlock().previousBlockId;
+	for (let i = 0; i <= n; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		const block = await getBlocks({ blockId });
+		blockId = block.previousBlockId;
+	}
+};
+
+const initBlocks = async () => {
+	await pouchdb('blocks', indexList);
+	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
+	setLastBlock(block.data);
+};
+
 module.exports = {
 	getBlocks,
+	preloadBlocks,
+	setLastBlock,
+	getLastBlock,
+	initBlocks,
 };
