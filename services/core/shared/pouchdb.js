@@ -44,7 +44,12 @@ const createDb = async (name, idxList = []) => {
 	return db;
 };
 
+const dbLogger = {};
+
 const getDbInstance = async (collectionName, idxList) => {
+	if (!dbLogger[collectionName]) dbLogger[collectionName] = Logger(`pouchdb-${collectionName}`);
+	const cLogger = dbLogger[collectionName];
+
 	if (!connectionPool[collectionName]) {
 		const dbDataDir = `${config.db.directory}/${collectionName}`;
 		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
@@ -53,7 +58,7 @@ const getDbInstance = async (collectionName, idxList) => {
 			dbDataDir,
 			[...config.db.collections[collectionName].indexes, ...idxList],
 		);
-		logger.info(`Opened PouchDB database: ${collectionName}`);
+		cLogger.info(`Opened PouchDB database: ${collectionName}`);
 	}
 
 	const db = connectionPool[collectionName];
