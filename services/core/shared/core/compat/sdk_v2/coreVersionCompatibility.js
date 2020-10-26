@@ -30,7 +30,8 @@ const mapResponse = (response, url) => {
 	const mapper = responseMappers[referenceKey]
 		&& responseMappers[referenceKey][url];
 	if (mapper) {
-		response = mapper(response);
+		// TODO: remove the nested if condition and responseMapper entry when sdk_v3 is implemented
+		if (referenceKey !== '1.0.0-alpha.0' || url === '/peers') response = mapper(response);
 	}
 	return response;
 };
