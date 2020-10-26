@@ -21,6 +21,7 @@ const coreApi = require('./coreApi');
 const { request } = require('./request');
 
 const { getTotalNumberOfDelegates, getDelegateRankByUsername, reload } = require('./delegateCache');
+const { reloadAccounts } = require('../../accountCache');
 
 const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
@@ -257,4 +258,5 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache: reload,
+	loadAccounts: reloadAccounts,
 };

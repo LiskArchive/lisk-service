@@ -69,6 +69,7 @@ const {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache,
+	loadAccounts,
 } = require('./compat');
 
 module.exports = {
@@ -123,4 +124,5 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache,
+	loadAccounts,
 };
