@@ -25,6 +25,8 @@ const packageJson = require('./package.json');
 
 const nodeStatus = require('./shared/nodeStatus');
 
+const core = require('./shared/core');
+
 const loggerConf = {
 	...config.log,
 	name: packageJson.name,
@@ -42,7 +44,8 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-nodeStatus.waitForNode().then(() => {
+nodeStatus.waitForNode().then(async () => {
+	await core.init();
 	app.addMethods(path.join(__dirname, 'methods'));
 	app.addEvents(path.join(__dirname, 'events'));
 	app.addJobs(path.join(__dirname, 'jobs'));
