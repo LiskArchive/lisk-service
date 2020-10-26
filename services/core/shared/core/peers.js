@@ -105,7 +105,7 @@ const getPeersStatistics = async () => {
     return {
         data: response,
         meta: {},
-    }
+    };
 };
 
 module.exports = {
