@@ -83,7 +83,7 @@ const notFoundSchema = badRequestSchema;
 const wrongInputParamSchema = badRequestSchema;
 
 describe('Accounts Compatibility API', () => {
-	describe('Retrieve top accounts list', () => {
+	xdescribe('Retrieve top accounts list', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${accountsTopEndpoint}`);
 			expect(response.data.length).toEqual(10);
