@@ -85,7 +85,7 @@ const getAccounts = async params => {
 	delete params.anyId;
 
 	try {
-		const response = await getDataForAccounts(params);
+		const response = await getDataForAccounts({ sort: 'balance:asc', ...params });
 
 		return {
 			data: response.data,

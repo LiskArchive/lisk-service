@@ -50,7 +50,7 @@ const delegateSchema = Joi.object({
 
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 
-describe('Method get.accounts', () => {
+xdescribe('Method get.accounts', () => {
 	describe('is able to retrieve account lists', () => {
 		it.todo('returns account details with no params');
 	});
@@ -127,7 +127,7 @@ describe('Method get.accounts', () => {
 		});
 
 		it('returns delegate data by delegate name', async () => {
-			const { result } = await getAccounts({ username: accounts.delegate.username });
+			const { result } = await getAccounts({ username: accounts.delegate.delegate.username });
 			expect(result.data[0].delegate).toMap(delegateSchema);
 		});
 	});

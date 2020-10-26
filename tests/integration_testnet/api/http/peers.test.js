@@ -23,7 +23,6 @@ const networkEndpoint = `${baseUrlV1}/network`;
 
 const peerSchema = {
 	ip: 'string',
-	location: 'object',
 	state: 'number',
 	version: 'string',
 };

@@ -14,11 +14,13 @@
  *
  */
 const http = require('../common/httpRequest');
-const { mapResponse, mapParams } = require('./coreVersionCompatibility');
+// TODO: Enable when sdk_v3 is implemented and sdk resolution works properly
+// const { mapParams, mapResponse } = require('./mappings');
+const { mapParams, mapResponse } = require('./coreVersionCompatibility');
 
-const request = (url, params) => {
+const request = async (url, params) => {
 	const transformedParams = mapParams(params, url);
-	const response = http.get(url, transformedParams);
+	const response = await http.get(url, transformedParams);
 	const transformedResponse = mapResponse(response, url);
 
 	return transformedResponse;

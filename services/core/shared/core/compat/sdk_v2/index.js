@@ -25,6 +25,7 @@ const { getTotalNumberOfDelegates, getDelegateRankByUsername, reload } = require
 const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
+const { getAccounts } = require('./accounts');
 
 const {
 	getNetworkStatus,
@@ -41,8 +42,6 @@ const peerStates = {
 	DISCONNECTED: 1,
 	CONNECTED: 2,
 };
-
-let readyStatus = false;
 
 
 // Utils & helpers
@@ -134,39 +133,6 @@ const getAddressByAny = async param => {
 	return paramNames[prefix](body);
 };
 
-const getAccounts = async params => {
-	const reqeustParams = {
-		limit: params.limit,
-		offset: params.offset,
-		sort: params.sort,
-		username: params.username,
-	};
-
-	if (params.address && typeof params.address === 'string') {
-		const parsedAddress = parseAddress(params.address);
-		if (!await confirmAddress(parsedAddress)) return {};
-		reqeustParams.address = parsedAddress;
-	}
-
-	if (params.publicKey && typeof params.publicKey === 'string') {
-		if (!validatePublicKey(params.publicKey) || (!await confirmPublicKey(params.publicKey))) {
-			return {};
-		}
-		reqeustParams.publicKey = params.publicKey;
-	}
-
-	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
-		if (!validatePublicKey(params.secondPublicKey)
-			|| (!await confirmSecondPublicKey(params.secondPublicKey))) {
-			return {};
-		}
-		reqeustParams.secondPublicKey = params.secondPublicKey;
-	}
-
-	const result = coreApi.getAccounts(reqeustParams);
-	return result;
-};
-
 const getPublicKeyByAddress = async address => {
 	if (!address || typeof address !== 'string') return '';
 	const account = await getAccounts({ address });
@@ -241,8 +207,6 @@ const getForgingStats = async address => {
 	}
 };
 
-const setReadyStatus = status => { readyStatus = status; };
-const getReadyStatus = () => readyStatus;
 
 const nop = () => { };
 
@@ -280,9 +244,7 @@ module.exports = {
 	getPeers: coreApi.getPeers,
 	numOfActiveDelegates,
 	peerStates,
-	setReadyStatus,
 	setCoreVersion,
-	getReadyStatus,
 	EMAcalc: nop,
 	getEstimateFeeByte: nop,
 	getEstimateFeeByteCoreLogic: nop,

@@ -51,13 +51,14 @@ const indexList = [
 let lastBlock = {};
 
 const getSelector = (params) => {
-	const selector = {};
 	const result = {};
+	const selector = {};
 	if (params.height) selector.height = Number(params.height);
 	if (params.blockId) selector.id = String(params.blockId);
 	if (params.fromTimestamp) selector.unixTimestamp = { $gte: Number(params.fromTimestamp) };
 	if (params.toTimestamp) selector.unixTimestamp = { $lte: Number(params.toTimestamp) };
 	if (params.generatorPublicKey) selector.generatorPublicKey = String(params.generatorPublicKey);
+
 	result.selector = selector;
 	if (params.limit) result.limit = Number(params.limit);
 	if (Number(params.offset) >= 0) result.skip = Number(params.offset);
@@ -67,6 +68,10 @@ const getSelector = (params) => {
 		$gte: Number(params.numberOfTransactions),
 	};
 	if (params.isFinal) selector.isFinal = params.isFinal;
+	result.selector = selector;
+
+	if (params.limit) result.limit = params.limit;
+	if (Number(params.offset) >= 0) result.skip = params.offset;
 
 	return result;
 };
@@ -103,7 +108,7 @@ const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
 const getBlocks = async (params = {}) => {
-	const blockDb = await pouchdb('blocks', indexList);
+	const blockDb = await pouchdb(config.db.collections.blocks.name, indexList);
 
 	let blocks = {
 		data: [],
