@@ -22,7 +22,6 @@ const coreApi = require('./compat');
 const config = require('../../config');
 
 const initialBlockPrefetch = 202;
-const considerFinalVersion2 = 202;
 
 const indexList = [
 	'id',
@@ -79,7 +78,6 @@ const getSelector = (params) => {
 const pushToDb = async (blockDb, blocks) => {
 	const propList = [
 		'blockSignature',
-		'confirmations',
 		'generatorAddress',
 		'generatorPublicKey',
 		'height',
@@ -121,18 +119,20 @@ const getBlocks = async (params = {}) => {
 			offset: params.offset || 0,
 		});
 		const dbResult = await blockDb.find(inputData);
-		if (dbResult.length > 0) blocks.data = dbResult;
+		if (dbResult.length > 0) {
+			blocks.data = dbResult.map((block) => ({
+				...block,
+				confirmations: (getLastBlock().height) - block.height,
+			}));
+		}
 	}
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
-		const lstBlockHeight = (getLastBlock()).height;
-		const tmpBlocks = blocks.data.map(o => ({
-			...o,
-			isFinal: (lstBlockHeight - o.height) >= considerFinalVersion2,
-		}));
-		blocks.data = tmpBlocks;
-		if (blocks.data.length > 0) pushToDb(blockDb, blocks.data);
+		if (blocks.data.length > 0) {
+			const finalBlocks = blocks.data.filter((block) => block.isFinal === true);
+			pushToDb(blockDb, finalBlocks);
+		}
 	}
 
 	return blocks;
