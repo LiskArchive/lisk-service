@@ -19,14 +19,18 @@ const coreApi = require('./compat');
 
 const getSelector = (params) => {
 	const selector = {};
-	const result = {};
-	if (params.address) selector.address = params.height;
+	const result = { sort: [] };
+
+	if (params.address) selector.address = params.address;
 	if (params.secondPublicKey) selector.secondPublicKey = params.secondPublicKey;
-	if (params.publicKey) selector.publicKey = params.publicKey;
+	if (params.publicKey) {
+		selector.publicKey = params.publicKey;
+		result.sort.push('publicKey');
+	}
 	if (params.username) selector.username = params.username;
 	result.selector = selector;
 
-	result.sort = [{ balance: 'asc' }];
+	result.sort.push({ balance: 'asc' });
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;

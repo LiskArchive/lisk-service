@@ -30,13 +30,23 @@ const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
 	const db = new PouchDB(name, { auto_compaction: true });
 
-	idxList.forEach(async idxName => {
-		if (typeof idxName === 'string') idxName = [idxName];
-		logger.debug(`Setting up index ${name}/${idxName.join('-')}...`);
+	idxList.forEach(async (propName) => {
+		let idxName = 'idx-'.concat(db.name.split('/')[1]).concat('-');
+		if (typeof propName === 'string') {
+			idxName = idxName.concat(propName);
+			propName = [propName];
+		} else {
+			idxName = idxName.concat(propName.join('-'));
+		}
+
+		logger.debug(
+			`Setting up index ${name}/${idxName.split('-').slice(2).join('-')}...`,
+		);
 
 		await db.createIndex({
 			index: {
-				fields: idxName,
+				fields: propName,
+				name: idxName,
 			},
 		});
 	});
@@ -49,10 +59,10 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		const dbDataDir = `${config.db.directory}/${collectionName}`;
 		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
-		connectionPool[collectionName] = await createDb(
-			dbDataDir,
-			[...config.db.collections[collectionName].indexes, ...idxList],
-		);
+		connectionPool[collectionName] = await createDb(dbDataDir, [
+			...config.db.collections[collectionName].indexes,
+			...idxList,
+		]);
 		logger.info(`Opened PouchDB database: ${collectionName}`);
 	}
 
@@ -69,7 +79,7 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	};
 
 	const writeBatch = async (docs) => {
-		docs.map(doc => {
+		docs.map((doc) => {
 			if (!doc._id) doc._id = doc.id;
 			return doc;
 		});
@@ -103,7 +113,7 @@ const getDbInstance = async (collectionName, idxList = []) => {
 
 	const deleteBatch = async (docs) => {
 		if (docs instanceof Array && docs.length === 0) return;
-		docs.map(doc => {
+		docs.map((doc) => {
 			if (!doc._id) doc._id = doc.id;
 			doc._deleted = true;
 			return doc;

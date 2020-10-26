@@ -44,7 +44,7 @@ config.db = {
 				'knowledge',
 				'multisignatureAccount',
 				'transactionCount',
-				['balance'],
+				['publicKey', 'balance'],
 			],
 		},
 		blocks: {
