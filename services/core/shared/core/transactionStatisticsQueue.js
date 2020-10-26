@@ -102,6 +102,7 @@ const insertToDb = async (statsList, date) => {
 	await db.deleteByProperty('date', date);
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
+		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});

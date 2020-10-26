@@ -19,7 +19,7 @@ const {
 	setCoreVersion,
 	getEpochUnixTime,
 	getNetworkConstants,
-	setReadyStatus
+	setReadyStatus,
 } = require('./core/compat/common');
 
 const liskCoreAddress = config.endpoints.liskHttp;
