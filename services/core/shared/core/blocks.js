@@ -21,6 +21,9 @@ const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const config = require('../../config');
 
+const initialBlockPrefetch = 202;
+const considerFinalVersion2 = 202;
+
 const indexList = [
 	'id',
 	'generatorPublicKey',
@@ -32,6 +35,8 @@ const indexList = [
 	'unixTimestamp',
 	'totalAmount',
 	'totalFee',
+	'isFinal',
+	['height', 'isFinal'],
 	['generatorPublicKey', 'numberOfTransactions'],
 	['generatorAddress', 'numberOfTransactions'],
 	['generatorUsername', 'numberOfTransactions'],
@@ -56,6 +61,13 @@ const getSelector = (params) => {
 	result.selector = selector;
 	if (params.limit) result.limit = Number(params.limit);
 	if (Number(params.offset) >= 0) result.skip = Number(params.offset);
+
+	// Not supported by the API but useful for caching
+	if (params.numberOfTransactions) selector.numberOfTransactions = {
+		$gte: Number(params.numberOfTransactions),
+	};
+	if (params.isFinal) selector.isFinal = params.isFinal;
+
 	return result;
 };
 
@@ -77,6 +89,7 @@ const pushToDb = async (blockDb, blocks) => {
 		'totalForged',
 		'unixTimestamp',
 		'version',
+		'isFinal',
 	];
 	const out = blocks.map(o => {
 		const obj = {};
@@ -86,6 +99,9 @@ const pushToDb = async (blockDb, blocks) => {
 	return blockDb.writeBatch(out);
 };
 
+const setLastBlock = block => lastBlock = block;
+const getLastBlock = () => lastBlock;
+
 const getBlocks = async (params = {}) => {
 	const blockDb = await pouchdb('blocks', indexList);
 
@@ -93,7 +109,7 @@ const getBlocks = async (params = {}) => {
 		data: [],
 	};
 
-	if (params.blockId) { // try to get from cache
+	if (params.blockId || params.numberOfTransactions || params.isFinal) { // try to get from cache
 		const inputData = await getSelector({
 			...params,
 			limit: params.limit || 10,
@@ -105,31 +121,62 @@ const getBlocks = async (params = {}) => {
 
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
+		const lstBlockHeight = (getLastBlock()).height;
+		const tmpBlocks = blocks.data.map(o => ({
+			...o,
+			isFinal: (lstBlockHeight - o.height) >= considerFinalVersion2,
+		}));
+		blocks.data = tmpBlocks;
 		if (blocks.data.length > 0) pushToDb(blockDb, blocks.data);
 	}
 
 	return blocks;
 };
 
-const setLastBlock = block => lastBlock = block;
-const getLastBlock = () => lastBlock;
-
 const preloadBlocks = async (n) => {
-	let blockId = (await getLastBlock()).previousBlockId;
+	let blockId = (getLastBlock()).previousBlockId;
 	for (let i = 0; i <= n; i++) {
 		// eslint-disable-next-line no-await-in-loop
 		blockId = (await getBlocks({ blockId })).data[0].previousBlockId;
 	}
 };
 
+const removeOrphanedBlocks = async (n) => {
+	const blockDb = await pouchdb('blocks', indexList);
+	const blocks = await blockDb.find({
+		selector: {
+			// isFinal: false,
+			height: { $gte: (getLastBlock()).height - n },
+		},
+		sort: ['height'],
+	});
+	const orphanList = blocks.reverse().filter((block, idx) => {
+		if (idx + 1 >= blocks.length) return false;
+		const prevBlock = blocks[idx + 1];
+		if (prevBlock.id !== block.previousBlockId) return true;
+		return false;
+	});
+
+	// TODO: orphanList removal from PouchDB
+
+	logger.debug(`Found ${orphanList.length} orphaned blocks...`);
+	return orphanList;
+};
+
 const initBlocks = async () => {
 	await pouchdb('blocks', indexList);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
-	logger.info('Storing the first block');
+	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);
+
 	const numOfBlocksPrefetch = config.cacheNumOfBlocks;
-	logger.info(`Preloading first ${numOfBlocksPrefetch} blocks`);
-	await preloadBlocks(numOfBlocksPrefetch);
+
+	logger.debug(`Preloading first ${initialBlockPrefetch} blocks`);
+	await preloadBlocks(initialBlockPrefetch);
+	await removeOrphanedBlocks(initialBlockPrefetch);
+
+	logger.debug(`Preloading ${numOfBlocksPrefetch} blocks in the background...`);
+	preloadBlocks(numOfBlocksPrefetch);
 };
 
 module.exports = {
@@ -138,4 +185,5 @@ module.exports = {
 	setLastBlock,
 	getLastBlock,
 	initBlocks,
+	removeOrphanedBlocks,
 };

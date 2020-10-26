@@ -36,6 +36,9 @@ module.exports = [
 				logger.debug('Returning block list to the socket.io client...');
 				const restData = await core.getBlocks({ blockId: data.id });
 				core.setLastBlock(restData.data[0]);
+				core.preloadBlocks(202).then(() => {
+					core.removeOrphanedBlocks(202);
+				});
 				callback(restData.data[0]);
 			});
 		},

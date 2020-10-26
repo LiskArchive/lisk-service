@@ -18,6 +18,8 @@ const {
 	setLastBlock,
 	getLastBlock,
 	initBlocks,
+	preloadBlocks,
+	removeOrphanedBlocks,
 } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
@@ -133,4 +135,6 @@ module.exports = {
 	setLastBlock,
 	getLastBlock,
 	init,
+	preloadBlocks,
+	removeOrphanedBlocks,
 };
