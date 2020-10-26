@@ -99,10 +99,14 @@ const getDisconnectedPeers = async params => {
     return response;
 };
 
-const getPeersStatistics = () => ({
-    data: peerCache.getStatistics(),
-    meta: {},
-});
+const getPeersStatistics = async () => {
+    const response = await peerCache.getStatistics();
+
+    return {
+        data: response,
+        meta: {},
+    }
+};
 
 module.exports = {
     getPeers,

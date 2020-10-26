@@ -42,14 +42,12 @@ const getDisconnectedPeers = async params => {
 	};
 };
 
-const getPeersStatistics = () => {
-	const response = coreService.getPeersStatistics();
-
-	const meta = {};
+const getPeersStatistics = async () => {
+	const response = await coreService.getPeersStatistics();
 
 	return {
-		data: response,
-		meta,
+		data: response.data,
+		meta: response.meta,
 	};
 };
 
