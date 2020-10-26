@@ -19,7 +19,7 @@ const http = require('./httpRequest');
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
-let coreVersion;
+let coreVersion = '1.0.0-alpha.0';
 let readyStatus;
 
 const getNetworkConstants = async () => {
