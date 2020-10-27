@@ -21,7 +21,7 @@ const {
 	removeOrphanedBlocks,
 } = require('./blocks');
 const { getTransactions } = require('./transactions');
-const { getAccounts } = require('./accounts');
+const { getAccounts, retrieveTopAccounts } = require('./accounts');
 
 const {
 	EMAcalc,
@@ -139,4 +139,5 @@ module.exports = {
 	init,
 	preloadBlocks,
 	removeOrphanedBlocks,
+	retrieveTopAccounts,
 };

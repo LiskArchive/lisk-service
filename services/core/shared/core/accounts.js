@@ -105,16 +105,19 @@ const getAccounts = async (params) => {
 	if (accounts.data.length === 0) {
 		accounts = await coreApi.getAccounts(params);
 		if (accounts.data.length > 0) {
-		accounts.data.id = accounts.data.address;
-		db.writeBatch(accounts.data);
+		const allAccounts = accounts.data.map(account => {
+			account.id = account.address;
+			return account;
+		});
+		await db.writeBatch(allAccounts);
 	}
 }
 	return accounts;
 };
 
-const retrieveTopAccounts = async (core, accounts = []) => {
+const retrieveTopAccounts = async (accounts = []) => {
 	const limit = config.cacheNumOfAccounts;
-	const response = await core.getAccounts({
+	const response = await getAccounts({
 		limit: limit > 100 ? 100 : limit,
 		offset: accounts.length,
 		sort: 'balance:desc',
@@ -122,7 +125,7 @@ const retrieveTopAccounts = async (core, accounts = []) => {
 	accounts = [...accounts, ...response.data];
 
 	if (accounts.length < limit) {
-		retrieveTopAccounts(core, accounts);
+		retrieveTopAccounts(accounts);
 	} else {
 		topAccounts = accounts;
 		logger.info(
@@ -132,10 +135,11 @@ const retrieveTopAccounts = async (core, accounts = []) => {
 };
 
 const initAccounts = (async () => {
-	retrieveTopAccounts(coreApi);
+	retrieveTopAccounts();
 })();
 
 module.exports = {
 	getAccounts,
 	initAccounts,
+	retrieveTopAccounts,
 };
