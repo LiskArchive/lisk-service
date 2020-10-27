@@ -17,9 +17,9 @@ const {
 	getBlocks,
 	setLastBlock,
 	getLastBlock,
+	cleanFromForks,
+	reloadBlocks,
 	initBlocks,
-	preloadBlocks,
-	removeOrphanedBlocks,
 } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
@@ -137,6 +137,6 @@ module.exports = {
 	setLastBlock,
 	getLastBlock,
 	init,
-	preloadBlocks,
-	removeOrphanedBlocks,
+	reloadBlocks,
+	cleanFromForks,
 };
