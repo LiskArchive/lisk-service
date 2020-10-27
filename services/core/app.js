@@ -25,7 +25,7 @@ const packageJson = require('./package.json');
 
 const nodeStatus = require('./shared/nodeStatus');
 
-const core = require('./shared/core');
+// const core = require('./shared/core');
 
 const loggerConf = {
 	...config.log,
@@ -46,7 +46,7 @@ const app = Microservice({
 
 nodeStatus.waitForNode().then(async () => {
 	logger.info('Found a node, initiating Lisk Core...');
-	await core.init();
+	// await core.init();
 
 	app.addMethods(path.join(__dirname, 'methods'));
 	app.addEvents(path.join(__dirname, 'events'));

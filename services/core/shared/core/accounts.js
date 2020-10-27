@@ -17,9 +17,9 @@ const { Logger } = require('lisk-service-framework');
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-const { reloadTopAccounts, getTopAccounts } = require('./accountCache');
 
 const logger = Logger();
+let topAccounts = [];
 
 const getSelector = (params) => {
 	const selector = {};
@@ -39,13 +39,16 @@ const getSelector = (params) => {
 	return result;
 };
 
+const getTopAccounts = () => new Promise((resolve) => {
+	resolve(topAccounts);
+});
+
 const getAccounts = async (params) => {
 	const db = await pouchdb(config.db.collections.accounts.name);
 
 	let accounts = {
 		data: [],
 	};
-
 	// read from cache if available
 	try {
 		const cachedAccounts = await getTopAccounts();
@@ -96,9 +99,27 @@ const getAccounts = async (params) => {
 	return accounts;
 };
 
-const initAccounts = async () => {
-	reloadTopAccounts(coreApi);
+const retrieveTopAccounts = async (core, accounts = []) => {
+	const limit = config.cacheNumofAccounts;
+	const response = await core.getAccounts({
+		limit: limit > 100 ? 100 : limit,
+		offset: accounts.length,
+		sort: 'balance:desc',
+	});
+	accounts = [...accounts, ...response.data];
+
+	if (accounts.length < limit) {
+		retrieveTopAccounts(core, accounts);
+	} else {
+		topAccounts = accounts;
+		logger.info(`Initialized/Updated accounts cache with ${topAccounts.length} top accounts.`);
+	}
 };
+
+
+const initAccounts = (async () => {
+	retrieveTopAccounts(coreApi);
+})();
 
 module.exports = {
 	getAccounts,

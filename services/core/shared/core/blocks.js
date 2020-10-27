@@ -171,7 +171,7 @@ const removeOrphanedBlocks = async (n) => {
 	return orphanList;
 };
 
-const initBlocks = async () => {
+const initBlocks = (async () => {
 	await pouchdb('blocks', indexList);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
@@ -185,7 +185,7 @@ const initBlocks = async () => {
 
 	logger.debug(`Preloading ${numOfBlocksPrefetch} blocks in the background...`);
 	preloadBlocks(numOfBlocksPrefetch);
-};
+})();
 
 module.exports = {
 	getBlocks,

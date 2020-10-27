@@ -22,7 +22,7 @@ const {
 	removeOrphanedBlocks,
 } = require('./blocks');
 const { getTransactions } = require('./transactions');
-const { getAccounts, initAccounts } = require('./accounts');
+const { getAccounts } = require('./accounts');
 
 const {
 	EMAcalc,
@@ -80,7 +80,7 @@ const {
 
 const init = async () => {
 	await initBlocks();
-	await initAccounts();
+	// await initAccounts();
 };
 
 module.exports = {
