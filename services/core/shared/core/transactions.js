@@ -13,13 +13,31 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger, LoggerConfig } = require('lisk-service-framework');
+
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');
 
+LoggerConfig(config.log);
+const logger = Logger();
+
+const formatSortString = sortString => {
+	const sortObj = {};
+	const sortProp = sortString.split(':')[0];
+	const sortOrder = sortString.split(':')[1];
+	sortObj[sortProp] = sortOrder;
+
+	return sortObj;
+};
+
 const getSelector = (params) => {
 	const result = {};
+	result.sort = [];
+
+	if (params.limit) result.limit = params.limit;
+	if (Number(params.offset) >= 0) result.skip = params.offset;
 
 	const selector = {};
 	if (params.id) selector.id = params.id;
@@ -30,8 +48,14 @@ const getSelector = (params) => {
 			{ recipientId: params.senderIdOrRecipientId },
 		];
 	}
-	if (params.senderId) selector.senderId = params.senderId;
-	if (params.recipientId) selector.recipientId = params.recipientId;
+	if (params.senderId) {
+		selector.senderId = params.senderId;
+		result.sort.push('senderId', formatSortString(params.sort));
+	}
+	if (params.recipientId) {
+		selector.recipientId = params.recipientId;
+		result.sort.push('recipientId', formatSortString(params.sort));
+	}
 	if (params.minAmount || params.maxAmount) selector.amount = {};
 	if (params.minAmount) Object.assign(selector.amount, { $gte: params.minAmount });
 	if (params.maxAmount) Object.assign(selector.amount, { $lte: params.maxAmount });
@@ -42,10 +66,10 @@ const getSelector = (params) => {
 	if (params.height) selector.height = params.height;
 	result.selector = selector;
 
-	result.sort = [{ timestamp: 'desc' }];
-
-	if (params.limit) result.limit = params.limit;
-	if (Number(params.offset) >= 0) result.skip = params.offset;
+	if (Object.getOwnPropertyNames(result.selector).length === 0) {
+		if (params.sort) result.sort.push(formatSortString(params.sort));
+		else result.sort.push({ timestamp: 'desc' });
+	} else if (result.sort.length === 0) delete result.sort;
 
 	return result;
 };
@@ -57,36 +81,29 @@ const getTransactions = async params => {
 		data: [],
 	};
 
-	const inputData = getSelector({
-		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-	const dbResult = await db.find(inputData);
-	if (dbResult.length > 0) {
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-		if (sortOrder === 'asc') dbResult.sort((a, b) => {
-			let compareResult;
-			if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-				compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-			} else {
-				compareResult = a[sortProp].localCompare(b[sortProp]);
-			}
-			return compareResult;
-		});
+	try {
+		if (!params.id) throw new Error('No param: \'id\'. Falling back to Lisk Core');
+		else {
+			const inputData = getSelector({
+				...params,
+				limit: params.limit || 10,
+				offset: params.offset || 0,
+			});
+			const dbResult = await db.find(inputData);
+			if (dbResult.length > 0) {
+				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+				dbResult.map(tx => {
+					tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
+					return tx;
+				});
+				transactions.data = dbResult;
+			} else throw new Error('Request data from Lisk Core');
+		}
+	} catch (err) {
+		logger.debug(err.message);
 
-		const latestBlock = (await getBlocks({ limit: 1 })).data[0];
-		dbResult.map(tx => {
-			tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
-			return tx;
-		});
-		transactions.data = dbResult;
-	}
-
-	if (transactions.data.length === 0) {
 		transactions = await coreApi.getTransactions(params);
-		if (transactions.data.length > 0) await db.writeBatch(transactions.data);
+		if (transactions.data && transactions.data.length) await db.writeBatch(transactions.data);
 	}
 
 	return transactions;

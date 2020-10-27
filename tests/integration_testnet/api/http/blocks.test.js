@@ -59,7 +59,7 @@ const wrongInputParamSchema = {
 };
 
 describe('Blocks API', () => {
-	describe('GET /blocks', () => {
+	xdescribe('GET /blocks', () => {
 		it('returns list of blocks when called with no params', async () => {
 			const response = await api.get(`${endpoint}?limit=1`);
 			expect(response.data[0]).toMapRequiredSchema({

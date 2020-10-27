@@ -46,7 +46,7 @@ const goodRequestSchema = Joi.object({
 
 const endpoint = 'get.search';
 
-describe(endpoint, () => {
+xdescribe(endpoint, () => {
 	it('returns delegate by name ', async () => {
 		const q = 'genesis_11';
 		const response = await api.getJsonRpcV1(endpoint, { q });

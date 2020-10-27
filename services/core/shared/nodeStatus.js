@@ -15,7 +15,12 @@
  */
 const { Logger } = require('lisk-service-framework');
 const config = require('../config');
-const { setCoreVersion, getEpochUnixTime, getNetworkConstants, setReadyStatus } = require('./core/compat/common');
+const {
+	setCoreVersion,
+	getEpochUnixTime,
+	getNetworkConstants,
+	setReadyStatus,
+} = require('./core/compat/common');
 
 const liskCoreAddress = config.endpoints.liskHttp;
 const logger = Logger();
@@ -26,16 +31,16 @@ const CORE_DISCOVERY_INTERVAL = 1 * 1000; // ms
 let logConnectStatus = true;
 
 const checkStatus = () => new Promise((resolve, reject) => {
-	getNetworkConstants().then(result => {
-		if (typeof result.data === 'object' && result.data.version) {
-			setCoreVersion(result.data.version);
+	getNetworkConstants().then(networkConstants => {
+		if (typeof networkConstants.data === 'object' && networkConstants.data.version) {
+			setCoreVersion(networkConstants.data.version);
 			getEpochUnixTime();
 			setReadyStatus(true);
 			if (logConnectStatus) {
-				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${result.data.version}`);
+				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 				logConnectStatus = false;
 			}
-			resolve(result.data);
+			resolve(networkConstants.data);
 		} else {
 			setReadyStatus(false);
 			logger.warn(`The node ${liskCoreAddress} has an incompatible API or is not available at the moment.`);

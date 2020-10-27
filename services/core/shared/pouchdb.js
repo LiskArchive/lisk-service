@@ -30,7 +30,12 @@ const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
 	const db = new PouchDB(name, { auto_compaction: true });
 
-	idxList.forEach(async (propName) => {
+	// const availableIndexes = [];
+	// (await db.getIndexes())
+	// 	.indexes.forEach(index => availableIndexes.push(index.name));
+	// console.log(availableIndexes);
+
+	idxList.forEach(async propName => {
 		let idxName = 'idx-'.concat(db.name.split('/')[1]).concat('-');
 		if (typeof propName === 'string') {
 			idxName = idxName.concat(propName);
@@ -39,9 +44,7 @@ const createDb = async (name, idxList = []) => {
 			idxName = idxName.concat(propName.join('-'));
 		}
 
-		logger.debug(
-			`Setting up index ${name}/${idxName.split('-').slice(2).join('-')}...`,
-		);
+		logger.debug(`Setting up index ${name}/${idxName.split('-').slice(2).join('-')}...`);
 
 		await db.createIndex({
 			index: {

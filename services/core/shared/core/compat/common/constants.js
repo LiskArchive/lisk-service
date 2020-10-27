@@ -34,7 +34,7 @@ const setCoreVersion = version => coreVersion = version;
 
 const getCoreVersion = () => coreVersion;
 
-const setReadyStatus = status => { readyStatus = status; };
+const setReadyStatus = status => readyStatus = status;
 
 const getReadyStatus = () => readyStatus;
 
