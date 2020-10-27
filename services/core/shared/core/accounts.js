@@ -134,12 +134,7 @@ const retrieveTopAccounts = async (accounts = []) => {
 	}
 };
 
-const initAccounts = (async () => {
-	retrieveTopAccounts();
-})();
-
 module.exports = {
 	getAccounts,
-	initAccounts,
 	retrieveTopAccounts,
 };
