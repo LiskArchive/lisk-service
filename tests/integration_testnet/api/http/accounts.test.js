@@ -60,7 +60,7 @@ const badRequestSchema = {
 
 const notFoundSchema = badRequestSchema;
 
-xdescribe('Accounts API', () => {
+describe('Accounts API', () => {
 	describe('Retrieve account list', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${endpoint}`);
@@ -235,7 +235,7 @@ xdescribe('Accounts API', () => {
 	});
 
 	describe('Retrieve accounts with off-chain knowlegde entry', () => {
-		it('existing known account by address -> ok with knowledge', async () => {
+		xit('existing known account by address -> ok with knowledge', async () => {
 			const address = '13795892230918963229L';
 			const response = await api.get(`${endpoint}?address=${address}`);
 			expect(response.data.length).toEqual(1);
