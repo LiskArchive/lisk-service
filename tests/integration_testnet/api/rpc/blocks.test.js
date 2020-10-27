@@ -28,7 +28,7 @@ import {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
 
-xdescribe('Method get.blocks', () => {
+describe('Method get.blocks', () => {
 	describe('is able to retireve block lists', () => {
 		it.todo('no params -> ok');
 
