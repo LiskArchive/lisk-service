@@ -35,13 +35,7 @@ const getBlocksData = async params => {
 	if (!Array.isArray(response.data)) return result;
 	let total;
 
-	const data = await Promise.all(response.data.map(async block => {
-		const username = await CoreService.getUsernameByAddress(block.generatorAddress);
-		if (username) {
-			block.generatorUsername = username;
-		}
-		return block;
-	}));
+	const { data } = response;
 
 	if (params.generatorPublicKey) {
 		delete result.meta.total;
