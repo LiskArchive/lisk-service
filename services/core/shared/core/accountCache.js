@@ -15,11 +15,13 @@
  */
 const { Logger } = require('lisk-service-framework');
 
+const config = require('../../config');
+
 const logger = Logger();
 let topAccounts = [];
 
 const retrieveTopAccounts = async (core, accounts = []) => {
-	const limit = 500;
+	const limit = config.cacheNumofAccounts;
 	const response = await core.getAccounts({
 		limit: limit > 100 ? 100 : limit,
 		offset: accounts.length,
@@ -31,13 +33,13 @@ const retrieveTopAccounts = async (core, accounts = []) => {
 		retrieveTopAccounts(core, accounts);
 	} else {
 		topAccounts = accounts;
-		logger.info(`Initialized/Updated accounts cache with ${topAccounts.length} accounts.`);
+		logger.info(`Initialized/Updated accounts cache with ${topAccounts.length} top accounts.`);
 	}
 };
 
 const getTopAccounts = () => new Promise((resolve) => {
 		resolve(topAccounts);
-	});
+});
 
 module.exports = {
 	reloadTopAccounts: retrieveTopAccounts,

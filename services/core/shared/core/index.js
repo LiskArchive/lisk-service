@@ -13,9 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getBlocks } = require('./blocks');
+const {
+	getBlocks,
+	setLastBlock,
+	getLastBlock,
+	initBlocks,
+	preloadBlocks,
+	removeOrphanedBlocks,
+} = require('./blocks');
 const { getTransactions } = require('./transactions');
-const { getAccounts } = require('./accounts');
+const { getAccounts, initAccounts } = require('./accounts');
 
 const {
 	EMAcalc,
@@ -69,8 +76,12 @@ const {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache,
-	loadAccounts,
 } = require('./compat');
+
+const init = async () => {
+	await initBlocks();
+	await initAccounts();
+};
 
 module.exports = {
 	get,
@@ -124,5 +135,9 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache,
-	loadAccounts,
+	setLastBlock,
+	getLastBlock,
+	init,
+	preloadBlocks,
+	removeOrphanedBlocks,
 };

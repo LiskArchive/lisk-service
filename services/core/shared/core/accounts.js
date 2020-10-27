@@ -17,6 +17,7 @@ const { Logger } = require('lisk-service-framework');
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
+const { reloadTopAccounts, getTopAccounts } = require('./accountCache');
 
 const logger = Logger();
 
@@ -44,34 +45,48 @@ const getAccounts = async (params) => {
 	let accounts = {
 		data: [],
 	};
-	try {
-		if (!params.address) throw new Error("No param: 'address'. Falling back to Lisk Core");
-		else {
-			const inputData = getSelector({
-				...params,
-				limit: params.limit || 10,
-				offset: params.offset || 0,
-			});
-			const dbResult = await db.find(inputData);
-			if (dbResult.length > 0) {
-				const sortProp = params.sort.split(':')[0];
-				const sortOrder = params.sort.split(':')[1];
-				if (sortOrder === 'desc') dbResult.sort((a, b) => {
-						let compareResult;
-						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-						} else {
-							// Fallback plan (Ideally not required)
-							compareResult = a[sortProp].localCompare(b[sortProp]);
-						}
-						return compareResult;
-					});
 
-				accounts.data = dbResult;
+	// read from cache if available
+	try {
+		const cachedAccounts = await getTopAccounts();
+		accounts.data = cachedAccounts.filter(
+			(acc) => (acc.address && acc.address === params.address)
+				|| (acc.publicKey && acc.publicKey === params.publicKey)
+				|| (acc.secondPublicKey
+					&& acc.secondPublicKey === params.secondPublicKey)
+				|| (acc.username && acc.username === params.username),
+		);
+
+		if (!accounts.data.length) {
+			if (!params.address) throw new Error("No param: 'address'. Falling back to Lisk Core");
+			else {
+				const inputData = getSelector({
+					...params,
+					limit: params.limit || 10,
+					offset: params.offset || 0,
+				});
+				const dbResult = await db.find(inputData);
+				if (dbResult.length > 0) {
+					const sortProp = params.sort.split(':')[0];
+					const sortOrder = params.sort.split(':')[1];
+					if (sortOrder === 'desc') dbResult.sort((a, b) => {
+							let compareResult;
+							if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+								compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+							} else {
+								// Fallback plan (Ideally not required)
+								compareResult = a[sortProp].localCompare(b[sortProp]);
+							}
+							return compareResult;
+						});
+
+					accounts.data = dbResult;
+				}
 			}
 		}
 	} catch (error) {
 		logger.debug(error.message);
+
 		accounts = await coreApi.getAccounts(params);
 		if (accounts.data.length > 0) {
 			accounts.data.id = accounts.data.address;
@@ -81,6 +96,11 @@ const getAccounts = async (params) => {
 	return accounts;
 };
 
+const initAccounts = async () => {
+	reloadTopAccounts(coreApi);
+};
+
 module.exports = {
 	getAccounts,
+	initAccounts,
 };
