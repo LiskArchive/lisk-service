@@ -21,6 +21,15 @@ const coreApi = require('./compat');
 const logger = Logger();
 let topAccounts = [];
 
+const formatSortString = sortString => {
+	const sortObj = {};
+	const sortProp = sortString.split(':')[0];
+	const sortOrder = sortString.split(':')[1];
+	sortObj[sortProp] = sortOrder;
+
+	return sortObj;
+};
+
 const getSelector = (params) => {
 	const selector = {};
 	const result = { sort: [] };
@@ -33,15 +42,20 @@ const getSelector = (params) => {
 	}
 	if (params.username) selector.username = params.username;
 	result.selector = selector;
-	if (!params.sort) result.sort.push({ balance: 'asc' });
+
+	if (Object.getOwnPropertyNames(result.selector).length === 0) {
+		if (params.sort) result.sort.push(formatSortString(params.sort));
+		else result.sort.push({ timestamp: 'desc' });
+	} else if (result.sort.length === 0) delete result.sort;
+
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
 };
 
 const getTopAccounts = () => new Promise((resolve) => {
-	resolve(topAccounts);
-});
+		resolve(topAccounts);
+	});
 
 const getAccounts = async (params) => {
 	const db = await pouchdb(config.db.collections.accounts.name);
@@ -50,57 +64,56 @@ const getAccounts = async (params) => {
 		data: [],
 	};
 	// read from cache if available
-	try {
-		const cachedAccounts = await getTopAccounts();
-		accounts.data = cachedAccounts.filter(
-			(acc) => (acc.address && acc.address === params.address)
-				|| (acc.publicKey && acc.publicKey === params.publicKey)
-				|| (acc.secondPublicKey
-					&& acc.secondPublicKey === params.secondPublicKey)
-				|| (acc.username && acc.username === params.username),
-		);
+	const cachedAccounts = await getTopAccounts();
+	accounts.data = cachedAccounts.filter(
+		(acc) => (acc.address && acc.address === params.address)
+			|| (acc.publicKey && acc.publicKey === params.publicKey)
+			|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
+			|| (acc.username && acc.username === params.username),
+	);
 
-		if (!accounts.data.length) {
-			if (!params.address) throw new Error("No param: 'address'. Falling back to Lisk Core");
-			else {
-				const inputData = getSelector({
-					...params,
-					limit: params.limit || 10,
-					offset: params.offset || 0,
-				});
-				const dbResult = await db.find(inputData);
-				if (dbResult.length > 0) {
-					const sortProp = params.sort.split(':')[0];
-					const sortOrder = params.sort.split(':')[1];
-					if (sortOrder === 'desc') dbResult.sort((a, b) => {
-							let compareResult;
-							if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-								compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-							} else {
-								// Fallback plan (Ideally not required)
-								compareResult = a[sortProp].localCompare(b[sortProp]);
-							}
-							return compareResult;
-						});
+	if (!accounts.data.length) {
+		if (
+			params.address
+			|| params.publicKey
+			|| params.secondPublicKey
+			|| params.username
+		) {
+			const inputData = getSelector({
+				...params,
+				limit: params.limit || 10,
+				offset: params.offset || 0,
+			});
+			const dbResult = await db.find(inputData);
+			if (dbResult.length > 0) {
+				const sortProp = params.sort.split(':')[0];
+				const sortOrder = params.sort.split(':')[1];
+				if (sortOrder === 'desc') dbResult.sort((a, b) => {
+						let compareResult;
+						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+						} else {
+							compareResult = a[sortProp].localCompare(b[sortProp]);
+						}
+						return compareResult;
+					});
 
-					accounts.data = dbResult;
-				}
+				accounts.data = dbResult;
 			}
 		}
-	} catch (error) {
-		logger.debug(error.message);
-
+	}
+	if (accounts.data.length === 0) {
 		accounts = await coreApi.getAccounts(params);
 		if (accounts.data.length > 0) {
-			accounts.data.id = accounts.data.address;
-			db.writeBatch(accounts.data);
-		}
+		accounts.data.id = accounts.data.address;
+		db.writeBatch(accounts.data);
 	}
+}
 	return accounts;
 };
 
 const retrieveTopAccounts = async (core, accounts = []) => {
-	const limit = config.cacheNumofAccounts;
+	const limit = config.cacheNumOfAccounts;
 	const response = await core.getAccounts({
 		limit: limit > 100 ? 100 : limit,
 		offset: accounts.length,
@@ -112,10 +125,11 @@ const retrieveTopAccounts = async (core, accounts = []) => {
 		retrieveTopAccounts(core, accounts);
 	} else {
 		topAccounts = accounts;
-		logger.info(`Initialized/Updated accounts cache with ${topAccounts.length} top accounts.`);
+		logger.info(
+			`Initialized/Updated accounts cache with ${topAccounts.length} top accounts.`,
+		);
 	}
 };
-
 
 const initAccounts = (async () => {
 	retrieveTopAccounts(coreApi);

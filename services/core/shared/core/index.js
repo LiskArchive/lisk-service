@@ -17,7 +17,6 @@ const {
 	getBlocks,
 	setLastBlock,
 	getLastBlock,
-	initBlocks,
 	preloadBlocks,
 	removeOrphanedBlocks,
 } = require('./blocks');
@@ -79,7 +78,7 @@ const {
 } = require('./compat');
 
 const init = async () => {
-	await initBlocks();
+	// await initBlocks();
 	// await initAccounts();
 };
 
