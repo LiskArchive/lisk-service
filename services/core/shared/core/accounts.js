@@ -13,9 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
+
+const logger = Logger();
 
 const getSelector = (params) => {
 	const selector = {};
@@ -42,32 +45,34 @@ const getAccounts = async (params) => {
 	let accounts = {
 		data: [],
 	};
-
-	const inputData = getSelector({
-		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-
-	const dbResult = await db.find(inputData);
-	if (dbResult.length > 0) {
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-		if (sortOrder === 'desc') dbResult.sort((a, b) => {
-				let compareResult;
-				if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-					compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-				} else {
-					// Fallback plan (Ideally not required)
-					compareResult = a[sortProp].localCompare(b[sortProp]);
-				}
-				return compareResult;
+	try {
+		if (!params.address) throw new Error("No param: 'address'. Falling back to Lisk Core");
+		else {
+			const inputData = getSelector({
+				...params,
+				limit: params.limit || 10,
+				offset: params.offset || 0,
 			});
-		// TODO: Update transient properties such as confirmations
-		accounts.data = dbResult;
-	}
+			const dbResult = await db.find(inputData);
+			if (dbResult.length > 0) {
+				const sortProp = params.sort.split(':')[0];
+				const sortOrder = params.sort.split(':')[1];
+				if (sortOrder === 'desc') dbResult.sort((a, b) => {
+						let compareResult;
+						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+						} else {
+							// Fallback plan (Ideally not required)
+							compareResult = a[sortProp].localCompare(b[sortProp]);
+						}
+						return compareResult;
+					});
 
-	if (accounts.data.length === 0) {
+				accounts.data = dbResult;
+			}
+		}
+	} catch (error) {
+		logger.debug(error.message);
 		accounts = await coreApi.getAccounts(params);
 		if (accounts.data.length > 0) {
 			accounts.data.id = accounts.data.address;

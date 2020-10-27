@@ -16,25 +16,32 @@
 const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
+let topAccounts = [];
 
-let accounts = [];
+const retrieveTopAccounts = async (core, accounts = []) => {
+	const limit = 500;
+	const response = await core.getAccounts({
+		limit: limit > 100 ? 100 : limit,
+		offset: accounts.length,
+		sort: 'balance:desc',
+	});
+	accounts = [...accounts, ...response.data];
 
-const retrieveTopAccounts = async (core) => {
-	const limit = 100;
-    accounts = await core.getAccounts({ limit, sort: 'balance:asc' });
-    logger.debug('Updated accounts cache.');
+	if (accounts.length < limit) {
+		retrieveTopAccounts(core, accounts);
+	} else {
+		topAccounts = accounts;
+		logger.info(`Updated accounts cache with ${topAccounts.length} accounts.`);
+	}
 };
 
 const get = () => new Promise((resolve) => {
-	resolve(accounts);
-});
+		resolve(topAccounts);
+	});
 
-
-const reloadAccounts = core => {
-	retrieveTopAccounts(core);
-};
+const reloadAccounts = async (core) => retrieveTopAccounts(core);
 
 module.exports = {
-    reloadAccounts,
-    get,
+	reloadAccounts,
+	get,
 };
