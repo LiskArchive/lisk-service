@@ -23,11 +23,11 @@ module.exports = [
 		interval: 45, // seconds
 		init: () => {
 			logger.debug('Initializing account list...');
-			core.retrieveTopAccounts()
+			core.retrieveTopAccounts();
 		},
 		controller: () => {
 			logger.debug('Scheduling account list reload...');
-			core.retrieveTopAccounts()
+			core.retrieveTopAccounts();
 		},
 	},
 ];
