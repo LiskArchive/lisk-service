@@ -60,7 +60,7 @@ const accountsResponseSchema = Joi.object({
 	links: Joi.object(),
 }).required();
 
-describe('Multi-Request API', () => {
+xdescribe('Multi-Request API', () => {
 	it('responds to a correct request', async () => {
 		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', method: 'get.transactions', params: { limit: 1 } },
