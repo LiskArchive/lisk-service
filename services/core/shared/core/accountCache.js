@@ -31,17 +31,15 @@ const retrieveTopAccounts = async (core, accounts = []) => {
 		retrieveTopAccounts(core, accounts);
 	} else {
 		topAccounts = accounts;
-		logger.info(`Updated accounts cache with ${topAccounts.length} accounts.`);
+		logger.info(`Initialized/Updated accounts cache with ${topAccounts.length} accounts.`);
 	}
 };
 
-const get = () => new Promise((resolve) => {
+const getTopAccounts = () => new Promise((resolve) => {
 		resolve(topAccounts);
 	});
 
-const reloadAccounts = async (core) => retrieveTopAccounts(core);
-
 module.exports = {
-	reloadAccounts,
-	get,
+	reloadTopAccounts: retrieveTopAccounts,
+	getTopAccounts,
 };

@@ -32,8 +32,7 @@ const getSelector = (params) => {
 	}
 	if (params.username) selector.username = params.username;
 	result.selector = selector;
-
-	result.sort.push({ balance: 'asc' });
+	if (!params.sort) result.sort.push({ balance: 'asc' });
 	if (params.limit) result.limit = params.limit;
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 	return result;
