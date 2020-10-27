@@ -58,7 +58,6 @@ const getSelector = (params) => {
 	if (params.toTimestamp) selector.unixTimestamp = { $lte: Number(params.toTimestamp) };
 	if (params.generatorPublicKey) selector.generatorPublicKey = String(params.generatorPublicKey);
 
-	result.selector = selector;
 	if (params.limit) result.limit = Number(params.limit);
 	if (Number(params.offset) >= 0) result.skip = Number(params.offset);
 
@@ -68,6 +67,7 @@ const getSelector = (params) => {
 	};
 	if (params.isFinal) selector.isFinal = params.isFinal;
 	if (params.isImmutable) selector.isFinal = params.isImmutable;
+
 	result.selector = selector;
 
 	if (params.limit) result.limit = params.limit;
