@@ -67,6 +67,7 @@ const getSelector = (params) => {
 		$gte: Number(params.numberOfTransactions),
 	};
 	if (params.isFinal) selector.isFinal = params.isFinal;
+	if (params.isImmutable) selector.isFinal = params.isImmutable;
 	result.selector = selector;
 
 	if (params.limit) result.limit = params.limit;
@@ -112,7 +113,10 @@ const getBlocks = async (params = {}) => {
 		data: [],
 	};
 
-	if (params.blockId || params.numberOfTransactions || params.isFinal) { // try to get from cache
+	if (params.blockId
+		|| params.numberOfTransactions
+		|| params.isFinal === true
+		|| params.isImmutable === true) { // try to get from cache
 		const inputData = getSelector({
 			...params,
 			limit: params.limit || 10,
@@ -130,7 +134,7 @@ const getBlocks = async (params = {}) => {
 	if (blocks.data.length === 0) {
 		blocks = await coreApi.getBlocks(params);
 		if (blocks.data.length > 0) {
-			const finalBlocks = blocks.data.filter((block) => block.isFinal === true);
+			const finalBlocks = blocks.data.filter((block) => block.isImmutable === true);
 			pushToDb(blockDb, finalBlocks);
 		}
 	}
@@ -150,7 +154,6 @@ const removeOrphanedBlocks = async (n) => {
 	const blockDb = await pouchdb('blocks', indexList);
 	const blocks = await blockDb.find({
 		selector: {
-			// isFinal: false,
 			height: { $gte: (getLastBlock()).height - n },
 		},
 		sort: ['height'],

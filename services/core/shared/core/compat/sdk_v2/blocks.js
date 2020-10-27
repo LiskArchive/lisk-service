@@ -41,7 +41,7 @@ const getBlocks = async params => {
 
 		await Promise.all(blocks.data.map(async (o) => Object.assign(o, {
 			unixTimestamp: await getUnixTime(o.timestamp),
-			isFinal: (currentHeight - o.height >= considerFinalHeight),
+			isImmutable: (currentHeight - o.height >= considerFinalHeight),
 		}),
 		));
 	}
