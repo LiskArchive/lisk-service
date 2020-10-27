@@ -113,7 +113,7 @@ const getBlocks = async (params = {}) => {
 	};
 
 	if (params.blockId || params.numberOfTransactions || params.isFinal) { // try to get from cache
-		const inputData = await getSelector({
+		const inputData = getSelector({
 			...params,
 			limit: params.limit || 10,
 			offset: params.offset || 0,
