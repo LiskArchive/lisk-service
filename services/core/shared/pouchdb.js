@@ -136,6 +136,8 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		return deleteBatch(res);
 	};
 
+	const getCount = async () => (await db.info()).doc_count;
+
 	return {
 		write,
 		writeOnce,
@@ -146,6 +148,7 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		deleteById,
 		deleteBatch,
 		deleteByProperty,
+		getCount,
 	};
 };
 
