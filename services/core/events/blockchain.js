@@ -71,7 +71,7 @@ module.exports = [
 		name: 'update.fee_estimates',
 		description: 'Keep the fee estimates up-to-date',
 		controller: callback => {
-			coreSocket.socket.on('blocks/change', async () => {
+			signals.blockCached.add(async () => {
 				logger.debug('Returning latest fee_estimates to the socket.io client...');
 				const restData = await core.getEstimateFeeByte();
 				callback(restData ? restData.data : null);
