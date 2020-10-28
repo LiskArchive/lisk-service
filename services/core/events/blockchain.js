@@ -48,7 +48,7 @@ module.exports = [
 		controller: callback => {
 			signals.blockCached.add(async (block) => {
 				if (block.numberOfTransactions > 0) {
-					logger.debug(`New transactions arrived (${block.id}), ${block.numberOfTransactions} txs...`);
+					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
 					const transactionData = await core.getTransactions({ blockId: block.id });
 					callback(transactionData);
 				}
