@@ -21,30 +21,6 @@ const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const config = require('../../config');
 
-const indexList = [
-	'id',
-	'generatorPublicKey',
-	'generatorAddress',
-	'generatorUsername',
-	'height',
-	'numberOfTransactions',
-	'previousBlockId',
-	'unixTimestamp',
-	'totalAmount',
-	'totalFee',
-	'isFinal',
-	['height', 'isFinal'],
-	['generatorPublicKey', 'numberOfTransactions'],
-	['generatorAddress', 'numberOfTransactions'],
-	['generatorUsername', 'numberOfTransactions'],
-	['generatorPublicKey', 'totalAmount'],
-	['generatorAddress', 'totalAmount'],
-	['generatorUsername', 'totalAmount'],
-	['generatorPublicKey', 'unixTimestamp'],
-	['generatorAddress', 'unixTimestamp'],
-	['generatorUsername', 'unixTimestamp'],
-];
-
 let lastBlock = {};
 
 const getSelector = (params) => {
@@ -105,7 +81,7 @@ const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
 const getBlocks = async (params = {}, skipCache = false) => {
-	const blockDb = await pouchdb(config.db.collections.blocks.name, indexList);
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
 	let blocks = {
 		data: [],
@@ -171,7 +147,7 @@ const preloadBlocksByPage = async (n) => {
 };
 
 const cleanFromForks = async (n) => {
-	const blockDb = await pouchdb('blocks', indexList);
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 	const blocks = await blockDb.find({
 		selector: {
 			height: { $gte: (getLastBlock()).height - n },
@@ -194,7 +170,7 @@ const cleanFromForks = async (n) => {
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
 const initBlocks = async () => {
-	await pouchdb('blocks', indexList);
+	await pouchdb(config.db.collections.accounts.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);
