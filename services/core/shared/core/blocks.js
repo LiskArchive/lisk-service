@@ -40,7 +40,7 @@ const getSelector = (params) => {
 		$gte: Number(params.numberOfTransactions),
 	};
 	if (params.isFinal) selector.isFinal = params.isFinal;
-	if (params.isImmutable) selector.isFinal = params.isImmutable;
+	if (params.isImmutable) selector.isImmutable = params.isImmutable;
 
 	result.selector = selector;
 
