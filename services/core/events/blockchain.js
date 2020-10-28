@@ -21,11 +21,13 @@ const core = require('../shared/core');
 const config = require('../config');
 
 const coreSocket = SocketClient(config.endpoints.liskWs);
-logger.info(`Registering ${config.endpoints.liskWs}`);
+logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
 const signals = {
 	blockCached: new Signal(),
 };
+
+const numOfBlocks = 202;
 
 module.exports = [
 	{
@@ -37,7 +39,7 @@ module.exports = [
 				const restData = await core.getBlocks({ blockId: data.id });
 				core.setLastBlock(restData.data[0]);
 				signals.blockCached.dispatch(restData.data[0]);
-				core.reloadBlocks(202);
+				core.reloadBlocks(numOfBlocks);
 				callback(restData.data[0]);
 			});
 		},
