@@ -77,10 +77,6 @@ const {
 	reloadDelegateCache,
 } = require('./compat');
 
-const init = async () => {
-	// await initBlocks();
-	// await initAccounts();
-};
 
 module.exports = {
 	get,
@@ -136,7 +132,6 @@ module.exports = {
 	reloadDelegateCache,
 	setLastBlock,
 	getLastBlock,
-	init,
 	preloadBlocks,
 	removeOrphanedBlocks,
 	retrieveTopAccounts,

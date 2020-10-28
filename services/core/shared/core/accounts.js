@@ -21,7 +21,7 @@ const coreApi = require('./compat');
 const logger = Logger();
 let topAccounts = [];
 
-const formatSortString = sortString => {
+const formatSortString = (sortString) => {
 	const sortObj = {};
 	const sortProp = sortString.split(':')[0];
 	const sortOrder = sortString.split(':')[1];
@@ -90,9 +90,11 @@ const getAccounts = async (params) => {
 				const sortOrder = params.sort.split(':')[1];
 				if (sortOrder === 'desc') dbResult.sort((a, b) => {
 						let compareResult;
-						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-						} else {
+						try {
+							if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+								compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+							}
+						} catch (err) {
 							compareResult = a[sortProp].localCompare(b[sortProp]);
 						}
 						return compareResult;
@@ -105,13 +107,13 @@ const getAccounts = async (params) => {
 	if (accounts.data.length === 0) {
 		accounts = await coreApi.getAccounts(params);
 		if (accounts.data.length > 0) {
-		const allAccounts = accounts.data.map(account => {
-			account.id = account.address;
-			return account;
-		});
-		await db.writeBatch(allAccounts);
+			const allAccounts = accounts.data.map((account) => {
+				account.id = account.address;
+				return account;
+			});
+			await db.writeBatch(allAccounts);
+		}
 	}
-}
 	return accounts;
 };
 
