@@ -60,7 +60,12 @@ const getDelegates = async params => {
 	};
 
 	try {
-		if (!params.address) throw new Error('Cannot query the DB without indexed params. Falling back to Lisk Core');
+		if (
+			!params.address
+			&& !params.publicKey
+			&& !params.secondPublicKey
+			&& !params.username
+		) throw new Error('Cannot query the DB without indexed params. Falling back to Lisk Core');
 		else {
 			const inputData = getSelector({
 				...params,
