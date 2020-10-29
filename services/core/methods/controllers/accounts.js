@@ -18,8 +18,8 @@ const { HTTP, Utils, Logger } = require('lisk-service-framework');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray, isEmptyObject } = Utils.Data;
 
-const CoreService = require('../../shared/core.js');
-const config = require('../../config.js');
+const CoreService = require('../../shared/core');
+const config = require('../../config');
 
 const logger = Logger();
 
@@ -27,7 +27,7 @@ const knownExpireMiliseconds = 5 * 60 * 1000;
 const staticUrl = config.endpoints.liskStatic;
 
 const getKnownAccounts = async () => {
-	const { nethash } = await CoreService.getConstants();
+	const { nethash } = await CoreService.getNetworkConstants();
 
 	const cacheTTL = knownExpireMiliseconds;
 
@@ -85,7 +85,7 @@ const getAccounts = async params => {
 	delete params.anyId;
 
 	try {
-		const response = await getDataForAccounts(params);
+		const response = await getDataForAccounts({ sort: 'balance:asc', ...params });
 
 		return {
 			data: response.data,

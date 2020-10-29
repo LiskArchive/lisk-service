@@ -14,12 +14,10 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const CoreService = require('./core.js');
-const requestAll = require('./requestAll');
+const { peerStates } = require('./compat');
+const requestAll = require('../requestAll');
 
 const logger = Logger();
-
-const { peerStates } = CoreService;
 
 const peerStore = {
 	peers: [],

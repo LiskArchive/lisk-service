@@ -14,7 +14,7 @@
  *
  */
 const GeoService = require('../../shared/geolocation.js');
-const peerCache = require('../../shared/peerCache.js');
+const peerCache = require('../../shared/core/peerCache.js');
 
 const addLocation = async (ipaddress) => {
 	try {

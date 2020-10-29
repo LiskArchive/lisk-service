@@ -14,7 +14,7 @@
  *
  */
 const { HTTP } = require('lisk-service-framework');
-const CoreService = require('../../shared/core.js');
+const CoreService = require('../../shared/core');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 

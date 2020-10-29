@@ -13,22 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../shared/core');
+const coreApi = require('./coreApi');
 
-const getNetworkStatus = async () => {
-	const status = await CoreService.getNetworkStatus();
-	const constants = await CoreService.getNetworkConstants();
-	const result = {};
-	result.status = status.data;
-	result.constants = constants.data;
+const {
+	...coreApiGetters
+} = coreApi;
 
-	return {
-		data: result,
-		meta: {},
-	};
-};
+const coreApiCached = Object.keys(coreApiGetters).reduce((accumulator, key) => ({
+	...accumulator,
+	[key]: (requestParams, { expireMiliseconds } = {}) => (
+		coreApi[key]({
+			...requestParams,
+			cacheTTL: expireMiliseconds,
+		})
+	),
+}), {});
 
-
-module.exports = {
-	getNetworkStatus,
-};
+module.exports = coreApiCached;

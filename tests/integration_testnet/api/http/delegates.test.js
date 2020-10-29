@@ -126,7 +126,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	describe('GET /delegates/latest_registrations', () => {
+	xdescribe('GET /delegates/latest_registrations', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=100`);
 			expect(response.data).toBeArrayOfSize(100);

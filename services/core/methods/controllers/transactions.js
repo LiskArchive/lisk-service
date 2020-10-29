@@ -20,8 +20,8 @@ const { isEmptyArray, isEmptyObject } = Utils.Data;
 
 const moment = require('moment');
 
-const CoreService = require('../../shared/core.js');
-const txStatisticsService = require('../../shared/transactionStatistics');
+const CoreService = require('../../shared/core');
+const txStatisticsService = require('../../shared/core/transactionStatistics');
 
 const getTransactions = async params => {
 	const addressParam = ['senderId', 'recipientId', 'senderIdOrRecipientId'].filter(item => typeof params[item] === 'string');
@@ -45,14 +45,15 @@ const getTransactions = async params => {
 
 	const meta = {
 		count: result.data.length,
-		limit: result.meta.limit,
-		offset: result.meta.offset,
-		total: result.meta.count,
+		offset: result.meta ? result.meta.offset : 0,
+		total: result.meta ? result.meta.count : null,
+		// TODO: Set total properly
 	};
 
 	return {
 		data: result.data,
 		meta,
+		link: {},
 	};
 };
 
