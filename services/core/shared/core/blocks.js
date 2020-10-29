@@ -186,7 +186,7 @@ const cleanFromForks = async (n) => {
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
 const initBlocks = (async () => {
-	await pouchdb(config.db.collections.accounts.name);
+	await pouchdb(config.db.collections.blocks.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);
