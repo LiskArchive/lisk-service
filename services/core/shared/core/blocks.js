@@ -21,30 +21,6 @@ const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const config = require('../../config');
 
-const indexList = [
-	'id',
-	'generatorPublicKey',
-	'generatorAddress',
-	'generatorUsername',
-	'height',
-	'numberOfTransactions',
-	'previousBlockId',
-	'unixTimestamp',
-	'totalAmount',
-	'totalFee',
-	'isFinal',
-	['height', 'isFinal'],
-	['generatorPublicKey', 'numberOfTransactions'],
-	['generatorAddress', 'numberOfTransactions'],
-	['generatorUsername', 'numberOfTransactions'],
-	['generatorPublicKey', 'totalAmount'],
-	['generatorAddress', 'totalAmount'],
-	['generatorUsername', 'totalAmount'],
-	['generatorPublicKey', 'unixTimestamp'],
-	['generatorAddress', 'unixTimestamp'],
-	['generatorUsername', 'unixTimestamp'],
-];
-
 let lastBlock = {};
 
 const getSelector = (params) => {
@@ -64,7 +40,7 @@ const getSelector = (params) => {
 		$gte: Number(params.numberOfTransactions),
 	};
 	if (params.isFinal) selector.isFinal = params.isFinal;
-	if (params.isImmutable) selector.isFinal = params.isImmutable;
+	if (params.isImmutable) selector.isImmutable = params.isImmutable;
 
 	result.selector = selector;
 
@@ -105,7 +81,7 @@ const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
 const getBlocks = async (params = {}, skipCache = false) => {
-	const blockDb = await pouchdb(config.db.collections.blocks.name, indexList);
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
 	let blocks = {
 		data: [],
@@ -124,7 +100,7 @@ const getBlocks = async (params = {}, skipCache = false) => {
 		if (dbResult.length > 0) {
 			blocks.data = dbResult.map((block) => ({
 				...block,
-				confirmations: (getLastBlock().height) - block.height,
+				confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
 			}));
 		}
 	}
@@ -138,7 +114,33 @@ const getBlocks = async (params = {}, skipCache = false) => {
 		}
 	}
 
-	return blocks;
+	await Promise.all(blocks.data.map(async block => {
+		// TODO: Enable when delegate caching is done
+		// const username = await CoreService.getUsernameByAddress(block.generatorAddress);
+		const username = 'FIXME';
+		if (username) {
+			block.generatorUsername = username;
+		}
+		return block;
+	}));
+
+	let total;
+	if (params.generatorPublicKey) {
+		delete blocks.meta.total;
+	} else if (params.blockId || params.height) {
+		total = blocks.length;
+	} else {
+		total = (getLastBlock()).height;
+	}
+
+	return {
+		data: blocks.data,
+		meta: {
+			count: blocks.data.length,
+			offset: parseInt(params.offset, 10) || 0,
+			total,
+		},
+	};
 };
 
 const preloadBlocksOneByOne = async (n) => {
@@ -161,7 +163,7 @@ const preloadBlocksByPage = async (n) => {
 };
 
 const cleanFromForks = async (n) => {
-	const blockDb = await pouchdb('blocks', indexList);
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 	const blocks = await blockDb.find({
 		selector: {
 			height: { $gte: (getLastBlock()).height - n },
@@ -184,7 +186,7 @@ const cleanFromForks = async (n) => {
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
 const initBlocks = async () => {
-	await pouchdb('blocks', indexList);
+	await pouchdb(config.db.collections.accounts.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);

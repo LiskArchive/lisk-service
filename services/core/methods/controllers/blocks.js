@@ -18,57 +18,20 @@ const { HTTP, Utils } = require('lisk-service-framework');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
-const CoreService = require('../../shared/core');
+const Core = require('../../shared/core');
 
 const { isEmptyArray } = ObjectUtilService;
-
-const getBlocksData = async params => {
-	const result = {
-		data: [],
-		meta: {
-			count: 0,
-			offset: parseInt(params.offset, 10) || 0,
-			total: 0,
-		},
-	};
-	const response = await CoreService.getBlocks(params);
-	if (!Array.isArray(response.data)) return result;
-	let total;
-
-	const data = await Promise.all(response.data.map(async block => {
-		const username = await CoreService.getUsernameByAddress(block.generatorAddress);
-		if (username) {
-			block.generatorUsername = username;
-		}
-		return block;
-	}));
-
-	if (params.generatorPublicKey) {
-		delete result.meta.total;
-	} else if (params.blockId || params.height) {
-		total = data.length;
-	} else {
-		total = (CoreService.getLastBlock()).height;
-	}
-
-	result.data = data;
-	result.meta.count = data.length;
-	result.meta.total = total;
-	result.meta.offset = response.meta ? response.meta.offset : 0;
-
-	return result;
-};
 
 const getBlocks = async params => {
 	if (typeof params.height === 'number') {
 		params.height = `${params.height}`;
 	}
 	if (params.address) {
-		params.generatorPublicKey = await CoreService.getPublicKeyByAny(params.address);
+		params.generatorPublicKey = await Core.getPublicKeyByAny(params.address);
 		if (!params.generatorPublicKey) return { status: NOT_FOUND, data: { error: `Account ID ${params.address} not found.` } };
 		delete params.address;
 	}
-	const response = await getBlocksData(params);
+	const response = await Core.getBlocks(params);
 
 	if (typeof params.blockId === 'string') {
 		if (isEmptyArray(response.data)) {
@@ -100,7 +63,7 @@ const getBlocks = async params => {
 };
 
 const getBestBlocks = async params => {
-	const response = await getBlocksData(Object.assign(params, {
+	const response = await Core.getBlocks(Object.assign(params, {
 		sort: 'totalAmount:desc',
 	}));
 	const blocks = response.data;
@@ -113,7 +76,7 @@ const getBestBlocks = async params => {
 };
 
 const getLastBlocks = async params => {
-	const response = await getBlocksData(Object.assign(params, {
+	const response = await Core.getBlocks(Object.assign(params, {
 		sort: 'timestamp:desc',
 	}));
 	const blocks = response.data;
