@@ -74,7 +74,13 @@ config.db = {
 		},
 		delegates: {
 			name: 'delegates',
-			indexes: [],
+			indexes: [
+				'address',
+				'publicKey',
+				'secondPublicKey',
+				'username',
+				'rank',
+			],
 		},
 		transactions: {
 			name: 'transactions',
