@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const coreApi = require('./coreApi');
 
 const logger = Logger();
 
@@ -53,8 +54,16 @@ const getTotalNumberOfDelegates = (params = {}) => {
 	return relevantDelegates.length;
 };
 
+const getDelegates = async params => {
+	// If available in cache, filter and return, else retrieve from Core
+	const delegates = await coreApi.getDelegates(params);
+
+	return delegates;
+};
+
 module.exports = {
 	reloadDelegateCache: reload,
 	getDelegateRankByUsername,
 	getTotalNumberOfDelegates,
+	getDelegates,
 };

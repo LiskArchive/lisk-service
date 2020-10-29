@@ -23,6 +23,7 @@ const {
 } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
+const { getDelegates } = require('./delegates');
 
 const {
 	EMAcalc,
@@ -59,7 +60,6 @@ const {
 	getOutgoingTxsCount,
 	getVotes,
 	getVoters,
-	getDelegates,
 	getForgingStats,
 	getNextForgers,
 	getNetworkStatus,
