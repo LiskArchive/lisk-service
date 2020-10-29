@@ -57,6 +57,7 @@ const getDelegates = async params => {
 
 	let delegates = {
 		data: [],
+		meta: {},
 	};
 
 	try {
