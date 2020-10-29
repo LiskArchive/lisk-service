@@ -34,5 +34,4 @@ module.exports = {
 	receivedAt: '=,string',
 	relays: '=,number',
 	ready: '=,boolean',
-	isFinal: '=',
 };

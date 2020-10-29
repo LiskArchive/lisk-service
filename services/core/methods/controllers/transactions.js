@@ -22,8 +22,8 @@ const { isEmptyArray, isEmptyObject } = Utils.Data;
 
 const moment = require('moment');
 
-const CoreService = require('../../shared/core.js');
-const txStatisticsService = require('../../shared/transactionStatistics');
+const CoreService = require('../../shared/core');
+const txStatisticsService = require('../../shared/core/transactionStatistics');
 
 const getTransactions = async (params) => {
 	const addressParam = [
@@ -57,26 +57,17 @@ const getTransactions = async (params) => {
 		return { status: NOT_FOUND, data: { error: 'Not found.' } };
 	}
 
-	const finalHeight = CoreService.getFinalizedHeight();
-	const data = result.data.map((transaction) => {
-		if (transaction.height <= finalHeight) {
-			transaction.isFinal = true;
-		} else {
-			transaction.isFinal = false;
-		}
-		return transaction;
-	});
-
 	const meta = {
 		count: result.data.length,
-		limit: result.meta.limit,
-		offset: result.meta.offset,
-		total: result.meta.count,
+		offset: result.meta ? result.meta.offset : 0,
+		total: result.meta ? result.meta.count : null,
+		// TODO: Set total properly
 	};
 
 	return {
 		data,
 		meta,
+		link: {},
 	};
 };
 

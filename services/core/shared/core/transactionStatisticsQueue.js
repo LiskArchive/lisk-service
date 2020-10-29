@@ -19,10 +19,10 @@ const Queue = require('bull');
 const moment = require('moment');
 const util = require('util');
 
-const core = require('./core');
-const getDbInstance = require('./pouchdb');
-const config = require('../config');
-const requestAll = require('./requestAll');
+const config = require('../../config');
+const requestAll = require('../requestAll');
+const getDbInstance = require('../pouchdb');
+const { getTransactions } = require('./transactions');
 
 const logger = Logger();
 
@@ -102,6 +102,7 @@ const insertToDb = async (statsList, date) => {
 	await db.deleteByProperty('date', date);
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
+		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});
@@ -119,7 +120,7 @@ const fetchTransactions = async (date, offset = 0) => {
 		limit,
 		offset,
 	};
-	const transactions = await requestAll(core.getTransactions, params, 20000);
+	const transactions = await requestAll(getTransactions, params, 20000);
 	return transactions;
 };
 

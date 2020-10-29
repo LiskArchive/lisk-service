@@ -60,7 +60,7 @@ const badRequestSchema = {
 
 const notFoundSchema = badRequestSchema;
 
-describe('Accounts API', () => {
+xdescribe('Accounts API', () => {
 	describe('Retrieve account list', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${endpoint}`);

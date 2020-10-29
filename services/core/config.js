@@ -35,11 +35,32 @@ config.db = {
 	collections: {
 		accounts: {
 			name: 'accounts',
-			indexes: [],
+			indexes: [
+				'address',
+				'publicKey',
+				'secondPublicKey',
+				'balance',
+				'delegate',
+				'knowledge',
+				'multisignatureAccount',
+				'transactionCount',
+			],
 		},
 		blocks: {
 			name: 'blocks',
-			indexes: [],
+			indexes: [
+				'id',
+				'generatorPublicKey',
+				'generatorAddress',
+				'generatorUsername',
+				'height',
+				'numberOfTransactions',
+				'previousBlockId',
+				'totalAmount',
+				'totalFee',
+				['generatorPublicKey', 'numberOfTransactions'],
+				['generatorPublicKey', 'totalAmount'],
+			],
 		},
 		delegates: {
 			name: 'delegates',
@@ -47,7 +68,19 @@ config.db = {
 		},
 		transactions: {
 			name: 'transactions',
-			indexes: [],
+			indexes: [
+				'id',
+				'amount',
+				'fee',
+				'type',
+				'height',
+				'blockId',
+				'timestamp',
+				'senderId',
+				'recipientId',
+				['senderId', 'timestamp'],
+				['recipientId', 'timestamp'],
+			],
 		},
 		transaction_statistics: {
 			name: 'transaction_statistics',
@@ -71,6 +104,8 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
  */
 // Time in seconds to keep the general cache
 config.cacheTTL = 20;
+config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
+
 /**
  * Cache delegate info in order to replace address by username
  * Delegate caching support (true - enabled, false - disabled)

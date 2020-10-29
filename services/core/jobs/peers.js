@@ -15,7 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const peerCache = require('../shared/peerCache');
+const peerCache = require('../shared/core/peerCache');
 const core = require('../shared/core');
 
 module.exports = [

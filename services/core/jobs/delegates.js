@@ -16,7 +16,7 @@
 const logger = require('lisk-service-framework').Logger();
 
 const core = require('../shared/core');
-const delegateCache = require('../shared/delegateCache');
+// const delegateCache = require('../shared/core/delegateCache');
 
 module.exports = [
 	{
@@ -26,11 +26,11 @@ module.exports = [
 		updateOnInit: true,
 		init: () => {
 			logger.debug('Scheduling initial list update...');
-			delegateCache.reload(core);
+			core.reloadDelegateCache(core);
 		},
 		controller: () => {
 			logger.debug('Scheduling delegate list reload...');
-			delegateCache.reload(core);
+			core.reloadDelegateCache(core);
 		},
 	},
 ];

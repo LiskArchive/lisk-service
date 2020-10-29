@@ -18,7 +18,7 @@ const { HTTP, Utils } = require('lisk-service-framework');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
-const CoreService = require('../../shared/core.js');
+const CoreService = require('../../shared/core');
 
 const { isEmptyArray } = ObjectUtilService;
 
@@ -48,11 +48,7 @@ const getBlocksData = async params => {
 	} else if (params.blockId || params.height) {
 		total = data.length;
 	} else {
-		const lastBlock = await CoreService.getBlocks({
-			sort: 'height:desc',
-			limit: 1,
-		});
-		total = lastBlock.data[0].height;
+		total = (CoreService.getLastBlock()).height;
 	}
 
 	result.data = data;
