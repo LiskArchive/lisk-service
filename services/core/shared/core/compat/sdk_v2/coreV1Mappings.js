@@ -15,6 +15,13 @@
  */
 const { getDelegateRankByUsername } = require('./delegateCache');
 
+const reverseMap = (originalMap) => {
+	const result = {};
+	Object.entries(originalMap).forEach(([k, v]) => result[v] = String(k).toLowerCase());
+
+	return result;
+};
+
 const peerStates = {
 	'1.0.0-alpha.0': {
 		UNKNOWN: 0,
@@ -39,6 +46,11 @@ const mapState = state => {
 		disconnected: peerStates['1.0.0-alpha.0'].DISCONNECTED,
 	};
 	return stateMapping[state] !== undefined ? stateMapping[state] : state;
+};
+
+const mapStateName = state => {
+	const peerStateNames = reverseMap(peerStates['1.0.0-alpha.0']);
+	return peerStateNames[state] !== undefined ? peerStateNames[state] : state;
 };
 
 const transactionTypeParamMap = {
@@ -85,7 +97,11 @@ const mapDelegate = ({ voteWeight, ...delegate }) => ({
 
 const responseMappers = {
 	'/peers': response => {
-		response.data = response.data.map(peer => ({ ...peer, state: mapState(peer.state) }));
+		response.data = response.data.map(peer => ({
+			...peer,
+			stateName: mapStateName(peer.state),
+			state: mapState(peer.state),
+		}));
 		return response;
 	},
 	'/transactions': response => {

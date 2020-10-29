@@ -14,8 +14,11 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const { peerStates } = require('./compat');
+
+const core = require('./compat');
 const requestAll = require('../requestAll');
+
+const { peerStates } = require('./compat');
 
 const logger = Logger();
 
@@ -75,7 +78,7 @@ const refreshStatistics = async () => {
 
 const getStatistics = () => peerStore.statistics;
 
-const reload = async (core) => {
+const reload = async () => {
 	logger.debug('Refreshing peer cache...');
 	peerStore.peers = await requestAll(core.getPeers, {});
 	peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
