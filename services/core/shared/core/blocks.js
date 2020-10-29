@@ -185,7 +185,7 @@ const cleanFromForks = async (n) => {
 
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
-const initBlocks = async () => {
+const initBlocks = (async () => {
 	await pouchdb(config.db.collections.accounts.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
@@ -195,7 +195,7 @@ const initBlocks = async () => {
 	logger.debug(`Preloading first ${numOfBlocksPrefetch} blocks`);
 	await reloadBlocks(numOfBlocksPrefetch);
 	logger.debug('Finished block prefetch');
-};
+})();
 
 module.exports = {
 	getBlocks,
