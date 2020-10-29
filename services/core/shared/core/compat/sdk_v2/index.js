@@ -35,7 +35,6 @@ const ObjectUtilService = Utils.Data;
 
 // LoggerConfig(config.log);
 // const logger = Logger();
-let heightFinalized = 2077908;
 const numOfActiveDelegates = 101;
 const peerStates = {
 	UNKNOWN: 0,
@@ -207,18 +206,6 @@ const getForgingStats = async address => {
 	}
 };
 
-const setFinalizedHeight = height => {
-	heightFinalized = height;
-};
-
-const updateFinalizedHeight = async () => {
-	const result = await getNetworkStatus();
-	setFinalizedHeight(result.data.chainMaxHeightFinalized);
-	return result;
-};
-
-const getFinalizedHeight = () => heightFinalized;
-
 
 const nop = () => { };
 
@@ -269,7 +256,4 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache: reload,
-	setFinalizedHeight,
-	updateFinalizedHeight,
-	getFinalizedHeight,
 };

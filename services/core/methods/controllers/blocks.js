@@ -45,18 +45,8 @@ const getBlocks = async params => {
 		}
 	}
 
-	const finalHeight = CoreService.getFinalizedHeight();
-	const data = response.data.map((block) => {
-		if (block.height <= finalHeight) {
-			block.isFinal = true;
-		} else {
-			block.isFinal = false;
-		}
-		return block;
-	});
-
 	return {
-		data,
+		data: response.data,
 		meta: response.meta,
 		link: {},
 	};

@@ -13,4 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = require('../sdk_v2');
+const { getBlocks, updateFinalizedHeight } = require('./blocks');
+
+module.exports = {
+    ...require('../sdk_v2'),
+    getBlocks,
+    updateFinalizedHeight,
+};
