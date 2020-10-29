@@ -132,7 +132,6 @@ module.exports = {
 	reloadDelegateCache,
 	setLastBlock,
 	getLastBlock,
-	init,
 	reloadBlocks,
 	cleanFromForks,
 	retrieveTopAccounts,
