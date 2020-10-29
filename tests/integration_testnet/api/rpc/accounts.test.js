@@ -50,7 +50,7 @@ const delegateSchema = Joi.object({
 
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 
-xdescribe('Method get.accounts', () => {
+describe('Method get.accounts', () => {
 	describe('is able to retrieve account lists', () => {
 		it.todo('returns account details with no params');
 	});
