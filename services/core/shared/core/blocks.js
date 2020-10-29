@@ -124,7 +124,23 @@ const getBlocks = async (params = {}, skipCache = false) => {
 		return block;
 	}));
 
-	return blocks;
+	let total;
+	if (params.generatorPublicKey) {
+		delete blocks.meta.total;
+	} else if (params.blockId || params.height) {
+		total = blocks.length;
+	} else {
+		total = (getLastBlock()).height;
+	}
+
+	return {
+		data: blocks.data,
+		meta: {
+			count: blocks.data.length,
+			offset: parseInt(params.offset, 10) || 0,
+			total,
+		},
+	};
 };
 
 const preloadBlocksOneByOne = async (n) => {
