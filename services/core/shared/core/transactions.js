@@ -13,14 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, LoggerConfig } = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');
 
-LoggerConfig(config.log);
 const logger = Logger();
 
 const formatSortString = sortString => {
