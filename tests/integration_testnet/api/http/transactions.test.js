@@ -39,7 +39,6 @@ const transactionSchema = {
 	signatures: 'array',
 	timestamp: 'number',
 	type: 'number',
-	isFinal: 'boolean',
 };
 
 const badRequestSchema = {

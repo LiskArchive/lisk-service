@@ -35,6 +35,7 @@ const blockSchema = Joi.object({
 	blockSignature: Joi.string().required(),
 	confirmations: Joi.number().required(),
 	previousBlockId: Joi.string().required(),
+	isFinal: Joi.boolean().required(),
 });
 
 module.exports = blockSchema;
