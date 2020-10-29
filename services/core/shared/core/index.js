@@ -19,10 +19,9 @@ const {
 	getLastBlock,
 	cleanFromForks,
 	reloadBlocks,
-	initBlocks,
 } = require('./blocks');
 const { getTransactions } = require('./transactions');
-const { getAccounts } = require('./accounts');
+const { getAccounts, retrieveTopAccounts } = require('./accounts');
 const { getDelegates } = require('./delegates');
 
 const {
@@ -38,7 +37,7 @@ const {
 } = require('./dynamicFees');
 
 const {
-	http,
+	get,
 	parseAddress,
 	validateAddress,
 	validatePublicKey,
@@ -78,12 +77,9 @@ const {
 	reloadDelegateCache,
 } = require('./compat');
 
-const init = async () => {
-	await initBlocks();
-};
 
 module.exports = {
-	http,
+	get,
 	parseAddress,
 	validateAddress,
 	validatePublicKey,
@@ -136,7 +132,7 @@ module.exports = {
 	reloadDelegateCache,
 	setLastBlock,
 	getLastBlock,
-	init,
 	reloadBlocks,
 	cleanFromForks,
+	retrieveTopAccounts,
 };
