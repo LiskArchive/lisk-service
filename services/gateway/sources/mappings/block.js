@@ -31,5 +31,5 @@ module.exports = {
 	totalFee: '=,string',
 	reward: '=,string',
 	totalForged: '=,string',
-	isReady: '=,boolean',
+	isFinal: '=,boolean',
 };
