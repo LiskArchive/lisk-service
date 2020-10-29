@@ -25,7 +25,7 @@ const considerFinalHeight = 202;
 
 let heightFinalized;
 
-const setFinalizedHeight = height => {
+const setFinalizedHeight = (height) => {
 	heightFinalized = height;
 };
 
@@ -37,36 +37,39 @@ const updateFinalizedHeight = async () => {
 
 const getFinalizedHeight = () => heightFinalized;
 
-const getBlocks = async params => {
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
-		if (await validateTimestamp(params[timestamp])) {
-			params[timestamp] = await getBlockchainTime(params[timestamp]);
-		}
-		return Promise.resolve();
-	}),
+const getBlocks = async (params) => {
+	await Promise.all(
+		['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
+			if (await validateTimestamp(params[timestamp])) {
+				params[timestamp] = await getBlockchainTime(params[timestamp]);
+			}
+			return Promise.resolve();
+		}),
 	);
 
 	const blocks = await coreApi.getBlocks(params);
 
 	const finalHeight = getFinalizedHeight();
-	const data = blocks.data.map(block => Object.assign(block, { isFinal: (block.height <= finalHeight) }));
+	const data = blocks.data.map((block) => Object.assign(block,
+		{ isFinal: block.height <= finalHeight },
+	));
 
 	blocks.data = data;
 	if (blocks.data) {
-		blocks.data.forEach(block => {
+		blocks.data.forEach((block) => {
 			if (block.height > currentHeight) currentHeight = block.height;
 		});
 
-		await Promise.all(blocks.data.map(async (o) => Object.assign(o, {
-			unixTimestamp: await getUnixTime(o.timestamp),
-			isImmutable: (currentHeight - o.height >= considerFinalHeight),
-		}),
-		));
+		await Promise.all(
+			blocks.data.map(async (o) => Object.assign(o, {
+					unixTimestamp: await getUnixTime(o.timestamp),
+					isImmutable: currentHeight - o.height >= considerFinalHeight,
+				}),
+			),
+		);
 	}
 
 	return blocks;
 };
 
-module.exports = { getBlocks,
-	updateFinalizedHeight,
- };
+module.exports = { getBlocks, updateFinalizedHeight };
