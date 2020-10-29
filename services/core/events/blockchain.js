@@ -15,17 +15,19 @@
  */
 const logger = require('lisk-service-framework').Logger();
 const { SocketClient } = require('lisk-service-framework');
+const Signal = require('signals');
 
 const core = require('../shared/core');
-// const recentBlocksCache = require('../shared/core/recentBlocksCache');
-// const delegateCache = require('../shared/core/delegateCache');
-
 const config = require('../config');
 
 const coreSocket = SocketClient(config.endpoints.liskWs);
-logger.info(`Registering ${config.endpoints.liskWs}`);
+logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
-// recentBlocksCache.init(core);
+const signals = {
+	blockCached: new Signal(),
+};
+
+const numOfBlocks = 202;
 
 module.exports = [
 	{
@@ -33,8 +35,11 @@ module.exports = [
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			coreSocket.socket.on('blocks/change', async data => {
-				logger.debug('Returning block list to the socket.io client...');
+				logger.debug(`New block arrived (${data.id})...`);
 				const restData = await core.getBlocks({ blockId: data.id });
+				core.setLastBlock(restData.data[0]);
+				signals.blockCached.dispatch(restData.data[0]);
+				core.reloadBlocks(numOfBlocks);
 				callback(restData.data[0]);
 			});
 		},
@@ -43,17 +48,11 @@ module.exports = [
 		name: 'transactions.confirmed',
 		description: 'Keep confirmed transaction list up-to-date',
 		controller: callback => {
-			coreSocket.socket.on('blocks/change', async data => {
-				logger.debug('Scheduling block list reload...');
-				const emitData = await core.getBlocks({ blockId: data.id });
-
-				if (Array.isArray(emitData.data) && emitData.data.length > 0
-					&& emitData.data[0].numberOfTransactions > 0) {
-						const transactionData = await core.getTransactions({ blockId: data.id });
-						// recentBlocksCache.addNewBlock(emitData.data[0], transactionData);
-						callback(transactionData);
-				} else {
-					// recentBlocksCache.addNewBlock(emitData.data[0], []);
+			signals.blockCached.add(async (block) => {
+				if (block.numberOfTransactions > 0) {
+					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
+					const transactionData = await core.getTransactions({ blockId: block.id });
+					callback(transactionData);
 				}
 			});
 		},
@@ -74,7 +73,7 @@ module.exports = [
 		name: 'update.fee_estimates',
 		description: 'Keep the fee estimates up-to-date',
 		controller: callback => {
-			coreSocket.socket.on('blocks/change', async () => {
+			signals.blockCached.add(async () => {
 				logger.debug('Returning latest fee_estimates to the socket.io client...');
 				const restData = await core.getEstimateFeeByte();
 				callback(restData ? restData.data : null);

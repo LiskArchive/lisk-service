@@ -105,11 +105,11 @@ const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
 const getReady = async () => ({
 	services: {
 		lisk_blocks: await checkAPI('/blocks', true),
-		lisk_transactions: await checkAPI('/transactions', true),
-		lisk_transaction_statistics: await checkAPI('/transactions/statistics/day', false),
-		lisk_accounts: await checkAPI('/accounts', true),
-		lisk_delegates: await checkAPI('/delegates', true),
-		lisk_peers: await checkAPI('/peers', true),
+		// lisk_transactions: await checkAPI('/transactions', true),
+		// lisk_transaction_statistics: await checkAPI('/transactions/statistics/day', false),
+		// lisk_accounts: await checkAPI('/accounts', true),
+		// lisk_delegates: await checkAPI('/delegates', true),
+		// lisk_peers: await checkAPI('/peers', true),
 	},
 });
 

@@ -13,19 +13,35 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../config');
+const { Logger } = require('lisk-service-framework');
+
+const logger = Logger();
+
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
+const config = require('../../config');
+
+let lastBlock = {};
 
 const getSelector = (params) => {
 	const result = {};
-
 	const selector = {};
-	if (params.height) selector.height = params.height;
-	if (params.blockId) selector.id = params.blockId;
-	if (params.fromTimestamp) selector.timestamp = { $gte: params.fromTimestamp };
-	if (params.toTimestamp) selector.timestamp = { $lte: params.toTimestamp };
-	if (params.generatorPublicKey) selector.generatorPublicKey = params.generatorPublicKey;
+	if (params.height) selector.height = Number(params.height);
+	if (params.blockId) selector.id = String(params.blockId);
+	if (params.fromTimestamp) selector.unixTimestamp = { $gte: Number(params.fromTimestamp) };
+	if (params.toTimestamp) selector.unixTimestamp = { $lte: Number(params.toTimestamp) };
+	if (params.generatorPublicKey) selector.generatorPublicKey = String(params.generatorPublicKey);
+
+	if (params.limit) result.limit = Number(params.limit);
+	if (Number(params.offset) >= 0) result.skip = Number(params.offset);
+
+	// Not supported by the API but useful for caching
+	if (params.numberOfTransactions) selector.numberOfTransactions = {
+		$gte: Number(params.numberOfTransactions),
+	};
+	if (params.isFinal) selector.isFinal = params.isFinal;
+	if (params.isImmutable) selector.isImmutable = params.isImmutable;
+
 	result.selector = selector;
 
 	if (params.limit) result.limit = params.limit;
@@ -34,49 +50,160 @@ const getSelector = (params) => {
 	return result;
 };
 
-const getBlocks = async (params) => {
+const pushToDb = async (blockDb, blocks) => {
+	const propList = [
+		'blockSignature',
+		'generatorAddress',
+		'generatorPublicKey',
+		'height',
+		'id',
+		'numberOfTransactions',
+		'payloadHash',
+		'payloadLength',
+		'previousBlockId',
+		'reward',
+		'totalAmount',
+		'totalFee',
+		'totalForged',
+		'unixTimestamp',
+		'version',
+		'isFinal',
+	];
+	const out = blocks.map(o => {
+		const obj = {};
+		propList.map(prop => obj[prop] = o[prop]);
+		return obj;
+	});
+	return blockDb.writeBatch(out);
+};
+
+const setLastBlock = block => lastBlock = block;
+const getLastBlock = () => lastBlock;
+
+const getBlocks = async (params = {}, skipCache = false) => {
 	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
 	let blocks = {
 		data: [],
 	};
 
-	/* 	let dbResult;
-		if (params.blockId) {
-			dbResult = await blockDb.findById(params.blockId);
-			if (dbResult !== null) blocks.data = [dbResult];
+	if (skipCache !== true && (params.blockId
+		|| params.numberOfTransactions
+		|| params.isFinal === true
+		|| params.isImmutable === true)) { // try to get from cache
+		const inputData = getSelector({
+			...params,
+			limit: params.limit || 10,
+			offset: params.offset || 0,
+		});
+		const dbResult = await blockDb.find(inputData);
+		if (dbResult.length > 0) {
+			blocks.data = dbResult.map((block) => ({
+				...block,
+				confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
+			}));
 		}
-
-		if (params.height) {
-			dbResult = await blockDb.findOneByProperty('height', Number(params.height));
-			if (dbResult.length > 0) blocks.data = dbResult;
-		}
-
-		if (params.generatorPublicKey) {
-			dbResult = await blockDb.find({
-				selector: { generatorAddress: params.generatorPublicKey },
-				limit: params.limit,
-				skip: params.offset,
-			});
-			if (dbResult.length > 0) blocks.data = dbResult;
-		} */
-
-	const inputData = getSelector({
-		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-	const dbResult = await blockDb.find(inputData);
-	if (dbResult.length > 0) blocks.data = dbResult;
-
-	if (blocks.data.length === 0) {
-		blocks = await coreApi.getBlocks(params);
-		if (blocks.data.length > 0) blockDb.writeBatch(blocks.data);
 	}
 
-	return blocks;
+	if (blocks.data.length === 0) {
+		logger.debug(`Retrieved block ${params.blockId || params.height || 'with custom search'} from Lisk Core`);
+		blocks = await coreApi.getBlocks(params);
+		if (blocks.data.length > 0) {
+			const finalBlocks = blocks.data;
+			pushToDb(blockDb, finalBlocks);
+		}
+	}
+
+	await Promise.all(blocks.data.map(async block => {
+		// TODO: Enable when delegate caching is done
+		// const username = await CoreService.getUsernameByAddress(block.generatorAddress);
+		const username = 'FIXME';
+		if (username) {
+			block.generatorUsername = username;
+		}
+		return block;
+	}));
+
+	let total;
+	if (params.generatorPublicKey) {
+		delete blocks.meta.total;
+	} else if (params.blockId || params.height) {
+		total = blocks.length;
+	} else {
+		total = (getLastBlock()).height;
+	}
+
+	return {
+		data: blocks.data,
+		meta: {
+			count: blocks.data.length,
+			offset: parseInt(params.offset, 10) || 0,
+			total,
+		},
+	};
+};
+
+const preloadBlocksOneByOne = async (n) => {
+	let blockId = (getLastBlock()).previousBlockId;
+	for (let i = 0; i <= n; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		blockId = (await getBlocks({ blockId }, true)).data[0].previousBlockId;
+	}
+};
+
+const preloadBlocksByPage = async (n) => {
+	const pageSize = 100;
+	const numberOfPages = Math.ceil(n / pageSize);
+
+	const limit = 100;
+	for (let i = 0; i <= numberOfPages; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		await getBlocks({ sort: 'height:desc', offset: (i * limit) + 1, limit }, true);
+	}
+};
+
+const cleanFromForks = async (n) => {
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
+	const blocks = await blockDb.find({
+		selector: {
+			height: { $gte: (getLastBlock()).height - n },
+		},
+		sort: ['height'],
+	});
+	const orphanList = blocks.reverse().filter((block, idx) => {
+		if (idx + 1 >= blocks.length) return false;
+		const prevBlock = blocks[idx + 1];
+		if (prevBlock.id !== block.previousBlockId) return true;
+		return false;
+	});
+
+	// TODO: orphanList removal from PouchDB
+
+	logger.debug(`Found ${orphanList.length} orphaned blocks...`);
+	return orphanList;
+};
+
+const reloadBlocks = async (n) => preloadBlocksByPage(n);
+
+const initBlocks = async () => {
+	await pouchdb(config.db.collections.accounts.name);
+	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
+	logger.debug('Storing the first block');
+	setLastBlock(block.data[0]);
+
+	const numOfBlocksPrefetch = config.cacheNumOfBlocks;
+	logger.debug(`Preloading first ${numOfBlocksPrefetch} blocks`);
+	await reloadBlocks(numOfBlocksPrefetch);
+	logger.debug('Finished block prefetch');
 };
 
 module.exports = {
 	getBlocks,
+	preloadBlocksOneByOne,
+	preloadBlocksByPage,
+	setLastBlock,
+	getLastBlock,
+	initBlocks,
+	cleanFromForks,
+	reloadBlocks,
 };

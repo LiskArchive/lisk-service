@@ -20,6 +20,9 @@ const {
 	validateTimestamp,
 } = require('../common');
 
+let currentHeight = 0;
+const considerFinalHeight = 202;
+
 const getBlocks = async params => {
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 		if (await validateTimestamp(params[timestamp])) {
@@ -32,8 +35,13 @@ const getBlocks = async params => {
 	const blocks = await coreApi.getBlocks(params);
 
 	if (blocks.data) {
+		blocks.data.forEach(block => {
+			if (block.height > currentHeight) currentHeight = block.height;
+		});
+
 		await Promise.all(blocks.data.map(async (o) => Object.assign(o, {
 			unixTimestamp: await getUnixTime(o.timestamp),
+			isImmutable: (currentHeight - o.height >= considerFinalHeight),
 		}),
 		));
 	}
