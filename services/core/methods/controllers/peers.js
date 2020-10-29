@@ -34,7 +34,7 @@ const getConnectedPeers = async params => {
 };
 
 const getDisconnectedPeers = async params => {
-	const response = await coreService.getPeers(params);
+	const response = await coreService.getDisconnectedPeers(params);
 
 	return {
 		data: response.data,
