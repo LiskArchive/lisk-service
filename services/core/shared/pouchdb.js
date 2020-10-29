@@ -67,14 +67,32 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		const dbDataDir = `${config.db.directory}/${collectionName}`;
 		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
-		connectionPool[collectionName] = await createDb(
-			dbDataDir,
-			[...config.db.collections[collectionName].indexes, ...idxList],
-		);
+		connectionPool[collectionName] = await createDb(dbDataDir, [
+			...config.db.collections[collectionName].indexes,
+			...idxList,
+		]);
 		cLogger.info(`Opened PouchDB database: ${collectionName}`);
 	}
 
 	const db = connectionPool[collectionName];
+
+	const write = async (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.upsert(doc);
+	};
+
+	const writeOnce = async (doc) => {
+		if (!doc._id) doc._id = doc.id;
+		return db.putIfNotExists(doc);
+	};
+
+	const writeBatch = async (docs) => {
+		docs.map((doc) => {
+			if (!doc._id) doc._id = doc.id;
+			return doc;
+		});
+		return db.bulkDocs(docs);
+	};
 
 	const findById = async (id) => {
 		try {
@@ -99,31 +117,11 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		return res.docs;
 	};
 
-	const write = async (doc) => {
-		if (!doc._id) doc._id = doc.id;
-		return db.upsert(doc);
-	};
-
-	const writeOnce = async (doc) => {
-		if (!doc._id) doc._id = doc.id;
-		return db.putIfNotExists(doc);
-	};
-
-	const writeBatch = async (docs) => {
-		docs.map(async doc => {
-			if (!doc._id) doc._id = doc.id;
-			const dbResult = await findById(doc._id);
-			if (dbResult._rev) doc._rev = dbResult._rev;
-			return doc;
-		});
-		return db.bulkDocs(docs);
-	};
-
 	const deleteById = async (id) => db.remove(await findById(id));
 
 	const deleteBatch = async (docs) => {
 		if (docs instanceof Array && docs.length === 0) return;
-		docs.map(doc => {
+		docs.map((doc) => {
 			if (!doc._id) doc._id = doc.id;
 			doc._deleted = true;
 			return doc;
