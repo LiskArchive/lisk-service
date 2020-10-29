@@ -44,6 +44,7 @@ config.db = {
 				'knowledge',
 				'multisignatureAccount',
 				'transactionCount',
+				['publicKey', 'balance'],
 			],
 		},
 		blocks: {
@@ -115,6 +116,7 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
 // Time in seconds to keep the general cache
 config.cacheTTL = 20;
 config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
+config.cacheNumOfAccounts = Number(process.env.CACHE_N_ACCOUNTS) || 500;
 
 /**
  * Cache delegate info in order to replace address by username

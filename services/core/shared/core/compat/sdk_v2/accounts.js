@@ -14,13 +14,32 @@
  *
  */
 const coreApi = require('./coreApi');
-const {
-	parseAddress,
-	confirmAddress,
-	validatePublicKey,
-	confirmPublicKey,
-	confirmSecondPublicKey,
-} = require('./index');
+const coreCache = require('./coreCache');
+
+const parseAddress = address => {
+	if (typeof address !== 'string') return '';
+	return address.toUpperCase();
+};
+
+const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
+
+const confirmAddress = async address => {
+	if (!address || typeof address !== 'string') return false;
+	const account = await coreCache.getCachedAccountByAddress(parseAddress(address));
+	return (account && account.address === address);
+};
+
+const confirmPublicKey = async publicKey => {
+	if (!publicKey || typeof publicKey !== 'string') return false;
+	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
+	return (account && account.publicKey === publicKey);
+};
+
+const confirmSecondPublicKey = async secondPublicKey => {
+	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
+	const account = await coreCache.getCachedAccountBySecondPublicKey(secondPublicKey);
+	return (account && account.secondPublicKey === secondPublicKey);
+};
 
 const getAccounts = async params => {
 	const requestParams = {
