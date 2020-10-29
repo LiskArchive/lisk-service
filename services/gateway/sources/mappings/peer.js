@@ -20,6 +20,7 @@ module.exports = {
 	os: '=,string',
 	version: '=,string',
 	state: '=,number',
+	stateName: '=,string',
 	height: '=,number',
 	broadhash: '=,string',
 	nonce: '=,string',
