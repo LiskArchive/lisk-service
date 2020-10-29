@@ -88,7 +88,6 @@ module.exports = [
 				let restData = null;
 				logger.debug('Returning latest heightFinalized to the socket.io client...');
 				if (core.updateFinalizedHeight) restData = await core.updateFinalizedHeight();
-				// restData = await core.updateFinalizedHeight();
 				callback(restData ? restData.data : null);
 			});
 		},
