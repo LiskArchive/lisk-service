@@ -100,7 +100,7 @@ const getBlocks = async (params = {}, skipCache = false) => {
 		if (dbResult.length > 0) {
 			blocks.data = dbResult.map((block) => ({
 				...block,
-				confirmations: (getLastBlock().height) - block.height + lastBlock.confirmations,
+				confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
 			}));
 		}
 	}
