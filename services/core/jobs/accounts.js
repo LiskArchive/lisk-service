@@ -13,10 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getBlocks, updateFinalizedHeight } = require('./blocks');
+const logger = require('lisk-service-framework').Logger();
+const core = require('../shared/core');
 
-module.exports = {
-    ...require('../sdk_v2'),
-    getBlocks,
-    updateFinalizedHeight,
-};
+module.exports = [
+	{
+		name: 'refresh.accounts',
+		description: 'Keep top accounts list up-to-date',
+		interval: 45, // seconds
+		init: () => {
+			logger.debug('Initializing account list...');
+			core.retrieveTopAccounts();
+		},
+		controller: () => {
+			logger.debug('Scheduling account list reload...');
+			core.retrieveTopAccounts();
+		},
+	},
+];
