@@ -21,32 +21,6 @@ const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const config = require('../../config');
 
-const initialBlockPrefetch = 202;
-
-const indexList = [
-	'id',
-	'generatorPublicKey',
-	'generatorAddress',
-	'generatorUsername',
-	'height',
-	'numberOfTransactions',
-	'previousBlockId',
-	'unixTimestamp',
-	'totalAmount',
-	'totalFee',
-	'isFinal',
-	['height', 'isFinal'],
-	['generatorPublicKey', 'numberOfTransactions'],
-	['generatorAddress', 'numberOfTransactions'],
-	['generatorUsername', 'numberOfTransactions'],
-	['generatorPublicKey', 'totalAmount'],
-	['generatorAddress', 'totalAmount'],
-	['generatorUsername', 'totalAmount'],
-	['generatorPublicKey', 'unixTimestamp'],
-	['generatorAddress', 'unixTimestamp'],
-	['generatorUsername', 'unixTimestamp'],
-];
-
 let lastBlock = {};
 
 const getSelector = (params) => {
@@ -66,7 +40,7 @@ const getSelector = (params) => {
 		$gte: Number(params.numberOfTransactions),
 	};
 	if (params.isFinal) selector.isFinal = params.isFinal;
-	if (params.isImmutable) selector.isFinal = params.isImmutable;
+	if (params.isImmutable) selector.isImmutable = params.isImmutable;
 
 	result.selector = selector;
 
@@ -106,17 +80,17 @@ const pushToDb = async (blockDb, blocks) => {
 const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
-const getBlocks = async (params = {}) => {
-	const blockDb = await pouchdb(config.db.collections.blocks.name, indexList);
+const getBlocks = async (params = {}, skipCache = false) => {
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
 	let blocks = {
 		data: [],
 	};
 
-	if (params.blockId
+	if (skipCache !== true && (params.blockId
 		|| params.numberOfTransactions
 		|| params.isFinal === true
-		|| params.isImmutable === true) { // try to get from cache
+		|| params.isImmutable === true)) { // try to get from cache
 		const inputData = getSelector({
 			...params,
 			limit: params.limit || 10,
@@ -126,32 +100,70 @@ const getBlocks = async (params = {}) => {
 		if (dbResult.length > 0) {
 			blocks.data = dbResult.map((block) => ({
 				...block,
-				confirmations: (getLastBlock().height) - block.height,
+				confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
 			}));
 		}
 	}
 
 	if (blocks.data.length === 0) {
+		logger.debug(`Retrieved block ${params.blockId || params.height || 'with custom search'} from Lisk Core`);
 		blocks = await coreApi.getBlocks(params);
 		if (blocks.data.length > 0) {
-			const finalBlocks = blocks.data.filter((block) => block.isImmutable === true);
+			const finalBlocks = blocks.data;
 			pushToDb(blockDb, finalBlocks);
 		}
 	}
 
-	return blocks;
+	await Promise.all(blocks.data.map(async block => {
+		// TODO: Enable when delegate caching is done
+		// const username = await CoreService.getUsernameByAddress(block.generatorAddress);
+		const username = 'FIXME';
+		if (username) {
+			block.generatorUsername = username;
+		}
+		return block;
+	}));
+
+	let total;
+	if (params.generatorPublicKey) {
+		delete blocks.meta.total;
+	} else if (params.blockId || params.height) {
+		total = blocks.length;
+	} else {
+		total = (getLastBlock()).height;
+	}
+
+	return {
+		data: blocks.data,
+		meta: {
+			count: blocks.data.length,
+			offset: parseInt(params.offset, 10) || 0,
+			total,
+		},
+	};
 };
 
-const preloadBlocks = async (n) => {
+const preloadBlocksOneByOne = async (n) => {
 	let blockId = (getLastBlock()).previousBlockId;
 	for (let i = 0; i <= n; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		blockId = (await getBlocks({ blockId })).data[0].previousBlockId;
+		blockId = (await getBlocks({ blockId }, true)).data[0].previousBlockId;
 	}
 };
 
-const removeOrphanedBlocks = async (n) => {
-	const blockDb = await pouchdb('blocks', indexList);
+const preloadBlocksByPage = async (n) => {
+	const pageSize = 100;
+	const numberOfPages = Math.ceil(n / pageSize);
+
+	const limit = 100;
+	for (let i = 0; i <= numberOfPages; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		await getBlocks({ sort: 'height:desc', offset: (i * limit) + 1, limit }, true);
+	}
+};
+
+const cleanFromForks = async (n) => {
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 	const blocks = await blockDb.find({
 		selector: {
 			height: { $gte: (getLastBlock()).height - n },
@@ -171,27 +183,27 @@ const removeOrphanedBlocks = async (n) => {
 	return orphanList;
 };
 
-const initBlocks = (async () => {
-	await pouchdb('blocks', indexList);
+const reloadBlocks = async (n) => preloadBlocksByPage(n);
+
+const initBlocks = async () => {
+	await pouchdb(config.db.collections.accounts.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);
 
 	const numOfBlocksPrefetch = config.cacheNumOfBlocks;
-
-	logger.debug(`Preloading first ${initialBlockPrefetch} blocks`);
-	await preloadBlocks(initialBlockPrefetch);
-	await removeOrphanedBlocks(initialBlockPrefetch);
-
-	logger.debug(`Preloading ${numOfBlocksPrefetch} blocks in the background...`);
-	preloadBlocks(numOfBlocksPrefetch);
-})();
+	logger.debug(`Preloading first ${numOfBlocksPrefetch} blocks`);
+	await reloadBlocks(numOfBlocksPrefetch);
+	logger.debug('Finished block prefetch');
+};
 
 module.exports = {
 	getBlocks,
-	preloadBlocks,
+	preloadBlocksOneByOne,
+	preloadBlocksByPage,
 	setLastBlock,
 	getLastBlock,
 	initBlocks,
-	removeOrphanedBlocks,
+	cleanFromForks,
+	reloadBlocks,
 };
