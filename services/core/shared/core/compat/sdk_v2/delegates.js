@@ -13,46 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
 const coreApi = require('./coreApi');
-
-const logger = Logger();
-
-let delegates = [];
-
-const loadAllDelegates = async (core, delegateList = []) => {
-	const limit = 100;
-	const response = await core.getDelegates({ limit, offset: delegateList.length });
-	delegateList = [...delegateList, ...response.data];
-	if (delegateList.length >= delegates.length) {
-		// this condition should speed up initial load but not break things on rounds/change
-		delegates = delegateList;
-	}
-	if (response.data.length === limit) {
-		loadAllDelegates(core, delegateList);
-	} else {
-		logger.info(`Initialized with ${delegates.length} delegates`);
-	}
-};
-
-const reload = core => {
-	loadAllDelegates(core);
-};
-
-const getDelegateRankByUsername = username => (
-	delegates.findIndex(delegate => delegate.username === username) + 1
-);
-
-const getTotalNumberOfDelegates = (params = {}) => {
-	const relevantDelegates = delegates.filter(delegate => (
-		(!params.search || delegate.username.includes(params.search))
-		&& (!params.username || delegate.username === params.username)
-		&& (!params.address || delegate.account.address === params.address)
-		&& (!params.publickey || delegate.account.publicKey === params.publickey)
-		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
-	));
-	return relevantDelegates.length;
-};
 
 const getDelegates = async params => {
 	// If available in cache, filter and return, else retrieve from Core
@@ -62,8 +23,5 @@ const getDelegates = async params => {
 };
 
 module.exports = {
-	reloadDelegateCache: reload,
-	getDelegateRankByUsername,
-	getTotalNumberOfDelegates,
 	getDelegates,
 };

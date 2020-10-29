@@ -84,7 +84,7 @@ const getDelegates = async params => {
 		delegates.data.map(delegate => {
 			delegate.id = delegate.account.address;
 			return delegate;
-		})
+		});
 		if (delegates.data && delegates.data.length) await db.writeBatch(delegates.data);
 	}
 
