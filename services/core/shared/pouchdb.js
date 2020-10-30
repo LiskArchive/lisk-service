@@ -50,6 +50,7 @@ const createDb = async (name, idxList = []) => {
 			index: {
 				fields: propName,
 				name: idxName,
+				ddoc: idxName.concat('-doc'),
 			},
 		});
 	});
