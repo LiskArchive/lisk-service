@@ -15,7 +15,9 @@
  */
 const { HTTP, Utils } = require('lisk-service-framework');
 
-const { StatusCodes: { NOT_FOUND } } = HTTP;
+const {
+	StatusCodes: { NOT_FOUND },
+} = HTTP;
 const { isEmptyArray, isEmptyObject } = Utils.Data;
 
 const moment = require('moment');
@@ -23,21 +25,33 @@ const moment = require('moment');
 const CoreService = require('../../shared/core');
 const txStatisticsService = require('../../shared/core/transactionStatistics');
 
-const getTransactions = async params => {
-	const addressParam = ['senderId', 'recipientId', 'senderIdOrRecipientId'].filter(item => typeof params[item] === 'string');
+const getTransactions = async (params) => {
+	const addressParam = [
+		'senderId',
+		'recipientId',
+		'senderIdOrRecipientId',
+	].filter((item) => typeof params[item] === 'string');
 
-	const addressLookupResult = await Promise.all(addressParam.map(async param => {
-		const paramVal = params[param];
-		const address = await CoreService.getAddressByAny(paramVal);
-		if (!address) return false;
-		params[param] = address;
-		return true;
-	}));
+	const addressLookupResult = await Promise.all(
+		addressParam.map(async (param) => {
+			const paramVal = params[param];
+			const address = await CoreService.getAddressByAny(paramVal);
+			if (!address) return false;
+			params[param] = address;
+			return true;
+		}),
+	);
 	if (addressLookupResult.includes(false)) {
-		return { status: NOT_FOUND, data: { error: `Account ${params[addressParam[0]]} not found.` } };
+		return {
+			status: NOT_FOUND,
+			data: { error: `Account ${params[addressParam[0]]} not found.` },
+		};
 	}
 
-	const result = await CoreService.getTransactions({ sort: 'timestamp:desc', ...params });
+	const result = await CoreService.getTransactions({
+		sort: 'timestamp:desc',
+		...params,
+	});
 
 	if (isEmptyObject(result) || isEmptyArray(result.data)) {
 		return { status: NOT_FOUND, data: { error: 'Not found.' } };
@@ -57,10 +71,13 @@ const getTransactions = async params => {
 	};
 };
 
-const getTransactionsByAddress = async params => {
+const getTransactionsByAddress = async (params) => {
 	const address = params.anyId;
 	delete params.anyId;
-	const result = await CoreService.getTransactions({ ...params, senderIdOrRecipientId: address });
+	const result = await CoreService.getTransactions({
+		...params,
+		senderIdOrRecipientId: address,
+	});
 	return {
 		data: {
 			data: result.data,
@@ -69,8 +86,11 @@ const getTransactionsByAddress = async params => {
 	};
 };
 
-const getLastTransactions = async params => {
-	const result = await CoreService.getTransactions({ ...params, sort: 'timestamp:desc' });
+const getLastTransactions = async (params) => {
+	const result = await CoreService.getTransactions({
+		...params,
+		sort: 'timestamp:desc',
+	});
 
 	const meta = {
 		count: result.data.length,
@@ -87,13 +107,22 @@ const getLastTransactions = async params => {
 	};
 };
 
-const getTransactionsStatistics = async ({ aggregateBy, limit = 10, offset = 0 }) => {
+const getTransactionsStatistics = async ({
+	aggregateBy,
+	limit = 10,
+	offset = 0,
+}) => {
 	limit = parseInt(limit, 10);
 	offset = parseInt(offset, 10);
 	const dateFormat = aggregateBy === 'day' ? 'YYYY-MM-DD' : 'YYYY-MM';
 
-	const dateTo = moment().utc().endOf(aggregateBy).subtract(offset, aggregateBy);
-	const dateFrom = moment(dateTo).startOf(aggregateBy).subtract(limit - 1, aggregateBy);
+	const dateTo = moment()
+		.utc()
+		.endOf(aggregateBy)
+		.subtract(offset, aggregateBy);
+	const dateFrom = moment(dateTo)
+		.startOf(aggregateBy)
+		.subtract(limit - 1, aggregateBy);
 	const params = {
 		dateFormat,
 		dateTo,
@@ -101,7 +130,7 @@ const getTransactionsStatistics = async ({ aggregateBy, limit = 10, offset = 0 }
 	};
 
 	const timelineRaw = await txStatisticsService.getStatsTimeline(params);
-	const timeline = timelineRaw.map(el => ({
+	const timeline = timelineRaw.map((el) => ({
 		...el,
 		timestamp: Date.parse(el.date) / 1000,
 		transactionCount: parseInt(el.transactionCount, 10),
@@ -126,8 +155,8 @@ const getTransactionsStatistics = async ({ aggregateBy, limit = 10, offset = 0 }
 	};
 };
 
-const getTransactionsStatisticsDay = params => getTransactionsStatistics({ aggregateBy: 'day', ...params });
-const getTransactionsStatisticsMonth = params => getTransactionsStatistics({ aggregateBy: 'month', ...params });
+const getTransactionsStatisticsDay = (params) => getTransactionsStatistics({ aggregateBy: 'day', ...params });
+const getTransactionsStatisticsMonth = (params) => getTransactionsStatistics({ aggregateBy: 'month', ...params });
 
 module.exports = {
 	getTransactions,

@@ -13,9 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegates } = require('./delegates');
+const {
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight
+} = require('./blocks');
+
+const {
+    getDelegates
+} = require('./delegates');
 
 module.exports = {
     ...require('../sdk_v2'),
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
     getDelegates,
 };

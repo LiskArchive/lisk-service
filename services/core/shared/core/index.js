@@ -90,6 +90,7 @@ const {
 	getReadyStatus,
 	getEpochUnixTime,
 	getUnixTime,
+	updateFinalizedHeight,
 } = require('./compat');
 
 
@@ -152,4 +153,5 @@ module.exports = {
 	reloadBlocks,
 	cleanFromForks,
 	retrieveTopAccounts,
+	updateFinalizedHeight,
 };
