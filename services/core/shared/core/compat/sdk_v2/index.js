@@ -25,11 +25,6 @@ const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
 const { getDelegates } = require('./delegates');
-const {
-	getTotalNumberOfDelegates,
-	getDelegateRankByUsername,
-	reloadDelegateCache,
-} = require('./delegateCache');
 
 const {
 	getNetworkStatus,
@@ -238,9 +233,6 @@ module.exports = {
 	getVotes: coreApi.getVotes,
 	getVoters: coreApi.getVoters,
 	getDelegates,
-	getTotalNumberOfDelegates,
-	getDelegateRankByUsername,
-	reloadDelegateCache,
 	getForgingStats,
 	getNextForgers,
 	getNetworkStatus,

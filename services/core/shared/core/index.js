@@ -32,8 +32,7 @@ const {
 
 const {
 	reloadDelegateCache,
-	getDelegateRankByUsername,
-	// getTotalNumberOfDelegates,
+	getTotalNumberOfDelegates,
 	getDelegates,
 } = require('./delegates');
 
@@ -91,7 +90,6 @@ const {
 	getReadyStatus,
 	getEpochUnixTime,
 	getUnixTime,
-	getTotalNumberOfDelegates,
 } = require('./compat');
 
 
@@ -123,7 +121,6 @@ module.exports = {
 	getVoters,
 	getDelegates,
 	reloadDelegateCache,
-	getDelegateRankByUsername,
 	getTotalNumberOfDelegates,
 	getForgingStats,
 	getNextForgers,
