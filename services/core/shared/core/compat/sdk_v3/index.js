@@ -16,11 +16,11 @@
 const {
     getBlocks,
     updateFinalizedHeight,
-    getFinalizedHeight
+    getFinalizedHeight,
 } = require('./blocks');
 
 const {
-    getDelegates
+    getDelegates,
 } = require('./delegates');
 
 module.exports = {
