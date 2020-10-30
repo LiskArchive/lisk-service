@@ -49,12 +49,6 @@ const getBlocks = async (params) => {
 
 	const blocks = await coreApi.getBlocks(params);
 
-	const finalHeight = getFinalizedHeight();
-	const data = blocks.data.map((block) => Object.assign(block,
-		{ isFinal: block.height <= finalHeight },
-	));
-
-	blocks.data = data;
 	if (blocks.data) {
 		blocks.data.forEach((block) => {
 			if (block.height > currentHeight) currentHeight = block.height;
@@ -72,4 +66,4 @@ const getBlocks = async (params) => {
 	return blocks;
 };
 
-module.exports = { getBlocks, updateFinalizedHeight };
+module.exports = { getBlocks, updateFinalizedHeight, getFinalizedHeight };
