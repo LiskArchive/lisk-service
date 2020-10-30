@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegateRankByUsername } = require('./delegateCache');
-
 const reverseMap = (originalMap) => {
     const result = {};
     Object.entries(originalMap).forEach(([k, v]) => result[v] = String(k).toLowerCase());

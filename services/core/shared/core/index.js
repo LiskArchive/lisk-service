@@ -91,8 +91,6 @@ const {
 	getReadyStatus,
 	getEpochUnixTime,
 	getUnixTime,
-	// reloadDelegateCache,
-	// getDelegateRankByUsername,
 	getTotalNumberOfDelegates,
 } = require('./compat');
 
