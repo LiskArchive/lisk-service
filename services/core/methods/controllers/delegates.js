@@ -20,9 +20,7 @@ const ObjectUtilService = Utils.Data;
 
 const CoreService = require('../../shared/core');
 
-const { getTotalNumberOfDelegates } = CoreService;
-
-const { numOfActiveDelegates } = CoreService;
+const { numOfActiveDelegates, getTotalNumberOfDelegates } = CoreService;
 
 const { isEmptyArray } = ObjectUtilService;
 const { isEmptyObject } = ObjectUtilService;
@@ -134,9 +132,9 @@ const getNextForgers = async params => {
 	nextForgers.meta.total = params.limit;
 
 	return {
-			data: delegates,
-			meta: nextForgers.meta,
-			link: nextForgers.link,
+		data: delegates,
+		meta: nextForgers.meta,
+		link: nextForgers.link,
 	};
 };
 
@@ -162,9 +160,9 @@ const getLatestRegistrations = async params => {
 	registrationsRes.meta.count = params.limit;
 
 	return {
-			data: delegates,
-			meta: registrationsRes.meta,
-			link: registrationsRes.link,
+		data: delegates,
+		meta: registrationsRes.meta,
+		link: registrationsRes.link,
 	};
 };
 

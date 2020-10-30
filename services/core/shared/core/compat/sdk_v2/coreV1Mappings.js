@@ -13,7 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegateRankByUsername } = require('./delegateCache');
+// const { getDelegateRankByUsername } = require('./delegateCache');
+// const { getDelegateRankByUsername } = require('../../delegates');
 
 const reverseMap = (originalMap) => {
 	const result = {};
@@ -92,7 +93,7 @@ const mapTransaction = transaction => {
 const mapDelegate = ({ voteWeight, ...delegate }) => ({
 	...delegate,
 	vote: voteWeight,
-	rank: getDelegateRankByUsername(delegate.username),
+	// rank: getDelegateRankByUsername(delegate.username),
 });
 
 const responseMappers = {

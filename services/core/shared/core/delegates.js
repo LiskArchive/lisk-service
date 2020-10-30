@@ -38,9 +38,9 @@ const getSelector = (params) => {
 	if (Number(params.offset) >= 0) result.skip = params.offset;
 
 	const selector = {};
-	if (params.address) selector.address = params.address;
-	if (params.publicKey) selector.publicKey = params.publicKey;
-	if (params.secondPublicKey) selector.secondPublicKey = params.secondPublicKey;
+	if (params.address) selector['account.address'] = params.address;
+	if (params.publicKey) selector['account.publicKey'] = params.publicKey;
+	if (params.secondPublicKey) selector['account.secondPublicKey'] = params.secondPublicKey;
 	if (params.username) selector.username = params.username;
 	result.selector = selector;
 
@@ -83,7 +83,7 @@ const getDelegates = async params => {
 
 		delegates = await coreApi.getDelegates(params);
 		delegates.data.map(delegate => {
-			delegate.id = delegate.account.address;
+			delegate.id = String(delegate.rank);
 			return delegate;
 		});
 		if (delegates.data && delegates.data.length) await db.writeBatch(delegates.data);
@@ -92,6 +92,45 @@ const getDelegates = async params => {
 	return delegates;
 };
 
+const loadAllDelegates = async (delegateList = []) => {
+	const limit = 100;
+	const response = await getDelegates({ limit, offset: delegateList.length });
+	delegateList = [...delegateList, ...response.data];
+	// if (delegateList.length >= delegates.length) {
+	// 	// this condition should speed up initial load but not break things on rounds/change
+	// 	delegates = delegateList;
+	// }
+	if (response.data.length === limit) {
+		loadAllDelegates(delegateList);
+	} else {
+		logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
+	}
+};
+
+const reload = () => {
+	loadAllDelegates();
+};
+
+const getDelegateRankByUsername = async username => {
+	const delegate = await getDelegates({ username });
+	const { rank } = delegate;
+	return rank;
+};
+
+const getTotalNumberOfDelegates = (params = {}) => {
+	const relevantDelegates = delegates.filter(delegate => (
+		(!params.search || delegate.username.includes(params.search))
+		&& (!params.username || delegate.username === params.username)
+		&& (!params.address || delegate.account.address === params.address)
+		&& (!params.publickey || delegate.account.publicKey === params.publickey)
+		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
+	));
+	return relevantDelegates.length;
+};
+
 module.exports = {
+	reloadDelegateCache: reload,
+	getDelegateRankByUsername,
+	getTotalNumberOfDelegates,
 	getDelegates,
 };
