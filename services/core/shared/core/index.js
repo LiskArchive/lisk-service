@@ -27,7 +27,7 @@ const {
 
 const {
 	getAccounts,
-	retrieveTopAccounts
+	retrieveTopAccounts,
 } = require('./accounts');
 
 const {

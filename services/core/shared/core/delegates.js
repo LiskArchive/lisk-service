@@ -117,20 +117,20 @@ const getDelegateRankByUsername = async username => {
 	return rank;
 };
 
-const getTotalNumberOfDelegates = (params = {}) => {
-	const relevantDelegates = delegates.filter(delegate => (
-		(!params.search || delegate.username.includes(params.search))
-		&& (!params.username || delegate.username === params.username)
-		&& (!params.address || delegate.account.address === params.address)
-		&& (!params.publickey || delegate.account.publicKey === params.publickey)
-		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
-	));
-	return relevantDelegates.length;
-};
+// const getTotalNumberOfDelegates = (params = {}) => {
+// 	const relevantDelegates = delegates.filter(delegate => (
+// 		(!params.search || delegate.username.includes(params.search))
+// 		&& (!params.username || delegate.username === params.username)
+// 		&& (!params.address || delegate.account.address === params.address)
+// 		&& (!params.publickey || delegate.account.publicKey === params.publickey)
+// 		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
+// 	));
+// 	return relevantDelegates.length;
+// };
 
 module.exports = {
 	reloadDelegateCache: reload,
 	getDelegateRankByUsername,
-	getTotalNumberOfDelegates,
+	// getTotalNumberOfDelegates,
 	getDelegates,
 };
