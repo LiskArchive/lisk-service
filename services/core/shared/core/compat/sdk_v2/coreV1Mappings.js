@@ -13,9 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const { getDelegateRankByUsername } = require('./delegateCache');
-// const { getDelegateRankByUsername } = require('../../delegates');
-
 const reverseMap = (originalMap) => {
 	const result = {};
 	Object.entries(originalMap).forEach(([k, v]) => result[v] = String(k).toLowerCase());
@@ -90,12 +87,6 @@ const mapTransaction = transaction => {
 	});
 };
 
-const mapDelegate = ({ voteWeight, ...delegate }) => ({
-	...delegate,
-	vote: voteWeight,
-	// rank: getDelegateRankByUsername(delegate.username),
-});
-
 const responseMappers = {
 	'/peers': response => {
 		response.data = response.data.map(peer => ({
@@ -107,10 +98,6 @@ const responseMappers = {
 	},
 	'/transactions': response => {
 		response.data = response.data.map(mapTransaction);
-		return response;
-	},
-	'/delegates': response => {
-		response.data = response.data.map(mapDelegate);
 		return response;
 	},
 	'/node/constants': response => {
@@ -127,7 +114,6 @@ const paramMappers = {
 		return params;
 	},
 };
-
 
 module.exports = {
 	responseMappers,

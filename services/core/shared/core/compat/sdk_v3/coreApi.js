@@ -14,9 +14,7 @@
  *
  */
 const http = require('../common/httpRequest');
-// TODO: Enable when sdk_v3 is fully implemented
-// const { mapParams, mapResponse } = require('./mappings');
-const { mapParams, mapResponse } = require('./coreVersionCompatibility');
+const { mapParams, mapResponse } = require('./mappings');
 
 const request = async (url, params) => {
 	const transformedParams = mapParams(params, url);

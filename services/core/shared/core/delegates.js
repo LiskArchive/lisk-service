@@ -96,10 +96,7 @@ const loadAllDelegates = async (delegateList = []) => {
 	const limit = 100;
 	const response = await getDelegates({ limit, offset: delegateList.length });
 	delegateList = [...delegateList, ...response.data];
-	// if (delegateList.length >= delegates.length) {
-	// 	// this condition should speed up initial load but not break things on rounds/change
-	// 	delegates = delegateList;
-	// }
+
 	if (response.data.length === limit) {
 		loadAllDelegates(delegateList);
 	} else {

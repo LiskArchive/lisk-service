@@ -76,12 +76,6 @@ const mapTransaction = transaction => {
     });
 };
 
-const mapDelegate = ({ voteWeight, ...delegate }) => ({
-    ...delegate,
-    vote: voteWeight,
-    rank: getDelegateRankByUsername(delegate.username),
-});
-
 const responseMappers = {
     '/peers': response => {
         response.data = response.data.map(peer => ({
@@ -93,10 +87,6 @@ const responseMappers = {
     },
     '/transactions': response => {
         response.data = response.data.map(mapTransaction);
-        return response;
-    },
-    '/delegates': response => {
-        response.data = response.data.map(mapDelegate);
         return response;
     },
     '/node/constants': response => {

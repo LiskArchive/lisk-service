@@ -17,6 +17,13 @@ const coreApi = require('./coreApi');
 
 const getDelegates = async params => {
 	const delegates = await coreApi.getDelegates(params);
+
+	delegates.data.map((delegate, index) => {
+		delegate.rank = params.offset + index + 1;
+		delegate.vote = delegate.voteWeight;
+		return delegate;
+	});
+
 	return delegates;
 };
 
