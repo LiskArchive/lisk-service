@@ -80,6 +80,7 @@ const {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache,
+	updateFinalizedHeight,
 } = require('./compat');
 
 
@@ -143,4 +144,5 @@ module.exports = {
 	reloadBlocks,
 	cleanFromForks,
 	retrieveTopAccounts,
+	updateFinalizedHeight,
 };

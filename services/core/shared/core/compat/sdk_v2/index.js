@@ -35,7 +35,6 @@ const ObjectUtilService = Utils.Data;
 
 // LoggerConfig(config.log);
 // const logger = Logger();
-
 const numOfActiveDelegates = 101;
 const peerStates = {
 	UNKNOWN: 0,
@@ -207,8 +206,8 @@ const getForgingStats = async address => {
 	}
 };
 
-
 const nop = () => { };
+const updateFinalizedHeight = () => null;
 
 module.exports = {
 	get: request,
@@ -257,4 +256,5 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache: reload,
+	updateFinalizedHeight,
 };
