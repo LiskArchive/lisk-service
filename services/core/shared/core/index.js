@@ -20,8 +20,22 @@ const {
 	cleanFromForks,
 	reloadBlocks,
 } = require('./blocks');
-const { getTransactions } = require('./transactions');
-const { getAccounts, retrieveTopAccounts } = require('./accounts');
+
+const {
+	getTransactions,
+} = require('./transactions');
+
+const {
+	getAccounts,
+	retrieveTopAccounts,
+} = require('./accounts');
+
+const {
+	reloadDelegateCache,
+	getTotalNumberOfDelegates,
+	getDelegates,
+} = require('./delegates');
+
 const {
 	getPeers,
 	getConnectedPeers,
@@ -64,7 +78,6 @@ const {
 	getOutgoingTxsCount,
 	getVotes,
 	getVoters,
-	getDelegates,
 	getForgingStats,
 	getNextForgers,
 	getNetworkStatus,
@@ -77,9 +90,7 @@ const {
 	getReadyStatus,
 	getEpochUnixTime,
 	getUnixTime,
-	getTotalNumberOfDelegates,
-	getDelegateRankByUsername,
-	reloadDelegateCache,
+	updateFinalizedHeight,
 } = require('./compat');
 
 
@@ -110,6 +121,8 @@ module.exports = {
 	getVotes,
 	getVoters,
 	getDelegates,
+	reloadDelegateCache,
+	getTotalNumberOfDelegates,
 	getForgingStats,
 	getNextForgers,
 	getNetworkStatus,
@@ -135,12 +148,10 @@ module.exports = {
 	calcAvgFeeByteModes,
 	calculateAvgFeePerByte,
 	calculateWeightedAvg,
-	getTotalNumberOfDelegates,
-	getDelegateRankByUsername,
-	reloadDelegateCache,
 	setLastBlock,
 	getLastBlock,
 	reloadBlocks,
 	cleanFromForks,
 	retrieveTopAccounts,
+	updateFinalizedHeight,
 };

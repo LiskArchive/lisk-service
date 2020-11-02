@@ -80,4 +80,15 @@ module.exports = [
 			});
 		},
 	},
+	{
+		name: 'update.height_finalized',
+		description: 'Keep the block finality height up-to-date',
+		controller: callback => {
+			coreSocket.socket.on('blocks/change', async () => {
+				logger.debug('Returning latest heightFinalized to the socket.io client...');
+				const restData = await core.updateFinalizedHeight();
+				callback(restData ? restData.data : null);
+			});
+		},
+	},
 ];

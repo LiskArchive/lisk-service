@@ -20,12 +20,11 @@ const coreApi = require('./coreApi');
 
 const { request } = require('./request');
 
-const { getTotalNumberOfDelegates, getDelegateRankByUsername, reload } = require('./delegateCache');
-
 const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
+const { getDelegates } = require('./delegates');
 
 const {
 	getNetworkStatus,
@@ -33,16 +32,13 @@ const {
 
 const ObjectUtilService = Utils.Data;
 
-// LoggerConfig(config.log);
-// const logger = Logger();
-
 const numOfActiveDelegates = 101;
+
 const peerStates = {
 	UNKNOWN: 0,
 	DISCONNECTED: 1,
 	CONNECTED: 2,
 };
-
 
 // Utils & helpers
 const parseAddress = address => {
@@ -207,8 +203,8 @@ const getForgingStats = async address => {
 	}
 };
 
-
 const nop = () => { };
+const updateFinalizedHeight = () => null;
 
 module.exports = {
 	get: request,
@@ -236,7 +232,7 @@ module.exports = {
 	getOutgoingTxsCount,
 	getVotes: coreApi.getVotes,
 	getVoters: coreApi.getVoters,
-	getDelegates: coreApi.getDelegates,
+	getDelegates,
 	getForgingStats,
 	getNextForgers,
 	getNetworkStatus,
@@ -254,7 +250,5 @@ module.exports = {
 	calcAvgFeeByteModes: nop,
 	calculateAvgFeePerByte: nop,
 	calculateWeightedAvg: nop,
-	getTotalNumberOfDelegates,
-	getDelegateRankByUsername,
-	reloadDelegateCache: reload,
+	updateFinalizedHeight,
 };

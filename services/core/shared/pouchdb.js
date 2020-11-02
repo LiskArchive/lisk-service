@@ -17,6 +17,7 @@ const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
 const PouchDB = require('pouchdb');
 
+PouchDB.plugin(require('pouchdb-adapter-memory'));
 PouchDB.plugin(require('pouchdb-upsert'));
 PouchDB.plugin(require('pouchdb-find'));
 
@@ -28,7 +29,17 @@ const connectionPool = {};
 
 const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
-	const db = new PouchDB(name, { auto_compaction: true });
+
+	const collectionName = name.split('/')[1];
+	const adapter = config.db.collections[collectionName].adapter
+		? config.db.collections[collectionName].adapter
+		: config.db.defaults.adapter;
+
+	const enableAutoCompaction = config.db.collections[collectionName].auto_compaction
+		? config.db.collections[collectionName].auto_compaction
+		: config.db.defaults.auto_compaction;
+
+	const db = new PouchDB(name, { adapter, auto_compaction: enableAutoCompaction });
 
 	// const availableIndexes = [];
 	// (await db.getIndexes())
@@ -50,6 +61,7 @@ const createDb = async (name, idxList = []) => {
 			index: {
 				fields: propName,
 				name: idxName,
+				ddoc: idxName.concat('-doc'),
 			},
 		});
 	});
@@ -64,8 +76,12 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	const cLogger = dbLogger[collectionName];
 
 	if (!connectionPool[collectionName]) {
-		const dbDataDir = `${config.db.directory}/${collectionName}`;
-		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+		const dbDataDir = `${config.db.defaults.directory}/${collectionName}`;
+
+		if (
+			config.db.collections[collectionName].adapter !== 'memory'
+			&& !fs.existsSync(dbDataDir)
+		) fs.mkdirSync(dbDataDir, { recursive: true });
 
 		connectionPool[collectionName] = await createDb(dbDataDir, [
 			...config.db.collections[collectionName].indexes,
@@ -92,6 +108,13 @@ const getDbInstance = async (collectionName, idxList = []) => {
 			return doc;
 		});
 		return db.bulkDocs(docs);
+	};
+
+	const findAll = async () => {
+		const res = await db.allDocs({ include_docs: true });
+		const allDocs = res.rows.map(entry => entry.doc);
+		const filteredDocs = allDocs.filter(doc => !doc._id.includes('idx'));
+		return filteredDocs;
 	};
 
 	const findById = async (id) => {
@@ -140,6 +163,7 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		write,
 		writeOnce,
 		writeBatch,
+		findAll,
 		find,
 		findById,
 		findOneByProperty,

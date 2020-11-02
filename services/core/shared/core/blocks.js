@@ -133,6 +133,14 @@ const getBlocks = async (params = {}, skipCache = false) => {
 		total = (getLastBlock()).height;
 	}
 
+	if (coreApi.getFinalizedHeight) {
+		const finalHeight = coreApi.getFinalizedHeight();
+		const data = blocks.data.map((block) => Object.assign(block,
+			{ isFinal: block.height <= finalHeight },
+		));
+		blocks.data = data;
+	}
+
 	return {
 		data: blocks.data,
 		meta: {
@@ -185,8 +193,9 @@ const cleanFromForks = async (n) => {
 
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
-const initBlocks = async () => {
-	await pouchdb(config.db.collections.accounts.name);
+const initBlocks = (async () => {
+	await coreApi.updateFinalizedHeight();
+	await pouchdb(config.db.collections.blocks.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);
@@ -195,7 +204,7 @@ const initBlocks = async () => {
 	logger.debug(`Preloading first ${numOfBlocksPrefetch} blocks`);
 	await reloadBlocks(numOfBlocksPrefetch);
 	logger.debug('Finished block prefetch');
-};
+})();
 
 module.exports = {
 	getBlocks,
