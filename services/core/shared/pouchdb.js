@@ -35,11 +35,11 @@ const createDb = async (name, idxList = []) => {
 		? config.db.collections[collectionName].adapter
 		: config.db.defaults.adapter;
 
-	const auto_compaction = config.db.collections[collectionName].auto_compaction
+	const enableAutoCompaction = config.db.collections[collectionName].auto_compaction
 		? config.db.collections[collectionName].auto_compaction
 		: config.db.defaults.auto_compaction;
 
-	const db = new PouchDB(name, { adapter, auto_compaction });
+	const db = new PouchDB(name, { adapter, auto_compaction: enableAutoCompaction });
 
 	// const availableIndexes = [];
 	// (await db.getIndexes())
