@@ -20,9 +20,7 @@ const ObjectUtilService = Utils.Data;
 
 const CoreService = require('../../shared/core');
 
-const { getTotalNumberOfDelegates } = CoreService;
-
-const { numOfActiveDelegates } = CoreService;
+const { numOfActiveDelegates, getTotalNumberOfDelegates } = CoreService;
 
 const { isEmptyArray } = ObjectUtilService;
 const { isEmptyObject } = ObjectUtilService;
@@ -53,11 +51,11 @@ const getDelegates = async params => {
 	if (reqParams.some(e => paramsArr.includes(e))) {
 		if (Array.isArray(delegates)) {
 			response.meta.count = delegates.length;
-			response.meta.total = getTotalNumberOfDelegates(params);
+			response.meta.total = await getTotalNumberOfDelegates(params);
 		}
 	} else {
 		response.meta.count = response.meta.limit;
-		response.meta.total = getTotalNumberOfDelegates();
+		response.meta.total = await getTotalNumberOfDelegates();
 	}
 
 	if (isEmptyObject(response) || isEmptyArray(response.data)) {
@@ -96,7 +94,7 @@ const getStandbyDelegates = async params => {
 	}));
 	const delegates = response.data;
 
-	const totalStandbyDelegates = getTotalNumberOfDelegates() - numOfActiveDelegates;
+	const totalStandbyDelegates = (await getTotalNumberOfDelegates()) - numOfActiveDelegates;
 	const offset = parseInt(params.offset, 10) - numOfActiveDelegates;
 
 	response.meta.count = delegates.length;
@@ -134,9 +132,9 @@ const getNextForgers = async params => {
 	nextForgers.meta.total = params.limit;
 
 	return {
-			data: delegates,
-			meta: nextForgers.meta,
-			link: nextForgers.link,
+		data: delegates,
+		meta: nextForgers.meta,
+		link: nextForgers.link,
 	};
 };
 
@@ -162,9 +160,9 @@ const getLatestRegistrations = async params => {
 	registrationsRes.meta.count = params.limit;
 
 	return {
-			data: delegates,
-			meta: registrationsRes.meta,
-			link: registrationsRes.link,
+		data: delegates,
+		meta: registrationsRes.meta,
+		link: registrationsRes.link,
 	};
 };
 

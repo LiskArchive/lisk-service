@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegateRankByUsername } = require('../sdk_v2');
+const reverseMap = (originalMap) => {
+	const result = {};
+	Object.entries(originalMap).forEach(([k, v]) => result[v] = String(k).toLowerCase());
+
+	return result;
+};
 
 const peerStates = {
 	DISCONNECTED: 'disconnected',
@@ -33,14 +38,7 @@ const peerStateParamMap = {
 	2: peerStates.CONNECTED,
 };
 
-const reverseMap = (originalMap) => {
-	const result = {};
-	Object.entries(originalMap).forEach(([k, v]) => result[v] = String(k).toLowerCase());
-
-	return result;
-};
-
-const mapState = (state) => {
+const mapState = state => {
 	const stateMapping = {
 		[peerStates.CONNECTED]: 2,
 		[peerStates.DISCONNECTED]: 1,
@@ -61,7 +59,7 @@ const transactionTypeParamMap = {
 	REGISTERMULTISIGNATURE: transactionTypes.REGISTERMULTISIGNATURE,
 };
 
-const mapTransaction = (transaction) => {
+const mapTransaction = transaction => {
 	const changesByType = {
 		8: {
 			amount: transaction.asset.amount,
@@ -82,56 +80,46 @@ const mapTransaction = (transaction) => {
 		},
 	};
 
-	return {
+	return ({
 		amount: '0',
 		...transaction,
-		...(changesByType[transaction.type] || {}),
-	};
+		...changesByType[transaction.type] || {},
+	});
 };
 
-const mapDelegate = ({ voteWeight, ...delegate }) => ({
-	...delegate,
-	vote: voteWeight,
-	rank: getDelegateRankByUsername(delegate.username),
-});
-
 const responseMappers = {
-	'/peers': (response) => {
-		response.data = response.data.map((peer) => ({
+	'/peers': response => {
+		response.data = response.data.map(peer => ({
 			...peer,
 			stateName: mapStateName(peer.state),
 			state: mapState(peer.state),
 		}));
 		return response;
 	},
-	'/transactions': (response) => {
+	'/transactions': response => {
 		response.data = response.data.map(mapTransaction);
 		return response;
 	},
-	'/delegates': (response) => {
-		response.data = response.data.map(mapDelegate);
-		return response;
-	},
-	'/node/constants': (response) => {
+	'/node/constants': response => {
 		response.data = { ...response.data, nethash: response.data.networkId };
 		return response;
 	},
 };
 
 const paramMappers = {
-	'/delegates/latest_registrations': (params) => {
+	'/delegates/latest_registrations': params => {
 		if (params.type) {
 			params.type = transactionTypeParamMap[params.type];
 		}
 		return params;
 	},
-	'/peers': (params) => {
+	'/peers': params => {
 		if (params.state) {
 			params.state = peerStateParamMap[params.state];
 		}
 		return params;
 	},
-	'/delegates': (params) => {
+	'/delegates': params => {
 		if (params.sort) {
 			params.sort = params.sort.replace('rank:asc', 'voteWeight:desc');
 			params.sort = params.sort.replace('rank:desc', 'voteWeight:asc');

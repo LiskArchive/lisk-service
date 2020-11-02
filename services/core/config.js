@@ -31,7 +31,11 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
  * Database config
  */
 config.db = {
-	directory: 'db_data',
+	defaults: {
+		directory: 'db_data',
+		adapter: 'leveldb',
+		auto_compaction: true,
+	},
 	collections: {
 		accounts: {
 			name: 'accounts',
@@ -75,7 +79,14 @@ config.db = {
 		},
 		delegates: {
 			name: 'delegates',
-			indexes: [],
+			indexes: [
+				'account.address',
+				'account.publicKey',
+				'account.secondPublicKey',
+				'username',
+				'rank',
+			],
+			adapter: 'memory',
 		},
 		transactions: {
 			name: 'transactions',

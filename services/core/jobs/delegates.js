@@ -22,7 +22,7 @@ module.exports = [
 	{
 		name: 'refresh.delegates',
 		description: 'Keep the delegate list up-to-date',
-		schedule: '*/5 * * * *', // Every 5 min
+		schedule: '* * * * *', // Every 1 min
 		updateOnInit: true,
 		init: () => {
 			logger.debug('Scheduling initial list update...');

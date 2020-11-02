@@ -14,7 +14,7 @@
  *
  */
 const http = require('../common/httpRequest');
-// TODO: Enable when sdk_v3 is implemented and sdk resolution works properly
+// TODO: Enable when sdk_v3 is fully implemented
 // const { mapParams, mapResponse } = require('./mappings');
 const { mapParams, mapResponse } = require('./coreVersionCompatibility');
 

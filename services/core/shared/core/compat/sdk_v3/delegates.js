@@ -13,20 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('./blocks');
+const coreApi = require('./coreApi');
 
-const {
-    getDelegates,
-} = require('./delegates');
+const getDelegates = async params => {
+	const delegates = await coreApi.getDelegates(params);
+
+	delegates.data.map((delegate, index) => {
+		delegate.rank = params.offset + index + 1;
+		delegate.vote = delegate.voteWeight;
+		return delegate;
+	});
+
+	return delegates;
+};
 
 module.exports = {
-    ...require('../sdk_v2'),
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getDelegates,
+	getDelegates,
 };
