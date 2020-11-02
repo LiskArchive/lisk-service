@@ -194,7 +194,7 @@ const cleanFromForks = async (n) => {
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
 const initBlocks = (async () => {
-	if (coreApi.updateFinalizedHeight) await coreApi.updateFinalizedHeight();
+	await coreApi.updateFinalizedHeight();
 	await pouchdb(config.db.collections.blocks.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
