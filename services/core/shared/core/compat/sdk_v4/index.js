@@ -13,4 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = require('../sdk_v2');
+const { getTransactions } = require('./transactions');
+
+module.exports = {
+    ...require('../sdk_v2'),
+    getTransactions,
+};
