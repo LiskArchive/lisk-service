@@ -20,23 +20,30 @@ const {
 	validateTimestamp,
 } = require('../common');
 
-const getTransactions = async params => {
-	// TODO: Replace timestamp logic to retrieve transactions
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
-		if (await validateTimestamp(params[timestamp])) {
-			params[timestamp] = await getBlockchainTime(params[timestamp]);
-		}
-		return Promise.resolve();
-	}),
+const getTransactions = async (params) => {
+	await Promise.all(
+		['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
+			if (await validateTimestamp(params[timestamp])) {
+				params[timestamp] = await getBlockchainTime(params[timestamp]);
+			}
+			return Promise.resolve();
+		}),
 	);
-
-	const transactions = await coreApi.getTransactions(params);
+	// TODO: Implement logic to retrieve transactions using block height
+	let transactions;
+	if (params.fromTimestamp && params.toTimestamp) {
+		transactions = await coreApi.getTransactions({});
+	} else {
+		transactions = await coreApi.getTransactions(params);
+	}
 
 	if (transactions.data) {
-		await Promise.all(transactions.data.map(async (o) => Object.assign(o, {
-			unixTimestamp: await getUnixTime(o.timestamp),
-		}),
-		));
+		await Promise.all(
+			transactions.data.map(async (o) => Object.assign(o, {
+					unixTimestamp: await getUnixTime(o.timestamp),
+				}),
+			),
+		);
 	}
 
 	return transactions;
