@@ -30,12 +30,16 @@ const connectionPool = {};
 const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
 
-	let db;
-	if (name.split('/')[1] === config.db.collections.delegates.name) {
-		db = new PouchDB(name, { adapter: 'memory', auto_compaction: true });
-	} else {
-		db = new PouchDB(name, { auto_compaction: true });
-	}
+	const collectionName = name.split('/')[1];
+	const adapter = config.db.collections[collectionName].adapter
+		? config.db.collections[collectionName].adapter
+		: config.db.defaults.adapter;
+
+	const auto_compaction = config.db.collections[collectionName].auto_compaction
+		? config.db.collections[collectionName].auto_compaction
+		: config.db.defaults.auto_compaction;
+
+	const db = new PouchDB(name, { adapter, auto_compaction });
 
 	// const availableIndexes = [];
 	// (await db.getIndexes())
@@ -72,9 +76,12 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	const cLogger = dbLogger[collectionName];
 
 	if (!connectionPool[collectionName]) {
-		const dbDataDir = `${config.db.directory}/${collectionName}`;
-		if (collectionName !== config.db.collections.delegates.name
-			&& !fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+		const dbDataDir = `${config.db.defaults.directory}/${collectionName}`;
+
+		if (
+			config.db.collections[collectionName].adapter !== 'memory'
+			&& !fs.existsSync(dbDataDir)
+		) fs.mkdirSync(dbDataDir, { recursive: true });
 
 		connectionPool[collectionName] = await createDb(dbDataDir, [
 			...config.db.collections[collectionName].indexes,
