@@ -206,8 +206,8 @@ const getForgingStats = async address => {
 	}
 };
 
-
 const nop = () => { };
+const updateFinalizedHeight = () => null;
 
 module.exports = {
 	get: request,
@@ -256,4 +256,5 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegateRankByUsername,
 	reloadDelegateCache: reload,
+	updateFinalizedHeight,
 };
