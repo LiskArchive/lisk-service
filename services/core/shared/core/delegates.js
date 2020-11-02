@@ -21,8 +21,6 @@ const coreApi = require('./compat');
 
 const logger = Logger();
 
-let allDelegates = [];
-
 const formatSortString = sortString => {
 	const sortObj = {};
 	const sortProp = sortString.split(':')[0];
@@ -99,9 +97,6 @@ const loadAllDelegates = async (delegateList = []) => {
 	const response = await getDelegates({ limit, offset: delegateList.length });
 	delegateList = [...delegateList, ...response.data];
 
-	// this condition should speed up initial load but not break things on rounds/change
-	if (delegateList.length >= allDelegates.length) allDelegates = delegateList;
-
 	if (response.data.length === limit) loadAllDelegates(delegateList);
 	else logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
 };
@@ -110,7 +105,10 @@ const reload = () => {
 	loadAllDelegates();
 };
 
-const getTotalNumberOfDelegates = (params = {}) => {
+const getTotalNumberOfDelegates = async (params = {}) => {
+	const db = await pouchdb(config.db.collections.delegates.name);
+
+	const allDelegates = await db.findAll();
 	const relevantDelegates = allDelegates.filter(delegate => (
 		(!params.search || delegate.username.includes(params.search))
 		&& (!params.username || delegate.username === params.username)

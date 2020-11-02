@@ -17,6 +17,7 @@ const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
 const PouchDB = require('pouchdb');
 
+PouchDB.plugin(require('pouchdb-adapter-memory'));
 PouchDB.plugin(require('pouchdb-upsert'));
 PouchDB.plugin(require('pouchdb-find'));
 
@@ -28,7 +29,13 @@ const connectionPool = {};
 
 const createDb = async (name, idxList = []) => {
 	logger.debug(`Creating/opening database ${name}...`);
-	const db = new PouchDB(name, { auto_compaction: true });
+
+	let db;
+	if (name.split('/')[1] === config.db.collections.delegates.name) {
+		db = new PouchDB(name, { adapter: 'memory', auto_compaction: true });
+	} else {
+		db = new PouchDB(name, { auto_compaction: true });
+	}
 
 	// const availableIndexes = [];
 	// (await db.getIndexes())
@@ -95,6 +102,13 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		return db.bulkDocs(docs);
 	};
 
+	const findAll = async () => {
+		const res = await db.allDocs({ include_docs: true });
+		const allDocs = res.rows.map(entry => entry.doc);
+		const filteredDocs = allDocs.filter(doc => !doc._id.includes('idx'));
+		return filteredDocs;
+	};
+
 	const findById = async (id) => {
 		try {
 			const res = await db.get(id);
@@ -141,6 +155,7 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		write,
 		writeOnce,
 		writeBatch,
+		findAll,
 		find,
 		findById,
 		findOneByProperty,
