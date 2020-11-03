@@ -14,8 +14,16 @@
  *
  */
 const { getTransactions } = require('./transactions');
+const {
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
+} = require('../sdk_v3');
 
 module.exports = {
     ...require('../sdk_v2'),
     getTransactions,
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
 };
