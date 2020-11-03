@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTransactions } = require('./transactions');
+const {
+    getTransactions
+} = require('./transactions');
+const {
+    mapToOriginal
+} = require('./reverseMappings');
 const {
     getBlocks,
     updateFinalizedHeight,
@@ -23,6 +28,7 @@ const {
 module.exports = {
     ...require('../sdk_v2'),
     getTransactions,
+    mapToOriginal,
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
