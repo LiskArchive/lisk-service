@@ -14,10 +14,10 @@
  *
  */
 const {
-    getTransactions
+    getTransactions,
 } = require('./transactions');
 const {
-    mapToOriginal
+    mapToOriginal,
 } = require('./reverseMappings');
 const {
     getBlocks,

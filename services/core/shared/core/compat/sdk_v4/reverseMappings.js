@@ -43,7 +43,7 @@ const mapTransaction = transaction => {
 };
 
 const responseMappers = {
-    'transactions': response => {
+    transactions: response => {
         response.data = response.data.map(mapTransaction);
         return response;
     },
