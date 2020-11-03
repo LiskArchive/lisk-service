@@ -120,6 +120,16 @@ const responseMappers = {
 };
 
 const paramMappers = {
+    '/transactions': params => {
+        if (params.sort) {
+            const sortProp = params.sort.split(':')[0];
+            const sortOrder = params.sort.split(':')[1];
+            // TODO: Fix the validation logic as per business requirements
+            params.sort = (['fee', 'type', 'nonce'].includes(sortProp) ? sortProp : 'fee')
+                .concat(':').concat(sortOrder);
+        }
+        return params;
+    },
     '/delegates/latest_registrations': params => {
         if (params.type) {
             params.type = transactionTypeParamMap[params.type];

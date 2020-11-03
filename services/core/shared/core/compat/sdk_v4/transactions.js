@@ -13,27 +13,77 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
-// const {
-// 	getUnixTime,
-// 	getBlockchainTime,
-// 	validateTimestamp,
-// } = require("../common");
+const {
+	getUnixTime,
+	getBlockchainTime,
+	validateTimestamp,
+} = require('../common');
 
 const getTransactionsByBlock = async (block) => {
 	const transactions = await coreApi.getTransactions({ height: block.height });
-	transactions.data.map((tx) => ({ ...tx, timestamp: block.timestamp }));
+	transactions.data = await BluebirdPromise.map(
+		transactions.data,
+		async transaction => ({ ...transaction, timestamp: block.timestamp }),
+		{ concurrency: transactions.data.length },
+	);
 	return transactions;
 };
 
-const getTransactions = async (params) => {
-	let transactions;
+const getTransactions = async params => {
+	let transactions = {
+		data: [],
+		meta: {},
+		links: {},
+	};
 
-	const blocks = await coreApi.getBlocks(params);
-	await blocks.data.map(async block => {
-		const blockTransactions = await getTransactionsByBlock(block);
-		transactions = transactions.concat(blockTransactions.data);
-	});
+	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
+		if (await validateTimestamp(params[timestamp])) {
+			params[timestamp] = await getBlockchainTime(params[timestamp]);
+		}
+		return Promise.resolve();
+	}));
+
+	if (params.fromTimestamp || params.toTimestamp) {
+		const blocks = await coreApi.getBlocks(params);
+		transactions.meta.count = 0;
+		await BluebirdPromise.map(
+			blocks.data,
+			async (block) => {
+				const blkTransactions = await getTransactionsByBlock(block);
+				transactions.data = transactions.data.concat(blkTransactions.data);
+				transactions.meta.count += blkTransactions.meta.count;
+			},
+			{ concurrency: blocks.data.length },
+		);
+	} else {
+		transactions = await coreApi.getTransactions(params);
+		await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
+				transaction.timestamp = txBlock.timestamp;
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
+	}
+
+	if (transactions.data) {
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => ({
+				...transaction, unixTimestamp: await getUnixTime(transaction.timestamp),
+			}),
+			{ concurrency: transactions.data.length },
+		);
+	}
+
+	transactions.meta.total = transactions.meta.count;
+	transactions.meta.count = transactions.data.length;
+	transactions.meta.offset = params.offset || 0;
+
 	return transactions;
 };
 
