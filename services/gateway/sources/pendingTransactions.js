@@ -18,7 +18,10 @@ const transaction = require('./mappings/transaction');
 module.exports = {
 	type: 'moleculer',
 	method: 'core.transactions.pending',
-	params: {},
+	params: {
+		offset: '=',
+		limit: '=',
+	},
 	definition: {
 		data: ['data', transaction],
 		meta: {
