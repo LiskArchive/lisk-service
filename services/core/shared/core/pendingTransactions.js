@@ -34,7 +34,7 @@ const getPendingTransactions = async (params) => {
 
 	try {
 		dbResult = await db.findAll();
-		dbResult.sort((a, b) => a.receivedAt.localCompare(b.receivedAt)).reverse();
+		dbResult.sort((a, b) => a.receivedAt.localeCompare(b.receivedAt)).reverse();
 
 		const now = moment().unix(); // TODO: Check if in secs or millisec
 		const lastSubmittedAt = moment(dbResult[0].receivedAt).unix();

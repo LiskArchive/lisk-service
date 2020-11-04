@@ -95,7 +95,7 @@ const getAccounts = async (params) => {
 								compareResult = Number(a[sortProp]) - Number(b[sortProp]);
 							}
 						} catch (err) {
-							compareResult = a[sortProp].localCompare(b[sortProp]);
+							compareResult = a[sortProp].localeCompare(b[sortProp]);
 						}
 						return compareResult;
 					});
