@@ -23,6 +23,8 @@ const {
 
 const {
 	getTransactions,
+	getPendingTransactions,
+	reloadAllPendingTransactions,
 } = require('./transactions');
 
 const {
@@ -54,8 +56,6 @@ const {
 	calculateAvgFeePerByte,
 	calculateWeightedAvg,
 } = require('./dynamicFees');
-
-const { getPendingTransactions, reloadAllPendingTransactions } = require('./pendingTransactions');
 
 const {
 	get,

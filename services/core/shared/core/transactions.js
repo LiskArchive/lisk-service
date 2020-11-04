@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const moment = require('moment');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
@@ -108,6 +109,59 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const getPendingTransactions = async (params) => {
+	let pendingTransactions = {
+		data: [],
+		meta: {},
+		links: {},
+	};
+
+	const db = await pouchdb(config.db.collections.pending_transactions.name);
+	let dbResult;
+
+	try {
+		dbResult = await db.findAll();
+		dbResult.sort((a, b) => a.receivedAt.localeCompare(b.receivedAt)).reverse();
+
+		const now = moment().unix();
+		const lastSubmittedAt = moment(dbResult[0].receivedAt).unix();
+		if (dbResult.length && now - lastSubmittedAt < 10) {
+			pendingTransactions.data = dbResult.split(params.offset, params.limit);
+			pendingTransactions.meta = {
+				count: params.limit,
+				offset: params.offset,
+				total: dbResult.length,
+			};
+		} else throw new Error('Request data from Lisk Core');
+	} catch (err) {
+		logger.debug(err.message);
+		pendingTransactions = await coreApi.getPendingTransactions(params);
+		if (dbResult.length) await db.deleteBatch(dbResult);
+		if (pendingTransactions.data && pendingTransactions.data.length) {
+			await db.writeBatch(pendingTransactions.data);
+		}
+	}
+	return pendingTransactions;
+};
+
+const loadAllPendingTransactions = async (pendingTransactions = []) => {
+	const limit = 100;
+	const response = await getPendingTransactions({
+		limit,
+		offset: pendingTransactions.length,
+	});
+	pendingTransactions = [...pendingTransactions, ...response.data];
+
+	if (response.data.length === limit) loadAllPendingTransactions(pendingTransactions);
+	else logger.debug(
+			`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`,
+		);
+};
+
+const reload = () => loadAllPendingTransactions();
+
 module.exports = {
 	getTransactions,
+	getPendingTransactions,
+	reloadAllPendingTransactions: reload,
 };
