@@ -110,8 +110,8 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const getPendingTransactions = async (params, list = []) => {
-	const pendingTx = await coreApi.getPendingTransactions(params);
+const getPendingTransactions = async (list = []) => {
+	const pendingTx = await coreApi.getPendingTransactions();
 	if (pendingTx) {
 		list = [...list, ...pendingTx.data];
 		pendingTransactionList = list;

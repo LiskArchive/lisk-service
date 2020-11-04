@@ -70,9 +70,6 @@ module.exports = [
 	{
 		name: 'transactions.pending',
 		controller: getPendingTransactions,
-		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-		},
+		params: {},
 	},
 ];

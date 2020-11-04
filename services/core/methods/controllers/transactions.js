@@ -158,8 +158,8 @@ const getTransactionsStatistics = async ({
 const getTransactionsStatisticsDay = (params) => getTransactionsStatistics({ aggregateBy: 'day', ...params });
 const getTransactionsStatisticsMonth = (params) => getTransactionsStatistics({ aggregateBy: 'month', ...params });
 
-const getPendingTransactions = async (params) => {
-	const result = await CoreService.getPendingTransactions(params);
+const getPendingTransactions = async () => {
+	const result = await CoreService.getPendingTransactions();
 	if (result) {
 		const meta = {
 			count: result.data.length,
