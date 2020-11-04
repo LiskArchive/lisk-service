@@ -136,9 +136,11 @@ const getPendingTransactions = async (params) => {
 	} catch (err) {
 		logger.debug(err.message);
 		pendingTransactions = await coreApi.getPendingTransactions(params);
-		if (dbResult.length) await db.deleteBatch(dbResult);
-		if (pendingTransactions.data && pendingTransactions.data.length) {
-			await db.writeBatch(pendingTransactions.data);
+		if (pendingTransactions) {
+			if (dbResult.length) await db.deleteBatch(dbResult);
+			if (pendingTransactions.data && pendingTransactions.data.length) {
+				await db.writeBatch(pendingTransactions.data);
+			}
 		}
 	}
 	return pendingTransactions;
@@ -150,12 +152,14 @@ const loadAllPendingTransactions = async (pendingTransactions = []) => {
 		limit,
 		offset: pendingTransactions.length,
 	});
-	pendingTransactions = [...pendingTransactions, ...response.data];
+	if (response) {
+		pendingTransactions = [...pendingTransactions, ...response.data];
 
-	if (response.data.length === limit) loadAllPendingTransactions(pendingTransactions);
-	else logger.debug(
-			`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`,
-		);
+		if (response.data.length === limit) loadAllPendingTransactions(pendingTransactions);
+		else logger.debug(
+				`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`,
+			);
+	}
 };
 
 const reload = () => loadAllPendingTransactions();
