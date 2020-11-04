@@ -110,13 +110,13 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const getPendingTransactions = async (list = []) => {
+const getPendingTransactions = async (transactions = []) => {
 	const pendingTx = await coreApi.getPendingTransactions();
 	if (pendingTx) {
-		list = [...list, ...pendingTx.data];
-		pendingTransactionList = list;
+		transactions = [...transactions, ...pendingTx.data];
+		pendingTransactionList = transactions;
 		logger.info(
-			`Retrieve pending transactions ${pendingTransactionList.length} txs.`,
+			`Retrieving list of pending transactions: ${pendingTransactionList.length} txs.`,
 		);
 	}
 	return pendingTx;
