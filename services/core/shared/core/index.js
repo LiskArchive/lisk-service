@@ -23,7 +23,6 @@ const {
 
 const {
 	getTransactions,
-	getPendingTransactions,
 } = require('./transactions');
 
 const {
@@ -55,6 +54,8 @@ const {
 	calculateAvgFeePerByte,
 	calculateWeightedAvg,
 } = require('./dynamicFees');
+
+const { getPendingTransactions, reloadAllPendingTransactions } = require('./pendingTransactions');
 
 const {
 	get,
@@ -156,4 +157,5 @@ module.exports = {
 	retrieveTopAccounts,
 	updateFinalizedHeight,
 	getPendingTransactions,
+	reloadAllPendingTransactions,
 };

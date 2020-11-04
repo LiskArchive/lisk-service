@@ -88,6 +88,11 @@ config.db = {
 			],
 			adapter: 'memory',
 		},
+		pending_transactions: {
+			name: 'pending_transactions',
+			indexes: [],
+			adapter: 'memory',
+		},
 		transactions: {
 			name: 'transactions',
 			indexes: [

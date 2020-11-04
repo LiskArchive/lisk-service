@@ -23,11 +23,11 @@ module.exports = [
 		interval: 1, // seconds
 		init: () => {
 			logger.debug('Initializing pending transactions list...');
-			core.getPendingTransactions();
+			core.reloadAllPendingTransactions();
 		},
 		controller: () => {
 			logger.debug('Scheduling pending transactions list reload...');
-			core.getPendingTransactions();
+			core.reloadAllPendingTransactions();
 		},
 	},
 ];

@@ -88,8 +88,8 @@ const getTransactions = async params => {
 };
 
 
-const getPendingTransactions = async () => {
-	const pendingTx = await coreApi.getPendingTransactions();
+const getPendingTransactions = async (params) => {
+	const pendingTx = await coreApi.getPendingTransactions(params);
 	return pendingTx;
 };
 
