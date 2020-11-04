@@ -13,18 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTransactions, getPendingTransactions } = require('./transactions');
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('../sdk_v3');
+const logger = require('lisk-service-framework').Logger();
+const core = require('../shared/core');
 
-module.exports = {
-    ...require('../sdk_v2'),
-    getTransactions,
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getPendingTransactions,
-};
+module.exports = [
+	{
+		name: 'refresh.pendingTxs',
+		description: 'Keep pending transactions list up-to-date',
+		interval: 1, // seconds
+		init: () => {
+			logger.debug('Initializing pending transactions list...');
+			core.getPendingTransactions();
+		},
+		controller: () => {
+			logger.debug('Scheduling pending transactions list reload...');
+			core.getPendingTransactions();
+		},
+	},
+];

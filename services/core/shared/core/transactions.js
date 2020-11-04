@@ -22,6 +22,8 @@ const { getBlocks } = require('./blocks');
 
 const logger = Logger();
 
+let pendingTransactionList = [];
+
 const formatSortString = sortString => {
 	const sortObj = {};
 	const sortProp = sortString.split(':')[0];
@@ -108,6 +110,19 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const getPendingTransactions = async (params, list = []) => {
+	const pendingTx = await coreApi.getPendingTransactions(params);
+	if (pendingTx) {
+		list = [...list, ...pendingTx.data];
+		pendingTransactionList = list;
+		logger.info(
+			`Retrieve pending transactions ${pendingTransactionList.length} txs.`,
+		);
+	}
+	return pendingTx;
+};
+
 module.exports = {
 	getTransactions,
+	getPendingTransactions,
 };

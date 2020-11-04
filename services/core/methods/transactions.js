@@ -19,6 +19,7 @@ const {
 	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,
+	getPendingTransactions,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -61,6 +62,14 @@ module.exports = [
 	{
 		name: 'transactions.statistics.month',
 		controller: getTransactionsStatisticsMonth,
+		params: {
+			limit: { type: 'any', optional: true },
+			offset: { type: 'any', optional: true },
+		},
+	},
+	{
+		name: 'transactions.pending',
+		controller: getPendingTransactions,
 		params: {
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },

@@ -205,6 +205,7 @@ const getForgingStats = async address => {
 
 const nop = () => { };
 const updateFinalizedHeight = () => null;
+const getPendingTransactions = () => null;
 
 module.exports = {
 	get: request,
@@ -251,4 +252,5 @@ module.exports = {
 	calculateAvgFeePerByte: nop,
 	calculateWeightedAvg: nop,
 	updateFinalizedHeight,
+	getPendingTransactions,
 };

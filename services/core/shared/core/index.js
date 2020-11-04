@@ -23,6 +23,7 @@ const {
 
 const {
 	getTransactions,
+	getPendingTransactions,
 } = require('./transactions');
 
 const {
@@ -154,4 +155,5 @@ module.exports = {
 	cleanFromForks,
 	retrieveTopAccounts,
 	updateFinalizedHeight,
+	getPendingTransactions,
 };

@@ -13,18 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTransactions, getPendingTransactions } = require('./transactions');
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('../sdk_v3');
+const transaction = require('./mappings/transaction');
 
 module.exports = {
-    ...require('../sdk_v2'),
-    getTransactions,
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getPendingTransactions,
+	type: 'moleculer',
+	method: 'core.transactions.pending',
+	params: {
+		offset: '=',
+		limit: '=',
+	},
+	definition: {
+		data: ['data', transaction],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };

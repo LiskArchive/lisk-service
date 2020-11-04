@@ -87,4 +87,10 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-module.exports = { getTransactions };
+
+const getPendingTransactions = async (params) => {
+	const pendingTx = await coreApi.getPendingTransactions(params);
+	return pendingTx;
+};
+
+module.exports = { getTransactions, getPendingTransactions };
