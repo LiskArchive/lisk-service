@@ -18,6 +18,7 @@ const { Logger } = require('lisk-service-framework');
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
+const { getLastBlock } = require('./blocks');
 
 const logger = Logger();
 
@@ -101,10 +102,6 @@ const loadAllDelegates = async (delegateList = []) => {
 	else logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
 };
 
-const reload = () => {
-	loadAllDelegates();
-};
-
 const getTotalNumberOfDelegates = async (params = {}) => {
 	const db = await pouchdb(config.db.collections.delegates.name);
 
@@ -118,6 +115,45 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	));
 	return relevantDelegates.length;
 };
+
+const computeDelegateRankAndStatus = async () => {
+	const db = await pouchdb(config.db.collections.delegates.name);
+
+	const allDelegates = await db.findAll();
+	const lastestBlock = await getLastBlock();
+	const next_forgers = await getNextForgers(); // TODO: Update it with correct params
+
+	const checkIfPunished = delegate => {
+		const isPunished = delegate.pomHeights
+			.some(pomHeight => pomHeight.start <= lastestBlock.height
+				&& lastestBlock.height <= pomHeights.end);
+		return isPunished;
+	};
+
+	allDelegates.sort((a, b) => a.delegateWeight - b.delegateWeight);
+	allDelegates.map((delegate, index) => {
+		delegate.rank = index + 1;
+
+		if (!delegate.isDelegate) delegate.status = 'non-eligible';
+		else if (delegate.isBanned) delegate.status = 'banned';
+		else if (checkIfPunished(delegate)) delegate.status = 'punished';
+		else if (next_forgers.includes(delegate.address)) delegate.status = 'active';
+		else delegate.status = 'standby'; // TODO: Determination logic
+
+		return delegate;
+	});
+
+	await db.writeBatch(allDelegates);
+};
+
+const reload = () => {
+	loadAllDelegates();
+	computeDelegateRankAndStatus();
+};
+
+// TODO: v4 - rank, status
+// delegate.rank = from delegateWeight
+// delegate.status = "standby"; // active(in next_forgers)/standby/punished(pomHeights)/banned(isBanned)/non-eligible(isDelegate)
 
 module.exports = {
 	reloadDelegateCache: reload,
