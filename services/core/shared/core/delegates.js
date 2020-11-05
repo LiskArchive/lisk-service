@@ -19,7 +19,7 @@ const BluebirdPromise = require('bluebird');
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-const { getLastBlock } = require('./blocks');
+const { getBlocks } = require('./blocks');
 
 const logger = Logger();
 
@@ -133,7 +133,7 @@ const computeDelegateRankAndStatus = async () => {
 	const db = await pouchdb(config.db.collections.delegates.name);
 
 	const allDelegates = await db.findAll();
-	const lastestBlock = await getLastBlock();
+	const lastestBlock = await getBlocks({ limit: 1 });
 	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
 	const standbyNextForgersList = allNextForgersAddressList.slice(numActiveForgers);
@@ -158,7 +158,7 @@ const computeDelegateRankAndStatus = async () => {
 		return delegate;
 	});
 
-	await db.writeBatch(allDelegates);
+	if (allDelegates.length) await db.writeBatch(allDelegates);
 };
 
 const getNextForgers = async params => {
