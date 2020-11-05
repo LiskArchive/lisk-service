@@ -22,6 +22,47 @@ const { getLastBlock } = require('./blocks');
 
 const logger = Logger();
 
+let nextForgers = [];
+
+const getNextForgers = async params => {
+	let forgers = {
+		data: [],
+		meta: {},
+	};
+
+	try {
+		if (nextForgers.length) {
+			const offset = params.offset || 0;
+			const limit = params.limit || 10;
+
+			forgers.data = nextForgers.slice(offset, offset + limit);
+
+			forgers.meta.count = forgers.data.length;
+			forgers.meta.offset = params.offset;
+			forgers.meta.total = nextForgers.length;
+		} else throw new Error('Request Next Forgers data from Lisk Core');
+	} catch (err) {
+		logger.debug(err.message);
+
+		forgers = await coreApi.getNextForgers(params);
+	}
+	return forgers;
+};
+
+const loadAllNextForgers = async (forgersList = []) => {
+	const limit = 101;
+	const response = await getNextForgers({ limit, offset: forgersList.length });
+	forgersList = [...forgersList, ...response.data];
+
+	if (response.data.length === limit) loadAllNextForgers(forgersList);
+	else {
+		nextForgers = forgersList; // Update local in-mem cache with latest information
+		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
+	}
+};
+
+const reloadNextForgersCache = () => loadAllNextForgers();
+
 const formatSortString = sortString => {
 	const sortObj = {};
 	const sortProp = sortString.split(':')[0];
@@ -77,7 +118,7 @@ const getDelegates = async params => {
 			const dbResult = await db.find(inputData);
 
 			if (dbResult.length > 0) delegates.data = dbResult;
-			else throw new Error('Request data from Lisk Core');
+			else throw new Error('Request Delegates data from Lisk Core');
 		}
 	} catch (err) {
 		logger.debug(err.message);
@@ -117,11 +158,14 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 };
 
 const computeDelegateRankAndStatus = async () => {
+	const numActiveForgers = 101;
 	const db = await pouchdb(config.db.collections.delegates.name);
 
 	const allDelegates = await db.findAll();
 	const lastestBlock = await getLastBlock();
-	const nextForgers = await coreApi.getNextForgers(); // TODO: Update it with correct params
+	const allNextForgersList = nextForgers.map(forger => forger.address);
+	const activeNextForgersList = allNextForgersList.slice(0, numActiveForgers);
+	const standbyNextForgersList = allNextForgersList.slice(numActiveForgers);
 
 	const checkIfPunished = delegate => {
 		const isPunished = delegate.pomHeights
@@ -137,8 +181,8 @@ const computeDelegateRankAndStatus = async () => {
 		if (!delegate.isDelegate) delegate.status = 'non-eligible';
 		else if (delegate.isBanned) delegate.status = 'banned';
 		else if (checkIfPunished(delegate)) delegate.status = 'punished';
-		else if (nextForgers.includes(delegate.address)) delegate.status = 'active';
-		else delegate.status = 'standby'; // TODO: Determination logic
+		else if (activeNextForgersList.includes(delegate.address)) delegate.status = 'active';
+		else if (standbyNextForgersList.includes(delegate.address)) delegate.status = 'standby';
 
 		return delegate;
 	});
@@ -160,4 +204,6 @@ module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
+	reloadNextForgersCache,
+	getNextForgers,
 };

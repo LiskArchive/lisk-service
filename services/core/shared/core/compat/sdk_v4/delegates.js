@@ -57,6 +57,9 @@ const getDelegates = async params => {
 };
 
 const getNextForgers = async params => {
+	const numMaxForgers = 103;
+	if (params.limit === 101) params.limit = numMaxForgers;
+
 	const result = await coreApi.getNextForgers(params);
 	return isProperObject(result) && Array.isArray(result.data) ? result : [];
 };
