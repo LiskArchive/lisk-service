@@ -126,12 +126,15 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 };
 
 const computeDelegateRankAndStatus = async () => {
+	const sdkVersion = coreApi.getSDKVersion().split('sdk_v')[1];
+	if (Number(sdkVersion) < 4) return;
+
 	const numActiveForgers = 101;
 	const db = await pouchdb(config.db.collections.delegates.name);
 
 	const allDelegates = await db.findAll();
 	const lastestBlock = await getLastBlock();
-	const allNextForgersAddressList = nextForgers.map(forger => forger.address); // TODO: Verify
+	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
 	const standbyNextForgersList = allNextForgersAddressList.slice(numActiveForgers);
 
