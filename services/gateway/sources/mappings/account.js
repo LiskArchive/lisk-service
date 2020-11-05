@@ -27,6 +27,12 @@ module.exports = {
 		rewards: '=,string',
 		username: '=,string',
 		vote: '=,string',
+		totalVotesReceived: ',string',
+		isBanned: '=',
+		status: '=,string',
+		pomHeights: '=',
+		lastForgedHeight: '=,number',
+		consecutiveMissedBlocks: '=,number',
 	},
 	knowledge: {
 		owner: '=,string',

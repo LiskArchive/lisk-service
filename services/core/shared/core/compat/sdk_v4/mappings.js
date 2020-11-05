@@ -88,6 +88,12 @@ const mapTransaction = transaction => {
     });
 };
 
+const mapAccounts = (account) => {
+    const { username } = account;
+    if (username) account.delegate.username = username;
+    return account;
+};
+
 const responseMappers = {
     '/peers': response => {
         response.data = response.data.map(peer => ({
@@ -103,6 +109,10 @@ const responseMappers = {
     },
     '/node/constants': response => {
         response.data = { ...response.data, nethash: response.data.networkId };
+        return response;
+    },
+    '/accounts': response => {
+        response.data = response.data.map(mapAccounts);
         return response;
     },
 };

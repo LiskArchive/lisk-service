@@ -24,10 +24,12 @@ const {
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('../sdk_v3');
-
 const {
     getDelegates,
 } = require('./delegates');
+const {
+    getAccounts,
+} = require('./accounts');
 
 module.exports = {
     ...require('../sdk_v2'),
@@ -37,4 +39,5 @@ module.exports = {
     updateFinalizedHeight,
     getFinalizedHeight,
     getDelegates,
+    getAccounts,
 };
