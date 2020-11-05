@@ -2,8 +2,8 @@
 pipeline {
 	agent none
 	stages {
-		agent { node { label 'lisk-service-dev' } }
 		stage('Build docker images') {
+			agent { node { label 'lisk-service-dev' } }
 			when { branch 'development' }
 			steps {
 				sh 'make build-core'
