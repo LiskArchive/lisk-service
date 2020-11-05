@@ -13,4 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = require('../sdk_v2');
+const {
+    getTransactions,
+} = require('./transactions');
+const {
+    mapToOriginal,
+} = require('./reverseMappings');
+const {
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
+} = require('../sdk_v3');
+
+module.exports = {
+    ...require('../sdk_v2'),
+    getTransactions,
+    mapToOriginal,
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
+};

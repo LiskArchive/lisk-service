@@ -27,8 +27,9 @@ const {
 
 const config = require('../../config.js');
 
-// const { getCoreVersion } = require('./helpers/coreVersionCompatibility');
-const { getCoreVersion, getBlocks, getTransactions } = require('./compat');
+const { getCoreVersion, mapToOriginal } = require('./compat');
+const { getBlocks } = require('./blocks');
+const { getTransactions } = require('./transactions');
 
 const logger = Logger();
 
@@ -221,9 +222,15 @@ const getEstimateFeeByte = async () => {
 			height: prevFeeEstPerByte.blockHeight + 1 - i,
 		})).data[0], { concurrency: batchSize });
 
-		blockBatch.data = await BluebirdPromise.map(blockBatch.data, async block => Object
-			.assign(block, { transactions: await getTransactions({ blockId: block.id }) }),
-			{ concurrency: blockBatch.data.length });
+		blockBatch.data = await BluebirdPromise.map(
+			blockBatch.data,
+			async block => {
+				const transactions = mapToOriginal(await getTransactions({ blockId: block.id }), 'transactions');
+				Object.assign(block, { transactions });
+				return block;
+			},
+			{ concurrency: blockBatch.data.length },
+		);
 
 		Object.assign(prevFeeEstPerByte,
 			await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte));
