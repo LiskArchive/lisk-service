@@ -25,14 +25,6 @@ const getDelegates = async params => {
 	const delegates = await coreApi.getDelegates(params);
 
 	delegates.data.map((delegate, index) => {
-		// delegate.address = delegate.address;
-		// delegate.missedBlocks = delegate.missedBlocks;
-		// delegate.producedBlocks = delegate.producedBlocks;
-		// delegate.productivity = delegate.productivity;
-		// delegate.publicKey = delegate.publicKey;
-		// delegate.rewards = delegate.rewards;
-		// delegate.username = delegate.username;
-
 		delegate.account = {
 			address: delegate.address,
 			publicKey: delegate.publicKey,

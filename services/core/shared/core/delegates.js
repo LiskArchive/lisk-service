@@ -201,6 +201,7 @@ const loadAllNextForgers = async (forgersList = []) => {
 
 	if (response.data.length === limit) loadAllNextForgers(forgersList);
 	else {
+		computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
 		nextForgers = forgersList; // Update local in-mem cache with latest information
 		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
 	}
