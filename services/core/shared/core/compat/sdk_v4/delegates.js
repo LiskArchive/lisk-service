@@ -13,11 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    getDelegates,
-} = require('./delegates');
+const coreApi = require('./coreApi');
+
+const getDelegates = async params => {
+	const delegates = await coreApi.getDelegates(params);
+	delegates.data.map(delegate => {
+		delegate.isBanned = delegate.delegate.isBanned;
+		delegate.status = delegate.delegate.status;
+		delegate.pomHeights = delegate.delegate.pomHeights;
+		delegate.lastForgedHeight = delegate.delegate.lastForgedHeight;
+		delegate.consecutiveMissedBlocks = delegate.delegate.consecutiveMissedBlocks;
+		return delegate;
+	});
+	return delegates;
+};
 
 module.exports = {
-    ...require('../sdk_v2'),
-    getDelegates,
+	getDelegates,
 };
