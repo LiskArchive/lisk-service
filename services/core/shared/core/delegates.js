@@ -149,8 +149,8 @@ const computeDelegateRankAndStatus = async () => {
 		if (!delegate.isDelegate) delegate.status = 'non-eligible';
 		else if (delegate.isBanned) delegate.status = 'banned';
 		else if (verifyIfPunished(delegate)) delegate.status = 'punished';
-		else if (activeNextForgersList.includes(delegate.address)) delegate.status = 'active';
-		else if (standbyNextForgersList.includes(delegate.address)) delegate.status = 'standby';
+		else if (activeNextForgersList.includes(delegate.account.address)) delegate.status = 'active';
+		else if (standbyNextForgersList.includes(delegate.account.address)) delegate.status = 'standby';
 
 		return delegate;
 	});
