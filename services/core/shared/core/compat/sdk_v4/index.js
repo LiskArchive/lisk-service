@@ -18,6 +18,7 @@ const {
 } = require('./transactions');
 const {
     getDelegates,
+    getNextForgers,
 } = require('./delegates');
 const {
     mapToOriginal,
@@ -36,4 +37,5 @@ module.exports = {
     getTransactions,
     mapToOriginal,
     getDelegates,
+    getNextForgers,
 };

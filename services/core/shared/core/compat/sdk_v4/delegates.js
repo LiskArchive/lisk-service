@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Utils } = require('lisk-service-framework');
 const coreApi = require('./coreApi');
+
+const ObjectUtilService = Utils.Data;
+
+const { isProperObject } = ObjectUtilService;
 
 const getDelegates = async params => {
 	const punishmentHeight = 780000;
@@ -51,6 +56,12 @@ const getDelegates = async params => {
 	return delegates;
 };
 
+const getNextForgers = async params => {
+	const result = await coreApi.getNextForgers(params);
+	return isProperObject(result) && Array.isArray(result.data) ? result : [];
+};
+
 module.exports = {
 	getDelegates,
+	getNextForgers,
 };

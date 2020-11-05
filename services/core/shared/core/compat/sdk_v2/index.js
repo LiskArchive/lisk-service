@@ -24,7 +24,10 @@ const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const { getAccounts } = require('./accounts');
-const { getDelegates } = require('./delegates');
+const {
+	getDelegates,
+	getNextForgers,
+} = require('./delegates');
 
 const {
 	getNetworkStatus,
@@ -149,11 +152,6 @@ const getPublicKeyByAny = async param => {
 	if (validatePublicKey(param) && await confirmPublicKey(param)) return param;
 	if (validateAddress(param)) return getPublicKeyByAddress(param);
 	return getPublicKeyByUsername(param);
-};
-
-const getNextForgers = async params => {
-	const result = await coreApi.getNextForgers(params);
-	return isProperObject(result) && Array.isArray(result.data) ? result : [];
 };
 
 const getMultisignatureGroups = async address => {
