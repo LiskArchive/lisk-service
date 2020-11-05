@@ -26,11 +26,12 @@ module.exports = [
 		updateOnInit: true,
 		init: () => {
 			logger.debug('Scheduling initial list update...');
-			core.reloadDelegateCache(core);
+			core.reloadDelegateCache();
+			core.reloadNextForgersCache();
 		},
 		controller: () => {
 			logger.debug('Scheduling delegate list reload...');
-			core.reloadDelegateCache(core);
+			core.reloadDelegateCache();
 		},
 	},
 ];

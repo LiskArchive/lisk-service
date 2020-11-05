@@ -33,6 +33,12 @@ const getDelegates = async params => {
 		// delegate.rewards = delegate.rewards;
 		// delegate.username = delegate.username;
 
+		delegate.account = {
+			address: delegate.address,
+			publicKey: delegate.publicKey,
+			secondPublicKey: delegate.secondPublicKey, // Is always 'undefined'
+		};
+
 		const adder = (acc, curr) => acc + curr.amount;
 		const totalVotes = delegate.votes.reduce(adder, 0);
 		const selfVotes = delegate.votes
