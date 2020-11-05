@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
@@ -23,6 +24,12 @@ const { getLastBlock } = require('./blocks');
 const logger = Logger();
 
 let nextForgers = [];
+
+const delegateComparator = (a, b) => {
+	const diff = b.delegateWeight - a.delegateWeight;
+	if (diff !== 0) return diff;
+	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address))
+};
 
 const getNextForgers = async params => {
 	let forgers = {
@@ -45,6 +52,14 @@ const getNextForgers = async params => {
 		logger.debug(err.message);
 
 		forgers = await coreApi.getNextForgers(params);
+		forgers.data = await BluebirdPromise.map(
+			forgers.data,
+			async forger => {
+				const forgerDelegateInfo = await getDelegates({ address: forger.address });
+				return forgerDelegateInfo.data[0];
+			},
+			{ concurrency: forgers.data.length });
+		forgers.data.sort(delegateComparator);
 	}
 	return forgers;
 };
@@ -163,24 +178,24 @@ const computeDelegateRankAndStatus = async () => {
 
 	const allDelegates = await db.findAll();
 	const lastestBlock = await getLastBlock();
-	const allNextForgersList = nextForgers.map(forger => forger.address);
-	const activeNextForgersList = allNextForgersList.slice(0, numActiveForgers);
-	const standbyNextForgersList = allNextForgersList.slice(numActiveForgers);
+	const allNextForgersAddressList = nextForgers.map(forger => forger.address); // TODO: Verify
+	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
+	const standbyNextForgersList = allNextForgersAddressList.slice(numActiveForgers);
 
-	const checkIfPunished = delegate => {
+	const verifyIfPunished = delegate => {
 		const isPunished = delegate.pomHeights
 			.some(pomHeight => pomHeight.start <= lastestBlock.height
 				&& lastestBlock.height <= pomHeight.end);
 		return isPunished;
 	};
 
-	allDelegates.sort((a, b) => a.delegateWeight - b.delegateWeight);
+	allDelegates.sort(delegateComparator);
 	allDelegates.map((delegate, index) => {
 		delegate.rank = index + 1;
 
 		if (!delegate.isDelegate) delegate.status = 'non-eligible';
 		else if (delegate.isBanned) delegate.status = 'banned';
-		else if (checkIfPunished(delegate)) delegate.status = 'punished';
+		else if (verifyIfPunished(delegate)) delegate.status = 'punished';
 		else if (activeNextForgersList.includes(delegate.address)) delegate.status = 'active';
 		else if (standbyNextForgersList.includes(delegate.address)) delegate.status = 'standby';
 
