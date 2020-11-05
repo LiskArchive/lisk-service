@@ -28,55 +28,8 @@ let nextForgers = [];
 const delegateComparator = (a, b) => {
 	const diff = b.delegateWeight - a.delegateWeight;
 	if (diff !== 0) return diff;
-	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address))
+	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
 };
-
-const getNextForgers = async params => {
-	let forgers = {
-		data: [],
-		meta: {},
-	};
-
-	try {
-		if (nextForgers.length) {
-			const offset = params.offset || 0;
-			const limit = params.limit || 10;
-
-			forgers.data = nextForgers.slice(offset, offset + limit);
-
-			forgers.meta.count = forgers.data.length;
-			forgers.meta.offset = params.offset;
-			forgers.meta.total = nextForgers.length;
-		} else throw new Error('Request Next Forgers data from Lisk Core');
-	} catch (err) {
-		logger.debug(err.message);
-
-		forgers = await coreApi.getNextForgers(params);
-		forgers.data = await BluebirdPromise.map(
-			forgers.data,
-			async forger => {
-				const forgerDelegateInfo = await getDelegates({ address: forger.address });
-				return forgerDelegateInfo.data[0];
-			},
-			{ concurrency: forgers.data.length });
-		forgers.data.sort(delegateComparator);
-	}
-	return forgers;
-};
-
-const loadAllNextForgers = async (forgersList = []) => {
-	const limit = 101;
-	const response = await getNextForgers({ limit, offset: forgersList.length });
-	forgersList = [...forgersList, ...response.data];
-
-	if (response.data.length === limit) loadAllNextForgers(forgersList);
-	else {
-		nextForgers = forgersList; // Update local in-mem cache with latest information
-		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
-	}
-};
-
-const reloadNextForgersCache = () => loadAllNextForgers();
 
 const formatSortString = sortString => {
 	const sortObj = {};
@@ -204,6 +157,53 @@ const computeDelegateRankAndStatus = async () => {
 
 	await db.writeBatch(allDelegates);
 };
+
+const getNextForgers = async params => {
+	let forgers = {
+		data: [],
+		meta: {},
+	};
+
+	try {
+		if (nextForgers.length) {
+			const offset = params.offset || 0;
+			const limit = params.limit || 10;
+
+			forgers.data = nextForgers.slice(offset, offset + limit);
+
+			forgers.meta.count = forgers.data.length;
+			forgers.meta.offset = params.offset;
+			forgers.meta.total = nextForgers.length;
+		} else throw new Error('Request Next Forgers data from Lisk Core');
+	} catch (err) {
+		logger.debug(err.message);
+
+		forgers = await coreApi.getNextForgers(params);
+		forgers.data = await BluebirdPromise.map(
+			forgers.data,
+			async forger => {
+				const forgerDelegateInfo = await getDelegates({ address: forger.address });
+				return forgerDelegateInfo.data[0];
+			},
+			{ concurrency: forgers.data.length });
+		forgers.data.sort(delegateComparator);
+	}
+	return forgers;
+};
+
+const loadAllNextForgers = async (forgersList = []) => {
+	const limit = 101;
+	const response = await getNextForgers({ limit, offset: forgersList.length });
+	forgersList = [...forgersList, ...response.data];
+
+	if (response.data.length === limit) loadAllNextForgers(forgersList);
+	else {
+		nextForgers = forgersList; // Update local in-mem cache with latest information
+		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
+	}
+};
+
+const reloadNextForgersCache = () => loadAllNextForgers();
 
 const reload = () => {
 	loadAllDelegates();
