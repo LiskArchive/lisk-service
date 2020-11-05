@@ -53,7 +53,9 @@ const getDelegates = async params => {
 			.map(height => ({ start: height, end: height + punishmentHeight }));
 		delegate.lastForgedHeight = delegate.delegate.lastForgedHeight;
 		delegate.consecutiveMissedBlocks = delegate.delegate.consecutiveMissedBlocks;
-		// Rank is recalculated in the abstraction layer based on delegateWeight
+
+		// Required for proper indexing in PouchDB
+		// Rank appropriately recalculated in the abstraction layer based on delegateWeight/address
 		delegate.rank = params.offset + index + 1;
 
 		return delegate;

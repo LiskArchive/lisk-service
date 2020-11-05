@@ -210,11 +210,6 @@ const reload = () => {
 	computeDelegateRankAndStatus();
 };
 
-// TODO: v4 - rank, status
-// delegate.rank = from delegateWeight
-// delegate.status = "standby";
-// active(in next_forgers)/standby/punished(pomHeights)/banned(isBanned)/non-eligible(isDelegate)
-
 module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,

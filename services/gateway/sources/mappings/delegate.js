@@ -16,6 +16,7 @@
 module.exports = {
 	address: 'account.address,string',
 	approval: '=,string',
+	delegateWeight: '=,string',
 	missedBlocks: '=,number',
 	producedBlocks: '=,number',
 	productivity: '=,string',
@@ -25,4 +26,13 @@ module.exports = {
 	rewards: '=,string',
 	username: '=,string',
 	vote: '=,string',
+	totalVotesReceived: '=,string',
+	isBanned: '=,boolean',
+	status: '=,string',
+	pomHeights: ['pomHeights', {
+		start: '=,string',
+		end: '=,string',
+	}],
+	lastForgedHeight: '=,number',
+	consecutiveMissedBlocks: '=,number',
 };
