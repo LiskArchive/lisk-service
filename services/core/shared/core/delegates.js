@@ -192,7 +192,7 @@ const getNextForgers = async params => {
 };
 
 const loadAllNextForgers = async (forgersList = []) => {
-	const limit = 101;
+	const limit = 100;
 	const response = await getNextForgers({ limit, offset: forgersList.length });
 	forgersList = [...forgersList, ...response.data];
 
