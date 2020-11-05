@@ -14,10 +14,27 @@
  *
  */
 const {
+    getTransactions,
+} = require('./transactions');
+const {
+    mapToOriginal,
+} = require('./reverseMappings');
+const {
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
+} = require('../sdk_v3');
+
+const {
     getDelegates,
 } = require('./delegates');
 
 module.exports = {
     ...require('../sdk_v2'),
+    getTransactions,
+    mapToOriginal,
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
     getDelegates,
 };
