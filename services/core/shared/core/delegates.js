@@ -121,12 +121,12 @@ const computeDelegateRankAndStatus = async () => {
 
 	const allDelegates = await db.findAll();
 	const lastestBlock = await getLastBlock();
-	const next_forgers = await getNextForgers(); // TODO: Update it with correct params
+	const nextForgers = await coreApi.getNextForgers(); // TODO: Update it with correct params
 
 	const checkIfPunished = delegate => {
 		const isPunished = delegate.pomHeights
 			.some(pomHeight => pomHeight.start <= lastestBlock.height
-				&& lastestBlock.height <= pomHeights.end);
+				&& lastestBlock.height <= pomHeight.end);
 		return isPunished;
 	};
 
@@ -137,7 +137,7 @@ const computeDelegateRankAndStatus = async () => {
 		if (!delegate.isDelegate) delegate.status = 'non-eligible';
 		else if (delegate.isBanned) delegate.status = 'banned';
 		else if (checkIfPunished(delegate)) delegate.status = 'punished';
-		else if (next_forgers.includes(delegate.address)) delegate.status = 'active';
+		else if (nextForgers.includes(delegate.address)) delegate.status = 'active';
 		else delegate.status = 'standby'; // TODO: Determination logic
 
 		return delegate;
@@ -153,7 +153,8 @@ const reload = () => {
 
 // TODO: v4 - rank, status
 // delegate.rank = from delegateWeight
-// delegate.status = "standby"; // active(in next_forgers)/standby/punished(pomHeights)/banned(isBanned)/non-eligible(isDelegate)
+// delegate.status = "standby";
+// active(in next_forgers)/standby/punished(pomHeights)/banned(isBanned)/non-eligible(isDelegate)
 
 module.exports = {
 	reloadDelegateCache: reload,
