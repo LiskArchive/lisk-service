@@ -49,7 +49,8 @@ const parseAddress = (address) => {
 	return address.toUpperCase();
 };
 const validateAddress = address => (typeof address === 'string' && address.match(/^[0-9]{1,20}[L|l]$/g));
-const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
+const validatePublicKey = publicKey => (
+	typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 const { isProperObject } = ObjectUtilService;
 const { isEmptyArray } = ObjectUtilService;
 
@@ -135,7 +136,8 @@ const getAddressByAny = async (param) => {
 
 	if (!hasPrefix(param)) {
 		const parsedAddress = parseAddress(param);
-		if (validateAddress(parsedAddress) && (await confirmAddress(parsedAddress))) return parsedAddress;
+		if (validateAddress(parsedAddress)
+		&& (await confirmAddress(parsedAddress))) return parsedAddress;
 		if (validatePublicKey(param)) return getAddressByPublicKey(param);
 		return getAddressByUsername(param);
 	}
