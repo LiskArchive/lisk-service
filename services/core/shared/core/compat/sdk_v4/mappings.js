@@ -88,11 +88,11 @@ const mapTransaction = transaction => {
     });
 };
 
-const mapAccounts = (account) => {
-    const { username } = account;
-    if (username) account.delegate.username = username;
-    return account;
-};
+// const mapAccounts = (account) => {
+//     const { username } = account;
+//     if (username) account.delegate.username = username;
+//     return account;
+// };
 
 const responseMappers = {
     '/peers': response => {
@@ -111,10 +111,10 @@ const responseMappers = {
         response.data = { ...response.data, nethash: response.data.networkId };
         return response;
     },
-    '/accounts': response => {
-        response.data = response.data.map(mapAccounts);
-        return response;
-    },
+    // '/accounts': response => {
+    //     response.data = response.data.map(mapAccounts);
+    //     return response;
+    // },
 };
 
 const paramMappers = {

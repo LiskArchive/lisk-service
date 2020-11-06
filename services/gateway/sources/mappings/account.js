@@ -18,6 +18,7 @@ module.exports = {
 	publicKey: '=,string',
 	secondPublicKey: '=,string',
 	balance: '=,string',
+	nonce: '=,string',
 	delegate: {
 		approval: '=,string',
 		missedBlocks: '=,number',
