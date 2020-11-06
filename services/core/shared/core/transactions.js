@@ -23,7 +23,7 @@ const { getBlocks } = require('./blocks');
 
 const logger = Logger();
 
-const formatSortString = sortString => {
+const formatSortString = (sortString) => {
 	const sortObj = {};
 	const sortProp = sortString.split(':')[0];
 	const sortOrder = sortString.split(':')[1];
@@ -74,7 +74,7 @@ const getSelector = (params) => {
 	return result;
 };
 
-const getTransactions = async params => {
+const getTransactions = async (params) => {
 	const db = await pouchdb(config.db.collections.transactions.name);
 
 	let transactions = {
@@ -82,7 +82,7 @@ const getTransactions = async params => {
 	};
 
 	try {
-		if (!params.id) throw new Error('No param: \'id\'. Falling back to Lisk Core');
+		if (!params.id) throw new Error("No param: 'id'. Falling back to Lisk Core");
 		else {
 			const inputData = getSelector({
 				...params,
@@ -92,8 +92,8 @@ const getTransactions = async params => {
 			const dbResult = await db.find(inputData);
 			if (dbResult.length > 0) {
 				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
-				dbResult.map(tx => {
-					tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
+				dbResult.map((tx) => {
+					tx.confirmations =						latestBlock.confirmations + latestBlock.height - tx.height;
 					return tx;
 				});
 				transactions.data = dbResult;
@@ -110,33 +110,46 @@ const getTransactions = async params => {
 };
 
 const getPendingTransactions = async (params) => {
-	let pendingTransactions = {
+	const pendingTransactions = {
 		data: [],
 		meta: {},
 		links: {},
 	};
 
 	const db = await pouchdb(config.db.collections.pending_transactions.name);
+	const offset = params.offset || 0;
+	const limit = params.limit || 10;
 	let dbResult;
 
 	try {
 		dbResult = await db.findAll();
-		dbResult.sort((a, b) => a.receivedAt.localeCompare(b.receivedAt)).reverse();
+		if (dbResult.length) {
+			dbResult
+				.sort((a, b) => a.receivedAt.localeCompare(b.receivedAt))
+				.reverse();
 
-		const now = moment().unix();
-		const lastSubmittedAt = moment(dbResult[0].receivedAt).unix();
-		if (dbResult.length && now - lastSubmittedAt < 10) {
-			pendingTransactions.data = dbResult.split(params.offset, params.limit);
-			pendingTransactions.meta = {
-				count: params.limit,
-				offset: params.offset,
-				total: dbResult.length,
-			};
+			const now = moment().unix();
+			const lastSubmittedAt = moment(dbResult[0].receivedAt).unix();
+			if (now - lastSubmittedAt < 10) {
+				pendingTransactions.data = dbResult.split(offset, limit);
+				pendingTransactions.meta = {
+					count: pendingTransactions.data.length,
+					offset,
+					total: dbResult.length,
+				};
+			} else throw new Error('Stale data. Re-request data from Lisk Core');
 		} else throw new Error('Request data from Lisk Core');
 	} catch (err) {
 		logger.debug(err.message);
-		pendingTransactions = await coreApi.getPendingTransactions(params);
-		if (pendingTransactions) {
+		const result = await coreApi.getPendingTransactions(params);
+		if (result) {
+			pendingTransactions.data = result.data;
+			pendingTransactions.meta = {
+				count: pendingTransactions.data.length,
+				offset,
+				total: result.meta.count,
+			};
+			pendingTransactions.links = result.links;
 			if (dbResult.length) await db.deleteBatch(dbResult);
 			if (pendingTransactions.data && pendingTransactions.data.length) {
 				await db.writeBatch(pendingTransactions.data);
@@ -152,14 +165,13 @@ const loadAllPendingTransactions = async (pendingTransactions = []) => {
 		limit,
 		offset: pendingTransactions.length,
 	});
-	if (response) {
-		pendingTransactions = [...pendingTransactions, ...response.data];
 
-		if (response.data.length === limit) loadAllPendingTransactions(pendingTransactions);
-		else logger.debug(
-				`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`,
-			);
-	}
+	pendingTransactions = [...pendingTransactions, ...response.data];
+
+	if (response.data.length === limit) loadAllPendingTransactions(pendingTransactions);
+	else logger.info(
+			`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`,
+		);
 };
 
 const reload = () => loadAllPendingTransactions();

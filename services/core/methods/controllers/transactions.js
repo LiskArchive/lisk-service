@@ -160,22 +160,10 @@ const getTransactionsStatisticsMonth = (params) => getTransactionsStatistics({ a
 
 const getPendingTransactions = async (params) => {
 	const result = await CoreService.getPendingTransactions(params);
-	if (result) {
-		const meta = {
-			total: result.meta.count,
-			count: result.data.length,
-			limit: result.meta.limit || result.data.length,
-			offset: result.meta.offset || 0,
-		};
-		return {
-				data: result.data,
-				meta,
-		};
-	}
 	return {
-		data: [],
-		meta: {},
-		links: {},
+		data: result.data,
+		meta: result.meta,
+		links: result.links,
 	};
 };
 
