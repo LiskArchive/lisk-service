@@ -169,7 +169,7 @@ const loadAllPendingTransactions = async (pendingTransactions = []) => {
 	pendingTransactions = [...pendingTransactions, ...response.data];
 
 	if (response.data.length === limit) loadAllPendingTransactions(pendingTransactions);
-	else logger.info(
+	else logger.debug(
 			`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`,
 		);
 };
