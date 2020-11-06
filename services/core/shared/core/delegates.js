@@ -136,7 +136,6 @@ const computeDelegateRankAndStatus = async () => {
 	const lastestBlock = await getBlocks({ limit: 1 });
 	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
-	const standbyNextForgersList = allNextForgersAddressList.slice(numActiveForgers);
 
 	const verifyIfPunished = delegate => {
 		const isPunished = delegate.pomHeights
@@ -153,7 +152,7 @@ const computeDelegateRankAndStatus = async () => {
 		else if (delegate.isBanned) delegate.status = 'banned';
 		else if (verifyIfPunished(delegate)) delegate.status = 'punished';
 		else if (activeNextForgersList.includes(delegate.account.address)) delegate.status = 'active';
-		else if (standbyNextForgersList.includes(delegate.account.address)) delegate.status = 'standby';
+		else delegate.status = 'standby';
 
 		return delegate;
 	});
