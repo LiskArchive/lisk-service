@@ -45,6 +45,7 @@ export const delegateSchema = Joi.object({
 	vote: Joi.string(),
 	rewards: Joi.string(),
 	secondPublicKey: Joi.string().allow(''),
+	status: Joi.string(),
 });
 
 export const delegateListSchema = Joi.array().items(delegateSchema).required();

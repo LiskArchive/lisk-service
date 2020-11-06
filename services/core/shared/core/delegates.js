@@ -92,10 +92,16 @@ const getDelegates = async params => {
 		logger.debug(err.message);
 
 		delegates = await coreApi.getDelegates(params);
-		delegates.data.map(delegate => {
-			delegate.id = String(delegate.rank);
-			return delegate;
-		});
+		delegates.data = await BluebirdPromise.map(
+			delegates.data,
+			async delegate => {
+				const dbResult = await db.find(getSelector({ address: delegate.account.address }));
+				if (dbResult.length) [delegate] = dbResult;
+				else delegate.id = String(delegate.rank);
+				return delegate;
+			},
+			{ concurrency: delegates.data.length },
+		);
 		if (delegates.data && delegates.data.length) await db.writeBatch(delegates.data);
 	}
 
@@ -126,8 +132,7 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 };
 
 const computeDelegateRankAndStatus = async () => {
-	const sdkVersion = coreApi.getSDKVersion().split('sdk_v')[1];
-	if (Number(sdkVersion) < 4) return;
+	const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
 
 	const numActiveForgers = 101;
 	const db = await pouchdb(config.db.collections.delegates.name);
@@ -144,15 +149,19 @@ const computeDelegateRankAndStatus = async () => {
 		return isPunished;
 	};
 
-	allDelegates.sort(delegateComparator);
+	if (sdkVersion >= 4) allDelegates.sort(delegateComparator);
 	allDelegates.map((delegate, index) => {
-		delegate.rank = index + 1;
-
-		if (!delegate.isDelegate) delegate.status = 'non-eligible';
-		else if (delegate.isBanned) delegate.status = 'banned';
-		else if (verifyIfPunished(delegate)) delegate.status = 'punished';
-		else if (activeNextForgersList.includes(delegate.account.address)) delegate.status = 'active';
-		else delegate.status = 'standby';
+		if (sdkVersion < 4) {
+			if (activeNextForgersList.includes(delegate.account.address)) delegate.status = 'active';
+			else delegate.status = 'standby';
+		} else {
+			delegate.rank = index + 1;
+			if (!delegate.isDelegate) delegate.status = 'non-eligible';
+			else if (delegate.isBanned) delegate.status = 'banned';
+			else if (verifyIfPunished(delegate)) delegate.status = 'punished';
+			else if (activeNextForgersList.includes(delegate.account.address)) delegate.status = 'active';
+			else delegate.status = 'standby';
+		}
 
 		return delegate;
 	});
