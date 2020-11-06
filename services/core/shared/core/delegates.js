@@ -132,10 +132,17 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 };
 
 const computeDelegateRankAndStatus = async () => {
-	const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
-
-	const numActiveForgers = 101;
 	const db = await pouchdb(config.db.collections.delegates.name);
+	const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
+	const numActiveForgers = 101;
+
+	const delegateStatus = {
+		ACTIVE: 'active',
+		STANDBY: 'standby',
+		BANNED: 'banned',
+		PUNISHED: 'punished',
+		NON_ELIGIBLE: 'non-eligible',
+	};
 
 	const allDelegates = await db.findAll();
 	const lastestBlock = await getBlocks({ limit: 1 });
@@ -152,15 +159,17 @@ const computeDelegateRankAndStatus = async () => {
 	if (sdkVersion >= 4) allDelegates.sort(delegateComparator);
 	allDelegates.map((delegate, index) => {
 		if (sdkVersion < 4) {
-			if (activeNextForgersList.includes(delegate.account.address)) delegate.status = 'active';
-			else delegate.status = 'standby';
+			if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else delegate.status = delegateStatus.STANDBY;
 		} else {
 			delegate.rank = index + 1;
-			if (!delegate.isDelegate) delegate.status = 'non-eligible';
-			else if (delegate.isBanned) delegate.status = 'banned';
-			else if (verifyIfPunished(delegate)) delegate.status = 'punished';
-			else if (activeNextForgersList.includes(delegate.account.address)) delegate.status = 'active';
-			else delegate.status = 'standby';
+			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
+			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
+			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
+			else if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else delegate.status = delegateStatus.STANDBY;
 		}
 
 		return delegate;
