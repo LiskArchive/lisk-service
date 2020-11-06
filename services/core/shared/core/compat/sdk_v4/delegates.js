@@ -28,7 +28,7 @@ const getDelegates = async params => {
 		delegate.account = {
 			address: delegate.address,
 			publicKey: delegate.publicKey,
-			secondPublicKey: delegate.secondPublicKey, // Is always 'undefined'
+			secondPublicKey: delegate.secondPublicKey || '', // Is always 'undefined'
 		};
 
 		const adder = (acc, curr) => acc + curr.amount;

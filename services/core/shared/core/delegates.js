@@ -182,6 +182,7 @@ const getNextForgers = async params => {
 	let forgers = {
 		data: [],
 		meta: {},
+		link: {},
 	};
 
 	try {
@@ -192,7 +193,7 @@ const getNextForgers = async params => {
 			forgers.data = nextForgers.slice(offset, offset + limit);
 
 			forgers.meta.count = forgers.data.length;
-			forgers.meta.offset = params.offset;
+			forgers.meta.offset = offset;
 			forgers.meta.total = nextForgers.length;
 		} else throw new Error('Request Next Forgers data from Lisk Core');
 	} catch (err) {
