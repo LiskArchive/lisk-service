@@ -65,7 +65,7 @@ const getDelegates = async params => {
 	return {
 		data: delegates,
 		meta: response.meta,
-		link: response.link,
+		links: response.links,
 	};
 };
 
@@ -82,7 +82,7 @@ const getActiveDelegates = async params => {
 		data: {
 			data: delegates,
 			meta: response.meta,
-			link: response.link,
+			links: response.links,
 		},
 	};
 };
@@ -105,7 +105,7 @@ const getStandbyDelegates = async params => {
 		data: {
 			data: delegates,
 			meta: response.meta,
-			link: response.link,
+			links: response.links,
 		},
 	};
 };
@@ -131,7 +131,7 @@ const getNextForgers = async params => {
 	return {
 		data: delegates,
 		meta: nextForgers.meta,
-		link: nextForgers.link,
+		links: nextForgers.links,
 	};
 };
 
@@ -159,7 +159,7 @@ const getLatestRegistrations = async params => {
 	return {
 		data: delegates,
 		meta: registrationsRes.meta,
-		link: registrationsRes.link,
+		links: registrationsRes.links,
 	};
 };
 
