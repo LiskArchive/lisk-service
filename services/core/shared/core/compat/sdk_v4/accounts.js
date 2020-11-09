@@ -14,7 +14,11 @@
  *
  */
 const coreApi = require('./coreApi');
-const coreCache = require('../sdk_v2');
+const {
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+} = require('../sdk_v2');
 
 const parseAddress = address => {
 	if (typeof address !== 'string') return '';
@@ -25,19 +29,19 @@ const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicK
 
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
-	const account = await coreCache.getCachedAccountByAddress(parseAddress(address));
+	const account = await getCachedAccountByAddress(parseAddress(address));
 	return (account && account.address === address);
 };
 
 const confirmPublicKey = async publicKey => {
 	if (!publicKey || typeof publicKey !== 'string') return false;
-	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
+	const account = await getCachedAccountByPublicKey(publicKey);
 	return (account && account.publicKey === publicKey);
 };
 
 const confirmSecondPublicKey = async secondPublicKey => {
 	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
-	const account = await coreCache.getCachedAccountBySecondPublicKey(secondPublicKey);
+	const account = await getCachedAccountBySecondPublicKey(secondPublicKey);
 	return (account && account.secondPublicKey === secondPublicKey);
 };
 

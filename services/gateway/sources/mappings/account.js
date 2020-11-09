@@ -31,7 +31,10 @@ module.exports = {
 		totalVotesReceived: ',string',
 		isBanned: '=',
 		status: '=,string',
-		pomHeights: '=',
+		pomHeights: ['pomHeights', {
+			start: '=,string',
+			end: '=,string',
+		}],
 		lastForgedHeight: '=,number',
 		consecutiveMissedBlocks: '=,number',
 	},
