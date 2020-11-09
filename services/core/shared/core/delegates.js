@@ -14,12 +14,22 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
+const { getBlocks } = require('./blocks');
 
 const logger = Logger();
+
+let nextForgers = [];
+
+const delegateComparator = (a, b) => {
+	const diff = b.delegateWeight - a.delegateWeight;
+	if (diff !== 0) return diff;
+	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
+};
 
 const formatSortString = sortString => {
 	const sortObj = {};
@@ -58,6 +68,7 @@ const getDelegates = async params => {
 	let delegates = {
 		data: [],
 		meta: {},
+		links: {},
 	};
 
 	try {
@@ -76,16 +87,22 @@ const getDelegates = async params => {
 			const dbResult = await db.find(inputData);
 
 			if (dbResult.length > 0) delegates.data = dbResult;
-			else throw new Error('Request data from Lisk Core');
+			else throw new Error('Request Delegates data from Lisk Core');
 		}
 	} catch (err) {
 		logger.debug(err.message);
 
 		delegates = await coreApi.getDelegates(params);
-		delegates.data.map(delegate => {
-			delegate.id = String(delegate.rank);
-			return delegate;
-		});
+		delegates.data = await BluebirdPromise.map(
+			delegates.data,
+			async delegate => {
+				const dbResult = await db.find(getSelector({ address: delegate.account.address }));
+				if (dbResult.length) [delegate] = dbResult;
+				else delegate.id = String(delegate.rank);
+				return delegate;
+			},
+			{ concurrency: delegates.data.length },
+		);
 		if (delegates.data && delegates.data.length) await db.writeBatch(delegates.data);
 	}
 
@@ -99,10 +116,6 @@ const loadAllDelegates = async (delegateList = []) => {
 
 	if (response.data.length === limit) loadAllDelegates(delegateList);
 	else logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
-};
-
-const reload = () => {
-	loadAllDelegates();
 };
 
 const getTotalNumberOfDelegates = async (params = {}) => {
@@ -119,8 +132,111 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	return relevantDelegates.length;
 };
 
+const computeDelegateRankAndStatus = async () => {
+	const db = await pouchdb(config.db.collections.delegates.name);
+	const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
+	const numActiveForgers = 101;
+
+	const delegateStatus = {
+		ACTIVE: 'active',
+		STANDBY: 'standby',
+		BANNED: 'banned',
+		PUNISHED: 'punished',
+		NON_ELIGIBLE: 'non-eligible',
+	};
+
+	const allDelegates = await db.findAll();
+	const lastestBlock = await getBlocks({ limit: 1 });
+	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
+	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
+
+	const verifyIfPunished = delegate => {
+		const isPunished = delegate.pomHeights
+			.some(pomHeight => pomHeight.start <= lastestBlock.height
+				&& lastestBlock.height <= pomHeight.end);
+		return isPunished;
+	};
+
+	if (sdkVersion >= 4) allDelegates.sort(delegateComparator);
+	allDelegates.map((delegate, index) => {
+		if (sdkVersion < 4) {
+			if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else delegate.status = delegateStatus.STANDBY;
+		} else {
+			delegate.rank = index + 1;
+			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
+			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
+			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
+			else if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else delegate.status = delegateStatus.STANDBY;
+		}
+
+		return delegate;
+	});
+
+	if (allDelegates.length) await db.writeBatch(allDelegates);
+};
+
+const getNextForgers = async params => {
+	let forgers = {
+		data: [],
+		meta: {},
+		links: {},
+	};
+
+	try {
+		if (nextForgers.length) {
+			const offset = params.offset || 0;
+			const limit = params.limit || 10;
+
+			forgers.data = nextForgers.slice(offset, offset + limit);
+
+			forgers.meta.count = forgers.data.length;
+			forgers.meta.offset = offset;
+			forgers.meta.total = nextForgers.length;
+		} else throw new Error('Request Next Forgers data from Lisk Core');
+	} catch (err) {
+		logger.debug(err.message);
+
+		forgers = await coreApi.getNextForgers(params);
+		forgers.data = await BluebirdPromise.map(
+			forgers.data,
+			async forger => {
+				const forgerDelegateInfo = await getDelegates({ address: forger.address });
+				return forgerDelegateInfo.data[0];
+			},
+			{ concurrency: forgers.data.length });
+		forgers.data.sort(delegateComparator);
+	}
+	return forgers;
+};
+
+const loadAllNextForgers = async (forgersList = []) => {
+	const limit = 100;
+	const response = await getNextForgers({ limit, offset: forgersList.length });
+	forgersList = [...forgersList, ...response.data];
+
+	if (response.data.length === limit) loadAllNextForgers(forgersList);
+	else {
+		computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
+		nextForgers = forgersList; // Update local in-mem cache with latest information
+		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
+	}
+};
+
+const reloadNextForgersCache = () => loadAllNextForgers();
+
+const reload = () => {
+	loadAllDelegates();
+	computeDelegateRankAndStatus();
+};
+
 module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
+	reloadNextForgersCache,
+	getNextForgers,
 };
