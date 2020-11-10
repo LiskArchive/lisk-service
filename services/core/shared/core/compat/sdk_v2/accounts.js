@@ -13,8 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Utils } = require('lisk-service-framework');
+
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
+
+const ObjectUtilService = Utils.Data;
+
+const { isProperObject } = ObjectUtilService;
 
 const parseAddress = address => {
 	if (typeof address !== 'string') return '';
@@ -77,5 +83,25 @@ const getAccounts = async params => {
 	return result;
 };
 
+const getMultisignatureGroups = async account => {
+	const result = await coreApi.getMultisignatureGroups(parseAddress(account.address));
+	return isProperObject(result) && Array.isArray(result.data)
+		? result.data[0]
+		: [];
+};
 
-module.exports = { getAccounts };
+const getMultisignatureMemberships = async (account) => {
+	const result = await coreApi.getMultisignatureMemberships(
+		parseAddress(account.address),
+	);
+	return isProperObject(result) && Array.isArray(result.data)
+		? result.data
+		: [];
+};
+
+
+module.exports = {
+	getAccounts,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
+ };

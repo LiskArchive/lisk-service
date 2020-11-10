@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 
 const {
@@ -87,21 +88,29 @@ const getMultisignatureGroups = async account => {
 	multisignatureAccount.numberOfReqSignatures = account.keys.numberOfSignatures;
 	multisignatureAccount.members = [];
 	if (multisignatureAccount.numberOfReqSignatures) {
-		account.keys.mandatoryKeys.forEach(async publicKey => {
-			const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
-			accountByPublicKey.isMandatory = true;
-			multisignatureAccount.members.push(accountByPublicKey);
-		});
-		account.keys.optionalKeys.forEach(async publicKey => {
-			const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
-			accountByPublicKey.isMandatory = false;
-			multisignatureAccount.members.push(accountByPublicKey);
-		});
+		await BluebirdPromise.map(
+			account.keys.mandatoryKeys,
+			async publicKey => {
+				const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+				accountByPublicKey.isMandatory = true;
+				multisignatureAccount.members.push(accountByPublicKey);
+			},
+			{ concurrency: account.keys.mandatoryKeys.length },
+		);
+		await BluebirdPromise.map(
+			account.keys.optionalKeys,
+			async publicKey => {
+				const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+				accountByPublicKey.isMandatory = false;
+				multisignatureAccount.members.push(accountByPublicKey);
+			},
+			{ concurrency: account.keys.optionalKeys.length },
+		);
 	}
 	return multisignatureAccount;
 };
 
-const getMultisignatureMemberships = async () => [];
+const getMultisignatureMemberships = async () => []; // TODO
 
 module.exports = {
 	getAccounts,

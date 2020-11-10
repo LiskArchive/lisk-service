@@ -28,7 +28,11 @@ const { request } = require('./request');
 const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
-const { getAccounts } = require('./accounts');
+const {
+	getAccounts,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
+} = require('./accounts');
 const {
 	getDelegates,
 	getNextForgers,
@@ -169,22 +173,6 @@ const getPublicKeyByAny = async (param) => {
 	if (validatePublicKey(param) && (await confirmPublicKey(param))) return param;
 	if (validateAddress(param)) return getPublicKeyByAddress(param);
 	return getPublicKeyByUsername(param);
-};
-
-const getMultisignatureGroups = async account => {
-	const result = await coreApi.getMultisignatureGroups(parseAddress(account.address));
-	return isProperObject(result) && Array.isArray(result.data)
-		? result.data[0]
-		: [];
-};
-
-const getMultisignatureMemberships = async (account) => {
-	const result = await coreApi.getMultisignatureMemberships(
-		parseAddress(account.address),
-	);
-	return isProperObject(result) && Array.isArray(result.data)
-		? result.data
-		: [];
 };
 
 const getIncomingTxsCount = async (address) => {
