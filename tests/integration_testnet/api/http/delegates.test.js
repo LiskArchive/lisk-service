@@ -35,7 +35,7 @@ const delegateSchema = {
 	secondPublicKey: 'string',
 	username: 'string',
 	vote: 'string',
-	status: 'string',
+	// status: 'string', uncomment when testnet updated to SDKv4
 };
 
 const badRequestSchema = {
