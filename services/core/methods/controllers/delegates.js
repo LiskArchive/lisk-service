@@ -111,22 +111,8 @@ const getNextForgers = async params => {
 	const nextForgers = await CoreService.getNextForgers(params);
 	if (isEmptyObject(nextForgers)) return {};
 
-	const nextForgersData = nextForgers.data;
-
-	const ensureDelegatesArr = forgers => {
-		const promises = forgers.map(async forger => {
-			const delegates = await CoreService.getDelegates({
-				address: forger.account.address,
-			});
-			return delegates.data[0];
-		});
-		return Promise.all(promises);
-	};
-
-	const delegates = await ensureDelegatesArr(nextForgersData);
-
 	return {
-		data: delegates,
+		data: nextForgers.data,
 		meta: nextForgers.meta,
 	};
 };

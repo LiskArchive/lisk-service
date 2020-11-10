@@ -203,10 +203,7 @@ const getNextForgers = async params => {
 		forgers = await coreApi.getNextForgers(params);
 		forgers.data = await BluebirdPromise.map(
 			forgers.data,
-			async forger => {
-				const forgerDelegateInfo = await getDelegates({ address: forger.address });
-				return forgerDelegateInfo.data[0];
-			},
+			async forger => (await getDelegates({ address: forger.address })).data[0],
 			{ concurrency: forgers.data.length });
 		forgers.data.sort(delegateComparator);
 	}
@@ -220,8 +217,13 @@ const loadAllNextForgers = async (forgersList = []) => {
 
 	if (response.data.length === limit) loadAllNextForgers(forgersList);
 	else {
+		nextForgers = forgersList;
 		computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
-		nextForgers = forgersList; // Update local in-mem cache with latest information
+		nextForgers = await BluebirdPromise.map(
+			forgersList,
+			async forger => (await getDelegates({ address: forger.account.address })).data[0],
+			{ concurrency: forgersList.length }
+		); // Update local in-mem cache with the updated delegate status information
 		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
 	}
 };
