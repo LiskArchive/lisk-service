@@ -45,7 +45,7 @@ module.exports = {
 	multisignatureAccount: {
 		lifetime: 'multisignatureGroups.lifetime,number', // returns no data at a delegate account
 		minimalNumberAcccounts: 'multisignatureGroups.min,number', // returns no data at a delegate account
-		numberOfReqSignatures: '=,number',
+		numberOfReqSignatures: 'multisignatureGroups.numberOfReqSignatures,number',
 		members: ['multisignatureGroups.members', {
 			address: '=,string',
 			publicKey: '=,string',
@@ -69,7 +69,7 @@ module.exports = {
 	},
 	unlocking: ['unlocking', {
 		amount: '=,string',
-		height: '=,number',
+		height: 'unlocking.unvoteHeight,number',
 		delegateAddress: '=,string',
 	},
 

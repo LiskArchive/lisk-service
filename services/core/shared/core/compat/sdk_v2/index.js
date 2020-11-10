@@ -171,16 +171,16 @@ const getPublicKeyByAny = async (param) => {
 	return getPublicKeyByUsername(param);
 };
 
-const getMultisignatureGroups = async address => {
-	const result = await coreApi.getMultisignatureGroups(parseAddress(address));
+const getMultisignatureGroups = async account => {
+	const result = await coreApi.getMultisignatureGroups(parseAddress(account.address));
 	return isProperObject(result) && Array.isArray(result.data)
 		? result.data[0]
 		: [];
 };
 
-const getMultisignatureMemberships = async (address) => {
+const getMultisignatureMemberships = async (account) => {
 	const result = await coreApi.getMultisignatureMemberships(
-		parseAddress(address),
+		parseAddress(account.address),
 	);
 	return isProperObject(result) && Array.isArray(result.data)
 		? result.data

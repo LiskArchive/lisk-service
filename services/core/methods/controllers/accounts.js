@@ -56,11 +56,11 @@ const getDataForAccounts = async params => {
 	} else {
 		const knownAccounts = await getKnownAccounts();
 		const data = await Promise.all(accounts.data.map(async account => {
-			account.multisignatureGroups = await CoreService.getMultisignatureGroups(account.address);
+			account.multisignatureGroups = await CoreService.getMultisignatureGroups(account);
 			account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
 			account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
 			account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
-				account.address);
+				account);
 			account.knowledge = knownAccounts[account.address] || {};
 			return account;
 		}));

@@ -14,6 +14,7 @@
  *
  */
 const coreApi = require('./coreApi');
+
 const {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
@@ -81,5 +82,29 @@ const getAccounts = async params => {
 	return result;
 };
 
+const getMultisignatureGroups = async account => {
+	const multisignatureAccount = {};
+	multisignatureAccount.numberOfReqSignatures = account.keys.numberOfSignatures;
+	multisignatureAccount.members = [];
+	if (multisignatureAccount.numberOfReqSignatures) {
+		account.keys.mandatoryKeys.forEach(async publicKey => {
+			const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+			accountByPublicKey.isMandatory = true;
+			multisignatureAccount.members.push(accountByPublicKey);
+		});
+		account.keys.optionalKeys.forEach(async publicKey => {
+			const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+			accountByPublicKey.isMandatory = false;
+			multisignatureAccount.members.push(accountByPublicKey);
+		});
+	}
+	return multisignatureAccount;
+};
 
-module.exports = { getAccounts };
+const getMultisignatureMemberships = async () => [];
+
+module.exports = {
+	getAccounts,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
+ };

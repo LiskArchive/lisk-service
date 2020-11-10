@@ -30,6 +30,8 @@ const {
 } = require('../sdk_v3');
 const {
     getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
 } = require('./accounts');
 
 module.exports = {
@@ -42,4 +44,6 @@ module.exports = {
     getTransactions,
     getDelegates,
     getNextForgers,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
 };
