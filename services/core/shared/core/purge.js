@@ -46,7 +46,8 @@ const purgeBlocks = async purgeLimit => {
 	const purgeResult = await db.deleteBatch(purgableBlocks);
 	const purgeCount = purgeResult ? purgeResult.length : 0;
 
-	const purgeHeight = (latestBlockHeight - purgeLimit > 0) ? latestBlockHeight - purgeLimit : minBlockHeight;
+	const purgeHeight = (latestBlockHeight - purgeLimit) > 0
+		? latestBlockHeight - purgeLimit : minBlockHeight;
 	logger.info('Purged '.concat(purgeCount)
 		.concat(' blocks from db at height lower than ').concat(purgeHeight));
 
@@ -65,7 +66,8 @@ const purgeTransactions = async purgeLimit => {
 	const purgeResult = await db.deleteBatch(purgableTransactions);
 	const purgeCount = purgeResult ? purgeResult.length : 0;
 
-	const purgeHeight = (latestBlockHeight - purgeLimit > 0) ? latestBlockHeight - purgeLimit : minBlockHeight;
+	const purgeHeight = (latestBlockHeight - purgeLimit) > 0
+		? latestBlockHeight - purgeLimit : minBlockHeight;
 	logger.info('Purged '.concat(purgeCount)
 		.concat(' transactions from db contained within blocks at height lower than ').concat(purgeHeight));
 
