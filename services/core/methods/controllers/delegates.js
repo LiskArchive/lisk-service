@@ -81,7 +81,6 @@ const getActiveDelegates = async params => {
 		data: {
 			data: delegates,
 			meta: response.meta,
-			links: response.links,
 		},
 	};
 };
