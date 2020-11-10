@@ -143,7 +143,7 @@ const getDbInstance = async (collectionName, idxList = []) => {
 	const deleteById = async (id) => db.remove(await findById(id));
 
 	const deleteBatch = async (docs) => {
-		if (docs instanceof Array && docs.length === 0) return;
+		if (docs instanceof Array && docs.length === 0) return null;
 		docs.map((doc) => {
 			if (!doc._id) doc._id = doc.id;
 			doc._deleted = true;
