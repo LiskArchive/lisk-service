@@ -93,7 +93,7 @@ const getTransactions = async (params) => {
 			if (dbResult.length > 0) {
 				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
 				dbResult.map((tx) => {
-					tx.confirmations =						latestBlock.confirmations + latestBlock.height - tx.height;
+					tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
 					return tx;
 				});
 				transactions.data = dbResult;

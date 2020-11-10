@@ -163,7 +163,6 @@ const getPendingTransactions = async (params) => {
 	return {
 		data: result.data,
 		meta: result.meta,
-		links: result.links,
 	};
 };
 
