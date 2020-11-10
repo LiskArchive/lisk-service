@@ -222,7 +222,7 @@ const loadAllNextForgers = async (forgersList = []) => {
 		nextForgers = await BluebirdPromise.map(
 			forgersList,
 			async forger => (await getDelegates({ address: forger.account.address })).data[0],
-			{ concurrency: forgersList.length }
+			{ concurrency: forgersList.length },
 		); // Update local in-mem cache with the updated delegate status information
 		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
 	}
