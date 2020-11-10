@@ -45,12 +45,14 @@ module.exports = {
 	multisignatureAccount: {
 		lifetime: 'multisignatureGroups.lifetime,number', // returns no data at a delegate account
 		minimalNumberAcccounts: 'multisignatureGroups.min,number', // returns no data at a delegate account
+		numberOfReqSignatures: '=number',
 		members: ['multisignatureGroups.members', {
 			address: '=,string',
 			publicKey: '=,string',
 			secondPublicKey: '=,string',
 			balance: '=,number',
 			unconfirmedSignature: '=,number',
+			isMandatory: '=',
 		}],
 	},
 	multisignatureMemberships: ['multisignatureMemberships', {
@@ -65,4 +67,11 @@ module.exports = {
 		incoming: 'incomingTxsCount,string',
 		outgoing: 'outgoingTxsCount,string',
 	},
+	unlocking: ['unlocking', {
+		amount: '=,string',
+		height: '=,number',
+		delegateAddress: '=,string',
+	},
+
+	],
 };
