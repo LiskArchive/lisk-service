@@ -21,7 +21,7 @@ const transactionStatistics = require('../shared/core/transactionStatistics');
 
 module.exports = [
 	{
-		name: 'refresh.delegates',
+		name: 'refresh.transactionstats',
 		description: 'Keep the transaction statistics up-to-date',
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
