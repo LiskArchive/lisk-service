@@ -68,7 +68,6 @@ const getDelegates = async params => {
 	let delegates = {
 		data: [],
 		meta: {},
-		links: {},
 	};
 
 	try {
@@ -183,7 +182,6 @@ const getNextForgers = async params => {
 	let forgers = {
 		data: [],
 		meta: {},
-		links: {},
 	};
 
 	try {
