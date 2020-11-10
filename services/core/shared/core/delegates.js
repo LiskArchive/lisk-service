@@ -87,7 +87,7 @@ const getDelegates = async params => {
 			const dbResult = await db.find(inputData);
 
 			if (dbResult.length > 0) delegates.data = dbResult;
-			else throw new Error('Request Delegates data from Lisk Core');
+			else throw new Error('Request delegates data from Lisk Core');
 		}
 	} catch (err) {
 		logger.debug(err.message);

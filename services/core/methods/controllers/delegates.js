@@ -65,7 +65,6 @@ const getDelegates = async params => {
 	return {
 		data: delegates,
 		meta: response.meta,
-		links: response.links,
 	};
 };
 
@@ -105,7 +104,6 @@ const getStandbyDelegates = async params => {
 		data: {
 			data: delegates,
 			meta: response.meta,
-			links: response.links,
 		},
 	};
 };
@@ -119,7 +117,7 @@ const getNextForgers = async params => {
 	const ensureDelegatesArr = forgers => {
 		const promises = forgers.map(async forger => {
 			const delegates = await CoreService.getDelegates({
-				address: forger.address || forger.account.address,
+				address: forger.account.address,
 			});
 			return delegates.data[0];
 		});
@@ -131,7 +129,6 @@ const getNextForgers = async params => {
 	return {
 		data: delegates,
 		meta: nextForgers.meta,
-		links: nextForgers.links,
 	};
 };
 
@@ -159,7 +156,6 @@ const getLatestRegistrations = async params => {
 	return {
 		data: delegates,
 		meta: registrationsRes.meta,
-		links: registrationsRes.links,
 	};
 };
 
