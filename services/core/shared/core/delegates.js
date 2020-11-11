@@ -232,7 +232,7 @@ const loadAllNextForgers = async () => {
 		{ concurrency: rawNextForgers.length });
 	nextForgers.sort(delegateComparator);
 
-	computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
+	await computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
 	nextForgers = await BluebirdPromise.map(
 		nextForgers,
 		async forger => (await getDelegates({ address: forger.account.address })).data[0],
@@ -244,9 +244,9 @@ const loadAllNextForgers = async () => {
 
 const reloadNextForgersCache = () => loadAllNextForgers();
 
-const reload = () => {
-	loadAllDelegates();
-	computeDelegateRankAndStatus();
+const reload = async () => {
+	await loadAllDelegates();
+	await computeDelegateRankAndStatus();
 };
 
 module.exports = {
