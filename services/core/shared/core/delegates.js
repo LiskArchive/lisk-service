@@ -177,27 +177,15 @@ const getNextForgers = async params => {
 		meta: {},
 	};
 
-	try {
-		if (nextForgers.length) {
-			const offset = params.offset || 0;
-			const limit = params.limit || 10;
+	const offset = params.offset || 0;
+	const limit = params.limit || 10;
 
-			forgers.data = nextForgers.slice(offset, offset + limit);
+	forgers.data = nextForgers.slice(offset, offset + limit);
 
-			forgers.meta.count = forgers.data.length;
-			forgers.meta.offset = offset;
-			forgers.meta.total = nextForgers.length;
-		} else throw new Error('Request Next Forgers data from Lisk Core');
-	} catch (err) {
-		logger.debug(err.message);
+	forgers.meta.count = forgers.data.length;
+	forgers.meta.offset = offset;
+	forgers.meta.total = nextForgers.length;
 
-		forgers = await coreApi.getNextForgers(params);
-		forgers.data = await BluebirdPromise.map(
-			forgers.data,
-			async forger => (await getDelegates({ address: forger.address })).data[0],
-			{ concurrency: forgers.data.length });
-		forgers.data.sort(delegateComparator);
-	}
 	return forgers;
 };
 
