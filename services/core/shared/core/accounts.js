@@ -24,7 +24,7 @@ const { getDelegates } = require('./delegates');
 const logger = Logger();
 let topAccounts = [];
 
-const formatSortString = (sortString) => {
+const formatSortString = sortString => {
 	const sortObj = {};
 	const sortProp = sortString.split(':')[0];
 	const sortOrder = sortString.split(':')[1];
@@ -33,7 +33,7 @@ const formatSortString = (sortString) => {
 	return sortObj;
 };
 
-const getSelector = (params) => {
+const getSelector = params => {
 	const selector = {};
 	const result = { sort: [] };
 
@@ -60,23 +60,20 @@ const getTopAccounts = () => new Promise((resolve) => {
 		resolve(topAccounts);
 	});
 
-const resolveDelegateInfoByAddress = async (accounts) => {
+const resolveDelegateInfoByAddress = async accounts => {
 	await BluebirdPromise.map(
-		accounts.data,
-		async account => {
+		accounts.data, async account => {
 			if (account.isDelegate) {
 				// getDelegates takes care of retreive delegates from cache first
 				const delegateInfo = (await getDelegates({ address: account.address })).data[0];
 				account.delegate = delegateInfo;
 			}
 			return account;
-		},
-		{ concurrency: accounts.data.length },
-	);
+		}, { concurrency: accounts.data.length });
 return accounts;
 };
 
-const getAccounts = async (params) => {
+const getAccounts = async params => {
 	const db = await pouchdb(config.db.collections.accounts.name);
 
 	let accounts = {
