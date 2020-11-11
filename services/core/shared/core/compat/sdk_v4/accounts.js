@@ -61,17 +61,13 @@ const getAccounts = async params => {
 		requestParams.address = parsedAddress;
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
-		if (
-			!validatePublicKey(params.publicKey)
-			|| !(await confirmPublicKey(params.publicKey))
-		) {
+		if (!validatePublicKey(params.publicKey) || !(await confirmPublicKey(params.publicKey))) {
 			return {};
 		}
 		requestParams.publicKey = params.publicKey;
 	}
 	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
-		if (
-			!validatePublicKey(params.secondPublicKey)
+		if (!validatePublicKey(params.secondPublicKey)
 			|| !(await confirmSecondPublicKey(params.secondPublicKey))
 		) {
 			return {};
