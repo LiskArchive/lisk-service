@@ -113,12 +113,25 @@ const loadAllDelegates = async () => {
 
 	const maxCount = 10000;
 	const rawDelegates = await requestAll(coreApi.getDelegates, {}, maxCount);
+
+	const dbResult = await db.findAll();
 	const delegates = await BluebirdPromise.map(
 		rawDelegates,
 		async delegate => {
-			const dbResult = await db.find(getSelector({ address: delegate.account.address }));
-			if (dbResult.length) [delegate] = dbResult;
-			else delegate.id = String(delegate.rank);
+			if (dbResult.length) {
+				const [dbMatchByAddress] = dbResult
+					.filter(dbDelegate => dbDelegate.account.address === delegate.account.address);
+				const [dbMatchByRank] = dbResult.filter(dbDelegate => dbDelegate.rank === delegate.rank);
+
+				if (dbMatchByAddress) delegate = dbMatchByAddress.rank === delegate.rank
+					? dbMatchByAddress : delegate;
+
+				// If no existing DB match for given delegate address
+				// and entry exists for given delegate rank, replace the entry
+				if (!delegate._rev && dbMatchByRank) delegate._rev = dbMatchByRank._rev;
+			}
+
+			delegate.id = String(delegate.rank);
 			return delegate;
 		},
 		{ concurrency: rawDelegates.length },

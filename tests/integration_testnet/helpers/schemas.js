@@ -40,13 +40,13 @@ const pomHeightSchema = Joi.object({
 
 export const delegateSchema = Joi.object({
 	address: Joi.string(),
-	approval: Joi.number(),
+	approval: Joi.number().optional(),
 	delegateWeight: Joi.string().optional(),
 	missedBlocks: Joi.number(),
 	producedBlocks: Joi.number(),
 	productivity: Joi.string(),
 	publicKey: Joi.string(),
-	secondPublicKey: Joi.string().allow(''),
+	secondPublicKey: Joi.string().allow('').optional(),
 	rank: Joi.number(),
 	rewards: Joi.string(),
 	username: Joi.string(),
