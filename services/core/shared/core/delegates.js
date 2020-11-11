@@ -95,7 +95,7 @@ const getDelegates = async params => {
 		const dbResult = await db.findAll();
 		if (dbResult.length) delegates.data = dbResult
 			.filter(delegate => delegate.username.includes(params.search))
-			.slice(params.offset, params.offset + params.limit);
+			.slice(inputData.skip, inputData.skip + inputData.limit);
 	} else {
 		const dbResult = await db.find(inputData);
 		if (dbResult.length) delegates.data = dbResult;
