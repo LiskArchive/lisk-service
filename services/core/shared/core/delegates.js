@@ -109,7 +109,7 @@ const getDelegates = async params => {
 	return delegates;
 };
 
-const loadAllDelegates = async (delegateList = []) => {
+const loadAllDelegates = async () => {
 	const db = await pouchdb(config.db.collections.delegates.name);
 
 	const maxCount = 10000;
@@ -127,7 +127,7 @@ const loadAllDelegates = async (delegateList = []) => {
 
 	if (delegates.length) {
 		await db.writeBatch(delegates);
-		logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
+		logger.info(`Initialized/Updated delegates cache with ${delegates.length} delegates.`);
 	}
 };
 
