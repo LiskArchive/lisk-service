@@ -92,7 +92,7 @@ const getTransactions = async params => {
 			const dbResult = await db.find(inputData);
 			if (dbResult.length > 0) {
 				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
-				dbResult.map((tx) => {
+				dbResult.map(tx => {
 					tx.confirmations = latestBlock.confirmations + latestBlock.height - tx.height;
 					return tx;
 				});
