@@ -167,7 +167,7 @@ const getMultisignatureMemberships = async address => {
 	return isProperObject(result) && Array.isArray(result.data) ? result.data : [];
 };
 
-const getIncomingTxsCount = async (address) => {
+const getIncomingTxsCount = async address => {
 	const result = await coreApi.getTransactions({
 		recipientId: parseAddress(address),
 		limit: 1,
@@ -182,7 +182,7 @@ const getIncomingTxsCount = async (address) => {
 	return result.meta.count;
 };
 
-const getOutgoingTxsCount = async (address) => {
+const getOutgoingTxsCount = async address => {
 	const result = await coreApi.getTransactions({
 		senderId: parseAddress(address),
 		limit: 1,
@@ -198,7 +198,7 @@ const getOutgoingTxsCount = async (address) => {
 	return result.meta.count;
 };
 
-const getForgingStats = async (address) => {
+const getForgingStats = async address => {
 	if (!validateAddress(address)) throw new Error('Missing/Invalid address');
 	try {
 		const result = await coreApi.getForgingStats(parseAddress(address));
