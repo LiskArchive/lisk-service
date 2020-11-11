@@ -24,6 +24,7 @@ const { getBlocks } = require('./blocks');
 
 const logger = Logger();
 
+let totalNumDelegates;
 let nextForgers = [];
 
 const delegateComparator = (a, b) => {
@@ -71,40 +72,17 @@ const getDelegates = async params => {
 		meta: {},
 	};
 
-	try {
-		if (
-			!params.address
-			&& !params.publicKey
-			&& !params.secondPublicKey
-			&& !params.username
-		) throw new Error('Cannot query the DB without indexed params. Falling back to Lisk Core');
-		else {
-			const inputData = getSelector({
-				...params,
-				limit: params.limit || 10,
-				offset: params.offset || 0,
-			});
-			const dbResult = await db.find(inputData);
+	const inputData = getSelector({
+		...params,
+		limit: params.limit || 10,
+		offset: params.offset || 0,
+	});
+	const dbResult = await db.find(inputData);
+	if (dbResult.length) delegates.data = dbResult;
 
-			if (dbResult.length > 0) delegates.data = dbResult;
-			else throw new Error('Request delegates data from Lisk Core');
-		}
-	} catch (err) {
-		logger.debug(err.message);
-
-		delegates = await coreApi.getDelegates(params);
-		delegates.data = await BluebirdPromise.map(
-			delegates.data,
-			async delegate => {
-				const dbResult = await db.find(getSelector({ address: delegate.account.address }));
-				if (dbResult.length) [delegate] = dbResult;
-				else delegate.id = String(delegate.rank);
-				return delegate;
-			},
-			{ concurrency: delegates.data.length },
-		);
-		if (delegates.data && delegates.data.length) await db.writeBatch(delegates.data);
-	}
+	delegates.meta.count = dbResult.length;
+	delegates.meta.offset = inputData.offset;
+	delegates.meta.total = totalNumDelegates;
 
 	return delegates;
 };
@@ -127,6 +105,7 @@ const loadAllDelegates = async () => {
 
 	if (delegates.length) {
 		await db.writeBatch(delegates);
+		totalNumDelegates = delegates.length;
 		logger.info(`Initialized/Updated delegates cache with ${delegates.length} delegates.`);
 	}
 };
