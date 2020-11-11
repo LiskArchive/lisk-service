@@ -1,9 +1,9 @@
 @Library('lisk-jenkins') _
 pipeline {
-
+	agent none
 	stages {
-		agent { node { label 'lisk-service-dev' } }
 		stage('Build docker images') {
+			agent { node { label 'lisk-service-dev' } }
 			when { branch 'development' }
 			steps {
 				sh 'make build-core'
@@ -16,8 +16,6 @@ pipeline {
 			environment {
 				ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
 				ENABLE_WS_API='rpc,rpc-v1,rpc-test,blockchain'
-				LISK_CORE_HTTP='https://testnet.lisk.io'
-				LISK_CORE_WS='wss://testnet.lisk.io'
 			}
 			steps {
 				ansiColor('xterm') {
@@ -34,14 +32,12 @@ pipeline {
 			environment {
 				ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
 				ENABLE_WS_API='rpc,rpc-v1,rpc-test,blockchain'
-				LISK_CORE_HTTP='http://178.62.212.132:4000'
-				LISK_CORE_WS='ws://178.62.212.132:4000'
 			}
 			steps {
 				ansiColor('xterm') {
 					dir('docker') {
-						sh 'make -f Makefile.deployment mrproper'
-						sh 'make -f Makefile.deployment up'
+						sh 'make -f Makefile.deployment.alphanet mrproper'
+						sh 'make -f Makefile.deployment.alphanet up'
 					}
 				}
 			}

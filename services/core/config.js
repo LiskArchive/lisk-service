@@ -76,6 +76,8 @@ config.db = {
 				['generatorAddress', 'unixTimestamp'],
 				['generatorUsername', 'unixTimestamp'],
 			],
+			// Only retain the latest n blocks (Default: Approx. 1 year)
+			purge_limit: process.env.SERVICE_DB_PURGE_LIMIT_BLOCKS || 3162240,
 		},
 		delegates: {
 			name: 'delegates',
@@ -108,6 +110,8 @@ config.db = {
 				['senderId', 'timestamp'],
 				['recipientId', 'timestamp'],
 			],
+			// Only retain transactions contained in the latest n blocks
+			purge_limit: process.env.SERVICE_DB_PURGE_LIMIT_TRANSACTIONS || 3162240,
 		},
 		transaction_statistics: {
 			name: 'transaction_statistics',

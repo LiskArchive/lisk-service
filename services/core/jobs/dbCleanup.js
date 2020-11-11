@@ -16,22 +16,35 @@
 const logger = require('lisk-service-framework').Logger();
 
 const config = require('../config');
-
-const transactionStatistics = require('../shared/core/transactionStatistics');
+const purger = require('../shared/core/purge');
 
 module.exports = [
 	{
-		name: 'refresh.transactionstats',
-		description: 'Keep the transaction statistics up-to-date',
-		schedule: '*/30 * * * *', // Every 30 min
+		name: 'purge.blocks',
+		description: 'Remove old blocks',
+		schedule: '0 0 * * *', // Every day at mid-night
 		updateOnInit: true,
 		init: () => {
 			logger.debug('Scheduling delegate list init...');
-			transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+			purger.purgeBlocks(config.db.collections.blocks.purge_limit);
 		},
 		controller: async () => {
 			logger.debug('Scheduling delegate list reload...');
-			transactionStatistics.updateTodayStats();
+			purger.purgeBlocks(config.db.collections.blocks.purge_limit);
+		},
+	},
+	{
+		name: 'purge.transactions',
+		description: 'Remove old transactions',
+		schedule: '0 0 * * *', // Every day at mid-night
+		updateOnInit: true,
+		init: () => {
+			logger.debug('Scheduling delegate list init...');
+			purger.purgeTransactions(config.db.collections.transactions.purge_limit);
+		},
+		controller: async () => {
+			logger.debug('Scheduling delegate list reload...');
+			purger.purgeTransactions(config.db.collections.transactions.purge_limit);
 		},
 	},
 ];
