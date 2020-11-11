@@ -63,6 +63,20 @@ const getSelector = (params) => {
 	return result;
 };
 
+const getTotalNumberOfDelegates = async (params = {}) => {
+	const db = await pouchdb(config.db.collections.delegates.name);
+
+	const allDelegates = await db.findAll();
+	const relevantDelegates = allDelegates.filter(delegate => (
+		(!params.search || delegate.username.includes(params.search))
+		&& (!params.username || delegate.username === params.username)
+		&& (!params.address || delegate.account.address === params.address)
+		&& (!params.publickey || delegate.account.publicKey === params.publickey)
+		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
+	));
+	return relevantDelegates.length;
+};
+
 const getDelegates = async params => {
 	const db = await pouchdb(config.db.collections.delegates.name);
 
@@ -114,20 +128,6 @@ const loadAllDelegates = async () => {
 		await db.writeBatch(delegates);
 		logger.info(`Initialized/Updated delegates cache with ${delegates.length} delegates.`);
 	}
-};
-
-const getTotalNumberOfDelegates = async (params = {}) => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-
-	const allDelegates = await db.findAll();
-	const relevantDelegates = allDelegates.filter(delegate => (
-		(!params.search || delegate.username.includes(params.search))
-		&& (!params.username || delegate.username === params.username)
-		&& (!params.address || delegate.account.address === params.address)
-		&& (!params.publickey || delegate.account.publicKey === params.publickey)
-		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
-	));
-	return relevantDelegates.length;
 };
 
 const computeDelegateRankAndStatus = async () => {
