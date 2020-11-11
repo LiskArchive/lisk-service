@@ -222,22 +222,24 @@ const getNextForgers = async params => {
 	return forgers;
 };
 
-const loadAllNextForgers = async (forgersList = []) => {
-	const limit = 100;
-	const response = await getNextForgers({ limit, offset: forgersList.length });
-	forgersList = [...forgersList, ...response.data];
+const loadAllNextForgers = async () => {
+	const maxCount = 103;
+	const rawNextForgers = await requestAll(coreApi.getNextForgers, {}, maxCount);
 
-	if (response.data.length === limit) loadAllNextForgers(forgersList);
-	else {
-		nextForgers = forgersList;
-		computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
-		nextForgers = await BluebirdPromise.map(
-			forgersList,
-			async forger => (await getDelegates({ address: forger.account.address })).data[0],
-			{ concurrency: forgersList.length },
-		); // Update local in-mem cache with the updated delegate status information
-		logger.info(`Initialized/Updated next forgers cache with ${forgersList.length} delegates.`);
-	}
+	nextForgers = await BluebirdPromise.map(
+		rawNextForgers,
+		async forger => (await getDelegates({ address: forger.address })).data[0],
+		{ concurrency: rawNextForgers.length });
+	nextForgers.sort(delegateComparator);
+
+	computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
+	nextForgers = await BluebirdPromise.map(
+		nextForgers,
+		async forger => (await getDelegates({ address: forger.account.address })).data[0],
+		{ concurrency: nextForgers.length },
+	); // Update local in-mem cache with the updated delegate status information
+
+	logger.info(`Initialized/Updated next forgers cache with ${nextForgers.length} delegates.`);
 };
 
 const reloadNextForgersCache = () => loadAllNextForgers();
