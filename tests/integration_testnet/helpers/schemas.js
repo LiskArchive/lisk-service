@@ -33,19 +33,30 @@ export const badRequestSchema = Joi.object({
 	message: Joi.string().required(),
 }).required();
 
+const pomHeightSchema = Joi.object({
+	start: Joi.string().required(),
+	end: Joi.string().required(),
+});
+
 export const delegateSchema = Joi.object({
 	address: Joi.string(),
-	publicKey: Joi.string(),
 	approval: Joi.number(),
+	delegateWeight: Joi.string().optional(),
 	missedBlocks: Joi.number(),
 	producedBlocks: Joi.number(),
 	productivity: Joi.string(),
+	publicKey: Joi.string(),
+	secondPublicKey: Joi.string().allow(''),
 	rank: Joi.number(),
+	rewards: Joi.string(),
 	username: Joi.string(),
 	vote: Joi.string(),
-	rewards: Joi.string(),
-	secondPublicKey: Joi.string().allow(''),
+	totalVotesReceived: Joi.string().optional(),
+	isBanned: Joi.boolean().optional(),
 	status: Joi.string(),
+	pomHeights: Joi.array().items(pomHeightSchema).optional(),
+	lastForgedHeight: Joi.number().optional(),
+	consecutiveMissedBlocks: Joi.number().optional(),
 });
 
 export const delegateListSchema = Joi.array().items(delegateSchema).required();
