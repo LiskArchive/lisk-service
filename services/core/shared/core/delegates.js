@@ -67,7 +67,7 @@ const getSelector = (params) => {
 const getDelegates = async params => {
 	const db = await pouchdb(config.db.collections.delegates.name);
 
-	let delegates = {
+	const delegates = {
 		data: [],
 		meta: {},
 	};
@@ -172,7 +172,7 @@ const computeDelegateRankAndStatus = async () => {
 };
 
 const getNextForgers = async params => {
-	let forgers = {
+	const forgers = {
 		data: [],
 		meta: {},
 	};
