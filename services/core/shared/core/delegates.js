@@ -24,7 +24,6 @@ const { getBlocks } = require('./blocks');
 
 const logger = Logger();
 
-let totalNumDelegates;
 let nextForgers = [];
 
 const delegateComparator = (a, b) => {
@@ -77,12 +76,20 @@ const getDelegates = async params => {
 		limit: params.limit || 10,
 		offset: params.offset || 0,
 	});
-	const dbResult = await db.find(inputData);
-	if (dbResult.length) delegates.data = dbResult;
 
-	delegates.meta.count = dbResult.length;
+	if (params.search) {
+		const dbResult = await db.findAll();
+		if (dbResult.length) delegates.data = dbResult
+			.filter(delegate => delegate.username.includes(params.search))
+			.slice(params.offset, params.offset + params.limit);
+	} else {
+		const dbResult = await db.find(inputData);
+		if (dbResult.length) delegates.data = dbResult;
+	}
+
+	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = inputData.skip;
-	delegates.meta.total = totalNumDelegates;
+	delegates.meta.total = await getTotalNumberOfDelegates(params);
 
 	return delegates;
 };
@@ -105,7 +112,6 @@ const loadAllDelegates = async () => {
 
 	if (delegates.length) {
 		await db.writeBatch(delegates);
-		totalNumDelegates = delegates.length;
 		logger.info(`Initialized/Updated delegates cache with ${delegates.length} delegates.`);
 	}
 };

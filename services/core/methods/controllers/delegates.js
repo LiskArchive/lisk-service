@@ -37,33 +37,11 @@ const getDelegates = async params => {
 	delete params.anyId;
 
 	const response = await CoreService.getDelegates(params);
-	const delegates = response.data;
-	const paramsArr = [
-		'address',
-		'publicKey',
-		'secondPublicKey',
-		'username',
-		'search',
-	];
 
-	const reqParams = Object.keys(params);
-
-	if (reqParams.some(e => paramsArr.includes(e))) {
-		if (Array.isArray(delegates)) {
-			response.meta.count = delegates.length;
-			response.meta.total = await getTotalNumberOfDelegates(params);
-		}
-	} else {
-		response.meta.count = response.meta.limit;
-		response.meta.total = await getTotalNumberOfDelegates();
-	}
-
-	if (isEmptyObject(response) || isEmptyArray(response.data)) {
-		return { status: NOT_FOUND, data: { error: 'Not found' } };
-	}
+	if (isEmptyObject(response) || isEmptyArray(response.data)) return { status: NOT_FOUND, data: { error: 'Not found' } };
 
 	return {
-		data: delegates,
+		data: response.data,
 		meta: response.meta,
 	};
 };
