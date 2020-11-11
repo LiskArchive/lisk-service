@@ -18,6 +18,7 @@ const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
+const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');
 
@@ -109,12 +110,25 @@ const getDelegates = async params => {
 };
 
 const loadAllDelegates = async (delegateList = []) => {
-	const limit = 100;
-	const response = await getDelegates({ limit, offset: delegateList.length });
-	delegateList = [...delegateList, ...response.data];
+	const db = await pouchdb(config.db.collections.delegates.name);
 
-	if (response.data.length === limit) loadAllDelegates(delegateList);
-	else logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
+	const maxCount = 10000;
+	const rawDelegates = await requestAll(coreApi.getDelegates, {}, maxCount);
+	const delegates = await BluebirdPromise.map(
+		rawDelegates,
+		async delegate => {
+			const dbResult = await db.find(getSelector({ address: delegate.account.address }));
+			if (dbResult.length) [delegate] = dbResult;
+			else delegate.id = String(delegate.rank);
+			return delegate;
+		},
+		{ concurrency: rawDelegates.length },
+	);
+
+	if (delegates.length) {
+		await db.writeBatch(delegates);
+		logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
+	}
 };
 
 const getTotalNumberOfDelegates = async (params = {}) => {
