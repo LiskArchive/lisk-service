@@ -81,7 +81,7 @@ const getDelegates = async params => {
 	if (dbResult.length) delegates.data = dbResult;
 
 	delegates.meta.count = dbResult.length;
-	delegates.meta.offset = inputData.offset;
+	delegates.meta.offset = inputData.skip;
 	delegates.meta.total = totalNumDelegates;
 
 	return delegates;
