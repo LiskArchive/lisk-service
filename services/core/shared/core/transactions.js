@@ -23,7 +23,7 @@ const { getBlocks } = require('./blocks');
 
 const logger = Logger();
 
-const formatSortString = (sortString) => {
+const formatSortString = sortString => {
 	const sortObj = {};
 	const sortProp = sortString.split(':')[0];
 	const sortOrder = sortString.split(':')[1];
@@ -32,7 +32,7 @@ const formatSortString = (sortString) => {
 	return sortObj;
 };
 
-const getSelector = (params) => {
+const getSelector = params => {
 	const result = {};
 	result.sort = [];
 
@@ -74,7 +74,7 @@ const getSelector = (params) => {
 	return result;
 };
 
-const getTransactions = async (params) => {
+const getTransactions = async params => {
 	const db = await pouchdb(config.db.collections.transactions.name);
 
 	let transactions = {
@@ -88,7 +88,7 @@ const getTransactions = async (params) => {
 				...params,
 				limit: params.limit || 10,
 				offset: params.offset || 0,
-			});
+				});
 			const dbResult = await db.find(inputData);
 			if (dbResult.length > 0) {
 				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
@@ -109,7 +109,7 @@ const getTransactions = async (params) => {
 	return transactions;
 };
 
-const getPendingTransactions = async (params) => {
+const getPendingTransactions = async params => {
 	const pendingTransactions = {
 		data: [],
 		meta: {},
@@ -124,9 +124,7 @@ const getPendingTransactions = async (params) => {
 	try {
 		dbResult = await db.findAll();
 		if (dbResult.length) {
-			dbResult
-				.sort((a, b) => a.receivedAt.localeCompare(b.receivedAt))
-				.reverse();
+			dbResult.sort((a, b) => a.receivedAt.localeCompare(b.receivedAt)).reverse();
 
 			const now = moment().unix();
 			const lastSubmittedAt = moment(dbResult[0].receivedAt).unix();
@@ -161,10 +159,7 @@ const getPendingTransactions = async (params) => {
 
 const loadAllPendingTransactions = async (pendingTransactions = []) => {
 	const limit = 100;
-	const response = await getPendingTransactions({
-		limit,
-		offset: pendingTransactions.length,
-	});
+	const response = await getPendingTransactions({ limit, offset: pendingTransactions.length });
 
 	pendingTransactions = [...pendingTransactions, ...response.data];
 
