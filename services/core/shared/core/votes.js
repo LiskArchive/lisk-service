@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const coreApi = require('./compat');
+
+const { getAccounts } = require('./accounts');
 
 const getVotes = async params => {
 	const votes = {
@@ -23,7 +26,18 @@ const getVotes = async params => {
 
 	const response = await coreApi.getVotes(params);
 
-	votes.data = response.data.votes;
+	votes.data = await BluebirdPromise.map(
+		response.data.votes,
+		async vote => {
+			if (!vote.publicKey) {
+				const account = (await getAccounts({ id: vote.address })).data[0];
+				vote.publicKey = account.publicKey;
+			}
+			return vote;
+		},
+		{ concurrency: response.data.votes.length },
+	);
+
 	votes.meta = {
 		limit: response.meta.limit,
 		count: response.data.votes.length,

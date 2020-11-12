@@ -17,6 +17,14 @@ const coreApi = require('./coreApi');
 
 const getVotes = async params => {
 	const votes = await coreApi.getVotes(params);
+	votes.data.votes = votes.data.votes.map(vote => {
+		vote.address = vote.delegateAddress;
+		vote.balance = vote.amount;
+		vote.publicKey = null;
+		vote.username = vote.delegate.username;
+
+		return vote;
+	});
 	return votes;
 };
 
