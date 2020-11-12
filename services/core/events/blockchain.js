@@ -63,7 +63,8 @@ module.exports = [
 		controller: callback => {
 			coreSocket.socket.on('round/change', async data => {
 				logger.debug('New round, updating delegates...');
-				core.reloadDelegateCache(core);
+				core.reloadDelegateCache();
+				core.reloadNextForgersCache();
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
 			});

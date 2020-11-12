@@ -21,6 +21,7 @@ const {
 
 const {
     getDelegates,
+    getNextForgers,
 } = require('./delegates');
 
 module.exports = {
@@ -29,4 +30,5 @@ module.exports = {
     updateFinalizedHeight,
     getFinalizedHeight,
     getDelegates,
+    getNextForgers,
 };

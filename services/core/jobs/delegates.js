@@ -24,13 +24,14 @@ module.exports = [
 		description: 'Keep the delegate list up-to-date',
 		schedule: '* * * * *', // Every 1 min
 		updateOnInit: true,
-		init: () => {
+		init: async () => {
 			logger.debug('Scheduling initial list update...');
-			core.reloadDelegateCache(core);
+			await core.reloadDelegateCache();
+			await core.reloadNextForgersCache();
 		},
 		controller: () => {
 			logger.debug('Scheduling delegate list reload...');
-			core.reloadDelegateCache(core);
+			core.reloadDelegateCache();
 		},
 	},
 ];
