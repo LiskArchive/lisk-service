@@ -142,10 +142,15 @@ const loadAllPendingTransactions = async () => {
 	}
 };
 
+const initPendingTransactionsList = (async () => {
+	await loadAllPendingTransactions();
+})();
+
 const reload = () => loadAllPendingTransactions();
 
 module.exports = {
 	getTransactions,
 	getPendingTransactions,
+	initPendingTransactionsList,
 	reloadAllPendingTransactions: reload,
 };
