@@ -21,7 +21,7 @@ const {
 	validateTimestamp,
 } = require('../common');
 
-const getTransactionsByBlock = async (block) => {
+const getTransactionsByBlock = async block => {
 	const transactions = await coreApi.getTransactions({ height: block.height });
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,

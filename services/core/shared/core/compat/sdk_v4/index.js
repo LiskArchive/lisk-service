@@ -28,14 +28,18 @@ const {
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('../sdk_v3');
+const {
+    getAccounts,
+} = require('./accounts');
 
 module.exports = {
     ...require('../sdk_v2'),
+    getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
-    getBlocks,
-    getTransactions,
+    getAccounts,
     mapToOriginal,
+    getTransactions,
     getDelegates,
     getNextForgers,
 };
