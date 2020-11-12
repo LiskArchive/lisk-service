@@ -28,7 +28,6 @@ module.exports = {
 		rewards: '=,string',
 		username: '=,string',
 		vote: '=,string',
-		totalVotesReceived: '=,string',
 		isBanned: '=,boolean',
 		status: '=,string',
 		pomHeights: ['pomHeights', {
