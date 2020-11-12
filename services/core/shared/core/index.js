@@ -58,6 +58,10 @@ const {
 } = require('./dynamicFees');
 
 const {
+	getVotes,
+} = require('./votes');
+
+const {
 	get,
 	parseAddress,
 	validateAddress,
@@ -78,7 +82,6 @@ const {
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
 	getOutgoingTxsCount,
-	getVotes,
 	getVoters,
 	getForgingStats,
 	getNetworkStatus,

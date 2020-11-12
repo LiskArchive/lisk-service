@@ -13,25 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('./blocks');
+const coreApi = require('./compat');
 
-const {
-    getDelegates,
-    getNextForgers,
-} = require('./delegates');
+const getVotes = async params => {
 
-const { getVotes } = require('./votes');
+	const votes = coreApi.getVotes(params);
+	return votes;
+};
 
 module.exports = {
-    ...require('../sdk_v2'),
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getDelegates,
-    getNextForgers,
-    getVotes,
+	getVotes,
 };

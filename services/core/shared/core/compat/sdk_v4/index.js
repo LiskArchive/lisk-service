@@ -14,23 +14,20 @@
  *
  */
 const {
-    getTransactions,
-} = require('./transactions');
-const {
     getDelegates,
     getNextForgers,
 } = require('./delegates');
-const {
-    mapToOriginal,
-} = require('./reverseMappings');
+
+const { getAccounts } = require('./accounts');
+const { getTransactions } = require('./transactions');
+const { mapToOriginal } = require('./reverseMappings');
+const { getVotes } = require('./votes');
+
 const {
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('../sdk_v3');
-const {
-    getAccounts,
-} = require('./accounts');
 
 module.exports = {
     ...require('../sdk_v2'),
@@ -42,4 +39,5 @@ module.exports = {
     getTransactions,
     getDelegates,
     getNextForgers,
+    getVotes,
 };
