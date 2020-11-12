@@ -16,7 +16,6 @@
 const coreApi = require('./compat');
 
 const getVotes = async params => {
-
 	const votes = coreApi.getVotes(params);
 	return votes;
 };
