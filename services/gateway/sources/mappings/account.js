@@ -28,8 +28,7 @@ module.exports = {
 		rewards: '=,string',
 		username: '=,string',
 		vote: '=,string',
-		totalVotesReceived: ',string',
-		isBanned: '=',
+		isBanned: '=,boolean',
 		status: '=,string',
 		pomHeights: ['pomHeights', {
 			start: '=,string',
@@ -45,12 +44,14 @@ module.exports = {
 	multisignatureAccount: {
 		lifetime: 'multisignatureGroups.lifetime,number', // returns no data at a delegate account
 		minimalNumberAcccounts: 'multisignatureGroups.min,number', // returns no data at a delegate account
+		numberOfReqSignatures: 'multisignatureGroups.numberOfReqSignatures,number',
 		members: ['multisignatureGroups.members', {
 			address: '=,string',
 			publicKey: '=,string',
 			secondPublicKey: '=,string',
 			balance: '=,number',
 			unconfirmedSignature: '=,number',
+			isMandatory: '=,boolean',
 		}],
 	},
 	multisignatureMemberships: ['multisignatureMemberships', {
@@ -65,4 +66,12 @@ module.exports = {
 		incoming: 'incomingTxsCount,string',
 		outgoing: 'outgoingTxsCount,string',
 	},
+	unlocking: ['unlocking', {
+		amount: '=,string',
+		height: {
+			start: '=,number',
+			end: '=,number',
+		},
+		delegateAddress: '=,string',
+	}],
 };
