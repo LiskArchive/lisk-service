@@ -115,13 +115,12 @@ const getPendingTransactions = async params => {
 		meta: {},
 		links: {},
 	};
-
 	const db = await pouchdb(config.db.collections.pending_transactions.name);
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 	const dbResult = await db.findAll();
 	if (dbResult.length) {
-				pendingTransactions.data = dbResult.slice(offset, limit);
+				pendingTransactions.data = dbResult.slice(offset, offset + limit);
 				pendingTransactions.meta = {
 					count: pendingTransactions.data.length,
 					offset,
