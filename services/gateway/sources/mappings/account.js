@@ -28,8 +28,8 @@ module.exports = {
 		rewards: '=,string',
 		username: '=,string',
 		vote: '=,string',
-		totalVotesReceived: ',string',
-		isBanned: '=',
+		totalVotesReceived: '=,string',
+		isBanned: '=,boolean',
 		status: '=,string',
 		pomHeights: ['pomHeights', {
 			start: '=,string',
@@ -52,7 +52,7 @@ module.exports = {
 			secondPublicKey: '=,string',
 			balance: '=,number',
 			unconfirmedSignature: '=,number',
-			isMandatory: '=',
+			isMandatory: '=,boolean',
 		}],
 	},
 	multisignatureMemberships: ['multisignatureMemberships', {
