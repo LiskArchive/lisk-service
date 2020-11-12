@@ -79,20 +79,14 @@ const getAccounts = async params => {
 	return result;
 };
 
-const getMultisignatureGroups = async account => {
-	const result = await coreApi.getMultisignatureGroups(parseAddress(account.address));
-	return isProperObject(result) && Array.isArray(result.data)
-		? result.data[0]
-		: [];
+const getMultisignatureGroups = async address => {
+	const result = await coreApi.getMultisignatureGroups(parseAddress(address));
+	return isProperObject(result) && Array.isArray(result.data) ? result.data[0] : [];
 };
 
-const getMultisignatureMemberships = async (account) => {
-	const result = await coreApi.getMultisignatureMemberships(
-		parseAddress(account.address),
-	);
-	return isProperObject(result) && Array.isArray(result.data)
-		? result.data
-		: [];
+const getMultisignatureMemberships = async address => {
+	const result = await coreApi.getMultisignatureMemberships(parseAddress(address));
+	return isProperObject(result) && Array.isArray(result.data) ? result.data : [];
 };
 
 
