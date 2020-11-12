@@ -14,10 +14,10 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const moment = require('moment');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
+const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');
 
@@ -117,56 +117,30 @@ const getPendingTransactions = async params => {
 	};
 
 	const db = await pouchdb(config.db.collections.pending_transactions.name);
-	const offset = params.offset || 0;
-	const limit = params.limit || 10;
-	let dbResult;
-
-	try {
-		dbResult = await db.findAll();
-		if (dbResult.length) {
-			dbResult.sort((a, b) => a.receivedAt.localeCompare(b.receivedAt)).reverse();
-
-			const now = moment().unix();
-			const lastSubmittedAt = moment(dbResult[0].receivedAt).unix();
-			if (now - lastSubmittedAt < 10) {
-				pendingTransactions.data = dbResult.split(offset, limit);
+	const offset = Number(params.offset) || 0;
+	const limit = Number(params.limit) || 10;
+	const dbResult = await db.findAll();
+	if (dbResult.length) {
+				pendingTransactions.data = dbResult.slice(offset, limit);
 				pendingTransactions.meta = {
 					count: pendingTransactions.data.length,
 					offset,
 					total: dbResult.length,
 				};
-			} else throw new Error('Stale data. Re-request data from Lisk Core');
-		} else throw new Error('Request data from Lisk Core');
-	} catch (err) {
-		logger.debug(err.message);
-		const result = await coreApi.getPendingTransactions(params);
-		if (result) {
-			pendingTransactions.data = result.data;
-			pendingTransactions.meta = {
-				count: pendingTransactions.data.length,
-				offset,
-				total: result.meta.count,
-			};
-			pendingTransactions.links = result.links;
-			if (dbResult.length) await db.deleteBatch(dbResult);
-			if (pendingTransactions.data && pendingTransactions.data.length) {
-				await db.writeBatch(pendingTransactions.data);
 			}
-		}
-	}
 	return pendingTransactions;
 };
 
-const loadAllPendingTransactions = async (pendingTransactions = []) => {
+const loadAllPendingTransactions = async () => {
+	const db = await pouchdb(config.db.collections.pending_transactions.name);
+	const dbResult = await db.findAll();
 	const limit = 100;
-	const response = await getPendingTransactions({ limit, offset: pendingTransactions.length });
-
-	pendingTransactions = [...pendingTransactions, ...response.data];
-
-	if (response.data.length === limit) loadAllPendingTransactions(pendingTransactions);
-	else logger.debug(
-			`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`,
-		);
+	const pendingTransactions = await requestAll(coreApi.getPendingTransactions, {}, limit);
+	if (pendingTransactions.length) {
+		if (dbResult.length) await db.deleteBatch(dbResult);
+		await db.writeBatch(pendingTransactions);
+		logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`);
+	}
 };
 
 const reload = () => loadAllPendingTransactions();
