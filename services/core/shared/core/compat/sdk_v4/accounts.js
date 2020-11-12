@@ -22,6 +22,9 @@ const {
 	getCachedAccountBySecondPublicKey,
 } = require('../sdk_v2');
 
+const balanceUnlockWaitHeightSelf = 260000;
+const balanceUnlockWaitHeightDefault = 2000;
+
 const parseAddress = address => {
 	if (typeof address !== 'string') return '';
 	return address.toUpperCase();
@@ -45,6 +48,22 @@ const confirmSecondPublicKey = async secondPublicKey => {
 	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
 	const account = await getCachedAccountBySecondPublicKey(secondPublicKey);
 	return (account && account.secondPublicKey === secondPublicKey);
+};
+
+const resolveUnlockingHeight = async accounts => {
+    accounts.data.map(account => {
+        account.unlocking = account.unlocking.map(item => {
+            const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+                ? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
+            item.height = {
+                start: item.unvoteHeight,
+                end: item.unvoteHeight + balanceUnlockWaitHeight,
+            };
+            return item;
+		});
+		return account;
+    });
+    return accounts;
 };
 
 const getAccounts = async params => {
@@ -76,7 +95,8 @@ const getAccounts = async params => {
 	}
 
 	const result = await coreApi.getAccounts(requestParams);
-	return result;
+	const accounts = await resolveUnlockingHeight(result);
+	return accounts;
 };
 
 const getMultisignatureGroups = async account => {

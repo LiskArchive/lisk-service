@@ -68,7 +68,10 @@ module.exports = {
 	},
 	unlocking: ['unlocking', {
 		amount: '=,string',
-		unvoteHeight: 'unvoteHeight,number',
+		height: {
+			start: '=,number',
+			end: '=,number',
+		},
 		delegateAddress: '=,string',
 	}],
 };
