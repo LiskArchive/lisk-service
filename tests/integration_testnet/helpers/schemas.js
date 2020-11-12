@@ -33,19 +33,30 @@ export const badRequestSchema = Joi.object({
 	message: Joi.string().required(),
 }).required();
 
+const pomHeightSchema = Joi.object({
+	start: Joi.string().required(),
+	end: Joi.string().required(),
+});
+
 export const delegateSchema = Joi.object({
-	address: Joi.string(),
-	publicKey: Joi.string(),
-	approval: Joi.number(),
-	missedBlocks: Joi.number(),
-	producedBlocks: Joi.number(),
-	productivity: Joi.string(),
-	rank: Joi.number(),
-	username: Joi.string(),
-	vote: Joi.string(),
-	rewards: Joi.string(),
-	secondPublicKey: Joi.string().allow(''),
-	status: Joi.string(),
+	address: Joi.string().required(),
+	approval: Joi.number().optional(),
+	delegateWeight: Joi.string().optional(),
+	missedBlocks: Joi.number().required(),
+	producedBlocks: Joi.number().required(),
+	productivity: Joi.string().required(),
+	publicKey: Joi.string().required(),
+	secondPublicKey: Joi.string().allow('').optional(),
+	rank: Joi.number().required(),
+	rewards: Joi.string().required(),
+	username: Joi.string().required(),
+	vote: Joi.string().required(),
+	totalVotesReceived: Joi.string().optional(),
+	isBanned: Joi.boolean().optional(),
+	status: Joi.string().valid('active', 'standby', 'banned', 'punished', 'non-eligible').required(),
+	pomHeights: Joi.array().items(pomHeightSchema).optional(),
+	lastForgedHeight: Joi.number().optional(),
+	consecutiveMissedBlocks: Joi.number().optional(),
 });
 
 export const delegateListSchema = Joi.array().items(delegateSchema).required();
