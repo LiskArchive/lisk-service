@@ -36,7 +36,7 @@ const getKnownAccounts = async () => {
 		if (knownNetworks.data[nethash]) {
 			return (await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`, { cacheTTL })).data;
 		}
-		return { };
+		return {};
 	} catch (err) {
 		return {};
 	}
@@ -130,15 +130,8 @@ const getVotes = async params => {
 	if (isEmptyObject(response)) return {};
 
 	return {
-		data: response.data.votes,
-		meta: {
-			limit: response.meta.limit,
-			offset: response.meta.offset,
-			total: response.data.votesUsed,
-			count: response.data.votes.length,
-			votesAvailable: response.data.votesAvailable,
-			votesUsed: response.data.votesUsed,
-		},
+		data: response.data,
+		meta: response.meta,
 	};
 };
 

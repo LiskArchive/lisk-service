@@ -16,7 +16,24 @@
 const coreApi = require('./compat');
 
 const getVotes = async params => {
-	const votes = coreApi.getVotes(params);
+	const votes = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await coreApi.getVotes(params);
+
+	votes.data = response.data.votes;
+	votes.meta = {
+		limit: response.meta.limit,
+		count: response.data.votes.length,
+		offset: response.meta.offset,
+		total: response.data.votesUsed,
+		address: response.data.address,
+		publicKey: response.data.publicKey,
+		username: response.data.username,
+	};
+
 	return votes;
 };
 
