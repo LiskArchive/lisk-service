@@ -141,9 +141,7 @@ const loadAllPendingTransactions = async () => {
 	}
 };
 
-const initPendingTransactionsList = (async () => {
-	await loadAllPendingTransactions();
-})();
+const initPendingTransactionsList = (() => loadAllPendingTransactions())();
 
 const reload = () => loadAllPendingTransactions();
 
