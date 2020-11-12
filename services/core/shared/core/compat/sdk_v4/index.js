@@ -15,6 +15,7 @@
  */
 const {
     getTransactions,
+    getPendingTransactions,
 } = require('./transactions');
 const {
     getDelegates,
@@ -44,6 +45,7 @@ module.exports = {
     getTransactions,
     getDelegates,
     getNextForgers,
+    getPendingTransactions,
     getMultisignatureGroups,
     getMultisignatureMemberships,
 };
