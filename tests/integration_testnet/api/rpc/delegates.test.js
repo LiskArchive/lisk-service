@@ -17,7 +17,10 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import delegates from './constants/delegates';
-import { delegateSchema, delegateListSchema, metaSchema,
+import {
+	delegateSchema,
+	delegateListSchema,
+	metaSchema,
 } from '../../helpers/schemas';
 import {
 	envelopeSchema,

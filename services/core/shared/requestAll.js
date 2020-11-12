@@ -25,7 +25,7 @@ const requestAll = async (fn, params, limit) => {
 		},
 	});
 	const { data } = firstRequest;
-	const maxAmount = firstRequest.meta.count > defaultMaxAmount
+	const maxAmount = !firstRequest.meta.count || firstRequest.meta.count > defaultMaxAmount
 		? defaultMaxAmount
 		: firstRequest.meta.count;
 
@@ -41,9 +41,9 @@ const requestAll = async (fn, params, limit) => {
 					offset: oneRequestLimit * page,
 				},
 			})).then((result) => {
-			result.data.forEach((item) => { data.push(item); });
-			return data;
-		}), Promise.resolve());
+				result.data.forEach((item) => { data.push(item); });
+				return data;
+			}), Promise.resolve());
 		return collection;
 	}
 	return data;

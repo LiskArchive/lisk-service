@@ -18,6 +18,10 @@ const {
     getPendingTransactions,
 } = require('./transactions');
 const {
+    getDelegates,
+    getNextForgers,
+} = require('./delegates');
+const {
     mapToOriginal,
 } = require('./reverseMappings');
 const {
@@ -28,10 +32,12 @@ const {
 
 module.exports = {
     ...require('../sdk_v2'),
-    getTransactions,
-    mapToOriginal,
-    getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
+    getBlocks,
+    getTransactions,
+    mapToOriginal,
+    getDelegates,
+    getNextForgers,
     getPendingTransactions,
 };

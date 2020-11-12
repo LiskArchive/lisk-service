@@ -36,6 +36,8 @@ const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
+	reloadNextForgersCache,
+	getNextForgers,
 } = require('./delegates');
 
 const {
@@ -81,7 +83,6 @@ const {
 	getVotes,
 	getVoters,
 	getForgingStats,
-	getNextForgers,
 	getNetworkStatus,
 	getNetworkConstants,
 	numOfActiveDelegates,
@@ -126,6 +127,7 @@ module.exports = {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getForgingStats,
+	reloadNextForgersCache,
 	getNextForgers,
 	getNetworkStatus,
 	getNetworkConstants,

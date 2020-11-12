@@ -24,11 +24,16 @@ const sdkMappers = {
 };
 
 let sdk;
+
+const setSDKVersion = (sdkVersion) => sdk = sdkVersion;
+const getSDKVersion = () => sdk;
+
 Object.keys(sdkMappers).forEach(key => {
-	if (semver.lte(key, getCoreVersion())) sdk = sdkMappers[key];
+	if (semver.lte(key, getCoreVersion())) setSDKVersion(sdkMappers[key]);
 });
 
 module.exports = {
+	getSDKVersion,
 	...require('./common'),
 	/* eslint-disable-next-line import/no-dynamic-require */
 	...require(`./${sdk}`),

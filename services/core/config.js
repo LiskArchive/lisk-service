@@ -158,7 +158,7 @@ config.ttl = {
 };
 
 config.feeEstimates = {
-	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1837616),
+	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 21),
 	medEstLowerPercentile: 25,
 	medEstUpperPercentile: 75,
 	highEstLowerPercentile: 80,

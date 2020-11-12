@@ -35,6 +35,7 @@ const delegateSchema = {
 	secondPublicKey: 'string',
 	username: 'string',
 	vote: 'string',
+	status: 'string',
 };
 
 const badRequestSchema = {

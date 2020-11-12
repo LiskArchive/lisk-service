@@ -21,11 +21,34 @@ const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
 const getDelegates = async params => {
+	const punishmentHeight = 780000;
 	const delegates = await coreApi.getDelegates(params);
 
 	delegates.data.map((delegate, index) => {
+		delegate.account = {
+			address: delegate.address,
+			publicKey: delegate.publicKey,
+		};
+
+		const adder = (acc, curr) => acc + curr.amount;
+		const totalVotes = delegate.votes.reduce(adder, 0);
+		const selfVotes = delegate.votes
+			.filter(vote => vote.delegateAddress === delegate.address).reduce(adder, 0);
+
+		delegate.delegateWeight = Math.min(10 * selfVotes, totalVotes);
+		delegate.vote = delegate.delegateWeight;
+		delegate.totalVotesReceived = totalVotes - selfVotes;
+		delegate.isBanned = delegate.delegate.isBanned;
+		delegate.pomHeights = delegate.delegate.pomHeights
+			.sort((a, b) => a - b).reverse().slice(0, 5)
+			.map(height => ({ start: height, end: height + punishmentHeight }));
+		delegate.lastForgedHeight = delegate.delegate.lastForgedHeight;
+		delegate.consecutiveMissedBlocks = delegate.delegate.consecutiveMissedBlocks;
+
+		// Required for proper indexing in PouchDB
+		// Rank appropriately recalculated in the abstraction layer based on delegateWeight/address
 		delegate.rank = params.offset + index + 1;
-		delegate.vote = delegate.voteWeight;
+
 		return delegate;
 	});
 
