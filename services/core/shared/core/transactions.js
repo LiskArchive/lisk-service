@@ -113,7 +113,6 @@ const getPendingTransactions = async params => {
 	const pendingTransactions = {
 		data: [],
 		meta: {},
-		links: {},
 	};
 	const db = await pouchdb(config.db.collections.pending_transactions.name);
 	const offset = Number(params.offset) || 0;
