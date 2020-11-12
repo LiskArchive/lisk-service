@@ -18,8 +18,17 @@ const {
     getNextForgers,
 } = require('./delegates');
 
-const { getAccounts } = require('./accounts');
-const { getTransactions } = require('./transactions');
+const {
+    getTransactions,
+    getPendingTransactions,
+} = require('./transactions');
+
+const {
+    getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
+} = require('./accounts');
+
 const { mapToOriginal } = require('./reverseMappings');
 const { getVotes } = require('./votes');
 
@@ -39,5 +48,8 @@ module.exports = {
     getTransactions,
     getDelegates,
     getNextForgers,
+    getPendingTransactions,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
     getVotes,
 };

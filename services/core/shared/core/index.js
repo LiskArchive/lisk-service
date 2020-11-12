@@ -23,6 +23,8 @@ const {
 
 const {
 	getTransactions,
+	getPendingTransactions,
+	reloadAllPendingTransactions,
 } = require('./transactions');
 
 const {
@@ -159,4 +161,6 @@ module.exports = {
 	cleanFromForks,
 	retrieveTopAccounts,
 	updateFinalizedHeight,
+	getPendingTransactions,
+	reloadAllPendingTransactions,
 };

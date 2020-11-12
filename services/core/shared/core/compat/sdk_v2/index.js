@@ -27,7 +27,11 @@ const {
 } = require('./coreCache');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
-const { getAccounts } = require('./accounts');
+const {
+	getAccounts,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
+} = require('./accounts');
 const {
 	getDelegates,
 	getNextForgers,
@@ -157,16 +161,6 @@ const getPublicKeyByAny = async param => {
 	return getPublicKeyByUsername(param);
 };
 
-const getMultisignatureGroups = async address => {
-	const result = await coreApi.getMultisignatureGroups(parseAddress(address));
-	return isProperObject(result) && Array.isArray(result.data) ? result.data[0] : [];
-};
-
-const getMultisignatureMemberships = async address => {
-	const result = await coreApi.getMultisignatureMemberships(parseAddress(address));
-	return isProperObject(result) && Array.isArray(result.data) ? result.data : [];
-};
-
 const getIncomingTxsCount = async address => {
 	const result = await coreApi.getTransactions({
 		recipientId: parseAddress(address),
@@ -206,7 +200,7 @@ const getForgingStats = async address => {
 
 const nop = () => { };
 const updateFinalizedHeight = () => null;
-const getPendingTransactions = () => null;
+const getPendingTransactions = () => ({ data: [], meta: {} });
 
 module.exports = {
 	get: request,

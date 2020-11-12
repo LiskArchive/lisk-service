@@ -17,6 +17,7 @@ const { Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
+const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');
 
@@ -31,7 +32,7 @@ const formatSortString = sortString => {
 	return sortObj;
 };
 
-const getSelector = (params) => {
+const getSelector = params => {
 	const result = {};
 	result.sort = [];
 
@@ -81,13 +82,13 @@ const getTransactions = async params => {
 	};
 
 	try {
-		if (!params.id) throw new Error('No param: \'id\'. Falling back to Lisk Core');
+		if (!params.id) throw new Error("No param: 'id'. Falling back to Lisk Core");
 		else {
 			const inputData = getSelector({
 				...params,
 				limit: params.limit || 10,
 				offset: params.offset || 0,
-			});
+				});
 			const dbResult = await db.find(inputData);
 			if (dbResult.length > 0) {
 				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
@@ -108,6 +109,45 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const getPendingTransactions = async params => {
+	const pendingTransactions = {
+		data: [],
+		meta: {},
+	};
+	const db = await pouchdb(config.db.collections.pending_transactions.name);
+	const offset = Number(params.offset) || 0;
+	const limit = Number(params.limit) || 10;
+	const dbResult = await db.findAll();
+	if (dbResult.length) {
+				pendingTransactions.data = dbResult.slice(offset, offset + limit);
+				pendingTransactions.meta = {
+					count: pendingTransactions.data.length,
+					offset,
+					total: dbResult.length,
+				};
+			}
+	return pendingTransactions;
+};
+
+const loadAllPendingTransactions = async () => {
+	const db = await pouchdb(config.db.collections.pending_transactions.name);
+	const dbResult = await db.findAll();
+	const limit = 100;
+	const pendingTransactions = await requestAll(coreApi.getPendingTransactions, {}, limit);
+	if (pendingTransactions.length) {
+		if (dbResult.length) await db.deleteBatch(dbResult);
+		await db.writeBatch(pendingTransactions);
+		logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`);
+	}
+};
+
+const initPendingTransactionsList = (() => loadAllPendingTransactions())();
+
+const reload = () => loadAllPendingTransactions();
+
 module.exports = {
 	getTransactions,
+	getPendingTransactions,
+	initPendingTransactionsList,
+	reloadAllPendingTransactions: reload,
 };
