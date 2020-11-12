@@ -37,7 +37,6 @@ const getPeers = params => request('/peers', params);
 const getTransactions = params => request('/transactions', params);
 const getVoters = params => request('/voters', params);
 const getVotes = params => request('/votes', params);
-
 module.exports = {
 	getAccounts,
 	getBlocks,

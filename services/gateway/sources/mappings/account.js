@@ -18,6 +18,7 @@ module.exports = {
 	publicKey: '=,string',
 	secondPublicKey: '=,string',
 	balance: '=,string',
+	nonce: '=,string',
 	delegate: {
 		approval: '=,string',
 		missedBlocks: '=,number',
@@ -27,6 +28,15 @@ module.exports = {
 		rewards: '=,string',
 		username: '=,string',
 		vote: '=,string',
+		totalVotesReceived: ',string',
+		isBanned: '=',
+		status: '=,string',
+		pomHeights: ['pomHeights', {
+			start: '=,string',
+			end: '=,string',
+		}],
+		lastForgedHeight: '=,number',
+		consecutiveMissedBlocks: '=,number',
 	},
 	knowledge: {
 		owner: '=,string',
