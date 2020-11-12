@@ -172,11 +172,9 @@ const getIncomingTxsCount = async address => {
 		recipientId: parseAddress(address),
 		limit: 1,
 	});
-	if (
-		!isProperObject(result)
+	if (!isProperObject(result)
 		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)
-	) {
+		|| !Number.isInteger(result.meta.count)) {
 		throw new Error('Could not retrieve incoming transaction count.');
 	}
 	return result.meta.count;
@@ -187,11 +185,9 @@ const getOutgoingTxsCount = async address => {
 		senderId: parseAddress(address),
 		limit: 1,
 	});
-	if (
-		!isProperObject(result)
+	if (!isProperObject(result)
 		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)
-	) {
+		|| !Number.isInteger(result.meta.count)) {
 		throw new Error('Could not retrieve outgoing transaction count.');
 	}
 
