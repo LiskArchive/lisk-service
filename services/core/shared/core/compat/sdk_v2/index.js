@@ -15,7 +15,12 @@
  */
 const { Utils } = require('lisk-service-framework');
 
-const coreCache = require('./coreCache');
+const {
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
+} = require('./coreCache');
 const coreApi = require('./coreApi');
 
 const { request } = require('./request');
@@ -29,9 +34,7 @@ const {
 	getNextForgers,
 } = require('./delegates');
 
-const {
-	getNetworkStatus,
-} = coreApi;
+const { getNetworkStatus } = coreApi;
 
 const ObjectUtilService = Utils.Data;
 
@@ -56,27 +59,27 @@ const { isEmptyArray } = ObjectUtilService;
 // Lisk Core API functions
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
-	const account = await coreCache.getCachedAccountByAddress(parseAddress(address));
-	return (account && account.address === address);
+	const account = await getCachedAccountByAddress(parseAddress(address));
+	return account && account.address === address;
 };
 
 const confirmPublicKey = async publicKey => {
 	if (!publicKey || typeof publicKey !== 'string') return false;
-	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
-	return (account && account.publicKey === publicKey);
+	const account = await getCachedAccountByPublicKey(publicKey);
+	return account && account.publicKey === publicKey;
 };
 
 const confirmSecondPublicKey = async secondPublicKey => {
 	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
-	const account = await coreCache.getCachedAccountBySecondPublicKey(secondPublicKey);
-	return (account && account.secondPublicKey === secondPublicKey);
+	const account = await getCachedAccountBySecondPublicKey(secondPublicKey);
+	return account && account.secondPublicKey === secondPublicKey;
 };
 
 const confirmUsername = async username => {
 	if (!username || typeof username !== 'string') return false;
 	const result = await coreApi.getDelegates({ username });
 	if (!Array.isArray(result.data) || isEmptyArray(result.data)) return false;
-	return (result.data[0].username === username);
+	return result.data[0].username === username;
 };
 
 const confirmAnyId = async params => {
@@ -91,19 +94,19 @@ const confirmAnyId = async params => {
 };
 
 const getUsernameByAddress = async address => {
-	const account = await coreCache.getCachedAccountByAddress(parseAddress(address));
+	const account = await getCachedAccountByAddress(parseAddress(address));
 	return account && account.username;
 };
 
 const getAddressByPublicKey = async publicKey => {
 	if (!publicKey || typeof publicKey !== 'string') return '';
-	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
+	const account = await getCachedAccountByPublicKey(publicKey);
 	return account ? account.address : '';
 };
 
 const getAddressByUsername = async username => {
 	if (!username || typeof username !== 'string') return '';
-	const account = await coreCache.getCachedAccountByUsername(username);
+	const account = await getCachedAccountByUsername(username);
 	return account ? account.address : '';
 };
 
@@ -149,7 +152,7 @@ const getPublicKeyByUsername = async username => {
 
 const getPublicKeyByAny = async param => {
 	if (!param || typeof param !== 'string') return '';
-	if (validatePublicKey(param) && await confirmPublicKey(param)) return param;
+	if (validatePublicKey(param) && (await confirmPublicKey(param))) return param;
 	if (validateAddress(param)) return getPublicKeyByAddress(param);
 	return getPublicKeyByUsername(param);
 };
@@ -201,7 +204,7 @@ const getForgingStats = async address => {
 	}
 };
 
-const nop = () => { };
+const nop = () => {};
 const updateFinalizedHeight = () => null;
 const getPendingTransactions = () => ({ data: [], meta: {} });
 
@@ -251,4 +254,8 @@ module.exports = {
 	calculateWeightedAvg: nop,
 	updateFinalizedHeight,
 	getPendingTransactions,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
 };
