@@ -203,7 +203,7 @@ const getForgingStats = async address => {
 
 const nop = () => { };
 const updateFinalizedHeight = () => null;
-const getPendingTransactions = () => null;
+const getPendingTransactions = () => ({ data: [], meta: {} });
 
 module.exports = {
 	get: request,
