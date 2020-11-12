@@ -37,35 +37,12 @@ const getDelegates = async params => {
 	delete params.anyId;
 
 	const response = await CoreService.getDelegates(params);
-	const delegates = response.data;
-	const paramsArr = [
-		'address',
-		'publicKey',
-		'secondPublicKey',
-		'username',
-		'search',
-	];
 
-	const reqParams = Object.keys(params);
-
-	if (reqParams.some(e => paramsArr.includes(e))) {
-		if (Array.isArray(delegates)) {
-			response.meta.count = delegates.length;
-			response.meta.total = await getTotalNumberOfDelegates(params);
-		}
-	} else {
-		response.meta.count = response.meta.limit;
-		response.meta.total = await getTotalNumberOfDelegates();
-	}
-
-	if (isEmptyObject(response) || isEmptyArray(response.data)) {
-		return { status: NOT_FOUND, data: { error: 'Not found' } };
-	}
+	if (isEmptyObject(response) || isEmptyArray(response.data)) return { status: NOT_FOUND, data: { error: 'Not found' } };
 
 	return {
-		data: delegates,
+		data: response.data,
 		meta: response.meta,
-		links: response.links,
 	};
 };
 
@@ -82,7 +59,6 @@ const getActiveDelegates = async params => {
 		data: {
 			data: delegates,
 			meta: response.meta,
-			links: response.links,
 		},
 	};
 };
@@ -105,7 +81,6 @@ const getStandbyDelegates = async params => {
 		data: {
 			data: delegates,
 			meta: response.meta,
-			links: response.links,
 		},
 	};
 };
@@ -114,24 +89,9 @@ const getNextForgers = async params => {
 	const nextForgers = await CoreService.getNextForgers(params);
 	if (isEmptyObject(nextForgers)) return {};
 
-	const nextForgersData = nextForgers.data;
-
-	const ensureDelegatesArr = forgers => {
-		const promises = forgers.map(async forger => {
-			const delegates = await CoreService.getDelegates({
-				address: forger.address || forger.account.address,
-			});
-			return delegates.data[0];
-		});
-		return Promise.all(promises);
-	};
-
-	const delegates = await ensureDelegatesArr(nextForgersData);
-
 	return {
-		data: delegates,
+		data: nextForgers.data,
 		meta: nextForgers.meta,
-		links: nextForgers.links,
 	};
 };
 
@@ -159,7 +119,6 @@ const getLatestRegistrations = async params => {
 	return {
 		data: delegates,
 		meta: registrationsRes.meta,
-		links: registrationsRes.links,
 	};
 };
 
