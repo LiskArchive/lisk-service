@@ -33,7 +33,7 @@ module.exports = {
 			offset: '=,number',
 			total: '=,number',
 			address: '=,string',
-			publicKey: 'publickey,string',
+			publicKey: '=,string',
 			username: '=,string',
 		},
 		links: {},
