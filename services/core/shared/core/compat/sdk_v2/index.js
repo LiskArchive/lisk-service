@@ -38,6 +38,8 @@ const {
 	getNextForgers,
 } = require('./delegates');
 
+const { getVoters } = require('./voters');
+
 const { getNetworkStatus } = coreApi;
 
 const ObjectUtilService = Utils.Data;
@@ -227,7 +229,7 @@ module.exports = {
 	getIncomingTxsCount,
 	getOutgoingTxsCount,
 	getVotes: coreApi.getVotes,
-	getVoters: coreApi.getVoters,
+	getVoters,
 	getDelegates,
 	getForgingStats,
 	getNextForgers,
