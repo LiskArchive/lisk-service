@@ -13,29 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const voter = require('./mappings/voter');
+const {
+	getVoters,
+} = require('./controllers/voters');
 
-module.exports = {
-	type: 'moleculer',
-	method: 'core.voters',
-	params: {
-		address: '=,string',
-		username: '=,string',
-		publicKey: 'publickey,string',
-		secondPublicKey: 'secpubkey,string',
-		limit: '=,number',
-		offset: '=,number',
-	},
-	definition: {
-		data: ['data', voter],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-			address: '=,string',
-			publicKey: '=,string',
-			username: '=,string',
+module.exports = [
+	{
+		name: 'voters',
+		controller: getVoters,
+		params: {
+			anyId: { type: 'any', optional: true },
+			address: { type: 'any', optional: true },
+			username: { type: 'any', optional: true },
+			publicKey: { type: 'any', optional: true },
+			secondPublicKey: { type: 'any', optional: true },
+			limit: { type: 'any', optional: true },
+			offset: { type: 'any', optional: true },
 		},
-		links: {},
 	},
-};
+];
