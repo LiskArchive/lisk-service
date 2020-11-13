@@ -158,10 +158,19 @@ const getTransactionsStatistics = async ({
 const getTransactionsStatisticsDay = (params) => getTransactionsStatistics({ aggregateBy: 'day', ...params });
 const getTransactionsStatisticsMonth = (params) => getTransactionsStatistics({ aggregateBy: 'month', ...params });
 
+const getPendingTransactions = async params => {
+	const result = await CoreService.getPendingTransactions(params);
+	return {
+		data: result.data,
+		meta: result.meta,
+	};
+};
+
 module.exports = {
 	getTransactions,
 	getTransactionsByAddress,
 	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,
+	getPendingTransactions,
 };

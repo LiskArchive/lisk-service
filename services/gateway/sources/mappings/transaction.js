@@ -19,6 +19,7 @@ module.exports = {
 	fee: '=,string',
 	type: '=,number',
 	height: '=,number',
+	nonce: '=,string',
 	blockId: '=,string',
 	timestamp: 'unixTimestamp,number',
 	senderId: '=,string',

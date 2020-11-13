@@ -40,6 +40,7 @@ module.exports = [
 				core.setLastBlock(restData.data[0]);
 				signals.blockCached.dispatch(restData.data[0]);
 				core.reloadBlocks(numOfBlocks);
+				core.reloadAllPendingTransactions();
 				callback(restData.data[0]);
 			});
 		},

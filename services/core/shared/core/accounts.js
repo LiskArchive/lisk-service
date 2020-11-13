@@ -64,7 +64,6 @@ const resolveDelegateInfoByAddress = async accounts => {
 	await BluebirdPromise.map(
 		accounts.data, async account => {
 			if (account.isDelegate) {
-				// getDelegates takes care of retreive delegates from cache first
 				const delegateInfo = (await getDelegates({ address: account.address })).data[0];
 				account.delegate = delegateInfo;
 			}
@@ -111,7 +110,7 @@ const getAccounts = async params => {
 								compareResult = Number(a[sortProp]) - Number(b[sortProp]);
 							}
 						} catch (err) {
-							compareResult = a[sortProp].localCompare(b[sortProp]);
+							compareResult = a[sortProp].localeCompare(b[sortProp]);
 						}
 						return compareResult;
 					});
