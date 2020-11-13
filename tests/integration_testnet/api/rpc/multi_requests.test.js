@@ -19,18 +19,18 @@ import Joi from 'joi';
 // Imports
 import config from '../../config';
 import request from '../../helpers/socketIoRpcMultiRequest';
+import accountSchema from './schemas/account.schema';
+import blockSchema from './schemas/block.schema';
+import transactionSchema from './schemas/transaction.schema';
 
 // Schemas
-import {
+const {
 	jsonRpcEnvelopeSchema,
 	metaSchema,
 	invalidParamsSchema,
 	invalidRequestSchema,
 	wrongMethodSchema,
-} from './schemas/generics.schema';
-import accountSchema from './schemas/account.schema';
-import blockSchema from './schemas/block.schema';
-import transactionSchema from './schemas/transaction.schema';
+} = require('../../schemas/generics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
@@ -121,7 +121,7 @@ describe('Multi-Request API', () => {
 	it('returns data despite having a mix of correct and incorrect requests', async () => {
 		const response = await request(wsRpcUrl, [
 			{ jsonrpc: '2.0', method: 'get.transactions', params: { limit: 1 } },
-			{ jsonrpc: '2.0', method: 'wrong_method', params: { } },
+			{ jsonrpc: '2.0', method: 'wrong_method', params: {} },
 			{ jsonrpc: '2.0', method: 'get.accounts', params: { limit_wrong: 1 } },
 		]);
 
@@ -150,7 +150,7 @@ describe('Multi-Request API', () => {
 
 	it('fails on request without specified method', async () => {
 		const response = await request(wsRpcUrl, [
-			{ jsonrpc: '2.0', params: { } },
+			{ jsonrpc: '2.0', params: {} },
 		]);
 
 		expect(response).toHaveLength(1);

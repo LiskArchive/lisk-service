@@ -19,16 +19,16 @@ import to from 'await-to-js';
 import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 
-// Schemas
-import {
-	metaSchema,
-	invalidRequestSchema,
-} from './schemas/generics.schema';
-
 // Sample data
 import accounts from './constants/accounts';
 import blocks from './constants/blocks';
 import transactions from './constants/transactions';
+
+// Schemas
+const {
+	metaSchema,
+	invalidRequestSchema,
+} = require('../../schemas/generics.schema');
 
 const searchItemSchema = Joi.object({
 	score: Joi.number().required(),

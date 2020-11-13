@@ -20,10 +20,11 @@ import request from '../../helpers/socketIoRpcRequest';
 import block from './constants/blocks';
 
 import blockSchema from './schemas/block.schema';
-import {
+
+const {
 	invalidParamsSchema,
 	emptyResponseSchema,
-} from './schemas/generics.schema';
+} = require('../../schemas/generics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);

@@ -20,12 +20,12 @@ import config from '../../config';
 import peerSchema from '../../schemas/peer.schema';
 import request from '../../helpers/socketIoRpcRequest';
 
-import {
+const {
 	invalidParamsSchema,
 	emptyEnvelopeSchema,
 	jsonRpcEnvelopeSchema,
 	envelopeSchema,
-} from './schemas/generics.schema';
+} = require('../../schemas/generics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 const requestPeers = async params => request(wsRpcUrl, 'get.peers', params);

@@ -17,11 +17,12 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import delegates from './constants/delegates';
-import {
+
+const {
 	envelopeSchema,
 	emptyEnvelopeSchema,
 	invalidParamsSchema,
-} from './schemas/generics.schema';
+} = require('../../schemas/generics.schema');
 
 const {
 	metaSchema,

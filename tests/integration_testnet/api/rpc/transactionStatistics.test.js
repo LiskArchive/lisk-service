@@ -24,9 +24,9 @@ import {
 	timelineItemSchema,
 } from '../../schemas/transactionStatistics.schema';
 
-import {
+const {
 	invalidParamsSchema,
-} from './schemas/generics.schema';
+} = require('../../schemas/generics.schema');
 
 const { badRequestSchema } = require('../../helpers/schemas/general');
 

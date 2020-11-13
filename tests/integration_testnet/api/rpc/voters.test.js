@@ -15,15 +15,15 @@
  */
 import Joi from 'joi';
 
-import {
+import request from '../../helpers/socketIoRpcRequest';
+import config from '../../config';
+
+const {
 	envelopeSchema,
 	emptyEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-} from './schemas/generics.schema';
-
-import request from '../../helpers/socketIoRpcRequest';
-import config from '../../config';
+} = require('../../schemas/generics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 

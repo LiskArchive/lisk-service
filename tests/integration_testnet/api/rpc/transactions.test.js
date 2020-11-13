@@ -18,14 +18,14 @@ import request from '../../helpers/socketIoRpcRequest';
 import { transaction } from './constants/transactions';
 import { block } from './constants/blocks';
 
-import {
+import transactionSchema from './schemas/transaction.schema';
+
+const {
 	envelopeSchema,
 	emptyEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-} from './schemas/generics.schema';
-
-import transactionSchema from './schemas/transaction.schema';
+} = require('../../schemas/generics.schema');
 
 const { goodRequestSchema } = require('../../helpers/schemas/general');
 

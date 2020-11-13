@@ -18,12 +18,12 @@ import request from '../../helpers/socketIoRpcRequest';
 import config from '../../config';
 
 // Schemas
-import {
+const {
 	envelopeSchema,
 	emptyEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-} from './schemas/generics.schema';
+} = require('../../schemas/generics.schema');
 
 const { goodRequestSchema } = require('../../helpers/schemas/general');
 

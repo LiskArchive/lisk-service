@@ -18,12 +18,13 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 
 import { JSON_RPC } from '../../helpers/errorCodes';
-import {
+
+const {
 	envelopeSchema,
 	emptyEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-} from './schemas/generics.schema';
+} = require('../../schemas/generics.schema');
 
 const { delegateSchema } = require('../../helpers/schemas/delegate');
 
