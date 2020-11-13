@@ -30,9 +30,10 @@ const { goodRequestSchema } = require('../../helpers/schemas/general');
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
 const votesSchema = Joi.array().items(Joi.object({
-	address: Joi.string(),
-	balance: Joi.string(),
-	publicKey: Joi.string(),
+	address: Joi.string().required(),
+	amount: Joi.string().optional(),
+	balance: Joi.string().required(),
+	publicKey: Joi.string().required(),
 	username: Joi.string(),
 }).required()).required();
 
