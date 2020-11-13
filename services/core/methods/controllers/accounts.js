@@ -16,7 +16,7 @@
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
-const { isEmptyArray, isEmptyObject } = Utils.Data;
+const { isEmptyArray } = Utils.Data;
 
 const CoreService = require('../../shared/core');
 const config = require('../../config');
