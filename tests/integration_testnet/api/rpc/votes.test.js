@@ -24,6 +24,7 @@ import {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } from './schemas/generics.schema';
+
 const { goodRequestSchema } = require('../../helpers/schemas/general');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
