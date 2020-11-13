@@ -35,6 +35,8 @@ const {
     getMultisignatureMemberships,
 } = require('./accounts');
 
+const { getVoters } = require('./voters');
+
 module.exports = {
     ...require('../sdk_v2'),
     getBlocks,
@@ -48,4 +50,5 @@ module.exports = {
     getPendingTransactions,
     getMultisignatureGroups,
     getMultisignatureMemberships,
+    getVoters,
 };

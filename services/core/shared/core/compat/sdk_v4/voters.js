@@ -13,12 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const coreApi = require('./compat');
+const coreApi = require('./coreApi');
 
 const getVoters = async params => {
-	const response = await coreApi.getVoters(params);
-
-	return response;
+	const voters = await coreApi.getVoters(params);
+	return voters;
 };
 
 module.exports = {
