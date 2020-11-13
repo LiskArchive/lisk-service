@@ -14,26 +14,29 @@
  *
  */
 const {
-    getTransactions,
-    getPendingTransactions,
-} = require('./transactions');
-const {
     getDelegates,
     getNextForgers,
 } = require('./delegates');
+
 const {
-    mapToOriginal,
-} = require('./reverseMappings');
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('../sdk_v3');
+    getTransactions,
+    getPendingTransactions,
+} = require('./transactions');
+
 const {
     getAccounts,
     getMultisignatureGroups,
     getMultisignatureMemberships,
 } = require('./accounts');
+
+const { mapToOriginal } = require('./reverseMappings');
+const { getVotes } = require('./votes');
+
+const {
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
+} = require('../sdk_v3');
 
 module.exports = {
     ...require('../sdk_v2'),
@@ -48,4 +51,5 @@ module.exports = {
     getPendingTransactions,
     getMultisignatureGroups,
     getMultisignatureMemberships,
+    getVotes,
 };

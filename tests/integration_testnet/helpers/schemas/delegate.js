@@ -16,23 +16,6 @@
 
 import Joi from 'joi';
 
-export const goodRequestSchema = Joi.object({
-	data: Joi.array().required(),
-	meta: Joi.object().required(),
-}).required();
-
-export const metaSchema = Joi.object({
-	count: Joi.number().required(),
-	offset: Joi.number().required(),
-	total: Joi.number().required(),
-}).required();
-
-export const badRequestSchema = Joi.object({
-	jsonrpc: Joi.string().required(),
-	code: Joi.number().required(),
-	message: Joi.string().required(),
-}).required();
-
 const pomHeightSchema = Joi.object({
 	start: Joi.string().required(),
 	end: Joi.string().required(),

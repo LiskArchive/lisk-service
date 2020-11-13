@@ -17,7 +17,6 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { transaction } from './constants/transactions';
 import { block } from './constants/blocks';
-import { goodRequestSchema } from '../../helpers/schemas';
 
 import {
 	envelopeSchema,
@@ -27,6 +26,8 @@ import {
 } from './schemas/generics.schema';
 
 import transactionSchema from './schemas/transaction.schema';
+
+const { goodRequestSchema } = require('../../helpers/schemas/general');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
