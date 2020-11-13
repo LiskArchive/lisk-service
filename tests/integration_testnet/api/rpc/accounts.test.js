@@ -13,40 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
 import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import accounts from './constants/accounts';
-import {
-	invalidParamsSchema,
-	emptyEnvelopeSchema,
-	jsonRpcEnvelopeSchema,
-} from './schemas/generics.schema';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
-const accountSchema = Joi.object({
-	address: Joi.string().required(),
-	publicKey: Joi.string().required(),
-	secondPublicKey: Joi.string().allow('').required(),
-	balance: Joi.string().required(),
-	delegate: Joi.object(),
-	knowledge: Joi.object(),
-	multisignatureAccount: Joi.object(),
-	transactionCount: Joi.object(),
-});
+const {
+	invalidParamsSchema,
+	emptyEnvelopeSchema,
+	jsonRpcEnvelopeSchema,
+} = require('../../schemas/generics.schema');
 
-const delegateSchema = Joi.object({
-	approval: Joi.number(),
-	missedBlocks: Joi.number(),
-	producedBlocks: Joi.number(),
-	productivity: Joi.string(),
-	rank: Joi.number(),
-	username: Joi.string(),
-	vote: Joi.string(),
-	rewards: Joi.string(),
-}).required();
+const {
+	accountSchema,
+	delegateSchema,
+} = require('../../schemas/account.schema');
 
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 

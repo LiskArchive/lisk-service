@@ -15,7 +15,7 @@
  */
 
 import Joi from 'joi';
-import { JSON_RPC } from '../../../helpers/errorCodes';
+import { JSON_RPC } from '../helpers/errorCodes';
 
 export const invalidParamsSchema = Joi.object({
 	jsonrpc: Joi.string().equal('2.0'),
