@@ -15,6 +15,8 @@
  */
 const coreApi = require('./coreApi');
 
+const maxVotesPerAccount = 10;
+
 const getVotes = async params => {
 	const votes = await coreApi.getVotes(params);
 	votes.data.votes = votes.data.votes.map(vote => {
@@ -25,6 +27,8 @@ const getVotes = async params => {
 
 		return vote;
 	});
+	votes.data.votesUsed = maxVotesPerAccount - votes.data.votesAvailable;
+
 	return votes;
 };
 
