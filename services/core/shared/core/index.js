@@ -48,6 +48,10 @@ const {
 } = require('./peers');
 
 const {
+	getVoters,
+} = require('./voters');
+
+const {
 	EMAcalc,
 	getEstimateFeeByte,
 	getEstimateFeeByteCoreLogic,
@@ -81,7 +85,6 @@ const {
 	getIncomingTxsCount,
 	getOutgoingTxsCount,
 	getVotes,
-	getVoters,
 	getForgingStats,
 	getNetworkStatus,
 	getNetworkConstants,
