@@ -15,17 +15,7 @@
  */
 import Joi from 'joi';
 
-const feeSchema = {
-	send: Joi.string().required(),
-	vote: Joi.string().required(),
-	secondSignature: Joi.string().required(),
-	delegate: Joi.string().required(),
-	multisignature: Joi.string().required(),
-	dappRegistration: Joi.string().required(),
-	dappWithdrawal: Joi.string().required(),
-};
-
-const networkStatusSchema = {
+const networkSearchSchema = {
 	broadhash: Joi.string().required(),
 	height: Joi.number().required(),
 	networkHeight: Joi.number().required(),
@@ -37,6 +27,15 @@ const networkStatusSchema = {
 	fees: Joi.object(feeSchema).required(),
 };
 
+// "results": [
+// 	{
+// 		"score": 0.82,
+// 		"description": "genesis_10",
+// 		"id": "1864409191503661202L",
+// 		"type": "address"
+// 	}
+// ],
+
 module.exports = {
-	networkStatusSchema: Joi.object(networkStatusSchema),
+	networkSearchSchema: Joi.object(networkSearchSchema),
 }

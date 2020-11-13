@@ -15,19 +15,15 @@
  */
 import Joi from 'joi';
 
-const basicNetworkStatisticsSchema = {
-	connectedPeers: Joi.number().required(),
-	disconnectedPeers: Joi.number().required(),
-	totalPeers: Joi.number().required(),
-};
 
-const networkStatisticsSchema = {
-	basic: Joi.object(basicNetworkStatisticsSchema).required(),
-	height: Joi.object().required(), // TODO: Check if generic "string: number" validation possible?
-	coreVer: Joi.object().required(),
-	os: Joi.object().required(),
+const voterSchema = {
+	address: Joi.string().required(),
+	amount: Joi.string().optional(),
+	publicKey: Joi.string().required(),
+	balance: Joi.number().required(),
+	username: Joi.string().required(),
 };
 
 module.exports = {
-	networkStatisticsSchema: Joi.object(networkStatisticsSchema),
+	voterSchema: Joi.object(voterSchema),
 };

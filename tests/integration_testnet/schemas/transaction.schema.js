@@ -16,24 +16,29 @@
 
 import Joi from 'joi';
 
-const transactionSchema = Joi.object({
-	amount: Joi.string().required(),
-	asset: Joi.object().required(),
-	blockId: Joi.string().required(),
-	confirmations: Joi.number().required(),
-	fee: Joi.string().required(),
-	height: Joi.number().required(),
+const transactionSchema = {
 	id: Joi.string().required(),
-	recipientId: Joi.string().allow('').required(),
-	recipientPublicKey: Joi.string().allow('').required(),
+	amount: Joi.string().required(),
+	fee: Joi.string().required(),
+	type: Joi.number().required(), // TODO: Add validation
+	height: Joi.number().required(),
+	blockId: Joi.string().required(),
+	timestamp: Joi.number().required(), // TODO: Add validation
 	senderId: Joi.string().required(),
 	senderPublicKey: Joi.string().required(),
+	senderSecondPublicKey: Joi.string().optional(),
+	recipientId: Joi.string().allow('').required(),
+	recipientPublicKey: Joi.string().allow('').required(),
 	signature: Joi.string().required(),
 	signSignature: Joi.string().optional(),
-	signatures: Joi.array().required(),
-	timestamp: Joi.number().required(),
-	type: Joi.number().required(),
-	senderSecondPublicKey: Joi.string(),
-}).required();
+	signatures: Joi.array().items(Joi.string().required()).required(),
+	confirmations: Joi.number().required(), // TODO: Add validation - min 1
+	asset: Joi.object().required(),
+	receivedAt: Joi.string().optional(), // TODO: Add validation
+	relays: Joi.number().optional(),
+	ready: Joi.boolean().optional(),
+};
 
-module.exports = transactionSchema;
+module.exports = {
+	transactionSchema: Joi.object(transactionSchema),
+};

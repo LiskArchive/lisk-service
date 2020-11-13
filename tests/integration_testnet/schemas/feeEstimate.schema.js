@@ -15,12 +15,20 @@
  */
 import Joi from 'joi';
 
-const feeSchema = Joi.object({
+const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object({
 		low: Joi.number().required(),
 		medium: Joi.number().required(),
 		high: Joi.number().required(),
 	}).required(),
-}).required();
+};
 
-export default feeSchema;
+export const metaSchema = { // TODO: Verify and update swagger
+	"updated": Joi.string().required(),
+	"blockHeight": Joi.number().required(),
+};
+
+module.exports = {
+	feeEstimateSchema: Joi.object(feeEstimateSchema),
+	metaSchema: Joi.object(metaSchema),
+};

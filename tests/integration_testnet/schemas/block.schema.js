@@ -13,29 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-
 import Joi from 'joi';
 
-const blockSchema = Joi.object({
-	height: Joi.number().required(),
+const blockSchema = {
 	id: Joi.string().required(),
+	height: Joi.number().required(),
 	version: Joi.number().required(),
+	timestamp: Joi.number().required(),
 	payloadLength: Joi.number().required(),
 	generatorAddress: Joi.string().required(),
 	generatorPublicKey: Joi.string().required(),
 	generatorUsername: Joi.string().required(),
-	numberOfTransactions: Joi.number().required(),
-	reward: Joi.string().required(),
-	timestamp: Joi.number().required(),
-	totalAmount: Joi.string().required(),
-	totalFee: Joi.string().required(),
-	totalForged: Joi.string().required(),
 	payloadHash: Joi.string().required(),
 	blockSignature: Joi.string().required(),
 	confirmations: Joi.number().required(),
 	previousBlockId: Joi.string().required(),
-	isFinal: Joi.boolean().optional(),
-});
+	numberOfTransactions: Joi.number().required(),
+	totalAmount: Joi.string().required(),
+	totalFee: Joi.string().required(),
+	reward: Joi.string().required(),
+	totalForged: Joi.string().required(),
+	isFinal: Joi.boolean().required(),
+};
 
-module.exports = blockSchema;
+module.exports = {
+	blockSchema: Joi.object(blockSchema),
+};

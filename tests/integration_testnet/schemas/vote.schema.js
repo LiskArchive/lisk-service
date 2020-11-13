@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,18 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 import Joi from 'joi';
 
-const accountSchema = Joi.object({
+const voteSchema = {
 	address: Joi.string().required(),
+	amount: Joi.string().optional(),
 	publicKey: Joi.string().required(),
-	secondPublicKey: Joi.string().allow('').required(),
-	balance: Joi.string().required(),
-	delegate: Joi.object(),
-	knowledge: Joi.object(),
-	multisignatureAccount: Joi.object(),
-	transactionCount: Joi.object(),
-});
+	balance: Joi.number().required(),
+	username: Joi.string().required(),
+};
 
-module.exports = accountSchema;
+module.exports = {
+	voteSchema: Joi.object(voteSchema),
+};

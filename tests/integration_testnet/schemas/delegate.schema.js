@@ -15,15 +15,20 @@
  */
 import Joi from 'joi';
 
-const networkStatisticsSchema = Joi.object({
-	basic: Joi.object({
-		totalPeers: Joi.number().required(),
-		connectedPeers: Joi.number().required(),
-		disconnectedPeers: Joi.number().required(),
-	}).required(),
-	coreVer: Joi.object().required(),
-	height: Joi.object().required(),
-	os: Joi.object().required(),
-}).required();
+const delegateSchema = {
+	address: Joi.string().required(),
+	approval: Joi.string().required(),
+	missedBlocks: Joi.number().required(),
+	producedBlocks: Joi.number().required(),
+	productivity: Joi.string().required(),
+	publicKey: Joi.string().required(),
+	secondPublicKey: Joi.string().required(),
+	rank: Joi.number().required(),
+	rewards: Joi.string().required(),
+	username: Joi.string().required(),
+	vote: Joi.string().required(),
+};
 
-export default networkStatisticsSchema;
+module.exports = {
+	delegateSchema: Joi.object(delegateSchema),
+};
