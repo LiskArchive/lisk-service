@@ -61,7 +61,7 @@ const transactionCountSchema = {
 
 const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema;
 
-const accountSchema = Joi.object({
+const accountSchema = {
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),
 	secondPublicKey: Joi.string().allow('').required(),
@@ -74,9 +74,9 @@ const accountSchema = Joi.object({
 	transactionCount: Joi.object(transactionCountSchema).required(),
 	unconfirmedMultisignatureMemberships: Joi.array()
 		.items(unconfirmedMultisignatureMembershipSchema).optional(),
-});
+};
 
 module.exports = {
-	accountSchema,
+	accountSchema: Joi.object(accountSchema),
 	delegateSchema: Joi.object(delegateSchema),
 };
