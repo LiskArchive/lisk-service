@@ -18,13 +18,14 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 
 import { JSON_RPC } from '../../helpers/errorCodes';
-import { delegateSchema } from '../../helpers/schemas';
 import {
 	envelopeSchema,
 	emptyEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } from './schemas/generics.schema';
+
+const { delegateSchema } = require('../../helpers/schemas/delegate');
 
 const nextForgersDataSchema = Joi.array().items(delegateSchema).required();
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;

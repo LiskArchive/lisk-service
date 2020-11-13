@@ -18,15 +18,19 @@ import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 import delegates from './constants/delegates';
 import {
-	delegateSchema,
-	delegateListSchema,
-	metaSchema,
-} from '../../helpers/schemas';
-import {
 	envelopeSchema,
 	emptyEnvelopeSchema,
 	invalidParamsSchema,
 } from './schemas/generics.schema';
+
+const {
+	metaSchema,
+} = require('../../helpers/schemas/general');
+
+const {
+	delegateSchema,
+	delegateListSchema,
+} = require('../../helpers/schemas/delegate');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 

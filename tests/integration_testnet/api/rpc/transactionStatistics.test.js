@@ -17,7 +17,6 @@ import moment from 'moment';
 
 import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
-import { badRequestSchema } from '../../helpers/schemas';
 import {
 	goodRequestSchema,
 	dataSchema,
@@ -28,6 +27,8 @@ import {
 import {
 	invalidParamsSchema,
 } from './schemas/generics.schema';
+
+const { badRequestSchema } = require('../../helpers/schemas/general');
 
 describe('get.transactions.statistics.{aggregateBy}', () => {
 	const baseMethod = 'get.transactions.statistics';
