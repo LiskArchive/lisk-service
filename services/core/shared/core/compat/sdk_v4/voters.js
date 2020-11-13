@@ -20,21 +20,21 @@ const { getDelegates } = require('./delegates');
 
 const getVoters = async params => {
     const voters = await coreApi.getVoters(params);
-    voters.data.voters = await BluebirdPromise.map(
-		voters.data.voters,
-		async vote => {
-            if (voters.data.address === vote.address) {
-                vote.balance = voters.data.balance;
-                vote.username = voters.data.username;
-            } else {
-                const voteInfo = await getDelegates({ address: vote.address }).data[0];
-                vote.balance = voteInfo.balance;
-                vote.username = voteInfo.username;
-            }
-			return vote;
-		},
-		{ concurrency: voters.data.voters.length },
-	);
+    // voters.data.voters = await BluebirdPromise.map(
+	// 	voters.data.voters,
+	// 	async vote => {
+    //         if (voters.data.address === vote.address) {
+    //             vote.balance = voters.data.balance;
+    //             vote.username = voters.data.username;
+    //         } else {
+    //             const voteInfo = await getDelegates({ address: vote.address }).data[0];
+    //             vote.balance = voteInfo.balance;
+    //             vote.username = voteInfo.username;
+    //         }
+	// 		return vote;
+	// 	},
+	// 	{ concurrency: voters.data.voters.length },
+	// );
 	return voters;
 };
 
