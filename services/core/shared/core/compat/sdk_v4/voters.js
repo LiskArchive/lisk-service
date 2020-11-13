@@ -27,10 +27,15 @@ const getVoters = async params => {
                 vote.balance = voters.data.balance;
                 vote.username = voters.data.username;
             } else {
-                const voteInfo = await getDelegates({ address: vote.address }).data[0];
-                vote.balance = voteInfo.balance;
-                vote.username = voteInfo.username;
+                const voterInfo = await getDelegates({ address: vote.address }).data[0];
+                vote.balance = voterInfo.balance;
+                vote.username = voterInfo.username;
             }
+            const voteAmount = vote.votes.map(item => {
+                if (voters.data.address === item.delegateAddress) return Number(item.amount);
+                return null;
+            });
+            vote.amount = voteAmount.reduce((a, b) => a + b);
 			return vote;
 		},
 		{ concurrency: voters.data.voters.length },
