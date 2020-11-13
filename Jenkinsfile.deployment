@@ -2,7 +2,7 @@
 pipeline {
 	agent none
 	stages {
-		stage('Build docker images') {
+		stage('Build docker images (testnet)') {
 			agent { node { label 'lisk-service-dev' } }
 			when { branch 'development' }
 			steps {
@@ -24,6 +24,14 @@ pipeline {
 						sh 'make -f Makefile.deployment up'
 					}
 				}
+			}
+		}
+		stage('Build docker images (alphanet)') {
+			agent { node { label 'lisk-service-dev-v4' } }
+			when { branch 'development' }
+			steps {
+				sh 'make build-core'
+				sh 'make build-gateway'
 			}
 		}
 		stage('Deploy lisk-service (alphanet)') {
