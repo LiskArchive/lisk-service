@@ -138,5 +138,4 @@ const getVoters = async params => {
 module.exports = {
 	getAccounts,
 	getTopAccounts,
-	getVoters,
 };
