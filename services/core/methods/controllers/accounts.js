@@ -130,13 +130,8 @@ const getVoters = async params => {
 	if (isEmptyObject(response)) return {};
 
 	return {
-		data: response.data.voters,
-		meta: {
-			limit: response.meta.limit,
-			offset: response.meta.offset,
-			total: response.data.votes,
-			count: response.data.voters.length,
-		},
+		data: response.data,
+		meta: response.meta,
 	};
 };
 
