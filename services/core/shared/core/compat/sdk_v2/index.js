@@ -15,17 +15,16 @@
  */
 const { Utils } = require('lisk-service-framework');
 
+const coreApi = require('./coreApi');
+
+const { request } = require('./request');
+const { setCoreVersion } = require('./coreVersionCompatibility');
 const {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
 	getCachedAccountBySecondPublicKey,
 	getCachedAccountByUsername,
 } = require('./coreCache');
-const coreApi = require('./coreApi');
-
-const { request } = require('./request');
-
-const { setCoreVersion } = require('./coreVersionCompatibility');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const {
@@ -37,6 +36,7 @@ const {
 	getDelegates,
 	getNextForgers,
 } = require('./delegates');
+const { getVotes } = require('./votes');
 
 const { getVoters } = require('./voters');
 
@@ -200,7 +200,7 @@ const getForgingStats = async address => {
 	}
 };
 
-const nop = () => {};
+const nop = () => { };
 const updateFinalizedHeight = () => null;
 const getPendingTransactions = () => ({ data: [], meta: {} });
 
@@ -228,7 +228,7 @@ module.exports = {
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
 	getOutgoingTxsCount,
-	getVotes: coreApi.getVotes,
+	getVotes,
 	getVoters,
 	getDelegates,
 	getForgingStats,

@@ -13,25 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('./blocks');
 
-const {
-    getDelegates,
-    getNextForgers,
-} = require('./delegates');
+import Joi from 'joi';
 
-const { getVotes } = require('./votes');
+export const goodRequestSchema = Joi.object({
+	data: Joi.array().required(),
+	meta: Joi.object().required(),
+}).required();
 
-module.exports = {
-    ...require('../sdk_v2'),
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getDelegates,
-    getNextForgers,
-    getVotes,
-};
+export const metaSchema = Joi.object({
+	count: Joi.number().required(),
+	offset: Joi.number().required(),
+	total: Joi.number().required(),
+}).required();
+
+export const badRequestSchema = Joi.object({
+	jsonrpc: Joi.string().required(),
+	code: Joi.number().required(),
+	message: Joi.string().required(),
+}).required();

@@ -13,25 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('./blocks');
+const coreApi = require('./coreApi');
 
-const {
-    getDelegates,
-    getNextForgers,
-} = require('./delegates');
+const maxVotesPerAccount = 10;
 
-const { getVotes } = require('./votes');
+const getVotes = async params => {
+	const votes = await coreApi.getVotes(params);
+	votes.data.votes = votes.data.votes.map(vote => {
+		vote.address = vote.delegateAddress;
+		vote.balance = vote.amount;
+		vote.publicKey = null;
+		vote.username = vote.delegate.username;
+
+		return vote;
+	});
+	votes.data.votesUsed = maxVotesPerAccount - votes.data.votesAvailable;
+
+	return votes;
+};
 
 module.exports = {
-    ...require('../sdk_v2'),
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getDelegates,
-    getNextForgers,
-    getVotes,
+	getVotes,
 };

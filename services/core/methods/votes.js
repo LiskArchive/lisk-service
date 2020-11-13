@@ -14,24 +14,21 @@
  *
  */
 const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('./blocks');
+	getVotes,
+} = require('./controllers/votes');
 
-const {
-    getDelegates,
-    getNextForgers,
-} = require('./delegates');
-
-const { getVotes } = require('./votes');
-
-module.exports = {
-    ...require('../sdk_v2'),
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getDelegates,
-    getNextForgers,
-    getVotes,
-};
+module.exports = [
+	{
+		name: 'votes',
+		controller: getVotes,
+		params: {
+			anyId: { type: 'any', optional: true },
+			address: { type: 'any', optional: true },
+			username: { type: 'any', optional: true },
+			publicKey: { type: 'any', optional: true },
+			secondPublicKey: { type: 'any', optional: true },
+			limit: { type: 'any', optional: true },
+			offset: { type: 'any', optional: true },
+		},
+	},
+];

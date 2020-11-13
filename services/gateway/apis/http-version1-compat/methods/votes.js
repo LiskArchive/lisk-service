@@ -15,11 +15,11 @@
  */
 const votesSource = require('../../../sources/votes');
 const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const { transformParams, response } = require('../../http-version1/swagger/utils');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/votes_sent',
+	swaggerApiPath: '/votes',
 	rpcMethod: 'get.votes',
 	tags: ['Accounts'],
 	envelope,
