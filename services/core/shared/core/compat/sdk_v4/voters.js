@@ -35,7 +35,7 @@ const getVoters = async params => {
                 if (voters.data.address === item.delegateAddress) return Number(item.amount);
                 return null;
             });
-            vote.amount = voteAmount.reduce((a, b) => a + b);
+            vote.amount = voteAmount.reduce((a, b) => a + b).toString();
 			return vote;
 		},
 		{ concurrency: voters.data.voters.length },

@@ -19,6 +19,7 @@ const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyObject } = Utils.Data;
 
 const CoreService = require('../../shared/core');
+
 const getVoters = async params => {
 	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
