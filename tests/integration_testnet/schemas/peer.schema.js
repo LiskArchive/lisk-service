@@ -15,12 +15,14 @@
  */
 import Joi from 'joi';
 
+const allowedPeerStateNames = ['connected', 'disconnected '];
+
 const locationSchema = {
-	city: Berlin,
-	countryCode: Joi.string().optional(), // TODO: Add validation
-	countryName: Joi.string().optional(), // TODO: Add validation
+	city: Joi.string().required(),
+	countryCode: Joi.string().length(2).optional(),
+	countryName: Joi.string().optional(),
 	hostname: Joi.string().optional(),
-	ip: Joi.string().ip().optional(),
+	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).optional(),
 	latitude: Joi.string().optional(), // TODO: Add validation
 	longitude: Joi.string().optional(), // TODO: Add validation
 	regionCode: Joi.string().optional(),
@@ -30,13 +32,13 @@ const locationSchema = {
 };
 
 const peerSchema = {
-	ip: Joi.string().ip().required(),
+	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).required(),
 	httpPort: Joi.number().port().optional(),
 	wsPort: Joi.number().port().optional(),
 	os: Joi.string().optional(),
-	version: Joi.string().required(), // TODO: Add validation
-	state: Joi.number().required(), // TODO: Add validation
-	stateName: Joi.string().required(), // TODO: Add validation
+	version: Joi.string().required(),
+	state: Joi.number().min(0).max(2).integer().required(),
+	stateName: Joi.string().valid(...allowedPeerStateNames).required(),
 	height: Joi.number().optional(),
 	broadhash: Joi.string().optional(),
 	nonce: Joi.string().optional(),
