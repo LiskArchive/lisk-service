@@ -16,17 +16,7 @@
 const coreApi = require('./coreApi');
 
 const getVoters = async params => {
-	const voters = {
-		data: [],
-		meta: {},
-	};
-	const response = await coreApi.getVoters(params);
-	voters.data = response.data.voters;
-    voters.meta = {
-		count: response.data.voters.length,
-		offset: response.meta.offset,
-		total: response.data.voteCount,
-	};
+	const voters = await coreApi.getVoters(params);
 	return voters;
 };
 

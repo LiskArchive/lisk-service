@@ -19,39 +19,23 @@ const coreApi = require('./coreApi');
 const { getDelegates } = require('./delegates');
 
 const getVoters = async params => {
-    const voters = {
-		data: [],
-		meta: {},
-	};
-    const response = await coreApi.getVoters(params);
-    response.data.voters = await BluebirdPromise.map(
-		response.data.voters,
+    const voters = await coreApi.getVoters(params);
+    voters.data.voters = await BluebirdPromise.map(
+		voters.data.voters,
 		async voter => {
-            if (response.data.address === voter.address) {
-                voter = {
-                    ...voter, balance: response.data.balance, username: response.data.username,
-                };
+            if (voters.data.address === voter.address) {
+                voter = { ...voter, balance: voters.data.balance, username: voters.data.username };
             } else {
-                const voterInfo = await getDelegates({ address: voter.address }).data[0];
+                const voterInfo = (await getDelegates({ address: voter.address })).data[0];
                 voter = { ...voter, balance: voterInfo.balance, username: voterInfo.username };
             }
             const voteAmount = voter.votes.map(item => {
-                if (response.data.address === item.delegateAddress) return Number(item.amount);
+                if (voters.data.address === item.delegateAddress) return Number(item.amount);
                 return null;
             });
             voter.amount = voteAmount.reduce((a, b) => a + b).toString();
 			return voter;
-		}, { concurrency: response.data.voters.length });
-    voters.data = response.data.voters;
-    voters.meta = {
-		limit: response.meta.limit,
-		count: response.data.voters.length,
-		offset: response.meta.offset,
-		total: response.data.voteCount,
-		address: response.data.address,
-		publicKey: response.data.publicKey,
-		username: response.data.username,
-	};
+		}, { concurrency: voters.data.voters.length });
 	return voters;
 };
 
