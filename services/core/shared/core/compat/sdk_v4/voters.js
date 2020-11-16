@@ -18,6 +18,8 @@ const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const { getAccounts } = require('./accounts');
 
+const resolveAmount = (amount) => Number(amount) || 0;
+
 const getVoters = async (params) => {
 	const voters = await coreApi.getVoters(params);
 	voters.data.voters = await BluebirdPromise.map(
@@ -40,7 +42,7 @@ const getVoters = async (params) => {
 			}
 			voter.amount = voter.votes
 				.filter((vote) => vote.delegateAddress === voters.data.address)
-				.reduce((a, b) => Number(a.amount) || 0 + Number(b.amount) || 0, 0)
+				.reduce((a, b) => resolveAmount(a.amount) + resolveAmount(b.amount), 0)
 				.toString();
 			return voter;
 		},
