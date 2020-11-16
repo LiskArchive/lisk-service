@@ -16,8 +16,19 @@
 const coreApi = require('./coreApi');
 
 const getVoters = async params => {
-	const votes = await coreApi.getVoters(params);
-	return votes;
+	const voters = {
+		data: [],
+		meta: {},
+	};
+	const response = await coreApi.getVoters(params);
+	voters.data = response.data.voters;
+    voters.meta = {
+		limit: response.meta.limit,
+		count: response.data.voters.length,
+		offset: response.meta.offset,
+		total: response.data.voteCount,
+	};
+	return voters;
 };
 
 module.exports = {
