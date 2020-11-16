@@ -13,25 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getBlocks,
-	updateFinalizedHeight,
-	getFinalizedHeight,
-} = require('./blocks');
+const coreApi = require('./compat');
 
-const { getDelegates, getNextForgers } = require('./delegates');
-
-const { getVotes } = require('./votes');
-
-const { getVoters } = require('./voters');
+const getVoters = async params => {
+	const voters = {
+		data: [],
+		meta: {},
+	};
+	const response = await coreApi.getVoters(params);
+	voters.data = response.data.voters;
+	voters.meta = {
+		limit: response.meta.limit,
+		count: response.data.voters.length,
+		offset: response.meta.offset,
+		total: response.data.voteCount,
+		address: response.data.address,
+		publicKey: response.data.publicKey,
+		username: response.data.username,
+	};
+	return voters;
+};
 
 module.exports = {
-	...require('../sdk_v2'),
-	getBlocks,
-	updateFinalizedHeight,
-	getFinalizedHeight,
-	getDelegates,
-	getNextForgers,
-	getVotes,
 	getVoters,
 };

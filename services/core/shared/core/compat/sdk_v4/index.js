@@ -31,7 +31,7 @@ const {
 
 const { mapToOriginal } = require('./reverseMappings');
 const { getVotes } = require('./votes');
-
+const { getVoters } = require('./voters');
 const {
     getBlocks,
     updateFinalizedHeight,
@@ -52,4 +52,5 @@ module.exports = {
     getMultisignatureGroups,
     getMultisignatureMemberships,
     getVotes,
+    getVoters,
 };
