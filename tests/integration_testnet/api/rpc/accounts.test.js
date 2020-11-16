@@ -13,11 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import config from '../../config';
-import request from '../../helpers/socketIoRpcRequest';
-import accounts from './constants/accounts';
-
-const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+const config = require('../../config');
+const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -32,9 +29,17 @@ const {
 	delegateSchema,
 } = require('../../schemas/account.schema');
 
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 
 describe('Method get.accounts', () => {
+	let delegate;
+	beforeAll(async () => {
+		const response = await request(wsRpcUrl, 'get.delegates', { limit: 1 });
+		[delegate] = response.result.data;
+	});
+
 	describe('is able to retrieve account lists', () => {
 		it('returns account details with no params', async () => {
 			const response = await getAccounts({});
@@ -48,22 +53,22 @@ describe('Method get.accounts', () => {
 
 	describe('is able to retrieve account based on address', () => {
 		it('returns account details on known address', async () => {
-			const response = await getAccounts({ address: accounts.genesis.address });
+			const response = await getAccounts({ address: delegate.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(account => expect(account)
-				.toMap(accountSchema, { address: accounts.genesis.address }));
+				.toMap(accountSchema, { address: delegate.address }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('returns account details when known address is written lowercase', async () => {
-			const response = await getAccounts({ address: accounts.genesis.address.toLowerCase() });
+			const response = await getAccounts({ address: delegate.address.toLowerCase() });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(account => expect(account)
-				.toMap(accountSchema, { address: accounts.genesis.address }));
+				.toMap(accountSchema, { address: delegate.address }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -87,12 +92,12 @@ describe('Method get.accounts', () => {
 
 	describe('is able to retrieve account based on public key', () => {
 		it('returns account details on known public key', async () => {
-			const response = await getAccounts({ publickey: accounts.genesis.publicKey });
+			const response = await getAccounts({ publickey: delegate.publicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(account => expect(account)
-				.toMap(accountSchema, { address: accounts.genesis.address }));
+				.toMap(accountSchema, { address: delegate.address }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -130,24 +135,24 @@ describe('Method get.accounts', () => {
 
 	describe('is able to retrieve delegate account details', () => {
 		it('returns delegate data by address', async () => {
-			const response = await getAccounts({ address: accounts.delegate.address });
+			const response = await getAccounts({ address: delegate.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(account => {
-				expect(account).toMap(accountSchema, { address: accounts.delegate.address });
+				expect(account).toMap(accountSchema, { address: delegate.address });
 				expect(account.delegate).toMap(delegateSchema);
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('returns delegate data by delegate name', async () => {
-			const response = await getAccounts({ username: accounts.delegate.delegate.username });
+			const response = await getAccounts({ username: delegate.username });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(account => {
-				expect(account).toMap(accountSchema, { address: accounts.delegate.address });
+				expect(account).toMap(accountSchema, { address: delegate.address });
 				expect(account.delegate).toMap(delegateSchema);
 			});
 			expect(result.meta).toMap(metaSchema);

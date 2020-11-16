@@ -28,7 +28,7 @@ const request = (endpoint, method, params) => new Promise((resolve) => {
 	});
 });
 
-export const api = {
+const api = {
 	get: async (...args) => {
 		const [error, response] = await to(request(...args));
 		if (error) {
@@ -39,4 +39,7 @@ export const api = {
 	getJsonRpcV1: (...args) => api.get(wsRpcUrl, ...args),
 };
 
-export default request;
+module.exports = {
+	api,
+	request,
+};
