@@ -27,13 +27,14 @@ const { validate } = require('./paramValidator');
 const apiMeta = [];
 
 const configureApi = (apiNames, apiPrefix) => {
+	const allMethods = {};
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
 		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
 
 		return curlyBracketsToColon(dropSlash(url));
 	};
-	const allMethods = {};
+
 	apiNames.map(apiName => {
 		Object.assign(
 			allMethods,
@@ -51,30 +52,21 @@ const configureApi = (apiNames, apiPrefix) => {
 		return { ...acc, [key]: method };
 	}, {});
 
-	const whitelist = Object.keys(methods).reduce(
-		(acc, key) => [...acc, methods[key].source.method],
-		[],
-	);
+	const whitelist = Object.keys(methods).reduce((acc, key) => [
+		...acc, methods[key].source.method,
+	], []);
 
-	const aliases = Object.keys(methods).reduce(
-		(acc, key) => ({
-			...acc,
-			[`${transformPath(methods[key].rpcMethod)}`]: methods[key].source.method,
-		}),
-		{},
-	);
+	const aliases = Object.keys(methods).reduce((acc, key) => ({
+		...acc, [`${transformPath(methods[key].rpcMethod)}`]: methods[key].source.method,
+	}), {});
 
-	const methodPaths = Object.keys(methods).reduce(
-		(acc, key) => ({
-			...acc,
-			[`${transformPath(methods[key].rpcMethod)}`]: methods[key],
-		}),
-		{},
-	);
+	const methodPaths = Object.keys(methods).reduce((acc, key) => ({
+		...acc, [`${transformPath(methods[key].rpcMethod)}`]: methods[key],
+	}), {});
 
 	const meta = {
 		apiPrefix,
-		routes: Object.keys(methods).map((m) => ({
+		routes: Object.keys(methods).map(m => ({
 			path: methods[m].rpcMethod,
 			params: Object.keys(methods[m].params || {}),
 			response: {
@@ -96,7 +88,7 @@ const typeMappings = {
 };
 
 const convertType = (item, type) => {
-	const typeMatch = `${typeof item}_${type}`;
+	const typeMatch = `${(typeof item)}_${type}`;
 	if (typeMappings[typeMatch]) return typeMappings[typeMatch](item);
 	return item;
 };
@@ -127,27 +119,19 @@ const transformParams = (params = {}, specs) => {
 };
 
 const registerApi = (apiNames, config) => {
-	const { aliases, whitelist, methodPaths } = configureApi(
-		apiNames,
-		config.path,
-	);
+	const { aliases, whitelist, methodPaths } = configureApi(apiNames, config.path);
 
 	const transformRequest = (apiPath, params) => {
 		try {
 			const paramDef = methodPaths[apiPath].source.params;
 			const transformedParams = transformParams(params, paramDef);
 			return transformedParams;
-		} catch (e) {
-			return params;
-		}
+		} catch (e) { return params; }
 	};
 
 	const transformResponse = async (apiPath, data) => {
 		if (!methodPaths[apiPath]) return data;
-		const transformedData = await mapper(
-			data,
-			methodPaths[apiPath].source.definition,
-		);
+		const transformedData = await mapper(data, methodPaths[apiPath].source.definition);
 		return {
 			...methodPaths[apiPath].envelope,
 			...transformedData,
@@ -160,43 +144,30 @@ const registerApi = (apiNames, config) => {
 				...config,
 
 				mappingPolicy: 'restrict',
-				whitelist: [...config.whitelist, ...whitelist],
+				whitelist: [
+					...config.whitelist,
+					...whitelist,
+				],
 				aliases: {
 					...config.aliases,
 					...aliases,
 				},
 
 				onBeforeCall: async (ctx, socket, request) => {
-					const paramReport = validate(
-						request.params,
-						methodPaths[request.method],
-					);
+					const paramReport = validate(request.params, methodPaths[request.method]);
 
 					if (paramReport.missing.length > 0) {
-						throw new MoleculerClientError({
-							code: INVALID_PARAMS[0],
-							message: `Missing parameter(s): ${paramReport.missing.join(
-								', ',
-							)}`,
-						});
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Missing parameter(s): ${paramReport.missing.join(', ')}` });
 					}
 
 					const unknownList = Object.keys(paramReport.unknown);
 					if (unknownList.length > 0) {
-						throw new MoleculerClientError({
-							code: INVALID_PARAMS[0],
-							message: `Unknown input parameter(s): ${unknownList.join(', ')}`,
-						});
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
 					}
 
 					const invalidList = paramReport.invalid;
 					if (invalidList.length > 0) {
-						throw new MoleculerClientError({
-							code: INVALID_PARAMS[0],
-							message: `Invalid input parameter values: ${invalidList
-								.map((o) => o.message)
-								.join(', ')}`,
-						});
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
 					}
 
 					request.params = transformRequest(request.method, request.params);
