@@ -20,23 +20,15 @@ import config from '../../config';
 
 const {
 	goodRequestSchema,
-	dataSchema,
-} = require('../../schemas/generics.schema');
+	invalidRequestSchema,
+	notFoundSchema,
+} = require('../../schemas/httpGenerics.schema');
 
 const {
 	timelineItemSchema,
+	dataSchema,
 	metaSchema,
 } = require('../../schemas/transactionStatistics.schema');
-
-const invalidRequestSchema = {
-	error: 'boolean',
-	message: 'string',
-};
-
-const notFoundSchema = {
-	error: 'boolean',
-	message: 'string',
-};
 
 xdescribe('Transaction statistics API', () => {
 	describe('GET /transactions/statistics/{aggregateBy}', () => {

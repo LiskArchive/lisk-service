@@ -15,6 +15,12 @@
  */
 import Joi from 'joi';
 
+const goodRequestSchema = {
+	data: Joi.object().required(),
+	meta: Joi.object().required(),
+	links: Joi.object().optional,
+};
+
 const badRequestSchema = {
 	error: Joi.boolean().required(),
 	message: Joi.string().required(),
@@ -26,6 +32,7 @@ const wrongInputParamSchema = badRequestSchema;
 
 module.exports = {
 	...require('./generics.schema'),
+	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 	badRequestSchema: Joi.object(badRequestSchema).required(),
 	notFoundSchema: Joi.object(notFoundSchema).required(),
 	wrongInputParamSchema: Joi.object(wrongInputParamSchema).required(),

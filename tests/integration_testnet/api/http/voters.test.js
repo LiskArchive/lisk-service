@@ -21,22 +21,19 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const accountEndpoint = `${baseUrlV1}/account`;
 
-const votersSchema = {
-	address: 'string',
-	balance: 'string',
-	publicKey: 'string',
-};
+const {
+	notFoundSchema,
+} = require('../../schemas/httpGenerics.schema');
 
-const notFoundSchema = {
-	error: 'boolean',
-	message: 'string',
-};
+const {
+	voterSchema,
+} = require('../../schemas/voter.schema');
 
 describe('Voters API', () => {
 	xdescribe('GET /account/{address}/voters', () => {
 		it('matches specific schema when requested existing account by account ID', async () => {
 			const response = await api.get(`${accountEndpoint}/2581762640681118072L/voters`);
-			expect(response.data[0]).toMapRequiredSchema(votersSchema);
+			expect(response.data[0]).toMap(voterSchema);
 		});
 
 		it('matches specific data when requested existing account by account ID', async () => {
@@ -57,34 +54,34 @@ describe('Voters API', () => {
 
 		it('matches specific schema when requested existing account by username', async () => {
 			const response = await api.get(`${accountEndpoint}/genesis_14/voters`);
-			expect(response.data[0]).toMapRequiredSchema(votersSchema);
+			expect(response.data[0]).toMap(voterSchema);
 		});
 
 		it('matches specific schema when requested existing account by public key', async () => {
 			const response = await api.get(`${accountEndpoint}/1af35b29ca515ff5b805a5e3a0ab8c518915b780d5988e76b0672a71b5a3be02/voters`);
-			expect(response.data[0]).toMapRequiredSchema(votersSchema);
+			expect(response.data[0]).toMap(voterSchema);
 		});
 
 		it('matches specific schema when requested existing account by account ID (explicit)', async () => {
 			const response = await api.get(`${accountEndpoint}/address:2581762640681118072L/voters`);
-			expect(response.data[0]).toMapRequiredSchema(votersSchema);
+			expect(response.data[0]).toMap(voterSchema);
 		});
 
 		it('matches specific schema when requested existing account by username (explicit)', async () => {
 			const response = await api.get(`${accountEndpoint}/username:genesis_14/voters`);
-			expect(response.data[0]).toMapRequiredSchema(votersSchema);
+			expect(response.data[0]).toMap(voterSchema);
 		});
 
 		it('matches specific schema when requested existing account by publickey (explicit)', async () => {
 			const response = await api.get(`${accountEndpoint}/publickey:1af35b29ca515ff5b805a5e3a0ab8c518915b780d5988e76b0672a71b5a3be02/voters`);
-			expect(response.data[0]).toMapRequiredSchema(votersSchema);
+			expect(response.data[0]).toMap(voterSchema);
 		});
 
 		it('results in NOT_FOUND (404) requested wrong address ', async () => {
 			const url = `${accountEndpoint}/999999999L/voters`;
 			const expectedStatus = 404;
 			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMapRequiredSchema(notFoundSchema);
+			expect(response).resolves.toMap(notFoundSchema);
 		});
 	});
 });
