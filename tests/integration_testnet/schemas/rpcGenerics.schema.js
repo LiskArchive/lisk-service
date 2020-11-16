@@ -16,7 +16,7 @@
 import Joi from 'joi';
 
 const { JSON_RPC } = require('../helpers/errorCodes');
-const { emptyEnvelopeSchema } = require('./generics.schema');
+const { emptyResultEnvelopeSchema } = require('./generics.schema');
 
 const jsonrpcVersion = '2.0';
 
@@ -57,7 +57,7 @@ const jsonRpcEnvelopeSchema = {
 
 const emptyResponseSchema = {
 	jsonrpc: jsonRPCSchema,
-	result: emptyEnvelopeSchema,
+	result: emptyResultEnvelopeSchema,
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 };
 

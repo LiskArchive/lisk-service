@@ -21,18 +21,18 @@ const metaSchema = {
 	total: Joi.number(), // TODO: Must be required??
 };
 
-const envelopeSchema = {
+const resultEnvelopeSchema = {
 	data: Joi.array().required(),
 	meta: metaSchema,
 };
 
-const emptyEnvelopeSchema = {
+const emptyResultEnvelopeSchema = {
 	data: Joi.array().length(0).required(),
 	meta: Joi.object().length(0).required(),
 };
 
 module.exports = {
 	metaSchema: Joi.object(metaSchema).required(),
-	envelopeSchema: Joi.object(envelopeSchema).required(),
-	emptyEnvelopeSchema: Joi.object(emptyEnvelopeSchema).required(),
+	resultEnvelopeSchema: Joi.object(resultEnvelopeSchema).required(),
+	emptyResultEnvelopeSchema: Joi.object(emptyResultEnvelopeSchema).required(),
 };
