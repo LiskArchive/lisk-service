@@ -20,7 +20,7 @@ const { transformParams, response } = require('../swagger/utils');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/votes_sent',
-	rpcMethod: 'get.votes',
+	rpcMethod: 'get.votes_sent',
 	tags: ['Accounts'],
 	envelope,
 	params: {
