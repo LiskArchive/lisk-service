@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const votesSource = require('../../../sources/votes');
+const votersSource = require('../../../sources/voters');
 const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const { transformParams, response } = require('../../http-version1/swagger/utils');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/votes_sent',
-	rpcMethod: 'get.votes_sent',
+	swaggerApiPath: '/voters',
+	rpcMethod: 'get.voters',
 	tags: ['Accounts'],
 	envelope,
 	params: {
@@ -32,11 +32,11 @@ module.exports = {
 		offset: { optional: true, min: 0, type: 'number' },
 	},
 	get schema() {
-		const votesSchema = {};
-		votesSchema[this.swaggerApiPath] = { get: {} };
-		votesSchema[this.swaggerApiPath].get.tags = this.tags;
-		votesSchema[this.swaggerApiPath].get.parameters = transformParams('votes', this.params);
-		votesSchema[this.swaggerApiPath].get.responses = {
+		const votersSchema = {};
+		votersSchema[this.swaggerApiPath] = { get: {} };
+		votersSchema[this.swaggerApiPath].get.tags = this.tags;
+		votersSchema[this.swaggerApiPath].get.parameters = transformParams('voters', this.params);
+		votersSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of votes',
 				schema: {
@@ -47,8 +47,8 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(votesSchema[this.swaggerApiPath].get.responses, response);
-		return votesSchema;
+		Object.assign(votersSchema[this.swaggerApiPath].get.responses, response);
+		return votersSchema;
 	},
-	source: votesSource,
+	source: votersSource,
 };
