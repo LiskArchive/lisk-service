@@ -22,11 +22,11 @@ const baseUrlV1 = `${baseUrl}/api/v1`;
 const accountEndpoint = `${baseUrlV1}/account`;
 
 const {
-	notFoundSchema
+	notFoundSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
-	voteSchema
+	voteSchema,
 } = require('../../schemas/vote.schema');
 
 describe('Votes API', () => {

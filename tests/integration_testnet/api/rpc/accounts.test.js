@@ -52,7 +52,8 @@ describe('Method get.accounts', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
-			result.data.forEach(account => expect(account).toMap(accountSchema, { address: accounts.genesis.address }));
+			result.data.forEach(account => expect(account)
+				.toMap(accountSchema, { address: accounts.genesis.address }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -61,7 +62,8 @@ describe('Method get.accounts', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
-			result.data.forEach(account => expect(account).toMap(accountSchema, { address: accounts.genesis.address }));
+			result.data.forEach(account => expect(account)
+				.toMap(accountSchema, { address: accounts.genesis.address }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -89,7 +91,8 @@ describe('Method get.accounts', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
-			result.data.forEach(account => expect(account).toMap(accountSchema, { address: accounts.genesis.address }));
+			result.data.forEach(account => expect(account)
+				.toMap(accountSchema, { address: accounts.genesis.address }));
 			expect(result.meta).toMap(metaSchema);
 		});
 

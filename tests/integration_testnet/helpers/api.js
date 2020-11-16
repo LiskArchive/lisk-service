@@ -3,7 +3,7 @@ import axios from 'axios';
 const handleError = (error, expectedStatusCode) => {
 	if (error.response) {
 		if (error.response.status !== expectedStatusCode) {
-			throw new Error(`Status code: ${error.response.status} 
+			throw new Error(`Status code: ${error.response.status}
 			\n${JSON.stringify(error.response.data, null, 2)}`);
 		}
 		return error.response.data;
@@ -13,7 +13,7 @@ const handleError = (error, expectedStatusCode) => {
 
 const handleResponse = (response, expectedStatusCode = 200) => {
 	if (response.status === expectedStatusCode) return response.data;
-	throw new Error(`Status code: ${response.response.status} 
+	throw new Error(`Status code: ${response.response.status}
 	\n${JSON.stringify(response.response.data, null, 2)}`);
 };
 
@@ -32,4 +32,6 @@ const api = {
 		.catch(error => handleError(error, expectedStatusCode)),
 };
 
-export default api;
+module.exports = {
+	api,
+};

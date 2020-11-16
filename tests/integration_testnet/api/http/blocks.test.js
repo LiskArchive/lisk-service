@@ -37,7 +37,7 @@ describe('Blocks API', () => {
 	let delegate;
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrlV1}/delegates?limit=1`);
-		delegate = response.data[0];
+		[delegate] = response.data;
 	});
 
 	describe('GET /blocks', () => {

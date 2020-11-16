@@ -14,8 +14,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const api = require('../../helpers/api');
 const config = require('../../config');
+const { api } = require('../../helpers/api');
 
 const {
 	goodRequestSchema,
@@ -38,7 +38,7 @@ describe('Accounts API', () => {
 	let delegate;
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrlV1}/delegates?limit=1`);
-		delegate = response.data[0];
+		[delegate] = response.data;
 	});
 
 	describe('Retrieve account list', () => {
@@ -135,14 +135,16 @@ describe('Accounts API', () => {
 	});
 
 	describe('Retrieve account list by second public key', () => {
-		xit('known address by second public key', async () => {
-			const url = `${endpoint}?secpubkey=${accounts['second passphrase account'].secondPublicKey}`;
-			const expectedStatus = 200;
-			const response = await api.get(url, expectedStatus);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data.length).toEqual(1);
-			response.data.forEach(account => expect(account).toMap(accountSchema));
-			expect(response.meta).toMap(metaSchema);
+		it('known address by second public key', async () => {
+			if (delegate.secondPublicKey) {
+				const url = `${endpoint}?secpubkey=${delegate.secondPublicKey}`;
+				const expectedStatus = 200;
+				const response = await api.get(url, expectedStatus);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data.length).toEqual(1);
+				response.data.forEach(account => expect(account).toMap(accountSchema));
+				expect(response.meta).toMap(metaSchema);
+			}
 		});
 	});
 
