@@ -13,61 +13,80 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 import Joi from 'joi';
 import { JSON_RPC } from '../helpers/errorCodes';
 
-export const invalidParamsSchema = Joi.object({
+const badRequestSchema = {
+	error: Joi.boolean().required(),
+	message: Joi.string().required(),
+};
+
+const notFoundSchema = badRequestSchema;
+
+const invalidParamsSchema = {
 	jsonrpc: Joi.string().equal('2.0'),
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 	error: {
 		code: Joi.number().required().equal(JSON_RPC.INVALID_PARAMS[0]),
 		message: Joi.string().required(),
 	},
-});
+};
 
-export const invalidRequestSchema = Joi.object({
+const invalidRequestSchema = {
 	jsonrpc: Joi.string().equal('2.0'),
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 	error: {
 		code: Joi.number().required().equal(JSON_RPC.INVALID_REQUEST[0]),
 		message: Joi.string().required(),
 	},
-});
+};
 
-export const wrongMethodSchema = Joi.object({
+const wrongMethodSchema = {
 	jsonrpc: Joi.string().equal('2.0'),
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 	error: {
 		code: Joi.number().required().equal(JSON_RPC.METHOD_NOT_FOUND[0]),
 		message: Joi.string().required(),
 	},
-});
+};
 
-export const metaSchema = Joi.object({
+const metaSchema = {
 	count: Joi.number(),
 	total: Joi.number(),
 	offset: Joi.number(),
-}).required();
+};
 
-export const envelopeSchema = Joi.object({
+const envelopeSchema = {
 	data: Joi.array().required(),
 	meta: metaSchema,
-}).required();
+};
 
-export const emptyEnvelopeSchema = Joi.object({
+const emptyEnvelopeSchema = {
 	data: Joi.array().required(),
 	meta: Joi.object().required(),
-}).required();
+};
 
-export const jsonRpcEnvelopeSchema = Joi.object({
+const jsonRpcEnvelopeSchema = {
 	jsonrpc: Joi.string().equal('2.0'),
 	result: Joi.object().required(),
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
-}).required();
+};
 
-export const emptyResponseSchema = Joi.object({
+const emptyResponseSchema = {
 	jsonrpc: Joi.string().equal('2.0'),
 	result: emptyEnvelopeSchema,
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
-}).required();
+};
+
+module.exports = {
+	badRequestSchema: Joi.object(badRequestSchema).required(),
+	notFoundSchema: Joi.object(notFoundSchema).required(),
+	envelopeSchema: Joi.object(envelopeSchema).required(),
+	metaSchema: Joi.object(metaSchema).required(),
+	invalidParamsSchema: Joi.object(invalidParamsSchema).required(),
+	invalidRequestSchema: Joi.object(invalidRequestSchema).required(),
+	wrongMethodSchema: Joi.object(wrongMethodSchema).required(),
+	emptyEnvelopeSchema: Joi.object(emptyEnvelopeSchema).required(),
+	jsonRpcEnvelopeSchema: Joi.object(jsonRpcEnvelopeSchema).required(),
+	emptyResponseSchema: Joi.object(emptyResponseSchema).required(),
+};

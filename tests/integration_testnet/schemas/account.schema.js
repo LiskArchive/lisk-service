@@ -61,11 +61,23 @@ const transactionCountSchema = {
 
 const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema;
 
+const unlockingHeightSchema = {
+	start: Joi.number().required,
+	end: Joi.number().required,
+};
+
+const unlockingItemSchema = {
+	amount: Joi.string().required(),
+	height: Joi.object(unlockingHeightSchema).required,
+	delegateAddress: Joi.string().required(),
+};
+
 const accountSchema = {
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),
 	secondPublicKey: Joi.string().allow('').required(),
 	balance: Joi.string().required(),
+	nonce: Joi.string().optional(),
 	delegate: Joi.object(delegateSchema).optional(),
 	knowledge: Joi.object(knowledgeSchema).optional(),
 	multisignatureAccount: Joi.object(multisignatureAccountSchema).optional(),
@@ -74,9 +86,10 @@ const accountSchema = {
 	transactionCount: Joi.object(transactionCountSchema).required(),
 	unconfirmedMultisignatureMemberships: Joi.array()
 		.items(unconfirmedMultisignatureMembershipSchema).optional(),
+	unlocking: Joi.array().items(unlockingItemSchema).optional(),
 };
 
 module.exports = {
-	accountSchema: Joi.object(accountSchema),
-	delegateSchema: Joi.object(delegateSchema),
+	accountSchema: Joi.object(accountSchema).required(),
+	delegateSchema: Joi.object(delegateSchema).required(),
 };
