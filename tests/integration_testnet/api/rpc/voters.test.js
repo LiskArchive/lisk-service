@@ -34,7 +34,7 @@ const votersSchema = Joi.array().items(Joi.object({
 	username: Joi.string(),
 }).required()).required();
 
-const getVoters = async params => request(wsRpcUrl, 'get.voters', params);
+const getVoters = async params => request(wsRpcUrl, 'get.votes_received', params);
 
 describe('get.voters', () => {
 	[
