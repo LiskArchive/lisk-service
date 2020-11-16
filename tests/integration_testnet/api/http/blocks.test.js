@@ -34,11 +34,11 @@ const {
 } = require('../../schemas/block.schema');
 
 describe('Blocks API', () => {
-	let block;
-	let delegate;
+	let refBlock;
+	let refDelegate;
 	beforeAll(async () => {
-		[block] = (await api.get(`${endpoint}?limit=1`)).data;
-		[delegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
+		[refBlock] = (await api.get(`${endpoint}?limit=1`)).data;
+		[refDelegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
 	});
 
 	describe('GET /blocks', () => {
@@ -51,7 +51,7 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by block ID -> ok', async () => {
-			const response = await api.get(`${endpoint}?id=${block.id}`);
+			const response = await api.get(`${endpoint}?id=${refBlock.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
 			response.data.forEach(block => expect(block).toMap(blockSchema));
@@ -68,31 +68,31 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by account -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.address}`);
+			const response = await api.get(`${endpoint}?address=${refDelegate.address}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchema);
-				expect(block.generatorAddress).toEqual(delegate.address);
+				expect(block.generatorAddress).toEqual(refDelegate.address);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known block by publickey -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.publicKey}`);
+			const response = await api.get(`${endpoint}?address=${refDelegate.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchema);
-				expect(block.generatorPublicKey).toEqual(delegate.publicKey);
+				expect(block.generatorPublicKey).toEqual(refDelegate.publicKey);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known block by username -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegate.username}`);
+			const response = await api.get(`${endpoint}?address=${refDelegate.username}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchema);
-				expect(block.generatorUsername).toEqual(delegate.username);
+				expect(block.generatorUsername).toEqual(refDelegate.username);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
