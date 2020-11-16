@@ -31,7 +31,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
 
-xdescribe('Method get.blocks', () => {
+describe('Method get.blocks', () => {
 	describe('is able to retireve block lists', () => {
 		it.todo('no params -> ok');
 
@@ -123,7 +123,7 @@ xdescribe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block lists by account username', () => {
-		xit('known block by username -> ok', async () => {
+		it('known block by username -> ok', async () => {
 			const { result } = await getBlocks({ address: 'genesis_71' });
 			result.data.forEach((blockData) => {
 				expect(blockData).toMap(blockSchema, { generatorUsername: 'genesis_71' });

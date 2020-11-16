@@ -24,7 +24,7 @@ const {
 	invalidParamsSchema,
 	emptyEnvelopeSchema,
 	jsonRpcEnvelopeSchema,
-} = require('../../schemas/generics.schema');
+} = require('../../schemas/rpcGenerics.schema');
 
 const {
 	accountSchema,
