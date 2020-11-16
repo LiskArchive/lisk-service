@@ -48,6 +48,9 @@ export const metaSchema = Joi.object({
 	count: Joi.number(),
 	total: Joi.number(),
 	offset: Joi.number(),
+	address: Joi.string().optional(),
+	publicKey: Joi.string().optional(),
+	username: Joi.string().optional(),
 }).required();
 
 export const envelopeSchema = Joi.object({
