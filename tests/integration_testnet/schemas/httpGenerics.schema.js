@@ -18,7 +18,7 @@ import Joi from 'joi';
 const goodRequestSchema = {
 	data: Joi.object().required(),
 	meta: Joi.object().required(),
-	links: Joi.object().optional,
+	links: Joi.object().optional(),
 };
 
 const badRequestSchema = {
