@@ -20,8 +20,10 @@ const { emptyEnvelopeSchema } = require('./generics.schema');
 
 const jsonrpcVersion = '2.0';
 
+const jsonRPCSchema = Joi.string().equal(jsonrpcVersion).required();
+
 const invalidParamsSchema = {
-	jsonrpc: Joi.string().equal(jsonrpcVersion),
+	jsonrpc: jsonRPCSchema,
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 	error: {
 		code: Joi.number().required().equal(JSON_RPC.INVALID_PARAMS[0]),
@@ -30,7 +32,7 @@ const invalidParamsSchema = {
 };
 
 const invalidRequestSchema = {
-	jsonrpc: Joi.string().equal(jsonrpcVersion),
+	jsonrpc: jsonRPCSchema,
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 	error: {
 		code: Joi.number().required().equal(JSON_RPC.INVALID_REQUEST[0]),
@@ -39,7 +41,7 @@ const invalidRequestSchema = {
 };
 
 const wrongMethodSchema = {
-	jsonrpc: Joi.string().equal(jsonrpcVersion),
+	jsonrpc: jsonRPCSchema,
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 	error: {
 		code: Joi.number().required().equal(JSON_RPC.METHOD_NOT_FOUND[0]),
@@ -48,13 +50,13 @@ const wrongMethodSchema = {
 };
 
 const jsonRpcEnvelopeSchema = {
-	jsonrpc: Joi.string().equal(jsonrpcVersion),
+	jsonrpc: jsonRPCSchema,
 	result: Joi.object().required(),
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 };
 
 const emptyResponseSchema = {
-	jsonrpc: Joi.string().equal(jsonrpcVersion),
+	jsonrpc: jsonRPCSchema,
 	result: emptyEnvelopeSchema,
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 };

@@ -16,9 +16,9 @@
 import Joi from 'joi';
 
 const metaSchema = {
-	count: Joi.number(),
-	total: Joi.number(),
-	offset: Joi.number(),
+	count: Joi.number().required(),
+	offset: Joi.number().required(),
+	total: Joi.number(), // TODO: Must be required??
 };
 
 const envelopeSchema = {
@@ -27,8 +27,8 @@ const envelopeSchema = {
 };
 
 const emptyEnvelopeSchema = {
-	data: Joi.array().required(),
-	meta: Joi.object().required(),
+	data: Joi.array().length(0).required(),
+	meta: Joi.object().length(0).required(),
 };
 
 module.exports = {
