@@ -24,14 +24,14 @@ const endpoint = `${baseUrlV1}/accounts`;
 const accountEndpoint = `${baseUrlV1}/account`;
 
 const {
+	badRequestSchema,
+	notFoundSchema,
+} = require('../../schemas/httpGenerics.schema');
+
+const {
 	accountSchema,
 	delegateSchema,
 } = require('../../schemas/account.schema');
-
-const {
-	badRequestSchema,
-	notFoundSchema,
-} = require('../../schemas/generics.schema');
 
 describe('Accounts API', () => {
 	describe('Retrieve account list', () => {
