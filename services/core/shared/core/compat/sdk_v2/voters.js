@@ -23,7 +23,6 @@ const getVoters = async params => {
 	const response = await coreApi.getVoters(params);
 	voters.data = response.data.voters;
     voters.meta = {
-		limit: response.meta.limit,
 		count: response.data.voters.length,
 		offset: response.meta.offset,
 		total: response.data.voteCount,
