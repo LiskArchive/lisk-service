@@ -24,8 +24,8 @@ const defaultConfig = {
 const filterApis = (requiredApis, availableApis) => {
 	const filteredApis = {};
 
-	const requiredPaths = requiredApis.split(',').map((path) => '/'.concat(path));
-	Object.keys(availableApis).forEach((key) => {
+	const requiredPaths = requiredApis.split(',').map(path => '/'.concat(path));
+	Object.keys(availableApis).forEach(key => {
 		if (requiredPaths.includes(key)) filteredApis[key] = availableApis[key]();
 	});
 

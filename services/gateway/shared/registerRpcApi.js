@@ -15,9 +15,7 @@
  */
 const {
 	Utils,
-	Constants: {
-		JSON_RPC: { INVALID_PARAMS },
-	},
+	Constants: { JSON_RPC: { INVALID_PARAMS } },
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
@@ -29,14 +27,14 @@ const { validate } = require('./paramValidator');
 const apiMeta = [];
 
 const configureApi = (apiNames, apiPrefix) => {
-	const transformPath = (url) => {
-		const dropSlash = (str) => str.replace(/^\//, '');
-		const curlyBracketsToColon = (str) => str.split('{').join(':').replace(/}/g, '');
+	const transformPath = url => {
+		const dropSlash = str => str.replace(/^\//, '');
+		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
 
 		return curlyBracketsToColon(dropSlash(url));
 	};
 	const allMethods = {};
-	apiNames.map((apiName) => {
+	apiNames.map(apiName => {
 		Object.assign(
 			allMethods,
 			Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
