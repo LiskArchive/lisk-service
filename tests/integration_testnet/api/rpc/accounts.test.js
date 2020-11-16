@@ -121,15 +121,13 @@ describe('Method get.accounts', () => {
 		});
 	});
 
-	xdescribe('is able to retrieve account based on second public key', () => {
+	describe('is able to retrieve account based on second public key', () => {
 		it('returns account details on known second public key', async () => {
-			const { result } = await getAccounts({
-				secpubkey: accounts['second passphrase account'].secondPublicKey,
-			});
-			expect(result.data.length).toEqual(1);
-			expect(result.data[0]).toMap(accountSchema, {
-				address: accounts['second passphrase account'].address,
-			});
+			if (delegate.secondPublicKey) {
+				const { result } = await getAccounts({ secpubkey: delegate.secondPublicKey });
+				expect(result.data.length).toEqual(1);
+				expect(result.data[0]).toMap(accountSchema, { address: delegate.address });
+			}
 		});
 	});
 

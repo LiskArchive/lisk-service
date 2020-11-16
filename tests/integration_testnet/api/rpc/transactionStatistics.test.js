@@ -14,9 +14,9 @@
  *
  */
 import moment from 'moment';
-
-import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
+
+const { api } = require('../../helpers/socketIoRpcRequest');
 
 const {
 	goodRequestSchema,

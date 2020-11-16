@@ -13,8 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import { api } from '../../helpers/socketIoRpcRequest';
 import networkStatusSchema from '../../schemas/networkStatus.schema';
+
+const { api } = require('../../helpers/socketIoRpcRequest');
 
 const requestNetworkStatus = async params => api.getJsonRpcV1('get.network.status', params);
 

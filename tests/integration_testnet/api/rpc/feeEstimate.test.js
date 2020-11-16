@@ -15,7 +15,7 @@
  */
 import Joi from 'joi';
 
-import { api } from '../../helpers/socketIoRpcRequest';
+const { api } = require('../../helpers/socketIoRpcRequest');
 
 const {
 	feeSchema,

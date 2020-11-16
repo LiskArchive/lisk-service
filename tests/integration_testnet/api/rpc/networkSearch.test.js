@@ -15,14 +15,14 @@
  */
 import Joi from 'joi';
 import to from 'await-to-js';
-
-import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 
 // Sample data
 import accounts from './constants/accounts';
 import blocks from './constants/blocks';
 import transactions from './constants/transactions';
+
+const { api } = require('../../helpers/socketIoRpcRequest');
 
 // Schemas
 const {

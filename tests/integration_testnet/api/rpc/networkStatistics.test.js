@@ -14,9 +14,9 @@
  *
  */
 import Joi from 'joi';
-
-import { api } from '../../helpers/socketIoRpcRequest';
 import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
+
+const { api } = require('../../helpers/socketIoRpcRequest');
 
 const goodRequestSchema = Joi.object({
 	data: Joi.object().required(),
