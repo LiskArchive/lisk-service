@@ -19,8 +19,8 @@ import { JSON_RPC } from '../../helpers/errorCodes';
 import delegates from './constants/delegates';
 
 const {
-	envelopeSchema,
-	emptyEnvelopeSchema,
+	resultEnvelopeSchema,
+	emptyResultEnvelopeSchema,
 	invalidParamsSchema,
 } = require('../../schemas/generics.schema');
 
@@ -41,7 +41,7 @@ describe('Method get.delegates', () => {
 	describe('returns delegates lists', () => {
 		it('returns top 10 delegates by default', async () => {
 			const { result } = await getDelegates();
-			expect(result).toMap(envelopeSchema);
+			expect(result).toMap(resultEnvelopeSchema);
 			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
 			expect(Object.keys(result.meta)).toEqual(Object.keys({ count: 10, offset: 0, total: 403 }));
 			expect(result.data).toMap(delegateListSchema.length(10));
@@ -51,7 +51,7 @@ describe('Method get.delegates', () => {
 			const limit = 100;
 			const total = 13;
 			const { result } = await getDelegates({ search: 'genesis_1', limit });
-			expect(result).toMap(envelopeSchema);
+			expect(result).toMap(resultEnvelopeSchema);
 			expect(result.meta).toMap(metaSchema, { count: total, offset: 0 });
 			expect(Object.keys(result.meta)).toEqual(Object.keys({ count: 10, offset: 0, total: 403 }));
 			expect(result.data).toMap(delegateListSchema.length(total));
@@ -61,7 +61,7 @@ describe('Method get.delegates', () => {
 			const limit = 10;
 			// const total = 13;
 			const { result } = await getDelegates({ search: 'genesis_1', limit });
-			expect(result).toMap(envelopeSchema);
+			expect(result).toMap(resultEnvelopeSchema);
 			expect(result.meta).toMap(metaSchema, { count: limit, offset: 0 });
 			expect(result.data).toMap(delegateListSchema.length(limit));
 		});
@@ -90,7 +90,7 @@ describe('Method get.delegates', () => {
 
 		it('returns empty data ([]) when invalid address', async () => {
 			const { result } = await getDelegates({ address: '412875216073141752800000' });
-			expect(result).toMap(emptyEnvelopeSchema);
+			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -102,7 +102,7 @@ describe('Method get.delegates', () => {
 
 		it('returns empty data ([]) on wrong username', async () => {
 			const response = await getDelegates({ username: 'genesis_510000000' });
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -114,7 +114,7 @@ describe('Method get.delegates', () => {
 
 		it('returns empty object ({}) on wrong delegate public key', async () => {
 			const response = await getDelegates({ publickey: '412875216073141752800000' });
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -133,7 +133,7 @@ describe('Method get.delegates', () => {
 
 		xit(`returns INVALID_PARAMS error (${JSON_RPC.INVALID_PARAMS[0]}) with empty limit ('')`, async () => {
 			const response = await getDelegates({ limit: '' }).catch(e => e);
-			expect(response).toMap(emptyEnvelopeSchema);
+			expect(response).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 });

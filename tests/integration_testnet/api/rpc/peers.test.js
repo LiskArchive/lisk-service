@@ -22,9 +22,9 @@ import request from '../../helpers/socketIoRpcRequest';
 
 const {
 	invalidParamsSchema,
-	emptyEnvelopeSchema,
+	emptyResultEnvelopeSchema,
 	jsonRpcEnvelopeSchema,
-	envelopeSchema,
+	resultEnvelopeSchema,
 } = require('../../schemas/generics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
@@ -36,7 +36,7 @@ describe('get.peers', () => {
 	it('is able to receive data', async () => {
 		const response = await requestPeers({ state: 'connected' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(envelopeSchema);
+		expect(response.result).toMap(resultEnvelopeSchema);
 		expect(response.result.data).toMap(peerListSchema);
 	});
 
@@ -48,13 +48,13 @@ describe('get.peers', () => {
 	it('invalid IP string returns empty list', async () => {
 		const response = await requestPeers({ ip: '0' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('non-existent IP returns empty', async () => {
 		const response = await requestPeers({ ip: '256.256.256.256' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('non-existent HTTP port returns empty', async () => {
@@ -70,13 +70,13 @@ describe('get.peers', () => {
 	it('non-existent version returns empty', async () => {
 		const response = await requestPeers({ os: 'linux4.4.0-134-generic0000000' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('non-existent version fails', async () => {
 		const response = await requestPeers({ version: null });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('wrong state fails', async () => {
@@ -87,20 +87,20 @@ describe('get.peers', () => {
 	it('non-existent height returns empty', async () => {
 		const response = await requestPeers({ height: 1000000000 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('non-existent broadhash returns empty', async () => {
 		const response = await requestPeers({ broadhash: 'bf8b9d02a2167933be8c4a22b90992aee55204dca4452b3844208754a3baeb7b000000' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('valid limit and offset works', async () => {
 		const limit = 2;
 		const response = await requestPeers({ limit, offset: 3 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 		expect(response.result.data).toMap(peerListSchema.length(limit));
 	});
 
@@ -117,20 +117,20 @@ describe('get.peers', () => {
 	xit('invalid offset fails', async () => {
 		const response = await to(requestPeers({ state: 'connected', offset: null }));
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(envelopeSchema);
+		expect(response.result).toMap(resultEnvelopeSchema);
 		expect(response.result.data).toMap(peerListSchema);
 	});
 
 	it('big offset returns empty', async () => {
 		const response = await requestPeers({ offset: 1000000 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('empty sort returns data properly', async () => {
 		const response = await requestPeers({ state: 'connected', sort: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(envelopeSchema);
+		expect(response.result).toMap(resultEnvelopeSchema);
 		expect(response.result.data).toMap(peerListSchema);
 	});
 

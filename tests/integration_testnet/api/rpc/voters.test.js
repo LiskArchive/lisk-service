@@ -19,8 +19,8 @@ import request from '../../helpers/socketIoRpcRequest';
 import config from '../../config';
 
 const {
-	envelopeSchema,
-	emptyEnvelopeSchema,
+	resultEnvelopeSchema,
+	emptyResultEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../schemas/generics.schema');
@@ -51,7 +51,7 @@ describe('get.voters', () => {
 				const response = await getVoters(body);
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
-				expect(result).toMap(envelopeSchema);
+				expect(result).toMap(resultEnvelopeSchema);
 				expect(result.data).toMap(votersSchema);
 			});
 		});
@@ -59,7 +59,7 @@ describe('get.voters', () => {
 	it('returns empty response when called with unused address', async () => {
 		const response = await getVoters({ address: '999999999L' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('returns INVALID_PARAMS error (-32602) when called with invalid address', async () => {

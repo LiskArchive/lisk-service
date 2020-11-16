@@ -19,8 +19,8 @@ import { transaction } from './constants/transactions';
 import { block } from './constants/blocks';
 
 const {
-	envelopeSchema,
-	emptyEnvelopeSchema,
+	resultEnvelopeSchema,
+	emptyResultEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../schemas/generics.schema');
@@ -40,13 +40,13 @@ describe('Method get.transactions', () => {
 		it('known address -> ok', async () => {
 			const response = await requestTransactions({ address: transaction.recipientId });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(envelopeSchema);
+			expect(response.result).toMap(resultEnvelopeSchema);
 		});
 
 		it('invalid address -> empty response', async () => {
 			const response = await requestTransactions({ id: '000000000L' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -54,13 +54,13 @@ describe('Method get.transactions', () => {
 		it('known sender address -> ok', async () => {
 			const response = await requestTransactions({ sender: `address:${transaction.senderId}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(envelopeSchema);
+			expect(response.result).toMap(resultEnvelopeSchema);
 		});
 
 		it('invalid sender address -> empty response', async () => {
 			const response = await requestTransactions({ sender: 'address:000000000L' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -70,13 +70,13 @@ describe('Method get.transactions', () => {
 			expect(response.result.data[0])
 				.toMap(transactionSchema, { recipientId: transaction.recipientId });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(envelopeSchema);
+			expect(response.result).toMap(resultEnvelopeSchema);
 		});
 
 		it('invalid recipient address -> empty response', async () => {
 			const response = await requestTransactions({ recipient: '000000000L' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -84,20 +84,20 @@ describe('Method get.transactions', () => {
 		it('known transaction type -> ok', async () => {
 			const response = await requestTransactions({ type: `${transaction.type}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(envelopeSchema);
+			expect(response.result).toMap(resultEnvelopeSchema);
 			expect(response.result.data[0]).toMap(transactionSchema, { type: transaction.type });
 		});
 
 		it('invalid transaction type -> empty response', async () => {
 			const response = await requestTransactions({ type: '13' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 
 		it('empty transaction type -> invalid params', async () => {
 			const response = await requestTransactions({ type: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -106,19 +106,19 @@ describe('Method get.transactions', () => {
 			const response = await requestTransactions({ block: block.id });
 			expect(response.result.data[0]).toMap(transactionSchema, { blockId: block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(envelopeSchema);
+			expect(response.result).toMap(resultEnvelopeSchema);
 		});
 
 		it('invalid block -> empty response', async () => {
 			const response = await requestTransactions({ block: '1000000000000000000000000' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 
 		it('empty block ->  empty response', async () => {
 			const response = await requestTransactions({ block: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -127,7 +127,7 @@ describe('Method get.transactions', () => {
 			const response = await requestTransactions({ height: transaction.height });
 			expect(response.result.data[0]).toMap(transactionSchema, { height: transaction.height });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(envelopeSchema);
+			expect(response.result).toMap(resultEnvelopeSchema);
 		});
 
 		xit('invalid height -> empty response', async () => {
@@ -138,7 +138,7 @@ describe('Method get.transactions', () => {
 		it('empty height -> ', async () => {
 			const response = await requestTransactions({ height: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 
@@ -162,26 +162,26 @@ describe('Method get.transactions', () => {
 			const response = await requestTransactions({ id });
 			expect(response.result.data[0]).toMap(transactionSchema, { id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(envelopeSchema);
+			expect(response.result).toMap(resultEnvelopeSchema);
 		});
 
 		// To Do: current response => {}
 		it('long transaction id -> empty response', async () => {
 			const response = await requestTransactions({ id: '412875216073141752800000' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 
 		it('invalid transaction id -> empty response', async () => {
 			const response = await requestTransactions({ id: '41287' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 
 		it('empty transaction id -> empty response', async () => {
 			const response = await requestTransactions({ id: '' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
-			expect(response.result).toMap(emptyEnvelopeSchema);
+			expect(response.result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 });

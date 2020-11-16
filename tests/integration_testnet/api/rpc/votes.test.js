@@ -19,8 +19,8 @@ import config from '../../config';
 
 // Schemas
 const {
-	envelopeSchema,
-	emptyEnvelopeSchema,
+	resultEnvelopeSchema,
+	emptyResultEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../schemas/generics.schema');
@@ -54,7 +54,7 @@ describe('Method get.votes', () => {
 				const response = await getVotes(body);
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
-				expect(result).toMap(envelopeSchema);
+				expect(result).toMap(resultEnvelopeSchema);
 				expect(result.data).toMap(votesSchema);
 			});
 		});
@@ -67,7 +67,7 @@ describe('Method get.votes', () => {
 	it('returns empty response when called with unused address', async () => {
 		const response = await getVotes({ address: '999999999L' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('returns INVALID_PARAMS error (-32602) when called with invalid address', async () => {

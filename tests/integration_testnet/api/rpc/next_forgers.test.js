@@ -20,8 +20,8 @@ import request from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
 
 const {
-	envelopeSchema,
-	emptyEnvelopeSchema,
+	resultEnvelopeSchema,
+	emptyResultEnvelopeSchema,
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 } = require('../../schemas/generics.schema');
@@ -38,7 +38,7 @@ describe('Method get.next_forgers', () => {
 		const limit = 100;
 		const result = await getNextForgers({ limit });
 		expect(result).toMap(jsonRpcEnvelopeSchema);
-		expect(result.result).toMap(envelopeSchema);
+		expect(result.result).toMap(resultEnvelopeSchema);
 		expect(result.result.data).toMap(nextForgersDataSchema.length(limit));
 	});
 
@@ -46,7 +46,7 @@ describe('Method get.next_forgers', () => {
 		const limit = 10;
 		const result = await getNextForgers({ limit });
 		expect(result).toMap(jsonRpcEnvelopeSchema);
-		expect(result.result).toMap(envelopeSchema);
+		expect(result.result).toMap(resultEnvelopeSchema);
 		expect(result.result.data).toMap(nextForgersDataSchema.length(limit));
 	});
 
@@ -58,6 +58,6 @@ describe('Method get.next_forgers', () => {
 	it('returns empty response when limit is empty', async () => {
 		const response = await getNextForgers({ limit: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyEnvelopeSchema);
+		expect(response.result).toMap(emptyResultEnvelopeSchema);
 	});
 });
