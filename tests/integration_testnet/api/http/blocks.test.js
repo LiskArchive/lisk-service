@@ -17,8 +17,6 @@
 const config = require('../../config');
 const { api } = require('../../helpers/api');
 
-import block from './constants/blocks';
-
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/blocks`;
@@ -36,10 +34,11 @@ const {
 } = require('../../schemas/block.schema');
 
 describe('Blocks API', () => {
+	let block;
 	let delegate;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV1}/delegates?limit=1`);
-		[delegate] = response.data;
+		[block] = (await api.get(`${endpoint}?limit=1`)).data;
+		[delegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
 	});
 
 	describe('GET /blocks', () => {
