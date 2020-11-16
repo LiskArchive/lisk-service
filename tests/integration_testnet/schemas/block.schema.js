@@ -20,20 +20,20 @@ const blockSchema = {
 	height: Joi.number().required(),
 	version: Joi.number().required(),
 	timestamp: Joi.number().required(),
-	payloadLength: Joi.number().required(),
 	generatorAddress: Joi.string().required(),
 	generatorPublicKey: Joi.string().required(),
 	generatorUsername: Joi.string().required(),
+	payloadLength: Joi.number().required(),
 	payloadHash: Joi.string().required(),
 	blockSignature: Joi.string().required(),
-	confirmations: Joi.number().required(),
+	confirmations: Joi.number().min(1).required(),
 	previousBlockId: Joi.string().required(),
 	numberOfTransactions: Joi.number().required(),
 	totalAmount: Joi.string().required(),
 	totalFee: Joi.string().required(),
 	reward: Joi.string().required(),
 	totalForged: Joi.string().required(),
-	isFinal: Joi.boolean().required(),
+	isFinal: Joi.boolean().optional(),
 };
 
 module.exports = {
