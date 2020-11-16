@@ -14,18 +14,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import api from '../../helpers/api';
-import accounts from './constants/accounts';
-import config from '../../config';
-
-const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV1 = `${baseUrl}/api/v1`;
-const endpoint = `${baseUrlV1}/accounts`;
-const accountEndpoint = `${baseUrlV1}/account`;
+const api = require('../../helpers/api');
+const config = require('../../config');
 
 const {
+	goodRequestSchema,
 	badRequestSchema,
 	notFoundSchema,
+	metaSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
@@ -33,36 +29,43 @@ const {
 	delegateSchema,
 } = require('../../schemas/account.schema');
 
+const baseUrl = config.SERVICE_ENDPOINT;
+const baseUrlV1 = `${baseUrl}/api/v1`;
+const endpoint = `${baseUrlV1}/accounts`;
+const accountEndpoint = `${baseUrlV1}/account`;
+
 describe('Accounts API', () => {
+	let delegate;
+	beforeAll(async () => {
+		const response = await api.get(`${baseUrlV1}/delegates?limit=1`);
+		delegate = response.data[0];
+	});
+
 	describe('Retrieve account list', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${endpoint}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(10);
-			expect(response.data[0]).toMap(accountSchema);
-			expect(response.data[0]).toEqual({
-				'address': '16009998050678037905L',
-				'balance': '-9999989700000000',
-				'publicKey': '73ec4adbd8f99f0d46794aeda3c3d86b245bd9d27be2b282cdd38ad21988556b',
-				'secondPublicKey': '',
-				'transactionCount': {
-					'incoming': '3',
-					'outgoing': '1',
-				},
-			});
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 
 	describe('Retrieve account list by address', () => {
 		it('known address -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${accounts.genesis.address}`);
+			const response = await api.get(`${endpoint}?address=${delegate.address}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known address written lowercase -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${accounts.genesis.address.toLowerCase()}`);
+			const response = await api.get(`${endpoint}?address=${delegate.address.toLowerCase()}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('unknown address -> 404', async () => {
@@ -82,10 +85,13 @@ describe('Accounts API', () => {
 		it('empty address returns a default list', async () => {
 			const url = `${endpoint}?publickey=`;
 			const response = await api.get(url);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(10);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
+		// TODO: Move to compat
 		it('wrong address -> 404', async () => {
 			const url = `${accountEndpoint}/999999999L`;
 			const expectedStatus = 404;
@@ -96,11 +102,13 @@ describe('Accounts API', () => {
 
 	describe('Retrieve account list by public key', () => {
 		it('known address by publickey', async () => {
-			const url = `${endpoint}?publickey=${accounts.genesis.publicKey}`;
+			const url = `${endpoint}?publickey=${delegate.publicKey}`;
 			const expectedStatus = 200;
 			const response = await api.get(url, expectedStatus);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('invalid publicKey -> 404', async () => {
@@ -120,8 +128,9 @@ describe('Accounts API', () => {
 		it('empty public key parameter returns a default list', async () => {
 			const url = `${endpoint}?publickey=`;
 			const response = await api.get(url);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(10);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
 		});
 	});
 
@@ -130,28 +139,38 @@ describe('Accounts API', () => {
 			const url = `${endpoint}?secpubkey=${accounts['second passphrase account'].secondPublicKey}`;
 			const expectedStatus = 200;
 			const response = await api.get(url, expectedStatus);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 
 	describe('Retrieve a delegate', () => {
 		it('known delegate by address -> contain delegate data', async () => {
-			const response = await api.get(`${endpoint}?address=${accounts.delegate.address}`);
+			const response = await api.get(`${endpoint}?address=${delegate.address}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(accountSchema);
-			expect(response.data[0].delegate).toMap(delegateSchema);
+			response.data.forEach(account => {
+				expect(account).toMap(accountSchema);
+				expect(account.delegate).toMap(delegateSchema);
+			});
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known delegate by username -> contain delegate data', async () => {
-			const response = await api.get(`${endpoint}?username=${accounts.delegate.delegate.username}`);
+			const response = await api.get(`${endpoint}?username=${delegate.username}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(accountSchema);
-			expect(response.data[0].delegate).toMap(delegateSchema);
+			response.data.forEach(account => {
+				expect(account).toMap(accountSchema);
+				expect(account.delegate).toMap(delegateSchema);
+			});
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('existing account by username with wrong param: -> ok', async () => {
-			const url = `${accountEndpoint}/address:${accounts.delegate.username}`;
+			const url = `${accountEndpoint}/address:${delegate.username}`;
 			const expectedStatus = 404;
 			const response = api.get(url, expectedStatus);
 			expect(response).resolves.toMap(notFoundSchema);
@@ -161,8 +180,10 @@ describe('Accounts API', () => {
 	describe('Retrieve top accounts', () => {
 		it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
 			const response = await api.get(`${endpoint}?sort=balance:desc&limit=100`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(100);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns BAD_REQUEST (400) when pagination limit=0', async () => {
@@ -172,8 +193,10 @@ describe('Accounts API', () => {
 
 		it('returns a list when given empty limit', async () => {
 			const response = await api.get(`${endpoint}?sort=balance:desc&limit=`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(10);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 
@@ -181,12 +204,14 @@ describe('Accounts API', () => {
 		xit('existing known account by address -> ok with knowledge', async () => {
 			const address = '13795892230918963229L';
 			const response = await api.get(`${endpoint}?address=${address}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
 			expect(response.data[0].knowledge).toEqual({
 				owner: 'Top Account',
 				description: 'from Testnet',
 			});
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });
