@@ -16,26 +16,36 @@
 const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
-const { getDelegates } = require('./delegates');
+const { getAccounts } = require('./accounts');
 
-const getVoters = async params => {
-    const voters = await coreApi.getVoters(params);
-    voters.data.voters = await BluebirdPromise.map(
+const getVoters = async (params) => {
+	const voters = await coreApi.getVoters(params);
+	voters.data.voters = await BluebirdPromise.map(
 		voters.data.voters,
-		async voter => {
-            if (voters.data.address === voter.address) {
-                voter = { ...voter, balance: voters.data.balance, username: voters.data.username };
-            } else {
-                const voterInfo = (await getDelegates({ address: voter.address })).data[0];
-                voter = { ...voter, balance: voterInfo.balance, username: voterInfo.username };
-            }
-            const voteAmount = voter.votes.map(item => {
-                if (voters.data.address === item.delegateAddress) return Number(item.amount);
-                return null;
-            });
-            voter.amount = voteAmount.reduce((a, b) => a + b).toString();
+		async (voter) => {
+			if (voter.address === voters.data.address) {
+				voter = {
+					...voter,
+					balance: voters.data.balance,
+					username: voters.data.username,
+				};
+			} else {
+				const voterInfo = (await getAccounts({ address: voter.address }))
+					.data[0];
+				voter = {
+					...voter,
+					balance: voterInfo.balance,
+					username: voterInfo.username,
+				};
+			}
+			voter.amount = voter.votes
+				.filter((vote) => vote.delegateAddress === voters.data.address)
+				.reduce((a, b) => Number(a.amount) || 0 + Number(b.amount) || 0, 0)
+				.toString();
 			return voter;
-		}, { concurrency: voters.data.voters.length });
+		},
+		{ concurrency: voters.data.voters.length },
+	);
 	return voters;
 };
 
