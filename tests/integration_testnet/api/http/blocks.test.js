@@ -14,19 +14,21 @@
  *
  */
 /* eslint-disable quotes, quote-props, comma-dangle */
+const config = require('../../config');
+const { api } = require('../../helpers/api');
 
-import api from '../../helpers/api';
 import block from './constants/blocks';
-import config from '../../config';
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/blocks`;
 
 const {
+	goodRequestSchema,
 	badRequestSchema,
 	notFoundSchema,
 	wrongInputParamSchema,
+	metaSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
@@ -43,40 +45,57 @@ describe('Blocks API', () => {
 	describe('GET /blocks', () => {
 		it('returns list of blocks when called with no params', async () => {
 			const response = await api.get(`${endpoint}?limit=1`);
-			expect(response.data[0]).toMap(blockSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known block by block ID -> ok', async () => {
 			const response = await api.get(`${endpoint}?id=${block.id}`);
-			expect(response.data[0]).toMap(blockSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known block by height -> ok', async () => {
-			const response = await api.get(`${endpoint}?height=${block.height}`);
+			const response = await api.get(`${endpoint}?height=23`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0]).toMap(blockSchema);
-			expect(response.data[0].height).toEqual(block.height);
+			expect(response.data[0].height).toEqual(23);
+			response.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known block by account -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${delegate.address}`);
-			response.data.forEach(blockData => {
-				expect(blockData.generatorAddress).toEqual(delegate.address);
+			expect(response).toMap(goodRequestSchema);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchema);
+				expect(block.generatorAddress).toEqual(delegate.address);
 			});
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known block by publickey -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${delegate.publicKey}`);
-			response.data.forEach(blockData => {
-				expect(blockData.generatorPublicKey).toEqual(delegate.publicKey);
+			expect(response).toMap(goodRequestSchema);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchema);
+				expect(block.generatorPublicKey).toEqual(delegate.publicKey);
 			});
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known block by username -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${delegate.username}`);
-			response.data.forEach(blockData => {
-				expect(blockData.generatorUsername).toEqual(delegate.username);
+			expect(response).toMap(goodRequestSchema);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchema);
+				expect(block.generatorUsername).toEqual(delegate.username);
 			});
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('block list by unknown account ID fails with 404', async () => {
@@ -91,7 +110,9 @@ describe('Blocks API', () => {
 
 		it('empty block ID -> retrieve all', async () => {
 			const response = await api.get(`${endpoint}?id=`);
-			expect(response.data[0]).toMap(blockSchema);
+			expect(response).toMap(goodRequestSchema);
+			response.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('non-existent block id -> 404', async () => {
@@ -104,11 +125,6 @@ describe('Blocks API', () => {
 			expect(response).toMap(wrongInputParamSchema);
 		});
 
-		it('known height -> ok', async () => {
-			const response = await api.get(`${endpoint}?height=${block.height}`);
-			expect(response.data[0]).toMap(blockSchema);
-		});
-
 		it('non-existent height -> 404', async () => {
 			const response = await api.get(`${endpoint}?height=2000000000`, 404);
 			expect(response).toMap(notFoundSchema);
@@ -116,13 +132,18 @@ describe('Blocks API', () => {
 
 		it('empty height -> retrieve all', async () => {
 			const response = await api.get(`${endpoint}?height=`);
-			expect(response.data[0]).toMap(blockSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data.length).toEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?limit=100`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(100);
-			expect(response.data[0]).toMap(blockSchema);
+			response.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit=0 -> 400', async () => {
@@ -132,7 +153,10 @@ describe('Blocks API', () => {
 
 		it('empty limit -> retrieve all', async () => {
 			const response = await api.get(`${endpoint}?limit=`);
-			expect(response.data[0]).toMap(blockSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(10);
+			response.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });
