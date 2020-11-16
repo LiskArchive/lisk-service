@@ -14,9 +14,13 @@
  *
  */
 /* eslint-disable quotes, quote-props, comma-dangle */
+const util = require('util');
+
 const config = require('../../config');
-const { request } = require('../../helpers/socketIoRpcRequest');
-import block from './constants/blocks';
+
+const {
+	request,
+} = require('../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -34,14 +38,22 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
 
 describe('Method get.blocks', () => {
+	let block;
 	let delegate;
 	beforeAll(async () => {
-		const response = await request(wsRpcUrl, 'get.delegates', { limit: 1 });
-		[delegate] = response.result.data;
+		[block] = (await getBlocks({ limit: 1 })).result.data;
+		[delegate] = (await request(wsRpcUrl, 'get.delegates', { limit: 1 })).result.data;
 	});
 
 	describe('is able to retireve block lists', () => {
-		it.todo('no params -> ok');
+		it('no params -> ok', async () => {
+			const response = await getBlocks({});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data.length).toEqual(10);
+			result.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
 
 		it('limit=100 -> ok', async () => {
 			const response = await getBlocks({ limit: 100 });
@@ -52,9 +64,23 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it.todo('offset -> ok');
+		it('offset -> ok', async () => {
+			const [...topTenBlocks] = (await getBlocks({})).result.data;
+			const [...topTenOffsetBlocks] = (await getBlocks({ offset: 1 })).result.data;
 
-		it.todo('limit & offset -> ok');
+			[...Array(topTenBlocks.length)].forEach((_, i) => {
+				if (i) expect(util.isDeepStrictEqual(topTenBlocks[i], topTenOffsetBlocks[i - 1])).toBeTruthy();
+			});
+		});
+
+		it('limit & offset -> ok', async () => {
+			const [...topTenBlocks] = (await getBlocks({})).result.data;
+			const [...topTenOffsetBlocks] = (await getBlocks({ offset: 1, limit: 12 })).result.data;
+
+			[...Array(topTenBlocks.length)].forEach((_, i) => {
+				if (i) expect(util.isDeepStrictEqual(topTenBlocks[i], topTenOffsetBlocks[i - 1])).toBeTruthy();
+			});
+		});
 	});
 
 	describe('is able to retireve block details by block ID', () => {
@@ -67,10 +93,10 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// To Do : current response is server error, does not get correct invalid params
+		// TODO: current response is server error, does not get correct invalid params
 		it('too long block id -> empty response', async () => {
-			const result = await getBlocks({ id: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e);
-			expect(result).toMap(invalidParamsSchema);
+			const response = await getBlocks({ id: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e);
+			expect(response).toMap(invalidParamsSchema);
 		});
 
 		it('too short block id -> -32602', async () => {
@@ -88,8 +114,8 @@ describe('Method get.blocks', () => {
 		});
 
 		it('invalid query parameter -> -32602', async () => {
-			const result = await getBlocks({ block: '12602944501676077162' }).catch(e => e);
-			expect(result).toMap(invalidParamsSchema);
+			const response = await getBlocks({ block: '12602944501676077162' }).catch(e => e);
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
@@ -110,8 +136,8 @@ describe('Method get.blocks', () => {
 		});
 
 		it('height = 0 -> -32602', async () => {
-			const result = await getBlocks({ height: 0 }).catch(e => e);
-			expect(result).toMap(invalidParamsSchema);
+			const response = await getBlocks({ height: 0 }).catch(e => e);
+			expect(response).toMap(invalidParamsSchema);
 		});
 
 		it('empty height -> -32602 ', async () => {
