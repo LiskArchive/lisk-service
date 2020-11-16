@@ -24,8 +24,8 @@ const defaultConfig = {
 const filterApis = (requiredApis, availableApis) => {
 	const filteredApis = {};
 
-	const requiredPaths = requiredApis.split(',').map(path => '/'.concat(path));
-	Object.keys(availableApis).forEach(key => {
+	const requiredPaths = requiredApis.split(',').map((path) => '/'.concat(path));
+	Object.keys(availableApis).forEach((key) => {
 		if (requiredPaths.includes(key)) filteredApis[key] = availableApis[key]();
 	});
 
@@ -33,9 +33,9 @@ const filterApis = (requiredApis, availableApis) => {
 };
 
 module.exports = filterApis(config.api.ws, {
-	'/rpc': () => registerApi('http-version1', { ...defaultConfig }),
-	'/rpc-v1': () => registerApi('http-version1', { ...defaultConfig }),
-	'/rpc-test': () => registerApi('http-test', { ...defaultConfig }),
+	'/rpc': () => registerApi(['http-version1'], { ...defaultConfig }),
+	'/rpc-v1': () => registerApi(['http-version1', 'http-version1-compat'], { ...defaultConfig }),
+	'/rpc-test': () => registerApi(['http-test'], { ...defaultConfig }),
 	'/blockchain': () => ({
 		events: {
 			call: {
