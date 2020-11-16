@@ -24,7 +24,7 @@ const networkSearchSchema = {
 	nethash: Joi.string().required(),
 	supply: Joi.string().required(),
 	reward: Joi.string().required(),
-	fees: Joi.object(feeSchema).required(),
+	// fees: Joi.object(feeSchema).required(), // TODO: Verify and update the schema
 };
 
 // "results": [
@@ -38,4 +38,4 @@ const networkSearchSchema = {
 
 module.exports = {
 	networkSearchSchema: Joi.object(networkSearchSchema),
-}
+};

@@ -17,16 +17,17 @@ import moment from 'moment';
 
 import { api } from '../../helpers/socketIoRpcRequest';
 import { JSON_RPC } from '../../helpers/errorCodes';
-import {
-	goodRequestSchema,
-	dataSchema,
-	metaSchema,
-	timelineItemSchema,
-} from '../../schemas/transactionStatistics.schema';
 
 const {
+	goodRequestSchema,
+	dataSchema,
 	invalidParamsSchema,
 } = require('../../schemas/generics.schema');
+
+const {
+	timelineItemSchema,
+	metaSchema,
+} = require('../../schemas/transactionStatistics.schema');
 
 const { badRequestSchema } = require('../../helpers/schemas/general');
 

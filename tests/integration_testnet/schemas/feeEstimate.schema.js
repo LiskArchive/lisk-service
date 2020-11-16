@@ -23,9 +23,9 @@ const feeEstimateSchema = {
 	}).required(),
 };
 
-export const metaSchema = { // TODO: Verify and update swagger
-	"updated": Joi.string().required(),
-	"blockHeight": Joi.number().required(),
+const metaSchema = { // TODO: Verify and update swagger
+	updated: Joi.string().required(),
+	blockHeight: Joi.number().required(),
 };
 
 module.exports = {

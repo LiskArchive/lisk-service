@@ -39,4 +39,4 @@ const networkStatusSchema = {
 
 module.exports = {
 	networkStatusSchema: Joi.object(networkStatusSchema),
-}
+};

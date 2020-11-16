@@ -17,9 +17,16 @@ import moment from 'moment';
 
 import api from '../../helpers/api';
 import config from '../../config';
-import {
-	goodRequestSchema, dataSchema, metaSchema, timelineItemSchema,
-} from '../../schemas/transactionStatistics.schema';
+
+const {
+	goodRequestSchema,
+	dataSchema,
+} = require('../../schemas/generics.schema');
+
+const {
+	timelineItemSchema,
+	metaSchema,
+} = require('../../schemas/transactionStatistics.schema');
 
 const invalidRequestSchema = {
 	error: 'boolean',

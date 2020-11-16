@@ -19,9 +19,10 @@ import Joi from 'joi';
 // Imports
 import config from '../../config';
 import request from '../../helpers/socketIoRpcMultiRequest';
-import accountSchema from './schemas/account.schema';
-import blockSchema from './schemas/block.schema';
-import transactionSchema from './schemas/transaction.schema';
+
+const { accountSchema } = require('../../schemas/account.schema');
+const { blockSchema } = require('../../schemas/block.schema');
+const { transactionSchema } = require('../../schemas/transaction.schema');
 
 // Schemas
 const {

@@ -19,7 +19,9 @@ import config from '../../config';
 import request from '../../helpers/socketIoRpcRequest';
 import block from './constants/blocks';
 
-import blockSchema from './schemas/block.schema';
+const {
+	blockSchema,
+} = require('../../schemas/block.schema');
 
 const {
 	invalidParamsSchema,

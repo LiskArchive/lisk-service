@@ -16,7 +16,10 @@
 import Joi from 'joi';
 
 import { api } from '../../helpers/socketIoRpcRequest';
-import feeSchema from './schemas/feeEstimate.schema';
+
+const {
+	feeSchema,
+} = require('../../schemas/feeEstimate.schema');
 
 const goodRequestSchema = Joi.object({
 	data: Joi.object().required(),
