@@ -17,15 +17,15 @@ import Joi from 'joi';
 
 const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object({
-		low: Joi.number().required(),
-		medium: Joi.number().required(),
-		high: Joi.number().required(),
+		low: Joi.number().positive().required(),
+		medium: Joi.number().positive().required(),
+		high: Joi.number().positive().required(),
 	}).required(),
 };
 
 const metaSchema = {
 	updated: Joi.string().required(),
-	blockHeight: Joi.number().required(),
+	blockHeight: Joi.number().integer().positive().required(),
 	blockId: Joi.string().required(),
 };
 
