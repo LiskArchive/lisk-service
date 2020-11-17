@@ -17,10 +17,10 @@ import Joi from 'joi';
 
 const validDelegateStatuses = ['active', 'standby', 'banned', 'punished', 'non-eligible'];
 
-const pomHeightSchema = Joi.object({
+const pomHeightSchema = {
 	start: Joi.string().required(),
 	end: Joi.string().required(),
-});
+};
 
 const delegateSchema = {
 	address: Joi.string().required(),
@@ -44,7 +44,7 @@ const delegateSchema = {
 };
 
 module.exports = {
-	pomHeightSchema,
 	validDelegateStatuses,
+	pomHeightSchema: Joi.object(pomHeightSchema).required(),
 	delegateSchema: Joi.object(delegateSchema).required(),
 };
