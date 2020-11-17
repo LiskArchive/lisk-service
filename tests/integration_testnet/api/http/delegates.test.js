@@ -96,6 +96,24 @@ describe('Delegates API', () => {
 		});
 	});
 
+	describe('GET /delegates?secpubkey', () => {
+		it('known delegate by sec public key -> ok', async () => {
+			if (refDelegate.secPubKey) {
+				const response = await api.get(`${endpoint}?secpubkey=${refDelegate.secPubKey}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeArrayOfSize(1);
+				response.data.map(delegate => expect(delegate)
+					.toMap(delegateSchema, { secPubKey: refDelegate.secPubKey }));
+				expect(response.meta).toMap(metaSchema);
+			}
+		});
+
+		it('wrong delegate secpubkey -> 404', async () => {
+			const response = await api.get(`${endpoint}?secpubkey=412875216073141752800000`, 404);
+			expect(response).toMap(notFoundSchema);
+		});
+	});
+
 	describe('GET /delegates?username', () => {
 		it('known delegate by username -> ok', async () => {
 			const response = await api.get(`${endpoint}?username=${refDelegate.username}`);
