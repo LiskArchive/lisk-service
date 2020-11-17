@@ -26,15 +26,19 @@ const { validate } = require('./paramValidator');
 
 const apiMeta = [];
 
-const configureApi = (apiName, apiPrefix) => {
+const configureApi = (apiNames, apiPrefix) => {
+	const allMethods = {};
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
 		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
 
 		return curlyBracketsToColon(dropSlash(url));
 	};
-
-	const allMethods = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
+	if (typeof apiNames === 'string') apiNames = [apiNames];
+	apiNames.forEach(apiName => Object.assign(
+		allMethods,
+		Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
+	));
 
 	const methods = Object.keys(allMethods).reduce((acc, key) => {
 		const method = allMethods[key];
@@ -111,8 +115,8 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
-const registerApi = (apiName, config) => {
-	const { aliases, whitelist, methodPaths } = configureApi(apiName, config.path);
+const registerApi = (apiNames, config) => {
+	const { aliases, whitelist, methodPaths } = configureApi(apiNames, config.path);
 
 	const transformRequest = (apiPath, params) => {
 		try {
