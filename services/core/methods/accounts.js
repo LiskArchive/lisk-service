@@ -16,8 +16,6 @@
 const {
 	getAccounts,
 	getTopAccounts,
-	getVotes,
-	getVoters,
 } = require('./controllers/accounts');
 
 module.exports = [
@@ -39,32 +37,6 @@ module.exports = [
 		name: 'accounts.top',
 		controller: getTopAccounts,
 		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-		},
-	},
-	{
-		name: 'accounts.votes',
-		controller: getVotes,
-		params: {
-			anyId: { type: 'any', optional: true },
-			address: { type: 'any', optional: true },
-			username: { type: 'any', optional: true },
-			publicKey: { type: 'any', optional: true },
-			secondPublicKey: { type: 'any', optional: true },
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-		},
-	},
-	{
-		name: 'accounts.voters',
-		controller: getVoters,
-		params: {
-			anyId: { type: 'any', optional: true },
-			address: { type: 'any', optional: true },
-			username: { type: 'any', optional: true },
-			publicKey: { type: 'any', optional: true },
-			secondPublicKey: { type: 'any', optional: true },
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },
 		},
