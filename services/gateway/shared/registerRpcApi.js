@@ -27,7 +27,7 @@ const { validate } = require('./paramValidator');
 const apiMeta = [];
 
 const configureApi = (apiNames, apiPrefix) => {
-	const allMethods = {};
+	let allMethods = {};
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
 		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
@@ -35,13 +35,17 @@ const configureApi = (apiNames, apiPrefix) => {
 		return curlyBracketsToColon(dropSlash(url));
 	};
 
-	apiNames.map(apiName => {
-		Object.assign(
-			allMethods,
-			Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
-		);
-		return apiName;
-	});
+	if (Array.isArray(apiNames)) {
+		apiNames.map(apiName => {
+			Object.assign(
+				allMethods,
+				Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
+			);
+			return apiName;
+		});
+	} else {
+		allMethods = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiNames}/methods`));
+	}
 
 	const methods = Object.keys(allMethods).reduce((acc, key) => {
 		const method = allMethods[key];
