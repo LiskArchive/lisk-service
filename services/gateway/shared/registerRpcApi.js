@@ -35,13 +35,10 @@ const configureApi = (apiNames, apiPrefix) => {
 		return curlyBracketsToColon(dropSlash(url));
 	};
 	if (typeof apiNames === 'string') apiNames = [apiNames];
-	apiNames.map(apiName => {
-		Object.assign(
-			allMethods,
-			Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
-		);
-		return apiName;
-	});
+	apiNames.forEach(apiName => Object.assign(
+		allMethods,
+		Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
+	));
 
 	const methods = Object.keys(allMethods).reduce((acc, key) => {
 		const method = allMethods[key];
