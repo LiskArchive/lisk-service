@@ -40,10 +40,10 @@ describe('get.fee_estimates', () => {
 		const response = await request(wsRpcUrl, 'get.network.statistics');
 		const { ...availableNodeVersions } = response.result.data.coreVer;
 		let coreVersion;
-		Object.keys(availableNodeVersions).forEach(nodeVersion =>
+		Object.keys(availableNodeVersions).forEach(nodeVersion => {
 			coreVersion = (!coreVersion || semver.lt(coreVersion, nodeVersion))
-				? nodeVersion : coreVersion
-		);
+				? nodeVersion : coreVersion;
+		});
 
 		isFeeEstimateSupported = semver.lte('3.0.0-beta.1', coreVersion);
 	});
@@ -70,7 +70,7 @@ describe('get.fee_estimates', () => {
 
 	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
 		const response = await request(wsRpcUrl, 'get.fee_estimates', {
-			someparam: 'not_supported'
+			someparam: 'not_supported',
 		}).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});

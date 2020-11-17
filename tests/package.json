@@ -43,6 +43,7 @@
     "multimatch": "^3.0.0",
     "popsicle": "^10.0.1",
     "prettyjson": "^1.2.1",
+    "semver": "^7.3.2",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "vscode-json-languageservice": "^3.2.0"

@@ -38,10 +38,10 @@ describe('Fee estimates API', () => {
 		const response = await api.get(`${baseUrlV1}/network/statistics`);
 		const { ...availableNodeVersions } = response.data.coreVer;
 		let coreVersion;
-		Object.keys(availableNodeVersions).forEach(nodeVersion =>
+		Object.keys(availableNodeVersions).forEach(nodeVersion => {
 			coreVersion = (!coreVersion || semver.lt(coreVersion, nodeVersion))
-				? nodeVersion : coreVersion
-		);
+				? nodeVersion : coreVersion;
+		});
 
 		isFeeEstimateSupported = semver.lte('3.0.0-beta.1', coreVersion);
 	});
