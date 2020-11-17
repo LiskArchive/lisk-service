@@ -71,7 +71,7 @@ const transactionCountSchema = {
 	outgoing: Joi.string().required(),
 };
 
-const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema; // TODO: Removed?
+const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema;
 
 const unlockingHeightSchema = pomHeightSchema;
 

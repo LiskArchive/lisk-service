@@ -26,7 +26,7 @@ const {
 	jsonRpcEnvelopeSchema,
 } = require('../../schemas/generics.schema');
 
-const { delegateSchema } = require('../../helpers/schemas/delegate');
+const { delegateSchema } = require('../../schemas/delegate.schema');
 
 const nextForgersDataSchema = Joi.array().items(delegateSchema).required();
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
