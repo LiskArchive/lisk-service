@@ -102,6 +102,7 @@ const {
 	updateFinalizedHeight,
 } = require('./compat');
 
+const events = require('./events');
 
 module.exports = {
 	get,
@@ -166,4 +167,5 @@ module.exports = {
 	updateFinalizedHeight,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
+	events,
 };
