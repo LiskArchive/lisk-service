@@ -23,12 +23,20 @@ const feeEstimateSchema = {
 	}).required(),
 };
 
-const metaSchema = { // TODO: Verify and update swagger
+const metaSchema = {
 	updated: Joi.string().required(),
 	blockHeight: Joi.number().required(),
+	blockId: Joi.string().required(),
+};
+
+const goodRequestSchema = {
+	data: Joi.object(feeEstimateSchema).required(),
+	meta: Joi.object(metaSchema).required(),
+	links: Joi.object().optional(),
 };
 
 module.exports = {
-	feeEstimateSchema: Joi.object(feeEstimateSchema),
-	metaSchema: Joi.object(metaSchema),
+	feeEstimateSchema: Joi.object(feeEstimateSchema).required(),
+	metaSchema: Joi.object(metaSchema).required(),
+	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 };
