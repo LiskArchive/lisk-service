@@ -17,7 +17,7 @@ import Joi from 'joi';
 
 const {
 	pomHeightSchema,
-	validDelegateStatuses
+	validDelegateStatuses,
 } = require('./delegate.schema');
 
 const delegateSchema = {
@@ -30,7 +30,7 @@ const delegateSchema = {
 	username: Joi.string().required(),
 	vote: Joi.string().required(),
 	isBanned: Joi.boolean().optional(),
-	status: Joi.string().valid(...validDelegateStatuses).optional(), //TODO: Clarify
+	status: Joi.string().valid(...validDelegateStatuses).optional(), // TODO: Clarify
 	pomHeights: Joi.array().items(pomHeightSchema).optional(),
 	lastForgedHeight: Joi.number().integer().optional(), // TODO: Clarify
 	consecutiveMissedBlocks: Joi.number().integer().optional(),
@@ -71,7 +71,7 @@ const transactionCountSchema = {
 	outgoing: Joi.string().required(),
 };
 
-const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema; //TODO: Removed?
+const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema; // TODO: Removed?
 
 const unlockingHeightSchema = pomHeightSchema;
 
@@ -94,7 +94,7 @@ const accountSchema = {
 		.items(multisignatureMembershipSchema).optional(),
 	transactionCount: Joi.object(transactionCountSchema).required(),
 	unconfirmedMultisignatureMemberships: Joi.array()
-		.items(unconfirmedMultisignatureMembershipSchema).optional(), //TODO: Removed?
+		.items(unconfirmedMultisignatureMembershipSchema).optional(), // TODO: Removed?
 	unlocking: Joi.array().items(unlockingItemSchema).optional(),
 };
 

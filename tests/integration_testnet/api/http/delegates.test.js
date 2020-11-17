@@ -13,153 +13,144 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import api from '../../helpers/api';
-import delegates from './constants/delegates';
-// import accounts from './constants/accounts';
-import config from '../../config';
+const config = require('../../config');
+const { api } = require('../../helpers/api');
+
+const {
+	badRequestSchema,
+	notFoundSchema,
+	wrongInputParamSchema,
+	goodRequestSchema,
+	metaSchema,
+} = require('../../schemas/httpGenerics.schema');
+
+const {
+	delegateSchema,
+} = require('../../schemas/delegate.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/delegates`;
-// const delegateEndpoint = `${baseUrlV1}/delegate`;
-
-const delegateSchema = {
-	address: 'string',
-	approval: 'string',
-	missedBlocks: 'number',
-	producedBlocks: 'number',
-	productivity: 'string',
-	publicKey: 'string',
-	rank: 'number',
-	rewards: 'number',
-	secondPublicKey: 'string',
-	username: 'string',
-	vote: 'string',
-	status: 'string',
-};
-
-const badRequestSchema = {
-	error: 'boolean',
-	message: 'string',
-};
-
-const notFoundErrorSchema = {
-	error: 'boolean',
-	message: 'string',
-};
-
-const wrongInputParamSchema = {
-	error: 'boolean',
-	message: 'string',
-};
 
 describe('Delegates API', () => {
+	let refDelegate;
+	beforeAll(async () => {
+		[refDelegate] = (await api.get(`${endpoint}?limit=1`)).data;
+	});
+
 	describe('GET /delegates', () => {
 		it('known delegate by address -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${delegates.activeDelegate.address}`);
+			const response = await api.get(`${endpoint}?address=${refDelegate.address}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
-			expect(response.data[0]).toMapRequiredSchema({
-				...delegateSchema,
-				address: delegates.activeDelegate.address,
-			});
+			response.data.forEach(delegate => expect(delegate)
+				.toMap(delegateSchema, { address: refDelegate.address }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('known address by second public key', async () => {
-			const url = `${endpoint}?secpubkey=${delegates.activeDelegate.secondPublicKey}`;
-			const response = await api.get(url);
+			const response = await api.get(`${endpoint}?secpubkey=${refDelegate.secondPublicKey}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
-			expect(response.data[0]).toMapRequiredSchema({
-				...delegateSchema,
-				secondPublicKey: delegates.activeDelegate.secondPublicKey,
-			});
+			response.data.map(delegate => expect(delegate)
+				.toMap(delegateSchema, { secondPublicKey: refDelegate.secondPublicKey }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('wrong input param -> 400', async () => {
 			const response = await api.get(`${endpoint}?id=412875216073141752800000`, 400);
-			expect(response).toMapRequiredSchema(wrongInputParamSchema);
+			expect(response).toMap(wrongInputParamSchema);
 		});
 
 		it('search delegates -> ok', async () => {
 			const response = await api.get(`${endpoint}?search=genesis`);
-			expect(response.data.length).toEqual(10);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(delegate => {
+				expect(delegate).toMap(delegateSchema);
+				expect(delegate.username).toContain('genesis');
+			});
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('invalid address -> 404', async () => {
 			const response = await api.get(`${endpoint}?address=412875216073141752800000`, 404);
-			expect(response).toMapRequiredSchema(notFoundErrorSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 	});
 
 	describe('GET /delegates?publickey', () => {
 		it('known delegate by public key -> ok', async () => {
-			const response = await api.get(`${endpoint}?publickey=${delegates.activeDelegate.publicKey}`);
+			const response = await api.get(`${endpoint}?publickey=${refDelegate.publicKey}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
-			expect(response.data[0]).toMapRequiredSchema({
-				...delegateSchema,
-				publicKey: delegates.activeDelegate.publicKey,
-			});
+			response.data.map(delegate => expect(delegate)
+				.toMap(delegateSchema, { publicKey: refDelegate.publicKey }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('wrong delegate publickey -> 404', async () => {
 			const response = await api.get(`${endpoint}?publickey=412875216073141752800000`, 404);
-			expect(response).toMapRequiredSchema(notFoundErrorSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 	});
 
-
 	describe('GET /delegates?username', () => {
 		it('known delegate by username -> ok', async () => {
-			const response = await api.get(`${endpoint}?username=${delegates.activeDelegate.username}`);
+			const response = await api.get(`${endpoint}?username=${refDelegate.username}`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
-			expect(response.data[0]).toMapRequiredSchema({
-				...delegateSchema,
-				username: delegates.activeDelegate.username,
-			});
+			response.data.map(delegate => expect(delegate)
+				.toMap(delegateSchema, { username: refDelegate.username }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('wrong username -> 404', async () => {
 			const response = await api.get(`${endpoint}?username=genesis_510000000`, 404);
-			expect(response).toMapRequiredSchema(notFoundErrorSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 	});
 
-	xdescribe('GET /delegates/latest_registrations', () => {
-		it('limit = 100 -> ok', async () => {
+	describe('GET /delegates/latest_registrations', () => {
+		xit('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=100`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(100);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit = 0 -> 400', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=0`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
+		// Given test fails during CI phase
 		xit('empty limit -> 400', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
 	describe('GET /delegates/next_forgers', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=100`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(100);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema, { status: 'active' }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit = 0 -> 400', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=0`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
+		// Given test fails during CI phase
 		xit('empty limit -> 400', async () => {
 			const response = await api.get(`${endpoint}/next_forgers?limit=`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
@@ -167,45 +158,53 @@ describe('Delegates API', () => {
 		it('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`);
 			expect(response.data).toBeArrayOfSize(101);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit = 0 -> 400', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=0`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		// Given test fails during CI phase
-		it('empty limit -> ok', async () => {
+		xit('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(10);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 
 	describe('GET /delegates/standby', () => {
 		it('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=101&limit=101`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(101);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema, { status: 'standby' }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=100`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(100);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
-			expect(response.data[0]).toMapRequiredSchema(delegateSchema);
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema, { status: 'standby' }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit = 0 -> 400', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=0`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('empty limit -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=`);
+			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(10);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });

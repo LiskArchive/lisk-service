@@ -17,21 +17,34 @@ import Joi from 'joi';
 
 const validDelegateStatuses = ['active', 'standby', 'banned', 'punished', 'non-eligible'];
 
+const pomHeightSchema = Joi.object({
+	start: Joi.string().required(),
+	end: Joi.string().required(),
+});
+
 const delegateSchema = {
 	address: Joi.string().required(),
-	approval: Joi.string().required(),
+	approval: Joi.number().required(),
+	delegateWeight: Joi.string().optional(),
 	missedBlocks: Joi.number().required(),
 	producedBlocks: Joi.number().required(),
 	productivity: Joi.string().required(),
 	publicKey: Joi.string().required(),
-	secondPublicKey: Joi.string().required(),
+	secondPublicKey: Joi.string().allow('').optional(),
 	rank: Joi.number().required(),
 	rewards: Joi.string().required(),
 	username: Joi.string().required(),
 	vote: Joi.string().required(),
+	totalVotesReceived: Joi.string().optional(),
+	isBanned: Joi.boolean().optional(),
+	status: Joi.string().valid(...validDelegateStatuses).required(),
+	pomHeights: Joi.array().items(pomHeightSchema).optional(),
+	lastForgedHeight: Joi.number().optional(),
+	consecutiveMissedBlocks: Joi.number().optional(),
 };
 
 module.exports = {
+	pomHeightSchema,
 	validDelegateStatuses,
-	delegateSchema: Joi.object(delegateSchema),
+	delegateSchema: Joi.object(delegateSchema).required(),
 };
