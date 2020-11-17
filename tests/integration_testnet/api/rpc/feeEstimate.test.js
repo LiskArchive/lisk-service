@@ -13,28 +13,65 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
-
-const { api } = require('../../helpers/socketIoRpcRequest');
+const semver = require('semver');
+const config = require('../../config');
+const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
-	feeSchema,
+	emptyResponseSchema,
+	jsonRpcEnvelopeSchema,
+	emptyResultEnvelopeSchema,
+	invalidParamsSchema,
+} = require('../../schemas/rpcGenerics.schema');
+
+const {
+	feeEstimateSchema,
+	goodRequestSchema,
+	metaSchema,
 } = require('../../schemas/feeEstimate.schema');
 
-const goodRequestSchema = Joi.object({
-	data: Joi.object().required(),
-	meta: Joi.object().required(),
-});
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
-const requestFeeEstimate = async () => api.getJsonRpcV1('get.fee_estimates');
+const requestFeeEstimate = async () => request(wsRpcUrl, 'get.fee_estimates');
 
-xdescribe('get.fee_estimates', () => {
-	it('returns estimated fees', async () => {
-		const response = await requestFeeEstimate();
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(feeSchema);
+describe('get.fee_estimates', () => {
+	let isFeeEstimateSupported;
+	beforeAll(async () => {
+		const response = await request(wsRpcUrl, 'get.network.statistics');
+		const { ...availableNodeVersions } = response.result.data.coreVer;
+		let coreVersion;
+		Object.keys(availableNodeVersions).forEach(nodeVersion =>
+			coreVersion = (!coreVersion || semver.lt(coreVersion, nodeVersion))
+				? nodeVersion : coreVersion
+		);
+
+		isFeeEstimateSupported = semver.lte('3.0.0-beta.1', coreVersion);
 	});
 
-	// Negative test for 404 - Compare schema, error message
-	// Negative test with params - Compare schema, error message
+	it('returns estimated fees, when supported', async () => {
+		if (isFeeEstimateSupported) {
+			const response = await requestFeeEstimate();
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchema);
+			expect(result.data).toMap(feeEstimateSchema);
+			expect(result.meta).toMap(metaSchema);
+		}
+	});
+
+	it('returns empty result, when not supported', async () => {
+		if (!isFeeEstimateSupported) {
+			const response = await requestFeeEstimate();
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		}
+	});
+
+	it('params not supported -> INVALID_PARAMS (-32602)', async () => {
+		const response = await request(wsRpcUrl, 'get.fee_estimates', {
+			someparam: 'not_supported'
+		}).catch(e => e);
+		expect(response).toMap(invalidParamsSchema);
+	});
 });

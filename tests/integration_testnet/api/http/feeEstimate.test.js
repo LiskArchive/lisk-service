@@ -13,40 +13,59 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import api from '../../helpers/api';
-import config from '../../config';
+const semver = require('semver');
+const config = require('../../config');
+const { api } = require('../../helpers/api');
+
+const {
+	badRequestSchema,
+	notFoundSchema,
+} = require('../../schemas/httpGenerics.schema');
+
+const {
+	feeEstimateSchema,
+	goodRequestSchema,
+	metaSchema,
+} = require('../../schemas/feeEstimate.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/fee_estimates`;
 
-const feeSchema = {
-	low: 'number',
-	medium: 'number',
-	high: 'number',
-};
+describe('Fee estimates API', () => {
+	let isFeeEstimateSupported;
+	beforeAll(async () => {
+		const response = await api.get(`${baseUrlV1}/network/statistics`);
+		const { ...availableNodeVersions } = response.data.coreVer;
+		let coreVersion;
+		Object.keys(availableNodeVersions).forEach(nodeVersion =>
+			coreVersion = (!coreVersion || semver.lt(coreVersion, nodeVersion))
+				? nodeVersion : coreVersion
+		);
 
-const metaSchema = {
-	updated: 'number',
-	blockHeight: 'number',
-	blockId: 'string',
-};
-
-// Use schema from swagger instead
-
-xdescribe('Fee estimates API', () => {
-	describe('GET /fee_estimates', () => {
-		it('estimate fees true -> 200 ok', async () => {
-			const response = await api.get(`${endpoint}`);
-			expect(response.data.feeEstimatePerByte).toMapRequiredSchema({
-				...feeSchema,
-			});
-			expect(response.meta).toMapRequiredSchema({
-				...metaSchema,
-			});
-		});
+		isFeeEstimateSupported = semver.lte('3.0.0-beta.1', coreVersion);
 	});
 
-	// Negative test for 404 - Compare schema, error message
-	// Negative test with params - Compare schema, error message
+	describe('GET /fee_estimates', () => {
+		it('estimate fees true -> 200 OK', async () => {
+			if (isFeeEstimateSupported) {
+				const response = await api.get(`${endpoint}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toMap(feeEstimateSchema);
+				expect(response.meta).toMap(metaSchema);
+			}
+		});
+
+		it('not supported -> 404 NOT FOUND', async () => {
+			if (!isFeeEstimateSupported) {
+				const response = await api.get(`${endpoint}`, 404);
+				expect(response).toMap(notFoundSchema);
+			}
+		});
+
+		it('params not supported -> 400 BAD REQUEST', async () => {
+			const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+	});
 });
