@@ -77,7 +77,7 @@ const getSelector = params => {
 const getTransactions = async params => {
 	const db = await pouchdb(config.db.collections.transactions.name);
 
-	const transactions = {
+	let transactions = {
 		data: [],
 	};
 
@@ -88,7 +88,7 @@ const getTransactions = async params => {
 				...params,
 				limit: params.limit || 10,
 				offset: params.offset || 0,
-			});
+				});
 			const dbResult = await db.find(inputData);
 			if (dbResult.length > 0) {
 				const latestBlock = (await getBlocks({ limit: 1 })).data[0];
@@ -102,9 +102,7 @@ const getTransactions = async params => {
 	} catch (err) {
 		logger.debug(err.message);
 
-		const response = await coreApi.getTransactions(params);
-		if (response.data) transactions.data = response.data;
-		if (response.meta) transactions.meta = response.meta;
+		transactions = await coreApi.getTransactions(params);
 		if (transactions.data && transactions.data.length) await db.writeBatch(transactions.data);
 	}
 
@@ -121,13 +119,13 @@ const getPendingTransactions = async params => {
 	const limit = Number(params.limit) || 10;
 	const dbResult = await db.findAll();
 	if (dbResult.length) {
-		pendingTransactions.data = dbResult.slice(offset, offset + limit);
-		pendingTransactions.meta = {
-			count: pendingTransactions.data.length,
-			offset,
-			total: dbResult.length,
-		};
-	}
+				pendingTransactions.data = dbResult.slice(offset, offset + limit);
+				pendingTransactions.meta = {
+					count: pendingTransactions.data.length,
+					offset,
+					total: dbResult.length,
+				};
+			}
 	return pendingTransactions;
 };
 

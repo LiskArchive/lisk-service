@@ -57,25 +57,25 @@ const getSelector = params => {
 };
 
 const getTopAccounts = () => new Promise((resolve) => {
-	resolve(topAccounts);
-});
+		resolve(topAccounts);
+	});
 
 const resolveDelegateInfoByAddress = async accounts => {
 	await BluebirdPromise.map(
-		accounts, async account => {
+		accounts.data, async account => {
 			if (account.isDelegate) {
 				const delegateInfo = (await getDelegates({ address: account.address })).data[0];
 				account.delegate = delegateInfo;
 			}
 			return account;
-		}, { concurrency: accounts.length });
-	return accounts;
+		}, { concurrency: accounts.data.length });
+return accounts;
 };
 
 const getAccounts = async params => {
 	const db = await pouchdb(config.db.collections.accounts.name);
 
-	const accounts = {
+	let accounts = {
 		data: [],
 	};
 	// read from cache if available
@@ -104,25 +104,23 @@ const getAccounts = async params => {
 				const sortProp = params.sort.split(':')[0];
 				const sortOrder = params.sort.split(':')[1];
 				if (sortOrder === 'desc') dbResult.sort((a, b) => {
-					let compareResult;
-					try {
-						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+						let compareResult;
+						try {
+							if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+								compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+							}
+						} catch (err) {
+							compareResult = a[sortProp].localeCompare(b[sortProp]);
 						}
-					} catch (err) {
-						compareResult = a[sortProp].localeCompare(b[sortProp]);
-					}
-					return compareResult;
-				});
+						return compareResult;
+					});
 
 				accounts.data = dbResult;
 			}
 		}
 	}
 	if (accounts.data.length === 0) {
-		const response = await coreApi.getAccounts(params);
-		if (response.data) accounts.data = response.data;
-		if (response.meta) accounts.meta = response.meta;
+		accounts = await coreApi.getAccounts(params);
 		if (accounts.data.length > 0) {
 			const allAccounts = accounts.data.map((account) => {
 				account.id = account.address;
@@ -131,7 +129,7 @@ const getAccounts = async params => {
 			await db.writeBatch(allAccounts);
 		}
 	}
-	accounts.data = await resolveDelegateInfoByAddress(accounts.data);
+    accounts = await resolveDelegateInfoByAddress(accounts);
 	return accounts;
 };
 
