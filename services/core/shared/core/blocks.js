@@ -83,7 +83,7 @@ const getLastBlock = () => lastBlock;
 const getBlocks = async (params = {}, skipCache = false) => {
 	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
-	let blocks = {
+	const blocks = {
 		data: [],
 	};
 
@@ -107,7 +107,9 @@ const getBlocks = async (params = {}, skipCache = false) => {
 
 	if (blocks.data.length === 0) {
 		logger.debug(`Retrieved block ${params.blockId || params.height || 'with custom search'} from Lisk Core`);
-		blocks = await coreApi.getBlocks(params);
+		const response = await coreApi.getBlocks(params);
+		if (response.data) blocks.data = response.data;
+		if (response.meta) blocks.meta = response.meta;
 		if (blocks.data.length > 0) {
 			const finalBlocks = blocks.data;
 			pushToDb(blockDb, finalBlocks);
