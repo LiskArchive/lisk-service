@@ -15,6 +15,8 @@
  */
 import Joi from 'joi';
 
+const validDelegateStatuses = ['active', 'standby', 'banned', 'punished', 'non-eligible'];
+
 const delegateSchema = {
 	address: Joi.string().required(),
 	approval: Joi.string().required(),
@@ -30,5 +32,6 @@ const delegateSchema = {
 };
 
 module.exports = {
+	validDelegateStatuses,
 	delegateSchema: Joi.object(delegateSchema),
 };

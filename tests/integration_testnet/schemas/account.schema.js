@@ -15,6 +15,13 @@
  */
 import Joi from 'joi';
 
+const { validDelegateStatuses } = require('./delegate.schema');
+
+const pomHeightsSchema = {
+	start: Joi.number().required,
+	end: Joi.number().required,
+};
+
 const delegateSchema = {
 	approval: Joi.number().required(),
 	missedBlocks: Joi.number().required(),
@@ -24,6 +31,11 @@ const delegateSchema = {
 	rewards: Joi.string().required(),
 	username: Joi.string().required(),
 	vote: Joi.string().required(),
+	isBanned: Joi.boolean().optional(),
+	status: Joi.string().valid(...validDelegateStatuses).optional(), //TODO: Clarify
+	pomHeights: Joi.array().items(pomHeightsSchema).optional(),
+	lastForgedHeight: Joi.number().integer().optional(), // TODO: Clarify
+	consecutiveMissedBlocks: Joi.number().integer().optional(),
 };
 
 const knowledgeSchema = {
@@ -37,19 +49,21 @@ const multisignatureAccountMemberSchema = {
 	secondPublicKey: Joi.string().required(),
 	balance: Joi.number().required(),
 	unconfirmedSignature: Joi.number().required(),
+	isMandatory: Joi.boolean().optional(), // TODO: required?
 };
 
 const multisignatureAccountSchema = {
 	lifetime: Joi.number().required(),
 	minimalNumberAcccounts: Joi.number().required(),
-	members: Joi.array().required(),
+	numberOfReqSignatures: Joi.number().optional(),
+	members: Joi.array().items(multisignatureAccountMemberSchema).required(),
 };
 
 const multisignatureMembershipSchema = {
 	address: Joi.string().required(),
-	balance: Joi.number().required(),
+	balance: Joi.string().required(),
 	lifetime: Joi.number().required(),
-	min: Joi.number().required(),
+	minimalNumberAcccounts: Joi.number().required(),
 	publicKey: Joi.string().required(),
 	secondPublicKey: Joi.string().required(),
 };
@@ -59,12 +73,9 @@ const transactionCountSchema = {
 	outgoing: Joi.string().required(),
 };
 
-const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema;
+const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema; //TODO: Removed?
 
-const unlockingHeightSchema = {
-	start: Joi.number().required,
-	end: Joi.number().required,
-};
+const unlockingHeightSchema = pomHeightsSchema;
 
 const unlockingItemSchema = {
 	amount: Joi.string().required(),
@@ -85,7 +96,7 @@ const accountSchema = {
 		.items(multisignatureMembershipSchema).optional(),
 	transactionCount: Joi.object(transactionCountSchema).required(),
 	unconfirmedMultisignatureMemberships: Joi.array()
-		.items(unconfirmedMultisignatureMembershipSchema).optional(),
+		.items(unconfirmedMultisignatureMembershipSchema).optional(), //TODO: Removed?
 	unlocking: Joi.array().items(unlockingItemSchema).optional(),
 };
 
