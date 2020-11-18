@@ -16,7 +16,6 @@
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const {
-	getUnixTime,
 	getBlockchainTime,
 	validateTimestamp,
 } = require('../common');
@@ -60,25 +59,7 @@ const getTransactions = async params => {
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
-
-		transactions.data = await BluebirdPromise.map(
-			transactions.data,
-			async transaction => {
-				const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
-				transaction.timestamp = txBlock.timestamp;
-				return transaction;
-			},
-			{ concurrency: transactions.data.length },
-		);
 	}
-
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => ({
-			...transaction, unixTimestamp: await getUnixTime(transaction.timestamp),
-		}),
-		{ concurrency: transactions.data.length },
-	);
 
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
