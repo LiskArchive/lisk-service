@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const util = require('util');
 
 const logger = Logger();
 
@@ -88,7 +89,7 @@ const getBlocks = async (params = {}, skipCache = false) => {
 	};
 
 	if (skipCache !== true && (params.blockId
-		|| params.numberOfTransactions
+		|| params.height
 		|| params.isFinal === true
 		|| params.isImmutable === true)) { // try to get from cache
 		const inputData = getSelector({
@@ -106,7 +107,10 @@ const getBlocks = async (params = {}, skipCache = false) => {
 	}
 
 	if (blocks.data.length === 0) {
-		logger.debug(`Retrieved block ${params.blockId || params.height || 'with custom search'} from Lisk Core`);
+		if (params.blockId) logger.debug(`Retrieved block with id ${params.blockId} from Lisk Core`);
+		else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
+		else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
+
 		blocks = await coreApi.getBlocks(params);
 		if (blocks.data.length > 0) {
 			const finalBlocks = blocks.data;
