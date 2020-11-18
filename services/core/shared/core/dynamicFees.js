@@ -221,7 +221,7 @@ const getEstimateFeeByte = async () => {
 		blockBatch.data = await BluebirdPromise.map(
 			range(batchSize),
 			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i })).data[0],
-			{ concurrency: batchSize }
+			{ concurrency: batchSize },
 		);
 
 		blockBatch.data = await BluebirdPromise.map(

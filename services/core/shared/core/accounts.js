@@ -70,7 +70,7 @@ const resolveDelegateInfoByAddress = async accounts => {
 			}
 			return account;
 		},
-		{ concurrency: accounts.length }
+		{ concurrency: accounts.length },
 	);
 	return accounts;
 };
