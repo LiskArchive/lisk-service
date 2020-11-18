@@ -218,9 +218,11 @@ const getEstimateFeeByte = async () => {
 	do {
 		/* eslint-disable no-await-in-loop */
 		const batchSize = config.feeEstimates.emaBatchSize;
-		blockBatch.data = await BluebirdPromise.map(range(batchSize), async i => (await getBlocks({
-			height: prevFeeEstPerByte.blockHeight + 1 - i,
-		})).data[0], { concurrency: batchSize });
+		blockBatch.data = await BluebirdPromise.map(
+			range(batchSize),
+			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i })).data[0],
+			{ concurrency: batchSize }
+		);
 
 		blockBatch.data = await BluebirdPromise.map(
 			blockBatch.data,

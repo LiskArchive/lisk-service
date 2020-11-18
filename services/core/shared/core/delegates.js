@@ -78,12 +78,12 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 };
 
 const getDelegates = async params => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-
 	const delegates = {
 		data: [],
 		meta: {},
 	};
+
+	const db = await pouchdb(config.db.collections.delegates.name);
 
 	const inputData = getSelector({
 		...params,

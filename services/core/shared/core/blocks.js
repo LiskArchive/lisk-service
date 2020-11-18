@@ -81,11 +81,12 @@ const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
 const getBlocks = async (params = {}, skipCache = false) => {
-	const blockDb = await pouchdb(config.db.collections.blocks.name);
-
-	let blocks = {
+	const blocks = {
 		data: [],
+		meta: {},
 	};
+
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
 	if (skipCache !== true && (params.blockId
 		|| params.numberOfTransactions
@@ -107,8 +108,11 @@ const getBlocks = async (params = {}, skipCache = false) => {
 
 	if (blocks.data.length === 0) {
 		logger.debug(`Retrieved block ${params.blockId || params.height || 'with custom search'} from Lisk Core`);
-		blocks = await coreApi.getBlocks(params);
-		if (blocks.data.length > 0) {
+		const response = await coreApi.getBlocks(params);
+		if (response.data) blocks.data = response.data;
+		if (response.meta) blocks.meta = response.meta;
+
+		if (blocks.data.length) {
 			const finalBlocks = blocks.data;
 			pushToDb(blockDb, finalBlocks);
 		}

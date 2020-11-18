@@ -32,10 +32,9 @@ const getTransactionsByBlock = async block => {
 };
 
 const getTransactions = async params => {
-	let transactions = {
+	const transactions = {
 		data: [],
 		meta: {},
-		links: {},
 	};
 
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
@@ -58,8 +57,11 @@ const getTransactions = async params => {
 			{ concurrency: blocks.data.length },
 		);
 	} else {
-		transactions = await coreApi.getTransactions(params);
-		await BluebirdPromise.map(
+		const response = await coreApi.getTransactions(params);
+		if (response.data) transactions.data = response.data;
+		if (response.meta) transactions.meta = response.meta;
+
+		transactions.data = await BluebirdPromise.map(
 			transactions.data,
 			async transaction => {
 				const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
@@ -70,15 +72,13 @@ const getTransactions = async params => {
 		);
 	}
 
-	if (transactions.data) {
-		transactions.data = await BluebirdPromise.map(
-			transactions.data,
-			async transaction => ({
-				...transaction, unixTimestamp: await getUnixTime(transaction.timestamp),
-			}),
-			{ concurrency: transactions.data.length },
-		);
-	}
+	transactions.data = await BluebirdPromise.map(
+		transactions.data,
+		async transaction => ({
+			...transaction, unixTimestamp: await getUnixTime(transaction.timestamp),
+		}),
+		{ concurrency: transactions.data.length },
+	);
 
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;

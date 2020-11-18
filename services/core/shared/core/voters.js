@@ -20,6 +20,7 @@ const getVoters = async params => {
 		data: [],
 		meta: {},
 	};
+
 	const response = await coreApi.getVoters(params);
 	voters.data = response.data.voters;
 	voters.meta = {
@@ -31,6 +32,7 @@ const getVoters = async params => {
 		publicKey: response.data.publicKey,
 		username: response.data.username,
 	};
+
 	return voters;
 };
 
