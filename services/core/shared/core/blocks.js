@@ -21,6 +21,7 @@ const logger = Logger();
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
 const config = require('../../config');
+const { getUsernameByAddress } = require('./delegateUtils');
 
 let lastBlock = {};
 
@@ -123,12 +124,7 @@ const getBlocks = async (params = {}, skipCache = false) => {
 	}
 
 	await Promise.all(blocks.data.map(async block => {
-		// TODO: Enable when delegate caching is done
-		// const username = await CoreService.getUsernameByAddress(block.generatorAddress);
-		const username = 'FIXME';
-		if (username) {
-			block.generatorUsername = username;
-		}
+		block.generatorUsername = await getUsernameByAddress(block.generatorAddress);
 		return block;
 	}));
 
