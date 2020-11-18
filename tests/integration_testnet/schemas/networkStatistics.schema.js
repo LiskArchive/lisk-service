@@ -16,18 +16,28 @@
 import Joi from 'joi';
 
 const basicNetworkStatisticsSchema = {
-	connectedPeers: Joi.number().required(),
-	disconnectedPeers: Joi.number().required(),
-	totalPeers: Joi.number().required(),
+	connectedPeers: Joi.number().integer().positive().required(),
+	disconnectedPeers: Joi.number().integer().positive().required(),
+	totalPeers: Joi.number().integer().positive().required(),
 };
 
 const networkStatisticsSchema = {
 	basic: Joi.object(basicNetworkStatisticsSchema).required(),
-	height: Joi.object().required(), // TODO: Check if generic "string: number" validation possible?
-	coreVer: Joi.object().required(),
-	os: Joi.object().required(),
+	height: Joi.object().min(1).required()
+		.pattern(
+			Joi.string().pattern(/^[0-9]+$/).required(),
+			Joi.number().integer().positive().required()),
+	coreVer: Joi.object().min(1).required()
+		.pattern(
+			Joi.string().required()
+				.pattern(/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/),
+			Joi.number().integer().positive().required()),
+	os: Joi.object().min(1).required()
+		.pattern(
+			Joi.string().pattern(/^[a-zA-Z0-9.]+$/).required(),
+			Joi.number().integer().positive().required()),
 };
 
 module.exports = {
-	networkStatisticsSchema: Joi.object(networkStatisticsSchema),
+	networkStatisticsSchema: Joi.object(networkStatisticsSchema).required(),
 };
