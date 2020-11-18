@@ -15,6 +15,8 @@
  */
 const { Logger } = require('lisk-service-framework');
 
+const BluebirdPromise = require('bluebird');
+
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const requestAll = require('../requestAll');
@@ -106,6 +108,19 @@ const getTransactions = async params => {
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
+
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				if (!transaction.timestamp) {
+					const txBlock = (await getBlocks({ height: transaction.height })).data[0];
+					transaction.timestamp = txBlock.timestamp;
+				}
+				transaction.unixTimestamp = await coreApi.getUnixTime(transaction.timestamp);
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
 
 		if (transactions.data.length) await db.writeBatch(transactions.data);
 	}

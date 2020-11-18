@@ -15,7 +15,6 @@
  */
 const coreApi = require('./coreApi');
 const {
-	getUnixTime,
 	getBlockchainTime,
 	validateTimestamp,
 } = require('../common');
@@ -30,14 +29,6 @@ const getTransactions = async params => {
 	);
 
 	const transactions = await coreApi.getTransactions(params);
-
-	if (transactions.data) {
-		await Promise.all(transactions.data.map(async (o) => Object.assign(o, {
-			unixTimestamp: await getUnixTime(o.timestamp),
-		}),
-		));
-	}
-
 	return transactions;
 };
 
