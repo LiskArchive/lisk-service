@@ -5,7 +5,6 @@ services:
     image: lisk/service_core
     depends_on:
       - redis_common
-      - postgres_core
       - redis_core
     networks:
       - services_network
@@ -14,16 +13,6 @@ services:
     env_file:
       - ./lisk_service/env/common.env
       - ./lisk_service/env/core.env
-
-  postgres_core:
-    image: postgres:10-alpine
-    volumes:
-      - postgres_core_vol:/var/lib/postgresql/data
-    networks:
-      - core_network
-    restart: always
-    env_file:
-      - ./lisk_service/env/core-postgres.env
 
   redis_core:
     image: redis:5-alpine
@@ -39,9 +28,6 @@ services:
   gateway:
     depends_on:
       - core
-
-volumes:
-  postgres_core_vol:
 
 networks:
   core_network:

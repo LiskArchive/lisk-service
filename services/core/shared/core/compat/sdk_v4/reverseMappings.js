@@ -50,9 +50,9 @@ const responseMappers = {
 };
 
 const mapToOriginal = (response, type) => {
-    const mapper = responseMappers[type];
-    if (mapper) {
-        response = mapper(response);
+    if (response.data) {
+        const mapper = responseMappers[type];
+        if (mapper) response = mapper(response);
     }
     return response;
 };
