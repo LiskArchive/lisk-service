@@ -13,15 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
-import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
-
 const { api } = require('../../helpers/socketIoRpcRequest');
 
-const goodRequestSchema = Joi.object({
-	data: Joi.object().required(),
-	meta: Joi.object().required(),
-});
+const {
+	invalidParamsSchema,
+} = require('../../schemas/rpcGenerics.schema');
+
+const {
+	goodRequestSchema,
+	networkStatisticsSchema,
+} = require('../../schemas/networkStatistics.schema');
 
 const requestNetworkStatistics = async params => api.getJsonRpcV1('get.network.statistics', params);
 
@@ -30,5 +31,10 @@ describe('get.network.statistics', () => {
 		const response = await requestNetworkStatistics();
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(networkStatisticsSchema);
+	});
+
+	xit('params not supported -> 400 BAD REQUEST', async () => {
+		const response = await requestNetworkStatistics({ someparam: 'not_supported' }).catch(e => e);
+		expect(response).toMap(invalidParamsSchema);
 	});
 });

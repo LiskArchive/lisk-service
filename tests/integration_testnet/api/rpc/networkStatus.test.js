@@ -13,9 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import networkStatusSchema from '../../schemas/networkStatus.schema';
-
 const { api } = require('../../helpers/socketIoRpcRequest');
+
+const {
+	invalidParamsSchema,
+} = require('../../schemas/rpcGenerics.schema');
+
+const {
+	networkStatusSchema,
+} = require('../../schemas/networkStatus.schema');
 
 const requestNetworkStatus = async params => api.getJsonRpcV1('get.network.status', params);
 
@@ -23,5 +29,10 @@ describe('get.network.status', () => {
 	it('returns network status', async () => {
 		const response = await requestNetworkStatus();
 		expect(response).toMap(networkStatusSchema);
+	});
+
+	xit('params not supported -> 400 BAD REQUEST', async () => {
+		const response = await requestNetworkStatus({ someparam: 'not_supported' }).catch(e => e);
+		expect(response).toMap(invalidParamsSchema);
 	});
 });
