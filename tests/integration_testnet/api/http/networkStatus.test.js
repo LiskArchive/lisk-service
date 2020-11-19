@@ -13,49 +13,36 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
+const config = require('../../config');
+const { api } = require('../../helpers/api');
 
-import api from '../../helpers/api';
-import config from '../../config';
+const {
+	badRequestSchema,
+} = require('../../schemas/httpGenerics.schema');
 
-import networkStatisticsSchema from '../../schemas/networkStatistics.schema';
+const {
+	networkStatusSchema,
+} = require('../../schemas/networkStatus.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
-const endpointStatus = `${baseUrlV1}/network/status`;
-const endpointStatistics = `${baseUrlV1}/network/statistics`;
+const endpoint = `${baseUrlV1}/network/status`;
 
-const networkSchema = {
-	broadhash: 'string',
-	epoch: 'string',
-	fees: 'object',
-	height: 'number',
-	milestone: 'string',
-	nethash: 'string',
-	networkHeight: 'number',
-	reward: 'string',
-	supply: 'string',
-};
-
-const goodRequestSchema = Joi.object({
-	data: Joi.object().required(),
-	meta: Joi.object().required(),
-	links: Joi.object().required(),
-});
-
-describe('Network API', () => {
-	describe(`GET ${endpointStatus}`, () => {
-		it('retrieves network status -> ok', async () => {
-			const response = await api.get(`${endpointStatus}`);
-			expect(response).toMapRequiredSchema(networkSchema);
+describe('Network Status API', () => {
+	describe(`GET ${endpoint}`, () => {
+		it('retrieves network status -> 200 OK', async () => {
+			const response = await api.get(endpoint);
+			expect(response).toMap(networkStatusSchema);
 		});
-	});
 
-	xdescribe(`GET ${endpointStatistics}`, () => {
-		it('retrieves network statistics -> ok', async () => {
-			const response = await api.get(endpointStatistics);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toMap(networkStatisticsSchema);
+		it('params not supported -> 400 BAD REQUEST', async () => {
+			const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('params (empty) not supported -> 400 BAD REQUEST', async () => {
+			const response = await api.get(`${endpoint}?emptyparam=`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 });
