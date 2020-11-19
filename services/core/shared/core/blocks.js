@@ -82,45 +82,60 @@ const pushToDb = async (blockDb, blocks) => {
 const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
+const getBlocksFromCache = async params => {
+	const blockDb = await pouchdb(config.db.collections.blocks.name);
+
+	const inputData = getSelector({
+		...params,
+		limit: params.limit || 10,
+		offset: params.offset || 0,
+	});
+
+	const dbResult = await blockDb.find(inputData);
+
+	if (dbResult.length > 0) {
+		const blocks = dbResult.map((block) => ({
+			...block,
+			confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
+		}));
+
+		return blocks;
+	}
+
+	return [];
+};
+
+const getBlocksFromServer = async params => {
+	if (params.blockId) logger.debug(`Retrieved block with id ${params.blockId} from Lisk Core`);
+	else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
+	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
+
+	const blocks = await coreApi.getBlocks(params);
+
+	if (blocks.data.length) {
+		const blockDb = await pouchdb(config.db.collections.blocks.name);
+		const finalBlocks = blocks.data;
+		pushToDb(blockDb, finalBlocks);
+	}
+
+	return blocks || [];
+};
+
 const getBlocks = async (params = {}, skipCache = false) => {
-	const blocks = {
+	let blocks = {
 		data: [],
 		meta: {},
 	};
-
-	const blockDb = await pouchdb(config.db.collections.blocks.name);
 
 	if (skipCache !== true && (params.blockId
 		|| params.height
 		|| params.isFinal === true
 		|| params.isImmutable === true)) { // try to get from cache
-		const inputData = getSelector({
-			...params,
-			limit: params.limit || 10,
-			offset: params.offset || 0,
-		});
-		const dbResult = await blockDb.find(inputData);
-		if (dbResult.length > 0) {
-			blocks.data = dbResult.map((block) => ({
-				...block,
-				confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
-			}));
-		}
+			blocks.data = await getBlocksFromCache(params);
 	}
 
 	if (blocks.data.length === 0) {
-		if (params.blockId) logger.debug(`Retrieved block with id ${params.blockId} from Lisk Core`);
-		else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
-		else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
-
-		const response = await coreApi.getBlocks(params);
-		if (response.data) blocks.data = response.data;
-		if (response.meta) blocks.meta = response.meta;
-
-		if (blocks.data.length) {
-			const finalBlocks = blocks.data;
-			pushToDb(blockDb, finalBlocks);
-		}
+		blocks = await getBlocksFromServer(params);
 	}
 
 	await Promise.all(blocks.data.map(async block => {

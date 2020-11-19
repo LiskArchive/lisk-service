@@ -13,17 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getDelegates } = require('./delegates');
+const pouchdb = require('../pouchdb');
+const config = require('../../config');
 
 const getUsernameByAddress = async (address) => {
-	const dbResult = await getDelegates({ address });
+	const db = await pouchdb(config.db.collections.delegates.name);
+	const dbResult = await db.find({ selector: { address } });
 	if (dbResult.length === 1) return dbResult[0].username;
 	return null;
 };
 
 const getAddressByUsername = async (username) => {
-	const dbResult = await getDelegates({ username });
-	if (dbResult.length === 1) return dbResult[0].address;
+	const db = await pouchdb(config.db.collections.delegates.name);
+	const dbResult = await db.find({ selector: { username } });
+	if (dbResult.length === 1) return dbResult[0].username;
 	return null;
 };
 
