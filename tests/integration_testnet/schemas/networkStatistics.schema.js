@@ -38,6 +38,13 @@ const networkStatisticsSchema = {
 			Joi.number().integer().positive().required()),
 };
 
+const goodRequestSchema = {
+	data: Joi.object(networkStatisticsSchema).required(),
+	meta: Joi.object().required(),
+	links: Joi.object().optional(),
+};
+
 module.exports = {
+	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 	networkStatisticsSchema: Joi.object(networkStatisticsSchema).required(),
 };
