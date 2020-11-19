@@ -149,7 +149,7 @@ const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 		1 - Math.pow(1 - emaDecayRate, 1 / emaBatchSize)).toFixed(5);
 
 	const alpha = calcExpDecay(config.feeEstimates.emaBatchSize, config.feeEstimates.emaDecayRate);
-	logger.info(`Estimating fees with 'α' for EMA set to ${alpha}.`);
+	logger.debug(`Estimating fees with 'α' for EMA set to ${alpha}.`);
 
 	const feeEst = {};
 	if (Object.keys(prevFeeEstPerByte).length === 0) prevFeeEstPerByte = { low: 0, med: 0, high: 0 };
