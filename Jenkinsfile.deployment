@@ -44,8 +44,8 @@ pipeline {
 			steps {
 				ansiColor('xterm') {
 					dir('docker') {
-						sh 'make -f Makefile.deployment.alphanet mrproper'
-						sh 'make -f Makefile.deployment.alphanet up'
+						sh 'make -f Makefile.deployment.betanet mrproper'
+						sh 'make -f Makefile.deployment.betanet up'
 					}
 				}
 			}

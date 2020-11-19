@@ -52,7 +52,6 @@ module.exports = {
 				LISK_CORE_HTTP: 'https://testnet.lisk.io',
 				LISK_CORE_WS: 'wss://testnet.lisk.io',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
-				SERVICE_CORE_POSTGRES: 'postgres://lisk:password@localhost:5432/lisk',
 				LISK_STATIC: 'https://static-data.lisk.io',
 				GEOIP_JSON: 'https://geoip.lisk.io/json',
 			},

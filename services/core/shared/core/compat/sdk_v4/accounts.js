@@ -51,22 +51,27 @@ const confirmSecondPublicKey = async secondPublicKey => {
 };
 
 const resolveUnlockingHeight = async accounts => {
-    accounts.data.map(account => {
-        account.unlocking = account.unlocking.map(item => {
-            const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-                ? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
-            item.height = {
-                start: item.unvoteHeight,
-                end: item.unvoteHeight + balanceUnlockWaitHeight,
-            };
-            return item;
+	accounts.map(account => {
+		account.unlocking = account.unlocking.map(item => {
+			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
+			item.height = {
+				start: item.unvoteHeight,
+				end: item.unvoteHeight + balanceUnlockWaitHeight,
+			};
+			return item;
 		});
 		return account;
-    });
-    return accounts;
+	});
+	return accounts;
 };
 
 const getAccounts = async params => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+
 	const requestParams = {
 		limit: params.limit,
 		offset: params.offset,
@@ -94,8 +99,12 @@ const getAccounts = async params => {
 		requestParams.secondPublicKey = params.secondPublicKey;
 	}
 
-	const result = await coreApi.getAccounts(requestParams);
-	const accounts = await resolveUnlockingHeight(result);
+	const response = await coreApi.getAccounts(requestParams);
+	if (response.data) accounts.data = response.data;
+	if (response.meta) accounts.meta = response.meta;
+
+	accounts.data = await resolveUnlockingHeight(accounts.data);
+
 	return accounts;
 };
 
@@ -130,4 +139,4 @@ module.exports = {
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
- };
+};

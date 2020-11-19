@@ -19,6 +19,7 @@ const core = require('../shared/core');
 const signals = require('../shared/signals');
 
 const numOfBlocks = 202;
+let localPreviousBlockId;
 
 module.exports = [
 	{
@@ -28,7 +29,14 @@ module.exports = [
 			signals.get('newBlock').add(async data => {
 				logger.debug(`New block arrived (${data.id})...`);
 				core.setLastBlock(data);
-				core.reloadBlocks(numOfBlocks);
+
+				// Check for forks
+				if (!localPreviousBlockId) localPreviousBlockId = data.previousBlockId;
+				if (localPreviousBlockId !== data.previousBlockId) {
+					logger.debug(`Fork detected: reloading the last ${numOfBlocks} blocks`);
+					core.reloadBlocks(numOfBlocks);
+				}
+
 				core.reloadAllPendingTransactions();
 				callback(data);
 			});

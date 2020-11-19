@@ -20,7 +20,7 @@ const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
-const { getBlocks } = require('./blocks');
+const { getLastBlock } = require('./blocks');
 
 const logger = Logger();
 
@@ -78,12 +78,12 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 };
 
 const getDelegates = async params => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-
 	const delegates = {
 		data: [],
 		meta: {},
 	};
+
+	const db = await pouchdb(config.db.collections.delegates.name);
 
 	const inputData = getSelector({
 		...params,
@@ -157,7 +157,7 @@ const computeDelegateRankAndStatus = async () => {
 	};
 
 	const allDelegates = await db.findAll();
-	const lastestBlock = await getBlocks({ limit: 1 });
+	const lastestBlock = getLastBlock();
 	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
 
