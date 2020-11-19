@@ -40,10 +40,14 @@ module.exports = [
 				const restData = await core.getBlocks({ blockId: data.id });
 				core.setLastBlock(restData.data[0]);
 				signals.blockCached.dispatch(restData.data[0]);
+
+				// Check for forks
+				if (!localPreviousBlockId) localPreviousBlockId = restData.data[0].previousBlockId;
 				if (localPreviousBlockId !== restData.data[0].previousBlockId) {
 					logger.debug(`Fork detected: reloading the last ${numOfBlocks} blocks`);
 					core.reloadBlocks(numOfBlocks);
 				}
+
 				core.reloadAllPendingTransactions();
 				localPreviousBlockId = restData.data[0].id;
 				callback(restData.data[0]);
