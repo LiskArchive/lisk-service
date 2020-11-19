@@ -77,7 +77,7 @@ const unlockingHeightSchema = pomHeightSchema;
 
 const unlockingItemSchema = {
 	amount: Joi.string().required(),
-	height: Joi.object(unlockingHeightSchema).required,
+	height: Joi.object(unlockingHeightSchema).required(),
 	delegateAddress: Joi.string().required(),
 };
 
