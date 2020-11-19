@@ -118,7 +118,7 @@ const getBlocksFromServer = async params => {
 		pushToDb(blockDb, finalBlocks);
 	}
 
-	return blocks || [];
+	return blocks;
 };
 
 const getBlocks = async (params = {}, skipCache = false) => {
