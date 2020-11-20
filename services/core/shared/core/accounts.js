@@ -14,12 +14,10 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-const { getDelegates } = require('./delegates');
 
 const logger = Logger();
 let topAccounts = [];
@@ -57,27 +55,17 @@ const getSelector = params => {
 };
 
 const getTopAccounts = () => new Promise((resolve) => {
-		resolve(topAccounts);
-	});
-
-const resolveDelegateInfoByAddress = async accounts => {
-	await BluebirdPromise.map(
-		accounts.data, async account => {
-			if (account.isDelegate) {
-				const delegateInfo = (await getDelegates({ address: account.address })).data[0];
-				account.delegate = delegateInfo;
-			}
-			return account;
-		}, { concurrency: accounts.data.length });
-return accounts;
-};
+	resolve(topAccounts);
+});
 
 const getAccounts = async params => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+
 	const db = await pouchdb(config.db.collections.accounts.name);
 
-	let accounts = {
-		data: [],
-	};
 	// read from cache if available
 	const cachedAccounts = await getTopAccounts();
 	accounts.data = cachedAccounts.filter(
@@ -104,24 +92,27 @@ const getAccounts = async params => {
 				const sortProp = params.sort.split(':')[0];
 				const sortOrder = params.sort.split(':')[1];
 				if (sortOrder === 'desc') dbResult.sort((a, b) => {
-						let compareResult;
-						try {
-							if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-								compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-							}
-						} catch (err) {
-							compareResult = a[sortProp].localeCompare(b[sortProp]);
+					let compareResult;
+					try {
+						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
 						}
-						return compareResult;
-					});
+					} catch (err) {
+						compareResult = a[sortProp].localeCompare(b[sortProp]);
+					}
+					return compareResult;
+				});
 
 				accounts.data = dbResult;
 			}
 		}
 	}
 	if (accounts.data.length === 0) {
-		accounts = await coreApi.getAccounts(params);
-		if (accounts.data.length > 0) {
+		const response = await coreApi.getAccounts(params);
+		if (response.data) accounts.data = response.data;
+		if (response.meta) accounts.meta = response.meta;
+
+		if (accounts.data.length) {
 			const allAccounts = accounts.data.map((account) => {
 				account.id = account.address;
 				return account;
@@ -129,7 +120,6 @@ const getAccounts = async params => {
 			await db.writeBatch(allAccounts);
 		}
 	}
-    accounts = await resolveDelegateInfoByAddress(accounts);
 	return accounts;
 };
 

@@ -21,8 +21,15 @@ const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
 const getDelegates = async params => {
+	const delegates = {
+		data: [],
+		meta: {},
+	};
+
 	const punishmentHeight = 780000;
-	const delegates = await coreApi.getDelegates(params);
+	const response = await coreApi.getDelegates(params);
+	if (response.data) delegates.data = response.data;
+	if (response.meta) delegates.meta = response.meta;
 
 	delegates.data.map((delegate, index) => {
 		delegate.account = {

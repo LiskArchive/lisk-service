@@ -41,6 +41,11 @@ const {
 } = require('./delegates');
 
 const {
+	getUsernameByAddress,
+	getAddressByUsername,
+} = require('./delegateUtils');
+
+const {
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
@@ -79,11 +84,9 @@ const {
 	confirmAnyId,
 	getAddressByAny,
 	getAddressByPublicKey,
-	getAddressByUsername,
 	getPublicKeyByAny,
 	getPublicKeyByAddress,
 	getPublicKeyByUsername,
-	getUsernameByAddress,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
