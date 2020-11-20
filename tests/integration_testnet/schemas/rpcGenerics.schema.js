@@ -61,6 +61,8 @@ const emptyResponseSchema = {
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 };
 
+const jsonRpcListSchema = Joi.array().items(jsonRpcEnvelopeSchema).required();
+
 module.exports = {
 	...require('./generics.schema'),
 	jsonRPCSchema,
@@ -68,5 +70,6 @@ module.exports = {
 	invalidRequestSchema: Joi.object(invalidRequestSchema).required(),
 	wrongMethodSchema: Joi.object(wrongMethodSchema).required(),
 	jsonRpcEnvelopeSchema: Joi.object(jsonRpcEnvelopeSchema).required(),
+	jsonRpcListSchema,
 	emptyResponseSchema: Joi.object(emptyResponseSchema).required(),
 };

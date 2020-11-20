@@ -24,11 +24,13 @@ const metaSchema = {
 const resultEnvelopeSchema = {
 	data: Joi.array().required(),
 	meta: metaSchema,
+	links: Joi.object().optional(),
 };
 
 const emptyResultEnvelopeSchema = {
 	data: Joi.array().length(0).required(),
 	meta: Joi.object().length(0).required(),
+	links: Joi.object().optional(),
 };
 
 module.exports = {
