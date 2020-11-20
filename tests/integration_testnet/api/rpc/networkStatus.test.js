@@ -13,9 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { api } = require('../../helpers/socketIoRpcRequest');
+const config = require('../../config');
+const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
+	goodRequestSchema,
+	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
 } = require('../../schemas/rpcGenerics.schema');
 
@@ -23,15 +26,18 @@ const {
 	networkStatusSchema,
 } = require('../../schemas/networkStatus.schema');
 
-const requestNetworkStatus = async params => api.getJsonRpcV1('get.network.status', params);
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+const requestNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
 
 describe('get.network.status', () => {
 	it('returns network status', async () => {
 		const response = await requestNetworkStatus();
-		expect(response).toMap(networkStatusSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result).toMap(networkStatusSchema);
 	});
 
-	xit('params not supported -> 400 BAD REQUEST', async () => {
+	it('params not supported -> 400 BAD REQUEST', async () => {
 		const response = await requestNetworkStatus({ someparam: 'not_supported' }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});

@@ -30,7 +30,6 @@ const {
 } = require('../../schemas/account.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
-
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 
 describe('Method get.accounts', () => {

@@ -30,7 +30,6 @@ const {
 } = require('../../schemas/delegate.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
-
 const getNextForgers = async params => request(wsRpcUrl, 'get.delegates.next_forgers', params);
 
 describe('Method get.next_forgers', () => {

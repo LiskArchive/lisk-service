@@ -29,7 +29,6 @@ const {
 } = require('../../schemas/transaction.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
-
 const requestTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
 describe('Method get.transactions', () => {

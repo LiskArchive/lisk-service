@@ -31,7 +31,6 @@ const {
 } = require('../../schemas/feeEstimate.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
-
 const requestFeeEstimate = async () => request(wsRpcUrl, 'get.fee_estimates');
 
 describe('get.fee_estimates', () => {
