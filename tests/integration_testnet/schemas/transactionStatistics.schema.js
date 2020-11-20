@@ -15,7 +15,13 @@
  */
 import Joi from 'joi';
 
-export const timelineItemSchema = {
+const goodRequestSchema = {
+	data: Joi.object().required(),
+	meta: Joi.object().required(),
+	links: Joi.object().optional(),
+};
+
+const timelineItemSchema = {
 	timestamp: Joi.number().required(),
 	date: Joi.string().required(),
 	transactionCount: Joi.number().required(),
@@ -28,7 +34,7 @@ const transactionStatisticsSchema = {
 	distributionByAmount: Joi.object().required(),
 };
 
-export const metaSchema = {
+const metaSchema = {
 	limit: Joi.number().required(),
 	offset: Joi.number().required(),
 	dateFormat: Joi.string().required(),
@@ -37,6 +43,8 @@ export const metaSchema = {
 };
 
 module.exports = {
-	transactionStatisticsSchema: Joi.object(transactionStatisticsSchema),
-	metaSchema: Joi.object(metaSchema),
+	timelineItemSchema: Joi.object(timelineItemSchema).required(),
+	transactionStatisticsSchema: Joi.object(transactionStatisticsSchema).required(),
+	goodRequestSchema: Joi.object(goodRequestSchema).required(),
+	metaSchema: Joi.object(metaSchema).required(),
 };

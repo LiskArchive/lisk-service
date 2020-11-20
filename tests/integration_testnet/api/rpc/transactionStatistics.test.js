@@ -14,102 +14,116 @@
  *
  */
 import moment from 'moment';
-import { JSON_RPC } from '../../helpers/errorCodes';
 
-const { api } = require('../../helpers/socketIoRpcRequest');
+const config = require('../../config');
+const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
-	goodRequestSchema,
-	dataSchema,
 	invalidParamsSchema,
-} = require('../../schemas/generics.schema');
+	jsonRpcEnvelopeSchema,
+	wrongMethodSchema,
+} = require('../../schemas/rpcGenerics.schema');
 
 const {
 	timelineItemSchema,
+	transactionStatisticsSchema,
+	goodRequestSchema,
 	metaSchema,
 } = require('../../schemas/transactionStatistics.schema');
 
-const { badRequestSchema } = require('../../helpers/schemas/general');
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+
+const requestTransactionStatistics = async (mode, params) => request(wsRpcUrl, `get.transactions.statistics.${mode}`, params);
 
 describe('get.transactions.statistics.{aggregateBy}', () => {
-	const baseMethod = 'get.transactions.statistics';
 	[{
 		aggregateBy: 'day',
 		dateFormat: 'YYYY-MM-DD',
-	}, {
+	},
+	{
 		aggregateBy: 'month',
 		dateFormat: 'YYYY-MM',
 	}].forEach(({ aggregateBy, dateFormat }) => {
 		describe(`get.transactions.statistics.${aggregateBy}`, () => {
-			const endpoint = `${baseMethod}.${aggregateBy}`;
 			const startOfUnitUtc = moment().utc().startOf(aggregateBy);
 
-			it(`returns stats for last 10 ${aggregateBy}s if called without any params`, async () => {
-				const response = await api.getJsonRpcV1(endpoint);
-				expect(response).toMap(goodRequestSchema);
-				expect(response.meta).toMap(metaSchema);
-				expect(response.data).toMap(dataSchema);
-
-				// expect(response.data.timeline).toHaveLength(10);
-				response.data.timeline.forEach((item) => {
-					// const date = moment(startOfUnitUtc).subtract(i, aggregateBy);
-					expect(item).toMap(timelineItemSchema);
-				});
+			it(`returns stats for aggregated by ${aggregateBy}, if called without any params`, async () => {
+				const response = await requestTransactionStatistics(aggregateBy);
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(goodRequestSchema);
+				expect(result.data).toMap(transactionStatisticsSchema);
+				expect(result.meta).toMap(metaSchema);
 			});
 
 			it(`returns stats for this ${aggregateBy} if called with ?limit=1`, async () => {
 				const limit = 1;
-				const response = await api.getJsonRpcV1(endpoint, { limit });
-				expect(response).toMap(goodRequestSchema);
-				expect(response.meta).toMap(metaSchema, { limit });
-				expect(response.data).toMap(dataSchema);
-
-				expect(response.data.timeline).toHaveLength(1);
-				expect(response.data.timeline[0]).toMap(timelineItemSchema, {
-					date: startOfUnitUtc.format(dateFormat),
-					timestamp: startOfUnitUtc.unix(),
-				});
+				const response = await requestTransactionStatistics(aggregateBy, { limit });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(goodRequestSchema);
+				expect(result.data).toMap(transactionStatisticsSchema);
+				expect(result.data.timeline).toHaveLength(1);
+				result.data.timeline.forEach(timelineItem =>
+					expect(timelineItem).toMap(timelineItemSchema, {
+						date: startOfUnitUtc.format(dateFormat),
+						timestamp: startOfUnitUtc.unix(),
+					}));
+				expect(result.meta).toMap(metaSchema, { limit });
 			});
 
-			xit(`returns stats for previous ${aggregateBy} if called with ?limit=1&offset=1`, async () => {
+			it(`returns stats for previous ${aggregateBy} if called with ?limit=1&offset=1`, async () => {
 				const limit = 1;
 				const offset = 1;
-				const starOfYestarday = moment(startOfUnitUtc).subtract(1, aggregateBy);
+				const startOfYesterday = moment(startOfUnitUtc).subtract(1, aggregateBy);
 
-				const response = await api.getJsonRpcV1(endpoint, { limit, offset });
-
-				expect(response.meta).toMap(metaSchema, {
+				const response = await requestTransactionStatistics(aggregateBy, { limit, offset });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(goodRequestSchema);
+				expect(result.data).toMap(transactionStatisticsSchema);
+				expect(result.data.timeline).toHaveLength(1);
+				result.data.timeline.forEach(timelineItem =>
+					expect(timelineItem).toMap(timelineItemSchema, {
+						date: startOfYesterday.format(dateFormat),
+						timestamp: startOfYesterday.unix(),
+					}));
+				expect(result.meta).toMap(metaSchema, {
+					limit,
 					offset,
 					dateFormat,
-					dateFrom: starOfYestarday.format(dateFormat),
-					dateTo: starOfYestarday.format(dateFormat),
-				});
-
-				expect(response.data.timeline).toHaveLength(1);
-				expect(response.data.timeline[0]).toMap(timelineItemSchema, {
-					date: starOfYestarday.format(dateFormat),
-					timestamp: starOfYestarday.unix(),
+					dateFrom: startOfYesterday.format(dateFormat),
+					dateTo: startOfYesterday.format(dateFormat),
 				});
 			});
 
-			xit(`returns stats for previous ${aggregateBy} and the ${aggregateBy} before if called with ?limit=2&offset=1`, async () => {
+			it(`returns stats for previous ${aggregateBy} and the ${aggregateBy} before if called with ?limit=2&offset=1`, async () => {
+				const limit = 2;
 				const offset = 1;
-				const response = await api.getJsonRpcV1(endpoint, { limit: 2, offset });
 
-				expect(response.data.timeline).toHaveLength(2);
-				response.data.timeline.forEach((item, i) => {
+				const response = await requestTransactionStatistics(aggregateBy, { limit, offset });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result).toMap(goodRequestSchema);
+				expect(result.data).toMap(transactionStatisticsSchema);
+				expect(result.data.timeline).toHaveLength(2);
+				result.data.timeline.forEach((timelineItem, i) => {
 					const date = moment(startOfUnitUtc).subtract(i + offset, aggregateBy);
-
-					expect(item).toMap(timelineItemSchema, {
+					expect(timelineItem).toMap(timelineItemSchema, {
 						date: date.format(dateFormat),
 						timestamp: date.unix(),
 					});
 				});
+				expect(result.meta).toMap(metaSchema, {
+					limit,
+					offset,
+					dateFormat,
+				});
 			});
 
-			it('returns error 400 if called with ?limit=101 or higher', async () => {
-				const error = await api.getJsonRpcV1(endpoint, { limit: 101 });
-				expect(error).toMap(invalidParamsSchema);
+			it('returns invalid param error (-32602) if called with ?limit=101 or higher', async () => {
+				const response = await requestTransactionStatistics(aggregateBy, { limit: 101 });
+				expect(response).toMap(invalidParamsSchema);
 			});
 
 			// TODO implement this case in the API
@@ -117,12 +131,10 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 		});
 	});
 
-	xdescribe('GET /transactions/statistics/year', () => {
-		const endpoint = `${baseMethod}.year`;
-
-		it(`returns error METHOD_NOT_FOUND ${JSON_RPC.METHOD_NOT_FOUND[0]}) if called without any params as years are not supported`, async () => {
-			const error = await api.getJsonRpcV1(endpoint);
-			expect(error).toMap(badRequestSchema, { code: JSON_RPC.METHOD_NOT_FOUND[0] });
+	describe('GET get.transactions.statistics.year', () => {
+		it(`returns error METHOD_NOT_FOUND (-32601)) if called without any params as years are not supported`, async () => {
+			const response = await requestTransactionStatistics('year');
+			expect(response).toMap(wrongMethodSchema);
 		});
 	});
 });
