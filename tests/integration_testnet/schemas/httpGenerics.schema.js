@@ -28,6 +28,8 @@ const badRequestSchema = {
 
 const notFoundSchema = badRequestSchema;
 
+const urlNotFoundSchema = badRequestSchema;
+
 const wrongInputParamSchema = badRequestSchema;
 
 module.exports = {
@@ -35,5 +37,6 @@ module.exports = {
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 	badRequestSchema: Joi.object(badRequestSchema).required(),
 	notFoundSchema: Joi.object(notFoundSchema).required(),
+	urlNotFoundSchema: Joi.object(urlNotFoundSchema).required(),
 	wrongInputParamSchema: Joi.object(wrongInputParamSchema).required(),
 };
