@@ -13,19 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const pouchdb = require('../pouchdb');
+const { CacheRedis } = require('lisk-service-framework');
 const config = require('../../config');
 
+const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
+
 const getUsernameByAddress = async (address) => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-	const dbResult = await db.find({ selector: { address } });
+	const delegate = await cacheRedisDelegates.get('delegateCache');
+	const dbResult = await delegate.filter((acc) => (acc.address && acc.address === address));
 	if (dbResult.length === 1) return dbResult[0].username;
 	return null;
 };
 
 const getAddressByUsername = async (username) => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-	const dbResult = await db.find({ selector: { username } });
+	const delegate = await cacheRedisDelegates.get('delegateCache');
+	const dbResult = await delegate.filter((acc) => (acc.username && acc.username === username));
 	if (dbResult.length === 1) return dbResult[0].username;
 	return null;
 };
