@@ -16,8 +16,8 @@
 import Joi from 'joi';
 
 const basicNetworkStatisticsSchema = {
-	connectedPeers: Joi.number().integer().positive().required(),
-	disconnectedPeers: Joi.number().integer().positive().required(),
+	connectedPeers: Joi.number().integer().min(0).required(),
+	disconnectedPeers: Joi.number().integer().min(0).required(),
 	totalPeers: Joi.number().integer().positive().required(),
 };
 
