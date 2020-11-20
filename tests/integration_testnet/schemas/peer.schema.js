@@ -20,7 +20,7 @@ const { jsonRPCSchema } = require('./rpcGenerics.schema');
 const allowedPeerStateNames = ['connected', 'disconnected'];
 
 const locationSchema = {
-	city: Joi.string().required(),
+	city: Joi.string().optional(),
 	countryCode: Joi.string().length(2).optional(),
 	countryName: Joi.string().optional(),
 	hostname: Joi.string().optional(),
