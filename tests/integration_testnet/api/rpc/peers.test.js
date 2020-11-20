@@ -13,31 +13,33 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import to from 'await-to-js';
-import Joi from 'joi';
-
-import config from '../../config';
-import peerSchema from '../../schemas/peer.schema';
-import request from '../../helpers/socketIoRpcRequest';
+const config = require('../../config');
+const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
-	emptyResultEnvelopeSchema,
 	jsonRpcEnvelopeSchema,
-	resultEnvelopeSchema,
-} = require('../../schemas/generics.schema');
+	metaSchema,
+} = require('../../schemas/rpcGenerics.schema');
+
+const {
+	emptyResponseSchema,
+	emptyResultEnvelopeSchema,
+	peerSchema,
+} = require('../../schemas/peer.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 const requestPeers = async params => request(wsRpcUrl, 'get.peers', params);
-
-const peerListSchema = Joi.array().items(peerSchema).required();
 
 describe('get.peers', () => {
 	it('is able to receive data', async () => {
 		const response = await requestPeers({ state: 'connected' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(resultEnvelopeSchema);
-		expect(response.result.data).toMap(peerListSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		result.data.forEach(peer => expect(peer).toMap(peerSchema));
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('invalid type fails', async () => {
@@ -47,14 +49,16 @@ describe('get.peers', () => {
 
 	it('invalid IP string returns empty list', async () => {
 		const response = await requestPeers({ ip: '0' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyResultEnvelopeSchema);
+		expect(response).toMap(emptyResponseSchema);
+		const { result } = response;
+		expect(result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('non-existent IP returns empty', async () => {
 		const response = await requestPeers({ ip: '256.256.256.256' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyResultEnvelopeSchema);
+		expect(response).toMap(emptyResponseSchema);
+		const { result } = response;
+		expect(result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('non-existent HTTP port returns empty', async () => {
@@ -69,14 +73,16 @@ describe('get.peers', () => {
 
 	it('non-existent version returns empty', async () => {
 		const response = await requestPeers({ os: 'linux4.4.0-134-generic0000000' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyResultEnvelopeSchema);
+		expect(response).toMap(emptyResponseSchema);
+		const { result } = response;
+		expect(result).toMap(emptyResultEnvelopeSchema);
 	});
 
-	it('non-existent version fails', async () => {
+	xit('non-existent version fails', async () => {
 		const response = await requestPeers({ version: null });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyResultEnvelopeSchema);
+		expect(response).toMap(emptyResponseSchema);
+		const { result } = response;
+		expect(result).toMap(emptyResultEnvelopeSchema);
 	});
 
 	it('wrong state fails', async () => {
@@ -100,8 +106,11 @@ describe('get.peers', () => {
 		const limit = 2;
 		const response = await requestPeers({ limit, offset: 3 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyResultEnvelopeSchema);
-		expect(response.result.data).toMap(peerListSchema.length(limit));
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(limit);
+		result.data.forEach(peer => expect(peer).toMap(peerSchema));
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('too small limit fails', async () => {
@@ -114,11 +123,14 @@ describe('get.peers', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	xit('invalid offset fails', async () => {
-		const response = await to(requestPeers({ state: 'connected', offset: null }));
+	it('invalid offset fails', async () => {
+		const response = await requestPeers({ state: 'connected', offset: null });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(resultEnvelopeSchema);
-		expect(response.result.data).toMap(peerListSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		result.data.forEach(peer => expect(peer).toMap(peerSchema));
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('big offset returns empty', async () => {
@@ -130,8 +142,11 @@ describe('get.peers', () => {
 	it('empty sort returns data properly', async () => {
 		const response = await requestPeers({ state: 'connected', sort: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(resultEnvelopeSchema);
-		expect(response.result.data).toMap(peerListSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		result.data.forEach(peer => expect(peer).toMap(peerSchema));
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('invalid sort fails', async () => {

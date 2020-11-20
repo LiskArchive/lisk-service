@@ -63,6 +63,7 @@ const emptyResponseSchema = {
 
 module.exports = {
 	...require('./generics.schema'),
+	jsonRPCSchema,
 	invalidParamsSchema: Joi.object(invalidParamsSchema).required(),
 	invalidRequestSchema: Joi.object(invalidRequestSchema).required(),
 	wrongMethodSchema: Joi.object(wrongMethodSchema).required(),

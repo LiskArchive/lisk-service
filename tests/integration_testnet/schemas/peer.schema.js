@@ -15,6 +15,8 @@
  */
 import Joi from 'joi';
 
+const { jsonRPCSchema } = require('./rpcGenerics.schema');
+
 const allowedPeerStateNames = ['connected', 'disconnected'];
 
 const locationSchema = {
@@ -46,6 +48,19 @@ const peerSchema = {
 	location: Joi.object(locationSchema).optional(),
 };
 
+const emptyResultEnvelopeSchema = {
+	data: Joi.array().length(0).required(),
+	meta: Joi.object().required(),
+};
+
+const emptyResponseSchema = {
+	jsonrpc: jsonRPCSchema,
+	result: emptyResultEnvelopeSchema,
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+};
+
 module.exports = {
 	peerSchema: Joi.object(peerSchema),
+	emptyResultEnvelopeSchema: Joi.object(emptyResultEnvelopeSchema).required(),
+	emptyResponseSchema: Joi.object(emptyResponseSchema).required(),
 };
