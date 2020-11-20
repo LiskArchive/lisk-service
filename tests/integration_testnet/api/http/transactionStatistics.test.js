@@ -15,25 +15,27 @@
  */
 import moment from 'moment';
 
-import api from '../../helpers/api';
-import config from '../../config';
+const config = require('../../config');
+const { api } = require('../../helpers/api');
 
 const {
-	goodRequestSchema,
-	invalidRequestSchema,
+	wrongInputParamSchema,
 	notFoundSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
 	timelineItemSchema,
-	dataSchema,
+	transactionStatisticsSchema,
+	goodRequestSchema,
 	metaSchema,
 } = require('../../schemas/transactionStatistics.schema');
 
-xdescribe('Transaction statistics API', () => {
-	describe('GET /transactions/statistics/{aggregateBy}', () => {
-		const baseUrl = `${config.SERVICE_ENDPOINT}/api/v1/transactions/statistics`;
+const baseUrl = config.SERVICE_ENDPOINT;
+const baseUrlV1 = `${baseUrl}/api/v1`;
+const baseEndpoint = `${baseUrlV1}/transactions/statistics`;
 
+describe('Transaction statistics API', () => {
+	describe('GET /transactions/statistics/{aggregateBy}', () => {
 		[{
 			aggregateBy: 'day',
 			dateFormat: 'YYYY-MM-DD',
@@ -42,79 +44,84 @@ xdescribe('Transaction statistics API', () => {
 			dateFormat: 'YYYY-MM',
 		}].forEach(({ aggregateBy, dateFormat }) => {
 			describe(`GET /transactions/statistics/${aggregateBy}`, () => {
-				const endpoint = `${baseUrl}/${aggregateBy}`;
+				const endpoint = `${baseEndpoint}/${aggregateBy}`;
 				const startOfUnitUtc = moment().utc().startOf(aggregateBy);
 
 				it(`returns stats for last 10 ${aggregateBy}s if called without any params`, async () => {
-					const response = await api.get(endpoint);
+					const response = await api.get(`${baseEndpoint}/${aggregateBy}`);
 					expect(response).toMap(goodRequestSchema);
-					expect(response.meta).toMap(metaSchema);
-					expect(response.data).toMap(dataSchema);
-
-					expect(response.data.timeline).toHaveLength(10);
-					response.data.timeline.forEach((item, i) => {
+					expect(response.data).toMap(transactionStatisticsSchema);
+					response.data.timeline.forEach((timelineItem, i) => {
 						const date = moment(startOfUnitUtc).subtract(i, aggregateBy);
-
-						expect(item).toMap(timelineItemSchema, {
+						expect(timelineItem).toMap(timelineItemSchema, {
 							date: date.format(dateFormat),
 							timestamp: date.unix(),
 						});
 					});
+					expect(response.meta).toMap(metaSchema);
 				});
 
 				it(`returns stats for this ${aggregateBy} if called with ?limit=1`, async () => {
 					const limit = 1;
 					const response = await api.get(`${endpoint}?limit=${limit}`);
 					expect(response).toMap(goodRequestSchema);
-					expect(response.meta).toMap(metaSchema, { limit });
-					expect(response.data).toMap(dataSchema);
-
 					expect(response.data.timeline).toHaveLength(1);
-					expect(response.data.timeline[0]).toMap(timelineItemSchema, {
-						date: startOfUnitUtc.format(dateFormat),
-						timestamp: startOfUnitUtc.unix(),
-					});
+					response.data.timeline.forEach(timelineItem => expect(timelineItem)
+						.toMap(timelineItemSchema, {
+							date: startOfUnitUtc.format(dateFormat),
+							timestamp: startOfUnitUtc.unix(),
+						}));
+					expect(response.meta).toMap(metaSchema, { limit });
 				});
 
 				it(`returns stats for previous ${aggregateBy} if called with ?limit=1&offset=1`, async () => {
 					const limit = 1;
 					const offset = 1;
-					const starOfYestarday = moment(startOfUnitUtc).subtract(1, aggregateBy);
+					const startOfYesterday = moment(startOfUnitUtc).subtract(1, aggregateBy);
 
 					const response = await api.get(`${endpoint}?limit=${limit}&offset=${offset}`);
-
+					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toMap(transactionStatisticsSchema);
+					expect(response.data.timeline).toHaveLength(1);
+					response.data.timeline.forEach(timelineItem => expect(timelineItem)
+						.toMap(timelineItemSchema, {
+							date: startOfYesterday.format(dateFormat),
+							timestamp: startOfYesterday.unix(),
+						}));
 					expect(response.meta).toMap(metaSchema, {
+						limit,
 						offset,
 						dateFormat,
-						dateFrom: starOfYestarday.format(dateFormat),
-						dateTo: starOfYestarday.format(dateFormat),
-					});
-
-					expect(response.data.timeline).toHaveLength(1);
-					expect(response.data.timeline[0]).toMap(timelineItemSchema, {
-						date: starOfYestarday.format(dateFormat),
-						timestamp: starOfYestarday.unix(),
+						dateFrom: startOfYesterday.format(dateFormat),
+						dateTo: startOfYesterday.format(dateFormat),
 					});
 				});
 
 				it(`returns stats for previous ${aggregateBy} and the ${aggregateBy} before if called with ?limit=2&offset=1`, async () => {
+					const limit = 2;
 					const offset = 1;
-					const response = await api.get(`${endpoint}?limit=2&offset=${offset}`);
 
+					const response = await api.get(`${endpoint}?limit=${limit}&offset=${offset}`);
+					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toMap(transactionStatisticsSchema);
 					expect(response.data.timeline).toHaveLength(2);
-					response.data.timeline.forEach((item, i) => {
+					response.data.timeline.forEach((timelineItem, i) => {
 						const date = moment(startOfUnitUtc).subtract(i + offset, aggregateBy);
-
-						expect(item).toMap(timelineItemSchema, {
+						expect(timelineItem).toMap(timelineItemSchema, {
 							date: date.format(dateFormat),
 							timestamp: date.unix(),
 						});
+					});
+					expect(response.meta).toMap(metaSchema, {
+						limit,
+						offset,
+						dateFormat,
 					});
 				});
 
 				it('returns error 400 if called with ?limit=101 or higher', async () => {
 					const response = await api.get(`${endpoint}?limit=101`, 400);
-					expect(response).toMapRequiredSchema(invalidRequestSchema);
+					expect(response).toMap(wrongInputParamSchema);
 				});
 
 				// TODO implement this case in the API
@@ -123,11 +130,11 @@ xdescribe('Transaction statistics API', () => {
 		});
 
 		describe('GET /transactions/statistics/year', () => {
-			const endpoint = `${baseUrl}/year`;
+			const endpoint = `${baseEndpoint}/year`;
 
 			it('returns error 404 if called without any params as years are not supported', async () => {
 				const response = await api.get(endpoint, 404);
-				expect(response).toMapRequiredSchema(notFoundSchema);
+				expect(response).toMap(notFoundSchema);
 			});
 		});
 	});
