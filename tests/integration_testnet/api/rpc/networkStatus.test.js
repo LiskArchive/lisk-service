@@ -17,7 +17,6 @@ const config = require('../../config');
 const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
-	goodRequestSchema,
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
 } = require('../../schemas/rpcGenerics.schema');

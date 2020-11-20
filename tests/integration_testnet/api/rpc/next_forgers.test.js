@@ -65,7 +65,7 @@ describe('Method get.next_forgers', () => {
 		expect(result.meta).toMap(metaSchema, { count: 10, offset });
 	});
 
-	it(`returns INVALID_PARAMS (-32602) when limit = 0`, async () => {
+	it('returns INVALID_PARAMS (-32602) when limit = 0', async () => {
 		const error = await getNextForgers({ limit: 0 }).catch(e => e);
 		expect(error).toMap(invalidParamsSchema);
 	});
