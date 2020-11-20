@@ -37,7 +37,8 @@ const peerSchema = {
 	wsPort: Joi.number().port().optional(),
 	os: Joi.string().optional(),
 	version: Joi.string().required(),
-	state: Joi.number().min(0).max(2).integer().required(),
+	state: Joi.number().integer().min(0).max(2)
+		.required(),
 	stateName: Joi.string().valid(...allowedPeerStateNames).required(),
 	height: Joi.number().optional(),
 	broadhash: Joi.string().optional(),

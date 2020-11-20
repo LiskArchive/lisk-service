@@ -31,14 +31,6 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const endpoint = `${baseUrlV1}/peers`;
-const networkEndpoint = `${baseUrlV1}/network`;
-
-const peerStatistics = {
-	basic: 'object',
-	height: 'object',
-	coreVer: 'object',
-	os: 'object',
-};
 
 describe('Peers API', () => {
 	describe('GET /peers', () => {
