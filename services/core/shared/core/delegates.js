@@ -17,16 +17,18 @@ const { Logger, CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
+
+const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
+
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 const { getLastBlock } = require('./blocks');
-
-const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
 
 const logger = Logger();
 const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
 
 let nextForgers = [];
+let delegateList = [];
 
 const delegateComparator = (a, b) => {
 	const diff = b.delegateWeight - a.delegateWeight;
@@ -34,8 +36,12 @@ const delegateComparator = (a, b) => {
 	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
 };
 
+const getAllDelegates = () => new Promise((resolve) => {
+	resolve(delegateList);
+});
+
 const getTotalNumberOfDelegates = async (params = {}) => {
-	const allDelegates = await cacheRedisDelegates.get('delegateCache');
+	const allDelegates = await getAllDelegates();
 	const relevantDelegates = allDelegates.filter(delegate => (
 		(!params.search || delegate.username.includes(params.search))
 		&& (!params.username || delegate.username === params.username)
@@ -93,8 +99,7 @@ const getDelegates = async params => {
 		data: [],
 		meta: {},
 	};
-
-	const allDelegates = await cacheRedisDelegates.get('delegateCache');
+	const allDelegates = await getAllDelegates();
 
 	delegates.data = allDelegates.filter(
 		(acc) => (acc.address && acc.address === params.address)
@@ -115,41 +120,24 @@ const getDelegates = async params => {
 
 const loadAllDelegates = async () => {
 	const maxCount = 10000;
-	const rawDelegates = await requestAll(coreApi.getDelegates, {}, maxCount);
-
-	const dbResult = await cacheRedisDelegates.get('delegateCache');
-	const delegates = await BluebirdPromise.map(
-		rawDelegates,
+	delegateList = await requestAll(coreApi.getDelegates, {}, maxCount);
+	await BluebirdPromise.map(
+		delegateList,
 		async delegate => {
-			if (dbResult.length) {
-				const [dbMatchByAddress] = dbResult
-					.filter(dbDelegate => dbDelegate.account.address === delegate.account.address);
-				const [dbMatchByRank] = dbResult.filter(dbDelegate => dbDelegate.rank === delegate.rank);
-
-				if (dbMatchByAddress) delegate = dbMatchByAddress.rank === delegate.rank
-					? dbMatchByAddress : delegate;
-
-				// If no existing DB match for given delegate address
-				// and entry exists for given delegate rank, replace the entry
-				if (!delegate._rev && dbMatchByRank) delegate._rev = dbMatchByRank._rev;
-			}
-
-			delegate.id = String(delegate.rank);
+			await cacheRedisDelegates.set(delegate.address, delegate);
 			return delegate;
 		},
-		{ concurrency: rawDelegates.length },
+		{ concurrency: delegateList.length },
 	);
-
-	if (delegates.length) {
-		await cacheRedisDelegates.set('delegateCache', delegates);
-		logger.info(`Initialized/Updated delegates cache with ${delegates.length} delegates.`);
+	if (delegateList.length) {
+		logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
 	}
 };
 
 const computeDelegateRankAndStatus = async () => {
-	const result = await cacheRedisDelegates.get('delegateCache');
+	const result = await getAllDelegates();
 	const allDelegates = await getRankAndStatus(result);
-	if (allDelegates.length) await cacheRedisDelegates.set('delegateCache', allDelegates);
+	if (allDelegates.length) delegateList = allDelegates;
 };
 
 const getNextForgers = async params => {
