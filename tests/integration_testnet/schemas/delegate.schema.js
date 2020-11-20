@@ -45,6 +45,6 @@ const delegateSchema = {
 
 module.exports = {
 	validDelegateStatuses,
-	pomHeightSchema: Joi.object(pomHeightSchema).required(),
+	pomHeightSchema,
 	delegateSchema: Joi.object(delegateSchema).required(),
 };
