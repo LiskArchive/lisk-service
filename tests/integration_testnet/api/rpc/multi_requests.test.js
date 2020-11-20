@@ -47,19 +47,27 @@ describe('Multi-Request API', () => {
 		]);
 
 		expect(multiResponse).toMap(jsonRpcListSchema.length(3));
-		multiResponse.forEach((response, i) => {
-			const id = i + 1;
-			expect(response).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id });
-			const { result } = response;
-			expect(result).toMap(resultEnvelopeSchema);
-			expect(result.data).toBeArrayOfSize(1);
-			result.data.forEach(item => {
-				const schema = (id === 1) ? transactionSchema
-					: (id === 2) ? blockSchema : accountSchema;
-				expect(item).toMap(schema);
-			});
-			expect(result.meta).toMap(metaSchema, { count: 1 });
-		});
+
+		expect(multiResponse[0]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 1 });
+		expect(multiResponse[0].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[0].result.data).toBeArrayOfSize(1);
+		multiResponse[0].result.data
+			.forEach(transaction => expect(transaction).toMap(transactionSchema));
+		expect(multiResponse[0].result.meta).toMap(metaSchema, { count: 1 });
+
+		expect(multiResponse[1]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 2 });
+		expect(multiResponse[1].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[1].result.data).toBeArrayOfSize(1);
+		multiResponse[1].result.data
+			.forEach(transaction => expect(transaction).toMap(blockSchema));
+		expect(multiResponse[1].result.meta).toMap(metaSchema, { count: 1 });
+
+		expect(multiResponse[2]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 3 });
+		expect(multiResponse[2].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[2].result.data).toBeArrayOfSize(1);
+		multiResponse[2].result.data
+			.forEach(transaction => expect(transaction).toMap(accountSchema));
+		expect(multiResponse[2].result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	it('responds to a correct request with numerical IDs', async () => {
@@ -70,19 +78,27 @@ describe('Multi-Request API', () => {
 		]);
 
 		expect(multiResponse).toMap(jsonRpcListSchema.length(3));
-		multiResponse.forEach((response, i) => {
-			const id = i + 4;
-			expect(response).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id });
-			const { result } = response;
-			expect(result).toMap(resultEnvelopeSchema);
-			expect(result.data).toBeArrayOfSize(1);
-			result.data.forEach(item => {
-				const schema = (id === 4) ? transactionSchema
-					: (id === 5) ? blockSchema : accountSchema;
-				expect(item).toMap(schema);
-			});
-			expect(result.meta).toMap(metaSchema, { count: 1 });
-		});
+
+		expect(multiResponse[0]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 4 });
+		expect(multiResponse[0].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[0].result.data).toBeArrayOfSize(1);
+		multiResponse[0].result.data
+			.forEach(transaction => expect(transaction).toMap(transactionSchema));
+		expect(multiResponse[0].result.meta).toMap(metaSchema, { count: 1 });
+
+		expect(multiResponse[1]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 5 });
+		expect(multiResponse[1].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[1].result.data).toBeArrayOfSize(1);
+		multiResponse[1].result.data
+			.forEach(transaction => expect(transaction).toMap(blockSchema));
+		expect(multiResponse[1].result.meta).toMap(metaSchema, { count: 1 });
+
+		expect(multiResponse[2]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: 6 });
+		expect(multiResponse[2].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[2].result.data).toBeArrayOfSize(1);
+		multiResponse[2].result.data
+			.forEach(transaction => expect(transaction).toMap(accountSchema));
+		expect(multiResponse[2].result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	it('responds to a correct request with numerical UUIDs', async () => {
@@ -93,19 +109,27 @@ describe('Multi-Request API', () => {
 		]);
 
 		expect(multiResponse).toMap(jsonRpcListSchema.length(3));
-		multiResponse.forEach((response, i) => {
-			const id = uuid[i];
-			expect(response).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id });
-			const { result } = response;
-			expect(result).toMap(resultEnvelopeSchema);
-			expect(result.data).toBeArrayOfSize(1);
-			result.data.forEach(item => {
-				const schema = (id === uuid[0]) ? transactionSchema
-					: (id === uuid[1]) ? blockSchema : accountSchema;
-				expect(item).toMap(schema);
-			});
-			expect(result.meta).toMap(metaSchema, { count: 1 });
-		});
+
+		expect(multiResponse[0]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: uuid[0] });
+		expect(multiResponse[0].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[0].result.data).toBeArrayOfSize(1);
+		multiResponse[0].result.data
+			.forEach(transaction => expect(transaction).toMap(transactionSchema));
+		expect(multiResponse[0].result.meta).toMap(metaSchema, { count: 1 });
+
+		expect(multiResponse[1]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: uuid[1] });
+		expect(multiResponse[1].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[1].result.data).toBeArrayOfSize(1);
+		multiResponse[1].result.data
+			.forEach(transaction => expect(transaction).toMap(blockSchema));
+		expect(multiResponse[1].result.meta).toMap(metaSchema, { count: 1 });
+
+		expect(multiResponse[2]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0', id: uuid[2] });
+		expect(multiResponse[2].result).toMap(resultEnvelopeSchema);
+		expect(multiResponse[2].result.data).toBeArrayOfSize(1);
+		multiResponse[2].result.data
+			.forEach(transaction => expect(transaction).toMap(accountSchema));
+		expect(multiResponse[2].result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	it('returns data despite having a mix of correct and incorrect requests', async () => {
@@ -118,7 +142,8 @@ describe('Multi-Request API', () => {
 		expect(multiResponse[0]).toMap(jsonRpcEnvelopeSchema, { jsonrpc: '2.0' });
 		expect(multiResponse[0].result).toMap(resultEnvelopeSchema);
 		expect(multiResponse[0].result.data).toBeArrayOfSize(1);
-		multiResponse[0].result.data.forEach(transaction => expect(transaction).toMap(transactionSchema));
+		multiResponse[0].result.data
+			.forEach(transaction => expect(transaction).toMap(transactionSchema));
 		expect(multiResponse[0].result.meta).toMap(metaSchema, { count: 1 });
 
 		expect(multiResponse[1]).toMap(wrongMethodSchema);
