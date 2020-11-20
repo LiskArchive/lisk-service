@@ -19,7 +19,8 @@ const transactionSchema = {
 	id: Joi.string().required(),
 	amount: Joi.string().required(),
 	fee: Joi.string().required(),
-	type: Joi.number().integer().min(0).max(13).required(),
+	type: Joi.number().integer().min(0).max(13)
+		.required(),
 	height: Joi.number().required(),
 	blockId: Joi.string().required(),
 	timestamp: Joi.number().integer().required(),
