@@ -31,7 +31,7 @@ const transactionSchema = {
 	recipientPublicKey: Joi.string().allow('').required(),
 	signature: Joi.string().required(),
 	signSignature: Joi.string().optional(),
-	signatures: Joi.array().items(Joi.string().required()).required(),
+	signatures: Joi.array().items(Joi.string().optional()).required(),
 	confirmations: Joi.number().required(), // TODO: Add validation - min 1
 	asset: Joi.object().required(),
 	receivedAt: Joi.string().optional(), // TODO: Add validation
