@@ -29,7 +29,6 @@ const {
 
 const {
 	getAccounts,
-	retrieveTopAccounts,
 } = require('./accounts');
 
 const {
@@ -165,7 +164,6 @@ module.exports = {
 	getLastBlock,
 	reloadBlocks,
 	cleanFromForks,
-	retrieveTopAccounts,
 	updateFinalizedHeight,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
