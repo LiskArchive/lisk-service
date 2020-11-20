@@ -15,10 +15,11 @@
  */
 const signals = require('../signals');
 const core = require('./compat');
+const { getBlocks } = require('./blocks');
 
 const events = {
 	newBlock: async data => {
-		const block = await core.getBlocks({ id: data.id });
+		const block = await getBlocks({ blockId: data.id });
 		signals.get('newBlock').dispatch(block.data[0]);
 	},
 	newRound: data => {
