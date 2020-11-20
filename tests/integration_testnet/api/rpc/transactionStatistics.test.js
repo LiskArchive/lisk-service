@@ -64,8 +64,8 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 				expect(result).toMap(goodRequestSchema);
 				expect(result.data).toMap(transactionStatisticsSchema);
 				expect(result.data.timeline).toHaveLength(1);
-				result.data.timeline.forEach(timelineItem =>
-					expect(timelineItem).toMap(timelineItemSchema, {
+				result.data.timeline.forEach(timelineItem => expect(timelineItem)
+					.toMap(timelineItemSchema, {
 						date: startOfUnitUtc.format(dateFormat),
 						timestamp: startOfUnitUtc.unix(),
 					}));
@@ -83,8 +83,8 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 				expect(result).toMap(goodRequestSchema);
 				expect(result.data).toMap(transactionStatisticsSchema);
 				expect(result.data.timeline).toHaveLength(1);
-				result.data.timeline.forEach(timelineItem =>
-					expect(timelineItem).toMap(timelineItemSchema, {
+				result.data.timeline.forEach(timelineItem => expect(timelineItem)
+					.toMap(timelineItemSchema, {
 						date: startOfYesterday.format(dateFormat),
 						timestamp: startOfYesterday.unix(),
 					}));
@@ -132,7 +132,7 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 	});
 
 	describe('GET get.transactions.statistics.year', () => {
-		it(`returns error METHOD_NOT_FOUND (-32601)) if called without any params as years are not supported`, async () => {
+		it('returns error METHOD_NOT_FOUND (-32601)) if called without any params as years are not supported', async () => {
 			const response = await requestTransactionStatistics('year');
 			expect(response).toMap(wrongMethodSchema);
 		});
