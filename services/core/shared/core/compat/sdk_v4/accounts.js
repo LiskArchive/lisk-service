@@ -22,6 +22,8 @@ const {
 	getCachedAccountBySecondPublicKey,
 } = require('../sdk_v2');
 
+const { getDelegates } = require('./delegates');
+
 const balanceUnlockWaitHeightSelf = 260000;
 const balanceUnlockWaitHeightDefault = 2000;
 
@@ -50,8 +52,12 @@ const confirmSecondPublicKey = async secondPublicKey => {
 	return (account && account.secondPublicKey === secondPublicKey);
 };
 
-const resolveUnlockingHeight = async accounts => {
-	accounts.map(account => {
+const resolveAccountsInfo = async accounts => {
+	accounts.map(async account => {
+		if (account.isDelegate) {
+			const delegateInfo = (await getDelegates({ address: account.address })).data[0];
+			account.delegate = delegateInfo;
+		}
 		account.unlocking = account.unlocking.map(item => {
 			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
 				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
@@ -103,7 +109,7 @@ const getAccounts = async params => {
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
-	accounts.data = await resolveUnlockingHeight(accounts.data);
+	accounts.data = await resolveAccountsInfo(accounts.data);
 
 	return accounts;
 };
