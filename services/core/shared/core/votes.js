@@ -25,7 +25,6 @@ const getVotes = async params => {
 	};
 
 	const response = await coreApi.getVotes(params);
-
 	votes.data = await BluebirdPromise.map(
 		response.data.votes,
 		async vote => {

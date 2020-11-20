@@ -6,7 +6,7 @@ Note that those requirements are needed only if you want to build the project fr
 
 These programs and resources are required to install and run Lisk Service.
 
-### APT 
+### APT
 
 In Ubuntu and its derivatives APT is the base package management application. Ensure your local APT registry is up-to-date.
 
@@ -34,20 +34,6 @@ sudo apt install redis-server
 ```
 
 > Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variables `SERVICE_BROKER` and `SERVICE_CORE_REDIS` accordingly.
-
-### PostgreSQL
-
-[Postgres 10](https://www.postgresql.org/) is used for storing persistent data.
-
-```bash
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
-
-sudo apt update
-sudo apt install postgres-10
-```
-
-> Note: During this step it is possible to change your port if you wish to have more Postgres instances in the future. Remember to adjust the environment variable `SERVICE_CORE_POSTGRES` accordingly.
 
 
 ### Node.js
@@ -78,12 +64,10 @@ Copy and paste the following snippet to complete the installation in one step.
 ```bash
 # Add external repositories
 curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
 
 # APT-based dependencies
 sudo apt update
-sudo apt install build-essential git-core make redis-server postgres nodejs
+sudo apt install build-essential git-core make redis-server nodejs
 
 # NPM-based dependencies
 npm install -g pm2

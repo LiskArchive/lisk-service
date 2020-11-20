@@ -103,9 +103,9 @@ const paramMappers = {
 };
 
 const mapResponse = (response, url) => {
-    const mapper = responseMappers[url];
-    if (mapper) {
-        response = mapper(response);
+    if (response.data) {
+        const mapper = responseMappers[url];
+        if (mapper) response = mapper(response);
     }
     return response;
 };

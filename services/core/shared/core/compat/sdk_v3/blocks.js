@@ -38,6 +38,11 @@ const updateFinalizedHeight = async () => {
 const getFinalizedHeight = () => heightFinalized;
 
 const getBlocks = async (params) => {
+	const blocks = {
+		data: [],
+		meta: {},
+	};
+
 	await Promise.all(
 		['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 			if (await validateTimestamp(params[timestamp])) {
@@ -47,21 +52,21 @@ const getBlocks = async (params) => {
 		}),
 	);
 
-	const blocks = await coreApi.getBlocks(params);
+	const response = await coreApi.getBlocks(params);
+	if (response.data) blocks.data = response.data;
+	if (response.meta) blocks.meta = response.meta;
 
-	if (blocks.data) {
-		blocks.data.forEach((block) => {
-			if (block.height > currentHeight) currentHeight = block.height;
-		});
+	blocks.data.forEach((block) => {
+		if (block.height > currentHeight) currentHeight = block.height;
+	});
 
-		await Promise.all(
-			blocks.data.map(async (o) => Object.assign(o, {
-					unixTimestamp: await getUnixTime(o.timestamp),
-					isImmutable: currentHeight - o.height >= considerFinalHeight,
-				}),
-			),
-		);
-	}
+	await Promise.all(
+		blocks.data.map(async (o) => Object.assign(o, {
+			unixTimestamp: await getUnixTime(o.timestamp),
+			isImmutable: currentHeight - o.height >= considerFinalHeight,
+		}),
+		),
+	);
 
 	return blocks;
 };

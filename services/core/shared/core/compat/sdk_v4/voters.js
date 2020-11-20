@@ -21,7 +21,15 @@ const { getAccounts } = require('./accounts');
 const resolveAmount = (amount) => Number(amount) || 0;
 
 const getVoters = async (params) => {
-	const voters = await coreApi.getVoters(params);
+	const voters = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await coreApi.getVoters(params);
+	if (response.data) voters.data = response.data;
+	if (response.meta) voters.meta = response.meta;
+
 	voters.data.voters = await BluebirdPromise.map(
 		voters.data.voters,
 		async (voter) => {

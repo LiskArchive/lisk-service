@@ -20,9 +20,10 @@ const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
-const { getBlocks } = require('./blocks');
+const { getLastBlock } = require('./blocks');
 
 const logger = Logger();
+const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
 
 let nextForgers = [];
 
@@ -41,7 +42,7 @@ const formatSortString = sortString => {
 	return sortObj;
 };
 
-const getSelector = (params) => {
+const getSelector = params => {
 	const result = {};
 	result.sort = [];
 
@@ -77,13 +78,55 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	return relevantDelegates.length;
 };
 
-const getDelegates = async params => {
-	const db = await pouchdb(config.db.collections.delegates.name);
+const getRankAndStatus = async allDelegates => {
+	const numActiveForgers = 101;
 
+	const delegateStatus = {
+		ACTIVE: 'active',
+		STANDBY: 'standby',
+		BANNED: 'banned',
+		PUNISHED: 'punished',
+		NON_ELIGIBLE: 'non-eligible',
+	};
+	const lastestBlock = getLastBlock();
+	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
+	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
+
+	const verifyIfPunished = delegate => {
+		const isPunished = delegate.pomHeights
+			.some(pomHeight => pomHeight.start <= lastestBlock.height
+				&& lastestBlock.height <= pomHeight.end);
+		return isPunished;
+	};
+
+	if (sdkVersion >= 4) allDelegates.sort(delegateComparator);
+	allDelegates.map((delegate, index) => {
+		if (sdkVersion < 4) {
+			if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else delegate.status = delegateStatus.STANDBY;
+		} else {
+			delegate.rank = index + 1;
+			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
+			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
+			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
+			else if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else delegate.status = delegateStatus.STANDBY;
+		}
+
+		return delegate;
+	});
+	return allDelegates;
+};
+
+const getDelegates = async params => {
 	const delegates = {
 		data: [],
 		meta: {},
 	};
+
+	const db = await pouchdb(config.db.collections.delegates.name);
 
 	const inputData = getSelector({
 		...params,
@@ -96,11 +139,22 @@ const getDelegates = async params => {
 		if (dbResult.length) delegates.data = dbResult
 			.filter(delegate => delegate.username.includes(params.search))
 			.slice(inputData.skip, inputData.skip + inputData.limit);
-	} else {
-		const dbResult = await db.find(inputData);
-		if (dbResult.length) delegates.data = dbResult;
 	}
-
+	if (!delegates.data.length) {
+		if (
+			params.address
+			|| params.publicKey
+			|| params.secondPublicKey
+			|| params.username
+		) {
+			const dbResult = await db.find(inputData);
+			if (dbResult.length) delegates.data = dbResult;
+		}
+	}
+	if (delegates.data.length === 0) {
+		const dbResult = await coreApi.getDelegates(params);
+		if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
+	}
 	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = inputData.skip;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
@@ -145,48 +199,8 @@ const loadAllDelegates = async () => {
 
 const computeDelegateRankAndStatus = async () => {
 	const db = await pouchdb(config.db.collections.delegates.name);
-	const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
-	const numActiveForgers = 101;
-
-	const delegateStatus = {
-		ACTIVE: 'active',
-		STANDBY: 'standby',
-		BANNED: 'banned',
-		PUNISHED: 'punished',
-		NON_ELIGIBLE: 'non-eligible',
-	};
-
-	const allDelegates = await db.findAll();
-	const lastestBlock = await getBlocks({ limit: 1 });
-	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
-	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
-
-	const verifyIfPunished = delegate => {
-		const isPunished = delegate.pomHeights
-			.some(pomHeight => pomHeight.start <= lastestBlock.height
-				&& lastestBlock.height <= pomHeight.end);
-		return isPunished;
-	};
-
-	if (sdkVersion >= 4) allDelegates.sort(delegateComparator);
-	allDelegates.map((delegate, index) => {
-		if (sdkVersion < 4) {
-			if (activeNextForgersList.includes(delegate.account.address)) {
-				delegate.status = delegateStatus.ACTIVE;
-			} else delegate.status = delegateStatus.STANDBY;
-		} else {
-			delegate.rank = index + 1;
-			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
-			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
-			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
-			else if (activeNextForgersList.includes(delegate.account.address)) {
-				delegate.status = delegateStatus.ACTIVE;
-			} else delegate.status = delegateStatus.STANDBY;
-		}
-
-		return delegate;
-	});
-
+	const result = await db.findAll();
+	const allDelegates = await getRankAndStatus(result);
 	if (allDelegates.length) await db.writeBatch(allDelegates);
 };
 
@@ -209,8 +223,8 @@ const getNextForgers = async params => {
 };
 
 const loadAllNextForgers = async () => {
-	const maxCount = 103;
-	const rawNextForgers = await requestAll(coreApi.getNextForgers, {}, maxCount);
+	const maxCount = (sdkVersion < 4) ? 101 : 103;
+	const rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
 
 	nextForgers = await BluebirdPromise.map(
 		rawNextForgers,
