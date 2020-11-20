@@ -96,11 +96,22 @@ const getDelegates = async params => {
 		if (dbResult.length) delegates.data = dbResult
 			.filter(delegate => delegate.username.includes(params.search))
 			.slice(inputData.skip, inputData.skip + inputData.limit);
-	} else {
-		const dbResult = await db.find(inputData);
-		if (dbResult.length) delegates.data = dbResult;
 	}
-
+	if (!delegates.data.length) {
+		if (
+			params.address
+			|| params.publicKey
+			|| params.secondPublicKey
+			|| params.username
+		) {
+			const dbResult = await db.find(inputData);
+			if (dbResult.length) delegates.data = dbResult;
+		}
+	}
+	if (delegates.data.length === 0) {
+		const dbResult = await coreApi.getDelegates(params);
+		if (dbResult.data.length) delegates.data = dbResult.data;
+	}
 	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = inputData.skip;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
