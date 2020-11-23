@@ -15,8 +15,8 @@
  */
 import Joi from 'joi';
 
-import request from '../../helpers/socketIoRpcRequest';
-import config from '../../config';
+const config = require('../../config');
+const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
