@@ -39,6 +39,7 @@ const logger = Logger();
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 const cacheKeyFeeEst = 'lastFeeEstimate';
+const cacheKeyFeeEstQuick = 'lastFeeEstimateQuick';
 
 const calcAvgFeeByteModes = {
 	MEDIUM: 'med',
@@ -71,7 +72,7 @@ const calculateBlockSize = block => {
 		return transactionSize;
 	});
 
-	blockSize = transactionSizes.reduce((a, b) => a + b);
+	blockSize = transactionSizes.reduce((a, b) => a + b, 0);
 	return blockSize;
 };
 
@@ -170,7 +171,7 @@ const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 	return EMAoutput;
 };
 
-const getEstimateFeeByteCoreLogic = async (blockBatch, innerPrevFeeEstPerByte) => {
+const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) => {
 	const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
 	const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
 	const feePerByte = calculateFeePerByte(blockBatch.data[0]);
@@ -195,12 +196,20 @@ const getEstimateFeeByteCoreLogic = async (blockBatch, innerPrevFeeEstPerByte) =
 	return feeEstPerByte;
 };
 
-const getEstimateFeeByteForBatch = async (fromHeight, toHeight) => {
+const getEstimateFeeByteForBatch = async (fromHeight, toHeight, mode) => {
 	// Check if the starting height is permitted by config or adjust acc.
 	fromHeight = config.feeEstimates.defaultStartBlockHeight > fromHeight
 		? config.feeEstimates.defaultStartBlockHeight : fromHeight;
 
-	const prevFeeEstPerByte = { blockHeight: fromHeight };
+	const cachedFeeEstimate = (mode === 'quick')
+		? await cacheRedisFees.get(cacheKeyFeeEstQuick)
+		: await cacheRedisFees.get(cacheKeyFeeEst);
+
+	const cachedFeeEstimateHeight = cachedFeeEstimate
+		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
+
+	const prevFeeEstPerByte = fromHeight > cachedFeeEstimateHeight
+		? { blockHeight: fromHeight } : cachedFeeEstimate;
 
 	const range = size => Array(size).fill().map((_, index) => index);
 	const feeEstPerByte = {};
@@ -226,11 +235,13 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight) => {
 		);
 
 		Object.assign(prevFeeEstPerByte,
-			await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte));
+			await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte));
 
-		if (prevFeeEstPerByte.blockHeight !== toHeight) {
+		if (prevFeeEstPerByte.blockHeight < toHeight) {
 			// Store intermediate values, in case of a long running loop
-			await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
+			(mode === 'quick')
+				? await cacheRedisFees.set(cacheKeyFeeEstQuick, prevFeeEstPerByte)
+				: await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (toHeight > prevFeeEstPerByte.blockHeight);
@@ -241,31 +252,46 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight) => {
 	return feeEstPerByte;
 };
 
+const getEstimateFeeByteQuick = async () => {
+	// For the cold start scenario
+	const latestBlock = getLastBlock();
+	const batchSize = config.feeEstimates.coldStartBatchSize;
+	const toHeight = latestBlock.height;
+	const fromHeight = toHeight - batchSize;
+
+	const cachedFeeEstPerByteQuick = await getEstimateFeeByteForBatch(fromHeight, toHeight, 'quick');
+	await cacheRedisFees.set(cacheKeyFeeEstQuick, cachedFeeEstPerByteQuick);
+
+	return cachedFeeEstPerByteQuick;
+};
+
 const getEstimateFeeByte = async () => {
 	if (sdkVersion < 4) {
 		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
 	}
 
-	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
-	const latestBlock = await getLastBlock();
-	if (cachedFeeEstPerByte
-		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
-			.every(key => Object.keys(cachedFeeEstPerByte).includes(key))
-		&& Number(latestBlock.height) === cachedFeeEstPerByte.blockHeight) {
-		return cachedFeeEstPerByte;
-	}
+	const latestBlock = getLastBlock();
+	const validate = feeEstPerByte => {
+		return feeEstPerByte
+			&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
+				.every(key => Object.keys(cachedFeeEstPerByte).includes(key))
+			&& Number(latestBlock.height) === feeEstPerByte.blockHeight;
+	};
 
-	// For cold start scenario or stale value
-	const batchSize = config.feeEstimates.coldStartBatchSize || 21;
-	const toHeight = latestBlock.height;
-	const fromHeight = toHeight - batchSize;
-	return getEstimateFeeByteForBatch(toHeight, fromHeight);
+	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
+	// if (validate(cachedFeeEstPerByte)) return cachedFeeEstPerByte;
+
+	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
+	if (validate(cachedFeeEstPerByteQuick)) return cachedFeeEstPerByteQuick;
+
+	return null;
 };
 
 module.exports = {
 	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteCoreLogic,
+	getEstimateFeeByteQuick,
+	getEstimateFeeByteForBlock,
 	getTransactionInstanceByType,
 	calculateBlockSize,
 	calculateFeePerByte,
