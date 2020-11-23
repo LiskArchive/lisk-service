@@ -24,7 +24,7 @@ module.exports = {
 	tags: ['Accounts'],
 	envelope,
 	params: {
-		accountId: { type: 'any', optional: true },
+		accountId: { optional: true, type: 'string' },
 		address: { optional: true, type: 'string', min: 1, max: 21 },
 		username: { optional: true, type: 'string', min: 3, max: 20 },
 		publickey: { optional: true, type: 'string', min: 64, max: 64 },
