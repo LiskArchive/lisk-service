@@ -26,15 +26,15 @@ const { isEmptyArray } = ObjectUtilService;
 const { isEmptyObject } = ObjectUtilService;
 
 const getDelegates = async params => {
-	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
+	if (params.accountId) params.address = await CoreService.getAddressByAny(params.accountId);
 	const isFound = await CoreService.confirmAnyId(params);
-	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Delegate ${params.anyId} not found.` } };
+	if (typeof params.accountId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Delegate ${params.accountId} not found.` } };
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Delegate ${params.address} not found.` } };
 	if (!isFound && params.username) return { status: NOT_FOUND, data: { error: `Delegate ${params.username} not found.` } };
 	if (!isFound && params.publicKey) return { status: NOT_FOUND, data: { error: `Delegate with a public key ${params.publicKey} not found.` } };
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Delegate with a second public key ${params.secondPublicKey} not found.` } };
 
-	delete params.anyId;
+	delete params.accountId;
 
 	const response = await CoreService.getDelegates(params);
 
