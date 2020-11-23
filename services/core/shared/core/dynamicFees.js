@@ -250,16 +250,17 @@ const calculateEstimateFeeByte = async () => {
 	return feeEstPerByte;
 };
 
-const getEstimateFeeByte = () => (
-	{
+const getEstimateFeeByte = (b) => new Promise(resolve => {
+	if (b === true) resolve(null);
+	resolve({
 		low: 0,
 		med: 1000,
 		high: 2000,
 		updated: (new Date()).getTime() / 1000,
 		blockHeight: 25,
 		blockId: 'fake_block',
-	}
-);
+	});
+});
 
 module.exports = {
 	EMAcalc,
