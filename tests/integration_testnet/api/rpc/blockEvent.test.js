@@ -27,8 +27,8 @@ describe(`Recieve event from update.block from ${config.SERVICE_ENDPOINT}`, () =
 		const result = await subscribeAndReturn(endpoint, 'update.block');
 		expect(result.data).toMap(blockSchema);
 	});
-});
 
-afterAll(() => {
-	closeAllConnections();
+	afterAll(() => {
+		closeAllConnections();
+	});
 });
