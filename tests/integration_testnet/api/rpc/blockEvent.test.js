@@ -28,7 +28,8 @@ describe(`Recieve event from update.block from ${config.SERVICE_ENDPOINT}`, () =
 		expect(result.data).toMap(blockSchema);
 	});
 
-	afterAll(() => {
+	afterAll(done => {
 		closeAllConnections();
+		done();
 	});
 });
