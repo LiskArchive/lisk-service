@@ -190,7 +190,7 @@ const getEstimateFeeByteCoreLogic = async (blockBatch, innerPrevFeeEstPerByte) =
 	return feeEstPerByte;
 };
 
-const getEstimateFeeByte = async () => {
+const calculateEstimateFeeByte = async () => {
 	const coreVersion = getCoreVersion();
 	if (semver.lt(coreVersion, '3.0.0-beta.1')) {
 		return { data: { error: `Action not supported for Lisk Core version: ${coreVersion}.` } };
@@ -250,14 +250,18 @@ const getEstimateFeeByte = async () => {
 	return feeEstPerByte;
 };
 
+const getEstimateFeeByte = () => (
+	{
+		low: 0,
+		med: 1000,
+		high: 2000,
+		updated: (new Date()).getTime() / 1000,
+		blockHeight: 25,
+		blockId: 'fake_block',
+	}
+);
+
 module.exports = {
-	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteCoreLogic,
-	getTransactionInstanceByType,
-	calculateBlockSize,
-	calculateFeePerByte,
-	calcAvgFeeByteModes,
-	calculateAvgFeePerByte,
-	calculateWeightedAvg,
+	calculateEstimateFeeByte,
 };

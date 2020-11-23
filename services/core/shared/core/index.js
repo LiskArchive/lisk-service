@@ -56,15 +56,8 @@ const {
 } = require('./voters');
 
 const {
-	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteCoreLogic,
-	getTransactionInstanceByType,
-	calculateBlockSize,
-	calculateFeePerByte,
-	calcAvgFeeByteModes,
-	calculateAvgFeePerByte,
-	calculateWeightedAvg,
+	calculateEstimateFeeByte,
 } = require('./dynamicFees');
 
 const {
@@ -151,15 +144,8 @@ module.exports = {
 	getReadyStatus,
 	getEpochUnixTime,
 	getUnixTime,
-	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteCoreLogic,
-	getTransactionInstanceByType,
-	calculateBlockSize,
-	calculateFeePerByte,
-	calcAvgFeeByteModes,
-	calculateAvgFeePerByte,
-	calculateWeightedAvg,
+	calculateEstimateFeeByte,
 	setLastBlock,
 	getLastBlock,
 	reloadBlocks,
