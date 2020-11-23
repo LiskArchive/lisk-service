@@ -49,7 +49,7 @@ const moderateTrafficMockup = require('../blockGenerator/moderateTraffic.json');
 const highTrafficMockup = require('../blockGenerator/highTraffic.json');
 
 
-xdescribe('Fee estimation tests', () => {
+describe('Fee estimation tests', () => {
 	describe('getTransactionInstanceByType', () => {
 		it('TransferTransaction', async () => {
 			const transaction = getTransactionInstanceByType(transactionType8.data[0]);
