@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheRedis, Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
-const semver = require('semver');
+const {
+	CacheRedis,
+	Logger,
+} = require('lisk-service-framework');
 const {
 	TransferTransaction,
 	DelegateTransaction,
@@ -25,11 +27,16 @@ const {
 	ProofOfMisbehaviorTransaction,
 } = require('@liskhq/lisk-transactions');
 
-const config = require('../../config.js');
+const {
+	getSDKVersion,
+	getCoreVersion,
+	mapToOriginal
+} = require('./compat');
 
-const { getCoreVersion, mapToOriginal } = require('./compat');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
+
+const config = require('../../config.js');
 
 const logger = Logger();
 
@@ -191,9 +198,9 @@ const getEstimateFeeByteCoreLogic = async (blockBatch, innerPrevFeeEstPerByte) =
 };
 
 const getEstimateFeeByte = async () => {
-	const coreVersion = getCoreVersion();
-	if (semver.lt(coreVersion, '3.0.0-beta.1')) {
-		return { data: { error: `Action not supported for Lisk Core version: ${coreVersion}.` } };
+	const sdkVersion = getSDKVersion();
+	if (sdkVersion < 4) {
+		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
 	}
 
 	const cacheKeyFeeEst = 'lastFeeEstimate';
