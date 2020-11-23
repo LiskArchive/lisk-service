@@ -30,7 +30,7 @@ const {
 const {
 	getSDKVersion,
 	getCoreVersion,
-	mapToOriginal
+	mapToOriginal,
 } = require('./compat');
 
 const { getBlocks } = require('./blocks');
