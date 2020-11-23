@@ -14,12 +14,10 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-const { getDelegates } = require('./delegates');
 
 const logger = Logger();
 let topAccounts = [];
@@ -59,21 +57,6 @@ const getSelector = params => {
 const getTopAccounts = () => new Promise((resolve) => {
 	resolve(topAccounts);
 });
-
-const resolveDelegateInfoByAddress = async accounts => {
-	await BluebirdPromise.map(
-		accounts,
-		async account => {
-			if (account.isDelegate) {
-				const delegateInfo = (await getDelegates({ address: account.address })).data[0];
-				account.delegate = delegateInfo;
-			}
-			return account;
-		},
-		{ concurrency: accounts.length },
-	);
-	return accounts;
-};
 
 const getAccounts = async params => {
 	const accounts = {
@@ -137,7 +120,6 @@ const getAccounts = async params => {
 			await db.writeBatch(allAccounts);
 		}
 	}
-	accounts.data = await resolveDelegateInfoByAddress(accounts.data);
 	return accounts;
 };
 

@@ -20,7 +20,8 @@ module.exports = [
 	{
 		name: 'refresh.accounts',
 		description: 'Keep top accounts list up-to-date',
-		interval: 45, // seconds
+		schedule: '* * * * *', // Every 1 min
+		updateOnInit: true,
 		init: () => {
 			logger.debug('Initializing account list...');
 			core.retrieveTopAccounts();
