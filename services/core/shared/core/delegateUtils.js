@@ -24,14 +24,11 @@ const getUsernameByAddress = async (address) => {
 	return null;
 };
 
-const getAddressByUsername = () => null;
-
-// const getAddressByUsername = async (username) => {
-// 	const delegate = await cacheRedisDelegates.get('delegateCache');
-// 	const dbResult = await delegate.filter((acc) => (acc.username && acc.username === username));
-// 	if (dbResult.length === 1) return dbResult[0].username;
-// 	return null;
-// };
+const getAddressByUsername = async (username) => {
+	const delegate = await cacheRedisDelegates.get(username);
+	if (delegate) return delegate.address;
+	return null;
+};
 
 module.exports = {
 	getUsernameByAddress,
