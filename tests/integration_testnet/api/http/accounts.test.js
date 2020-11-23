@@ -246,4 +246,22 @@ describe('Accounts API', () => {
 			});
 		});
 	});
+
+	describe('Retrieve account list by accountId', () => {
+		it('valid and known accountId -> ok', async () => {
+			const response = await api.get(`${endpoint}?accountId=${accounts.genesis.address}`);
+			expect(response.data.length).toEqual(1);
+			expect(response.data[0]).toMapRequiredSchema({
+				...accountSchema,
+				address: accounts.genesis.address,
+			});
+		});
+
+		it('unknown accountId -> 404', async () => {
+			const url = `${endpoint}?address=999999999L`;
+			const expectedStatus = 404;
+			const response = await api.get(url, expectedStatus);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
+	});
 });
