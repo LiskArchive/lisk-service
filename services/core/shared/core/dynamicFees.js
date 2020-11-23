@@ -203,7 +203,8 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight) => {
 	const blockBatch = {};
 	do {
 		/* eslint-disable no-await-in-loop */
-		const batchSize = config.feeEstimates.emaBatchSize;
+		const batchSize = config.feeEstimates.emaBatchSize > (toHeight - fromHeight)
+			? (toHeight - fromHeight) : config.feeEstimates.emaBatchSize;
 		blockBatch.data = await BluebirdPromise.map(
 			range(batchSize + 1),
 			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight - i })).data[0],
