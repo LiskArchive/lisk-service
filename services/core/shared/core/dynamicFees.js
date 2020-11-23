@@ -196,6 +196,10 @@ const getEstimateFeeByteCoreLogic = async (blockBatch, innerPrevFeeEstPerByte) =
 };
 
 const getEstimateFeeByteForBatch = async (fromHeight, toHeight) => {
+	// Check if the starting height is permitted by config or adjust acc.
+	fromHeight = config.feeEstimates.defaultStartBlockHeight > fromHeight
+		? config.feeEstimates.defaultStartBlockHeight : fromHeight;
+
 	const prevFeeEstPerByte = { blockHeight: fromHeight };
 
 	const range = size => Array(size).fill().map((_, index) => index);
