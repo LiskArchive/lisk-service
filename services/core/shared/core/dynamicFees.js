@@ -239,9 +239,8 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, mode) => {
 
 		if (prevFeeEstPerByte.blockHeight < toHeight) {
 			// Store intermediate values, in case of a long running loop
-			(mode === 'quick')
-				? await cacheRedisFees.set(cacheKeyFeeEstQuick, prevFeeEstPerByte)
-				: await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
+			if (mode === 'quick') await cacheRedisFees.set(cacheKeyFeeEstQuick, prevFeeEstPerByte);
+			else await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
 		}
 		/* eslint-enable no-await-in-loop */
 	} while (toHeight > prevFeeEstPerByte.blockHeight);
@@ -271,15 +270,13 @@ const getEstimateFeeByte = async () => {
 	}
 
 	const latestBlock = getLastBlock();
-	const validate = feeEstPerByte => {
-		return feeEstPerByte
-			&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
-				.every(key => Object.keys(cachedFeeEstPerByte).includes(key))
-			&& Number(latestBlock.height) === feeEstPerByte.blockHeight;
-	};
+	const validate = feeEstPerByte => feeEstPerByte
+		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
+			.every(key => Object.keys(feeEstPerByte).includes(key))
+		&& Number(latestBlock.height) === feeEstPerByte.blockHeight;
 
 	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
-	// if (validate(cachedFeeEstPerByte)) return cachedFeeEstPerByte;
+	if (validate(cachedFeeEstPerByte)) return cachedFeeEstPerByte;
 
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
 	if (validate(cachedFeeEstPerByteQuick)) return cachedFeeEstPerByteQuick;
