@@ -23,6 +23,7 @@ module.exports = {
 	rpcMethod: 'get.accounts',
 	tags: ['Accounts'],
 	params: {
+		accountId: { type: 'any', optional: true },
 		address: { optional: true, type: 'string', min: 2 },
 		publickey: { optional: true, type: 'string', min: 1 },
 		secpubkey: { optional: true, type: 'string', min: 1 },

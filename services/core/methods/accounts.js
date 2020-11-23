@@ -23,6 +23,7 @@ module.exports = [
 		name: 'accounts',
 		controller: getAccounts,
 		params: {
+			accountId: { type: 'any', optional: true },
 			address: { type: 'any', optional: true },
 			publicKey: { type: 'any', optional: true },
 			secondPublicKey: { type: 'any', optional: true },
