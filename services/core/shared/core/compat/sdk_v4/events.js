@@ -23,6 +23,7 @@ const register = (events) => {
 	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
 	coreSocket.socket.on('blocks/change', async data => events.newBlock(data));
+	coreSocket.socket.on('blocks/change', async data => events.newFeeEstimate(data));
 	coreSocket.socket.on('round/change', async data => events.newRound(data));
 };
 

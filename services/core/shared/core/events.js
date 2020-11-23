@@ -16,6 +16,7 @@
 const signals = require('../signals');
 const core = require('./compat');
 const { getBlocks } = require('./blocks');
+const { getEstimateFeeByteQuick } = require('./dynamicFees');
 
 const events = {
 	newBlock: async data => {
@@ -24,6 +25,10 @@ const events = {
 	},
 	newRound: data => {
 		signals.get('newRound').dispatch(data);
+	},
+	newFeeEstimate: async () => {
+		const feeEstimate = await getEstimateFeeByteQuick();
+		signals.get('newFeeEstimate').dispatch(feeEstimate);
 	},
 };
 

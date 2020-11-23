@@ -258,6 +258,7 @@ const getEstimateFeeByteQuick = async () => {
 	const toHeight = latestBlock.height;
 	const fromHeight = toHeight - batchSize;
 
+	logger.debug(`Computing quick fee estimate for block ${latestBlock.id} at height ${latestBlock.height}`);
 	const cachedFeeEstPerByteQuick = await getEstimateFeeByteForBatch(fromHeight, toHeight, 'quick');
 	await cacheRedisFees.set(cacheKeyFeeEstQuick, cachedFeeEstPerByteQuick);
 
