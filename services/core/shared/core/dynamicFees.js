@@ -262,6 +262,14 @@ const getEstimateFeeByte = () => (
 );
 
 module.exports = {
+	EMAcalc,
 	getEstimateFeeByte,
+	getEstimateFeeByteCoreLogic,
 	calculateEstimateFeeByte,
+	getTransactionInstanceByType,
+	calculateBlockSize,
+	calculateFeePerByte,
+	calcAvgFeeByteModes,
+	calculateAvgFeePerByte,
+	calculateWeightedAvg,
 };
