@@ -72,16 +72,22 @@ const getTransactions = async (params) => {
 };
 
 const getTransactionsByAddress = async (params) => {
-	const address = params.anyId;
-	delete params.anyId;
-	const result = await CoreService.getTransactions({
-		...params,
-		senderIdOrRecipientId: address,
-	});
+	let transactions = {
+		data: [],
+		meta: {},
+	};
+	if (params.accountId) {
+		const address = params.accountId;
+		delete params.accountId;
+		transactions = await CoreService.getTransactions({
+			...params,
+			senderIdOrRecipientId: address,
+		});
+	}
 	return {
 		data: {
-			data: result.data,
-			meta: result.meta,
+			data: transactions.data,
+			meta: transactions.meta,
 		},
 	};
 };
