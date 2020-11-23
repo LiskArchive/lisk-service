@@ -18,6 +18,7 @@ const {
 	CacheRedis,
 	Logger,
 } = require('lisk-service-framework');
+
 const {
 	TransferTransaction,
 	DelegateTransaction,
@@ -27,20 +28,17 @@ const {
 	ProofOfMisbehaviorTransaction,
 } = require('@liskhq/lisk-transactions');
 
-const {
-	getSDKVersion,
-	getCoreVersion,
-	mapToOriginal,
-} = require('./compat');
-
-const { getBlocks } = require('./blocks');
+const { getSDKVersion, getCoreVersion, mapToOriginal } = require('./compat');
+const { getLastBlock, getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
 const config = require('../../config.js');
 
+const sdkVersion = getSDKVersion();
 const logger = Logger();
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
+const cacheKeyFeeEst = 'lastFeeEstimate';
 
 const calcAvgFeeByteModes = {
 	MEDIUM: 'med',
@@ -197,27 +195,8 @@ const getEstimateFeeByteCoreLogic = async (blockBatch, innerPrevFeeEstPerByte) =
 	return feeEstPerByte;
 };
 
-const getEstimateFeeByte = async () => {
-	const sdkVersion = getSDKVersion();
-	if (sdkVersion < 4) {
-		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
-	}
-
-	const cacheKeyFeeEst = 'lastFeeEstimate';
-
-	const prevFeeEstPerByte = { blockHeight: config.feeEstimates.defaultStartBlockHeight };
-	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
-	const latestBlock = await getBlocks({ sort: 'height:desc', limit: 1 });
-	if (cachedFeeEstPerByte
-		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
-			.every(key => Object.keys(cachedFeeEstPerByte).includes(key))) {
-		if ((Date.now() / 1000) - cachedFeeEstPerByte.updated < 10
-			|| Number(latestBlock.data.id) === cachedFeeEstPerByte.blockHeight) {
-			return cachedFeeEstPerByte;
-		}
-
-		Object.assign(prevFeeEstPerByte, cachedFeeEstPerByte);
-	}
+const getEstimateFeeByteForBatch = async (fromHeight, toHeight) => {
+	const prevFeeEstPerByte = { blockHeight: fromHeight };
 
 	const range = size => Array(size).fill().map((_, index) => index);
 	const feeEstPerByte = {};
@@ -226,8 +205,8 @@ const getEstimateFeeByte = async () => {
 		/* eslint-disable no-await-in-loop */
 		const batchSize = config.feeEstimates.emaBatchSize;
 		blockBatch.data = await BluebirdPromise.map(
-			range(batchSize),
-			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i })).data[0],
+			range(batchSize + 1),
+			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight - i })).data[0],
 			{ concurrency: batchSize },
 		);
 
@@ -244,17 +223,38 @@ const getEstimateFeeByte = async () => {
 		Object.assign(prevFeeEstPerByte,
 			await getEstimateFeeByteCoreLogic(blockBatch, prevFeeEstPerByte));
 
-		if (prevFeeEstPerByte.blockHeight !== latestBlock.data[0].height) {
+		if (prevFeeEstPerByte.blockHeight !== toHeight) {
 			// Store intermediate values, in case of a long running loop
 			await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
 		}
 		/* eslint-enable no-await-in-loop */
-	} while (latestBlock.data[0].height > prevFeeEstPerByte.blockHeight);
+	} while (toHeight > prevFeeEstPerByte.blockHeight);
 
 	Object.assign(feeEstPerByte, prevFeeEstPerByte);
 	await cacheRedisFees.set(cacheKeyFeeEst, feeEstPerByte);
 
 	return feeEstPerByte;
+};
+
+const getEstimateFeeByte = async () => {
+	if (sdkVersion < 4) {
+		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
+	}
+
+	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
+	const latestBlock = await getLastBlock();
+	if (cachedFeeEstPerByte
+		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
+			.every(key => Object.keys(cachedFeeEstPerByte).includes(key))
+		&& Number(latestBlock.height) === cachedFeeEstPerByte.blockHeight) {
+		return cachedFeeEstPerByte;
+	}
+
+	// For cold start scenario or stale value
+	const batchSize = config.feeEstimates.coldStartBatchSize || 21;
+	const toHeight = latestBlock.height;
+	const fromHeight = toHeight - batchSize;
+	return getEstimateFeeByteForBatch(toHeight, fromHeight);
 };
 
 module.exports = {
