@@ -170,5 +170,12 @@ xdescribe('Blocks API', () => {
 				...blockSchema,
 			});
 		});
+
+		it('retrieve block by username -> ok', async () => {
+			const response = await api.get(`${endpoint}?username=${delegate.username}`);
+			response.data.forEach(blockData => {
+				expect(blockData.generatorUsername).toEqual(delegate.username);
+			});
+		});
 	});
 });
