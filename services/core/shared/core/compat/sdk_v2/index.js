@@ -42,6 +42,8 @@ const { getVoters } = require('./voters');
 
 const { getNetworkStatus } = coreApi;
 
+const events = require('./events');
+
 const ObjectUtilService = Utils.Data;
 
 const numOfActiveDelegates = 101;
@@ -253,4 +255,5 @@ module.exports = {
 	getCachedAccountByPublicKey,
 	getCachedAccountBySecondPublicKey,
 	getCachedAccountByUsername,
+	events,
 };

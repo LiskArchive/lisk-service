@@ -13,25 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getBlocks,
-	updateFinalizedHeight,
-	getFinalizedHeight,
-} = require('./blocks');
+const Signal = require('signals');
+const { Logger } = require('lisk-service-framework');
 
-const { getDelegates, getNextForgers } = require('./delegates');
-const { getVotes } = require('./votes');
-const { getVoters } = require('./voters');
-const events = require('./events');
+const logger = Logger();
 
-module.exports = {
-	...require('../sdk_v2'),
-	getBlocks,
-	updateFinalizedHeight,
-	getFinalizedHeight,
-	getDelegates,
-	getNextForgers,
-	getVotes,
-	getVoters,
-	events,
+const signals = {};
+
+const register = (name) => {
+	signals[name] = new Signal();
+	logger.debug(`Registered internal signal ${name}`);
+	return signals[name];
 };
+
+const get = (name) => signals[name] ? signals[name] : register(name);
+
+module.exports = { register, get };
