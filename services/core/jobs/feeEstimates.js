@@ -13,25 +13,36 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const {
+	CacheRedis,
+	Logger,
+} = require('lisk-service-framework');
+
+const {
+	getEstimateFeeByteNormal,
+	getEstimateFeeByteQuick,
+} = require('../shared/core/dynamicFees');
 
 const config = require('../config');
-const { getLastBlock } = require('../shared/core/blocks');
-const dynamicFees = require('../shared/core/dynamicFees');
+
+const logger = Logger();
 
 module.exports = [
 	{
 		name: 'update.fee_estimates',
 		description: 'Initiate the dynamic fee estimates algorithm',
-		interval: 1,
+		interval: 60, // TODO: Switch to schedule?
 		updateOnInit: true,
 		init: async () => {
 			logger.debug('Initiate the dynamic fee estimates computation');
-			dynamicFees.getEstimateFeeByteQuick();
-			dynamicFees.getEstimateFeeByteForBatch(
-				config.feeEstimates.defaultStartBlockHeight,
-				getLastBlock().height,
-			);
+
+			// For dev purpose
+			const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
+			await cacheRedisFees.delete('lastFeeEstimate');
+			await cacheRedisFees.delete('lastFeeEstimateQuick');
+
+			getEstimateFeeByteNormal();
+			getEstimateFeeByteQuick();
 		},
 		controller: () => { },
 	},

@@ -38,8 +38,15 @@ const sdkVersion = getSDKVersion();
 const logger = Logger();
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
-const cacheKeyFeeEst = 'lastFeeEstimate';
+const cacheKeyFeeEstNormal = 'lastFeeEstimate';
 const cacheKeyFeeEstQuick = 'lastFeeEstimateQuick';
+
+let execNormalModeOnly = false;
+const executionStatus = {
+	// false: not running, true: running
+	[cacheKeyFeeEstNormal]: false,
+	[cacheKeyFeeEstQuick]: false,
+};
 
 const calcAvgFeeByteModes = {
 	MEDIUM: 'med',
@@ -196,14 +203,12 @@ const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) =>
 	return feeEstPerByte;
 };
 
-const getEstimateFeeByteForBatch = async (fromHeight, toHeight, mode) => {
+const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	// Check if the starting height is permitted by config or adjust acc.
 	fromHeight = config.feeEstimates.defaultStartBlockHeight > fromHeight
 		? config.feeEstimates.defaultStartBlockHeight : fromHeight;
 
-	const cachedFeeEstimate = (mode === 'quick')
-		? await cacheRedisFees.get(cacheKeyFeeEstQuick)
-		: await cacheRedisFees.get(cacheKeyFeeEst);
+	const cachedFeeEstimate = await cacheRedisFees.get(cacheKey);
 
 	const cachedFeeEstimateHeight = cachedFeeEstimate
 		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
@@ -216,12 +221,14 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, mode) => {
 	const blockBatch = {};
 	do {
 		/* eslint-disable no-await-in-loop */
-		const batchSize = config.feeEstimates.emaBatchSize > (toHeight - fromHeight)
+		const idealBatchSize = config.feeEstimates.emaBatchSize > (toHeight - fromHeight)
 			? (toHeight - fromHeight) : config.feeEstimates.emaBatchSize;
+		const finalBatchSize = idealBatchSize + 1 > fromHeight ? fromHeight : idealBatchSize + 1;
+
 		blockBatch.data = await BluebirdPromise.map(
-			range(batchSize + 1),
+			range(finalBatchSize),
 			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight - i })).data[0],
-			{ concurrency: batchSize },
+			{ concurrency: finalBatchSize },
 		);
 
 		blockBatch.data = await BluebirdPromise.map(
@@ -237,30 +244,73 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, mode) => {
 		Object.assign(prevFeeEstPerByte,
 			await getEstimateFeeByteForBlock(blockBatch, prevFeeEstPerByte));
 
+		// Store intermediate values, in case of a long running loop
 		if (prevFeeEstPerByte.blockHeight < toHeight) {
-			// Store intermediate values, in case of a long running loop
-			if (mode === 'quick') await cacheRedisFees.set(cacheKeyFeeEstQuick, prevFeeEstPerByte);
-			else await cacheRedisFees.set(cacheKeyFeeEst, prevFeeEstPerByte);
+			await cacheRedisFees.set(cacheKey, prevFeeEstPerByte);
 		}
+
 		/* eslint-enable no-await-in-loop */
 	} while (toHeight > prevFeeEstPerByte.blockHeight);
 
 	Object.assign(feeEstPerByte, prevFeeEstPerByte);
-	await cacheRedisFees.set(cacheKeyFeeEst, feeEstPerByte);
+	await cacheRedisFees.set(cacheKey, feeEstPerByte);
 
 	return feeEstPerByte;
 };
 
+const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
+	if (!execNormalModeOnly) {
+		// Stop executing quick mode, after Normal execution catches up
+		const feeEstPerByteNormal = await cacheRedisFees.get(cacheKeyFeeEstNormal);
+		const feeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
+		if (feeEstPerByteNormal && feeEstPerByteQuick
+			&& feeEstPerByteNormal.blockHeight >= feeEstPerByteQuick.blockHeight
+		) execNormalModeOnly = true;
+	}
+
+	let result = await cacheRedisFees.get(cacheKey);
+	if (!executionStatus[cacheKey]) {
+		// If the process (normal / quick) is already running,
+		// do not allow it to run again until the prior execution finishes
+		executionStatus[cacheKey] = true;
+		result = await getEstimateFeeByteForBatch(fromHeight, toHeight, cacheKey);
+		executionStatus[cacheKey] = false;
+	}
+	return result;
+};
+
+const getEstimateFeeByteNormal = async () => {
+	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
+	const toHeight = latestBlock.height;
+
+	if (!executionStatus[cacheKeyFeeEstNormal]) {
+		logger.debug(`Computing normal fee estimate for block ${latestBlock.id} at height ${latestBlock.height}`);
+	} else {
+		logger.debug('Compute normal fee estimate is already running. Won\'t start again until the current execution finishes');
+	}
+	const cachedFeeEstPerByteNormal = await checkAndProcessExecution(
+		fromHeight, toHeight, cacheKeyFeeEstNormal,
+	);
+	return cachedFeeEstPerByteNormal;
+};
+
 const getEstimateFeeByteQuick = async () => {
 	// For the cold start scenario
-	const latestBlock = getLastBlock();
+	if (execNormalModeOnly) {
+		logger.debug('Normal computation mode has caught up. Switching to normal computation mode');
+		return getEstimateFeeByteNormal();
+	}
+
+	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
 	const batchSize = config.feeEstimates.coldStartBatchSize;
 	const toHeight = latestBlock.height;
 	const fromHeight = toHeight - batchSize;
 
 	logger.debug(`Computing quick fee estimate for block ${latestBlock.id} at height ${latestBlock.height}`);
-	const cachedFeeEstPerByteQuick = await getEstimateFeeByteForBatch(fromHeight, toHeight, 'quick');
-	await cacheRedisFees.set(cacheKeyFeeEstQuick, cachedFeeEstPerByteQuick);
+	const cachedFeeEstPerByteQuick = await checkAndProcessExecution(
+		fromHeight, toHeight, cacheKeyFeeEstQuick,
+	);
 
 	return cachedFeeEstPerByteQuick;
 };
@@ -271,23 +321,31 @@ const getEstimateFeeByte = async () => {
 	}
 
 	const latestBlock = getLastBlock();
-	const validate = feeEstPerByte => feeEstPerByte
+	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
 			.every(key => Object.keys(feeEstPerByte).includes(key))
-		&& Number(latestBlock.height) === feeEstPerByte.blockHeight;
+		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
-	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEst);
-	if (validate(cachedFeeEstPerByte)) return cachedFeeEstPerByte;
+	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEstNormal);
+	if (validate(cachedFeeEstPerByte, 15)) return cachedFeeEstPerByte;
 
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
-	if (validate(cachedFeeEstPerByteQuick)) return cachedFeeEstPerByteQuick;
+	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
 
-	return null;
+	return {
+		low: 0,
+		med: 0,
+		high: 0,
+		updated: 0,
+		blockHeight: 0,
+		blockId: 0,
+	};
 };
 
 module.exports = {
 	EMAcalc,
 	getEstimateFeeByte,
+	getEstimateFeeByteNormal,
 	getEstimateFeeByteQuick,
 	getEstimateFeeByteForBlock,
 	getTransactionInstanceByType,
