@@ -37,6 +37,7 @@ const config = require('../../config.js');
 const sdkVersion = getSDKVersion();
 const logger = Logger();
 
+const cacheRedisBlockSizes = CacheRedis('blockSizes', config.endpoints.redis);
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 const cacheKeyFeeEstNormal = 'lastFeeEstimate';
 const cacheKeyFeeEstQuick = 'lastFeeEstimateQuick';
@@ -68,7 +69,10 @@ const getTransactionInstanceByType = transaction => {
 	return tx;
 };
 
-const calculateBlockSize = block => {
+const calculateBlockSize = async block => {
+	const cachedBlockSize = await cacheRedisBlockSizes.get(block.id);
+	if (cachedBlockSize) return cachedBlockSize;
+
 	let blockSize = 0;
 	if (block.numberOfTransactions === 0) return blockSize;
 
@@ -80,11 +84,13 @@ const calculateBlockSize = block => {
 	});
 
 	blockSize = transactionSizes.reduce((a, b) => a + b, 0);
+	await cacheRedisBlockSizes.set(block.id, blockSize, 300); // Cache for 5 mins
+
 	return blockSize;
 };
 
-const calculateWeightedAvg = blocks => {
-	const blockSizes = blocks.map(block => calculateBlockSize(block));
+const calculateWeightedAvg = async blocks => {
+	const blockSizes = await Promise.all(blocks.map(block => calculateBlockSize(block)));
 	const decayFactor = config.feeEstimates.wavgDecayPercentage / 100;
 	let weight = 1;
 	const wavgLastBlocks = blockSizes.reduce((a, b) => {
@@ -131,7 +137,7 @@ const calculateAvgFeePerByte = (mode, transactionDetails) => {
 	return avgFeePriority;
 };
 
-const calculateFeePerByte = block => {
+const calculateFeePerByte = async block => {
 	const feePerByte = {};
 	const payload = block.transactions.data;
 	const transactionDetails = payload.map(transaction => {
@@ -147,7 +153,7 @@ const calculateFeePerByte = block => {
 	});
 	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
 
-	const blockSize = calculateBlockSize(block);
+	const blockSize = await calculateBlockSize(block);
 
 	feePerByte.low = (blockSize < 12.5 * 2 ** 10) ? 0 : transactionDetails[0].feePriority;
 	feePerByte.med = calculateAvgFeePerByte(calcAvgFeeByteModes.MEDIUM, transactionDetails);
@@ -179,9 +185,9 @@ const EMAcalc = (feePerByte, prevFeeEstPerByte) => {
 };
 
 const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) => {
-	const wavgBlockBatch = calculateWeightedAvg(blockBatch.data);
-	const sizeLastBlock = calculateBlockSize(blockBatch.data[0]);
-	const feePerByte = calculateFeePerByte(blockBatch.data[0]);
+	const wavgBlockBatch = await calculateWeightedAvg(blockBatch.data);
+	const sizeLastBlock = await calculateBlockSize(blockBatch.data[0]);
+	const feePerByte = await calculateFeePerByte(blockBatch.data[0]);
 	const feeEstPerByte = {};
 
 	if (wavgBlockBatch > (12.5 * 2 ** 10) || sizeLastBlock > (14.8 * 2 ** 10)) {
