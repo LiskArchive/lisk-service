@@ -13,12 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Core = require('../../shared/core');
+const coreApi = require('./coreApi');
 
 const getNetworkStatus = async () => {
-	const result = await Core.getNetworkStatus();
+	const status = await coreApi.getNetworkStatus();
+	const constants = await coreApi.getNetworkConstants();
+	const result = {};
+	result.status = status.data;
+	result.constants = constants.data;
+
 	return {
-		data: result.data,
+		data: result,
 		meta: {},
 	};
 };

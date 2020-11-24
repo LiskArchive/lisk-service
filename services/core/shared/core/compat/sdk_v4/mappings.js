@@ -105,6 +105,10 @@ const responseMappers = {
         response.data = { ...response.data, nethash: response.data.networkId };
         return response;
     },
+    '/node/status': response => {
+        response.data = { ...response.data, networkHeight: response.data.height };
+        return response;
+    },
 };
 
 const paramMappers = {

@@ -88,7 +88,7 @@ const responseMappers = {
         return response;
     },
     '/node/constants': response => {
-        response.data = { ...response.data, nethash: response.data.networkId };
+        response.data = { ...response.data, nethash: response.data.nethash };
         return response;
     },
 };

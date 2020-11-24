@@ -39,7 +39,7 @@ const { getVotes } = require('./votes');
 
 const { getVoters } = require('./voters');
 
-const { getNetworkStatus } = coreApi;
+const { getNetworkStatus } = require('./network');
 
 const events = require('./events');
 
