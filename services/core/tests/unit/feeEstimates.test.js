@@ -93,18 +93,18 @@ describe('Fee estimation tests', () => {
 
 	describe('calculateBlockSize', () => {
 		it('Zero transactions', async () => {
-			const blockSize = calculateBlockSize(emptyBlock);
+			const blockSize = await calculateBlockSize(emptyBlock);
 			expect(blockSize).toBe(0);
 		});
 
 		it('Non-zero transactions', async () => {
-			const blockSize = calculateBlockSize(nonEmptyBlock);
+			const blockSize = await calculateBlockSize(nonEmptyBlock);
 			expect(blockSize).toBeGreaterThan(0);
 			expect(blockSize).toBeLessThanOrEqual(15 * 2 ** 10);
 		});
 
 		it('Non-zero transactions: Fully saturated block', async () => {
-			const blockSize = calculateBlockSize(fullySaturatedBlock);
+			const blockSize = await calculateBlockSize(fullySaturatedBlock);
 			expect(blockSize).not.toBe(0);
 			expect(blockSize).toBeGreaterThan(15 * 2 ** 10 - 130);
 			expect(blockSize).toBeLessThanOrEqual(15 * 2 ** 10);
@@ -113,24 +113,24 @@ describe('Fee estimation tests', () => {
 
 	describe('calculateWeightedAvg', () => {
 		it('Batch of empty blocks (noTraffic)', async () => {
-			const wavg = calculateWeightedAvg(noTrafficMockup.blocks);
+			const wavg = await calculateWeightedAvg(noTrafficMockup.blocks);
 			expect(wavg).toBe(0);
 		});
 
 		it('Batch of non-empty blocks (lowTraffic)', async () => {
-			const wavg = calculateWeightedAvg(lowTrafficMockup.blocks);
+			const wavg = await calculateWeightedAvg(lowTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
 			expect(wavg).toBeCloseTo(6233.280377604083);
 		});
 
 		it('Batch of non-empty blocks (moderateTraffic)', async () => {
-			const wavg = calculateWeightedAvg(moderateTrafficMockup.blocks);
+			const wavg = await calculateWeightedAvg(moderateTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
 			expect(wavg).toBeCloseTo(71227.69303107934);
 		});
 
 		it('Batch of non-empty blocks (highTraffic)', async () => {
-			const wavg = calculateWeightedAvg(highTrafficMockup.blocks);
+			const wavg = await calculateWeightedAvg(highTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
 			expect(wavg).toBeCloseTo(134283.09572095712);
 		});
@@ -180,7 +180,7 @@ describe('Fee estimation tests', () => {
 
 	describe('calculateFeePerByte for Blocks', () => {
 		it('Empty block', async () => {
-			const feePerByte = calculateFeePerByte(emptyBlock);
+			const feePerByte = await calculateFeePerByte(emptyBlock);
 			expect(feePerByte.low).toBe(0);
 			expect(feePerByte.med).toBe(0);
 			expect(feePerByte.high).toBe(1);
@@ -198,7 +198,7 @@ describe('Fee estimation tests', () => {
 				return transaction;
 			});
 
-			const feePerByte = calculateFeePerByte(block);
+			const feePerByte = await calculateFeePerByte(block);
 			expect(feePerByte.low).toBeCloseTo(0);
 			expect(feePerByte.med).toBeCloseTo(36.501497200885304);
 			expect(feePerByte.high).toBeCloseTo(1727.6700292873413);

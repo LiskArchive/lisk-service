@@ -93,7 +93,7 @@ const calculateWeightedAvg = async blocks => {
 	const blockSizes = await Promise.all(blocks.map(block => calculateBlockSize(block)));
 	const decayFactor = config.feeEstimates.wavgDecayPercentage / 100;
 	let weight = 1;
-	const wavgLastBlocks = blockSizes.reduce((a, b) => {
+	const wavgLastBlocks = blockSizes.reduce((a = 0, b = 0) => {
 		weight *= 1 - decayFactor;
 		return a + (b * weight);
 	});
