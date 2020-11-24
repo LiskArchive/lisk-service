@@ -28,7 +28,7 @@ module.exports = [
 	{
 		name: 'update.fee_estimates',
 		description: 'Initiate the dynamic fee estimates algorithm',
-		interval: 60, // TODO: Switch to schedule?
+		schedule: '0 0 1 1 *', // Once a year
 		updateOnInit: true,
 		init: () => {
 			logger.debug('Initiate the dynamic fee estimates computation');
