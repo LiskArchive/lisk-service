@@ -18,7 +18,6 @@ const { Utils } = require('lisk-service-framework');
 const coreApi = require('./coreApi');
 
 const { request } = require('./request');
-const { setCoreVersion } = require('./coreVersionCompatibility');
 const {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
@@ -240,7 +239,6 @@ module.exports = {
 	getPeers: coreApi.getPeers,
 	numOfActiveDelegates,
 	peerStates,
-	setCoreVersion,
 	EMAcalc: nop,
 	getEstimateFeeByte: nop,
 	getEstimateFeeByteCoreLogic: nop,
