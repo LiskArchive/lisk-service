@@ -22,7 +22,12 @@ const {
 	ProofOfMisbehaviorTransaction,
 } = require('@liskhq/lisk-transactions');
 
-const { emptyBlock, nonEmptyBlock, fullySaturatedBlock } = require('../constants/blocks');
+const {
+	emptyBlock,
+	nonEmptyBlock,
+	fullySaturatedBlock,
+} = require('../constants/blocks');
+
 const {
 	transactionType8,
 	transactionType10,

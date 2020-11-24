@@ -106,11 +106,18 @@ const getBlocksFromCache = async params => {
 };
 
 const getBlocksFromServer = async params => {
+	const blocks = {
+		data: [],
+		meta: {},
+	};
+
 	if (params.blockId) logger.debug(`Retrieved block with id ${params.blockId} from Lisk Core`);
 	else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
 	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
 
-	const blocks = await coreApi.getBlocks(params);
+	const response = await coreApi.getBlocks(params);
+	if (response.data) blocks.data = response.data;
+	if (response.meta) blocks.meta = response.meta;
 
 	if (blocks.data.length) {
 		const blockDb = await pouchdb(config.db.collections.blocks.name);
@@ -131,7 +138,7 @@ const getBlocks = async (params = {}, skipCache = false) => {
 		|| params.height
 		|| params.isFinal === true
 		|| params.isImmutable === true)) { // try to get from cache
-			blocks.data = await getBlocksFromCache(params);
+		blocks.data = await getBlocksFromCache(params);
 	}
 
 	if (blocks.data.length === 0) {
