@@ -227,14 +227,14 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	const blockBatch = {};
 	do {
 		/* eslint-disable no-await-in-loop */
-		const idealBatchSize = config.feeEstimates.emaBatchSize > (toHeight - fromHeight)
-			? (toHeight - fromHeight) : config.feeEstimates.emaBatchSize;
-		const finalBatchSize = idealBatchSize + 1 > fromHeight ? fromHeight : idealBatchSize + 1;
+		const idealEMABatchSize = config.feeEstimates.emaBatchSize;
+		const finalEMABatchSize = idealEMABatchSize > prevFeeEstPerByte.blockHeight
+			? prevFeeEstPerByte.blockHeight : idealEMABatchSize;
 
 		blockBatch.data = await BluebirdPromise.map(
-			range(finalBatchSize),
-			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight - i })).data[0],
-			{ concurrency: finalBatchSize },
+			range(finalEMABatchSize),
+			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i })).data[0],
+			{ concurrency: finalEMABatchSize },
 		);
 
 		blockBatch.data = await BluebirdPromise.map(
@@ -256,7 +256,7 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		}
 
 		/* eslint-enable no-await-in-loop */
-	} while (toHeight > prevFeeEstPerByte.blockHeight);
+	} while ((toHeight - 1) > prevFeeEstPerByte.blockHeight);
 
 	Object.assign(feeEstPerByte, prevFeeEstPerByte);
 	await cacheRedisFees.set(cacheKey, feeEstPerByte);
@@ -332,20 +332,13 @@ const getEstimateFeeByte = async () => {
 			.every(key => Object.keys(feeEstPerByte).includes(key))
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
-	const cachedFeeEstPerByte = await cacheRedisFees.get(cacheKeyFeeEstNormal);
-	if (validate(cachedFeeEstPerByte, 15)) return cachedFeeEstPerByte;
+	const cachedFeeEstPerByteNormal = await cacheRedisFees.get(cacheKeyFeeEstNormal);
+	if (validate(cachedFeeEstPerByteNormal, 15)) return cachedFeeEstPerByteNormal;
 
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
 
-	return {
-		low: 0,
-		med: 0,
-		high: 0,
-		updated: 0,
-		blockHeight: 0,
-		blockId: 0,
-	};
+	return {};
 };
 
 module.exports = {
