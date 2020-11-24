@@ -14,7 +14,6 @@
  *
  */
 const {
-	CacheRedis,
 	Logger,
 } = require('lisk-service-framework');
 
@@ -22,8 +21,6 @@ const {
 	getEstimateFeeByteNormal,
 	getEstimateFeeByteQuick,
 } = require('../shared/core/dynamicFees');
-
-const config = require('../config');
 
 const logger = Logger();
 
@@ -33,13 +30,8 @@ module.exports = [
 		description: 'Initiate the dynamic fee estimates algorithm',
 		interval: 60, // TODO: Switch to schedule?
 		updateOnInit: true,
-		init: async () => {
+		init: () => {
 			logger.debug('Initiate the dynamic fee estimates computation');
-
-			// For dev purpose
-			const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
-			await cacheRedisFees.delete('lastFeeEstimate');
-			await cacheRedisFees.delete('lastFeeEstimateQuick');
 
 			getEstimateFeeByteNormal();
 			getEstimateFeeByteQuick();
