@@ -26,11 +26,18 @@ const getBlocks = async params => {
 	if (typeof params.height === 'number') {
 		params.height = `${params.height}`;
 	}
+	if (params.username) {
+		params.address = await Core.getAddressByUsername(params.username);
+		if (!params.address) return { status: NOT_FOUND, data: { error: `Account ID ${params.username} not found.` } };
+		delete params.username;
+	}
+
 	if (params.address) {
 		params.generatorPublicKey = await Core.getPublicKeyByAny(params.address);
 		if (!params.generatorPublicKey) return { status: NOT_FOUND, data: { error: `Account ID ${params.address} not found.` } };
 		delete params.address;
 	}
+
 	const response = await Core.getBlocks(params);
 
 	if (typeof params.blockId === 'string') {

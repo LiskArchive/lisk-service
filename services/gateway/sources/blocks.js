@@ -25,6 +25,7 @@ module.exports = {
 		blockId: 'id',
 		sort: '=',
 		address: '=',
+		username: '=,string',
 		fromTimestamp: 'from',
 		toTimestamp: 'to',
 	},
