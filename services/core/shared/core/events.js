@@ -13,25 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getBlocks,
-	updateFinalizedHeight,
-	getFinalizedHeight,
-} = require('./blocks');
+const signals = require('../signals');
+const core = require('./compat');
+const { getBlocks } = require('./blocks');
 
-const { getDelegates, getNextForgers } = require('./delegates');
-const { getVotes } = require('./votes');
-const { getVoters } = require('./voters');
-const events = require('./events');
-
-module.exports = {
-	...require('../sdk_v2'),
-	getBlocks,
-	updateFinalizedHeight,
-	getFinalizedHeight,
-	getDelegates,
-	getNextForgers,
-	getVotes,
-	getVoters,
-	events,
+const events = {
+	newBlock: async data => {
+		const block = await getBlocks({ blockId: data.id });
+		signals.get('newBlock').dispatch(block.data[0]);
+	},
+	newRound: data => {
+		signals.get('newRound').dispatch(data);
+	},
 };
+
+const init = () => {
+	core.events.register(events);
+	Object.keys(events).forEach((eventName) => signals.register(eventName));
+};
+
+init();
+
+module.exports = { init };
