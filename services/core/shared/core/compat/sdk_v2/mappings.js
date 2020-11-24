@@ -51,7 +51,7 @@ const mapTransaction = transaction => {
     const changesByType = {
         0: {
             amount: transaction.asset.amount || transaction.amount,
-            recipientId: transaction.asset.recipientId,
+            recipientId: transaction.asset.recipientId || transaction.recipientId,
             asset: { data: transaction.asset.data },
         },
         1: {
