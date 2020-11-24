@@ -27,7 +27,7 @@ module.exports = [
 		name: 'delegates',
 		controller: getDelegates,
 		params: {
-			accountId: { type: 'any', optional: true },
+			anyId: { type: 'any', optional: true },
 			address: { type: 'any', optional: true },
 			publicKey: { type: 'any', optional: true },
 			secondPublicKey: { type: 'any', optional: true },

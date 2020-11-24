@@ -71,27 +71,6 @@ const getTransactions = async (params) => {
 	};
 };
 
-const getTransactionsByAddress = async (params) => {
-	let transactions = {
-		data: [],
-		meta: {},
-	};
-	if (params.accountId) {
-		const address = params.accountId;
-		delete params.accountId;
-		transactions = await CoreService.getTransactions({
-			...params,
-			senderIdOrRecipientId: address,
-		});
-	}
-	return {
-		data: {
-			data: transactions.data,
-			meta: transactions.meta,
-		},
-	};
-};
-
 const getLastTransactions = async (params) => {
 	const result = await CoreService.getTransactions({
 		...params,
@@ -174,7 +153,6 @@ const getPendingTransactions = async params => {
 
 module.exports = {
 	getTransactions,
-	getTransactionsByAddress,
 	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,

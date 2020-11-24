@@ -23,7 +23,6 @@ module.exports = {
 	rpcMethod: 'get.delegates',
 	tags: ['Delegates'],
 	params: {
-		accountId: { optional: true, type: 'string' },
 		address: { optional: true, type: 'string', min: 2 },
 		publickey: { optional: true, type: 'string', min: 1 },
 		secpubkey: { optional: true, type: 'string', min: 1 },

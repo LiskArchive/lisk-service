@@ -22,7 +22,7 @@ module.exports = [
 		name: 'voters',
 		controller: getVoters,
 		params: {
-			accountId: { type: 'any', optional: true },
+			anyId: { type: 'any', optional: true },
 			address: { type: 'any', optional: true },
 			username: { type: 'any', optional: true },
 			publicKey: { type: 'any', optional: true },

@@ -19,7 +19,6 @@ module.exports = {
 	type: 'moleculer',
 	method: 'core.accounts',
 	params: {
-		accountId: '=,string',
 		address: '=',
 		publicKey: 'publickey',
 		secondPublicKey: 'secpubkey',

@@ -19,7 +19,6 @@ module.exports = {
 	type: 'moleculer',
 	method: 'core.voters',
 	params: {
-		accountId: '=,string',
 		address: '=,string',
 		username: '=,string',
 		publicKey: 'publickey,string',

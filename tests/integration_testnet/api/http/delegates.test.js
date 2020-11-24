@@ -65,16 +65,6 @@ describe('Delegates API', () => {
 			});
 		});
 
-		it('known delegate by accountId -> ok', async () => {
-			const response = await api.get(`${endpoint}?accountId=${delegates.activeDelegate.address}`);
-			expect(response.data).toBeArrayOfSize(1);
-			response.data.map(delegate => expect(delegate).toMapRequiredSchema(delegateSchema));
-			expect(response.data[0]).toMapRequiredSchema({
-				...delegateSchema,
-				address: delegates.activeDelegate.address,
-			});
-		});
-
 		it('known address by second public key', async () => {
 			const url = `${endpoint}?secpubkey=${delegates.activeDelegate.secondPublicKey}`;
 			const response = await api.get(url);
