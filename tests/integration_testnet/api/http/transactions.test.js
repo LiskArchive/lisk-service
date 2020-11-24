@@ -220,12 +220,22 @@ describe('Transactions API', () => {
 			});
 		});
 
+		it('invalid sender query -> 404', async () => {
+			const response = await api.get(`${endpoint}?sender=${accounts.delegate.publicKey}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
+
 		it('existing recipient public key -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipient=publickey:${accounts.delegate.publicKey}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
 				recipientPublicKey: accounts.delegate.publicKey,
 			});
+		});
+
+		it('invalid recipient query -> 404', async () => {
+			const response = await api.get(`${endpoint}?recipient=${accounts.delegate.publicKey}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 	});
 
@@ -238,12 +248,22 @@ describe('Transactions API', () => {
 			});
 		});
 
+		it('invalid sender query -> 404', async () => {
+			const response = await api.get(`${endpoint}?sender=${accounts.delegate.delegate.username}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
+
 		it('existing recipient username -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipient=username:${accounts.delegate.delegate.username}`);
 			expect(response.data[0]).toMapRequiredSchema({
 				...transactionSchema,
 				recipientPublicKey: accounts.delegate.publicKey,
 			});
+		});
+
+		it('invalid recipient query -> 404', async () => {
+			const response = await api.get(`${endpoint}?recipient=${accounts.delegate.delegate.username}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 	});
 
