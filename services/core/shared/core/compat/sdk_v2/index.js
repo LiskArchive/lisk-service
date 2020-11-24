@@ -116,7 +116,7 @@ const getAddressByUsername = async username => {
 	return account ? account.address : '';
 };
 
-const getAddressByAccountId = async param => {
+const getAddressByAny = async param => {
 	const paramNames = {
 		'username:': getAddressByUsername,
 		'address:': parseAddress,
@@ -215,7 +215,7 @@ module.exports = {
 	confirmSecondPublicKey,
 	confirmUsername,
 	confirmAnyId,
-	getAddressByAccountId,
+	getAddressByAny,
 	getAddressByPublicKey,
 	getAddressByUsername,
 	getPublicKeyByAny,
