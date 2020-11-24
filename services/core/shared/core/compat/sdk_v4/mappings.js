@@ -137,8 +137,8 @@ const paramMappers = {
     },
     '/delegates': params => {
         if (params.sort) {
-            params.sort = params.sort.replace('rank:asc', 'voteWeight:desc');
-            params.sort = params.sort.replace('rank:desc', 'voteWeight:asc');
+            params.sort = params.sort.replace('rank:asc', 'totalVotesReceived:desc');
+            params.sort = params.sort.replace('rank:desc', 'totalVotesReceived:asc');
         }
         return params;
     },
