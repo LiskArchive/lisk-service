@@ -35,7 +35,7 @@ const getTransactions = async (params) => {
 	const addressLookupResult = await Promise.all(
 		addressParam.map(async (param) => {
 			const paramVal = params[param];
-			const address = await CoreService.getAddressByAny(paramVal);
+			const address = await CoreService.getAddressByAccountId(paramVal);
 			if (!address) return false;
 			params[param] = address;
 			return true;

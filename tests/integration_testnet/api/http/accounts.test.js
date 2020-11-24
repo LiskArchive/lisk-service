@@ -247,7 +247,7 @@ describe('Accounts API', () => {
 		});
 	});
 
-	describe('Retrieve account list by accountId', () => {
+	describe('Retrieve account by accountId', () => {
 		it('valid and known accountId -> ok', async () => {
 			const response = await api.get(`${endpoint}?accountId=${accounts.genesis.address}`);
 			expect(response.data.length).toEqual(1);

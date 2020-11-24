@@ -74,7 +74,7 @@ const getDataForAccounts = async params => {
 };
 
 const getAccounts = async params => {
-	if (params.accountId) params.address = await CoreService.getAddressByAny(params.accountId);
+	if (params.accountId) params.address = await CoreService.getAddressByAccountId(params.accountId);
 	const isFound = await CoreService.confirmAnyId(params);
 	if (typeof params.accountId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.accountId} not found.` } };
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account ${params.address} not found.` } };
