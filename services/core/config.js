@@ -157,7 +157,7 @@ config.ttl = {
 };
 
 config.feeEstimates = {
-	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 20),
+	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 1),
 	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1),
 	medEstLowerPercentile: 25,
 	medEstUpperPercentile: 75,
