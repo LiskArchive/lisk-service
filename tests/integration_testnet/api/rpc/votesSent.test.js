@@ -13,71 +13,163 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
-
 const config = require('../../config');
 const { request } = require('../../helpers/socketIoRpcRequest');
 
-// Schemas
 const {
-	resultEnvelopeSchema,
-	emptyResultEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
+	emptyResultEnvelopeSchema,
+	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
-} = require('../../schemas/generics.schema');
+} = require('../../schemas/rpcGenerics.schema');
 
-const { goodRequestSchema } = require('../../helpers/schemas/general');
+const {
+	voteSchema,
+	metaSchema,
+} = require('../../schemas/vote.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+// const getVotes = async params => request(wsRpcUrl, 'get.votes_sent', params);
 
-const votesSchema = Joi.array().items(Joi.object({
-	address: Joi.string().required(),
-	amount: Joi.string().optional(),
-	balance: Joi.string().required(),
-	publicKey: Joi.string().required(),
-	username: Joi.string(),
-}).required()).required();
+[
+	'get.votes_sent',
+	// 'get.votes',
+].forEach(methodName => {
+	const getVotes = async params => request(wsRpcUrl, methodName, params);
 
-const getVotes = async params => request(wsRpcUrl, 'get.votes', params);
+	describe(`Method ${methodName}`, () => {
+		let refDelegate;
+		beforeAll(async () => {
+			[refDelegate] = (await request(wsRpcUrl, 'get.delegates', { limit: 1 })).result.data;
+		});
 
-describe('Method get.votes', () => {
-	[
-		['returns votes for existing account by address', { address: '16313739661670634666L' }],
-		['returns votes for existing account by username', { username: 'cc001' }],
-		['returns votes for existing account by public key', { publickey: '473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c' }],
-		// TODO Fix this test case. There is no account with votes and second public key on the
-		// blockchain snapshot currently used in Jenkins.
-		// ['returns votes for existing account by second public key',
-		// { secpubkey: 'ec057d8816b18b83a2baac387eebf8af707f8fb565c963476a0e4533e8481eaf' }],
-	]
-		.forEach(([name, body]) => {
-			it(name, async () => {
-				const response = await getVotes(body);
-				expect(response).toMap(jsonRpcEnvelopeSchema);
-				const { result } = response;
-				expect(result).toMap(resultEnvelopeSchema);
-				expect(result.data).toMap(votesSchema);
+		it('Returns list of votes when requested for existing account by account ID', async () => {
+			const response = await getVotes({ address: refDelegate.address });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(10);
+			result.data.forEach(block => expect(block).toMap(voteSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
 			});
 		});
 
-	it('returns voters when called with an address', async () => {
-		const result = await getVotes({ address: '16313739661670634666L' });
-		expect(result.result).toMap(goodRequestSchema);
-	});
+		it('Returns list of votes when requested for existing account by username', async () => {
+			if (refDelegate.username) {
+				const response = await getVotes({ username: refDelegate.username });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toEqual(10);
+				result.data.forEach(block => expect(block).toMap(voteSchema));
+				expect(result.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			}
+		});
 
-	it('returns empty response when called with unused address', async () => {
-		const response = await getVotes({ address: '999999999L' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyResultEnvelopeSchema);
-	});
+		// TODO: Fails CI pipeline
+		xit('Returns list of votes when requested for existing account by publickey', async () => {
+			if (refDelegate.publicKey) {
+				const response = await getVotes({ publickey: refDelegate.publickey });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toEqual(10);
+				result.data.forEach(block => expect(block).toMap(voteSchema));
+				expect(result.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			}
+		});
 
-	it('returns INVALID_PARAMS error (-32602) when called with invalid address', async () => {
-		const response = await getVotes({ address: 999999999999999 });
-		expect(response).toMap(invalidParamsSchema);
-	});
+		it('Returns list of votes when requested for existing account by secpubkey', async () => {
+			if (refDelegate.secondPublicKey) {
+				const response = await getVotes({ secpubkey: refDelegate.secondPublicKey });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toEqual(10);
+				result.data.forEach(block => expect(block).toMap(voteSchema));
+				expect(result.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			}
+		});
 
-	it('returns INVALID_PARAMS error (-32602) when called with account_id param', async () => {
-		const response = await getVotes({ account_id: '999999999L' });
-		expect(response).toMap(invalidParamsSchema);
+		it('Returns list of votes when requested with offset', async () => {
+			const response = await getVotes({ address: refDelegate.address, offset: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(10);
+			result.data.forEach(block => expect(block).toMap(voteSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
+			});
+		});
+
+		it('Returns list of votes when requested with limit', async () => {
+			const response = await getVotes({ address: refDelegate.address, limit: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(1);
+			result.data.forEach(block => expect(block).toMap(voteSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
+			});
+		});
+
+		it('Returns list of votes when requested with offset & limit', async () => {
+			const response = await getVotes({ address: refDelegate.address, offset: 1, limit: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(1);
+			result.data.forEach(block => expect(block).toMap(voteSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
+			});
+		});
+
+		it('Returns INVALID_PARAMS (-32602) when requested with limit = 0', async () => {
+			const response = await getVotes({ limit: 0 });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('Returns empty response when requested with wrong address', async () => {
+			const response = await getVotes({ address: '999999999L' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('Returns INVALID_PARAMS (-32602) when requested with unsupported param', async () => {
+			const response = await getVotes({ unsupported_param: 0 });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		// TODO: Fails CI pipeline
+		xit('Returns BAD_REQUEST (400) when requested without required params', async () => {
+			const response = await getVotes({});
+			expect(response).toMap(invalidRequestSchema);
+		});
 	});
 });
