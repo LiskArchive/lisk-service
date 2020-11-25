@@ -30,6 +30,10 @@ const {
 } = require('../../schemas/voter.schema');
 
 describe('Voters API', () => {
+	let refDelegate;
+	beforeAll(async () => {
+		[refDelegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
+	});
 	xdescribe('GET /account/{address}/voters', () => {
 		it('matches specific schema when requested existing account by account ID', async () => {
 			const response = await api.get(`${accountEndpoint}/2581762640681118072L/voters`);

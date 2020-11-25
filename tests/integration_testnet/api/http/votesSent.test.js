@@ -22,7 +22,11 @@ const baseUrlV1 = `${baseUrl}/api/v1`;
 const accountEndpoint = `${baseUrlV1}/account`;
 
 const {
+	goodRequestSchema,
+	badRequestSchema,
 	notFoundSchema,
+	wrongInputParamSchema,
+	metaSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
