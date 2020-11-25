@@ -229,12 +229,12 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		/* eslint-disable no-await-in-loop */
 		const idealEMABatchSize = config.feeEstimates.emaBatchSize;
 		const finalEMABatchSize = idealEMABatchSize > prevFeeEstPerByte.blockHeight
-			? prevFeeEstPerByte.blockHeight : idealEMABatchSize;
+			? (prevFeeEstPerByte.blockHeight - 1) : idealEMABatchSize;
 
 		blockBatch.data = await BluebirdPromise.map(
-			range(finalEMABatchSize),
+			range(finalEMABatchSize + 1),
 			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i })).data[0],
-			{ concurrency: finalEMABatchSize },
+			{ concurrency: (finalEMABatchSize + 1) },
 		);
 
 		blockBatch.data = await BluebirdPromise.map(
@@ -256,7 +256,7 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		}
 
 		/* eslint-enable no-await-in-loop */
-	} while ((toHeight - 1) > prevFeeEstPerByte.blockHeight);
+	} while (toHeight > prevFeeEstPerByte.blockHeight);
 
 	Object.assign(feeEstPerByte, prevFeeEstPerByte);
 	await cacheRedisFees.set(cacheKey, feeEstPerByte);
