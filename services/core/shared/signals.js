@@ -13,22 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
-const core = require('../shared/core');
+const Signal = require('signals');
+const { Logger } = require('lisk-service-framework');
 
-module.exports = [
-	{
-		name: 'refresh.accounts',
-		description: 'Keep top accounts list up-to-date',
-		schedule: '* * * * *', // Every 1 min
-		updateOnInit: true,
-		init: () => {
-			logger.debug('Initializing account list...');
-			core.retrieveTopAccounts();
-		},
-		controller: () => {
-			logger.debug('Scheduling account list reload...');
-			core.retrieveTopAccounts();
-		},
-	},
-];
+const logger = Logger();
+
+const signals = {};
+
+const register = (name) => {
+	signals[name] = new Signal();
+	logger.debug(`Registered internal signal ${name}`);
+	return signals[name];
+};
+
+const get = (name) => signals[name] ? signals[name] : register(name);
+
+module.exports = { register, get };

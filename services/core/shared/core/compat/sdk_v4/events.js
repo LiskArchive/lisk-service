@@ -14,21 +14,17 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
+const { SocketClient } = require('lisk-service-framework');
 
-const peerCache = require('../shared/core/peerCache');
+const config = require('../../../../config');
 
-module.exports = [
-	{
-		name: 'refresh.peers',
-		description: 'Keep the peer list up-to-date',
-		interval: 90, // seconds
-		init: () => {
-			logger.debug('Initializing peer list...');
-			peerCache.reload();
-		},
-		controller: () => {
-			logger.debug('Scheduling peer list reload...');
-			peerCache.reload();
-		},
-	},
-];
+const register = (events) => {
+	const coreSocket = SocketClient(config.endpoints.liskWs);
+	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
+
+	coreSocket.socket.on('blocks/change', async data => events.newBlock(data));
+	coreSocket.socket.on('blocks/change', async data => events.calculateFeeEstimate(data));
+	coreSocket.socket.on('round/change', async data => events.newRound(data));
+};
+
+module.exports = { register };

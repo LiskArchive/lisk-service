@@ -14,18 +14,9 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { SocketClient } = require('lisk-service-framework');
-const Signal = require('signals');
 
 const core = require('../shared/core');
-const config = require('../config');
-
-const coreSocket = SocketClient(config.endpoints.liskWs);
-logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
-
-const signals = {
-	blockCached: new Signal(),
-};
+const signals = require('../shared/signals');
 
 const numOfBlocks = 202;
 let localPreviousBlockId;
@@ -35,22 +26,19 @@ module.exports = [
 		name: 'block.change',
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
-			coreSocket.socket.on('blocks/change', async data => {
+			signals.get('newBlock').add(async data => {
 				logger.debug(`New block arrived (${data.id})...`);
-				const restData = await core.getBlocks({ blockId: data.id });
-				core.setLastBlock(restData.data[0]);
-				signals.blockCached.dispatch(restData.data[0]);
+				core.setLastBlock(data);
 
 				// Check for forks
-				if (!localPreviousBlockId) localPreviousBlockId = restData.data[0].previousBlockId;
-				if (localPreviousBlockId !== restData.data[0].previousBlockId) {
+				if (!localPreviousBlockId) localPreviousBlockId = data.previousBlockId;
+				if (localPreviousBlockId !== data.previousBlockId) {
 					logger.debug(`Fork detected: reloading the last ${numOfBlocks} blocks`);
 					core.reloadBlocks(numOfBlocks);
 				}
 
 				core.reloadAllPendingTransactions();
-				localPreviousBlockId = restData.data[0].id;
-				callback(restData.data[0]);
+				callback(data);
 			});
 		},
 	},
@@ -58,7 +46,7 @@ module.exports = [
 		name: 'transactions.confirmed',
 		description: 'Keep confirmed transaction list up-to-date',
 		controller: callback => {
-			signals.blockCached.add(async (block) => {
+			signals.get('newBlock').add(async (block) => {
 				if (block.numberOfTransactions > 0) {
 					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
 					const transactionData = await core.getTransactions({ blockId: block.id });
@@ -71,7 +59,7 @@ module.exports = [
 		name: 'round.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			coreSocket.socket.on('round/change', async data => {
+			signals.get('newRound').add(async data => {
 				logger.debug('New round, updating delegates...');
 				core.reloadDelegateCache();
 				core.reloadNextForgersCache();
@@ -84,10 +72,10 @@ module.exports = [
 		name: 'update.fee_estimates',
 		description: 'Keep the fee estimates up-to-date',
 		controller: callback => {
-			signals.blockCached.add(async () => {
+			signals.get('newFeeEstimate').add(async () => {
 				logger.debug('Returning latest fee_estimates to the socket.io client...');
 				const restData = await core.getEstimateFeeByte();
-				callback(restData ? restData.data : null);
+				callback(restData);
 			});
 		},
 	},
@@ -95,7 +83,7 @@ module.exports = [
 		name: 'update.height_finalized',
 		description: 'Keep the block finality height up-to-date',
 		controller: callback => {
-			coreSocket.socket.on('blocks/change', async () => {
+			signals.get('newBlock').add(async () => {
 				logger.debug('Returning latest heightFinalized to the socket.io client...');
 				const restData = await core.updateFinalizedHeight();
 				callback(restData ? restData.data : null);

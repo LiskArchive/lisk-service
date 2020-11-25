@@ -13,22 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const {
+	Logger,
+} = require('lisk-service-framework');
 
-const peerCache = require('../shared/core/peerCache');
+const {
+	getEstimateFeeByteNormal,
+	getEstimateFeeByteQuick,
+} = require('../shared/core/dynamicFees');
+
+const logger = Logger();
 
 module.exports = [
 	{
-		name: 'refresh.peers',
-		description: 'Keep the peer list up-to-date',
-		interval: 90, // seconds
+		name: 'update.fee_estimates',
+		description: 'Initiate the dynamic fee estimates algorithm',
+		schedule: '0 0 1 1 *', // Once a year
+		updateOnInit: true,
 		init: () => {
-			logger.debug('Initializing peer list...');
-			peerCache.reload();
+			logger.debug('Initiate the dynamic fee estimates computation');
+
+			getEstimateFeeByteNormal();
+			getEstimateFeeByteQuick();
 		},
-		controller: () => {
-			logger.debug('Scheduling peer list reload...');
-			peerCache.reload();
-		},
+		controller: () => { },
 	},
 ];

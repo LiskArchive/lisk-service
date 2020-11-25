@@ -13,19 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
-const pouchdb = require('../pouchdb');
+
+const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
+
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 const { getLastBlock } = require('./blocks');
 
 const logger = Logger();
-const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
+const sdkVersion = coreApi.getSDKVersion();
 
 let nextForgers = [];
+let delegateList = [];
 
 const delegateComparator = (a, b) => {
 	const diff = b.delegateWeight - a.delegateWeight;
@@ -33,41 +36,12 @@ const delegateComparator = (a, b) => {
 	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
 };
 
-const formatSortString = sortString => {
-	const sortObj = {};
-	const sortProp = sortString.split(':')[0];
-	const sortOrder = sortString.split(':')[1];
-	sortObj[sortProp] = sortOrder;
-
-	return sortObj;
-};
-
-const getSelector = params => {
-	const result = {};
-	result.sort = [];
-
-	if (params.limit) result.limit = params.limit;
-	if (Number(params.offset) >= 0) result.skip = params.offset;
-
-	const selector = {};
-	if (params.address) selector['account.address'] = params.address;
-	if (params.publicKey) selector['account.publicKey'] = params.publicKey;
-	if (params.secondPublicKey) selector['account.secondPublicKey'] = params.secondPublicKey;
-	if (params.username) selector.username = params.username;
-	result.selector = selector;
-
-	if (Object.getOwnPropertyNames(result.selector).length === 0) {
-		if (params.sort) result.sort.push(formatSortString(params.sort));
-		else result.sort.push({ rank: 'asc' });
-	} else if (result.sort.length === 0) delete result.sort;
-
-	return result;
-};
+const getAllDelegates = () => new Promise((resolve) => {
+	resolve(delegateList);
+});
 
 const getTotalNumberOfDelegates = async (params = {}) => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-
-	const allDelegates = await db.findAll();
+	const allDelegates = await getAllDelegates();
 	const relevantDelegates = allDelegates.filter(delegate => (
 		(!params.search || delegate.username.includes(params.search))
 		&& (!params.username || delegate.username === params.username)
@@ -125,83 +99,46 @@ const getDelegates = async params => {
 		data: [],
 		meta: {},
 	};
+	const allDelegates = await getAllDelegates();
 
-	const db = await pouchdb(config.db.collections.delegates.name);
-
-	const inputData = getSelector({
-		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-
-	if (params.search) {
-		const dbResult = await db.findAll();
-		if (dbResult.length) delegates.data = dbResult
-			.filter(delegate => delegate.username.includes(params.search))
-			.slice(inputData.skip, inputData.skip + inputData.limit);
-	}
-	if (!delegates.data.length) {
-		if (
-			params.address
-			|| params.publicKey
-			|| params.secondPublicKey
-			|| params.username
-		) {
-			const dbResult = await db.find(inputData);
-			if (dbResult.length) delegates.data = dbResult;
-		}
-	}
+	delegates.data = allDelegates.filter(
+		(acc) => (acc.address && acc.address === params.address)
+			|| (acc.publicKey && acc.publicKey === params.publicKey)
+			|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
+			|| (acc.username && acc.username === params.username),
+	);
 	if (delegates.data.length === 0) {
 		const dbResult = await coreApi.getDelegates(params);
 		if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
 	}
 	delegates.meta.count = delegates.data.length;
-	delegates.meta.offset = inputData.skip;
+	delegates.meta.offset = params.offset || 0;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
 
 	return delegates;
 };
 
 const loadAllDelegates = async () => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-
 	const maxCount = 10000;
-	const rawDelegates = await requestAll(coreApi.getDelegates, {}, maxCount);
-
-	const dbResult = await db.findAll();
-	const delegates = await BluebirdPromise.map(
-		rawDelegates,
+	delegateList = await requestAll(coreApi.getDelegates, {}, maxCount);
+	await BluebirdPromise.map(
+		delegateList,
 		async delegate => {
-			if (dbResult.length) {
-				const [dbMatchByAddress] = dbResult
-					.filter(dbDelegate => dbDelegate.account.address === delegate.account.address);
-				const [dbMatchByRank] = dbResult.filter(dbDelegate => dbDelegate.rank === delegate.rank);
-
-				if (dbMatchByAddress) delegate = dbMatchByAddress.rank === delegate.rank
-					? dbMatchByAddress : delegate;
-
-				// If no existing DB match for given delegate address
-				// and entry exists for given delegate rank, replace the entry
-				if (!delegate._rev && dbMatchByRank) delegate._rev = dbMatchByRank._rev;
-			}
-
-			delegate.id = String(delegate.rank);
+			await cacheRedisDelegates.set(delegate.address, delegate);
+			await cacheRedisDelegates.set(delegate.username, delegate);
 			return delegate;
 		},
-		{ concurrency: rawDelegates.length },
+		{ concurrency: delegateList.length },
 	);
-
-	if (delegates.length) {
-		await db.writeBatch(delegates);
-		logger.info(`Initialized/Updated delegates cache with ${delegates.length} delegates.`);
+	if (delegateList.length) {
+		logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
 	}
 };
 
 const computeDelegateRankAndStatus = async () => {
-	const db = await pouchdb(config.db.collections.delegates.name);
-	const result = await db.findAll();
+	const result = await getAllDelegates();
 	const allDelegates = await getRankAndStatus(result);
-	if (allDelegates.length) await db.writeBatch(allDelegates);
+	if (allDelegates.length) delegateList = allDelegates;
 };
 
 const getNextForgers = async params => {

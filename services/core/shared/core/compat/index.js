@@ -26,7 +26,7 @@ const sdkMappers = {
 let sdk;
 
 const setSDKVersion = (sdkVersion) => sdk = sdkVersion;
-const getSDKVersion = () => sdk;
+const getSDKVersion = () => Number(sdk.split('sdk_v')[1]);
 
 Object.keys(sdkMappers).forEach(key => {
 	if (semver.lte(key, getCoreVersion())) setSDKVersion(sdkMappers[key]);

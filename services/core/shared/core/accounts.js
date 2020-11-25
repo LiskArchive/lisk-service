@@ -13,14 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
-
 const config = require('../../config');
 const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-
-const logger = Logger();
-let topAccounts = [];
 
 const formatSortString = sortString => {
 	const sortObj = {};
@@ -54,10 +49,6 @@ const getSelector = params => {
 	return result;
 };
 
-const getTopAccounts = () => new Promise((resolve) => {
-	resolve(topAccounts);
-});
-
 const getAccounts = async params => {
 	const accounts = {
 		data: [],
@@ -65,15 +56,6 @@ const getAccounts = async params => {
 	};
 
 	const db = await pouchdb(config.db.collections.accounts.name);
-
-	// read from cache if available
-	const cachedAccounts = await getTopAccounts();
-	accounts.data = cachedAccounts.filter(
-		(acc) => (acc.address && acc.address === params.address)
-			|| (acc.publicKey && acc.publicKey === params.publicKey)
-			|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
-			|| (acc.username && acc.username === params.username),
-	);
 
 	if (!accounts.data.length) {
 		if (
@@ -123,26 +105,6 @@ const getAccounts = async params => {
 	return accounts;
 };
 
-const retrieveTopAccounts = async (accounts = []) => {
-	const limit = config.cacheNumOfAccounts;
-	const response = await getAccounts({
-		limit: limit > 100 ? 100 : limit,
-		offset: accounts.length,
-		sort: 'balance:desc',
-	});
-	accounts = [...accounts, ...response.data];
-
-	if (accounts.length < limit) {
-		retrieveTopAccounts(accounts);
-	} else {
-		topAccounts = accounts;
-		logger.info(
-			`Initialized/Updated accounts cache with ${topAccounts.length} top accounts.`,
-		);
-	}
-};
-
 module.exports = {
 	getAccounts,
-	retrieveTopAccounts,
 };

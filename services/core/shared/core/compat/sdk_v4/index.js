@@ -37,6 +37,7 @@ const {
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('../sdk_v3');
+const events = require('./events');
 
 module.exports = {
     ...require('../sdk_v2'),
@@ -53,4 +54,5 @@ module.exports = {
     getMultisignatureMemberships,
     getVotes,
     getVoters,
+    events,
 };

@@ -29,7 +29,6 @@ const {
 
 const {
 	getAccounts,
-	retrieveTopAccounts,
 } = require('./accounts');
 
 const {
@@ -57,15 +56,8 @@ const {
 } = require('./voters');
 
 const {
-	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteCoreLogic,
-	getTransactionInstanceByType,
-	calculateBlockSize,
-	calculateFeePerByte,
-	calcAvgFeeByteModes,
-	calculateAvgFeePerByte,
-	calculateWeightedAvg,
+	calculateEstimateFeeByte,
 } = require('./dynamicFees');
 
 const {
@@ -105,6 +97,7 @@ const {
 	updateFinalizedHeight,
 } = require('./compat');
 
+const events = require('./events');
 
 module.exports = {
 	get,
@@ -152,21 +145,14 @@ module.exports = {
 	getReadyStatus,
 	getEpochUnixTime,
 	getUnixTime,
-	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteCoreLogic,
-	getTransactionInstanceByType,
-	calculateBlockSize,
-	calculateFeePerByte,
-	calcAvgFeeByteModes,
-	calculateAvgFeePerByte,
-	calculateWeightedAvg,
+	calculateEstimateFeeByte,
 	setLastBlock,
 	getLastBlock,
 	reloadBlocks,
 	cleanFromForks,
-	retrieveTopAccounts,
 	updateFinalizedHeight,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
+	events,
 };
