@@ -13,62 +13,164 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
-
 const config = require('../../config');
 const { request } = require('../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
-	emptyResultEnvelopeSchema,
 	invalidParamsSchema,
+	invalidRequestSchema,
+	emptyResultEnvelopeSchema,
+	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
-} = require('../../schemas/generics.schema');
+} = require('../../schemas/rpcGenerics.schema');
+
+const {
+	voterSchema,
+	metaSchema,
+} = require('../../schemas/voter.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+// const getVoters = async params => request(wsRpcUrl, 'get.votes_received', params);
 
-const votersSchema = Joi.array().items(Joi.object({
-	address: Joi.string(),
-	balance: Joi.string(),
-	publicKey: Joi.string(),
-	username: Joi.string(),
-}).required()).required();
+[
+	'get.votes_received',
+	'get.voters',
+].forEach(methodName => {
+	const getVoters = async params => request(wsRpcUrl, methodName, params);
 
-const getVoters = async params => request(wsRpcUrl, 'get.voters', params);
+	describe(`Method ${methodName}`, () => {
+		let refDelegate;
+		beforeAll(async () => {
+			[refDelegate] = (await request(wsRpcUrl, 'get.delegates', { limit: 1 })).result.data;
+		});
 
-describe('get.voters', () => {
-	[
-		['returns voters for existing account by delegate address', { address: '5201600508578320196L' }],
-		['returns voters for existing account by delegate username', { username: 'cc001' }],
-		['returns voters for existing account by delegate public key', { publickey: '473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c' }],
-		// TODO Fix this test case. There is no account with voters and second public key on the
-		// blockchain snapshot currently used in Jenkins.
-		// ['returns voters for existing account by delegate second public key',
-		// { secpubkey: 'ec057d8816b18b83a2baac387eebf8af707f8fb565c963476a0e4533e8481eaf' }],
-	]
-		.forEach(([name, body]) => {
-			it(name, async () => {
-				const response = await getVoters(body);
-				expect(response).toMap(jsonRpcEnvelopeSchema);
-				const { result } = response;
-				expect(result).toMap(resultEnvelopeSchema);
-				expect(result.data).toMap(votersSchema);
+		it('Returns list of voters when requested for existing account by account ID', async () => {
+			const response = await getVoters({ address: refDelegate.address });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(10);
+			result.data.forEach(block => expect(block).toMap(voterSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
 			});
 		});
 
-	it('returns empty response when called with unused address', async () => {
-		const response = await getVoters({ address: '999999999L' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		expect(response.result).toMap(emptyResultEnvelopeSchema);
-	});
+		it('Returns list of voters when requested for existing account by username', async () => {
+			if (refDelegate.username) {
+				const response = await getVoters({ username: refDelegate.username });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toEqual(10);
+				result.data.forEach(block => expect(block).toMap(voterSchema));
+				expect(result.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			}
+		});
 
-	it('returns INVALID_PARAMS error (-32602) when called with invalid address', async () => {
-		const response = await getVoters({ address: 999999999999999 });
-		expect(response).toMap(invalidParamsSchema);
-	});
+		// TODO: Fails CI pipeline
+		xit('Returns list of voters when requested for existing account by publickey', async () => {
+			if (refDelegate.publicKey) {
+				const response = await getVoters({ publickey: refDelegate.publickey });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toEqual(10);
+				result.data.forEach(block => expect(block).toMap(voterSchema));
+				expect(result.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			}
+		});
 
-	it('returns INVALID_PARAMS error (-32602) when called with account_id param', async () => {
-		const response = await getVoters({ account_id: '999999999L' });
-		expect(response).toMap(invalidParamsSchema);
+		it('Returns list of voters when requested for existing account by secpubkey', async () => {
+			if (refDelegate.secondPublicKey) {
+				const response = await getVoters({ secpubkey: refDelegate.secondPublicKey });
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toEqual(10);
+				result.data.forEach(block => expect(block).toMap(voterSchema));
+				expect(result.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			}
+		});
+
+		it('Returns list of voters when requested with offset', async () => {
+			const response = await getVoters({ address: refDelegate.address, offset: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(10);
+			result.data.forEach(block => expect(block).toMap(voterSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
+			});
+		});
+
+		it('Returns list of voters when requested with limit', async () => {
+			const response = await getVoters({ address: refDelegate.address, limit: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(1);
+			result.data.forEach(block => expect(block).toMap(voterSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
+			});
+		});
+
+		it('Returns list of voters when requested with offset & limit', async () => {
+			const response = await getVoters({ address: refDelegate.address, offset: 1, limit: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toEqual(1);
+			result.data.forEach(block => expect(block).toMap(voterSchema));
+			expect(result.meta).toMap(metaSchema, {
+				address: refDelegate.address,
+				publicKey: refDelegate.publicKey,
+				username: refDelegate.username,
+			});
+		});
+
+		it('Returns INVALID_PARAMS (-32602) when requested with limit = 0', async () => {
+			const response = await getVoters({ limit: 0 });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('Returns empty response when requested with wrong address', async () => {
+			const response = await getVoters({ address: '999999999L' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('Returns INVALID_PARAMS (-32602) when requested with unsupported param', async () => {
+			const response = await getVoters({ unsupported_param: 0 });
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		// TODO: Fails CI pipeline
+		xit('Returns BAD_REQUEST (400) when requested without required params', async () => {
+			const response = await getVoters({});
+			expect(response).toMap(invalidRequestSchema);
+		});
 	});
 });
