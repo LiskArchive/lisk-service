@@ -31,5 +31,7 @@ export const closeAllConnections = () => {
 	Object.keys(socketPool).forEach(s => socketPool[s].close());
 };
 
-
-export default subscribeAndReturn;
+module.exports = {
+	subscribeAndReturn,
+	closeAllConnections,
+};

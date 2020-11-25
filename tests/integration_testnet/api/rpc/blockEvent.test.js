@@ -16,9 +16,15 @@
 /* eslint-disable quotes, quote-props, comma-dangle */
 
 import config from '../../config';
-import { subscribeAndReturn, closeAllConnections } from '../../helpers/socketIoSubscribe';
 
-import blockSchema from './schemas/block.schema';
+const {
+	subscribeAndReturn,
+	closeAllConnections,
+} = require('../../helpers/socketIoSubscribe');
+
+const {
+	blockSchema,
+} = require('../../schemas/block.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT}/blockchain`;
 
