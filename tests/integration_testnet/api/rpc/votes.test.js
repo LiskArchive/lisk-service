@@ -14,6 +14,7 @@
  *
  */
 import Joi from 'joi';
+
 const config = require('../../config');
 const { request } = require('../../helpers/socketIoRpcRequest');
 
