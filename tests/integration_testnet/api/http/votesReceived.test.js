@@ -148,6 +148,12 @@ const {
 				const response = await api.get(`${endpoint}?unsupported_param=999999999L`, 400);
 				expect(response).toMap(wrongInputParamSchema);
 			});
+
+			// TODO: Fails CI pipeline
+			xit('Returns BAD_REQUEST (400) when requested without required params', async () => {
+				const response = await api.get(`${endpoint}`, 400);
+				expect(response).toMap(badRequestSchema);
+			});
 		});
 	});
 });
