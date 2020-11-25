@@ -19,73 +19,135 @@ const { api } = require('../../helpers/api');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
-const accountEndpoint = `${baseUrlV1}/account`;
+// const endpoint = `${baseUrlV1}/votes_received`;
 
 const {
+	goodRequestSchema,
+	badRequestSchema,
 	notFoundSchema,
+	wrongInputParamSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
 	voterSchema,
+	metaSchema,
 } = require('../../schemas/voter.schema');
 
-describe('Voters API', () => {
-	let refDelegate;
-	beforeAll(async () => {
-		[refDelegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
-	});
-	xdescribe('GET /account/{address}/voters', () => {
-		it('matches specific schema when requested existing account by account ID', async () => {
-			const response = await api.get(`${accountEndpoint}/2581762640681118072L/voters`);
-			expect(response.data[0]).toMap(voterSchema);
+[
+	`${baseUrlV1}/votes_received`,
+	`${baseUrlV1}/voters`,
+].forEach(endpoint => {
+	describe('Votes Received (Voters) API', () => {
+		let refDelegate;
+		beforeAll(async () => {
+			[refDelegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
 		});
 
-		it('matches specific data when requested existing account by account ID', async () => {
-			const response = await api.get(`${accountEndpoint}/2581762640681118072L/voters`);
-			expect(response.data).toEqual([
-				{
-					address: '16313739661670634666L',
-					balance: '9967545010836600',
-					publicKey: 'c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f',
-				},
-				{
-					address: '4401082358022424760L',
-					balance: '997100000000',
-					publicKey: 'd258627878a9b360fe4934218d2415d66b1ed2ef63ce097280bf02189a91468d',
-				},
-			]);
-		});
+		describe(`GET ${endpoint}`, () => {
+			it('Returns list of voters when requested for existing account by account ID', async () => {
+				const response = await api.get(`${endpoint}?address=${refDelegate.address}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeArrayOfSize(10);
+				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				expect(response.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			});
 
-		it('matches specific schema when requested existing account by username', async () => {
-			const response = await api.get(`${accountEndpoint}/genesis_14/voters`);
-			expect(response.data[0]).toMap(voterSchema);
-		});
+			it('Returns list of voters when requested for existing account by username', async () => {
+				if (refDelegate.username) {
+					const response = await api.get(`${endpoint}?username=${refDelegate.username}`);
+					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toBeArrayOfSize(10);
+					response.data.forEach(voter => expect(voter).toMap(voterSchema));
+					expect(response.meta).toMap(metaSchema, {
+						address: refDelegate.address,
+						publicKey: refDelegate.publicKey,
+						username: refDelegate.username,
+					});
+				}
+			});
 
-		it('matches specific schema when requested existing account by public key', async () => {
-			const response = await api.get(`${accountEndpoint}/1af35b29ca515ff5b805a5e3a0ab8c518915b780d5988e76b0672a71b5a3be02/voters`);
-			expect(response.data[0]).toMap(voterSchema);
-		});
+			it('Returns list of voters when requested for existing account by publickey', async () => {
+				if (refDelegate.publicKey) {
+					const response = await api.get(`${endpoint}?publickey=${refDelegate.publicKey}`);
+					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toBeArrayOfSize(10);
+					response.data.forEach(voter => expect(voter).toMap(voterSchema));
+					expect(response.meta).toMap(metaSchema, {
+						address: refDelegate.address,
+						publicKey: refDelegate.publicKey,
+						username: refDelegate.username,
+					});
+				}
+			});
 
-		it('matches specific schema when requested existing account by account ID (explicit)', async () => {
-			const response = await api.get(`${accountEndpoint}/address:2581762640681118072L/voters`);
-			expect(response.data[0]).toMap(voterSchema);
-		});
+			it('Returns list of voters when requested for existing account by secpubkey', async () => {
+				if (refDelegate.secondPublicKey) {
+					const response = await api.get(`${endpoint}?secpubkey=${refDelegate.secondPublicKey}`);
+					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toBeArrayOfSize(10);
+					response.data.forEach(voter => expect(voter).toMap(voterSchema));
+					expect(response.meta).toMap(metaSchema, {
+						address: refDelegate.address,
+						publicKey: refDelegate.publicKey,
+						username: refDelegate.username,
+					});
+				}
+			});
 
-		it('matches specific schema when requested existing account by username (explicit)', async () => {
-			const response = await api.get(`${accountEndpoint}/username:genesis_14/voters`);
-			expect(response.data[0]).toMap(voterSchema);
-		});
+			it('Returns list of voters when requested with offset', async () => {
+				const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeArrayOfSize(10);
+				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				expect(response.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			});
 
-		it('matches specific schema when requested existing account by publickey (explicit)', async () => {
-			const response = await api.get(`${accountEndpoint}/publickey:1af35b29ca515ff5b805a5e3a0ab8c518915b780d5988e76b0672a71b5a3be02/voters`);
-			expect(response.data[0]).toMap(voterSchema);
-		});
+			it('Returns list of voters when requested with limit', async () => {
+				const response = await api.get(`${endpoint}?address=${refDelegate.address}&limit=1`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeArrayOfSize(1);
+				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				expect(response.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			});
 
-		it('results in NOT_FOUND (404) requested wrong address ', async () => {
-			const url = `${accountEndpoint}/999999999L/voters`;
-			const expectedStatus = 404;
-			const response = api.get(url, expectedStatus);
-			expect(response).resolves.toMap(notFoundSchema);
+			it('Returns list of voters when requested with offset & limit', async () => {
+				const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=5&limit=1`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeArrayOfSize(1);
+				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				expect(response.meta).toMap(metaSchema, {
+					address: refDelegate.address,
+					publicKey: refDelegate.publicKey,
+					username: refDelegate.username,
+				});
+			});
+
+			it('Returns BAD_REQUEST (400) when requested with limit = 0', async () => {
+				const response = await api.get(`${endpoint}?limit=0`, 400);
+				expect(response).toMap(badRequestSchema);
+			});
+
+			it('Returns NOT_FOUND (404) when requested with wrong address', async () => {
+				const response = await api.get(`${endpoint}?address=999999999L`, 404);
+				expect(response).toMap(notFoundSchema);
+			});
+
+			it('Returns BAD_REQUEST (400) when requested with unsupported param', async () => {
+				const response = await api.get(`${endpoint}?unsupported_param=999999999L`, 400);
+				expect(response).toMap(wrongInputParamSchema);
+			});
 		});
 	});
 });
