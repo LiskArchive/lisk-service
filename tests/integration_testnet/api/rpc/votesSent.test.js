@@ -34,7 +34,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
 [
 	'get.votes_sent',
-	// 'get.votes',
+	'get.votes',
 ].forEach(methodName => {
 	const getVotes = async params => request(wsRpcUrl, methodName, params);
 
