@@ -15,15 +15,24 @@
  */
 import Joi from 'joi';
 
-
 const voterSchema = {
 	address: Joi.string().required(),
 	amount: Joi.string().optional(),
 	publicKey: Joi.string().required(),
 	balance: Joi.number().required(),
+	username: Joi.string().optional(),
+};
+
+const metaSchema = {
+	count: Joi.number().required(),
+	limit: Joi.number().optional(), // TODO: Must be required?
+	offset: Joi.number().required(),
+	address: Joi.string().required(),
+	publicKey: Joi.string().required(),
 	username: Joi.string().required(),
 };
 
 module.exports = {
-	voterSchema: Joi.object(voterSchema),
+	voterSchema: Joi.object(voterSchema).required(),
+	metaSchema: Joi.object(metaSchema).required(),
 };
