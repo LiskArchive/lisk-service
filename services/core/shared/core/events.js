@@ -13,9 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const signals = require('../signals');
 const core = require('./compat');
+const signals = require('../signals');
 const { getBlocks } = require('./blocks');
+const { getEstimateFeeByteNormal, getEstimateFeeByteQuick } = require('./dynamicFees');
 
 const events = {
 	newBlock: async data => {
@@ -24,6 +25,11 @@ const events = {
 	},
 	newRound: data => {
 		signals.get('newRound').dispatch(data);
+	},
+	calculateFeeEstimate: async () => {
+		getEstimateFeeByteNormal();
+		const feeEstimate = await getEstimateFeeByteQuick();
+		signals.get('newFeeEstimate').dispatch(feeEstimate);
 	},
 };
 
