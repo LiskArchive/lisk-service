@@ -34,7 +34,7 @@ const getBlocks = async params => {
 
 	if (params.address) {
 		params.generatorPublicKey = await Core.getPublicKeyByAny(params.address);
-		if (!params.generatorPublicKey) return { status: NOT_FOUND, data: { error: `Account ID ${params.address} not found.` } };
+		if (!params.address) return { status: NOT_FOUND, data: { error: `Account ID corresponding to username: '${params.username}' not found.` } };
 		delete params.address;
 	}
 

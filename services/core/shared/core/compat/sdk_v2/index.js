@@ -138,7 +138,7 @@ const getAddressByAny = async param => {
 	}
 
 	const [prefix, body] = separateParam(param);
-	if (prefix || body) return paramNames[prefix](body);
+	if (prefix && body) return paramNames[prefix](body);
 	return null;
 };
 
