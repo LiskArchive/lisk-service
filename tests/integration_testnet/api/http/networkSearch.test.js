@@ -17,11 +17,9 @@ const config = require('../../config');
 const { api } = require('../../helpers/api');
 
 const {
-	badRequestSchema,
 	notFoundSchema,
-	wrongInputParamSchema,
 	goodRequestSchema,
-	metaSchema,
+	// metaSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
