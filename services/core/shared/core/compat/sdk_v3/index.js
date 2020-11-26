@@ -19,7 +19,10 @@ const {
 	getFinalizedHeight,
 } = require('./blocks');
 
-const { getDelegates, getNextForgers } = require('./delegates');
+const {
+	getDelegates,
+	getNextForgers,
+} = require('./delegates');
 const { getVotes } = require('./votes');
 const { getVoters } = require('./voters');
 const events = require('./events');

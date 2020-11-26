@@ -67,6 +67,7 @@ const getNextForgers = async params => {
 	return isProperObject(result) && Array.isArray(result.data) ? result : [];
 };
 
+
 module.exports = {
 	getDelegates,
 	getNextForgers,
