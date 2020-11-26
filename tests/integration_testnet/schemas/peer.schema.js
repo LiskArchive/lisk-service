@@ -44,7 +44,7 @@ const peerSchema = {
 	stateName: Joi.string().valid(...allowedPeerStateNames).required(),
 	height: Joi.number().optional(),
 	broadhash: Joi.string().optional(),
-	nonce: Joi.string().optional(),
+	nonce: Joi.string().allow('').optional(),
 	location: Joi.object(locationSchema).optional(),
 };
 
