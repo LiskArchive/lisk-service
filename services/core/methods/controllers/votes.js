@@ -21,15 +21,12 @@ const { isEmptyObject } = Utils.Data;
 const CoreService = require('../../shared/core');
 
 const getVotes = async params => {
-	if (params.anyId) params.address = await CoreService.getAddressByAny(params.anyId);
 	const isFound = await CoreService.confirmAnyId(params);
 	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.anyId} not found.` } };
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account ${params.address} not found.` } };
 	if (!isFound && params.username) return { status: NOT_FOUND, data: { error: `Account ${params.username} not found.` } };
 	if (!isFound && params.publicKey) return { status: NOT_FOUND, data: { error: `Account with a public key ${params.publicKey} not found.` } };
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
-
-	delete params.anyId;
 
 	const response = await CoreService.getVotes(params);
 

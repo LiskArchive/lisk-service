@@ -71,21 +71,6 @@ const getTransactions = async (params) => {
 	};
 };
 
-const getTransactionsByAddress = async (params) => {
-	const address = params.anyId;
-	delete params.anyId;
-	const result = await CoreService.getTransactions({
-		...params,
-		senderIdOrRecipientId: address,
-	});
-	return {
-		data: {
-			data: result.data,
-			meta: result.meta,
-		},
-	};
-};
-
 const getLastTransactions = async (params) => {
 	const result = await CoreService.getTransactions({
 		...params,
@@ -168,7 +153,6 @@ const getPendingTransactions = async params => {
 
 module.exports = {
 	getTransactions,
-	getTransactionsByAddress,
 	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,

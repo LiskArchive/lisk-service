@@ -209,6 +209,11 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('invalid sender query -> 404', async () => {
+			const response = await api.get(`${endpoint}?sender=${accounts.delegate.publicKey}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
+
 		it('existing recipient public key -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipient=${refDelegate.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
@@ -217,6 +222,11 @@ describe('Transactions API', () => {
 			response.data.forEach(transaction => expect(transaction)
 				.toMap(transactionSchema, { recipientPublicKey: refDelegate.publicKey }));
 			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid recipient query -> 404', async () => {
+			const response = await api.get(`${endpoint}?recipient=${accounts.delegate.publicKey}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 	});
 
@@ -231,6 +241,11 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('invalid sender query -> 404', async () => {
+			const response = await api.get(`${endpoint}?sender=${accounts.delegate.delegate.username}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
+		});
+
 		it('existing recipient username -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipient=username:${refDelegate.username}`);
 			expect(response).toMap(goodRequestSchema);
@@ -239,6 +254,11 @@ describe('Transactions API', () => {
 			response.data.forEach(transaction => expect(transaction)
 				.toMap(transactionSchema, { recipientPublicKey: refDelegate.publicKey }));
 			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid recipient query -> 404', async () => {
+			const response = await api.get(`${endpoint}?recipient=${accounts.delegate.delegate.username}`, 404);
+			expect(response).toMapRequiredSchema(notFoundSchema);
 		});
 	});
 

@@ -207,4 +207,13 @@ describe('Method get.blocks', () => {
 			});
 		});
 	});
+
+	describe('retireve block lists by username', () => {
+		it('retrieve block by username -> ok', async () => {
+			const { result } = await getBlocks({ username: 'cc001' });
+			result.data.forEach((blockData) => {
+				expect(blockData).toMap(blockSchema, { generatorUsername: 'cc001' });
+			});
+		});
+	});
 });
