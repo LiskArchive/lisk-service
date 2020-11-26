@@ -159,10 +159,13 @@ describe('Blocks API', () => {
 		});
 
 		it('retrieve block by username -> ok', async () => {
-			const response = await api.get(`${endpoint}?username=${delegate.username}`);
-			response.data.forEach(blockData => {
-				expect(blockData.generatorUsername).toEqual(delegate.username);
+			const response = await api.get(`${endpoint}?username=${refDelegate.username}`);
+			expect(response).toMap(goodRequestSchema);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchema);
+				expect(block.generatorUsername).toEqual(refDelegate.username);
 			});
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });
