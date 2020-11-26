@@ -13,8 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
+const { Utils, CacheRedis } = require('lisk-service-framework');
 const coreApi = require('./coreApi');
+
+const config = require('../../../../config');
+
+const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
 
 const ObjectUtilService = Utils.Data;
 
@@ -67,7 +71,13 @@ const getNextForgers = async params => {
 	return isProperObject(result) && Array.isArray(result.data) ? result : [];
 };
 
+const setCacheDelegateRedis = async delegate => {
+	await cacheRedisDelegates.set(delegate.address, delegate);
+	await cacheRedisDelegates.set(delegate.username, delegate);
+};
+
 module.exports = {
 	getDelegates,
 	getNextForgers,
+	setCacheDelegateRedis,
 };
