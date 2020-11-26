@@ -91,7 +91,6 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Move to compat
 		it('wrong address -> 404', async () => {
 			const url = `${accountEndpoint}/999999999L`;
 			const expectedStatus = 404;

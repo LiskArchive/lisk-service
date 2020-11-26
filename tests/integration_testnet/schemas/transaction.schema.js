@@ -33,7 +33,7 @@ const transactionSchema = {
 	signSignature: Joi.string().optional(),
 	signatures: Joi.array().items(Joi.string().optional()).required(),
 	confirmations: Joi.number().integer().min(1).required(),
-	asset: Joi.object().required(), // TODO
+	asset: Joi.object().required(),
 	receivedAt: Joi.string().optional(), // TODO: Add validation
 	relays: Joi.number().optional(),
 	ready: Joi.boolean().optional(),
