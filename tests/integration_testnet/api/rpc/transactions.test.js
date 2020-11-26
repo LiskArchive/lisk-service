@@ -194,7 +194,6 @@ describe('Method get.transactions', () => {
 		it('from to -> ok', async () => {
 			const from = moment(refTransaction.timestamp).subtract(1, 'day').unix() * 10 ** 3;
 			const toTimestamp = refTransaction.timestamp;
-			console.log(from, toTimestamp);
 			const response = await requestTransactions({ from: String(from), to: String(toTimestamp) });
 
 			expect(response).toMap(jsonRpcEnvelopeSchema);
