@@ -15,27 +15,13 @@
  */
 import Joi from 'joi';
 
-const networkSearchSchema = {
-	broadhash: Joi.string().required(),
-	height: Joi.number().required(),
-	networkHeight: Joi.number().required(),
-	epoch: Joi.string().required(),
-	milestone: Joi.string().required(),
-	nethash: Joi.string().required(),
-	supply: Joi.string().required(),
-	reward: Joi.string().required(),
-	// fees: Joi.object(feeSchema).required(), // TODO: Verify and update the schema
+const searchItemSchema = {
+	score: Joi.number().required(),
+	description: Joi.string().required(),
+	id: Joi.string().required(),
+	type: Joi.string().required(),
 };
 
-// "results": [
-// 	{
-// 		"score": 0.82,
-// 		"description": "genesis_10",
-// 		"id": "1864409191503661202L",
-// 		"type": "address"
-// 	}
-// ],
-
 module.exports = {
-	networkSearchSchema: Joi.object(networkSearchSchema),
+	searchItemSchema: Joi.object(searchItemSchema).required(),
 };
