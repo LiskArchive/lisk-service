@@ -37,14 +37,14 @@ const peerSchema = {
 	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).required(),
 	httpPort: Joi.number().port().optional(),
 	wsPort: Joi.number().port().optional(),
-	os: Joi.string().allow('').optional(),
+	os: Joi.string().optional(),
 	version: Joi.string().required(),
 	state: Joi.number().integer().min(0).max(2)
 		.required(),
 	stateName: Joi.string().valid(...allowedPeerStateNames).required(),
 	height: Joi.number().optional(),
 	broadhash: Joi.string().optional(),
-	nonce: Joi.string().allow('').optional(),
+	nonce: Joi.string().optional(),
 	location: Joi.object(locationSchema).optional(),
 };
 
