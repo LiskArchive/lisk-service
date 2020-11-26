@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+import moment from 'moment';
+
 const config = require('../../config');
 const { api } = require('../../helpers/api');
 
@@ -267,7 +269,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list within timestamps', () => {
 		it('transactions within set timestamps are returned', async () => {
-			const from = 1497856679;
+			const from = moment(refTransaction.timestamp).subtract(1, 'day').unix() * 10 ** 3;
 			const toTimestamp = refTransaction.timestamp;
 			const response = await api.get(`${endpoint}?from=${from}&to=${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
