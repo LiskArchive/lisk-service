@@ -17,7 +17,7 @@ import Joi from 'joi';
 
 const metaSchema = {
 	count: Joi.number().required(),
-	offset: Joi.number().required(),
+	offset: Joi.number(), // TODO: Must be required??
 	total: Joi.number(), // TODO: Must be required??
 };
 
@@ -29,7 +29,7 @@ const resultEnvelopeSchema = {
 
 const emptyResultEnvelopeSchema = {
 	data: Joi.array().length(0).required(),
-	meta: Joi.object().length(0).required(),
+	meta: Joi.object().required(),
 	links: Joi.object().optional(),
 };
 
