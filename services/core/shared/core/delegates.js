@@ -13,8 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
+
+const config = require('../../config');
+
+const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
 
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
@@ -120,7 +124,8 @@ const loadAllDelegates = async () => {
 	await BluebirdPromise.map(
 		delegateList,
 		async delegate => {
-			await coreApi.setCacheDelegateRedis(delegate);
+			await cacheRedisDelegates.set(delegate.account.address, delegate);
+			await cacheRedisDelegates.set(delegate.username, delegate);
 			return delegate;
 		},
 		{ concurrency: delegateList.length },

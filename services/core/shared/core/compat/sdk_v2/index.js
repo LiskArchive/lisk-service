@@ -35,7 +35,6 @@ const {
 const {
 	getDelegates,
 	getNextForgers,
-	setCacheDelegateRedis,
 } = require('./delegates');
 const { getVotes } = require('./votes');
 
@@ -257,5 +256,4 @@ module.exports = {
 	getCachedAccountBySecondPublicKey,
 	getCachedAccountByUsername,
 	events,
-	setCacheDelegateRedis,
 };
