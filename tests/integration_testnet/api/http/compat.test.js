@@ -13,192 +13,183 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import api from '../../helpers/api';
-import accounts from './constants/accounts';
-import block from './constants/blocks';
-import transactions from './constants/transactions';
-import config from '../../config';
+const config = require('../../config');
+const { api } = require('../../helpers/api');
+
+const {
+	goodRequestSchema,
+	badRequestSchema,
+	notFoundSchema,
+	wrongInputParamSchema,
+	metaSchema,
+} = require('../../schemas/httpGenerics.schema');
+
+const { accountSchema } = require('../../schemas/account.schema');
+const { blockSchema } = require('../../schemas/block.schema');
+const { transactionSchema } = require('../../schemas/transaction.schema');
+const { voteSchema, voteMetaSchema } = require('../../schemas/vote.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const accountEndpoint = `${baseUrlV1}/account`;
 const accountsTopEndpoint = `${baseUrlV1}/accounts/top`;
 const blockEndpoint = `${baseUrlV1}/block`;
-const { transaction } = transactions;
-
-
-const accountSchema = {
-	address: 'string',
-	balance: 'string',
-	publicKey: 'string',
-	secondPublicKey: 'string',
-	transactionCount: 'object',
-};
-
-const votesSchema = {
-	address: 'string',
-	balance: 'string',
-	publicKey: 'string',
-	username: 'string',
-};
-
-const blockSchema = {
-	height: 'number',
-	id: 'string',
-	generatorAddress: 'string',
-	generatorPublicKey: 'string',
-	generatorUsername: 'string',
-	numberOfTransactions: 'number',
-	reward: 'string',
-	timestamp: 'number',
-	totalAmount: 'string',
-	totalFee: 'string',
-	totalForged: 'string',
-};
-
-const transactionSchema = {
-	amount: 'string',
-	asset: 'object',
-	blockId: 'string',
-	confirmations: 'number',
-	fee: 'string',
-	height: 'number',
-	id: 'string',
-	recipientId: 'string',
-	recipientPublicKey: 'string',
-	senderId: 'string',
-	senderPublicKey: 'string',
-	signature: 'string',
-	signatures: 'array',
-	timestamp: 'number',
-	type: 'number',
-};
-
-const badRequestSchema = {
-	error: 'boolean',
-	message: 'string',
-};
-
-const notFoundSchema = badRequestSchema;
-const wrongInputParamSchema = badRequestSchema;
 
 describe('Accounts Compatibility API', () => {
-	xdescribe('Retrieve top accounts list', () => {
+	describe('Retrieve top accounts list', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${accountsTopEndpoint}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(10);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
+		// TODO: Doesn't return meta.offset
 		it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=100`);
-			expect(response.data).toBeArrayOfSize(100);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(100);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			// expect(response.meta).toMap(metaSchema, { limit: 100 });
 		});
 
+		// TODO: Doesn't return meta.offset
 		it('returns a list when given empty limit', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=`);
-			expect(response.data).toBeArrayOfSize(10);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			// expect(response.meta).toMap(metaSchema, { limit: 10 });
 		});
 
 		it('returns BAD_REQUEST (400) when pagination limit=0', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=0`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('returns BAD_REQUEST (400) when pagination limit=101', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=101`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('returns a list when given empty offset', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?offset=`);
-			expect(response.data).toBeArrayOfSize(10);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns a list when given offset=1', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?offset=1`);
-			expect(response.data).toBeArrayOfSize(10);
-			expect(response.data[0]).toMapRequiredSchema(accountSchema);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchema));
+			expect(response.meta).toMap(metaSchema, { offset: 1 });
 		});
 	});
 });
 
 describe('Votes Compatibility API', () => {
 	describe('GET /account/{address}/votes', () => {
+		let refDelegate;
+		beforeAll(async () => {
+			[refDelegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
+		});
+
 		it('fetch votes for existing account address', async () => {
-			const response = await api.get(`${accountEndpoint}/${accounts.delegate.address}/votes`);
-			expect(response.data.length).toBeTruthy();
-			expect(response.data[0]).toMapRequiredSchema(votesSchema);
+			const response = await api.get(`${accountEndpoint}/${refDelegate.address}/votes`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(10);
+			response.data.forEach(account => expect(account).toMap(voteSchema));
+			expect(response.meta).toMap(voteMetaSchema);
 		});
 
 		it('returns NOT_FOUND (404) when no accountId specified', async () => {
 			const response = await api.get(`${accountEndpoint}//votes`, 404);
-			expect(response).toMapRequiredSchema(notFoundSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('returns NOT_FOUND (404) when inexistent accountId specified', async () => {
 			const response = await api.get(`${accountEndpoint}/0L/votes`, 404);
-			expect(response).toMapRequiredSchema(notFoundSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('returns BAD_REQUEST (400) when invalid (too long) accountId specified', async () => {
 			const response = await api.get(`${accountEndpoint}/1631373966167063466666666L/votes`, 400);
-			expect(response).toMapRequiredSchema(notFoundSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 	});
 });
 
 describe('Blocks Compatibility API', () => {
 	describe('Retrieve block identified by block_id', () => {
+		let refBlock;
+		beforeAll(async () => {
+			[refBlock] = (await api.get(`${baseUrlV1}/blocks?limit=1`)).data;
+		});
+
 		it('fetch block for known blockId', async () => {
-			const response = await api.get(`${blockEndpoint}/${block.id}`);
-			expect(response.data[0]).toMapRequiredSchema({
-				...blockSchema,
-				id: block.id,
-			});
+			const response = await api.get(`${blockEndpoint}/${refBlock.id}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(block => expect(block)
+				.toMap(blockSchema, { id: refBlock.id }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns BAD_REQUEST (400) when invalid blockId supplied', async () => {
 			const response = await api.get(`${blockEndpoint}/fkfkfkkkffkfkfk10101010101010101010`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('returns NOT_FOUND (404) when no blockId specified', async () => {
 			const response = await api.get(`${blockEndpoint}/`, 404);
-			expect(response).toMapRequiredSchema(notFoundSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('returns NOT_FOUND (404) when non-existent blockId specified', async () => {
 			const response = await api.get(`${blockEndpoint}/12602944501676077162`, 404);
-			expect(response).toMapRequiredSchema(notFoundSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('returns BAD_REQUEST (400) with invalid query parameter', async () => {
-			const response = await api.get(`${blockEndpoint}/${block.id}?block=12602944501676077162`, 400);
-			expect(response).toMapRequiredSchema(wrongInputParamSchema);
+			const response = await api.get(`${blockEndpoint}/${refBlock.id}?block=12602944501676077162`, 400);
+			expect(response).toMap(wrongInputParamSchema);
 		});
 	});
 
 	describe('Retrieve transactions contained within an identified block', () => {
+		let refTransaction;
+		beforeAll(async () => {
+			[refTransaction] = (await api.get(`${baseUrlV1}/transactions?limit=1`)).data;
+		});
+
 		it('fetch block for known blockId', async () => {
-			const response = await api.get(`${blockEndpoint}/${transaction.blockId}/transactions`);
-			expect(response.data[0]).toMapRequiredSchema({
-				...transactionSchema,
-				blockId: transaction.blockId,
-			});
+			const response = await api.get(`${blockEndpoint}/${refTransaction.blockId}/transactions`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(block => expect(block)
+				.toMap(transactionSchema, { blockId: refTransaction.blockId }));
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns BAD_REQUEST (400) when invalid blockId supplied', async () => {
 			const response = await api.get(`${blockEndpoint}/1000000000000000000000000/transactions`, 400);
-			expect(response).toMapRequiredSchema(badRequestSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('returns NOT_FOUND (404) when no blockId specified', async () => {
 			const response = await api.get(`${blockEndpoint}//transactions`, 404);
-			expect(response).toMapRequiredSchema(notFoundSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 	});
 });

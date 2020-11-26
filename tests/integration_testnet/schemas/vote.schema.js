@@ -35,4 +35,5 @@ const metaSchema = {
 module.exports = {
 	voteSchema: Joi.object(voteSchema).required(),
 	metaSchema: Joi.object(metaSchema).required(),
+	voteMetaSchema: Joi.object(metaSchema).required(),
 };
