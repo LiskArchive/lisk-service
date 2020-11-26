@@ -124,7 +124,8 @@ const loadAllDelegates = async () => {
 	await BluebirdPromise.map(
 		delegateList,
 		async delegate => {
-			await cacheRedisDelegates.set(delegate.address, delegate);
+			const delegateAddress = delegate.address || delegate.account.address;
+			await cacheRedisDelegates.set(delegateAddress, delegate);
 			await cacheRedisDelegates.set(delegate.username, delegate);
 			return delegate;
 		},
