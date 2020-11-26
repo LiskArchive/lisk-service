@@ -25,7 +25,7 @@ const coreApi = require('./compat');
 const { getLastBlock } = require('./blocks');
 
 const logger = Logger();
-const sdkVersion = Number(coreApi.getSDKVersion().split('sdk_v')[1]);
+const sdkVersion = coreApi.getSDKVersion();
 
 let nextForgers = [];
 let delegateList = [];
