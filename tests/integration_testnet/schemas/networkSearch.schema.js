@@ -17,7 +17,7 @@ import Joi from 'joi';
 
 const searchItemSchema = {
 	score: Joi.number().required(),
-	description: Joi.string().required(),
+	description: Joi.string().optional(),
 	id: Joi.string().required(),
 	type: Joi.string().required(),
 };
