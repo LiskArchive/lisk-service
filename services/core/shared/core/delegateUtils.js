@@ -26,7 +26,7 @@ const getUsernameByAddress = async (address) => {
 
 const getAddressByUsername = async (username) => {
 	const delegate = await cacheRedisDelegates.get(username);
-	if (delegate) return delegate.address || delegate.account.address;
+	if (delegate) return delegate.account.address;
 	return null;
 };
 
