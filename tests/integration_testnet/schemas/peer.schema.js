@@ -37,7 +37,7 @@ const peerSchema = {
 	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).required(),
 	httpPort: Joi.number().port().optional(),
 	wsPort: Joi.number().port().optional(),
-	os: Joi.string().optional(),
+	os: Joi.string().allow('').optional(),
 	version: Joi.string().required(),
 	state: Joi.number().integer().min(0).max(2)
 		.required(),
