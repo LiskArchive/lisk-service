@@ -135,12 +135,11 @@ const getAddressByAny = async param => {
 		const parsedAddress = parseAddress(param);
 		if (validateAddress(parsedAddress)
 			&& await confirmAddress(parsedAddress)) return parsedAddress;
-		if (validatePublicKey(param)) return getAddressByPublicKey(param);
-		return getAddressByUsername(param);
 	}
 
 	const [prefix, body] = separateParam(param);
-	return paramNames[prefix](body);
+	if (prefix && body) return paramNames[prefix](body);
+	return null;
 };
 
 const getPublicKeyByAddress = async address => {

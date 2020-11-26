@@ -16,6 +16,7 @@
 const { Utils } = require('lisk-service-framework');
 const coreApi = require('./coreApi');
 
+
 const ObjectUtilService = Utils.Data;
 
 const { isProperObject } = ObjectUtilService;
@@ -36,6 +37,7 @@ const getNextForgers = async params => {
 	const result = await coreApi.getNextForgers(params);
 	return isProperObject(result) && Array.isArray(result.data) ? result : [];
 };
+
 
 module.exports = {
 	getDelegates,

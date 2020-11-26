@@ -31,6 +31,7 @@ module.exports = [
 			offset: { type: 'any', optional: true },
 			sort: { type: 'any', optional: true },
 			address: { type: 'any', optional: true },
+			username: { type: 'any', optional: true },
 			fromTimestamp: { type: 'any', optional: true },
 			toTimestamp: { type: 'any', optional: true },
 		},
