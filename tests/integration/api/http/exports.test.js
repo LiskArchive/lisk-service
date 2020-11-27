@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import api from '../../../helpers/api';
-import config from '../../../config';
+const config = require('../../../config');
+const { api } = require('../../../helpers/api');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
