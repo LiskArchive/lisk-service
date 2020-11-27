@@ -26,7 +26,7 @@ const delegateSchema = {
 	address: Joi.string().required(),
 	approval: Joi.string().required(),
 	delegateWeight: Joi.string().optional(),
-	missedBlocks: Joi.number().integer().optional(),
+	missedBlocks: Joi.number().integer().min(0).optional(),
 	producedBlocks: Joi.number().integer().required(),
 	productivity: Joi.string().required(),
 	publicKey: Joi.string().required(),
