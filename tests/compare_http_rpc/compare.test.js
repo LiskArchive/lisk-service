@@ -15,7 +15,8 @@
  */
 import api from '../helpers/api';
 import config from './config';
-import request from '../helpers/socketIoRpcRequest';
+
+const { request } = require('../helpers/socketIoRpcRequest');
 
 const httpUrl = config.SERVICE_HTTP || 'http://localhost:9901';
 const wsUrl = config.SERVICE_WS || 'ws://localhost:9901/rpc';
