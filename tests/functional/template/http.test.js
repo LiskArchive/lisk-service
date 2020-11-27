@@ -14,8 +14,7 @@
  *
  */
 import config from '../config';
-
-const { api } = require('../../helpers/api');
+import api from '../helpers/httpApi';
 
 const baseUrlRoot = config.SERVICE_ENDPOINT_HTTP;
 const baseUrl = `${baseUrlRoot}/api/test`;
