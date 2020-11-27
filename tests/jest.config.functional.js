@@ -1,12 +1,12 @@
 module.exports = {
 	verbose: true,
 	testMatch: [
-		'<rootDir>/template/*.test.js',
+		'<rootDir>/functional/template/*.test.js',
 	],
 	testEnvironment: 'node',
 	setupFilesAfterEnv: [
 		'jest-extended',
-		'<rootDir>/helpers/setupCustomMatchers.js',
+		'<rootDir>/functional/helpers/setupCustomMatchers.js',
 	],
 	watchPlugins: [
 		['jest-watch-toggle-config', { setting: 'verbose' }],

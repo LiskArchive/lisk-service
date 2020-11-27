@@ -26,8 +26,8 @@
   "scripts": {
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:integration",
-    "test:integration": "jest --config=jest.integration.config.js",
-    "test:functional": "jest --config=functional/jest.config.js",
+    "test:integration": "jest --config=jest.config.integration.js",
+    "test:functional": "jest --config=jest.config.functional.js",
     "start": "node app.js"
   },
   "dependencies": {
