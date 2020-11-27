@@ -46,12 +46,12 @@ describe('Method get.search', () => {
 
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		// expect(result).toMap(resultEnvelopeSchema);
+		expect(result).toMap(resultEnvelopeSchema);
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
 		result.data.forEach(item => expect(item)
 			.toMap(searchItemSchema, { description: q, type: 'address' }));
-		// expect(result.meta).toMap(metaSchema, { count: 1 });
+		expect(result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	it('returns multiple delegate by name part ', async () => {
@@ -60,12 +60,12 @@ describe('Method get.search', () => {
 
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		// expect(result).toMap(resultEnvelopeSchema);
+		expect(result).toMap(resultEnvelopeSchema);
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		result.data.forEach(item => expect(item)
 			.toMap(searchItemSchema, { description: refDelegate.username, type: 'address' }));
-		// expect(result.meta).toMap(metaSchema);
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	// TODO: Fail CI pipeline
@@ -75,12 +75,12 @@ describe('Method get.search', () => {
 
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		// expect(result).toMap(resultEnvelopeSchema);
+		expect(result).toMap(resultEnvelopeSchema);
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
 		result.data.forEach(item => expect(item)
 			.toMap(searchItemSchema, { id: q, type: 'address' }));
-		// expect(result.meta).toMap(metaSchema, { count: 1 });
+		expect(result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	// TODO: Fail CI pipeline
@@ -91,12 +91,12 @@ describe('Method get.search', () => {
 
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		// expect(result).toMap(resultEnvelopeSchema);
+		expect(result).toMap(resultEnvelopeSchema);
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
 		result.data.forEach(item => expect(item)
 			.toMap(searchItemSchema, { id, type: 'address' }));
-		// expect(result.meta).toMap(metaSchema, { count: 1 });
+		expect(result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	it('returns block by height', async () => {
@@ -105,12 +105,12 @@ describe('Method get.search', () => {
 
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		// expect(result).toMap(resultEnvelopeSchema);
+		expect(result).toMap(resultEnvelopeSchema);
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
 		result.data.forEach(item => expect(item)
 			.toMap(searchItemSchema, { description: q, type: 'block' }));
-		// expect(result.meta).toMap(metaSchema, { count: 1 });
+		expect(result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	it('returns block by id', async () => {
@@ -119,12 +119,12 @@ describe('Method get.search', () => {
 
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		// expect(result).toMap(resultEnvelopeSchema);
+		expect(result).toMap(resultEnvelopeSchema);
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
 		result.data.forEach(item => expect(item)
 			.toMap(searchItemSchema, { id: q, type: 'block' }));
-		// expect(result.meta).toMap(metaSchema, { count: 1 });
+		expect(result.meta).toMap(metaSchema, { count: 1 });
 	});
 
 	// TODO: Fail CI pipeline

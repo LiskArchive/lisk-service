@@ -19,7 +19,7 @@ const { api } = require('../../helpers/api');
 const {
 	notFoundSchema,
 	goodRequestSchema,
-	// metaSchema,
+	metaSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
@@ -47,7 +47,7 @@ describe('GET /search', () => {
 		expect(response.data).toBeArrayOfSize(1);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { description: q, type: 'address' }));
-		// expect(response.meta).toMap(metaSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('returns multiple delegate by name part ', async () => {
@@ -57,7 +57,7 @@ describe('GET /search', () => {
 		expect(response.data).toBeArrayOfSize(1);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { description: refDelegate.username, type: 'address' }));
-		// expect(response.meta).toMap(metaSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 
 	// TODO: Fail CI pipeline (Not found)
@@ -68,7 +68,7 @@ describe('GET /search', () => {
 		expect(response.data).toBeArrayOfSize(1);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { id: q, type: 'address' }));
-		// expect(response.meta).toMap(metaSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 
 	// TODO: Fail CI pipeline (Not found)
@@ -80,7 +80,7 @@ describe('GET /search', () => {
 		expect(response.data).toBeArrayOfSize(1);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { id, type: 'address' }));
-		// expect(response.meta).toMap(metaSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('returns block by height', async () => {
@@ -90,7 +90,7 @@ describe('GET /search', () => {
 		expect(response.data).toBeArrayOfSize(1);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { description: q, type: 'block' }));
-		// expect(response.meta).toMap(metaSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('returns block by id', async () => {
@@ -100,7 +100,7 @@ describe('GET /search', () => {
 		expect(response.data).toBeArrayOfSize(1);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { id: q, type: 'block' }));
-		// expect(response.meta).toMap(metaSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('returns transaction by id ', async () => {
@@ -110,7 +110,7 @@ describe('GET /search', () => {
 		expect(response.data).toBeArrayOfSize(1);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { id: q, type: 'tx' }));
-		// expect(response.meta).toMap(metaSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 
 	it('returns a proper error when called without q param', async () => {
