@@ -32,6 +32,7 @@ const networkStatusSchema = Joi.object({
 		multisignature: Joi.string().required(),
 		dappRegistration: Joi.string().required(),
 		dappWithdrawal: Joi.string().required(),
+		dappDeposit: Joi.string().required(),
 	}).required(),
 }).required();
 
