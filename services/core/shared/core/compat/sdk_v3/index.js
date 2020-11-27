@@ -26,6 +26,7 @@ const {
 const { getVotes } = require('./votes');
 const { getVoters } = require('./voters');
 const events = require('./events');
+const { getNetworkStatus } = require('./network');
 
 module.exports = {
 	...require('../sdk_v2'),
@@ -37,4 +38,5 @@ module.exports = {
 	getVotes,
 	getVoters,
 	events,
+	getNetworkStatus,
 };

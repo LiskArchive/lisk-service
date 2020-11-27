@@ -38,6 +38,7 @@ const {
     getFinalizedHeight,
 } = require('../sdk_v3');
 const events = require('./events');
+const { getNetworkStatus } = require('./network');
 
 module.exports = {
     ...require('../sdk_v2'),
@@ -55,4 +56,5 @@ module.exports = {
     getVotes,
     getVoters,
     events,
+    getNetworkStatus,
 };

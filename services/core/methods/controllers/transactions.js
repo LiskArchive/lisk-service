@@ -59,9 +59,8 @@ const getTransactions = async (params) => {
 
 	const meta = {
 		count: result.data.length,
-		offset: result.meta ? result.meta.offset : 0,
-		total: result.meta ? result.meta.count : null,
-		// TODO: Set total properly
+		offset: result.meta.offset || 0,
+		total: result.meta.total || result.meta.count,
 	};
 
 	return {

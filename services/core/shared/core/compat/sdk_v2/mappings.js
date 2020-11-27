@@ -51,7 +51,7 @@ const mapTransaction = transaction => {
     const changesByType = {
         0: {
             amount: transaction.asset.amount || transaction.amount,
-            recipientId: transaction.asset.recipientId,
+            recipientId: transaction.asset.recipientId || transaction.recipientId,
             asset: { data: transaction.asset.data },
         },
         1: {
@@ -88,7 +88,7 @@ const responseMappers = {
         return response;
     },
     '/node/constants': response => {
-        response.data = { ...response.data, nethash: response.data.networkId };
+        response.data = { ...response.data, nethash: response.data.nethash };
         return response;
     },
 };
@@ -97,6 +97,14 @@ const paramMappers = {
     '/delegates/latest_registrations': params => {
         if (params.type) {
             params.type = transactionTypeParamMap[params.type];
+        }
+        return params;
+    },
+    '/transactions': params => {
+        if (params.type) {
+            if (!Number.isNaN(Number(params.type))) {
+                params.type = transactionTypeParamMap[params.type];
+            }
         }
         return params;
     },

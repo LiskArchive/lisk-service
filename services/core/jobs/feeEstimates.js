@@ -16,14 +16,13 @@
 const {
 	Logger,
 } = require('lisk-service-framework');
-
+const core = require('../shared/core');
 const {
 	getEstimateFeeByteNormal,
 	getEstimateFeeByteQuick,
 } = require('../shared/core/dynamicFees');
 
 const logger = Logger();
-
 module.exports = [
 	{
 		name: 'update.fee_estimates',
@@ -31,11 +30,13 @@ module.exports = [
 		schedule: '0 0 1 1 *', // Once a year
 		updateOnInit: true,
 		init: () => {
+			const sdkVersion = core.getSDKVersion();
+			if (sdkVersion >= 4) {
 			logger.debug('Initiate the dynamic fee estimates computation');
-
 			getEstimateFeeByteNormal();
 			getEstimateFeeByteQuick();
-		},
+		}
+},
 		controller: () => { },
 	},
 ];

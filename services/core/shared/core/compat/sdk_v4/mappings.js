@@ -105,6 +105,10 @@ const responseMappers = {
         response.data = { ...response.data, nethash: response.data.networkId };
         return response;
     },
+    '/node/status': response => {
+        response.data = { ...response.data, networkHeight: response.data.height };
+        return response;
+    },
 };
 
 const paramMappers = {
@@ -115,6 +119,11 @@ const paramMappers = {
             // TODO: Fix the validation logic as per business requirements
             params.sort = (['fee', 'type', 'nonce'].includes(sortProp) ? sortProp : 'fee')
                 .concat(':').concat(sortOrder);
+        }
+        if (params.type) {
+            if (Number.isNaN(Number(params.type))) {
+                params.type = transactionTypeParamMap[params.type];
+            }
         }
         return params;
     },
@@ -132,8 +141,8 @@ const paramMappers = {
     },
     '/delegates': params => {
         if (params.sort) {
-            params.sort = params.sort.replace('rank:asc', 'voteWeight:desc');
-            params.sort = params.sort.replace('rank:desc', 'voteWeight:asc');
+            params.sort = params.sort.replace('rank:asc', 'totalVotesReceived:desc');
+            params.sort = params.sort.replace('rank:desc', 'totalVotesReceived:asc');
         }
         return params;
     },
