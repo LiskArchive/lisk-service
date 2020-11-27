@@ -46,24 +46,22 @@ describe('Accounts Compatibility API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Doesn't return meta.offset
 		it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(100);
 			response.data.forEach(account => expect(account).toMap(accountSchema));
-			// expect(response.meta).toMap(metaSchema, { limit: 100 });
+			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Doesn't return meta.offset
 		it('returns a list when given empty limit', async () => {
 			const response = await api.get(`${accountsTopEndpoint}?limit=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(10);
 			response.data.forEach(account => expect(account).toMap(accountSchema));
-			// expect(response.meta).toMap(metaSchema, { limit: 10 });
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns BAD_REQUEST (400) when pagination limit=0', async () => {
@@ -176,7 +174,7 @@ describe('Blocks Compatibility API', () => {
 		it('fetch block for known blockId', async () => {
 			const response = await api.get(`${blockEndpoint}/${refTransaction.blockId}/transactions`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.length).toEqual(1);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			response.data.forEach(block => expect(block)
 				.toMap(transactionSchema, { blockId: refTransaction.blockId }));
 			expect(response.meta).toMap(metaSchema);
