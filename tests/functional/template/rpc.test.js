@@ -14,8 +14,9 @@
  *
  */
 import config from '../config';
-import request from '../helpers/rpcApi';
-import { JSON_RPC } from '../helpers/errorCodes';
+import { JSON_RPC } from '../../helpers/errorCodes';
+
+const { request } = require('../../helpers/socketIoRpcRequest');
 
 const baseUrlRoot = config.SERVICE_ENDPOINT_RPC;
 const baseUrl = `${baseUrlRoot}/rpc-test`;
