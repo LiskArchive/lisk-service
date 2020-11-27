@@ -22,8 +22,8 @@ const {
 
 const delegateSchema = {
 	approval: Joi.number().required(),
-	missedBlocks: Joi.number().integer().min(1).required(),
-	producedBlocks: Joi.number().integer().min(1).required(),
+	missedBlocks: Joi.number().integer().min(0).required(),
+	producedBlocks: Joi.number().integer().min(0).required(),
 	productivity: Joi.string().required(),
 	rank: Joi.number().integer().min(1).required(),
 	rewards: Joi.string().required(),
