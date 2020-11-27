@@ -15,21 +15,20 @@
  */
 import to from 'await-to-js';
 import io from 'socket.io-client';
+import config from '../config';
 
-const request = (endpoint, method, params) => new Promise((resolve, reject) => {
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+
+const request = (endpoint, method, params) => new Promise((resolve) => {
 	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
 
-	socket.emit('request', { method, params }, answer => {
+	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
 		socket.close();
-		if (answer.error) {
-			reject(answer);
-		} else {
-			resolve(answer);
-		}
+		resolve(answer);
 	});
 });
 
-export const api = {
+const api = {
 	get: async (...args) => {
 		const [error, response] = await to(request(...args));
 		if (error) {
@@ -37,7 +36,10 @@ export const api = {
 		}
 		return response.result;
 	},
-	getJsonRpcV1: (...args) => api.get(...args),
+	getJsonRpcV1: (...args) => api.get(wsRpcUrl, ...args),
 };
 
-export default request;
+module.exports = {
+	api,
+	request,
+};
