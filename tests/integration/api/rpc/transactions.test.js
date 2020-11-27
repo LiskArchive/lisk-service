@@ -175,7 +175,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid height -> empty response', async () => {
+		xit('invalid height -> empty response', async () => {
 			const response = await requestTransactions({ height: '1000000000000000000000000' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
