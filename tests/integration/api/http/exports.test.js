@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const fs = require('fs');
+const util = require('util');
+
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
-
-const fs = require('fs');
-const util = require('util');
 
 const readFile = util.promisify(fs.readFile);
 
