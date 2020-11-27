@@ -26,7 +26,7 @@ const blockSchema = {
 	payloadLength: Joi.number().integer().min(0).required(),
 	payloadHash: Joi.string().required(),
 	blockSignature: Joi.string().required(),
-	confirmations: Joi.number().integer().min(1).required(),
+	confirmations: Joi.number().integer().min(0).required(),
 	previousBlockId: Joi.string().required(),
 	numberOfTransactions: Joi.number().integer().min(0).required(),
 	totalAmount: Joi.string().required(),
