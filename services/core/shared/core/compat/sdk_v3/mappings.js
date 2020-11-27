@@ -128,7 +128,7 @@ const paramMappers = {
 	},
 	'/transactions': params => {
         if (params.type) {
-            if (!Number.isNaN(Number(params.type))) {
+            if (Number.isNaN(Number(params.type))) {
                 params.type = transactionTypeParamMap[params.type];
             }
         }
