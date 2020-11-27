@@ -15,7 +15,8 @@
  */
 import to from 'await-to-js';
 import io from 'socket.io-client';
-import config from '../config';
+
+const config = require('../../config');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlRpcV1 = `${baseUrl}/rpc`;

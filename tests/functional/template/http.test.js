@@ -13,8 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import config from '../config';
 import api from '../helpers/httpApi';
+
+const config = require('../../config');
 
 const baseUrlRoot = config.SERVICE_ENDPOINT_HTTP;
 const baseUrl = `${baseUrlRoot}/api/test`;

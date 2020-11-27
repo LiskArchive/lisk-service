@@ -13,9 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import config from '../config';
 import request from '../helpers/rpcApi';
-import { JSON_RPC } from '../helpers/errorCodes';
+import { JSON_RPC } from '../../helpers/errorCodes';
+
+const config = require('../../config');
 
 const baseUrlRoot = config.SERVICE_ENDPOINT_RPC;
 const baseUrl = `${baseUrlRoot}/rpc-test`;

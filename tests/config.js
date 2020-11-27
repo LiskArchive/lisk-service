@@ -14,6 +14,11 @@
  *
  */
 module.exports = {
+	// Functional test configs
+	SERVICE_ENDPOINT_HTTP: process.env.SERVICE_ENDPOINT || 'http://localhost:9901',
+	SERVICE_ENDPOINT_RPC: process.env.SERVICE_ENDPOINT || 'ws://localhost:9901',
+
+	// Integration test configs
 	SERVICE_ENDPOINT: process.env.SERVICE_ENDPOINT || 'http://localhost:9901',
 	MOCK_ENDPOINT: process.env.MOCK_ENDPOINT || 'http://localhost:9006',
 	SERVICE_STAGING: process.env.SERVICE_STAGING || 'https://mainnet-service-staging.lisk.io',
