@@ -34,7 +34,7 @@ module.exports = {
 			multisignature: 'data.constants.fees.multisignature,string',
 			dappRegistration: 'data.constants.fees.dappRegistration,string',
 			dappWithdrawal: 'data.constants.fees.dappWithdrawal,string',
-			dappDeposit: 'data.constants.fees.dappDepositl,string',
+			dappDeposit: 'data.constants.fees.dappDeposit,string',
 		},
 	},
 };
