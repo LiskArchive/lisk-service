@@ -15,6 +15,8 @@
  */
 import Joi from 'joi';
 
+const allowedDateFormats = ['YYYY-MM-DD', 'YYYY-MM'];
+
 const goodRequestSchema = {
 	data: Joi.object().required(),
 	meta: Joi.object().required(),
@@ -22,10 +24,10 @@ const goodRequestSchema = {
 };
 
 const timelineItemSchema = {
-	timestamp: Joi.number().required(),
+	timestamp: Joi.number().integer().positive().required(),
 	date: Joi.string().required(),
-	transactionCount: Joi.number().required(),
-	volume: Joi.number().required(),
+	transactionCount: Joi.number().integer().min(0).required(),
+	volume: Joi.number().integer().min(0).required(),
 };
 
 const transactionStatisticsSchema = {
@@ -37,7 +39,8 @@ const transactionStatisticsSchema = {
 const metaSchema = {
 	limit: Joi.number().required(),
 	offset: Joi.number().required(),
-	dateFormat: Joi.string().required(),
+	aggregateBy: Joi.string().optional(),
+	dateFormat: Joi.string().valid(...allowedDateFormats).required(),
 	dateFrom: Joi.string().required(),
 	dateTo: Joi.string().required(),
 };

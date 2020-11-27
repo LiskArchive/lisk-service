@@ -17,6 +17,7 @@ import Joi from 'joi';
 
 const { jsonRPCSchema } = require('./rpcGenerics.schema');
 
+const allowedPeerStateCodes = [0, 1, 2];
 const allowedPeerStateNames = ['connected', 'disconnected'];
 
 const locationSchema = {
@@ -25,11 +26,11 @@ const locationSchema = {
 	countryName: Joi.string().optional(),
 	hostname: Joi.string().optional(),
 	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).optional(),
-	latitude: Joi.string().optional(), // TODO: Add validation
-	longitude: Joi.string().optional(), // TODO: Add validation
+	latitude: Joi.string().pattern(/^[0-9.]+$/).optional(),
+	longitude: Joi.string().pattern(/^[0-9.]+$/).optional(),
 	regionCode: Joi.string().optional(),
 	regionName: Joi.string().optional(),
-	timeZone: Joi.string().optional(), // TODO: Add validation
+	timeZone: Joi.string().optional(),
 	zipCode: Joi.string().optional(),
 };
 
@@ -37,20 +38,21 @@ const peerSchema = {
 	ip: Joi.string().ip({ version: 'ipv4', cidr: 'forbidden' }).required(),
 	httpPort: Joi.number().port().optional(),
 	wsPort: Joi.number().port().optional(),
-	os: Joi.string().optional(),
+	os: Joi.string().allow('').optional(),
 	version: Joi.string().required(),
-	state: Joi.number().integer().min(0).max(2)
-		.required(),
+	state: Joi.number().integer().valid(...allowedPeerStateCodes).required(),
 	stateName: Joi.string().valid(...allowedPeerStateNames).required(),
 	height: Joi.number().optional(),
-	broadhash: Joi.string().optional(),
-	nonce: Joi.string().optional(),
+	broadhash: Joi.string().allow('').optional(),
+	nonce: Joi.string().allow('').optional(),
+	hostname: Joi.string().optional(),
 	location: Joi.object(locationSchema).optional(),
 };
 
 const emptyResultEnvelopeSchema = {
 	data: Joi.array().length(0).required(),
 	meta: Joi.object().required(),
+	links: Joi.object().optional(),
 };
 
 const emptyResponseSchema = {

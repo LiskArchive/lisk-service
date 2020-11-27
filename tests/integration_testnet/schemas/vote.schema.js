@@ -19,14 +19,14 @@ const voteSchema = {
 	address: Joi.string().required(),
 	amount: Joi.string().optional(),
 	publicKey: Joi.string().required(),
-	balance: Joi.number().required(),
+	balance: Joi.number().integer().min(1).required(),
 	username: Joi.string().required(),
 };
 
 const metaSchema = {
-	count: Joi.number().required(),
-	total: Joi.number().required(),
-	offset: Joi.number().required(),
+	count: Joi.number().integer().min(0).required(),
+	total: Joi.number().integer().min(0).required(),
+	offset: Joi.number().integer().min(0).required(),
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),
 	username: Joi.string().required(),

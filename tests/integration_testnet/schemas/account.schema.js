@@ -22,17 +22,17 @@ const {
 
 const delegateSchema = {
 	approval: Joi.number().required(),
-	missedBlocks: Joi.number().required(),
-	producedBlocks: Joi.number().required(),
+	missedBlocks: Joi.number().integer().min(1).required(),
+	producedBlocks: Joi.number().integer().min(1).required(),
 	productivity: Joi.string().required(),
-	rank: Joi.number().required(),
+	rank: Joi.number().integer().min(1).required(),
 	rewards: Joi.string().required(),
 	username: Joi.string().required(),
 	vote: Joi.string().required(),
 	isBanned: Joi.boolean().optional(),
-	status: Joi.string().valid(...validDelegateStatuses).optional(), // TODO: Clarify
+	status: Joi.string().valid(...validDelegateStatuses).optional(),
 	pomHeights: Joi.array().items(pomHeightSchema).optional(),
-	lastForgedHeight: Joi.number().integer().optional(), // TODO: Clarify
+	lastForgedHeight: Joi.number().integer().min(1).optional(),
 	consecutiveMissedBlocks: Joi.number().integer().optional(),
 };
 
@@ -47,13 +47,13 @@ const multisignatureAccountMemberSchema = {
 	secondPublicKey: Joi.string().required(),
 	balance: Joi.number().required(),
 	unconfirmedSignature: Joi.number().required(),
-	isMandatory: Joi.boolean().optional(), // TODO: required?
+	isMandatory: Joi.boolean().optional(),
 };
 
 const multisignatureAccountSchema = {
-	lifetime: Joi.number().required(),
-	minimalNumberAcccounts: Joi.number().required(),
-	numberOfReqSignatures: Joi.number().optional(),
+	lifetime: Joi.number().optional(),
+	minimalNumberAcccounts: Joi.number().optional(),
+	numberOfReqSignatures: Joi.number().required(),
 	members: Joi.array().items(multisignatureAccountMemberSchema).required(),
 };
 

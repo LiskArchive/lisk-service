@@ -21,10 +21,10 @@ const transactionSchema = {
 	fee: Joi.string().required(),
 	type: Joi.number().integer().min(0).max(13)
 		.required(),
-	height: Joi.number().required(),
+	height: Joi.number().integer().min(1).required(),
 	nonce: Joi.string().optional(),
 	blockId: Joi.string().required(),
-	timestamp: Joi.number().integer().required(),
+	timestamp: Joi.number().integer().positive().required(),
 	senderId: Joi.string().required(),
 	senderPublicKey: Joi.string().required(),
 	senderSecondPublicKey: Joi.string().optional(),
@@ -35,7 +35,7 @@ const transactionSchema = {
 	signatures: Joi.array().items(Joi.string().optional()).required(),
 	confirmations: Joi.number().integer().min(1).required(),
 	asset: Joi.object().required(),
-	receivedAt: Joi.string().optional(), // TODO: Add validation
+	receivedAt: Joi.string().optional(),
 	relays: Joi.number().optional(),
 	ready: Joi.boolean().optional(),
 };

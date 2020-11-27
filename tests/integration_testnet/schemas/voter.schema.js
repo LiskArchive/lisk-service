@@ -19,14 +19,14 @@ const voterSchema = {
 	address: Joi.string().required(),
 	amount: Joi.string().optional(),
 	publicKey: Joi.string().required(),
-	balance: Joi.number().required(),
+	balance: Joi.number().integer().min(1).required(),
 	username: Joi.string().optional(),
 };
 
 const metaSchema = {
-	count: Joi.number().required(),
-	limit: Joi.number().optional(), // TODO: Must be required?
-	offset: Joi.number().required(),
+	count: Joi.number().integer().min(0).required(),
+	limit: Joi.number().integer().min(0).optional(),
+	offset: Joi.number().integer().min(0).required(),
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),
 	username: Joi.string().required(),

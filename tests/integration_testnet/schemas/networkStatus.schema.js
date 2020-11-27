@@ -23,12 +23,13 @@ const feeSchema = {
 	multisignature: Joi.string().required(),
 	dappRegistration: Joi.string().required(),
 	dappWithdrawal: Joi.string().required(),
+	dappDeposit: Joi.string().required(),
 };
 
 const networkStatusSchema = {
 	broadhash: Joi.string().required(),
-	height: Joi.number().required(),
-	networkHeight: Joi.number().required(),
+	height: Joi.number().integer().min(1).required(),
+	networkHeight: Joi.number().integer().min(1).required(),
 	epoch: Joi.string().required(),
 	milestone: Joi.string().required(),
 	nethash: Joi.string().required(),
