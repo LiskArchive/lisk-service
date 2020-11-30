@@ -136,7 +136,7 @@ describe('Gateway', () => {
 	});
 
 	it('handles METHOD_NOT_FOUND error properly', async () => {
-		const response = await request(baseUrl, 'get.wrong_path', {})
+		const response = await request(baseUrl, 'get.wrong_path', {});
 		expect(response).toMap(wrongMethodSchema);
 		expect(response.id).toEqual(1);
 		expect(response).toStrictEqual({
