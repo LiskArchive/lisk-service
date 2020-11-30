@@ -17,7 +17,7 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const {
-	notFoundSchema,
+	badRequestSchema,
 	goodRequestSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
@@ -115,11 +115,11 @@ describe('GET /search', () => {
 
 	it('returns a proper error when called without q param', async () => {
 		const response = await api.get(endpoint, 400);
-		expect(response).toMap(notFoundSchema);
+		expect(response).toMap(badRequestSchema);
 	});
 
 	it('returns a proper error when called with empty q param', async () => {
 		const response = await api.get(`${endpoint}?q=`, 400);
-		expect(response).toMap(notFoundSchema);
+		expect(response).toMap(badRequestSchema);
 	});
 });

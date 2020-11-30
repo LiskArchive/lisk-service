@@ -19,12 +19,13 @@ import config from '../config';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
-const request = (endpoint, method, params) => new Promise((resolve) => {
+const request = (endpoint, method, params) => new Promise((resolve, reject) => {
 	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
 
 	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
 		socket.close();
-		resolve(answer);
+		if (answer.error) reject(answer);
+		else resolve(answer);
 	});
 });
 
