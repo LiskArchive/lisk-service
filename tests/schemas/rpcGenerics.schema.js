@@ -49,6 +49,15 @@ const wrongMethodSchema = {
 	},
 };
 
+const serverErrorSchema = {
+	jsonrpc: jsonRPCSchema,
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+	error: {
+		code: Joi.number().required().equal(JSON_RPC.SERVER_ERROR[0]),
+		message: Joi.string().required(),
+	},
+};
+
 const jsonRpcEnvelopeSchema = {
 	jsonrpc: jsonRPCSchema,
 	result: Joi.object().required(),
@@ -72,4 +81,5 @@ module.exports = {
 	jsonRpcEnvelopeSchema: Joi.object(jsonRpcEnvelopeSchema).required(),
 	jsonRpcListSchema,
 	emptyResponseSchema: Joi.object(emptyResponseSchema).required(),
+	serverErrorSchema: Joi.object(serverErrorSchema).required(),
 };
