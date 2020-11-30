@@ -24,8 +24,7 @@ const request = (endpoint, method, params) => new Promise((resolve, reject) => {
 
 	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
 		socket.close();
-		if (answer.error) reject(answer);
-		else resolve(answer);
+		resolve(answer);
 	});
 });
 
