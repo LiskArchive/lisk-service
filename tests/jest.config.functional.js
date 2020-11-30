@@ -6,7 +6,7 @@ module.exports = {
 	testEnvironment: 'node',
 	setupFilesAfterEnv: [
 		'jest-extended',
-		'<rootDir>/functional/helpers/setupCustomMatchers.js',
+		'<rootDir>/helpers/setupCustomMatchers.js',
 	],
 	watchPlugins: [
 		['jest-watch-toggle-config', { setting: 'verbose' }],
