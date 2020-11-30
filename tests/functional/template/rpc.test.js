@@ -13,10 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import request from '../helpers/rpcApi';
 import { JSON_RPC } from '../../helpers/errorCodes';
 
 const config = require('../../config');
+const { request } = require('../../helpers/socketIoRpcRequest');
+
+const {
+	jsonRpcEnvelopeSchema,
+	invalidParamsSchema,
+	serverErrorSchema,
+	wrongMethodSchema,
+	metaSchema,
+} = require('../../schemas/rpcGenerics.schema');
 
 const baseUrlRoot = config.SERVICE_ENDPOINT_RPC;
 const baseUrl = `${baseUrlRoot}/rpc-test`;
@@ -30,9 +38,13 @@ const {
 describe('Gateway', () => {
 	it('provides basic RPC route', async () => {
 		const response = await request(baseUrl, 'get.hello', {});
-		expect(response.jsonrpc).toEqual('2.0');
+		expect(response).toMap(jsonRpcEnvelopeSchema);
 		expect(response.id).toEqual(1);
-		expect(response.result).toEqual({
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		expect(result.meta).toMap(metaSchema, { count: 1 });
+		expect(result).toEqual({
 			data: [
 				{
 					message: 'Hello World!',
@@ -47,8 +59,12 @@ describe('Gateway', () => {
 
 	it('provides RPC route with parameters', async () => {
 		const response = await request(baseUrl, 'get.hello.param', { path_name: 'user1' });
-		expect(response.jsonrpc).toEqual('2.0');
+		expect(response).toMap(jsonRpcEnvelopeSchema);
 		expect(response.id).toEqual(1);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		expect(result.meta).toMap(metaSchema, { count: 1 });
 		expect(response.result).toEqual({
 			data: [
 				{
@@ -64,7 +80,10 @@ describe('Gateway', () => {
 	});
 
 	it('client error returns INVALID_REQUEST on wrong param name', async () => {
-		await expect(request(baseUrl, 'get.hello', { wrong_param_name: 'user1' })).rejects.toStrictEqual({
+		const response = await request(baseUrl, 'get.hello', { wrong_param_name: 'user1' });
+		expect(response).toMap(invalidParamsSchema);
+		expect(response.id).toEqual(1);
+		expect(response).toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
@@ -75,7 +94,10 @@ describe('Gateway', () => {
 	});
 
 	it('client error returns INVALID_REQUEST when no param value is defined', async () => {
-		await expect(request(baseUrl, 'get.hello', { wrong_param_name: null })).rejects.toStrictEqual({
+		const response = await request(baseUrl, 'get.hello', { wrong_param_name: null });
+		expect(response).toMap(invalidParamsSchema);
+		expect(response.id).toEqual(1);
+		expect(response).toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
@@ -86,7 +108,10 @@ describe('Gateway', () => {
 	});
 
 	it('client error returns INVALID_REQUEST when param value is too short', async () => {
-		await expect(request(baseUrl, 'get.hello', { path_name: 'ab' })).rejects.toStrictEqual({
+		const response = await request(baseUrl, 'get.hello', { path_name: 'ab' });
+		expect(response).toMap(invalidParamsSchema);
+		expect(response.id).toEqual(1);
+		expect(response).toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
@@ -97,7 +122,10 @@ describe('Gateway', () => {
 	});
 
 	it('server error returns SERVER_ERROR', async () => {
-		await expect(request(baseUrl, 'get.server_error', {})).rejects.toStrictEqual({
+		const response = await request(baseUrl, 'get.server_error', {});
+		expect(response).toMap(serverErrorSchema);
+		expect(response.id).toEqual(1);
+		expect(response).toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
@@ -108,7 +136,10 @@ describe('Gateway', () => {
 	});
 
 	it('handles METHOD_NOT_FOUND error properly', async () => {
-		await expect(request(baseUrl, 'get.wrong_path', {})).rejects.toStrictEqual({
+		const response = await request(baseUrl, 'get.wrong_path', {})
+		expect(response).toMap(wrongMethodSchema);
+		expect(response.id).toEqual(1);
+		expect(response).toStrictEqual({
 			jsonrpc: '2.0',
 			id: 1,
 			error: {
