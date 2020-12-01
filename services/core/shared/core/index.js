@@ -95,6 +95,7 @@ const {
 	getEpochUnixTime,
 	getUnixTime,
 	updateFinalizedHeight,
+	getSDKVersion,
 } = require('./compat');
 
 const events = require('./events');
@@ -155,4 +156,5 @@ module.exports = {
 	getPendingTransactions,
 	reloadAllPendingTransactions,
 	events,
+	getSDKVersion,
 };

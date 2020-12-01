@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
+const { getAccounts } = require('./accounts');
 
 const maxVotesPerAccount = 10;
 
@@ -27,14 +29,29 @@ const getVotes = async params => {
 	if (response.data) votes.data = response.data;
 	if (response.meta) votes.meta = response.meta;
 
-	votes.data.votes = votes.data.votes.map(vote => {
-		vote.address = vote.delegateAddress;
-		vote.balance = vote.amount;
-		vote.publicKey = null;
-		vote.username = vote.delegate.username;
-
-		return vote;
-	});
+	votes.data.votes = await BluebirdPromise.map(
+		votes.data.votes,
+		async (vote) => {
+			vote.address = vote.delegateAddress;
+			vote.publicKey = null;
+			vote.username = vote.delegate.username;
+			if (vote.address === votes.data.address) {
+				vote = {
+					...vote,
+					balance: votes.data.balance,
+				};
+			} else {
+				const voteInfo = (await getAccounts({ address: vote.address }))
+					.data[0];
+				vote = {
+					...vote,
+					balance: voteInfo.balance,
+				};
+			}
+			return vote;
+		},
+		{ concurrency: votes.data.votes.length },
+	);
 	votes.data.votesUsed = maxVotesPerAccount - votes.data.votesAvailable;
 
 	return votes;

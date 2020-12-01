@@ -30,7 +30,7 @@ module.exports = {
 				schema: {
 					type: 'array',
 					items: {
-						$ref: '#/definitions/NetworkStatistics',
+						$ref: '#/definitions/NetworkStatus',
 					},
 				},
 			},
