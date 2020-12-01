@@ -110,7 +110,7 @@ const getAccounts = async params => {
 				return account;
 			});
 			// await accountdb.writebatch(allAccounts);
-			await db.writebatch(allAccounts);
+			await db.writeBatch(allAccounts);
 		}
 	}
 	return accounts;
