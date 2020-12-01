@@ -23,7 +23,7 @@ PouchDB.plugin(require('pouchdb-find'));
 
 const logger = Logger();
 
-const config = require('../config');
+const config = require('../../config');
 
 const connectionPool = {};
 

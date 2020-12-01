@@ -18,7 +18,7 @@ const { Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
-const pouchdb = require('../pouchdb');
+const pouchdb = require('../database/pouchdb');
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 const { getBlocks } = require('./blocks');

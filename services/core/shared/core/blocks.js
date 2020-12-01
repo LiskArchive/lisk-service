@@ -18,7 +18,7 @@ const util = require('util');
 
 const logger = Logger();
 
-const pouchdb = require('../pouchdb');
+const pouchdb = require('../database/pouchdb');
 const coreApi = require('./compat');
 const config = require('../../config');
 const { getUsernameByAddress } = require('./delegateUtils');

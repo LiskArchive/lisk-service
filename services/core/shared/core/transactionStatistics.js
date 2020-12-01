@@ -17,7 +17,7 @@ const moment = require('moment');
 
 const config = require('../../config');
 const transactionStatisticsQueue = require('./transactionStatisticsQueue');
-const getDbInstance = require('../pouchdb');
+const getDbInstance = require('../database/pouchdb');
 
 const getSelector = (params) => {
 	const result = {};

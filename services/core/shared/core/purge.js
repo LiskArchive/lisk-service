@@ -16,7 +16,7 @@
 const { Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
-const pouchdb = require('../pouchdb');
+const pouchdb = require('../database/pouchdb');
 const { getBlocks } = require('./blocks');
 
 const logger = Logger();
