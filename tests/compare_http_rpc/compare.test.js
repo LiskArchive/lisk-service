@@ -15,14 +15,15 @@
  */
 import api from '../helpers/api';
 import config from './config';
-import requestWs from '../helpers/socketIoRpcRequest';
+
+const { request } = require('../helpers/socketIoRpcRequest');
 
 const httpUrl = config.SERVICE_HTTP || 'http://localhost:9901';
 const wsUrl = config.SERVICE_WS || 'ws://localhost:9901/rpc';
 
 const tests = require('./tests');
 
-const wsRequest = async (url, method, params) => requestWs(url, method, params);
+const wsRequest = async (url, method, params) => request(url, method, params);
 
 describe(`Routes from ${httpUrl} vs ${wsUrl}`, () => {
 	tests.forEach(({ http = {}, rpc = {}, commonParams = {} }) => {

@@ -28,10 +28,10 @@ const objDiff = (reference, testedObject) => Object.keys(testedObject).filter(o 
 const arrDiff = (arr1, arr2) => arr2.filter(x => !arr1.includes(x));
 
 const dropEmptyProps = p => Object.keys(p)
-.reduce((acc, cur) => {
-	if (p[cur] !== '') acc[cur] = p[cur];
-	return acc;
-}, {});
+	.reduce((acc, cur) => {
+		if (p[cur] !== '') acc[cur] = p[cur];
+		return acc;
+	}, {});
 
 const parseParams = (p) => {
 	const combinedParams = { ...p.swaggerParams, ...p.inputParams };

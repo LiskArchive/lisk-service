@@ -13,33 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import to from 'await-to-js';
 import io from 'socket.io-client';
-import config from '../config';
 
-const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+const socketPool = {};
 
-const request = (endpoint, method, params) => new Promise(resolve => {
-	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
+export const subscribeAndReturn = (endpoint, event) => new Promise((resolve) => {
+	if (!socketPool[endpoint]) socketPool[endpoint] = io(endpoint, { forceNew: true, transports: ['websocket'] });
+	const socket = socketPool[endpoint];
 
-	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
+	socket.on(event, answer => {
 		socket.close();
 		resolve(answer);
 	});
 });
 
-const api = {
-	get: async (...args) => {
-		const [error, response] = await to(request(...args));
-		if (error) {
-			throw error.error;
-		}
-		return response.result;
-	},
-	getJsonRpcV1: (...args) => api.get(wsRpcUrl, ...args),
+export const closeAllConnections = () => {
+	Object.keys(socketPool).forEach(s => socketPool[s].close());
 };
 
 module.exports = {
-	api,
-	request,
+	subscribeAndReturn,
+	closeAllConnections,
 };
