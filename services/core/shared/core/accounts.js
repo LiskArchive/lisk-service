@@ -14,8 +14,7 @@
  *
  */
 const config = require('../../config');
-// const db = require('../database');
-const pouchdb = require('../database/pouchdb');
+const db = require('../database');
 const coreApi = require('./compat');
 
 const formatSortString = sortString => {
@@ -58,8 +57,7 @@ const getAccounts = async params => {
 		meta: {},
 	};
 
-	// const accountdb = await db(config.db.collections.accounts.name);
-	const db = await pouchdb(config.db.collections.accounts.name);
+	const accountdb = await db(config.db.collections.accounts.name);
 
 	if (!accounts.data.length) {
 		if (
@@ -73,13 +71,12 @@ const getAccounts = async params => {
 				limit: params.limit || 10,
 				offset: params.offset || 0,
 			});
-			const dbResult = await db.find(inputData);
-			// let dbResult;
-			// if (params.address) {
-			// 	dbResult = await accountdb.findById(params.address);
-			// } else {
-			// 	dbResult = await accountdb.find(inputData);
-			// }
+			let dbResult;
+			if (params.address) {
+				dbResult = await accountdb.findById(params.address);
+			} else {
+				dbResult = await accountdb.find(inputData);
+			}
 			if (dbResult.length > 0) {
 				const sortProp = params.sort.split(':')[0];
 				const sortOrder = params.sort.split(':')[1];
@@ -109,8 +106,7 @@ const getAccounts = async params => {
 				account.id = account.address;
 				return account;
 			});
-			// await accountdb.writebatch(allAccounts);
-			await db.writeBatch(allAccounts);
+			await accountdb.writeBatch(allAccounts);
 		}
 	}
 	return accounts;

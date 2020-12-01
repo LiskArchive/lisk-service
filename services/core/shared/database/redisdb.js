@@ -18,14 +18,10 @@ const redis = require('redis');
 const { Logger } = require('lisk-service-framework');
 
 // const config = require('../../config');
-
 const logger = Logger();
 
 const getDbInstance = async (collectionName) => {
-	const db = redis.createClient({
-		port: 6379,
-		host: 'localhost',
-	});
+	const db = redis.createClient();
 
 	db.on('error', (err) => {
 		logger.error('connection issues ', err);
@@ -35,7 +31,7 @@ const getDbInstance = async (collectionName) => {
         await db.set(doc.id, JSON.stringify(doc));
     };
 
-    const writebatch = async (docs) => {
+    const writeBatch = async (docs) => {
         await Promise.all(docs.map((doc) => db.hmset(collectionName, doc.id, JSON.stringify(doc))));
     };
 
@@ -71,7 +67,7 @@ const getDbInstance = async (collectionName) => {
 	return {
         write,
         find,
-        writebatch,
+        writeBatch,
         findAll,
         findById,
 	};
