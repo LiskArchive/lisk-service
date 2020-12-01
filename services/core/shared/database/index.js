@@ -15,4 +15,5 @@
  */
 const config = require('../../config');
 
+/* eslint-disable-next-line import/no-dynamic-require */
 module.exports = require(`./${config.defaultDB}`);

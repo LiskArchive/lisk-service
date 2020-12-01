@@ -72,9 +72,11 @@ const getAccounts = async params => {
 				offset: params.offset || 0,
 			});
 			let dbResult;
-			if (params.address) dbResult = await accountdb.findById(params.address);
-			dbResult = await accountdb.find(inputData);
-
+			if (params.address) {
+				dbResult = await accountdb.findById(params.address);
+			} else {
+				dbResult = await accountdb.find(inputData);
+			}
 			if (dbResult.length > 0) {
 				const sortProp = params.sort.split(':')[0];
 				const sortOrder = params.sort.split(':')[1];
