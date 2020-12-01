@@ -26,8 +26,8 @@
   "scripts": {
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:integration",
-    "test:integration": "jest --config=integration_testnet/jest.config.js",
-    "test:functional": "jest --config=functional/jest.config.js",
+    "test:integration": "jest --config=jest.config.integration.js",
+    "test:functional": "jest --config=jest.config.functional.js",
     "start": "node app.js"
   },
   "dependencies": {
@@ -43,6 +43,7 @@
     "multimatch": "^3.0.0",
     "popsicle": "^10.0.1",
     "prettyjson": "^1.2.1",
+    "semver": "^7.3.2",
     "socket.io": "^2.2.0",
     "socket.io-client": "^2.2.0",
     "vscode-json-languageservice": "^3.2.0"

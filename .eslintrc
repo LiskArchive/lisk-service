@@ -53,6 +53,7 @@
 				"properties": "never"
 			}
 		],
+		"mocha/max-top-level-suites": ["warn", {"limit": 6}],
 		"mocha/no-skipped-tests": "off"
 	}
 }

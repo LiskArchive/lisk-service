@@ -15,7 +15,6 @@
  *  *
  *
  */
-
 const mapRequiredSchema = (response, schema) => {
 	let errors = '';
 	Object.keys(schema).forEach((key) => {

@@ -37,35 +37,35 @@ const getBuildTimestamp = () => {
 const buildTimestamp = getBuildTimestamp();
 
 const getNetworkId = (url) => new Promise((resolve, reject) => {
-		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
-			.then((response) => {
-				if (response) return resolve(response.data.nethash);
-				return resolve(false);
-			})
-			.catch((err) => {
-				logger.error(err.stack);
-				reject(err);
-			});
-	});
+	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+		.then((response) => {
+			if (response) return resolve(response.data.nethash);
+			return resolve(false);
+		})
+		.catch((err) => {
+			logger.error(err.stack);
+			reject(err);
+		});
+});
 
 const getNetworkNodeVersion = (url) => new Promise((resolve, reject) => {
-		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
-			.then((response) => {
-				if (response) {
-					const { coreVer } = response.data.data;
-					const versionCount = Object.values(coreVer);
-					const networkNodeVersion = Object.keys(coreVer)[
-						versionCount.indexOf(Math.max(...versionCount))
-					];
-					return resolve(networkNodeVersion);
-				}
-				return resolve(false);
-			})
-			.catch((err) => {
-				logger.error(err.stack);
-				reject(err);
-			});
-	});
+	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+		.then((response) => {
+			if (response) {
+				const { coreVer } = response.data.data;
+				const versionCount = Object.values(coreVer);
+				const networkNodeVersion = Object.keys(coreVer)[
+					versionCount.indexOf(Math.max(...versionCount))
+				];
+				return resolve(networkNodeVersion);
+			}
+			return resolve(false);
+		})
+		.catch((err) => {
+			logger.error(err.stack);
+			reject(err);
+		});
+});
 
 const getStatus = async () => ({
 	build: buildTimestamp,
@@ -77,39 +77,39 @@ const getStatus = async () => ({
 });
 
 const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
-		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
-			.then((response) => {
-				try {
-					if (!response) resolve(false);
-					else if (response.status === 200) {
-						if (dataCheck === true) {
-							if (response.data.data.length > 0) {
-								return resolve(true);
-							}
-							return resolve(false);
+	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+		.then((response) => {
+			try {
+				if (!response) resolve(false);
+				else if (response.status === 200) {
+					if (dataCheck === true) {
+						if (response.data.data.length > 0) {
+							return resolve(true);
 						}
-						return resolve(true);
+						return resolve(false);
 					}
-				} catch (err) {
-					logger.error(err.stack);
-					return reject(err);
+					return resolve(true);
 				}
-				return resolve(false);
-			})
-			.catch((err) => {
+			} catch (err) {
 				logger.error(err.stack);
-				resolve({});
-			});
-	});
+				return reject(err);
+			}
+			return resolve(false);
+		})
+		.catch((err) => {
+			logger.error(err.stack);
+			resolve({});
+		});
+});
 
 const getReady = async () => ({
 	services: {
 		lisk_blocks: await checkAPI('/blocks', true),
-		// lisk_transactions: await checkAPI('/transactions', true),
-		// lisk_transaction_statistics: await checkAPI('/transactions/statistics/day', false),
-		// lisk_accounts: await checkAPI('/accounts', true),
-		// lisk_delegates: await checkAPI('/delegates', true),
-		// lisk_peers: await checkAPI('/peers', true),
+		lisk_transactions: await checkAPI('/transactions', true),
+		lisk_transaction_statistics: await checkAPI('/transactions/statistics/day', false),
+		lisk_accounts: await checkAPI('/accounts', true),
+		lisk_delegates: await checkAPI('/delegates', true),
+		lisk_peers: await checkAPI('/peers', true),
 	},
 });
 
