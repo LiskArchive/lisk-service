@@ -14,7 +14,7 @@
  *
  */
 
-const redis = require('redis');
+const redis = require('ioredis');
 const { Logger } = require('lisk-service-framework');
 
 const config = require('../../config');
@@ -22,9 +22,7 @@ const config = require('../../config');
 const logger = Logger();
 
 const getDbInstance = async (collectionName) => {
-    const db = redis.createClient({
-        redis_url: config.endpoints.redisDB,
-    });
+    const db = new redis(config.endpoints.redis);
 
     db.on('error', (err) => {
         logger.error('connection issues ', err);
@@ -42,7 +40,7 @@ const getDbInstance = async (collectionName) => {
     const findById = (params) => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
             const res = JSON.parse(result[`${params}`]);
-            return resolve(res);
+            return resolve([res]);
         });
     });
 
