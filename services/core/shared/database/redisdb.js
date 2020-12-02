@@ -33,13 +33,15 @@ const getDbInstance = async (collectionName) => {
     };
 
     const writeBatch = async (docs) => {
-        await Promise.all(docs.map((doc) => db.hmset(collectionName, doc.id, JSON.stringify(doc))));
+        await Promise
+            .all(docs.map((doc) => db.hmset(collectionName, doc.id, JSON.stringify(doc))));
     };
 
     // const findById = async (id) => await db.get(id);
-    const findById = (params) => new Promise(resolve => {
+    const findById = (id) => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
-            const res = JSON.parse(result[`${params}`]);
+            const res = {};
+            if (result && result[id]) Object.assign(res, JSON.parse(result[id]));
             return resolve([res]);
         });
     });

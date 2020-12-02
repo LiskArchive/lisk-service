@@ -73,7 +73,7 @@ const getAccounts = async params => {
 			});
 			let dbResult;
 			if (params.address) {
-				dbResult = await accountdb.findById(params.address);
+				dbResult = await accountdb.findById(params.address.toUpperCase());
 			} else {
 				dbResult = await accountdb.find(inputData);
 			}
