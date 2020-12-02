@@ -34,8 +34,6 @@ const getDbInstance = async (collectionName) => {
 
     const writeBatch = async (docs) => {
         await Promise.all(docs.map(doc => {
-            db.hmset(collectionName, doc.id, JSON.stringify(doc));
-
             // // For accounts, delegates
             // if (doc.publicKey) db.zadd(collectionName, doc.publicKey, doc.id);
             // if (doc.secondPublicKey) db.zadd(collectionName, doc.secondPublicKey, doc.id);
@@ -53,12 +51,15 @@ const getDbInstance = async (collectionName) => {
             if (doc.type) db.zadd(collectionName, doc.type, doc.id);
             // if (doc.senderId) db.zadd(collectionName, doc.senderId, doc.id);
             // if (doc.senderPublicKey) db.zadd(collectionName, doc.senderPublicKey, doc.id);
-            // if (doc.senderSecondPublicKey) db.zadd(collectionName, doc.senderSecondPublicKey, doc.id);
+            // if (doc.senderSecondPublicKey) db
+            //     .zadd(collectionName, doc.senderSecondPublicKey, doc.id);
             // if (doc.recipientId) db.zadd(collectionName, doc.recipientId, doc.id);
             // if (doc.recipientPublicKey) db.zadd(collectionName, doc.recipientPublicKey, doc.id);
 
             // // For peers
             // if (doc.ip) db.zadd(collectionName, doc.ip, doc.id);
+
+            return db.hmset(collectionName, doc.id, JSON.stringify(doc));
         }));
     };
 
