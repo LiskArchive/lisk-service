@@ -17,15 +17,18 @@
 const redis = require('redis');
 const { Logger } = require('lisk-service-framework');
 
-// const config = require('../../config');
+const config = require('../../config');
+
 const logger = Logger();
 
 const getDbInstance = async (collectionName) => {
-	const db = redis.createClient();
+    const db = redis.createClient({
+        redis_url: config.endpoints.redisDB,
+    });
 
-	db.on('error', (err) => {
-		logger.error('connection issues ', err);
-	});
+    db.on('error', (err) => {
+        logger.error('connection issues ', err);
+    });
 
     const write = async (doc) => {
         await db.set(doc.id, JSON.stringify(doc));
@@ -43,19 +46,19 @@ const getDbInstance = async (collectionName) => {
         });
     });
 
-	const find = (params) => new Promise((resolve) => {
-			db.hgetall(collectionName, async (err, result) => {
-				let res = Object.keys(result).map((key) => JSON.parse(result[key]));
-				res = res.filter(
-					(item) => (item.address && item.address === params.selector.address)
-						|| (item.publicKey && item.publicKey === params.selector.publicKey)
-						|| (item.secondPublicKey
-							&& item.secondPublicKey === params.selector.secondPublicKey)
-						|| (item.username && item.username === params.selector.username),
-				);
-				return resolve(res);
-			});
-		});
+    const find = (params) => new Promise((resolve) => {
+        db.hgetall(collectionName, async (err, result) => {
+            let res = Object.keys(result).map((key) => JSON.parse(result[key]));
+            res = res.filter(
+                (item) => (item.address && item.address === params.selector.address)
+                    || (item.publicKey && item.publicKey === params.selector.publicKey)
+                    || (item.secondPublicKey
+                        && item.secondPublicKey === params.selector.secondPublicKey)
+                    || (item.username && item.username === params.selector.username),
+            );
+            return resolve(res);
+        });
+    });
 
     const findAll = () => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
@@ -64,12 +67,12 @@ const getDbInstance = async (collectionName) => {
         });
     });
 
-	return {
+    return {
         write,
         find,
         writeBatch,
         findAll,
         findById,
-	};
+    };
 };
 module.exports = getDbInstance;

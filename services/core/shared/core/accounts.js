@@ -77,25 +77,28 @@ const getAccounts = async params => {
 			} else {
 				dbResult = await accountdb.find(inputData);
 			}
-			if (dbResult.length > 0) {
+			accounts.data = dbResult;
+
+			if (accounts.data.length > 1) {
 				const sortProp = params.sort.split(':')[0];
 				const sortOrder = params.sort.split(':')[1];
-				if (sortOrder === 'desc') dbResult.sort((a, b) => {
+				accounts.data.sort((a, b) => {
 					let compareResult;
 					try {
 						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+							if (sortOrder === 'desc') compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+							else if (sortOrder === 'asc') compareResult = Number(b[sortProp]) - Number(a[sortProp]);
 						}
 					} catch (err) {
-						compareResult = a[sortProp].localeCompare(b[sortProp]);
+						if (sortOrder === 'desc') compareResult = a[sortProp].localeCompare(b[sortProp]);
+						else if (sortOrder === 'asc') compareResult = b[sortProp].localeCompare(a[sortProp]);
 					}
 					return compareResult;
 				});
-
-				accounts.data = dbResult;
 			}
 		}
 	}
+
 	if (accounts.data.length === 0) {
 		const response = await coreApi.getAccounts(params);
 		if (response.data) accounts.data = response.data;
