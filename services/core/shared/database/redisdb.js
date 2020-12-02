@@ -41,8 +41,11 @@ const getDbInstance = async (collectionName) => {
     const findById = (id) => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
             const res = {};
-            if (result && result[id]) Object.assign(res, JSON.parse(result[id]));
-            return resolve([res]);
+            if (result && result[id]) {
+                Object.assign(res, JSON.parse(result[id]));
+                return resolve([res]);
+            }
+            return resolve([]);
         });
     });
 

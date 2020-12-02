@@ -59,47 +59,42 @@ const getAccounts = async params => {
 
 	const accountdb = await db(config.db.collections.accounts.name);
 
-	if (!accounts.data.length) {
-		if (
-			params.address
-			|| params.publicKey
-			|| params.secondPublicKey
-			|| params.username
-		) {
-			const inputData = getSelector({
-				...params,
-				limit: params.limit || 10,
-				offset: params.offset || 0,
-			});
-			let dbResult;
-			if (params.address) {
-				dbResult = await accountdb.findById(params.address.toUpperCase());
-			} else {
-				dbResult = await accountdb.find(inputData);
-			}
-			accounts.data = dbResult;
+	if (
+		params.address
+		|| params.publicKey
+		|| params.secondPublicKey
+		|| params.username
+	) {
+		const inputData = getSelector({
+			...params,
+			limit: params.limit || 10,
+			offset: params.offset || 0,
+		});
 
-			if (accounts.data.length > 1) {
-				const sortProp = params.sort.split(':')[0];
-				const sortOrder = params.sort.split(':')[1];
-				accounts.data.sort((a, b) => {
-					let compareResult;
-					try {
-						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-							if (sortOrder === 'desc') compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-							else if (sortOrder === 'asc') compareResult = Number(b[sortProp]) - Number(a[sortProp]);
-						}
-					} catch (err) {
-						if (sortOrder === 'desc') compareResult = a[sortProp].localeCompare(b[sortProp]);
-						else if (sortOrder === 'asc') compareResult = b[sortProp].localeCompare(a[sortProp]);
+		accounts.data = (params.address)
+			? await accountdb.findById(params.address.toUpperCase())
+			: await accountdb.find(inputData);
+
+		if (accounts.data.length > 1) {
+			const sortProp = params.sort.split(':')[0];
+			const sortOrder = params.sort.split(':')[1];
+			accounts.data.sort((a, b) => {
+				let compareResult;
+				try {
+					if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
+						if (sortOrder === 'desc') compareResult = Number(a[sortProp]) - Number(b[sortProp]);
+						else if (sortOrder === 'asc') compareResult = Number(b[sortProp]) - Number(a[sortProp]);
 					}
-					return compareResult;
-				});
-			}
+				} catch (err) {
+					if (sortOrder === 'desc') compareResult = a[sortProp].localeCompare(b[sortProp]);
+					else if (sortOrder === 'asc') compareResult = b[sortProp].localeCompare(a[sortProp]);
+				}
+				return compareResult;
+			});
 		}
 	}
 
-	if (accounts.data.length === 0) {
+	if (!accounts.data.length) {
 		const response = await coreApi.getAccounts(params);
 		if (response.data) accounts.data = response.data;
 		if (response.meta) accounts.meta = response.meta;
