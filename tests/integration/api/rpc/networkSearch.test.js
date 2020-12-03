@@ -113,7 +113,7 @@ describe('Method get.search', () => {
 		expect(result.meta).toMap(metaSchema, { count: 1 });
 	});
 
-	it('returns block by id', async () => {
+	xit('returns block by id', async () => {
 		const q = refBlock.id;
 		const response = await searchNetwork({ q });
 
