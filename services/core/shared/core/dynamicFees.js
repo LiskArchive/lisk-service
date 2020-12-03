@@ -29,7 +29,7 @@ const {
 } = require('@liskhq/lisk-transactions');
 
 const { getSDKVersion, getCoreVersion, mapToOriginal } = require('./compat');
-const { getLastBlock, getBlocks } = require('./blocks');
+const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
 const config = require('../../config.js');
@@ -326,7 +326,7 @@ const getEstimateFeeByte = async () => {
 		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
 	}
 
-	const latestBlock = getLastBlock();
+	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
 	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
 			.every(key => Object.keys(feeEstPerByte).includes(key))
