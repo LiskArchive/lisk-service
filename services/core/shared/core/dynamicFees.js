@@ -338,7 +338,14 @@ const getEstimateFeeByte = async () => {
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
 
-	return {};
+	return {
+		low: 0,
+		med: 0,
+		high: 0,
+		updated: 0,
+		blockHeight: 0,
+		blockId: 'default',
+	};
 };
 
 module.exports = {
