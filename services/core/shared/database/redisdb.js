@@ -35,9 +35,9 @@ const getDbInstance = async (collectionName) => {
     const writeBatch = async (docs) => {
         await Promise.all(docs.map(doc => {
             // // For accounts, delegates
-            // if (doc.publicKey) db.zadd(collectionName, doc.publicKey, doc.id);
-            // if (doc.secondPublicKey) db.zadd(collectionName, doc.secondPublicKey, doc.id);
-            // if (doc.username) db.zadd(collectionName, doc.username, doc.id);
+            if (doc.publicKey) db.hmset(`${collectionName}_publicKeyToId`, doc.publicKey, doc.id);
+            if (doc.secondPublicKey) db.hmset(`${collectionName}_secPubKeyToId`, doc.secondPublicKey, doc.id);
+            if (doc.username) db.hmset(`${collectionName}_usernameToId`, doc.username, doc.id);
 
             // For blocks, transactions
             // if (doc.generatorAddress) db.zadd(collectionName, doc.generatorAddress, doc.id);
@@ -46,9 +46,9 @@ const getDbInstance = async (collectionName) => {
             if (doc.height) db.zadd(collectionName, doc.height, doc.id);
             if (doc.timestamp) db.zadd(collectionName, doc.timestamp, doc.id);
 
-            // For transactions
+            // // For transactions
             if (doc.blockId) db.zadd(collectionName, Number(doc.blockId), doc.id);
-            if (doc.type) db.zadd(collectionName, doc.type, doc.id);
+            // if (doc.type) db.zadd(collectionName, doc.type, doc.id);
             // if (doc.senderId) db.zadd(collectionName, doc.senderId, doc.id);
             // if (doc.senderPublicKey) db.zadd(collectionName, doc.senderPublicKey, doc.id);
             // if (doc.senderSecondPublicKey) db
@@ -59,6 +59,7 @@ const getDbInstance = async (collectionName) => {
             // // For peers
             // if (doc.ip) db.zadd(collectionName, doc.ip, doc.id);
 
+            // for storing all accounts with data store accounts
             return db.hmset(collectionName, doc.id, JSON.stringify(doc));
         }));
     };
@@ -95,12 +96,17 @@ const getDbInstance = async (collectionName) => {
         });
     });
 
+    const searchByIndex = (indexName, id) => new Promise(resolve => {
+        db.hgetall(indexName, async (err, result) => resolve(result[id]));
+    });
+
     return {
         write,
         find,
         writeBatch,
         findAll,
         findById,
+        searchByIndex,
     };
 };
 module.exports = getDbInstance;
