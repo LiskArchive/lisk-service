@@ -53,6 +53,7 @@
     "semver": "^7.3.2",
     "signals": "^1.0.0",
     "split": "^1.0.1",
+    "sqlite": "^4.0.17",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.1"
   },
