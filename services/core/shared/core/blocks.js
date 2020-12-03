@@ -122,7 +122,7 @@ const getBlocksFromServer = async params => {
 	if (blocks.data.length) {
 		const blockDb = await pouchdb(config.db.collections.blocks.name);
 		const finalBlocks = blocks.data;
-		pushToDb(blockDb, finalBlocks);
+		await pushToDb(blockDb, finalBlocks);
 	}
 
 	return blocks;
@@ -212,7 +212,6 @@ const cleanFromForks = async (n) => {
 	});
 
 	// TODO: orphanList removal from PouchDB
-
 	logger.debug(`Found ${orphanList.length} orphaned blocks...`);
 	return orphanList;
 };
