@@ -93,7 +93,7 @@ const getBlocksFromCache = async params => {
 
 	const dbResult = await blockDb.find(inputData);
 
-	if (dbResult.length > 0) {
+	if (dbResult.length && dbResult.every(item => item)) {
 		const blocks = dbResult.map((block) => ({
 			...block,
 			confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
