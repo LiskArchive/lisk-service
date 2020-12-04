@@ -25,7 +25,6 @@ exports.up = knex => {
             table.integer('timestamp').notNullable();
             table.string('generatorAddress').notNullable();
             table.string('generatorPublicKey');
-
         });
 };
 

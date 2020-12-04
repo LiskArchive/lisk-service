@@ -21,20 +21,6 @@ const logger = Logger();
 
 const connectionPool = {};
 
-const createTable = async (knex, tableName) => {
-    const tableSchema = config.db.tables[tableName].schema;
-
-    return knex.schema.hasTable(tableName)
-        .then(exists => {
-            if (exists) return;
-            return knex.schema
-                .withSchema(tableSchema)
-                .createTable(tableName, function (table) {
-
-                });
-        });
-};
-
 const createDb = async (dbDataDir, tableName, idxList = []) => {
     // TODO: Must be config based
     const client = 'sqlite3';
