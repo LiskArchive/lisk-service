@@ -21,32 +21,43 @@ const logger = Logger();
 
 const connectionPool = {};
 
+const createTable = async (knex, tableName) => {
+    const tableSchema = config.db.tables[tableName].schema;
+
+    return knex.schema.hasTable(tableName)
+        .then(exists => {
+            if (exists) return;
+            return knex.schema
+                .withSchema(tableSchema)
+                .createTable(tableName, function (table) {
+
+                });
+        });
+};
+
 const createDb = async (dbDataDir, tableName, idxList = []) => {
     // TODO: Must be config based
     const client = 'sqlite3';
 
     // TODO: Update connection object based on client
-    const connection = { filename: `./${dbDataDir}/${tableName}_db.sqlite` };
+    const connection = { filename: `./${dbDataDir}/${tableName}_db.sqlite3` };
 
-    const db = require('knex')({
+    const knex = require('knex')({
         client,
         connection,
-        pool: {
-            afterCreate: (conn, done) => conn.query('SET timezone="UTC";', (err) => {
-                if (err) done(err, conn);
-                conn.query('SELECT set_limit(0.01);', (err) => done(err, conn));
-            }),
-        },
         log: {
             warn(message) { logger.warn(message); },
             error(message) { logger.error(message); },
             debug(message) { logger.debug(message); },
         },
+        migrations: {
+            directory: './knex_migrations',
+            loadExtensions: ['.js'],
+        },
     });
 
-    return db;
+    return knex;
 };
-
 
 const getDbInstance = async (tableName) => {
     if (!connectionPool[tableName]) {
