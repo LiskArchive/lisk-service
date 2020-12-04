@@ -43,6 +43,7 @@
     "compression": "^1.7.4",
     "debug": "=4.1.1",
     "ioredis": "^4.19.2",
+    "knex": "^0.21.12",
     "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-1.0.0-beta.0.tgz",
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
@@ -54,6 +55,7 @@
     "signals": "^1.0.0",
     "split": "^1.0.1",
     "sqlite": "^4.0.17",
+    "sqlite3": "^5.0.0",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.1"
   },
