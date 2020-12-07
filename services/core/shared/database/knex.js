@@ -58,8 +58,7 @@ const getDbInstance = async (tableName) => {
     const knex = connectionPool[tableName];
 
     const writeBatch = async (rows) => {
-        const ids = await Promise.all(rows.map(row =>
-            knex(tableName).insert(row).onConflict(['id']).merge()));
+        const ids = await Promise.all(rows.map(row => knex(tableName).insert(row).onConflict(['id']).merge()));
         logger.debug(`Inserted data with ids: ${ids}`);
         return ids;
     };
