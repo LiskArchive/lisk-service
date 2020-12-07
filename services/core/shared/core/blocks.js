@@ -70,23 +70,6 @@ const pushToDb = async (blockDb, blocks) => {
 		'totalForged',
 		'unixTimestamp',
 		'version',
-		'isFinal',
-	];
-	const out = blocks.map(o => {
-		const obj = {};
-		propList.map(prop => obj[prop] = o[prop]);
-		return obj;
-	});
-	return blockDb.writeBatch(out);
-};
-
-const writeToSqlDb = async (blockDb, blocks) => {
-	const propList = [
-		'id',
-		'height',
-		'unixTimestamp',
-		'generatorAddress',
-		'generatorPublicKey',
 	];
 	const out = blocks.map(o => {
 		const obj = {};
@@ -101,6 +84,7 @@ const getLastBlock = () => lastBlock;
 
 const getBlocksFromCache = async params => {
 	const blockDb = await pouchdb(config.db.collections.blocks.name);
+	const blockSqlDb = await knexdb(config.db.collections.blocks.name);
 
 	const inputData = getSelector({
 		...params,
@@ -109,15 +93,17 @@ const getBlocksFromCache = async params => {
 	});
 
 	const dbResult = await blockDb.find(inputData);
+	const sqlDbResult = await blockSqlDb.find(inputData);
 
-	if (dbResult.length && dbResult.every(item => item)) {
-		const blocks = dbResult.map((block) => ({
+	const updateConfirmations = blocks => {
+		return blocks.map((block) => ({
 			...block,
 			confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
 		}));
+	};
 
-		return blocks;
-	}
+	if (sqlDbResult.length && sqlDbResult.every(item => item)) return updateConfirmations(sqlDbResult);
+	if (dbResult.length && dbResult.every(item => item)) return updateConfirmations(dbResult);
 
 	return [];
 };
@@ -141,7 +127,7 @@ const getBlocksFromServer = async params => {
 		const blockSqlDb = await knexdb(config.db.collections.blocks.name);
 		const finalBlocks = blocks.data;
 		await pushToDb(blockDb, finalBlocks);
-		await writeToSqlDb(blockSqlDb, finalBlocks);
+		await pushToDb(blockSqlDb, finalBlocks);
 	}
 
 	return blocks;
