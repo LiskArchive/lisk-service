@@ -16,6 +16,8 @@
 /* eslint-disable no-await-in-loop */
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
+const debug = require('debug')('http');
+const util = require('util');
 
 const delay = require('./delay');
 
@@ -36,6 +38,7 @@ const _validateHttpResponse = response => {
 
 const performRequest = async (url, params) => {
 	try {
+		debug(`Attempting to retrieve data from ${url} ${util.inspect(params)}`);
 		const response = await axios({ url, ...params });
 		return response;
 	} catch (err) {
