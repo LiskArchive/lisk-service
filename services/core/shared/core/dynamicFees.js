@@ -29,7 +29,7 @@ const {
 } = require('@liskhq/lisk-transactions');
 
 const { getSDKVersion, getCoreVersion, mapToOriginal } = require('./compat');
-const { getLastBlock, getBlocks } = require('./blocks');
+const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
 const config = require('../../config.js');
@@ -220,7 +220,7 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
 
 	const prevFeeEstPerByte = fromHeight > cachedFeeEstimateHeight
-		? { blockHeight: fromHeight } : cachedFeeEstimate;
+		? { blockHeight: fromHeight - 1 } : cachedFeeEstimate;
 
 	const range = size => Array(size).fill().map((_, index) => index);
 	const feeEstPerByte = {};
@@ -229,12 +229,12 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		/* eslint-disable no-await-in-loop */
 		const idealEMABatchSize = config.feeEstimates.emaBatchSize;
 		const finalEMABatchSize = idealEMABatchSize > prevFeeEstPerByte.blockHeight
-			? (prevFeeEstPerByte.blockHeight - 1) : idealEMABatchSize;
+			? (prevFeeEstPerByte.blockHeight + 1) : idealEMABatchSize;
 
 		blockBatch.data = await BluebirdPromise.map(
-			range(finalEMABatchSize + 1),
+			range(finalEMABatchSize),
 			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i })).data[0],
-			{ concurrency: (finalEMABatchSize + 1) },
+			{ concurrency: finalEMABatchSize },
 		);
 
 		blockBatch.data = await BluebirdPromise.map(
@@ -326,7 +326,7 @@ const getEstimateFeeByte = async () => {
 		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
 	}
 
-	const latestBlock = getLastBlock();
+	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
 	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
 			.every(key => Object.keys(feeEstPerByte).includes(key))
@@ -338,7 +338,14 @@ const getEstimateFeeByte = async () => {
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
 
-	return {};
+	return {
+		low: 0,
+		med: 0,
+		high: 0,
+		updated: 0,
+		blockHeight: 0,
+		blockId: 'default',
+	};
 };
 
 module.exports = {
