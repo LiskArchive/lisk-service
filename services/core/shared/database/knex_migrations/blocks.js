@@ -19,11 +19,24 @@ const tableName = config.db.collections.blocks.name;
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
+        // Indexed properties
         table.string('id').primary();
         table.integer('height').notNullable().index();
         table.integer('unixTimestamp').notNullable().index();
         table.string('generatorAddress').notNullable().index();
         table.string('generatorPublicKey').index();
+
+        // Non-indexed properties
+        table.string('blockSignature');
+        table.integer('numberOfTransactions');
+        table.string('payloadHash');
+        table.integer('payloadLength');
+        table.string('previousBlockId');
+        table.string('reward');
+        table.string('totalAmount');
+        table.string('totalFee');
+        table.string('totalForged');
+        table.integer('version');
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
