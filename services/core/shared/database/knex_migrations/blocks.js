@@ -17,16 +17,14 @@ const config = require('../../../config');
 
 const tableName = config.db.collections.blocks.name;
 
-exports.up = knex => {
-    return knex.schema
-        .createTable(tableName, (table) => {
-            table.string('id').primary();
-            table.integer('height').notNullable().index();
-            table.integer('timestamp').notNullable().index();
-            table.string('generatorAddress').notNullable().index();
-            table.string('generatorPublicKey').index();
-        });
-};
+exports.up = knex => knex.schema
+    .createTable(tableName, table => {
+        table.string('id').primary();
+        table.integer('height').notNullable().index();
+        table.integer('unixTimestamp').notNullable().index();
+        table.string('generatorAddress').notNullable().index();
+        table.string('generatorPublicKey').index();
+    });
 
 exports.down = knex => knex.schema.dropTable(tableName);
 

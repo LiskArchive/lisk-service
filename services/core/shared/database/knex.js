@@ -38,7 +38,7 @@ const createDb = async (dbDataDir, tableName) => {
             debug(message) { logger.debug(message); },
         },
         migrations: {
-            directory: './knex_migrations',
+            directory: './shared/database/knex_migrations',
             loadExtensions: ['.js'],
         },
     });
@@ -52,9 +52,21 @@ const getDbInstance = async (tableName) => {
         if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
         connectionPool[tableName] = await createDb(dbDataDir, tableName);
+        await connectionPool[tableName].migrate.latest();
     }
 
-    return connectionPool[tableName];
+    const knex = connectionPool[tableName];
+
+    const writeBatch = async (rows) => {
+        const ids = await Promise.all(rows.map(row =>
+            knex(tableName).insert(row).onConflict(['id']).merge()));
+        logger.debug(`Inserted data with ids: ${ids}`);
+        return ids;
+    };
+
+    return {
+        writeBatch,
+    };
 };
 
 module.exports = getDbInstance;
