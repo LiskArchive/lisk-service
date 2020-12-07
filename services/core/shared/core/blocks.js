@@ -18,6 +18,7 @@ const util = require('util');
 
 const logger = Logger();
 
+const knexdb = require('../database/knex');
 const pouchdb = require('../database/pouchdb');
 const coreApi = require('./compat');
 const config = require('../../config');
@@ -79,6 +80,22 @@ const pushToDb = async (blockDb, blocks) => {
 	return blockDb.writeBatch(out);
 };
 
+const writeToSqlDb = async (blockDb, blocks) => {
+	const propList = [
+		'id',
+		'height',
+		'unixTimestamp',
+		'generatorAddress',
+		'generatorPublicKey',
+	];
+	const out = blocks.map(o => {
+		const obj = {};
+		propList.map(prop => obj[prop] = o[prop]);
+		return obj;
+	});
+	return blockDb.writeBatch(out);
+};
+
 const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
@@ -121,8 +138,10 @@ const getBlocksFromServer = async params => {
 
 	if (blocks.data.length) {
 		const blockDb = await pouchdb(config.db.collections.blocks.name);
+		const blockSqlDb = await knexdb(config.db.collections.blocks.name);
 		const finalBlocks = blocks.data;
 		await pushToDb(blockDb, finalBlocks);
+		await writeToSqlDb(blockSqlDb, finalBlocks);
 	}
 
 	return blocks;
