@@ -20,11 +20,11 @@ const tableName = config.db.collections.blocks.name;
 exports.up = knex => {
     return knex.schema
         .createTable(tableName, (table) => {
-            table.string('id').notNullable();
-            table.integer('height').notNullable();
-            table.integer('timestamp').notNullable();
-            table.string('generatorAddress').notNullable();
-            table.string('generatorPublicKey');
+            table.string('id').primary();
+            table.integer('height').notNullable().index();
+            table.integer('timestamp').notNullable().index();
+            table.string('generatorAddress').notNullable().index();
+            table.string('generatorPublicKey').index();
         });
 };
 
