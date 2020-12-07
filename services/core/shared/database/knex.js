@@ -31,6 +31,7 @@ const createDb = async (dbDataDir, tableName) => {
     const knex = require('knex')({
         client,
         connection,
+        useNullAsDefault: true,
         log: {
             warn(message) { logger.warn(message); },
             error(message) { logger.error(message); },
