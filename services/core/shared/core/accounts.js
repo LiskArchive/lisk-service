@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../config');
-const db = require('../database');
+const db = require('../database')[config.db.collections.accounts.db || config.db.defaults.db];
 const coreApi = require('./compat');
 
 const formatSortString = sortString => {

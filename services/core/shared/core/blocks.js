@@ -18,10 +18,9 @@ const util = require('util');
 
 const logger = Logger();
 
-const knexdb = require('../database/knex');
-const pouchdb = require('../database/pouchdb');
-const coreApi = require('./compat');
 const config = require('../../config');
+const db = require('../database')[config.db.collections.blocks.db || config.db.defaults.db];
+const coreApi = require('./compat');
 const { getUsernameByAddress } = require('./delegateUtils');
 
 let lastBlock = {};
@@ -83,8 +82,7 @@ const setLastBlock = block => lastBlock = block;
 const getLastBlock = () => lastBlock;
 
 const getBlocksFromCache = async params => {
-	const blockDb = await pouchdb(config.db.collections.blocks.name);
-	const blockSqlDb = await knexdb(config.db.collections.blocks.name);
+	const blockDb = await db(config.db.collections.blocks.name);
 
 	const inputData = getSelector({
 		...params,
@@ -93,14 +91,12 @@ const getBlocksFromCache = async params => {
 	});
 
 	const dbResult = await blockDb.find(inputData);
-	const sqlDbRes = await blockSqlDb.find(inputData);
 
 	const updateConfirmations = blocks => blocks.map((block) => ({
 		...block,
 		confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
 	}));
 
-	if (sqlDbRes.length && sqlDbRes.every(item => item)) return updateConfirmations(sqlDbRes);
 	if (dbResult.length && dbResult.every(item => item)) return updateConfirmations(dbResult);
 
 	return [];
@@ -121,11 +117,9 @@ const getBlocksFromServer = async params => {
 	if (response.meta) blocks.meta = response.meta;
 
 	if (blocks.data.length) {
-		const blockDb = await pouchdb(config.db.collections.blocks.name);
-		const blockSqlDb = await knexdb(config.db.collections.blocks.name);
+		const blockDb = await db(config.db.collections.blocks.name);
 		const finalBlocks = blocks.data;
 		await pushToDb(blockDb, finalBlocks);
-		await pushToDb(blockSqlDb, finalBlocks);
 	}
 
 	return blocks;
@@ -200,7 +194,7 @@ const preloadBlocksByPage = async (n) => {
 };
 
 const cleanFromForks = async (n) => {
-	const blockDb = await pouchdb(config.db.collections.blocks.name);
+	const blockDb = await db(config.db.collections.blocks.name);
 	const blocks = await blockDb.find({
 		selector: {
 			height: { $gte: (getLastBlock()).height - n },
@@ -214,7 +208,7 @@ const cleanFromForks = async (n) => {
 		return false;
 	});
 
-	// TODO: orphanList removal from PouchDB
+	// TODO: orphanList removal from DB
 	logger.debug(`Found ${orphanList.length} orphaned blocks...`);
 	return orphanList;
 };
@@ -223,7 +217,6 @@ const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
 const initBlocks = (async () => {
 	await coreApi.updateFinalizedHeight();
-	await pouchdb(config.db.collections.blocks.name);
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);

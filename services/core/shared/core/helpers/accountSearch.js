@@ -13,31 +13,31 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const db = require('../../database');
 const config = require('../../../config');
+const db = require('../../database')[config.db.collections.accounts.db || config.db.defaults.db];
 
 const getAddressByPublickKey = async (publicKey) => {
     const accountdb = await db(config.db.collections.accounts.name);
     const indexName = `${config.db.collections.accounts.name}_publicKeyToId`;
     const address = await accountdb.searchByIndex(indexName, publicKey);
-	if (address) return address;
-	return null;
+    if (address) return address;
+    return null;
 };
 
 const getAddressBySecPublickKey = async (publicKey) => {
     const accountdb = await db(config.db.collections.accounts.name);
     const indexName = `${config.db.collections.accounts.name}_secPubKeyToId`;
     const address = await accountdb.searchByIndex(indexName, publicKey);
-	if (address) return address;
-	return null;
+    if (address) return address;
+    return null;
 };
 
 const getAddressByusername = async (username) => {
     const accountdb = await db(config.db.collections.accounts.name);
     const indexName = `${config.db.collections.accounts.name}_usernameToId`;
     const address = await accountdb.searchByIndex(indexName, username);
-	if (address) return address;
-	return null;
+    if (address) return address;
+    return null;
 };
 
 module.exports = {

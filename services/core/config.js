@@ -32,6 +32,7 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
  */
 config.db = {
 	defaults: {
+		db: 'redisdb',
 		directory: 'db_data',
 		adapter: 'leveldb',
 		auto_compaction: true,
@@ -53,6 +54,7 @@ config.db = {
 		},
 		blocks: {
 			name: 'blocks',
+			db: 'knex',
 			indexes: [
 				'id',
 				'generatorPublicKey',
@@ -201,5 +203,4 @@ config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
 config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
-config.defaultDB = 'redisdb';
 module.exports = config;
