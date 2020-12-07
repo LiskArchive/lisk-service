@@ -21,7 +21,7 @@ const logger = Logger();
 
 const connectionPool = {};
 
-const createDb = async (dbDataDir, tableName, idxList = []) => {
+const createDb = async (dbDataDir, tableName) => {
     // TODO: Must be config based
     const client = 'sqlite3';
 
@@ -34,6 +34,7 @@ const createDb = async (dbDataDir, tableName, idxList = []) => {
         log: {
             warn(message) { logger.warn(message); },
             error(message) { logger.error(message); },
+            deprecate(message) { logger.deprecate(message); },
             debug(message) { logger.debug(message); },
         },
         migrations: {
@@ -47,14 +48,11 @@ const createDb = async (dbDataDir, tableName, idxList = []) => {
 
 const getDbInstance = async (tableName) => {
     if (!connectionPool[tableName]) {
-        const dbDataDir = config.db.default.directory;
+        const dbDataDir = config.db.defaults.directory;
         if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
-    }
 
-    connectionPool[collectionName] = await createDb(dbDataDir, tableName, [
-        ...config.db.collections[collectionName].indexes,
-        ...idxList,
-    ]);
+        connectionPool[tableName] = await createDb(dbDataDir, tableName);
+    }
 
     return connectionPool[tableName];
 };
