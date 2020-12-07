@@ -93,16 +93,14 @@ const getBlocksFromCache = async params => {
 	});
 
 	const dbResult = await blockDb.find(inputData);
-	const sqlDbResult = await blockSqlDb.find(inputData);
+	const sqlDbRes = await blockSqlDb.find(inputData);
 
-	const updateConfirmations = blocks => {
-		return blocks.map((block) => ({
-			...block,
-			confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
-		}));
-	};
+	const updateConfirmations = blocks => blocks.map((block) => ({
+		...block,
+		confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
+	}));
 
-	if (sqlDbResult.length && sqlDbResult.every(item => item)) return updateConfirmations(sqlDbResult);
+	if (sqlDbRes.length && sqlDbRes.every(item => item)) return updateConfirmations(sqlDbRes);
 	if (dbResult.length && dbResult.every(item => item)) return updateConfirmations(dbResult);
 
 	return [];
