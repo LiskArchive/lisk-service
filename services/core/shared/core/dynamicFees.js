@@ -31,7 +31,7 @@ const {
 const util = require('util');
 
 const { getSDKVersion, getCoreVersion, mapToOriginal } = require('./compat');
-const { getBlocks } = require('./blocks');
+const { getBlocks, getLastBlock } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
 const config = require('../../config.js');
@@ -288,7 +288,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 };
 
 const getEstimateFeeByteNormal = async () => {
-	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+	const latestBlock = getLastBlock();
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
 
@@ -310,7 +310,7 @@ const getEstimateFeeByteQuick = async () => {
 		return getEstimateFeeByteNormal();
 	}
 
-	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+	const latestBlock = getLastBlock();
 	const batchSize = config.feeEstimates.coldStartBatchSize;
 	const toHeight = latestBlock.height;
 	const fromHeight = toHeight - batchSize;
@@ -328,7 +328,7 @@ const getEstimateFeeByte = async () => {
 		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
 	}
 
-	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+	const latestBlock = getLastBlock();
 	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
 			.every(key => Object.keys(feeEstPerByte).includes(key))
