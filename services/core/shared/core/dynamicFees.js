@@ -44,7 +44,6 @@ const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 const cacheKeyFeeEstNormal = 'lastFeeEstimate';
 const cacheKeyFeeEstQuick = 'lastFeeEstimateQuick';
 
-let execNormalModeOnly = false;
 const executionStatus = {
 	// false: not running, true: running
 	[cacheKeyFeeEstNormal]: false,
@@ -267,15 +266,6 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 };
 
 const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
-	if (!execNormalModeOnly) {
-		// Stop executing quick mode, after Normal execution catches up
-		const feeEstPerByteNormal = await cacheRedisFees.get(cacheKeyFeeEstNormal);
-		const feeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
-		if (feeEstPerByteNormal && feeEstPerByteQuick
-			&& feeEstPerByteNormal.blockHeight >= feeEstPerByteQuick.blockHeight
-		) execNormalModeOnly = true;
-	}
-
 	let result = await cacheRedisFees.get(cacheKey);
 	if (!executionStatus[cacheKey]) {
 		// If the process (normal / quick) is already running,
@@ -305,11 +295,6 @@ const getEstimateFeeByteNormal = async () => {
 
 const getEstimateFeeByteQuick = async () => {
 	// For the cold start scenario
-	if (execNormalModeOnly) {
-		logger.debug('Normal computation mode has caught up. Switching to normal computation mode');
-		return getEstimateFeeByteNormal();
-	}
-
 	const latestBlock = getLastBlock();
 	const batchSize = config.feeEstimates.coldStartBatchSize;
 	const toHeight = latestBlock.height;
