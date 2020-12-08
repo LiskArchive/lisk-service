@@ -17,9 +17,9 @@ import Joi from 'joi';
 
 const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object({
-		low: Joi.number().positive().min(0).required(),
-		medium: Joi.number().positive().min(0).required(),
-		high: Joi.number().positive().min(0).required(),
+		low: Joi.number().min(0).required(),
+		medium: Joi.number().min(0).required(),
+		high: Joi.number().min(0).required(),
 	}).required(),
 };
 
