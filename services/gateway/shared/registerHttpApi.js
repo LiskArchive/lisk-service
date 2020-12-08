@@ -186,7 +186,7 @@ const registerApi = (apiName, config) => {
 
 			if (data.data && data.status) {
 				ctx.meta.$statusCode = StatusCodes[data.status] || data.status;
-				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 }
+				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
 				let message = `The request ended up with error ${data.status}`;
 
 				if (typeof data.data === 'object' && typeof data.data.error === 'string') {
