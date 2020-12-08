@@ -28,6 +28,8 @@ const {
 	ProofOfMisbehaviorTransaction,
 } = require('@liskhq/lisk-transactions');
 
+const util = require('util');
+
 const { getSDKVersion, getCoreVersion, mapToOriginal } = require('./compat');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
@@ -333,19 +335,15 @@ const getEstimateFeeByte = async () => {
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
 	const cachedFeeEstPerByteNormal = await cacheRedisFees.get(cacheKeyFeeEstNormal);
+	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteNormal)}`);
 	if (validate(cachedFeeEstPerByteNormal, 15)) return cachedFeeEstPerByteNormal;
 
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
+	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}`);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
 
-	return {
-		low: 0,
-		med: 0,
-		high: 0,
-		updated: 0,
-		blockHeight: 0,
-		blockId: 'default',
-	};
+	logger.debug('Could not find estimate that meets requirements');
+	return {};
 };
 
 module.exports = {
