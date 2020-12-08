@@ -218,7 +218,7 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 
 	const cachedFeeEstimate = await cacheRedisFees.get(cacheKey);
 
-	const cachedFeeEstimateHeight = !cacheKey.includes('Quick') || cachedFeeEstimate
+	const cachedFeeEstimateHeight = !cacheKey.includes('Quick') && cachedFeeEstimate
 		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
 
 	const prevFeeEstPerByte = fromHeight > cachedFeeEstimateHeight
