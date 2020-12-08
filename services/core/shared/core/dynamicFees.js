@@ -325,7 +325,10 @@ const getEstimateFeeByteQuick = async () => {
 
 const getEstimateFeeByte = async () => {
 	if (sdkVersion < 4) {
-		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
+		return {
+			data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` },
+			status: 'METHOD_NOT_ALLOWED',
+		};
 	}
 
 	const latestBlock = getLastBlock();
@@ -342,8 +345,10 @@ const getEstimateFeeByte = async () => {
 	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}`);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
 
-	logger.debug('Could not find estimate that meets requirements');
-	return {};
+	return {
+		data: { error: 'The estimates are currently under processing. Please retry in 30 seconds.' },
+		status: 'SERVICE_UNAVAILABLE',
+	};
 };
 
 module.exports = {
