@@ -103,7 +103,7 @@ describe('GET /search', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('returns transaction by id ', async () => {
+	xit('returns transaction by id ', async () => {
 		const q = refTransaction.id;
 		const response = await api.get(`${endpoint}?q=${q}`);
 		expect(response).toMap(goodRequestSchema);

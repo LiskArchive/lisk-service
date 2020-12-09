@@ -7,7 +7,7 @@ module.exports = {
 		'<rootDir>/integration/api/rpc/*.test.js',
 	],
 	testEnvironment: 'node',
-	testTimeout: 15000,
+	testTimeout: 20000,
 	setupFilesAfterEnv: [
 		'jest-extended',
 		'<rootDir>/helpers/setupCustomMatchers.js',

@@ -28,7 +28,6 @@ module.exports = [
 		controller: callback => {
 			signals.get('newBlock').add(async data => {
 				logger.debug(`New block arrived (${data.id})...`);
-				core.setLastBlock(data);
 
 				// Check for forks
 				if (!localPreviousBlockId) localPreviousBlockId = data.previousBlockId;

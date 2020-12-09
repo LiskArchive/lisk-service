@@ -13,15 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP } = require('lisk-service-framework');
 const CoreService = require('../../shared/core');
-
-const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const getEstimateFeeByte = async () => {
 	const response = await CoreService.getEstimateFeeByte();
 
-	if (response.data && response.data.error) return { status: NOT_FOUND, data: response.data };
+	if (response.data && response.data.error) return { status: response.status, data: response.data };
 
 	const result = { feeEstimatePerByte: {} };
 	result.feeEstimatePerByte.low = response.low;
