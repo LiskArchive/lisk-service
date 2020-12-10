@@ -980,13 +980,6 @@
 				"height"
 			],
 			"properties": {
-				"broadhash": {
-					"type": "string",
-					"example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-					"minLength": 64,
-					"maxLength": 64,
-					"description": "Broadhash is established as an aggregated rolling hash of the past five blocks present in the database.\nBroadhash consensus serves a vital function for the Lisk network in order to prevent forks.\nIt ensures that a majority of available peers agree that it is acceptable to forge.\n"
-				},
 				"height": {
 					"type": "integer",
 					"example": 123,
@@ -1023,9 +1016,6 @@
 					"type": "string",
 					"example": "500000000",
 					"description": "The reward a delegate will get for forging a block.\nDepends on the slot height.\n"
-				},
-				"fees": {
-					"$ref": "#/definitions/Fees"
 				}
 			}
 		},
@@ -1361,7 +1351,7 @@
 					}
 				},
 				"meta": {
-					"$ref": "#/definitions/Pagination"
+					"$ref": "#/definitions/meta"
 				},
 				"links": {
 					"type": "object"
@@ -1426,6 +1416,51 @@
 					"example": 43749,
 					"minimum": 0,
 					"description": "Total number of items in the database."
+				}
+			}
+		},
+		"meta": {
+			"type": "object",
+			"required": [
+				"count",
+				"offset"
+			],
+			"properties": {
+				"count": {
+					"type": "integer",
+					"example": 100,
+					"minimum": 0,
+					"description": "Number of items returned in the request."
+				},
+				"offset": {
+					"type": "integer",
+					"example": 25,
+					"minimum": 0,
+					"description": "Defines how many items are skipped."
+				},
+				"total": {
+					"type": "integer",
+					"example": 43749,
+					"minimum": 0,
+					"description": "Total number of items in the database."
+				},
+				"address": {
+					"type": "string",
+					"format": "address",
+					"example": "4935562234363081651L",
+					"description": "Lisk Address of the delegate the queried account voted for."
+				},
+				"publicKey": {
+					"type": "string",
+					"format": "publicKey",
+					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+					"description": "Public key of the delegate the queried account voted for."
+				},
+				"username": {
+					"type": "string",
+					"format": "username",
+					"example": "liskhq",
+					"description": "Username of the delegate the queried account voted for."
 				}
 			}
 		},
