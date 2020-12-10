@@ -27,7 +27,7 @@ module.exports = {
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of peers',
+				description: 'network statistics info',
 				schema: {
 					type: 'array',
 					items: {

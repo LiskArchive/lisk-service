@@ -724,6 +724,10 @@
 					"example": 8350681,
 					"description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
 				},
+				"nonce": {
+					"type": "string",
+					"example": "0"
+				},
 				"blockId": {
 					"type": "string",
 					"format": "id",
@@ -749,35 +753,11 @@
 					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
 					"description": "The public key of the Senders' account.\n"
 				},
-				"senderSecondPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The second public key of the Senders' account, if it exists.\n"
-				},
 				"recipientId": {
 					"type": "string",
 					"format": "address",
 					"example": "4935562234363081651L",
 					"description": "Lisk Address of the Recipients' account.\n"
-				},
-				"recipientPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The public key of the Recipients' account.\n"
-				},
-				"signature": {
-					"type": "string",
-					"format": "signature",
-					"example": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-					"description": "Derived from a SHA-256 hash of the transaction object,\nthat is signed by the private key of the account who created the transaction.\n"
-				},
-				"signSignature": {
-					"type": "string",
-					"format": "signature",
-					"example": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-					"description": "Contains the second signature, if the transaction is sent from an account with second passphrase activated."
 				},
 				"signatures": {
 					"type": "array",
@@ -795,20 +775,6 @@
 				},
 				"asset": {
 					"type": "object"
-				},
-				"receivedAt": {
-					"type": "string",
-					"format": "date-time",
-					"description": "The timestamp of the moment, where a node discovered a transaction for the first time."
-				},
-				"relays": {
-					"type": "integer",
-					"description": "Number of times, a single transaction object has been broadcasted to another peer."
-				},
-				"ready": {
-					"type": "boolean",
-					"example": false,
-					"description": "Only present in transactions sent from a multisignature account, or transactions type 4 (multisignature registration).\nFalse, if the minimum amount of signatures to sign this transaction has not been reached yet.\nTrue, if the minimum amount of signatures has been reached.\n"
 				}
 			}
 		},
