@@ -264,7 +264,10 @@
 			"description": "Source of the news among different data providers (Poloniex, Bittrex, etc.)",
 			"required": true,
 			"type": "string",
-			"enum": ["poloniex", "bittrex"]
+			"enum": [
+				"poloniex",
+				"bittrex"
+			]
 		}
 	},
 	"definitions": {
@@ -284,15 +287,13 @@
 					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
 					"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
 				},
-				"secondPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.\n"
-				},
 				"balance": {
 					"type": "string",
 					"example": "4448642000"
+				},
+				"nonce": {
+					"type": "string",
+					"example": "0"
 				},
 				"delegate": {
 					"$ref": "#/definitions/DelegateSub"
@@ -313,18 +314,34 @@
 				"multisignatureAccount": {
 					"type": "object",
 					"properties": {
-						"lifetime": {
+						"numberOfReqSignatures": {
 							"type": "integer",
-							"example": 48
-						},
-						"minimalNumberAcccounts": {
-							"type": "integer",
-							"example": 2
+							"format": "int32",
+							"example": "1"
 						},
 						"members": {
 							"type": "array",
 							"items": {
-								"$ref": "#/definitions/AccountBasic"
+								"type": "object",
+								"properties": {
+									"address": {
+										"type": "string",
+										"example": "4935562234363081651L"
+									},
+									"publicKey": {
+										"type": "string",
+										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b"
+									},
+									"balance": {
+										"type": "integer",
+										"format": "int64",
+										"example": "4448642000"
+									},
+									"isMandatory": {
+										"type": "boolean",
+										"example": "true"
+									}
+								}
 							}
 						}
 					}
@@ -357,12 +374,6 @@
 								"format": "publicKey",
 								"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
 								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
-							},
-							"secondPublicKey": {
-								"type": "string",
-								"format": "publicKey",
-								"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-								"description": "The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.\n"
 							}
 						}
 					}
@@ -379,18 +390,15 @@
 							"example": "1581"
 						}
 					}
-				},
-				"unconfirmedMultisignatureMemberships": {
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/AccountBasic"
-					}
 				}
 			}
 		},
 		"AccountBasic": {
 			"type": "object",
-			"required": ["address", "publicKey"],
+			"required": [
+				"address",
+				"publicKey"
+			],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -531,7 +539,11 @@
 		},
 		"Delegate": {
 			"type": "object",
-			"required": ["address", "publicKey", "username"],
+			"required": [
+				"address",
+				"publicKey",
+				"username"
+			],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -539,10 +551,9 @@
 					"example": "4935562234363081651L",
 					"description": "Lisk Address of the delegate who forged the block."
 				},
-				"approval": {
+				"delegateWeight": {
 					"type": "string",
-					"example": "35.77",
-					"description": ""
+					"example": "1155000000000"
 				},
 				"missedBlocks": {
 					"type": "integer",
@@ -567,12 +578,6 @@
 					"example": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
 					"description": "Public key of th edelagte who forged the block."
 				},
-				"secondPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-					"description": "Second public key of th edelagte who forged the block."
-				},
 				"rank": {
 					"type": "integer",
 					"example": 93,
@@ -593,18 +598,32 @@
 					"type": "string",
 					"example": "4630668157412954",
 					"description": ""
+				},
+				"status": {
+					"type": "string",
+					"example": "active",
+					"description": "Status of delegates"
+				},
+				"isBanned": {
+					"type": "boolean",
+					"example": "false"
+				},
+				"lastForgedHeight": {
+					"type": "integer",
+					"example": 0
+				},
+				"consecutiveMissedBlocks": {
+					"type": "integer",
+					"example": 0
 				}
 			}
 		},
 		"DelegateSub": {
 			"type": "object",
-			"required": ["username"],
+			"required": [
+				"username"
+			],
 			"properties": {
-				"approval": {
-					"type": "string",
-					"example": "35.77",
-					"description": ""
-				},
 				"missedBlocks": {
 					"type": "integer",
 					"example": 157,
@@ -642,6 +661,18 @@
 					"type": "string",
 					"example": "4630668157412954",
 					"description": ""
+				},
+				"isBanned": {
+					"type": "boolean",
+					"example": "false"
+				},
+				"lastForgedHeight": {
+					"type": "integer",
+					"example": 0
+				},
+				"consecutiveMissedBlocks": {
+					"type": "integer",
+					"example": 0
 				}
 			}
 		},
@@ -842,7 +873,10 @@
 		},
 		"Peer": {
 			"type": "object",
-			"required": ["wsPort", "state"],
+			"required": [
+				"wsPort",
+				"state"
+			],
 			"properties": {
 				"ip": {
 					"type": "string",
@@ -970,7 +1004,11 @@
 		},
 		"NetworkStatus": {
 			"type": "object",
-			"required": ["broadhash", "nethash", "height"],
+			"required": [
+				"broadhash",
+				"nethash",
+				"height"
+			],
 			"properties": {
 				"broadhash": {
 					"type": "string",
@@ -1070,7 +1108,11 @@
 		},
 		"AccountsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1089,7 +1131,11 @@
 		},
 		"FeeEstimateEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1118,22 +1164,25 @@
 						}
 					}
 				},
-        "meta": {
-          "type": "object",
-          "required": ["updated", "blockHeight"],
-          "properties": {
-            "updated": {
-              "type": "string",
-              "example": "2020-03-10T09:54:05",
-              "description": "timestamp"
-            },
-            "blockHeight": {
-              "type": "integer",
-              "example": 25,
-              "description": "Height of a block"
-            }
-          }
-        },
+				"meta": {
+					"type": "object",
+					"required": [
+						"updated",
+						"blockHeight"
+					],
+					"properties": {
+						"updated": {
+							"type": "string",
+							"example": "2020-03-10T09:54:05",
+							"description": "timestamp"
+						},
+						"blockHeight": {
+							"type": "integer",
+							"example": 25,
+							"description": "Height of a block"
+						}
+					}
+				},
 				"links": {
 					"type": "object"
 				}
@@ -1141,7 +1190,11 @@
 		},
 		"BlocksWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1160,7 +1213,11 @@
 		},
 		"DelegatesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1179,7 +1236,11 @@
 		},
 		"PeersWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1198,7 +1259,11 @@
 		},
 		"TransactionsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1217,7 +1282,11 @@
 		},
 		"TransactionsExportWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1236,7 +1305,11 @@
 		},
 		"TransactionsStatisticsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"$ref": "#/definitions/TransactionsStatistics"
@@ -1252,13 +1325,22 @@
 		"TransactionsStatistics": {
 			"type": "object",
 			"description": "Transactions statistics",
-			"required": ["timeline", "distributionByType", "distributionByAmount"],
+			"required": [
+				"timeline",
+				"distributionByType",
+				"distributionByAmount"
+			],
 			"properties": {
 				"timeline": {
 					"type": "array",
 					"items": {
 						"type": "object",
-						"required": ["timestamp", "date", "transactionCount", "volume"],
+						"required": [
+							"timestamp",
+							"date",
+							"transactionCount",
+							"volume"
+						],
 						"properties": {
 							"timestamp": {
 								"type": "integer",
@@ -1295,7 +1377,11 @@
 		},
 		"VotesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of votes",
@@ -1314,7 +1400,12 @@
 		},
 		"Vote": {
 			"type": "object",
-			"required": ["address", "publicKey", "balance", "username"],
+			"required": [
+				"address",
+				"publicKey",
+				"balance",
+				"username"
+			],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -1343,7 +1434,10 @@
 		},
 		"Pagination": {
 			"type": "object",
-			"required": ["count", "offset"],
+			"required": [
+				"count",
+				"offset"
+			],
 			"properties": {
 				"count": {
 					"type": "integer",
@@ -1367,7 +1461,11 @@
 		},
 		"NetworkStatistics": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1446,7 +1544,11 @@
 		},
 		"NewsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1473,7 +1575,10 @@
 		},
 		"News": {
 			"type": "object",
-			"required": ["content", "source"],
+			"required": [
+				"content",
+				"source"
+			],
 			"properties": {
 				"content": {
 					"type": "string",
@@ -1508,7 +1613,11 @@
 		},
 		"MarketPriceWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1556,7 +1665,11 @@
 		},
 		"MarketOrdersWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1594,7 +1707,10 @@
 		},
 		"MarketOrder": {
 			"type": "object",
-			"required": ["amount", "price"],
+			"required": [
+				"amount",
+				"price"
+			],
 			"properties": {
 				"amount": {
 					"type": "string",
@@ -1620,7 +1736,11 @@
 		},
 		"MarketCandlesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1652,7 +1772,11 @@
 						"timeframe": {
 							"type": "string",
 							"description": "Beginning of the timespan of provided data",
-							"enum": ["day", "hour", "minute"]
+							"enum": [
+								"day",
+								"hour",
+								"minute"
+							]
 						},
 						"fromTimestamp": {
 							"type": "integer",
@@ -1744,7 +1868,11 @@
 		},
 		"MarketStatisticsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1899,7 +2027,11 @@
 		},
 		"FeatureNotImplemented": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object"

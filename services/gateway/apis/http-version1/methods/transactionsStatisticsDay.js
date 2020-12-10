@@ -33,7 +33,7 @@ module.exports = {
 		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of transactions with details',
+				description: 'array of transactions statisctis per day',
 				schema: {
 					type: 'array',
 					items: {
