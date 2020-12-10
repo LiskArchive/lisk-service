@@ -1140,6 +1140,11 @@
 							"type": "integer",
 							"example": 25,
 							"description": "Height of a block"
+						},
+						"blockId": {
+							"type": "string",
+							"example": "641597059875918152",
+							"description": "Id of a block"
 						}
 					}
 				},
