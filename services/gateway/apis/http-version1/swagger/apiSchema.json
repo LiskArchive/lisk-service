@@ -534,6 +534,10 @@
 					"type": "string",
 					"example": "65000000",
 					"description": "Total amount of LSK that have been forged in this Block.\nConsists of fees and the reward.\n"
+				},
+				"isFinal": {
+					"type": "boolean",
+					"example": "true"
 				}
 			}
 		},

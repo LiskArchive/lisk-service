@@ -33,7 +33,7 @@ module.exports = {
 		networkSchema[this.swaggerApiPath].get.parameters = transformParams('network', this.params);
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'unified search to retrieve data',
+				description: 'result based on search query',
 				schema: {
 					type: 'array',
 					items: {
