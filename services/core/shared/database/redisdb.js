@@ -37,6 +37,8 @@ const getDbInstance = async (collectionName) => {
 
     const writeBatch = async (docs) => Promise.all(docs.map(async doc => write(doc)));
 
+    const writeOnce = async (doc) => write(doc);
+
     const findById = async (id) => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
             const res = [];
@@ -68,20 +70,33 @@ const getDbInstance = async (collectionName) => {
         });
     });
 
+    const findOneByProperty = async (property, value) => {
+        const selector = {};
+        selector[property] = value;
+        return find({ selector });
+    };
+
+    const deleteById = async (id) => db.hdel(collectionName, id);
+
+    const deleteBatch = async (docs) => {
+        if (docs instanceof Array && docs.length === 0) return null;
+        return db.del(collectionName);
+    };
+
     const searchByIndex = async (indexName, id) => new Promise(resolve => {
         db.hgetall(indexName, async (err, result) => resolve(result[id]));
     });
 
     return {
         write,
-        // writeOnce,
+        writeOnce,
         writeBatch,
         findAll,
         find,
         findById,
-        // findOneByProperty,
-        // deleteById,
-        // deleteBatch,
+        findOneByProperty,
+        deleteById,
+        deleteBatch,
         // deleteByProperty,
         // getCount,
         searchByIndex,
