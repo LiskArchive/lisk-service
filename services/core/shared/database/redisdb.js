@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 const redis = require('ioredis');
 const { Logger } = require('lisk-service-framework');
 
@@ -24,13 +23,9 @@ const logger = Logger();
 const getDbInstance = async (collectionName) => {
     const db = new redis(config.endpoints.redis);
 
-    db.on('error', (err) => {
-        logger.error('connection issues ', err);
-    });
+    db.on('error', (err) => logger.error('connection issues ', err));
 
-    const write = async (doc) => {
-        await db.set(doc.id, JSON.stringify(doc));
-    };
+    const write = async (doc) => db.set(doc.id, JSON.stringify(doc));
 
     const writeBatch = async (docs) => {
         await Promise.all(docs.map(doc => {
@@ -64,39 +59,38 @@ const getDbInstance = async (collectionName) => {
         }));
     };
 
-    const findById = (id) => new Promise(resolve => {
+    const findById = async (id) => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
-            const res = {};
-            if (result && result[id]) {
-                Object.assign(res, JSON.parse(result[id]));
-                return resolve([res]);
-            }
-            return resolve([]);
+            const res = [];
+            if (result && result[id]) res.push(JSON.parse(result[id]));
+            return resolve(res);
         });
     });
 
-    const find = (params) => new Promise((resolve) => {
+    const find = async (params) => new Promise((resolve) => {
+        const filterByParams = (item, lParams) => {
+            const paramMatches = Object.entries(lParams)
+                .filter(([, v]) => v)
+                .map(([k, v]) => item[k] === v);
+            return paramMatches.reduce((a, b) => a && b, true);
+            // return !paramMatches.some(isMatch => !isMatch);
+        };
+
         db.hgetall(collectionName, async (err, result) => {
             let res = Object.keys(result).map((key) => JSON.parse(result[key]));
-            res = res.filter(
-                (item) => (item.address && item.address === params.selector.address)
-                    || (item.publicKey && item.publicKey === params.selector.publicKey)
-                    || (item.secondPublicKey
-                        && item.secondPublicKey === params.selector.secondPublicKey)
-                    || (item.username && item.username === params.selector.username),
-            );
+            res = res.filter(item => filterByParams(item, params.selector));
             return resolve(res);
         });
     });
 
-    const findAll = () => new Promise(resolve => {
+    const findAll = async () => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
-            const res = Object.keys(result).map((key) => JSON.parse(result[key]));
+            const res = Object.values(result).map(v => JSON.parse(v));
             return resolve(res);
         });
     });
 
-    const searchByIndex = (indexName, id) => new Promise(resolve => {
+    const searchByIndex = async (indexName, id) => new Promise(resolve => {
         db.hgetall(indexName, async (err, result) => resolve(result[id]));
     });
 
@@ -109,4 +103,5 @@ const getDbInstance = async (collectionName) => {
         searchByIndex,
     };
 };
+
 module.exports = getDbInstance;
