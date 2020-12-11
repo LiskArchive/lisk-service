@@ -39,6 +39,7 @@ module.exports = {
 		const peerSchema = {};
 		peerSchema[this.swaggerApiPath] = { get: {} };
 		peerSchema[this.swaggerApiPath].get.tags = this.tags;
+		peerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
 		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {
