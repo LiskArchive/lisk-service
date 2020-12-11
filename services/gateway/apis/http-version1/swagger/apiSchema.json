@@ -264,10 +264,7 @@
 			"description": "Source of the news among different data providers (Poloniex, Bittrex, etc.)",
 			"required": true,
 			"type": "string",
-			"enum": [
-				"poloniex",
-				"bittrex"
-			]
+			"enum": ["poloniex", "bittrex"]
 		}
 	},
 	"definitions": {
@@ -395,10 +392,7 @@
 		},
 		"AccountBasic": {
 			"type": "object",
-			"required": [
-				"address",
-				"publicKey"
-			],
+			"required": ["address", "publicKey"],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -543,11 +537,7 @@
 		},
 		"Delegate": {
 			"type": "object",
-			"required": [
-				"address",
-				"publicKey",
-				"username"
-			],
+			"required": ["address", "publicKey", "username"],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -624,9 +614,7 @@
 		},
 		"DelegateSub": {
 			"type": "object",
-			"required": [
-				"username"
-			],
+			"required": ["username"],
 			"properties": {
 				"missedBlocks": {
 					"type": "integer",
@@ -843,10 +831,7 @@
 		},
 		"Peer": {
 			"type": "object",
-			"required": [
-				"wsPort",
-				"state"
-			],
+			"required": ["wsPort", "state"],
 			"properties": {
 				"ip": {
 					"type": "string",
@@ -974,11 +959,7 @@
 		},
 		"NetworkStatus": {
 			"type": "object",
-			"required": [
-				"broadhash",
-				"nethash",
-				"height"
-			],
+			"required": ["broadhash", "nethash", "height"],
 			"properties": {
 				"height": {
 					"type": "integer",
@@ -1068,11 +1049,7 @@
 		},
 		"AccountsWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1091,11 +1068,7 @@
 		},
 		"FeeEstimateEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1155,11 +1128,7 @@
 		},
 		"BlocksWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1178,11 +1147,7 @@
 		},
 		"DelegatesWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1201,11 +1166,7 @@
 		},
 		"PeersWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1224,11 +1185,7 @@
 		},
 		"TransactionsWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1247,11 +1204,7 @@
 		},
 		"TransactionsExportWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1270,11 +1223,7 @@
 		},
 		"TransactionsStatisticsWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"$ref": "#/definitions/TransactionsStatistics"
@@ -1290,11 +1239,7 @@
 		"TransactionsStatistics": {
 			"type": "object",
 			"description": "Transactions statistics",
-			"required": [
-				"timeline",
-				"distributionByType",
-				"distributionByAmount"
-			],
+			"required": ["timeline", "distributionByType", "distributionByAmount"],
 			"properties": {
 				"timeline": {
 					"type": "array",
@@ -1342,11 +1287,7 @@
 		},
 		"VotesWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of votes",
@@ -1365,12 +1306,7 @@
 		},
 		"Vote": {
 			"type": "object",
-			"required": [
-				"address",
-				"publicKey",
-				"balance",
-				"username"
-			],
+			"required": ["address", "publicKey", "balance", "username"],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -1399,10 +1335,7 @@
 		},
 		"Pagination": {
 			"type": "object",
-			"required": [
-				"count",
-				"offset"
-			],
+			"required": ["count", "offset"],
 			"properties": {
 				"count": {
 					"type": "integer",
@@ -1426,10 +1359,7 @@
 		},
 		"meta": {
 			"type": "object",
-			"required": [
-				"count",
-				"offset"
-			],
+			"required": ["count", "offset"],
 			"properties": {
 				"count": {
 					"type": "integer",
@@ -1471,11 +1401,7 @@
 		},
 		"NetworkStatistics": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1554,11 +1480,7 @@
 		},
 		"NewsWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1585,10 +1507,7 @@
 		},
 		"News": {
 			"type": "object",
-			"required": [
-				"content",
-				"source"
-			],
+			"required": ["content", "source"],
 			"properties": {
 				"content": {
 					"type": "string",
@@ -1623,11 +1542,7 @@
 		},
 		"MarketPriceWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1675,11 +1590,7 @@
 		},
 		"MarketOrdersWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1717,10 +1628,7 @@
 		},
 		"MarketOrder": {
 			"type": "object",
-			"required": [
-				"amount",
-				"price"
-			],
+			"required": ["amount", "price"],
 			"properties": {
 				"amount": {
 					"type": "string",
@@ -1746,11 +1654,7 @@
 		},
 		"MarketCandlesWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1878,11 +1782,7 @@
 		},
 		"MarketStatisticsWithEnvelope": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -2037,11 +1937,7 @@
 		},
 		"FeatureNotImplemented": {
 			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
+			"required": ["data", "meta", "links"],
 			"properties": {
 				"data": {
 					"type": "object"
