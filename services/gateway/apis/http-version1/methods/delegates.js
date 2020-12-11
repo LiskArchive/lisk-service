@@ -46,6 +46,7 @@ module.exports = {
 		const delegateSchema = {};
 		delegateSchema[this.swaggerApiPath] = { get: {} };
 		delegateSchema[this.swaggerApiPath].get.tags = this.tags;
+		delegateSchema[this.swaggerApiPath].get.summary = 'Requests delegates data';
 		delegateSchema[this.swaggerApiPath].get.parameters = transformParams('delegates', this.params);
 		delegateSchema[this.swaggerApiPath].get.responses = {
 			200: {

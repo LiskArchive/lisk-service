@@ -24,6 +24,7 @@ module.exports = {
 		const networkSchema = {};
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkSchema[this.swaggerApiPath].get.summary = 'Requests network status';
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'network status info',
