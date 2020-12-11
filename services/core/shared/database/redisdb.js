@@ -22,42 +22,20 @@ const logger = Logger();
 
 const getDbInstance = async (collectionName) => {
     const db = new redis(config.endpoints.redis);
+    const { indexes } = config.db.collections[collectionName];
 
     db.on('error', (err) => logger.error('connection issues ', err));
 
-    const write = async (doc) => db.set(doc.id, JSON.stringify(doc));
-
-    const writeBatch = async (docs) => {
-        await Promise.all(docs.map(doc => {
-            // // For accounts, delegates
-            if (doc.publicKey) db.hmset(`${collectionName}_publicKeyToId`, doc.publicKey, doc.id);
-            if (doc.secondPublicKey) db.hmset(`${collectionName}_secPubKeyToId`, doc.secondPublicKey, doc.id);
-            if (doc.username) db.hmset(`${collectionName}_usernameToId`, doc.username, doc.id);
-
-            // For blocks, transactions
-            // if (doc.generatorAddress) db.zadd(collectionName, doc.generatorAddress, doc.id);
-            // if (doc.generatorPublicKey) db.zadd(collectionName, doc.generatorPublicKey, doc.id);
-            // if (doc.generatorUsername) db.zadd(collectionName, doc.generatorUsername, doc.id);
-            if (doc.height) db.zadd(collectionName, doc.height, doc.id);
-            if (doc.timestamp) db.zadd(collectionName, doc.timestamp, doc.id);
-
-            // // For transactions
-            if (doc.blockId) db.zadd(collectionName, Number(doc.blockId), doc.id);
-            // if (doc.type) db.zadd(collectionName, doc.type, doc.id);
-            // if (doc.senderId) db.zadd(collectionName, doc.senderId, doc.id);
-            // if (doc.senderPublicKey) db.zadd(collectionName, doc.senderPublicKey, doc.id);
-            // if (doc.senderSecondPublicKey) db
-            //     .zadd(collectionName, doc.senderSecondPublicKey, doc.id);
-            // if (doc.recipientId) db.zadd(collectionName, doc.recipientId, doc.id);
-            // if (doc.recipientPublicKey) db.zadd(collectionName, doc.recipientPublicKey, doc.id);
-
-            // // For peers
-            // if (doc.ip) db.zadd(collectionName, doc.ip, doc.id);
-
-            // for storing all accounts with data store accounts
-            return db.hmset(collectionName, doc.id, JSON.stringify(doc));
-        }));
+    const write = async (doc) => {
+        // Secondary indexes mapping properties to entity IDs
+        indexes.forEach(prop => {
+            if (['timestamp'].includes(prop)) db.zadd(collectionName, Number(doc[prop]), doc.id);
+            else if (doc[prop]) db.hmset(`${collectionName}_${prop}`, doc[prop], doc.id);
+        });
+        return db.hmset(collectionName, doc.id, JSON.stringify(doc));
     };
+
+    const writeBatch = async (docs) => Promise.all(docs.map(async doc => write(doc)));
 
     const findById = async (id) => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
@@ -96,10 +74,16 @@ const getDbInstance = async (collectionName) => {
 
     return {
         write,
-        find,
+        // writeOnce,
         writeBatch,
         findAll,
+        find,
         findById,
+        // findOneByProperty,
+        // deleteById,
+        // deleteBatch,
+        // deleteByProperty,
+        // getCount,
         searchByIndex,
     };
 };
