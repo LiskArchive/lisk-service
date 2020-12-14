@@ -78,8 +78,17 @@ const pushToDb = async (blockDb, blocks) => {
 	return blockDb.writeBatch(out);
 };
 
-const setLastBlock = block => lastBlock = block;
+const setLastBlock = block => {
+	if (block && block.height && block.height > lastBlock.height) lastBlock = block;
+	else if (!lastBlock.height) lastBlock = block;
+};
 const getLastBlock = () => lastBlock;
+const waitForLastBlock = () => new Promise((resolve) => {
+	setInterval(() => {
+		const block = getLastBlock();
+		if (block && block.height > 0) resolve(getLastBlock());
+	}, 500);
+});
 
 const getBlocksFromCache = async params => {
 	const blockDb = await db(config.db.collections.blocks.name);
@@ -117,6 +126,8 @@ const getBlocksFromServer = async params => {
 	if (response.meta) blocks.meta = response.meta;
 
 	if (blocks.data.length) {
+		blocks.data.forEach(block => setLastBlock(block));
+
 		const blockDb = await db(config.db.collections.blocks.name);
 		const finalBlocks = blocks.data;
 		await pushToDb(blockDb, finalBlocks);
@@ -233,6 +244,7 @@ module.exports = {
 	preloadBlocksByPage,
 	setLastBlock,
 	getLastBlock,
+	waitForLastBlock,
 	initBlocks,
 	cleanFromForks,
 	reloadBlocks,

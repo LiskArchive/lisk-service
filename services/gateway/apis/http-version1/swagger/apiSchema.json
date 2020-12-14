@@ -284,15 +284,13 @@
 					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
 					"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
 				},
-				"secondPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.\n"
-				},
 				"balance": {
 					"type": "string",
 					"example": "4448642000"
+				},
+				"nonce": {
+					"type": "string",
+					"example": "0"
 				},
 				"delegate": {
 					"$ref": "#/definitions/DelegateSub"
@@ -313,18 +311,34 @@
 				"multisignatureAccount": {
 					"type": "object",
 					"properties": {
-						"lifetime": {
+						"numberOfReqSignatures": {
 							"type": "integer",
-							"example": 48
-						},
-						"minimalNumberAcccounts": {
-							"type": "integer",
-							"example": 2
+							"format": "int32",
+							"example": "1"
 						},
 						"members": {
 							"type": "array",
 							"items": {
-								"$ref": "#/definitions/AccountBasic"
+								"type": "object",
+								"properties": {
+									"address": {
+										"type": "string",
+										"example": "4935562234363081651L"
+									},
+									"publicKey": {
+										"type": "string",
+										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b"
+									},
+									"balance": {
+										"type": "integer",
+										"format": "int64",
+										"example": "4448642000"
+									},
+									"isMandatory": {
+										"type": "boolean",
+										"example": "true"
+									}
+								}
 							}
 						}
 					}
@@ -357,12 +371,6 @@
 								"format": "publicKey",
 								"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
 								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
-							},
-							"secondPublicKey": {
-								"type": "string",
-								"format": "publicKey",
-								"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-								"description": "The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.\n"
 							}
 						}
 					}
@@ -378,12 +386,6 @@
 							"type": "string",
 							"example": "1581"
 						}
-					}
-				},
-				"unconfirmedMultisignatureMemberships": {
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/AccountBasic"
 					}
 				}
 			}
@@ -526,6 +528,10 @@
 					"type": "string",
 					"example": "65000000",
 					"description": "Total amount of LSK that have been forged in this Block.\nConsists of fees and the reward.\n"
+				},
+				"isFinal": {
+					"type": "boolean",
+					"example": "true"
 				}
 			}
 		},
@@ -539,10 +545,9 @@
 					"example": "4935562234363081651L",
 					"description": "Lisk Address of the delegate who forged the block."
 				},
-				"approval": {
+				"delegateWeight": {
 					"type": "string",
-					"example": "35.77",
-					"description": ""
+					"example": "1155000000000"
 				},
 				"missedBlocks": {
 					"type": "integer",
@@ -567,12 +572,6 @@
 					"example": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
 					"description": "Public key of th edelagte who forged the block."
 				},
-				"secondPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-					"description": "Second public key of th edelagte who forged the block."
-				},
 				"rank": {
 					"type": "integer",
 					"example": 93,
@@ -593,6 +592,23 @@
 					"type": "string",
 					"example": "4630668157412954",
 					"description": ""
+				},
+				"status": {
+					"type": "string",
+					"example": "active",
+					"description": "Status of delegates"
+				},
+				"isBanned": {
+					"type": "boolean",
+					"example": "false"
+				},
+				"lastForgedHeight": {
+					"type": "integer",
+					"example": 0
+				},
+				"consecutiveMissedBlocks": {
+					"type": "integer",
+					"example": 0
 				}
 			}
 		},
@@ -600,11 +616,6 @@
 			"type": "object",
 			"required": ["username"],
 			"properties": {
-				"approval": {
-					"type": "string",
-					"example": "35.77",
-					"description": ""
-				},
 				"missedBlocks": {
 					"type": "integer",
 					"example": 157,
@@ -642,6 +653,18 @@
 					"type": "string",
 					"example": "4630668157412954",
 					"description": ""
+				},
+				"isBanned": {
+					"type": "boolean",
+					"example": "false"
+				},
+				"lastForgedHeight": {
+					"type": "integer",
+					"example": 0
+				},
+				"consecutiveMissedBlocks": {
+					"type": "integer",
+					"example": 0
 				}
 			}
 		},
@@ -689,6 +712,10 @@
 					"example": 8350681,
 					"description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
 				},
+				"nonce": {
+					"type": "string",
+					"example": "0"
+				},
 				"blockId": {
 					"type": "string",
 					"format": "id",
@@ -714,35 +741,11 @@
 					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
 					"description": "The public key of the Senders' account.\n"
 				},
-				"senderSecondPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The second public key of the Senders' account, if it exists.\n"
-				},
 				"recipientId": {
 					"type": "string",
 					"format": "address",
 					"example": "4935562234363081651L",
 					"description": "Lisk Address of the Recipients' account.\n"
-				},
-				"recipientPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The public key of the Recipients' account.\n"
-				},
-				"signature": {
-					"type": "string",
-					"format": "signature",
-					"example": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-					"description": "Derived from a SHA-256 hash of the transaction object,\nthat is signed by the private key of the account who created the transaction.\n"
-				},
-				"signSignature": {
-					"type": "string",
-					"format": "signature",
-					"example": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-					"description": "Contains the second signature, if the transaction is sent from an account with second passphrase activated."
 				},
 				"signatures": {
 					"type": "array",
@@ -760,20 +763,6 @@
 				},
 				"asset": {
 					"type": "object"
-				},
-				"receivedAt": {
-					"type": "string",
-					"format": "date-time",
-					"description": "The timestamp of the moment, where a node discovered a transaction for the first time."
-				},
-				"relays": {
-					"type": "integer",
-					"description": "Number of times, a single transaction object has been broadcasted to another peer."
-				},
-				"ready": {
-					"type": "boolean",
-					"example": false,
-					"description": "Only present in transactions sent from a multisignature account, or transactions type 4 (multisignature registration).\nFalse, if the minimum amount of signatures to sign this transaction has not been reached yet.\nTrue, if the minimum amount of signatures has been reached.\n"
 				}
 			}
 		},
@@ -972,13 +961,6 @@
 			"type": "object",
 			"required": ["broadhash", "nethash", "height"],
 			"properties": {
-				"broadhash": {
-					"type": "string",
-					"example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-					"minLength": 64,
-					"maxLength": 64,
-					"description": "Broadhash is established as an aggregated rolling hash of the past five blocks present in the database.\nBroadhash consensus serves a vital function for the Lisk network in order to prevent forks.\nIt ensures that a majority of available peers agree that it is acceptable to forge.\n"
-				},
 				"height": {
 					"type": "integer",
 					"example": 123,
@@ -1015,9 +997,6 @@
 					"type": "string",
 					"example": "500000000",
 					"description": "The reward a delegate will get for forging a block.\nDepends on the slot height.\n"
-				},
-				"fees": {
-					"$ref": "#/definitions/Fees"
 				}
 			}
 		},
@@ -1118,22 +1097,30 @@
 						}
 					}
 				},
-        "meta": {
-          "type": "object",
-          "required": ["updated", "blockHeight"],
-          "properties": {
-            "updated": {
-              "type": "string",
-              "example": "2020-03-10T09:54:05",
-              "description": "timestamp"
-            },
-            "blockHeight": {
-              "type": "integer",
-              "example": 25,
-              "description": "Height of a block"
-            }
-          }
-        },
+				"meta": {
+					"type": "object",
+					"required": [
+						"updated",
+						"blockHeight"
+					],
+					"properties": {
+						"updated": {
+							"type": "string",
+							"example": "2020-03-10T09:54:05",
+							"description": "timestamp"
+						},
+						"blockHeight": {
+							"type": "integer",
+							"example": 25,
+							"description": "Height of a block"
+						},
+						"blockId": {
+							"type": "string",
+							"example": "641597059875918152",
+							"description": "Id of a block"
+						}
+					}
+				},
 				"links": {
 					"type": "object"
 				}
@@ -1258,7 +1245,12 @@
 					"type": "array",
 					"items": {
 						"type": "object",
-						"required": ["timestamp", "date", "transactionCount", "volume"],
+						"required": [
+							"timestamp",
+							"date",
+							"transactionCount",
+							"volume"
+						],
 						"properties": {
 							"timestamp": {
 								"type": "integer",
@@ -1305,7 +1297,7 @@
 					}
 				},
 				"meta": {
-					"$ref": "#/definitions/Pagination"
+					"$ref": "#/definitions/meta"
 				},
 				"links": {
 					"type": "object"
@@ -1362,6 +1354,48 @@
 					"example": 43749,
 					"minimum": 0,
 					"description": "Total number of items in the database."
+				}
+			}
+		},
+		"meta": {
+			"type": "object",
+			"required": ["count", "offset"],
+			"properties": {
+				"count": {
+					"type": "integer",
+					"example": 100,
+					"minimum": 0,
+					"description": "Number of items returned in the request."
+				},
+				"offset": {
+					"type": "integer",
+					"example": 25,
+					"minimum": 0,
+					"description": "Defines how many items are skipped."
+				},
+				"total": {
+					"type": "integer",
+					"example": 43749,
+					"minimum": 0,
+					"description": "Total number of items in the database."
+				},
+				"address": {
+					"type": "string",
+					"format": "address",
+					"example": "4935562234363081651L",
+					"description": "Lisk Address of the delegate the queried account voted for."
+				},
+				"publicKey": {
+					"type": "string",
+					"format": "publicKey",
+					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+					"description": "Public key of the delegate the queried account voted for."
+				},
+				"username": {
+					"type": "string",
+					"format": "username",
+					"example": "liskhq",
+					"description": "Username of the delegate the queried account voted for."
 				}
 			}
 		},
@@ -1652,7 +1686,11 @@
 						"timeframe": {
 							"type": "string",
 							"description": "Beginning of the timespan of provided data",
-							"enum": ["day", "hour", "minute"]
+							"enum": [
+								"day",
+								"hour",
+								"minute"
+							]
 						},
 						"fromTimestamp": {
 							"type": "integer",

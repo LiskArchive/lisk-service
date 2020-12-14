@@ -28,8 +28,10 @@ const {
 	ProofOfMisbehaviorTransaction,
 } = require('@liskhq/lisk-transactions');
 
+const util = require('util');
+
 const { getSDKVersion, getCoreVersion, mapToOriginal } = require('./compat');
-const { getBlocks } = require('./blocks');
+const { getBlocks, getLastBlock } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
 const config = require('../../config.js');
@@ -42,7 +44,6 @@ const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 const cacheKeyFeeEstNormal = 'lastFeeEstimate';
 const cacheKeyFeeEstQuick = 'lastFeeEstimateQuick';
 
-let execNormalModeOnly = false;
 const executionStatus = {
 	// false: not running, true: running
 	[cacheKeyFeeEstNormal]: false,
@@ -216,7 +217,7 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 
 	const cachedFeeEstimate = await cacheRedisFees.get(cacheKey);
 
-	const cachedFeeEstimateHeight = cachedFeeEstimate
+	const cachedFeeEstimateHeight = !cacheKey.includes('Quick') && cachedFeeEstimate
 		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
 
 	const prevFeeEstPerByte = fromHeight > cachedFeeEstimateHeight
@@ -265,15 +266,6 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 };
 
 const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
-	if (!execNormalModeOnly) {
-		// Stop executing quick mode, after Normal execution catches up
-		const feeEstPerByteNormal = await cacheRedisFees.get(cacheKeyFeeEstNormal);
-		const feeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
-		if (feeEstPerByteNormal && feeEstPerByteQuick
-			&& feeEstPerByteNormal.blockHeight >= feeEstPerByteQuick.blockHeight
-		) execNormalModeOnly = true;
-	}
-
 	let result = await cacheRedisFees.get(cacheKey);
 	if (!executionStatus[cacheKey]) {
 		// If the process (normal / quick) is already running,
@@ -286,7 +278,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 };
 
 const getEstimateFeeByteNormal = async () => {
-	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+	const latestBlock = getLastBlock();
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
 
@@ -303,12 +295,7 @@ const getEstimateFeeByteNormal = async () => {
 
 const getEstimateFeeByteQuick = async () => {
 	// For the cold start scenario
-	if (execNormalModeOnly) {
-		logger.debug('Normal computation mode has caught up. Switching to normal computation mode');
-		return getEstimateFeeByteNormal();
-	}
-
-	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+	const latestBlock = getLastBlock();
 	const batchSize = config.feeEstimates.coldStartBatchSize;
 	const toHeight = latestBlock.height;
 	const fromHeight = toHeight - batchSize;
@@ -323,28 +310,29 @@ const getEstimateFeeByteQuick = async () => {
 
 const getEstimateFeeByte = async () => {
 	if (sdkVersion < 4) {
-		return { data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` } };
+		return {
+			data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` },
+			status: 'METHOD_NOT_ALLOWED',
+		};
 	}
 
-	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
+	const latestBlock = getLastBlock();
 	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
 			.every(key => Object.keys(feeEstPerByte).includes(key))
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
 	const cachedFeeEstPerByteNormal = await cacheRedisFees.get(cacheKeyFeeEstNormal);
+	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteNormal)}`);
 	if (validate(cachedFeeEstPerByteNormal, 15)) return cachedFeeEstPerByteNormal;
 
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
+	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}`);
 	if (validate(cachedFeeEstPerByteQuick, 5)) return cachedFeeEstPerByteQuick;
 
 	return {
-		low: 0,
-		med: 0,
-		high: 0,
-		updated: 0,
-		blockHeight: 0,
-		blockId: 'default',
+		data: { error: 'The estimates are currently under processing. Please retry in 30 seconds.' },
+		status: 'SERVICE_UNAVAILABLE',
 	};
 };
 

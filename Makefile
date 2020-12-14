@@ -59,6 +59,16 @@ clean:
 	cd ./tests && rm -rf node_modules
 	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests
 
+audit:
+	cd ./framework && npm audit; :
+	cd ./services/core && npm audit; :
+	cd ./services/gateway && npm audit; :
+
+audit-fix:
+	cd ./framework && npm audit fix; :
+	cd ./services/core && npm audit fix; :
+	cd ./services/gateway && npm audit fix; :
+
 tag-%:
 	npm version --no-git-tag-version $*
 	cd services/gateway && npm version --no-git-tag-version $*

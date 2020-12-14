@@ -56,14 +56,14 @@ describe('Fee estimates API', () => {
 			}
 		});
 
-		it('not supported -> 404 NOT FOUND', async () => {
+		it('not supported -> 405 METHOD_NOT_ALLOWED', async () => {
 			if (!isFeeEstimateSupported) {
-				const response = await api.get(`${endpoint}`, 404);
+				const response = await api.get(`${endpoint}`, 405);
 				expect(response).toMap(notFoundSchema);
 			}
 		});
 
-		it('params not supported -> 400 BAD REQUEST', async () => {
+		it('params not supported -> 400 BAD_REQUEST', async () => {
 			const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
 			expect(response).toMap(badRequestSchema);
 		});

@@ -30,10 +30,11 @@ module.exports = {
 		const networkSchema = {};
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkSchema[this.swaggerApiPath].get.summary = 'Requests result based on search';
 		networkSchema[this.swaggerApiPath].get.parameters = transformParams('network', this.params);
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of peers',
+				description: 'result based on search query',
 				schema: {
 					type: 'array',
 					items: {

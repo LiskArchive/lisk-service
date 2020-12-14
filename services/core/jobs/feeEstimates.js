@@ -16,7 +16,7 @@
 const {
 	Logger,
 } = require('lisk-service-framework');
-const core = require('../shared/core');
+const { waitForLastBlock, getSDKVersion } = require('../shared/core');
 const {
 	getEstimateFeeByteNormal,
 	getEstimateFeeByteQuick,
@@ -29,8 +29,9 @@ module.exports = [
 		description: 'Initiate the dynamic fee estimates algorithm',
 		schedule: '0 0 1 1 *', // Once a year
 		updateOnInit: true,
-		init: () => {
-			const sdkVersion = core.getSDKVersion();
+		init: async () => {
+			await waitForLastBlock();
+			const sdkVersion = getSDKVersion();
 			if (sdkVersion >= 4) {
 			logger.debug('Initiate the dynamic fee estimates computation');
 			getEstimateFeeByteNormal();
