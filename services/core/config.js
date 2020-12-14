@@ -45,6 +45,7 @@ config.db = {
 				'publicKey',
 				'secondPublicKey',
 				'balance',
+				'username',
 				'delegate',
 				'knowledge',
 				'multisignatureAccount',

@@ -18,7 +18,7 @@ const db = require('../../database')[config.db.collections.accounts.db || config
 
 const getAddressByPublickKey = async (publicKey) => {
     const accountdb = await db(config.db.collections.accounts.name);
-    const indexName = `${config.db.collections.accounts.name}_publicKeyToId`;
+    const indexName = `${config.db.collections.accounts.name}_publicKey`;
     const address = await accountdb.searchByIndex(indexName, publicKey);
     if (address) return address;
     return null;
@@ -26,7 +26,7 @@ const getAddressByPublickKey = async (publicKey) => {
 
 const getAddressBySecPublickKey = async (publicKey) => {
     const accountdb = await db(config.db.collections.accounts.name);
-    const indexName = `${config.db.collections.accounts.name}_secPubKeyToId`;
+    const indexName = `${config.db.collections.accounts.name}_secondPublicKey`;
     const address = await accountdb.searchByIndex(indexName, publicKey);
     if (address) return address;
     return null;
@@ -34,7 +34,7 @@ const getAddressBySecPublickKey = async (publicKey) => {
 
 const getAddressByusername = async (username) => {
     const accountdb = await db(config.db.collections.accounts.name);
-    const indexName = `${config.db.collections.accounts.name}_usernameToId`;
+    const indexName = `${config.db.collections.accounts.name}_username`;
     const address = await accountdb.searchByIndex(indexName, username);
     if (address) return address;
     return null;
