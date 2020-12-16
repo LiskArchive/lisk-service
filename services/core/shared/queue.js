@@ -37,13 +37,13 @@ const initializeQueue = (name) => {
 	});
 
 	statsQueue.on('completed', (job, result) => {
-		logger.debug(`\n ${name} Job completed`, result);
+		logger.debug(`${name} Job completed`, result);
 	});
 	statsQueue.on('error', (err) => {
-		logger.debug(`\n ${name} Job error`, err);
+		logger.debug(`${name} Job error`, err);
 	});
 	statsQueue.on('failed', (job, err) => {
-		logger.debug(`\n ${name} Job failed`, err);
+		logger.debug(`${name} Job failed`, err);
 		const { data } = job;
 		statsQueue.add(data, { delay: 60000 });
 	});
