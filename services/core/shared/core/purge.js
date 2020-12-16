@@ -34,26 +34,6 @@ const getSelector = params => {
 	return result;
 };
 
-const purgeBlocks = async purgeLimit => {
-	const db = await pouchdb(config.db.collections.blocks.name);
-
-	const latestBlock = (await getBlocks({ limit: 1 })).data[0];
-	const latestBlockHeight = latestBlock.height;
-
-	const dbFilterParams = getSelector({ purge_height: latestBlockHeight - purgeLimit });
-	const purgableBlocks = await db.find(dbFilterParams);
-
-	const purgeResult = await db.deleteBatch(purgableBlocks);
-	const purgeCount = purgeResult ? purgeResult.length : 0;
-
-	const purgeHeight = (latestBlockHeight - purgeLimit) > 0
-		? latestBlockHeight - purgeLimit : minBlockHeight;
-	logger.info('Purged '.concat(purgeCount)
-		.concat(' blocks from db at height lower than ').concat(purgeHeight));
-
-	return purgeCount;
-};
-
 const purgeTransactions = async purgeLimit => {
 	const db = await pouchdb(config.db.collections.transactions.name);
 
@@ -75,6 +55,5 @@ const purgeTransactions = async purgeLimit => {
 };
 
 module.exports = {
-	purgeBlocks,
 	purgeTransactions,
 };
