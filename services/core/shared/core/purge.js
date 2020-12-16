@@ -53,7 +53,7 @@ const purgeTransactions = async purgeLimit => {
 
 	// Perform compaction when done
 	db.compact();
-	logger.info(`Performed database compaction for database ${db.getName()}`);
+	logger.info(`Performed compaction for database ${db.getName()}`);
 
 	return purgeCount;
 };
