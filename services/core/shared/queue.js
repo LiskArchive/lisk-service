@@ -15,6 +15,7 @@
  */
 const { Logger } = require('lisk-service-framework');
 const Queue = require('bull');
+const util = require('util');
 
 const config = require('../config');
 
@@ -49,6 +50,11 @@ const initializeQueue = (name, queueProcess) => {
 		const { data } = job;
 		statsQueue.add(name, data, data.options);
 	});
+
+	setInterval(async () => {
+		const jobCounts = await statsQueue.getJobCounts();
+		logger.debug(`Queue counters: ${util.inspect(jobCounts)}`);
+	}, 30000);
 	return statsQueue;
 };
 
