@@ -13,41 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../config');
-const pouchdb = require('../pouchdb');
 const coreApi = require('./compat');
-
-const formatSortString = sortString => {
-	const sortObj = {};
-	const sortProp = sortString.split(':')[0];
-	const sortOrder = sortString.split(':')[1];
-	sortObj[sortProp] = sortOrder;
-
-	return sortObj;
-};
-
-const getSelector = params => {
-	const selector = {};
-	const result = { sort: [] };
-
-	if (params.address) selector.address = params.address;
-	if (params.secondPublicKey) selector.secondPublicKey = params.secondPublicKey;
-	if (params.publicKey) {
-		selector.publicKey = params.publicKey;
-		result.sort.push('publicKey');
-	}
-	if (params.username) selector.username = params.username;
-	result.selector = selector;
-
-	if (Object.getOwnPropertyNames(result.selector).length === 0) {
-		if (params.sort) result.sort.push(formatSortString(params.sort));
-		else result.sort.push({ timestamp: 'desc' });
-	} else if (result.sort.length === 0) delete result.sort;
-
-	if (params.limit) result.limit = params.limit;
-	if (Number(params.offset) >= 0) result.skip = params.offset;
-	return result;
-};
 
 const getAccounts = async params => {
 	const accounts = {
@@ -55,53 +21,10 @@ const getAccounts = async params => {
 		meta: {},
 	};
 
-	const db = await pouchdb(config.db.collections.accounts.name);
+	const response = await coreApi.getAccounts(params);
+	if (response.data) accounts.data = response.data;
+	if (response.meta) accounts.meta = response.meta;
 
-	if (!accounts.data.length) {
-		if (
-			params.address
-			|| params.publicKey
-			|| params.secondPublicKey
-			|| params.username
-		) {
-			const inputData = getSelector({
-				...params,
-				limit: params.limit || 10,
-				offset: params.offset || 0,
-			});
-			const dbResult = await db.find(inputData);
-			if (dbResult.length > 0) {
-				const sortProp = params.sort.split(':')[0];
-				const sortOrder = params.sort.split(':')[1];
-				if (sortOrder === 'desc') dbResult.sort((a, b) => {
-					let compareResult;
-					try {
-						if (Number(a[sortProp]) >= 0 && Number(b[sortProp]) >= 0) {
-							compareResult = Number(a[sortProp]) - Number(b[sortProp]);
-						}
-					} catch (err) {
-						compareResult = a[sortProp].localeCompare(b[sortProp]);
-					}
-					return compareResult;
-				});
-
-				accounts.data = dbResult;
-			}
-		}
-	}
-	if (accounts.data.length === 0) {
-		const response = await coreApi.getAccounts(params);
-		if (response.data) accounts.data = response.data;
-		if (response.meta) accounts.meta = response.meta;
-
-		if (accounts.data.length) {
-			const allAccounts = accounts.data.map((account) => {
-				account.id = account.address;
-				return account;
-			});
-			await db.writeBatch(allAccounts);
-		}
-	}
 	return accounts;
 };
 

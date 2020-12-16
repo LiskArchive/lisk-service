@@ -18,7 +18,6 @@ const {
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,
-	cleanFromForks,
 	reloadBlocks,
 } = require('./blocks');
 
@@ -152,7 +151,6 @@ module.exports = {
 	setLastBlock,
 	getLastBlock,
 	reloadBlocks,
-	cleanFromForks,
 	updateFinalizedHeight,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
