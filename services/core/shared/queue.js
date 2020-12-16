@@ -13,9 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const Queue = require('bull');
 
 const config = require('../config');
+
+const logger = Logger();
 
 const initializeQueue = (name) => {
 	const statsQueue = new Queue(name, {
@@ -31,6 +34,18 @@ const initializeQueue = (name) => {
 			removeOnComplete: true,
 		},
 		settings: {},
+	});
+
+	statsQueue.on('completed', (job, result) => {
+		logger.debug(`\n ${name} Job completed`, result);
+	});
+	statsQueue.on('error', (err) => {
+		logger.debug(`\n ${name} Job error`, err);
+	});
+	statsQueue.on('failed', (job, err) => {
+		logger.debug(`\n ${name} Job failed`, err);
+		const { data } = job;
+		statsQueue.add(data, { delay: 60000 });
 	});
 	return statsQueue;
 };
