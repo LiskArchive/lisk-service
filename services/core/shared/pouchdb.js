@@ -155,6 +155,10 @@ const getDbInstance = async (collectionName, idxList = []) => {
 
 	const getCount = async () => (await db.info()).doc_count;
 
+	const compact = () => db.compact();
+
+	const getName = () => collectionName;
+
 	return {
 		write,
 		writeOnce,
@@ -167,6 +171,10 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		deleteBatch,
 		deleteByProperty,
 		getCount,
+
+		// extended functions
+		compact,
+		getName,
 	};
 };
 
