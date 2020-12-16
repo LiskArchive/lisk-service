@@ -34,7 +34,7 @@ config.db = {
 	defaults: {
 		directory: 'db_data',
 		adapter: 'leveldb',
-		auto_compaction: true,
+		auto_compaction: false,
 	},
 	collections: {
 		accounts: {
