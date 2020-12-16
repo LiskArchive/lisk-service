@@ -45,7 +45,7 @@ const initializeQueue = (name) => {
 	statsQueue.on('failed', (job, err) => {
 		logger.debug(`${name} Job failed`, err);
 		const { data } = job;
-		statsQueue.add(data, { delay: 60000 });
+		statsQueue.add(name, data, data.options);
 	});
 	return statsQueue;
 };
