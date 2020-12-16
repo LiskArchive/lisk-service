@@ -20,7 +20,7 @@ const config = require('../config');
 
 const logger = Logger();
 
-const initializeQueue = (name) => {
+const initializeQueue = (name, queueProcess) => {
 	const statsQueue = new Queue(name, {
 		redis: config.endpoints.redis,
 		limiter: {
@@ -35,6 +35,8 @@ const initializeQueue = (name) => {
 		},
 		settings: {},
 	});
+
+	statsQueue.process(queueProcess);
 
 	statsQueue.on('completed', (job, result) => {
 		logger.debug(`${name} Job completed`, result);

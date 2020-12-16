@@ -23,7 +23,6 @@ const requestAll = require('../requestAll');
 const { getTransactions } = require('./transactions');
 
 const queueName = 'transactionStatisticsQueue';
-const transactionStatisticsQueue = initializeQueue(queueName);
 
 const getSelector = (params) => {
 	const result = {};
@@ -121,13 +120,15 @@ const fetchTransactions = async (date, offset = 0) => {
 	return transactions;
 };
 
-transactionStatisticsQueue.process(queueName, async job => {
+const queueProcess = async (job) => {
 	const { date } = job.data;
 	const transactions = await fetchTransactions(date);
 	const statsObject = computeTransactionStats(transactions);
 	const statsList = transformStatsObjectToList(statsObject);
 	return insertToDb(statsList, date);
-});
+};
+
+const transactionStatisticsQueue = initializeQueue(queueName, queueProcess);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
