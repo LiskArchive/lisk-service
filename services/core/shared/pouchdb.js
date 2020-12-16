@@ -40,11 +40,7 @@ const createDb = async (name, idxList = []) => {
 		: config.db.defaults.auto_compaction;
 
 	const db = new PouchDB(name, { adapter, auto_compaction: enableAutoCompaction });
-
-	// const availableIndexes = [];
-	// (await db.getIndexes())
-	// 	.indexes.forEach(index => availableIndexes.push(index.name));
-	// console.log(availableIndexes);
+	db.setMaxListeners(50);
 
 	idxList.forEach(async propName => {
 		let idxName = 'idx-'.concat(db.name.split('/')[1]).concat('-');
@@ -159,6 +155,10 @@ const getDbInstance = async (collectionName, idxList = []) => {
 
 	const getCount = async () => (await db.info()).doc_count;
 
+	const compact = () => db.compact();
+
+	const getName = () => collectionName;
+
 	return {
 		write,
 		writeOnce,
@@ -171,6 +171,10 @@ const getDbInstance = async (collectionName, idxList = []) => {
 		deleteBatch,
 		deleteByProperty,
 		getCount,
+
+		// extended functions
+		compact,
+		getName,
 	};
 };
 

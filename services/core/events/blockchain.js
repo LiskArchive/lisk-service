@@ -18,7 +18,6 @@ const logger = require('lisk-service-framework').Logger();
 const core = require('../shared/core');
 const signals = require('../shared/signals');
 
-const numOfBlocks = 202;
 let localPreviousBlockId;
 
 module.exports = [
@@ -29,12 +28,14 @@ module.exports = [
 			signals.get('newBlock').add(async data => {
 				logger.debug(`New block arrived (${data.id})...`);
 
-				// Check for forks
-				if (!localPreviousBlockId) localPreviousBlockId = data.previousBlockId;
-				if (localPreviousBlockId !== data.previousBlockId) {
-					logger.debug(`Fork detected: reloading the last ${numOfBlocks} blocks`);
-					core.reloadBlocks(numOfBlocks);
+				// Fork detection
+				if (localPreviousBlockId) {
+					if (localPreviousBlockId !== data.previousBlockId) {
+						logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+					}
 				}
+
+				localPreviousBlockId = data.id;
 
 				core.reloadAllPendingTransactions();
 				callback(data);
