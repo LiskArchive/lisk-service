@@ -40,6 +40,7 @@ const createDb = async (name, idxList = []) => {
 		: config.db.defaults.auto_compaction;
 
 	const db = new PouchDB(name, { adapter, auto_compaction: enableAutoCompaction });
+	db.setMaxListeners(50);
 
 	// const availableIndexes = [];
 	// (await db.getIndexes())
