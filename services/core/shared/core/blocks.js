@@ -102,7 +102,7 @@ const preloadBlocksOneByOne = async (n) => {
 	let blockId = (getLastBlock()).previousBlockId;
 	for (let i = 0; i <= n; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		blockId = (await getBlocks({ blockId }, true)).data[0].previousBlockId;
+		blockId = (await getBlocks({ blockId })).data[0].previousBlockId;
 	}
 };
 
@@ -113,7 +113,7 @@ const preloadBlocksByPage = async (n) => {
 	const limit = 100;
 	for (let i = 0; i <= numberOfPages; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		await getBlocks({ sort: 'height:desc', offset: (i * limit) + 1, limit }, true);
+		await getBlocks({ sort: 'height:desc', offset: (i * limit) + 1, limit });
 	}
 };
 
