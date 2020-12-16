@@ -40,7 +40,7 @@ const getTransactions = async params => {
 		async transaction => {
 			if (!transaction.timestamp) {
 				const txBlock = (await getBlocks({ height: transaction.height })).data[0];
-				transaction.timestamp = txBlock.timestamp;
+				transaction.timestamp = txBlock.unixTimestamp;
 			}
 			transaction.unixTimestamp = await coreApi.getUnixTime(transaction.timestamp);
 			return transaction;
@@ -50,7 +50,7 @@ const getTransactions = async params => {
 
 	if (transactions.data.length) {
 		const db = await pouchdb(config.db.collections.transactions.name);
-		await db.writeBatch(transactions.data);
+		db.writeBatch(transactions.data);
 	}
 
 	return transactions;

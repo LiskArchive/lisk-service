@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-core",
-  "version": "0.2.0-alpha.1",
+  "version": "0.2.0-beta.0",
   "description": "Lisk Serivce Core Component",
   "keywords": [
     "lisk",
@@ -33,7 +33,7 @@
     "test:unit": "./node_modules/.bin/jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-transactions": "^4.0.0-alpha.1",
+    "@liskhq/lisk-transactions": "^4.0.0",
     "async": "^3.2.0",
     "big-number": "=2.0.0",
     "bluebird": "^3.7.2",

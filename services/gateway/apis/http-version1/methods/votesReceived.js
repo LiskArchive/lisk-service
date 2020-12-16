@@ -35,6 +35,7 @@ module.exports = {
 		const votersSchema = {};
 		votersSchema[this.swaggerApiPath] = { get: {} };
 		votersSchema[this.swaggerApiPath].get.tags = this.tags;
+		votersSchema[this.swaggerApiPath].get.summary = 'Requests votes received data';
 		votersSchema[this.swaggerApiPath].get.parameters = transformParams('voters', this.params);
 		votersSchema[this.swaggerApiPath].get.responses = {
 			200: {
