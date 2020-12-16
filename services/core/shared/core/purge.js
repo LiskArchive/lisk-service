@@ -48,8 +48,12 @@ const purgeTransactions = async purgeLimit => {
 
 	const purgeHeight = (latestBlockHeight - purgeLimit) > 0
 		? latestBlockHeight - purgeLimit : minBlockHeight;
-	logger.info('Purged '.concat(purgeCount)
-		.concat(' transactions from db contained within blocks at height lower than ').concat(purgeHeight));
+	logger.info(`Purged ${purgeCount} transactions from db contained`
+		.concat(`within blocks at height lower than ${purgeHeight}`));
+
+	// Perform compaction when done
+	db.compact();
+	logger.info(`Performed database compaction for database ${db.getName()}`);
 
 	return purgeCount;
 };
