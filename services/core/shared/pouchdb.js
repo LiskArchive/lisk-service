@@ -42,11 +42,6 @@ const createDb = async (name, idxList = []) => {
 	const db = new PouchDB(name, { adapter, auto_compaction: enableAutoCompaction });
 	db.setMaxListeners(50);
 
-	// const availableIndexes = [];
-	// (await db.getIndexes())
-	// 	.indexes.forEach(index => availableIndexes.push(index.name));
-	// console.log(availableIndexes);
-
 	idxList.forEach(async propName => {
 		let idxName = 'idx-'.concat(db.name.split('/')[1]).concat('-');
 		if (typeof propName === 'string') {
