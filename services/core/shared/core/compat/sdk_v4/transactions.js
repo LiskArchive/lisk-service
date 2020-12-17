@@ -65,8 +65,11 @@ const getTransactions = async params => {
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,
 		async transaction => {
-			const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
-			transaction.unixTimestamp = await getUnixTime(txBlock.timestamp);
+			if (!transaction.timestamp) {
+				const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
+				transaction.timestamp = txBlock.timestamp;
+			}
+			transaction.unixTimestamp = await getUnixTime(transaction.timestamp);
 			return transaction;
 		},
 		{ concurrency: transactions.data.length },
