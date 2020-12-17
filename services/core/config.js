@@ -42,15 +42,6 @@ config.db = {
 			indexes: [],
 			adapter: 'memory',
 		},
-		accounts: {
-			name: 'accounts',
-			indexes: [
-				'address',
-				'publicKey',
-				'secondPublicKey',
-				'username',
-			],
-		},
 		transactions: {
 			name: 'transactions',
 			indexes: [
