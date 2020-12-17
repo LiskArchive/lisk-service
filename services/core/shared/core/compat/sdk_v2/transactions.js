@@ -32,14 +32,16 @@ const getTransactions = async params => {
 	);
 
 	const transactions = await coreApi.getTransactions(params);
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => {
-			transaction.unixTimestamp = await getUnixTime(transaction.timestamp);
-			return transaction;
-		},
-		{ concurrency: transactions.data.length },
-	);
+	if (Object.getOwnPropertyNames(transactions).length) {
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				transaction.unixTimestamp = await getUnixTime(transaction.timestamp);
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
+	}
 	return transactions;
 };
 
