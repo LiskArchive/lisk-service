@@ -26,7 +26,7 @@ pipeline {
 				}
 			}
 		}
-		stage('Build docker images (alphanet)') {
+		stage('Build docker images (betanet)') {
 			agent { node { label 'lisk-service-dev-v4' } }
 			when { branch 'development' }
 			steps {
@@ -34,7 +34,7 @@ pipeline {
 				sh 'make build-gateway'
 			}
 		}
-		stage('Deploy lisk-service (alphanet)') {
+		stage('Deploy lisk-service (betanet)') {
 			agent { node { label 'lisk-service-dev-v4' } }
 			when { branch 'development' }
 			environment {
