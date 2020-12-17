@@ -28,17 +28,22 @@ const createEntities = (n) => {
 	return { users, transactions };
 };
 
-const generate = async () => {
-	const offset = [0, 1 * 10 ** 6];
-	const batchSize = 10000;
-	const n = Math.ceil(offset[1] / batchSize);
+const generate = async (args) => {
+	const batchSizeStr = args[2] || '10000';
+	const batchSizes = batchSizeStr.split(',');
 
-	if (!fs.existsSync(`testdata_${batchSize}`)) fs.mkdirSync(`testdata_${batchSize}`);
-	for (let i = offset[0]; i < n; i++) {
-		const { users, transactions } = createEntities(batchSize);
-		await file.writeJson(`./testdata_${batchSize}/users_${i}.json`, users);
-		await file.writeJson(`./testdata_${batchSize}/transactions_${i}.json`, transactions);
+	for (let i = 0; i < batchSizes.length; i++) {
+		const batchSize = batchSizes[i];
+		const offset = [0, 1 * 10 ** 6];
+		const n = Math.ceil(offset[1] / batchSize);
+
+		if (!fs.existsSync(`testdata_${batchSize}`)) fs.mkdirSync(`testdata_${batchSize}`);
+		for (let i = offset[0]; i < n; i++) {
+			const { users, transactions } = createEntities(batchSize);
+			await file.writeJson(`./testdata_${batchSize}/users_${i}.json`, users);
+			await file.writeJson(`./testdata_${batchSize}/transactions_${i}.json`, transactions);
+		}
 	}
 };
 
-generate();
+generate(process.argv);
