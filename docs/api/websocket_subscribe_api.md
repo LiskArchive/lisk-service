@@ -8,7 +8,7 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 
 ## Table of Contents
 
-<!-- TOC -->autoauto- [Lisk Service Subscribe API Documentation](#lisk-service-subscribe-api-documentation)auto	- [Table of Contents](#table-of-contents)auto	- [Access paths and compatibility](#access-paths-and-compatibility)auto	- [Endpoint Logic](#endpoint-logic)auto	- [Responses](#responses)auto	- [Date Format](#date-format)auto	- [Sample client implementations](#sample-client-implementations)auto		- [Node.js](#nodejs)auto- [Blockchain updates (`/blockchain`)](#blockchain-updates-blockchain)auto	- [`update.block`](#updateblock)auto		- [Response](#response)auto	- [`update.round`](#updateround)auto	- [`update.transactions.confirmed`](#updatetransactionsconfirmed)auto		- [Response](#response-1)auto	- [`update.transactions.unconfirmed`](#updatetransactionsunconfirmed)auto		- [Response](#response-2)autoauto<!-- /TOC -->
+TBD
 
 ## Access paths and compatibility
 
@@ -30,7 +30,7 @@ All responses are returned in the JSON format - application/json.
 
 Each API request has the following structure:
 
-```json
+```jsonc
 {
     "data": {}, // Contains the requested data
     "meta": {
@@ -63,7 +63,7 @@ Updates about a newly forged block with its all data.
 
 ### Response
 
-```json
+```jsonc
 {
     "data": [
         {
@@ -96,7 +96,7 @@ Updates about a newly forged block with its all data.
 
 Updates about current round, delegates and their forging status.
 
-```json
+```jsonc
 {
     "data": {
         "participants": [
@@ -138,7 +138,7 @@ Updates about transactions from the last block.
 
 ### Response
 
-```json
+```jsonc
 {
     "data": [
         {
@@ -173,7 +173,7 @@ Updates about unconfirmed transactions.
 
 ### Response
 
-```json
+```jsonc
 {
     "data": [
         {
