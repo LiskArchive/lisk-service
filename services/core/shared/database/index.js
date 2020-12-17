@@ -15,5 +15,14 @@
  */
 const config = require('../../config');
 
+const databases = {
+    Redis: 'redisdb',
+    PouchDB: 'pouchdb',
+};
+
+let db;
+Object.keys(databases).forEach(key => {
+    if (key === `${config.defaultDB}`) db = databases[key];
+});
 /* eslint-disable-next-line import/no-dynamic-require */
-module.exports = require(`./${config.defaultDB}`);
+module.exports = require(`./${db}`);
