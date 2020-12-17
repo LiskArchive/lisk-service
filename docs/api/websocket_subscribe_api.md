@@ -8,7 +8,7 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 
 ## Table of Contents
 
-TBD
+<!-- TOC -->autoauto- [Lisk Service Subscribe API Documentation](#lisk-service-subscribe-api-documentation)auto	- [Table of Contents](#table-of-contents)auto	- [Access paths and compatibility](#access-paths-and-compatibility)auto	- [Endpoint Logic](#endpoint-logic)auto	- [Responses](#responses)auto	- [Date Format](#date-format)auto	- [Sample client implementations](#sample-client-implementations)auto		- [Node.js](#nodejs)auto- [Blockchain updates (`/blockchain`)](#blockchain-updates-blockchain)auto	- [`update.block`](#updateblock)auto		- [Response](#response)auto	- [`update.round`](#updateround)auto	- [`update.transactions.confirmed`](#updatetransactionsconfirmed)auto		- [Response](#response-1)auto	- [`update.transactions.unconfirmed`](#updatetransactionsunconfirmed)auto		- [Response](#response-2)autoauto<!-- /TOC -->
 
 ## Access paths and compatibility
 
@@ -92,36 +92,7 @@ Updates about a newly forged block with its all data.
 }
 ```
 
-## `update.delegates.forging` _(not implemented)_
-
-Updates about forging delegates, first 101 delegates by voting power.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-        "address": "4935562234363081651L",
-        "approval": "35.77",
-        "missedBlocks": 157,
-        "producedBlocks": 55222,
-        "productivity": "99.72",
-        "publicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-        "secondPublicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-        "rank": 93,
-        "username": "genesis_84",
-        "vote": "4630668157412954"
-        }
-    ],
-    "meta": {
-        "update": 1565107927,
-        "count": 101
-    }, 
-}
-```
-
-## `update.round` _(not implemented)_
+## `update.round`
 
 Updates about current round, delegates and their forging status.
 
@@ -222,83 +193,5 @@ Updates about unconfirmed transactions.
         "count": 1,
         "timestamp": 1573059285
     }
-}
-```
-
-## `update.transactions.<Lisk_ID>` _(not implemented)_
-
-Updates about unconfirmed transactions on per-account basis.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-        "id": "222675625422353767",
-        "amount": "150000000",
-        "fee": "1000000",
-        "type": 0,
-        "timestamp": 28227090,
-        "senderId": "4935562234363081651L",
-        "senderPublicKey": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-        "senderSecondPublicKey": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-        "recipientId": "4935562234363081651L",
-        "recipientPublicKey": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-        "signature": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-        "signSignature": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-        "signatures": [
-            "72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a"
-        ],
-        "asset": {},
-        "receivedAt": "2019-08-07T10:12:25.938Z",
-        "ready": false
-        }
-    ],
-    "meta": {
-        "update": 1565107927,
-        "count": 5
-    }, 
-}
-```
-
-## `update.peers.connected` _(not implemented)_
-
-Updates about active peers.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-            "ip": "210.239.23.62",
-            "httpPort": 8000,
-            "wsPort": 8001,
-            "os": "debian",
-            "version": "v0.8.0",
-            "state": 2,
-            "height": 8350681,
-            "broadhash": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-            "nonce": "sYHEDBKcScaAAAYg",
-            "location": {
-                "city": "Berlin",
-                "countryCode": "DE",
-                "countryName": "Germany",
-                "hostname": "host.210.239.23.62.rev.coltfrance.com",
-                "ip": "210.239.23.62",
-                "latitude": "52.5073",
-                "longitude": "13.3643",
-                "regionCode": "BE",
-                "regionName": "Land Berlin",
-                "timeZone": "Europe/Berlin",
-                "zipCode": "10785"
-            }
-        }
-    ],
-    "meta": {
-        "update": 1565107927,
-        "count": 217
-    }, 
 }
 ```
