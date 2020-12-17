@@ -18,5 +18,4 @@ module.exports = {
     pouchdb: require('./pouchdb'),
     redisdb: require('./redisdb'),
     knex: require('./knex'),
-    mysql: require('./mysql'),
 };
