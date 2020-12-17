@@ -42,6 +42,21 @@ config.db = {
 			indexes: [],
 			adapter: 'memory',
 		},
+		accounts: {
+			name: 'accounts',
+			indexes: [
+				'address',
+				'publicKey',
+				'secondPublicKey',
+				'balance',
+				'username',
+				'delegate',
+				'knowledge',
+				'multisignatureAccount',
+				'transactionCount',
+				['publicKey', 'balance'],
+			],
+		},
 		transactions: {
 			name: 'transactions',
 			indexes: [
@@ -149,5 +164,5 @@ config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
 config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
-config.defaultDB = 'Redis';
+config.defaultDB = process.env.DEFAULT_DB || 'Redis';
 module.exports = config;
