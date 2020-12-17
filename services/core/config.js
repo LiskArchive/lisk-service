@@ -48,13 +48,7 @@ config.db = {
 				'address',
 				'publicKey',
 				'secondPublicKey',
-				'balance',
 				'username',
-				'delegate',
-				'knowledge',
-				'multisignatureAccount',
-				'transactionCount',
-				['publicKey', 'balance'],
 			],
 		},
 		transactions: {
