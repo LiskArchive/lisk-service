@@ -17,7 +17,7 @@ const { Logger } = require('lisk-service-framework');
 const Queue = require('bull');
 const util = require('util');
 
-const config = require('../../../config');
+const config = require('../../config');
 
 const logger = Logger();
 
@@ -28,7 +28,7 @@ const initializeQueue = (queueName, queueProcess) => {
 			max: 8,
 			duration: 20,
 		},
-		prefix: 'bullStatsQueue',
+		prefix: 'Queue',
 		defaultJobOptions: {
 			attempts: 5,
 			timeout: 5 * 60 * 1000, // ms
