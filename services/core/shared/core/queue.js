@@ -23,7 +23,7 @@ const config = require('../../config');
 const logger = Logger();
 
 const initializeQueue = (queueName, queueProcess, options) => {
-	const statsQueue = new Queue(queueName, {
+	const queue = new Queue(queueName, {
 		redis: config.endpoints.redis,
 		limiter: options.limiter,
 		prefix: `queue-${packageJson.name}`,
@@ -31,28 +31,28 @@ const initializeQueue = (queueName, queueProcess, options) => {
 		settings: options.settings,
 	});
 
-	statsQueue.process(queueName, queueProcess);
+	queue.process(queueName, queueProcess);
 
-	statsQueue.on('completed', (job, result) => {
+	queue.on('completed', (job, result) => {
 		logger.debug(`${queueName} Job completed`, result);
 		job.remove();
 	});
-	statsQueue.on('error', (err) => {
+	queue.on('error', (err) => {
 		logger.debug(`${queueName} Job error`, err);
 	});
-	statsQueue.on('failed', (job, err) => {
+	queue.on('failed', (job, err) => {
 		logger.debug(`${queueName} Job failed`, err);
 		const { data } = job;
-		statsQueue.add(queueName, data, data.options);
+		queue.add(queueName, data, data.options);
 		job.remove();
 	});
 
 	setInterval(async () => {
-		const jobCounts = await statsQueue.getJobCounts();
+		const jobCounts = await queue.getJobCounts();
 		logger.debug(`Queue counters: ${util.inspect(jobCounts)}`);
 	}, 30000);
 
-	return statsQueue;
+	return queue;
 };
 
 module.exports = { initializeQueue };
