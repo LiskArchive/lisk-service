@@ -21,8 +21,8 @@ const config = require('../config');
 
 const logger = Logger();
 
-const initializeQueue = (name) => {
-	const statsQueue = new Queue(name, {
+const initializeQueue = (queueName, queueProcess) => {
+	const statsQueue = new Queue(queueName, {
 		redis: config.endpoints.redis,
 		limiter: {
 			max: 8,
@@ -37,18 +37,20 @@ const initializeQueue = (name) => {
 		settings: {},
 	});
 
-	// statsQueue.process(queueProcess);
+	statsQueue.process(queueName, queueProcess);
 
 	statsQueue.on('completed', (job, result) => {
-		logger.debug(`${name} Job completed`, result);
+		logger.debug(`${queueName} Job completed`, result);
+		job.remove();
 	});
 	statsQueue.on('error', (err) => {
-		logger.debug(`${name} Job error`, err);
+		logger.debug(`${queueName} Job error`, err);
 	});
 	statsQueue.on('failed', (job, err) => {
-		logger.debug(`${name} Job failed`, err);
+		logger.debug(`${queueName} Job failed`, err);
 		const { data } = job;
-		statsQueue.add(name, data, data.options);
+		statsQueue.add(queueName, data, data.options);
+		job.remove();
 	});
 
 	setInterval(async () => {
