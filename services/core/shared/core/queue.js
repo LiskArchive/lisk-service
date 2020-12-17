@@ -17,30 +17,25 @@ const { Logger } = require('lisk-service-framework');
 const Queue = require('bull');
 const util = require('util');
 
+const packageJson = require('../../package.json');
 const config = require('../../config');
 
 const logger = Logger();
 
-const initializeQueue = (queueName, queueProcess) => {
+const initializeQueue = (queueName, queueProcess, options) => {
 	const statsQueue = new Queue(queueName, {
 		redis: config.endpoints.redis,
-		limiter: {
-			max: 8,
-			duration: 20,
-		},
-		prefix: 'Queue',
-		defaultJobOptions: {
-			attempts: 5,
-			timeout: 5 * 60 * 1000, // ms
-			removeOnComplete: true,
-		},
-		settings: {},
+		limiter: options.limiter,
+		prefix: `queue-${packageJson.name}`,
+		defaultJobOptions: options.defaultJobOptions,
+		settings: options.settings,
 	});
 
 	statsQueue.process(queueName, queueProcess);
 
 	statsQueue.on('completed', (job, result) => {
 		logger.debug(`${queueName} Job completed`, result);
+		job.remove();
 	});
 	statsQueue.on('error', (err) => {
 		logger.debug(`${queueName} Job error`, err);
@@ -49,12 +44,14 @@ const initializeQueue = (queueName, queueProcess) => {
 		logger.debug(`${queueName} Job failed`, err);
 		const { data } = job;
 		statsQueue.add(queueName, data, data.options);
+		job.remove();
 	});
 
 	setInterval(async () => {
 		const jobCounts = await statsQueue.getJobCounts();
 		logger.debug(`Queue counters: ${util.inspect(jobCounts)}`);
 	}, 30000);
+
 	return statsQueue;
 };
 

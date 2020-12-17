@@ -23,6 +23,7 @@ const { initializeQueue } = require('./queue');
 const getDbInstance = require('../pouchdb');
 
 const queueName = 'transactionStatisticsQueue';
+const queueOptions = config.queue[queueName] || config.queue.defaults;
 
 const getSelector = (params) => {
 	const result = {};
@@ -136,7 +137,7 @@ const queueProcess = async (job) => {
 	}
 };
 
-const transactionStatisticsQueue = initializeQueue(queueName, queueProcess); // initialize queue
+const transactionStatisticsQueue = initializeQueue(queueName, queueProcess, queueOptions);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
