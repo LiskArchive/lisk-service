@@ -16,12 +16,12 @@
 const moment = require('moment');
 
 const config = require('../../config');
-const { initializeQueue } = require('../queue');
+const { initializeQueue } = require('./queues/queue');
 const getDbInstance = require('../pouchdb');
-const queueProcess = require('./transactionStatisticsQueue');
+const queueProcess = require('./queues/jobs/transactionStatistics');
 
 const queueName = 'transactionStatisticsQueue';
-const transactionStatisticsQueue = initializeQueue(queueName, queueProcess);
+const transactionStatisticsQueue = initializeQueue(queueName, queueProcess); // initialize queue
 
 const getSelector = (params) => {
 	const result = {};

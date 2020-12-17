@@ -17,7 +17,7 @@ const { Logger } = require('lisk-service-framework');
 const Queue = require('bull');
 const util = require('util');
 
-const config = require('../config');
+const config = require('../../../config');
 
 const logger = Logger();
 
@@ -41,7 +41,6 @@ const initializeQueue = (queueName, queueProcess) => {
 
 	statsQueue.on('completed', (job, result) => {
 		logger.debug(`${queueName} Job completed`, result);
-		job.remove();
 	});
 	statsQueue.on('error', (err) => {
 		logger.debug(`${queueName} Job error`, err);
@@ -50,7 +49,6 @@ const initializeQueue = (queueName, queueProcess) => {
 		logger.debug(`${queueName} Job failed`, err);
 		const { data } = job;
 		statsQueue.add(queueName, data, data.options);
-		job.remove();
 	});
 
 	setInterval(async () => {
