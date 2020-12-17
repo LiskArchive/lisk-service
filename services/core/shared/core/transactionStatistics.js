@@ -18,7 +18,7 @@ const moment = require('moment');
 const config = require('../../config');
 const { initializeQueue } = require('./queues/queue');
 const getDbInstance = require('../pouchdb');
-const queueProcess = require('./queues/jobs/transactionStatistics');
+const queueProcess = require('./queues/processes/transactionStatistics');
 
 const queueName = 'transactionStatisticsQueue';
 const transactionStatisticsQueue = initializeQueue(queueName, queueProcess); // initialize queue
