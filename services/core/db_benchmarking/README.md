@@ -32,8 +32,8 @@ __Test execution__:
 ```
 ### Notes:
 
-  - The data generator generates a total of 1 million user records and 122 million (approx) transactions
-  - The default batch size is 10000 for users and 122000 (approx) for transactions
+  - The data generator generates a total of 1 million user records and 12 million (approx.) transactions
+  - The default batch size is 10000 for users and 122000 (approx.) for transactions
   - The scripts accept batch sizes as command line inputs. Multiple batch sizes can be specified as comma separated values (check [Script usage](#script-usage))
   - Please generate the test data before running the tests for the desired batch sizes
 

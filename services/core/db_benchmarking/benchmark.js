@@ -17,7 +17,7 @@ const benchmark = async (args) => {
     const txnDbRedis = await redisdb('transaction', txnIndexes);
 
     for (let i = 0; i < batchSizes.length; i++) {
-        const batchSize = batchSizes[i];
+        const batchSize = Number(batchSizes[i]);
 
         const results = {};
 
@@ -71,8 +71,8 @@ const benchmark = async (args) => {
         results['total_timetaken_user_redis'] = timetaken_user_redis;
         results['avg_timetaken_user_knex'] = timetaken_user_knex / userCount;
         results['avg_timetaken_user_redis'] = timetaken_user_redis / userCount;
-        results['avg_timetaken_user_knex_batch'] = timetaken_user_knex / batchSize;
-        results['avg_timetaken_user_redis_batch'] = timetaken_user_redis / batchSize;
+        results['avg_timetaken_user_knex_batch'] = timetaken_user_knex / userFiles.length;
+        results['avg_timetaken_user_redis_batch'] = timetaken_user_redis / userFiles.length;
 
         // Compute total time taken to insert transactions
         let txnCount = 0;
@@ -97,14 +97,14 @@ const benchmark = async (args) => {
             // console.timeEnd(`insertTxnRedis_${i}`);
             timetaken_txn_redis += (rt1 - rt0);
         }
-        results['txn_batchSize'] = Math.floor(txnCount / batchSize);
+        results['txn_batchSize'] = Math.floor(txnCount / txnFiles.length);
         results['total_txnCount'] = txnCount;
         results['total_timetaken_txn_knex'] = timetaken_txn_knex;
         results['total_timetaken_txn_redis'] = timetaken_txn_redis;
         results['avg_timetaken_txn_knex'] = timetaken_txn_knex / userCount;
         results['avg_timetaken_txn_redis'] = timetaken_txn_redis / userCount;
-        results['avg_timetaken_txn_knex_batch'] = timetaken_txn_knex / (txnCount / batchSize);
-        results['avg_timetaken_txn_redis_batch'] = timetaken_txn_redis / (txnCount / batchSize);
+        results['avg_timetaken_txn_knex_batch'] = timetaken_txn_knex / txnFiles.length;
+        results['avg_timetaken_txn_redis_batch'] = timetaken_txn_redis / txnFiles.length;
 
         await new Promise((resolve, reject) => {
             const resultsDir = 'results';
