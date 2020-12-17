@@ -40,9 +40,10 @@ const getTransactions = async params => {
 		async transaction => {
 			if (!transaction.timestamp) {
 				const txBlock = (await getBlocks({ height: transaction.height })).data[0];
-				transaction.timestamp = txBlock.unixTimestamp;
+				transaction.unixTimestamp = txBlock.unixTimestamp;
+			} else {
+				transaction.unixTimestamp = await coreApi.getUnixTime(transaction.timestamp);
 			}
-			transaction.unixTimestamp = await coreApi.getUnixTime(transaction.timestamp);
 			return transaction;
 		},
 		{ concurrency: transactions.data.length },
