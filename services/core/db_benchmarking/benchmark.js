@@ -27,11 +27,10 @@ const benchmark = async (args) => {
 
         // Compute total time taken to insert users
         let userCount = 0;
-        let timetaken_user_knex = 0;
-        let timetaken_user_redis = 0;
-        // for (let i = 0; i < 50; i++) {
-        for (let i = 0; i < userFiles.length; i++) {
-            const usersOriginal = await file.readJson(`./testdata_${batchSize}/${userFiles[i]}`);
+        let timetakenUserKnex = 0;
+        let timetakenUserRedis = 0;
+        for (let j = 0; j < userFiles.length; j++) {
+            const usersOriginal = await file.readJson(`./testdata_${batchSize}/${userFiles[j]}`);
             const users = usersOriginal.map(user => {
                 user.address_street = user.address.street;
                 user.address_suite = user.address.suite;
@@ -52,35 +51,34 @@ const benchmark = async (args) => {
             userCount += users.length;
 
             // console.time(`insertUserKnex_${i}`);
-            const kt0 = Date.now();;
+            const kt0 = Date.now();
             await userDbSql.writeBatch(users);
             const kt1 = Date.now();
             // console.timeEnd(`insertUserKnex_${i}`);
-            timetaken_user_knex += (kt1 - kt0);
+            timetakenUserKnex += (kt1 - kt0);
 
             // console.time(`insertUserRedis_${i}`);
             const rt0 = Date.now();
             await userDbRedis.writeBatch(users);
             const rt1 = Date.now();
             // console.timeEnd(`insertUserRedis_${i}`);
-            timetaken_user_redis += (rt1 - rt0);
+            timetakenUserRedis += (rt1 - rt0);
         }
-        results['user_batchSize'] = batchSize;
-        results['total_userCount'] = userCount;
-        results['total_timetaken_user_knex'] = timetaken_user_knex;
-        results['total_timetaken_user_redis'] = timetaken_user_redis;
-        results['avg_timetaken_user_knex'] = timetaken_user_knex / userCount;
-        results['avg_timetaken_user_redis'] = timetaken_user_redis / userCount;
-        results['avg_timetaken_user_knex_batch'] = timetaken_user_knex / userFiles.length;
-        results['avg_timetaken_user_redis_batch'] = timetaken_user_redis / userFiles.length;
+        results.user_batchSize = batchSize;
+        results.total_userCount = userCount;
+        results.total_timetaken_user_knex = timetakenUserKnex;
+        results.total_timetaken_user_redis = timetakenUserRedis;
+        results.avg_timetaken_user_knex = timetakenUserKnex / userCount;
+        results.avg_timetaken_user_redis = timetakenUserRedis / userCount;
+        results.avg_timetaken_user_knex_batch = timetakenUserKnex / userFiles.length;
+        results.avg_timetaken_user_redis_batch = timetakenUserRedis / userFiles.length;
 
         // Compute total time taken to insert transactions
         let txnCount = 0;
-        let timetaken_txn_knex = 0;
-        let timetaken_txn_redis = 0;
-        // for (let i = 0; i < 50; i++) {
-        for (let i = 0; i < txnFiles.length; i++) {
-            const txns = await file.readJson(`./testdata_${batchSize}/${txnFiles[i]}`);
+        let timetakenTxnKnex = 0;
+        let timetakenTxnRedis = 0;
+        for (let k = 0; k < txnFiles.length; k++) {
+            const txns = await file.readJson(`./testdata_${batchSize}/${txnFiles[k]}`);
             txnCount += txns.length;
 
             // console.time(`insertTxnKnex_${i}`);
@@ -88,23 +86,23 @@ const benchmark = async (args) => {
             await txnDbSql.writeBatch(txns);
             const kt1 = Date.now();
             // console.timeEnd(`insertTxnKnex_${i}`);
-            timetaken_txn_knex += (kt1 - kt0);
+            timetakenTxnKnex += (kt1 - kt0);
 
             // console.time(`insertTxnRedis_${i}`);
             const rt0 = Date.now();
             await txnDbRedis.writeBatch(txns);
             const rt1 = Date.now();
             // console.timeEnd(`insertTxnRedis_${i}`);
-            timetaken_txn_redis += (rt1 - rt0);
+            timetakenTxnRedis += (rt1 - rt0);
         }
-        results['txn_batchSize'] = Math.floor(txnCount / txnFiles.length);
-        results['total_txnCount'] = txnCount;
-        results['total_timetaken_txn_knex'] = timetaken_txn_knex;
-        results['total_timetaken_txn_redis'] = timetaken_txn_redis;
-        results['avg_timetaken_txn_knex'] = timetaken_txn_knex / userCount;
-        results['avg_timetaken_txn_redis'] = timetaken_txn_redis / userCount;
-        results['avg_timetaken_txn_knex_batch'] = timetaken_txn_knex / txnFiles.length;
-        results['avg_timetaken_txn_redis_batch'] = timetaken_txn_redis / txnFiles.length;
+        results.txn_batchSize = Math.floor(txnCount / txnFiles.length);
+        results.total_txnCount = txnCount;
+        results.total_timetaken_txn_knex = timetakenTxnKnex;
+        results.total_timetaken_txn_redis = timetakenTxnRedis;
+        results.avg_timetaken_txn_knex = timetakenTxnKnex / userCount;
+        results.avg_timetaken_txn_redis = timetakenTxnRedis / userCount;
+        results.avg_timetaken_txn_knex_batch = timetakenTxnKnex / txnFiles.length;
+        results.avg_timetaken_txn_redis_batch = timetakenTxnRedis / txnFiles.length;
 
         await new Promise((resolve, reject) => {
             const resultsDir = 'results';
@@ -113,7 +111,7 @@ const benchmark = async (args) => {
                 if (err) {
                     console.error(err);
                     reject(err);
-                };
+                }
                 console.log(`Test results saved to: './${resultsDir}/result_${batchSize}.json'`);
                 resolve();
             });

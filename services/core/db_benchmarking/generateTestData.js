@@ -3,7 +3,7 @@ const faker = require('faker/locale/en');
 const file = require('./fileUtils');
 
 const createEntity = faker.helpers.contextualCard;
-const createTransaction = faker.helpers.createTransaction;
+const { createTransaction } = faker.helpers;
 
 const createEntities = (n) => {
 	const users = [];
@@ -38,10 +38,10 @@ const generate = async (args) => {
 		const n = Math.ceil(offset[1] / batchSize);
 
 		if (!fs.existsSync(`testdata_${batchSize}`)) fs.mkdirSync(`testdata_${batchSize}`);
-		for (let i = offset[0]; i < n; i++) {
+		for (let j = offset[0]; j < n; j++) {
 			const { users, transactions } = createEntities(batchSize);
-			await file.writeJson(`./testdata_${batchSize}/users_${i}.json`, users);
-			await file.writeJson(`./testdata_${batchSize}/transactions_${i}.json`, transactions);
+			await file.writeJson(`./testdata_${batchSize}/users_${j}.json`, users);
+			await file.writeJson(`./testdata_${batchSize}/transactions_${j}.json`, transactions);
 		}
 	}
 };

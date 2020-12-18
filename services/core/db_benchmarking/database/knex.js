@@ -51,7 +51,7 @@ const getDbInstance = async (tableName) => {
     const write = async (row) => knex.transaction(async trx => {
         const inserts = await trx(tableName).insert(row).onConflict('id').merge()
             .transacting(trx);
-        console.info(`${rows.length} row inserted/updated in '${tableName}' table`);
+        console.info(`${inserts.length} row inserted/updated in '${tableName}' table`);
         return inserts;
     });
 
@@ -77,7 +77,7 @@ const getDbInstance = async (tableName) => {
                 return inserts;
             });
         }
-    }
+    };
 
     const findAll = async () => knex.select().table(tableName);
 
