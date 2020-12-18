@@ -18,4 +18,5 @@ module.exports = {
     pouchdb: require('./pouchdb'),
     redis: require('./redis'),
     knex: require('./knex'),
+    sqlite3: require('./knex_sqlite3'),
 };

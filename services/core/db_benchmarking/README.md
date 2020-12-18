@@ -7,7 +7,7 @@ The databases under trial were:
   - SQLite
   - MySQL
 
-However, the PoC currently only runs the tests for Redis and MySQL.
+However, the PoC currently only runs the tests and produces results for Redis and MySQL.
 
 ## Instructions
 
