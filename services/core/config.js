@@ -32,7 +32,7 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
  */
 config.db = {
 	defaults: {
-		db: 'redisdb',
+		db: 'redis',
 		directory: 'db_data',
 		adapter: 'leveldb',
 		auto_compaction: false,
