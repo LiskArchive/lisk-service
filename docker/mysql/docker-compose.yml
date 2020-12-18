@@ -8,8 +8,6 @@ services:
     image: mysql:5.7
     volumes:
       - db-data:/var/lib/mysql
-    ports:
-      - 3306:3306
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${ENV_LISK_DB_ROOT_PASSWORD}
@@ -18,8 +16,10 @@ services:
       MYSQL_PASSWORD: ${ENV_LISK_DB_PASSWORD}
     expose:
       - 3306
-    # healthcheck: // TODO: https://hub.docker.com/r/healthcheck/mysql/
-    #   test: ['CMD', 'root', 'ping', '-h', 'localhost']
+    healthcheck:
+      test: ['CMD', 'mysql', '-h"$HOSTNAME"', '-u"$MYSQL_USER"', '-p"$MYSQL_PASSWORD"', '--silent', -e"use $MYSQL_DATABASE"]
+      interval: 1m
+      timeout: 5s
 
 volumes:
   db-data:
