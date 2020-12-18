@@ -153,7 +153,7 @@ config.queue = {
 	defaults: {
 		limiter: {
 			max: 8,
-			duration: 20,
+			duration: 20, // millisecs
 		},
 		defaultJobOptions: {
 			attempts: 5,
@@ -165,7 +165,7 @@ config.queue = {
 	transactionStatisticsQueue: {
 		limiter: {
 			max: 8,
-			duration: 20,
+			duration: 20, //  millisecs
 		},
 		defaultJobOptions: {
 			attempts: 5,
