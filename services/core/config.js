@@ -150,4 +150,31 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
+config.queue = {
+	defaults: {
+		limiter: {
+			max: 8,
+			duration: 20, // millisecs
+		},
+		defaultJobOptions: {
+			attempts: 5,
+			timeout: 5 * 60 * 1000, // millisecs
+			removeOnComplete: true,
+		},
+		settings: {},
+	},
+	transactionStatisticsQueue: {
+		limiter: {
+			max: 8,
+			duration: 20, //  millisecs
+		},
+		defaultJobOptions: {
+			attempts: 5,
+			timeout: 5 * 60 * 1000, // millisecs
+			removeOnComplete: true,
+		},
+		settings: {},
+	},
+};
+
 module.exports = config;
