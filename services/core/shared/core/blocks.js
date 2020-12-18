@@ -18,65 +18,10 @@ const util = require('util');
 
 const logger = Logger();
 
-const config = require('../../config');
-const db = require('../database')[config.db.collections.blocks.db || config.db.defaults.db];
 const coreApi = require('./compat');
 const { getUsernameByAddress } = require('./delegateUtils');
 
 let lastBlock = {};
-
-const getSelector = (params) => {
-	const result = {};
-	const selector = {};
-	if (params.height) selector.height = Number(params.height);
-	if (params.blockId) selector.id = String(params.blockId);
-	if (params.fromTimestamp) selector.unixTimestamp = { $gte: Number(params.fromTimestamp) };
-	if (params.toTimestamp) selector.unixTimestamp = { $lte: Number(params.toTimestamp) };
-	if (params.generatorPublicKey) selector.generatorPublicKey = String(params.generatorPublicKey);
-
-	if (params.limit) result.limit = Number(params.limit);
-	if (Number(params.offset) >= 0) result.skip = Number(params.offset);
-
-	// Not supported by the API but useful for caching
-	if (params.numberOfTransactions) selector.numberOfTransactions = {
-		$gte: Number(params.numberOfTransactions),
-	};
-	if (params.isFinal) selector.isFinal = params.isFinal;
-	if (params.isImmutable) selector.isImmutable = params.isImmutable;
-
-	result.selector = selector;
-
-	if (params.limit) result.limit = params.limit;
-	if (Number(params.offset) >= 0) result.skip = params.offset;
-
-	return result;
-};
-
-const pushToDb = async (blockDb, blocks) => {
-	const propList = [
-		'blockSignature',
-		'generatorAddress',
-		'generatorPublicKey',
-		'height',
-		'id',
-		'numberOfTransactions',
-		'payloadHash',
-		'payloadLength',
-		'previousBlockId',
-		'reward',
-		'totalAmount',
-		'totalFee',
-		'totalForged',
-		'unixTimestamp',
-		'version',
-	];
-	const out = blocks.map(o => {
-		const obj = {};
-		propList.map(prop => obj[prop] = o[prop]);
-		return obj;
-	});
-	return blockDb.writeBatch(out);
-};
 
 const setLastBlock = block => {
 	if (block && block.height && block.height > lastBlock.height) lastBlock = block;
@@ -89,27 +34,6 @@ const waitForLastBlock = () => new Promise((resolve) => {
 		if (block && block.height > 0) resolve(getLastBlock());
 	}, 500);
 });
-
-const getBlocksFromCache = async params => {
-	const blockDb = await db(config.db.collections.blocks.name);
-
-	const inputData = getSelector({
-		...params,
-		limit: params.limit || 10,
-		offset: params.offset || 0,
-	});
-
-	const dbResult = await blockDb.find(inputData);
-
-	const updateConfirmations = blocks => blocks.map((block) => ({
-		...block,
-		confirmations: (getLastBlock().height) - block.height + (getLastBlock().confirmations),
-	}));
-
-	if (dbResult.length && dbResult.every(item => item)) return updateConfirmations(dbResult);
-
-	return [];
-};
 
 const getBlocksFromServer = async params => {
 	const blocks = {
@@ -127,27 +51,16 @@ const getBlocksFromServer = async params => {
 
 	if (blocks.data.length) {
 		blocks.data.forEach(block => setLastBlock(block));
-
-		const blockDb = await db(config.db.collections.blocks.name);
-		const finalBlocks = blocks.data;
-		await pushToDb(blockDb, finalBlocks);
 	}
 
 	return blocks;
 };
 
-const getBlocks = async (params = {}, skipCache = false) => {
+const getBlocks = async (params = {}) => {
 	let blocks = {
 		data: [],
 		meta: {},
 	};
-
-	if (skipCache !== true && (params.blockId
-		|| params.height
-		|| params.isFinal === true
-		|| params.isImmutable === true)) { // try to get from cache
-		blocks.data = await getBlocksFromCache(params);
-	}
 
 	if (blocks.data.length === 0) {
 		blocks = await getBlocksFromServer(params);
@@ -189,7 +102,7 @@ const preloadBlocksOneByOne = async (n) => {
 	let blockId = (getLastBlock()).previousBlockId;
 	for (let i = 0; i <= n; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		blockId = (await getBlocks({ blockId }, true)).data[0].previousBlockId;
+		blockId = (await getBlocks({ blockId })).data[0].previousBlockId;
 	}
 };
 
@@ -200,28 +113,8 @@ const preloadBlocksByPage = async (n) => {
 	const limit = 100;
 	for (let i = 0; i <= numberOfPages; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		await getBlocks({ sort: 'height:desc', offset: (i * limit) + 1, limit }, true);
+		await getBlocks({ sort: 'height:desc', offset: (i * limit) + 1, limit });
 	}
-};
-
-const cleanFromForks = async (n) => {
-	const blockDb = await db(config.db.collections.blocks.name);
-	const blocks = await blockDb.find({
-		selector: {
-			height: { $gte: (getLastBlock()).height - n },
-		},
-		sort: ['height'],
-	});
-	const orphanList = blocks.reverse().filter((block, idx) => {
-		if (idx + 1 >= blocks.length) return false;
-		const prevBlock = blocks[idx + 1];
-		if (prevBlock.id !== block.previousBlockId) return true;
-		return false;
-	});
-
-	// TODO: orphanList removal from DB
-	logger.debug(`Found ${orphanList.length} orphaned blocks...`);
-	return orphanList;
 };
 
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
@@ -231,11 +124,6 @@ const initBlocks = (async () => {
 	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
 	logger.debug('Storing the first block');
 	setLastBlock(block.data[0]);
-
-	const numOfBlocksPrefetch = config.cacheNumOfBlocks;
-	logger.debug(`Preloading first ${numOfBlocksPrefetch} blocks`);
-	await reloadBlocks(numOfBlocksPrefetch);
-	logger.debug('Finished block prefetch');
 })();
 
 module.exports = {
@@ -246,6 +134,5 @@ module.exports = {
 	getLastBlock,
 	waitForLastBlock,
 	initBlocks,
-	cleanFromForks,
 	reloadBlocks,
 };

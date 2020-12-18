@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const coreApi = require('./coreApi');
 const {
 	getBlockchainTime,
 	validateTimestamp,
+	getUnixTime,
 } = require('../common');
 
 const getTransactions = async params => {
@@ -29,6 +32,16 @@ const getTransactions = async params => {
 	);
 
 	const transactions = await coreApi.getTransactions(params);
+	if (Object.getOwnPropertyNames(transactions).length) {
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				transaction.unixTimestamp = await getUnixTime(transaction.timestamp);
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
+	}
 	return transactions;
 };
 
