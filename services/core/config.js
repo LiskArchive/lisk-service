@@ -149,4 +149,5 @@ config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
 config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
+
 module.exports = config;
