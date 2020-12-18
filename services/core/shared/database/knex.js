@@ -13,25 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const fs = require('fs');
 const { Logger } = require('lisk-service-framework');
-const config = require('../../config');
 
 const logger = Logger();
 
-const connectionPool = {};
-
-const createDb = async (dbDataDir, tableName) => {
-    // TODO: Must be config based
-    const client = 'sqlite3';
-
-    // TODO: Update connection object based on client
-    const connection = { filename: `./${dbDataDir}/${tableName}_db.sqlite3` };
-
+const createDb = async () => {
     const knex = require('knex')({
-        client,
-        connection,
-        useNullAsDefault: true,
+        client: 'mysql',
+        version: '5.7',
+        connection: {
+            host: '127.0.0.1',
+            user: 'lisk',
+            password: 'password',
+            database: 'lisk',
+        },
+        // useNullAsDefault: true,
         log: {
             warn(message) { logger.warn(message); },
             error(message) { logger.error(message); },
@@ -39,42 +35,53 @@ const createDb = async (dbDataDir, tableName) => {
             debug(message) { logger.debug(message); },
         },
         migrations: {
-            directory: './shared/database/knex_migrations',
+            directory: './database/knex_migrations',
             loadExtensions: ['.js'],
         },
     });
 
+    await knex.migrate.latest();
+
     return knex;
 };
 
+let dbConnection = null;
+
 const getDbInstance = async (tableName) => {
-    if (!connectionPool[tableName]) {
-        const dbDataDir = config.db.defaults.directory;
-        if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+    if (!dbConnection) dbConnection = await createDb();
 
-        connectionPool[tableName] = await createDb(dbDataDir, tableName);
-        await connectionPool[tableName].migrate.latest();
-    }
-
-    const knex = connectionPool[tableName];
+    const knex = dbConnection;
 
     const write = async (row) => knex.transaction(async trx => {
-        const inserts = await trx(tableName).insert(row).onConflict(['id']).merge()
+        const inserts = await trx(tableName).insert(row).onConflict('id').merge()
             .transacting(trx);
-
-        logger.debug(`${inserts.length} ${tableName} saved/updated.`);
+        logger.info(`${inserts.length} row inserted/updated in '${tableName}' table`);
         return inserts;
     });
 
     const writeOnce = async (row) => write(row);
 
-    const writeBatch = async (rows) => knex.transaction(async trx => {
-        const inserts = await Promise.all(rows.map(row => trx(tableName).insert(row).onConflict(['id']).merge()
-            .transacting(trx)));
+    const writeBatch = async (rows) => {
+        try {
+            const chunkSize = 1000;
+            const ids = await knex.batchInsert(tableName, rows, chunkSize);
+            logger.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+            return ids;
+        } catch (error) {
+            const errCode = error.code;
+            const errMessage = error.message.split(`${errCode}: `)[1] || error.message;
+            const errCause = errMessage.split(': ')[0];
+            logger.debug('Encountered error with batch insert:', errCause,
+                '\nRe-attempting to update/merge the conflicted transactions one at a time: ');
 
-        logger.debug(`${inserts.length} ${tableName} saved/updated.`);
-        return inserts;
-    });
+            return knex.transaction(async trx => {
+                const inserts = await Promise.all(rows.map(row => trx(tableName).insert(row).onConflict('id').merge()
+                    .transacting(trx)));
+                logger.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+                return inserts;
+            });
+        }
+    };
 
     const findAll = async () => knex.select().table(tableName);
 
