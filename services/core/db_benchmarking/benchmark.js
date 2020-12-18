@@ -1,7 +1,7 @@
 const fs = require('fs');
 const file = require('./fileUtils');
 
-const { redisdb, knex } = require('./database');
+const { redis, knex } = require('./database');
 
 const benchmark = async (args) => {
     const batchSizeStr = args[2] || '10000';
@@ -13,8 +13,8 @@ const benchmark = async (args) => {
     const userIndexes = ['id', 'btcAddress', 'username'];
     const txnIndexes = ['id', 'amount', 'date', 'userId', 'btcAddress'];
 
-    const userDbRedis = await redisdb('user', userIndexes);
-    const txnDbRedis = await redisdb('transaction', txnIndexes);
+    const userDbRedis = await redis('user', userIndexes);
+    const txnDbRedis = await redis('transaction', txnIndexes);
 
     for (let i = 0; i < batchSizes.length; i++) {
         const batchSize = Number(batchSizes[i]);
