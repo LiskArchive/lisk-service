@@ -157,7 +157,7 @@ config.queue = {
 		},
 		defaultJobOptions: {
 			attempts: 5,
-			timeout: 5 * 60 * 1000,
+			timeout: 5 * 60 * 1000, // millisecs
 			removeOnComplete: true,
 		},
 		settings: {},
@@ -169,7 +169,7 @@ config.queue = {
 		},
 		defaultJobOptions: {
 			attempts: 5,
-			timeout: 5 * 60 * 1000,
+			timeout: 5 * 60 * 1000, // millisecs
 			removeOnComplete: true,
 		},
 		settings: {},

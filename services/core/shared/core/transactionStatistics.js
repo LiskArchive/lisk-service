@@ -23,7 +23,7 @@ const { initializeQueue } = require('./queue');
 const getDbInstance = require('../pouchdb');
 
 const queueName = 'transactionStatisticsQueue';
-const queueOptions = config.queue[queueName] || config.queue.defaults;
+const queueOptions = config.queue[queueName];
 
 const getSelector = (params) => {
 	const result = {};
