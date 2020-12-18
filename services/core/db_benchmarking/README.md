@@ -41,3 +41,4 @@ __Test execution__:
 
   - Redis server is available on `localhost:6379`
   - MySQL server is available on `localhost:3306`
+  - `lisk` database already exists on the running instance of MySQL server
