@@ -122,7 +122,7 @@ const fetchTransactions = async (date, offset = 0) => {
 	return transactions;
 };
 
-const queueProcess = async (job) => {
+const queueJob = async (job) => {
 	const { date } = job.data;
 	if (!date) {
 		return Promise.reject(new Error('Missing date'));
@@ -137,7 +137,7 @@ const queueProcess = async (job) => {
 	}
 };
 
-const transactionStatisticsQueue = initializeQueue(queueName, queueProcess, queueOptions);
+const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOptions);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
