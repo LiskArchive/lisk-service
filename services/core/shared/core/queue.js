@@ -22,8 +22,7 @@ const config = require('../../config');
 
 const logger = Logger();
 
-const initializeQueue = (queueName = 'defaultQueue', requestedJob, options = config.queue.defaults) => {
-	const queueJob = requestedJob ? requestedJob : () => {};
+const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.queue.defaults) => {
 	const queue = new Queue(queueName, {
 		redis: config.endpoints.redis,
 		limiter: options.limiter,
