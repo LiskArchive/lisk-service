@@ -6,11 +6,31 @@ The Subscribe API is sometimes called publish/subscribe or Event-Driven API. The
 
 Lisk Service leverages the two-way communication approach by utilizing the WebSocket library responsible for updating users about changes in the blockchain network and markets.
 
-## Table of Contents
+## <a name='table-of-contents'></a>Table of Contents
 
-TBD
+<!-- vscode-markdown-toc -->
+* [Table of Contents](#table-of-contents)
+* [Access paths and compatibility](#access-paths-and-compatibility)
+* [Endpoint Logic](#endpoint-logic)
+* [Responses](#responses)
+* [Date Format](#date-format)
+* [Sample client implementations](#sample-client-implementations)
+    * [Node.js](#node.js)
+* [`update.block`](#`update.block`)
+    * [Response](#response)
+* [`update.round`](#`update.round`)
+* [`update.transactions.confirmed`](#`update.transactions.confirmed`)
+    * [Response](#response-1)
+* [`update.transactions.unconfirmed`](#`update.transactions.unconfirmed`)
+    * [Response](#response-2)
 
-## Access paths and compatibility
+<!-- vscode-markdown-toc-config
+	numbering=false
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+## <a name='access-paths-and-compatibility'></a>Access paths and compatibility
 
 The blockchain update API can be accessed by the following path `https://service.lisk.io/blockchain`.
 
@@ -20,11 +40,11 @@ You can also access the testnet network by using the `https://testnet-service.li
 
 The Lisk Service WebSocket API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard. The specification below contains numerous examples how to use the API in practice.
 
-## Endpoint Logic
+## <a name='endpoint-logic'></a>Endpoint Logic
 
 The logic of the endpoints comes as follows: the method naming is always based on the following pattern: `<action>.<entity>`, where the `action` is equivalent to method type performed on server (ie. update) and `entity` is a part of the application logic, ex. `accounts`, `transactions`.
 
-## Responses
+## <a name='responses'></a>Responses
 
 All responses are returned in the JSON format - application/json.
 
@@ -41,13 +61,13 @@ Each API request has the following structure:
 }
 ```
 
-## Date Format
+## <a name='date-format'></a>Date Format
 
 In the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
 
-## Sample client implementations
+## <a name='sample-client-implementations'></a>Sample client implementations
 
-### Node.js
+### <a name='node.js'></a>Node.js
 
 ```javascript
 const io = require('socket.io-client');
@@ -57,11 +77,11 @@ connection.on('update.block', (block) => { (...) });
 
 # Blockchain updates (`/blockchain`)
 
-## `update.block`
+## <a name='`update.block`'></a>`update.block`
 
 Updates about a newly forged block with its all data.
 
-### Response
+### <a name='response'></a>Response
 
 ```jsonc
 {
@@ -92,7 +112,7 @@ Updates about a newly forged block with its all data.
 }
 ```
 
-## `update.round`
+## <a name='`update.round`'></a>`update.round`
 
 Updates about current round, delegates and their forging status.
 
@@ -132,11 +152,11 @@ Updates about current round, delegates and their forging status.
 }
 ```
 
-## `update.transactions.confirmed`
+## <a name='`update.transactions.confirmed`'></a>`update.transactions.confirmed`
 
 Updates about transactions from the last block.
 
-### Response
+### <a name='response-1'></a>Response
 
 ```jsonc
 {
@@ -167,11 +187,11 @@ Updates about transactions from the last block.
 }
 ```
 
-## `update.transactions.unconfirmed`
+## <a name='`update.transactions.unconfirmed`'></a>`update.transactions.unconfirmed`
 
 Updates about unconfirmed transactions.
 
-### Response
+### <a name='response-2'></a>Response
 
 ```jsonc
 {
