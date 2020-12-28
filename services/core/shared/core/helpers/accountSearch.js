@@ -18,24 +18,21 @@ const db = require('../../database')[config.db.collections.accounts.db || config
 
 const getAddressByPublickKey = async (publicKey) => {
     const accountdb = await db(config.db.collections.accounts.name);
-    const indexName = `${config.db.collections.accounts.name}_publicKey`;
-    const address = await accountdb.searchByIndex(indexName, publicKey);
+    const [address] = await accountdb.find(publicKey);
     if (address) return address;
     return null;
 };
 
 const getAddressBySecPublickKey = async (publicKey) => {
     const accountdb = await db(config.db.collections.accounts.name);
-    const indexName = `${config.db.collections.accounts.name}_secondPublicKey`;
-    const address = await accountdb.searchByIndex(indexName, publicKey);
+    const [address] = await accountdb.find(publicKey);
     if (address) return address;
     return null;
 };
 
 const getAddressByusername = async (username) => {
     const accountdb = await db(config.db.collections.accounts.name);
-    const indexName = `${config.db.collections.accounts.name}_username`;
-    const address = await accountdb.searchByIndex(indexName, username);
+    const [address] = await accountdb.find(username);
     if (address) return address;
     return null;
 };

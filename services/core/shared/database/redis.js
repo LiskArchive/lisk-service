@@ -124,13 +124,6 @@ const getDbInstance = async (collectionName) => {
 
     const getCount = () => db.hlen(collectionName);
 
-    /**
-    * @deprecated Will be deleted soon. Use findById instead.
-    */
-    const searchByIndex = async (indexName, id) => new Promise(resolve => {
-        db.hgetall(indexName, async (err, result) => resolve(result[id]));
-    });
-
     return {
         write,
         writeOnce,
@@ -143,7 +136,6 @@ const getDbInstance = async (collectionName) => {
         deleteBatch,
         deleteByProperty,
         getCount,
-        searchByIndex,
     };
 };
 
