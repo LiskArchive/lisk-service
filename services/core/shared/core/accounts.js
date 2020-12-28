@@ -43,7 +43,7 @@ const getAccounts = async params => {
 			delete account.consecutiveMissedBlocks;
 		}
 		return account;
-	})
+	});
 
 	return accounts;
 };
