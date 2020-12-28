@@ -25,6 +25,26 @@ const getAccounts = async params => {
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
+	accounts.data.forEach(account => {
+		if (!account.isDelegate) {
+			delete account.delegate;
+			delete account.approval;
+			delete account.missedBlocks;
+			delete account.producedBlocks;
+			delete account.productivity;
+			delete account.rank;
+			delete account.rewards;
+			delete account.username;
+			delete account.vote;
+			delete account.isBanned;
+			delete account.status;
+			delete account.pomHeights;
+			delete account.lastForgedHeight;
+			delete account.consecutiveMissedBlocks;
+		}
+		return account;
+	})
+
 	return accounts;
 };
 
