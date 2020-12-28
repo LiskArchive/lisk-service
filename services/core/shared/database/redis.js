@@ -35,19 +35,29 @@ const getDbInstance = async (collectionName) => {
         return db.hmset(collectionName, doc.id, JSON.stringify(doc));
     };
 
-    const writeBatch = async (docs) => Promise.all(docs.map(async doc => write(doc)));
-
     const writeOnce = async (doc) => write(doc);
 
-    const findById = async (id) => new Promise(resolve => {
+    const writeBatch = async (docs) => Promise.all(docs.map(async doc => write(doc)));
+
+    const findAll = async () => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
-            const res = [];
-            if (result && result[id]) res.push(JSON.parse(result[id]));
+            if (err) logger.error(`Error retrieving ${collectionName} data: `, err);
+
+            const res = Object.values(result).map(v => JSON.parse(v));
             return resolve(res);
         });
     });
 
-    const find = async (params) => new Promise((resolve) => {
+    const find = async (params) => {
+        const offset = params.offset || 0;
+        const limit = params.limit || 10;
+
+        delete params.offset;
+        delete params.limit;
+
+        // TODO: Remove after PouchDB specific code is removed from the shared layer
+        if (params.selector) params = params.selector;
+
         const filterByParams = (item, lParams) => {
             const paramMatches = Object.entries(lParams)
                 .filter(([, v]) => v)
@@ -56,24 +66,36 @@ const getDbInstance = async (collectionName) => {
             // return !paramMatches.some(isMatch => !isMatch);
         };
 
-        db.hgetall(collectionName, async (err, result) => {
-            let res = Object.keys(result).map((key) => JSON.parse(result[key]));
-            res = res.filter(item => filterByParams(item, params.selector));
+        const result = await findAll();
+
+        const parsedResult = Object.keys(result).map((key) => JSON.parse(result[key]));
+        const filteredResult = parsedResult.filter(item => filterByParams(item, params));
+
+        return filteredResult.slice(offset, offset + limit);
+    };
+
+    const findById = async (id) => new Promise(resolve => {
+        db.hget(collectionName, id, async (err, result) => {
+            if (err) logger.error(`Error retrieving ${collectionName} data with id ${id}: `, err);
+
+            const res = [];
+            if (result && result[id]) res.push(JSON.parse(result[id]));
             return resolve(res);
         });
     });
 
-    const findAll = async () => new Promise(resolve => {
-        db.hgetall(collectionName, async (err, result) => {
-            const res = Object.values(result).map(v => JSON.parse(v));
-            return resolve(res);
-        });
-    });
+    const findOneByProperty = async (prop, value) => {
+        if (indexes.includes(prop)) {
+            const id = ['timestamp'].includes(prop)
+                ? await db.zrangebyscore(collectionName, value, value, 'LIMIT', 0, 1)
+                : await db.hget(`${collectionName}_${prop}`, value);
 
-    const findOneByProperty = async (property, value) => {
-        const selector = {};
-        selector[property] = value;
-        return find({ selector });
+            return findById(id);
+        }
+
+        const params = {};
+        params[prop] = value;
+        return find(params);
     };
 
     const deleteById = async (id) => db.hdel(collectionName, id);
@@ -83,6 +105,29 @@ const getDbInstance = async (collectionName) => {
         return db.del(collectionName);
     };
 
+    const deleteByProperty = async (prop, value) => {
+        if (indexes.includes(prop)) {
+            const id = ['timestamp'].includes(prop)
+                ? await db.zrangebyscore(collectionName, value, value, 'LIMIT', 0, 1)
+                : await db.hget(`${collectionName}_${prop}`, value);
+
+            db.hdel(`${collectionName}_${prop}`, value);
+
+            return deleteById(id);
+        }
+
+        const params = {};
+        params[prop] = value;
+        const [entry] = await find(params);
+
+        return entry.id ? deleteById(entry.id) : 0;
+    };
+
+    const getCount = () => db.hlen(collectionName);
+
+    /**
+    * @deprecated Will be deleted soon. Use findById instead.
+    */
     const searchByIndex = async (indexName, id) => new Promise(resolve => {
         db.hgetall(indexName, async (err, result) => resolve(result[id]));
     });
@@ -97,8 +142,8 @@ const getDbInstance = async (collectionName) => {
         findOneByProperty,
         deleteById,
         deleteBatch,
-        // deleteByProperty,
-        // getCount,
+        deleteByProperty,
+        getCount,
         searchByIndex,
     };
 };
