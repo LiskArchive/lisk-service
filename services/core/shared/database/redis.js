@@ -67,9 +67,7 @@ const getDbInstance = async (collectionName) => {
         };
 
         const result = await findAll();
-
-        const parsedResult = Object.keys(result).map((key) => JSON.parse(result[key]));
-        const filteredResult = parsedResult.filter(item => filterByParams(item, params));
+        const filteredResult = result.filter(item => filterByParams(item, params));
 
         return filteredResult.slice(offset, offset + limit);
     };
@@ -79,7 +77,7 @@ const getDbInstance = async (collectionName) => {
             if (err) logger.error(`Error retrieving ${collectionName} data with id ${id}: `, err);
 
             const res = [];
-            if (result && result[id]) res.push(JSON.parse(result[id]));
+            if (result) res.push(JSON.parse(result));
             return resolve(res);
         });
     });
@@ -95,14 +93,15 @@ const getDbInstance = async (collectionName) => {
 
         const params = {};
         params[prop] = value;
+        params.limit = 1;
         return find(params);
     };
 
     const deleteById = async (id) => db.hdel(collectionName, id);
 
     const deleteBatch = async (docs) => {
-        if (docs instanceof Array && docs.length === 0) return null;
-        return db.del(collectionName);
+        if (docs instanceof Array && docs.length === 0) return 0;
+        return (await Promise.all(docs.map(doc => deleteById(doc.id)))).reduce((a, b) => a + b, 0);
     };
 
     const deleteByProperty = async (prop, value) => {
@@ -118,9 +117,9 @@ const getDbInstance = async (collectionName) => {
 
         const params = {};
         params[prop] = value;
-        const [entry] = await find(params);
+        const results = await find(params);
 
-        return entry.id ? deleteById(entry.id) : 0;
+        return deleteBatch(results);
     };
 
     const getCount = () => db.hlen(collectionName);
