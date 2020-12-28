@@ -26,7 +26,10 @@ const getAccounts = async params => {
 	if (response.meta) accounts.meta = response.meta;
 
 	accounts.data.forEach(account => {
-		if (!account.isDelegate) {
+		if (
+			!!Object.getOwnPropertyDescriptor(account, 'isDelegate') && !account.isDelegate
+			|| account.delegate && !account.delegate.rank
+		) {
 			delete account.delegate;
 			delete account.approval;
 			delete account.missedBlocks;
