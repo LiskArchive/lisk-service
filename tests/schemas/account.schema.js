@@ -21,7 +21,7 @@ const {
 } = require('./delegate.schema');
 
 const delegateSchema = {
-	approval: Joi.number().min(0).required(),
+	approval: Joi.number().min(0).optional(),
 	missedBlocks: Joi.number().integer().min(0).optional(),
 	producedBlocks: Joi.number().integer().min(0).optional(),
 	productivity: Joi.string().optional(),
@@ -44,17 +44,17 @@ const knowledgeSchema = {
 const multisignatureAccountMemberSchema = {
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),
-	secondPublicKey: Joi.string().required(),
+	secondPublicKey: Joi.string().optional(),
 	balance: Joi.number().required(),
-	unconfirmedSignature: Joi.number().required(),
+	unconfirmedSignature: Joi.number().optional(),
 	isMandatory: Joi.boolean().optional(),
 };
 
 const multisignatureAccountSchema = {
 	lifetime: Joi.number().optional(),
 	minimalNumberAcccounts: Joi.number().optional(),
-	numberOfReqSignatures: Joi.number().required(),
-	members: Joi.array().items(multisignatureAccountMemberSchema).required(),
+	numberOfReqSignatures: Joi.number().optional(),
+	members: Joi.array().items(multisignatureAccountMemberSchema).optional(),
 };
 
 const multisignatureMembershipSchema = {
