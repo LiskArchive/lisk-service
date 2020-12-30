@@ -57,9 +57,22 @@ const getTransactions = async params => {
 			{ concurrency: blocks.data.length },
 		);
 	} else {
+		let timestampSortOrder;
+		if (params.sort.includes('timestamp')) {
+			if (params.address) params.sort = params.sort.replace('timestamp', 'nonce');
+			else {
+				timestampSortOrder = params.sort.split(':')[1];
+				delete params.sort;
+			}
+		}
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
+
+		if (timestampSortOrder) transactions.data.sort(
+			(t1, t2) => timestampSortOrder === 'asc'
+				? t1.height - t2.height : t2.height - t1.height
+		);
 	}
 
 	transactions.data = await BluebirdPromise.map(
