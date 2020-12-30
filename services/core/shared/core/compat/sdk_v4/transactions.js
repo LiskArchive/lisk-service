@@ -61,7 +61,7 @@ const getTransactions = async params => {
 		if (params.sort.includes('timestamp')) {
 			if (params.address) params.sort = params.sort.replace('timestamp', 'nonce');
 			else {
-				timestampSortOrder = params.sort.split(':')[1];
+				[, timestampSortOrder] = params.sort.split(':');
 				delete params.sort;
 			}
 		}
@@ -71,7 +71,7 @@ const getTransactions = async params => {
 
 		if (timestampSortOrder) transactions.data.sort(
 			(t1, t2) => timestampSortOrder === 'asc'
-				? t1.height - t2.height : t2.height - t1.height
+				? t1.height - t2.height : t2.height - t1.height,
 		);
 	}
 
