@@ -27,6 +27,15 @@ const { getLastBlock } = require('./blocks');
 const logger = Logger();
 const sdkVersion = coreApi.getSDKVersion();
 
+const delegateStatus = {
+	ACTIVE: 'active',
+	STANDBY: 'standby',
+	BANNED: 'banned',
+	PUNISHED: 'punished',
+	NON_ELIGIBLE: 'non-eligible',
+};
+
+let rawNextForgers = [];
 let nextForgers = [];
 let delegateList = [];
 
@@ -52,18 +61,22 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	return relevantDelegates.length;
 };
 
-const getRankAndStatus = async allDelegates => {
-	const numActiveForgers = 101;
+const computeDelegateRank = async () => {
+	if (sdkVersion >= 4) {
+		delegateList.sort(delegateComparator);
+		delegateList.map((delegate, index) => {
+			delegate.rank = index + 1;
+			return delegate;
+		});
+	}
+};
 
-	const delegateStatus = {
-		ACTIVE: 'active',
-		STANDBY: 'standby',
-		BANNED: 'banned',
-		PUNISHED: 'punished',
-		NON_ELIGIBLE: 'non-eligible',
-	};
+const computeDelegateStatus = async () => {
+	// TODO: These feature should be handled by the compatibility layer
+	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
+
 	const lastestBlock = getLastBlock();
-	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
+	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
 
 	const verifyIfPunished = delegate => {
@@ -73,14 +86,13 @@ const getRankAndStatus = async allDelegates => {
 		return isPunished;
 	};
 
-	if (sdkVersion >= 4) allDelegates.sort(delegateComparator);
-	allDelegates.map((delegate, index) => {
+	delegateList.map((delegate) => {
 		if (sdkVersion < 4) {
 			if (activeNextForgersList.includes(delegate.account.address)) {
 				delegate.status = delegateStatus.ACTIVE;
 			} else delegate.status = delegateStatus.STANDBY;
 		} else {
-			delegate.rank = index + 1;
+			logger.debug('Determine delegate status');
 			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
 			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
 			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
@@ -91,7 +103,7 @@ const getRankAndStatus = async allDelegates => {
 
 		return delegate;
 	});
-	return allDelegates;
+	return delegateList;
 };
 
 const getDelegates = async params => {
@@ -107,10 +119,10 @@ const getDelegates = async params => {
 			|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
 			|| (acc.username && acc.username === params.username),
 	);
-	if (delegates.data.length === 0) {
-		const dbResult = await coreApi.getDelegates(params);
-		if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
-	}
+	// if (delegates.data.length === 0) {
+	// 	const dbResult = await coreApi.getDelegates(params);
+	// 	if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
+	// }
 	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = params.offset || 0;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
@@ -131,14 +143,8 @@ const loadAllDelegates = async () => {
 		{ concurrency: delegateList.length },
 	);
 	if (delegateList.length) {
-		logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
+		logger.info(`Updated delegate list with ${delegateList.length} delegates.`);
 	}
-};
-
-const computeDelegateRankAndStatus = async () => {
-	const result = await getAllDelegates();
-	const allDelegates = await getRankAndStatus(result);
-	if (allDelegates.length) delegateList = allDelegates;
 };
 
 const getNextForgers = async params => {
@@ -160,21 +166,28 @@ const getNextForgers = async params => {
 };
 
 const loadAllNextForgers = async () => {
+	// TODO: These feature should be handled by the compatibility layer
 	const maxCount = (sdkVersion < 4) ? 101 : 103;
-	const rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
+	rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
 
-	nextForgers = await BluebirdPromise.map(
-		rawNextForgers,
-		async forger => delegateList.find(o => o.address === forger.address));
-
-	logger.info(`Initialized/Updated next forgers cache with ${nextForgers.length} delegates.`);
+	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
 
-const reloadNextForgersCache = () => loadAllNextForgers();
+const resolveNextForgers = async () => {
+	nextForgers = BluebirdPromise.map(rawNextForgers,
+		async forger => delegateList.find(o => o.address === forger.address));
+};
+
+const reloadNextForgersCache = () => {
+	loadAllNextForgers();
+	resolveNextForgers();
+};
 
 const reload = async () => {
 	await loadAllDelegates();
-	await computeDelegateRankAndStatus();
+	await loadAllNextForgers();
+	await computeDelegateRank();
+	await computeDelegateStatus();
 };
 
 module.exports = {
