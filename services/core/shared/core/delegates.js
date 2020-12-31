@@ -178,9 +178,9 @@ const resolveNextForgers = async () => {
 		async forger => delegateList.find(o => o.address === forger.address));
 };
 
-const reloadNextForgersCache = () => {
-	loadAllNextForgers();
-	resolveNextForgers();
+const reloadNextForgersCache = async () => {
+	await loadAllNextForgers();
+	await resolveNextForgers();
 };
 
 const reload = async () => {
