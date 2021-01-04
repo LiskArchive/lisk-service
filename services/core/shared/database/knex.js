@@ -14,19 +14,17 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const config = require('../../config');
 
 const logger = Logger();
 
-const createDb = async (migrationDir) => {
+const connectionPool = {};
+
+const createDb = async (migrationDir, connEndpoint) => {
     const knex = require('knex')({
         client: 'mysql',
         version: '5.7',
-        connection: {
-            host: '127.0.0.1',
-            user: 'lisk',
-            password: 'password',
-            database: 'lisk',
-        },
+        connection: connEndpoint,
         // useNullAsDefault: true,
         log: {
             warn(message) { logger.warn(message); },
@@ -45,12 +43,15 @@ const createDb = async (migrationDir) => {
     return knex;
 };
 
-let dbConnection = null;
+const getDbInstance = async (tableName, migrationDir = './database/knex_migrations', connEndpoint = config.endpoints.mysql) => {
+    const userName = connEndpoint.split('//')[1].split(':')[0];
+    const hostPort = connEndpoint.split('@')[1].split('/')[0];
+    const connPoolKey = [userName, hostPort].join('@');
+    if (!connectionPool[connPoolKey]) {
+        connectionPool[connPoolKey] = await createDb(migrationDir, connEndpoint);
+    }
 
-const getDbInstance = async (tableName, migrationDir = './database/knex_migrations') => {
-    if (!dbConnection) dbConnection = await createDb(migrationDir);
-
-    const knex = dbConnection;
+    const knex = connectionPool[connPoolKey];
 
     const write = async (row) => knex.transaction(async trx => {
         const inserts = await trx(tableName).insert(row).onConflict('id').merge()
