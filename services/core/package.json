@@ -33,6 +33,7 @@
     "test:unit": "./node_modules/.bin/jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
+    "@liskhq/lisk-api-client": "^5.0.1",
     "@liskhq/lisk-transactions": "^4.0.0",
     "async": "^3.2.0",
     "big-number": "=2.0.0",
@@ -42,6 +43,7 @@
     "commander": "=5.0.0",
     "compression": "^1.7.4",
     "debug": "=4.1.1",
+    "lisk-elements": "^5.0.1",
     "lisk-service-framework": "http://static-data.lisk.io/lisk-service-framework-1.0.0-beta.0.tgz",
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
