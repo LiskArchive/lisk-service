@@ -56,6 +56,15 @@ const parseParams = (p) => {
 };
 
 const validateInputParams = (rawInputParams = {}, specs) => {
+	const validateFromParamPairings = (paramsRequired, inputParamKeys, paramPairings) => {
+		const result = paramsRequired
+			&& !inputParamKeys.some(key => paramPairings.some(entry => entry.includes(key)))
+			? paramPairings
+			: [];
+
+		return result;
+	};
+
 	const checkMissingParams = (routeParams, requestParams) => {
 		const requiredParamList = Object.keys(routeParams)
 			.filter(o => routeParams[o].required === true);
@@ -85,18 +94,14 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 	const paramPairings = specs.validParamPairings || [];
 	const inputParamKeys = Object.getOwnPropertyNames(inputParams);
 
-	const paramReport = { required: [] };
-	if (
-		specs.paramsRequired
-		&& !inputParamKeys.some(key => paramPairings.some(entry => entry.includes(key)))
-	) paramReport.required = paramPairings;
-
-	if (paramReport.required.length) return paramReport;
-
-	Object.assign(paramReport, parseParams({
+	const paramReport = parseParams({
 		swaggerParams: parseAllParams(specParams, inputParams),
 		inputParams: { ...parseDefaultParams(specParams), ...inputParams },
-	}));
+	});
+
+	paramReport.required = validateFromParamPairings(
+		specs.paramsRequired, inputParamKeys, paramPairings);
+	if (paramReport.required.length) return paramReport;
 
 	paramReport.missing = checkMissingParams(specParams, inputParams);
 
