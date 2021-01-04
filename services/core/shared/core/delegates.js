@@ -136,12 +136,15 @@ const loadAllDelegates = async () => {
 	await BluebirdPromise.map(
 		delegateList,
 		async delegate => {
-			await cacheRedisDelegates.set(delegate.account.address, delegate);
+			delegate.address = delegate.account.address;
+			delegate.publicKey = delegate.account.publicKey;
+			await cacheRedisDelegates.set(delegate.address, delegate);
 			await cacheRedisDelegates.set(delegate.username, delegate);
 			return delegate;
 		},
 		{ concurrency: delegateList.length },
 	);
+
 	if (delegateList.length) {
 		logger.info(`Updated delegate list with ${delegateList.length} delegates.`);
 	}
@@ -174,8 +177,9 @@ const loadAllNextForgers = async () => {
 };
 
 const resolveNextForgers = async () => {
-	nextForgers = BluebirdPromise.map(rawNextForgers,
+	nextForgers = await BluebirdPromise.map(rawNextForgers,
 		async forger => delegateList.find(o => o.address === forger.address));
+	logger.debug('Finished collecting delegates');
 };
 
 const reloadNextForgersCache = async () => {
