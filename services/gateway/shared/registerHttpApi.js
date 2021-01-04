@@ -160,6 +160,11 @@ const registerApi = (apiName, config) => {
 			const routeAlias = `${req.method.toUpperCase()} ${req.$alias.path}`;
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
+			if (paramReport.onefrom.length) {
+				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter(s): ${paramReport.onefrom.join(', ')}`);
+				return;
+			}
+
 			if (paramReport.missing.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
 				return;

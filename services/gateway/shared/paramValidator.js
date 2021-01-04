@@ -72,8 +72,6 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 			return acc;
 		}, {});
 
-	const specParams = specs.params || {};
-
 	const looseSpecParams = (specPar) => Object.keys(specPar).reduce((acc, cur) => {
 		if (specPar[cur].type === 'number' || specPar[cur].type === 'boolean') {
 			acc[cur] = { convert: true, ...specPar[cur] };
@@ -81,7 +79,12 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 		return acc;
 	}, {}); // adds convert: true
 
+	const specParams = specs.params || {};
 	const inputParams = rawInputParams;
+
+	const oneParamFrom = specParams.onefrom || [];
+	const inputParamKeys = Object.getOwnPropertyNames(inputParams);
+	if (!oneParamFrom.some(key => inputParamKeys.includes(key))) return { onefrom: oneParamFrom };
 
 	const paramReport = parseParams({
 		swaggerParams: parseAllParams(specParams, inputParams),
