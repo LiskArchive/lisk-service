@@ -14,10 +14,13 @@
  *
  */
 const { createWSClient } = require('@liskhq/lisk-api-client');
+const config = require('../../../../config');
+
+const liskAddress = config.endpoints.liskWs;
 
 const createAPIClient = async () => {
     // const client = await createIPCClient('~/.lisk/lisk-core');
-    const client = await createWSClient('wss://api.lisk-service.io');
+    const client = await createWSClient(liskAddress);
     return client;
 };
 

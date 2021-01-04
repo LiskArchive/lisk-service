@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { getNetworkStatus } = require('./network');
+
 module.exports = {
-	...require('../sdk_v4'),
+    getNetworkStatus,
 };
