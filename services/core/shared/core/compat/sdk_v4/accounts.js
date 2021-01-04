@@ -116,9 +116,10 @@ const getAccounts = async params => {
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
-	multisignatureAccount.numberOfReqSignatures = account.keys.numberOfSignatures;
-	multisignatureAccount.members = [];
-	if (multisignatureAccount.numberOfReqSignatures) {
+	if (account.keys.numberOfSignatures) {
+		multisignatureAccount.numberOfReqSignatures = account.keys.numberOfSignatures;
+		multisignatureAccount.members = [];
+
 		await BluebirdPromise.map(
 			account.keys.mandatoryKeys, async publicKey => {
 				const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
