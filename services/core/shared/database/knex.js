@@ -86,20 +86,16 @@ const getDbInstance = async (tableName) => {
     const findAll = async () => knex.select().table(tableName);
 
     const find = async (params) => {
-        const whereParams = params.selector;
-        const res = await knex.select().table(tableName).where(whereParams);
+        const res = await knex.select().table(tableName).where(params);
         return res;
     };
 
-    const findById = async (id) => {
-        const params = { selector: { id } };
-        return find(params);
-    };
+    const findById = async (id) => find(id);
 
     const findOneByProperty = async (property, value) => {
-        const selector = {};
-        selector[property] = value;
-        return find({ selector });
+        const params = {};
+        params[property] = value;
+        return find(params);
     };
 
     const deleteByProperty = async (property, value) => {
