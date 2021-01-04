@@ -1,14 +1,16 @@
 const fs = require('fs');
 const file = require('./fileUtils');
 
-const { redis, knex } = require('./database');
+const { redis, knex } = require('../shared/database');
+
+const migrationDir = './knex_migrations';
 
 const benchmark = async (args) => {
     const batchSizeStr = args[2] || '10000';
     const batchSizes = batchSizeStr.split(',');
 
-    const userDbSql = await knex('users');
-    const txnDbSql = await knex('transactions');
+    const userDbSql = await knex('users', migrationDir);
+    const txnDbSql = await knex('transactions', migrationDir);
 
     const userIndexes = ['id', 'btcAddress', 'username'];
     const txnIndexes = ['id', 'amount', 'date', 'userId', 'btcAddress'];

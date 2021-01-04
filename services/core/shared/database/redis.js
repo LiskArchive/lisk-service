@@ -20,15 +20,16 @@ const config = require('../../config');
 
 const logger = Logger();
 
-const getDbInstance = async (collectionName) => {
+const getDbInstance = async (collectionName, customIndexes = []) => {
     const db = new redis(config.endpoints.redis);
-    const { indexes } = config.db.collections[collectionName];
+    const collection = config.db.collections[collectionName] || { indexes: [] };
+    const { indexes } = collection;
 
     db.on('error', (err) => logger.error('connection issues ', err));
 
     const write = async (doc) => {
         // Secondary indexes mapping properties to entity IDs
-        indexes.forEach(prop => {
+        [...indexes, ...customIndexes].forEach(prop => {
             if (['timestamp'].includes(prop)) db.zadd(collectionName, Number(doc[prop]), doc.id);
             else if (doc[prop]) db.hmset(`${collectionName}_${prop}`, doc[prop], doc.id);
         });

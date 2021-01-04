@@ -14,6 +14,9 @@
  *
  */
 const fs = require('fs');
+const { Logger } = require('lisk-service-framework');
+
+const logger = Logger();
 
 const connectionPool = {};
 
@@ -29,10 +32,10 @@ const createDb = async (dbDataDir, tableName) => {
         connection,
         useNullAsDefault: true,
         log: {
-            warn(message) { console.warn(message); },
-            error(message) { console.error(message); },
-            deprecate(message) { console.deprecate(message); },
-            debug(message) { console.debug(message); },
+            warn(message) { logger.warn(message); },
+            error(message) { logger.error(message); },
+            deprecate(message) { logger.deprecate(message); },
+            debug(message) { logger.debug(message); },
         },
         migrations: {
             directory: './shared/database/knex_migrations',
@@ -58,7 +61,7 @@ const getDbInstance = async (tableName) => {
         const inserts = await trx(tableName).insert(row).onConflict(['id']).merge()
             .transacting(trx);
 
-        console.info(`${inserts.length} row inserted/updated in '${tableName}' table`);
+        logger.info(`${inserts.length} row inserted/updated in '${tableName}' table`);
         return inserts;
     });
 
@@ -68,7 +71,7 @@ const getDbInstance = async (tableName) => {
         const inserts = await Promise.all(rows.map(row => trx(tableName).insert(row).onConflict(['id']).merge()
             .transacting(trx)));
 
-        console.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+        logger.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
         return inserts;
     });
 

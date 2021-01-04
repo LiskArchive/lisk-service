@@ -17,7 +17,7 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const createDb = async () => {
+const createDb = async (migrationDir) => {
     const knex = require('knex')({
         client: 'mysql',
         version: '5.7',
@@ -35,7 +35,7 @@ const createDb = async () => {
             debug(message) { logger.debug(message); },
         },
         migrations: {
-            directory: './database/knex_migrations',
+            directory: migrationDir,
             loadExtensions: ['.js'],
         },
     });
@@ -47,8 +47,8 @@ const createDb = async () => {
 
 let dbConnection = null;
 
-const getDbInstance = async (tableName) => {
-    if (!dbConnection) dbConnection = await createDb();
+const getDbInstance = async (tableName, migrationDir = './database/knex_migrations') => {
+    if (!dbConnection) dbConnection = await createDb(migrationDir);
 
     const knex = dbConnection;
 
@@ -86,11 +86,13 @@ const getDbInstance = async (tableName) => {
     const findAll = async () => knex.select().table(tableName);
 
     const find = async (params) => {
+        // TODO: Remove after PouchDB specific code is removed from the shared layer
+        if (params.selector) params = params.selector;
         const res = await knex.select().table(tableName).where(params);
         return res;
     };
 
-    const findById = async (id) => find(id);
+    const findById = async (id) => find({ id });
 
     const findOneByProperty = async (property, value) => {
         const params = {};
