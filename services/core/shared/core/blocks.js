@@ -29,13 +29,15 @@ const setLastBlock = block => {
 };
 const getLastBlock = () => lastBlock;
 const waitForLastBlock = () => new Promise((resolve) => {
-	const interval = setInterval(() => {
+	const checkLastBlock = (interval) => {
 		const block = getLastBlock();
 		if (block && block.height > 0) {
-			clearInterval(interval);
+			if (interval) clearInterval(interval);
 			resolve(getLastBlock());
 		}
-	}, 500);
+	};
+	checkLastBlock();
+	const interval = setInterval(() => checkLastBlock(interval), 500);
 });
 
 const getBlocksFromServer = async params => {
