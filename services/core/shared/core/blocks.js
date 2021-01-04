@@ -29,9 +29,12 @@ const setLastBlock = block => {
 };
 const getLastBlock = () => lastBlock;
 const waitForLastBlock = () => new Promise((resolve) => {
-	setInterval(() => {
+	const interval = setInterval(() => {
 		const block = getLastBlock();
-		if (block && block.height > 0) resolve(getLastBlock());
+		if (block && block.height > 0) {
+			clearInterval(interval);
+			resolve(getLastBlock());
+		}
 	}, 500);
 });
 
