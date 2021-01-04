@@ -20,8 +20,12 @@ const config = require('../../config');
 
 const logger = Logger();
 
-const getDbInstance = async (collectionName, customIndexes = []) => {
-    const db = new redis(config.endpoints.redis);
+const getDbInstance = async (
+    collectionName,
+    customIndexes = [],
+    endpoint = config.endpoints.redis,
+    ) => {
+    const db = new redis(endpoint);
     const collection = config.db.collections[collectionName] || { indexes: [] };
     const { indexes } = collection;
 
