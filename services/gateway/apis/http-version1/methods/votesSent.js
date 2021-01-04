@@ -30,8 +30,14 @@ module.exports = {
 		secpubkey: { optional: true, type: 'string', min: 64, max: 64 },
 		limit: { optional: true, min: 1, max: 100, type: 'number' },
 		offset: { optional: true, min: 0, type: 'number' },
-		onefrom: ['address', 'username', 'publickey', 'secpubkey'],
 	},
+	paramsRequired: true,
+	validParamPairings: [
+		['address'],
+		['username'],
+		['publickey'],
+		['secpubkey'],
+	],
 	get schema() {
 		const votesSchema = {};
 		votesSchema[this.swaggerApiPath] = { get: {} };

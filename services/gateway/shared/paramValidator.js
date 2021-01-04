@@ -82,14 +82,21 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 	const specParams = specs.params || {};
 	const inputParams = rawInputParams;
 
-	const oneParamFrom = specParams.onefrom || [];
+	const paramPairings = specs.validParamPairings || [];
 	const inputParamKeys = Object.getOwnPropertyNames(inputParams);
-	if (!oneParamFrom.some(key => inputParamKeys.includes(key))) return { onefrom: oneParamFrom };
 
-	const paramReport = parseParams({
+	const paramReport = { required: [] };
+	if (
+		specs.paramsRequired
+		&& !inputParamKeys.some(key => paramPairings.some(entry => entry.includes(key)))
+	) paramReport.required = paramPairings;
+
+	if (paramReport.required.length) return paramReport;
+
+	Object.assign(paramReport, parseParams({
 		swaggerParams: parseAllParams(specParams, inputParams),
 		inputParams: { ...parseDefaultParams(specParams), ...inputParams },
-	});
+	}));
 
 	paramReport.missing = checkMissingParams(specParams, inputParams);
 

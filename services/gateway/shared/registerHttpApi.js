@@ -160,8 +160,8 @@ const registerApi = (apiName, config) => {
 			const routeAlias = `${req.method.toUpperCase()} ${req.$alias.path}`;
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
-			if (paramReport.onefrom.length) {
-				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter(s): ${paramReport.onefrom.join(', ')}`);
+			if (paramReport.required.length) {
+				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter(s): ${paramReport.required.join(', ')}`);
 				return;
 			}
 
