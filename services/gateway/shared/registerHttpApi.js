@@ -160,11 +160,6 @@ const registerApi = (apiName, config) => {
 			const routeAlias = `${req.method.toUpperCase()} ${req.$alias.path}`;
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
-			if (paramReport.required.length) {
-				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter(s): ${paramReport.required.join(', ')}`);
-				return;
-			}
-
 			if (paramReport.missing.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
 				return;
@@ -173,6 +168,11 @@ const registerApi = (apiName, config) => {
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join(', ')}`);
+				return;
+			}
+
+			if (paramReport.required.length) {
+				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter(s): ${paramReport.required.join(', ')}`);
 				return;
 			}
 

@@ -101,12 +101,12 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 
 	paramReport.required = validateFromParamPairings(
 		specs.paramsRequired, inputParamKeys, paramPairings);
-	if (paramReport.required.length) return paramReport;
 
 	paramReport.missing = checkMissingParams(specParams, inputParams);
 
 	if (paramReport.missing.length > 0) return paramReport;
 	if (Object.keys(paramReport.unknown).length > 0) return paramReport;
+	if (paramReport.required.length) return paramReport;
 
 	paramReport.invalid = validator.validate(
 		dropEmptyProps(inputParams),

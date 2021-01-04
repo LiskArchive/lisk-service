@@ -150,7 +150,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 		});
 
 		it('Returns INVALID_PARAMS (-32602) when requested with limit = 0', async () => {
-			const response = await getVotes({ limit: 0 });
+			const response = await getVotes({ address: refDelegate.address, limit: 0 });
 			expect(response).toMap(invalidParamsSchema);
 		});
 
