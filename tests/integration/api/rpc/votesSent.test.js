@@ -151,7 +151,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
 		it('Returns INVALID_PARAMS (-32602) when request unsatisfies param pairings', async () => {
 			const response = await getVotes({});
-			console.log(response);
 			expect(response).toMap(invalidParamsSchema);
 		});
 
