@@ -56,7 +56,7 @@ const parseParams = (p) => {
 };
 
 const validateInputParams = (rawInputParams = {}, specs) => {
-	const validateFromParamPairings = (paramsRequired, inputParamKeys, paramPairings) => {
+	const validateFromParamPairings = (paramsRequired = false, inputParamKeys, paramPairings) => {
 		if (!paramsRequired) return [];
 
 		const relevantPairings = paramPairings
