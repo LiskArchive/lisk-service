@@ -15,7 +15,7 @@
  */
 const {
 	Utils,
-	Constants: { JSON_RPC: { INVALID_PARAMS } },
+	Constants: { JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST } },
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
@@ -163,7 +163,7 @@ const registerApi = (apiNames, config) => {
 					}
 
 					if (paramReport.required.length) {
-						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}` });
 					}
 
 					const invalidList = paramReport.invalid;
