@@ -18,18 +18,17 @@ const config = require('../../../../config');
 
 const liskAddress = config.endpoints.liskWs;
 
-const createAPIClient = async () => {
-    // const client = await createIPCClient('~/.lisk/lisk-core');
-    const client = await createWSClient(liskAddress);
-    return client;
+const coreApi = async () => {
+    const clientCache = await createWSClient(liskAddress);
+
+    const getNetworkStatus = async () => {
+        const result = await clientCache.node.getNodeInfo();
+        return result;
+    };
+
+	return {
+		getNetworkStatus,
+	};
 };
 
-const getNetworkStatus = async () => {
-    const apiClient = await createAPIClient();
-    const result = await apiClient.node.getNodeInfo();
-    return result;
-};
-
-module.exports = {
-    getNetworkStatus,
-};
+module.exports = coreApi;
