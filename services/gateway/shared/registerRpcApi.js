@@ -163,7 +163,7 @@ const registerApi = (apiNames, config) => {
 					}
 
 					if (paramReport.required.length) {
-						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Require one of the following parameter(s): ${paramReport.required.join(', ')}` });
+						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}` });
 					}
 
 					const invalidList = paramReport.invalid;

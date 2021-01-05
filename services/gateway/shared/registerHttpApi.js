@@ -172,7 +172,7 @@ const registerApi = (apiName, config) => {
 			}
 
 			if (paramReport.required.length) {
-				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter(s): ${paramReport.required.join(', ')}`);
+				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}`);
 				return;
 			}
 
