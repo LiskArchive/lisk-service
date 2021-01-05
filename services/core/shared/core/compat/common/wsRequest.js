@@ -18,19 +18,14 @@ const config = require('../../../../config');
 
 const liskAddress = config.endpoints.liskWs;
 
-const coreApi = async () => {
+const getNodeInfo = async () => {
     const clientCache = await createWSClient(liskAddress);
-
-    const getNetworkStatus = async () => {
-        const result = await clientCache.node.getNodeInfo();
-        return {
-            data: result,
-        };
+    const result = await clientCache.node.getNodeInfo();
+    return {
+        data: result,
     };
-
-	return {
-		getNetworkStatus,
-	};
 };
 
-module.exports = coreApi;
+module.exports = {
+    getNodeInfo,
+};
