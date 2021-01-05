@@ -16,5 +16,6 @@
 const { getNetworkStatus } = require('./network');
 
 module.exports = {
+    ...require('../sdk_v4'),
     getNetworkStatus,
 };
