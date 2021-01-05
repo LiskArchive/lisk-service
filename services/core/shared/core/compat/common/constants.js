@@ -15,7 +15,7 @@
  */
 const { Utils } = require('lisk-service-framework');
 const http = require('./httpRequest');
-const ws = require('./wsRequest');
+// const ws = require('./wsRequest');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
@@ -28,11 +28,12 @@ const getNetworkConstants = async () => {
 	// const result = await coreApiCached.getNetworkConstants(null, { expireMiliseconds });
 	let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
 	if (!result.length) {
-		const apiClient = await ws.getClient();
-		const info = await apiClient.node.getNodeInfo();
-		result = {
-			data: info,
-		};
+		// const apiClient = await ws.getClient();
+		// const info = await apiClient.node.getNodeInfo();
+		// result = {
+		// 	data: info,
+		// };
+		result = await http.get('/node/info');
 	}
 	if (!isProperObject(result)) return {};
 	return result;
