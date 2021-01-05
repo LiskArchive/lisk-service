@@ -149,8 +149,13 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 			});
 		});
 
+		it('Returns INVALID_PARAMS (-32602) when request unsatisfies param pairings', async () => {
+			const response = await getVoters({});
+			expect(response).toMap(invalidParamsSchema);
+		});
+
 		it('Returns INVALID_PARAMS (-32602) when requested with limit = 0', async () => {
-			const response = await getVoters({ limit: 0 });
+			const response = await getVoters({ address: refDelegate.address, limit: 0 });
 			expect(response).toMap(invalidParamsSchema);
 		});
 
