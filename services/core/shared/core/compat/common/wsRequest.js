@@ -17,15 +17,13 @@ const { createWSClient } = require('@liskhq/lisk-api-client');
 const config = require('../../../../config');
 
 const liskAddress = config.endpoints.liskWs;
+let clientCache;
 
-const getNodeInfo = async () => {
-    const clientCache = await createWSClient(`${liskAddress}/ws`);
-    const result = await clientCache.node.getNodeInfo();
-    return {
-        data: result,
-    };
+const getClient = async () => {
+    clientCache = await createWSClient(`${liskAddress}/ws`);
+    return clientCache;
 };
 
 module.exports = {
-    getNodeInfo,
+    getClient,
 };

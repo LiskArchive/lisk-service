@@ -13,13 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { createWSClient } = require('@liskhq/lisk-api-client');
-const config = require('../../../../config');
-
-const liskAddress = config.endpoints.liskWs;
+const { getClient } = require('../common/wsRequest');
 
 const coreApi = async () => {
-    const clientCache = await createWSClient(`${liskAddress}/ws`);
+    const clientCache = await getClient();
 
     const getNetworkStatus = async () => {
         const result = await clientCache.node.getNodeInfo();
@@ -28,9 +25,9 @@ const coreApi = async () => {
         };
     };
 
-	return {
-		getNetworkStatus,
-	};
+    return {
+        getNetworkStatus,
+    };
 };
 
 module.exports = coreApi;
