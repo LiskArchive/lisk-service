@@ -57,12 +57,13 @@ const parseParams = (p) => {
 
 const validateInputParams = (rawInputParams = {}, specs) => {
 	const validateFromParamPairings = (paramsRequired, inputParamKeys, paramPairings) => {
-		const result = paramsRequired
-			&& !inputParamKeys.some(key => paramPairings.some(entry => entry.includes(key)))
-			? paramPairings
-			: [];
+		if (paramsRequired && !inputParamKeys.length) return paramPairings;
 
-		return result;
+		const relevantPairings = paramPairings.filter(pairing => inputParamKeys.some(key => pairing.includes(key)));
+		if (relevantPairings.length === 0) return paramPairings;
+
+		const result = relevantPairings.some(pairing => pairing.every(param => inputParamKeys.includes(param)));
+		return result ? [] : paramPairings;
 	};
 
 	const checkMissingParams = (routeParams, requestParams) => {
