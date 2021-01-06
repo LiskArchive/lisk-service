@@ -32,6 +32,7 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
  */
 config.db = {
 	defaults: {
+		db: 'redis',
 		directory: 'db_data',
 		adapter: 'leveldb',
 		auto_compaction: false,
@@ -75,6 +76,7 @@ config.endpoints.liskWs = process.env.LISK_CORE_WS || config.endpoints.liskHttp.
 config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://localhost:6379/1';
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.io';
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
+config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 /**
  * Caching

@@ -1,0 +1,28 @@
+# Base file, do not modifiy.
+# Make changes in docker-compose.override.yml instead.
+# See https://docs.docker.com/compose/extends/#example-use-case
+version: '3.3'
+services:
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./mysql-healthcheck:/healthcheck
+    ports:
+      - 3306:3306
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ENV_LISK_DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${ENV_LISK_DB_DATABASE}
+      MYSQL_USER: ${ENV_LISK_DB_USER}
+      MYSQL_PASSWORD: ${ENV_LISK_DB_PASSWORD}
+    expose:
+      - 3306
+    healthcheck:
+      test: ['CMD', 'healthcheck']
+      interval: 1m
+      timeout: 5s
+
+volumes:
+  db-data:

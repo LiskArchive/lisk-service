@@ -20,7 +20,7 @@ const config = require('../../config');
 const requestAll = require('../requestAll');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
-const getDbInstance = require('../pouchdb');
+const getDbInstance = require('../database/pouchdb');
 
 const queueName = 'transactionStatisticsQueue';
 const queueOptions = config.queue[queueName];
