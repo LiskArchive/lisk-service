@@ -27,13 +27,13 @@ module.exports = [
 		updateOnInit: true,
 		init: () => {
 			if (config.transactionStatistics.enabled) {
-				logger.debug('Scheduling delegate list init...');
+				logger.debug('Initiating transaction statistics computation.');
 				transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 			}
 		},
 		controller: async () => {
 			if (config.transactionStatistics.enabled) {
-				logger.debug('Scheduling delegate list reload...');
+				logger.debug('Job scheduled to update transaction statistics.');
 				transactionStatistics.updateTodayStats();
 			}
 		},
