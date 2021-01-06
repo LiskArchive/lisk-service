@@ -40,7 +40,7 @@ describe('Method get.search', () => {
 		[refTransaction] = (await request(wsRpcUrl, 'get.transactions', { limit: 1 })).result.data;
 	});
 
-	it('returns delegate by name ', async () => {
+	xit('returns delegate by name ', async () => {
 		const q = refDelegate.username;
 		const response = await searchNetwork({ q });
 
@@ -54,7 +54,7 @@ describe('Method get.search', () => {
 		expect(result.meta).toMap(metaSchema, { count: 1 });
 	});
 
-	it('returns multiple delegate by name part ', async () => {
+	xit('returns multiple delegate by name part ', async () => {
 		const q = refDelegate.username.slice(0, -1);
 		const response = await searchNetwork({ q });
 
