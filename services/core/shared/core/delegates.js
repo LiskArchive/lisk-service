@@ -121,7 +121,30 @@ const getDelegates = async params => {
 				|| (acc.username && acc.username === params.username),
 		);
 	} else {
-		delegates.data = allDelegates;
+		const offset = params.offset || 0;
+		const limit = params.limit || 10;
+		if (!params.sort) params.sort = 'rank:asc';
+		const sortComparator = (sortProp, sortOrder) => {
+			const comparator = (a, b) => {
+				try {
+					if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting');
+					return (sortOrder === 'asc')
+						? a[sortProp] - b[sortProp]
+						: b[sortProp] - a[sortProp];
+				} catch (_) {
+					return (sortOrder === 'asc')
+						? a[sortProp].localeCompare(b[sortProp])
+						: b[sortProp].localeCompare(a[sortProp]);
+				}
+			};
+			return comparator;
+		};
+		const sortProp = params.sort.split(':')[0];
+		const sortOrder = params.sort.split(':')[1];
+
+		delegates.data = allDelegates
+			.sort(sortComparator(sortProp, sortOrder))
+			.slice(offset, offset + limit);
 	}
 	// if (delegates.data.length === 0) {
 	// 	const dbResult = await coreApi.getDelegates(params);
