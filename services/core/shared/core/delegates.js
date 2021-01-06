@@ -113,16 +113,20 @@ const getDelegates = async params => {
 	};
 	const allDelegates = await getAllDelegates();
 
-	delegates.data = allDelegates.filter(
-		(acc) => (acc.address && acc.address === params.address)
-			|| (acc.publicKey && acc.publicKey === params.publicKey)
-			|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
-			|| (acc.username && acc.username === params.username),
-	);
-	if (delegates.data.length === 0) {
-		delegates.data = (await coreApi.getDelegates(params)).data;
-		// if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
+	if (params.address || params.publicKey || params.secondPublicKey || params.username) {
+		delegates.data = allDelegates.filter(
+			(acc) => (acc.address && acc.address === params.address)
+				|| (acc.publicKey && acc.publicKey === params.publicKey)
+				|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
+				|| (acc.username && acc.username === params.username),
+		);
+	} else {
+		delegates.data = allDelegates;
 	}
+	// if (delegates.data.length === 0) {
+	// 	const dbResult = await coreApi.getDelegates(params);
+	// 	if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
+	// }
 	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = params.offset || 0;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
