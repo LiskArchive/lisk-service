@@ -50,7 +50,7 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
 		});
 
-		it('returns delegates matching search param', async () => {
+		xit('returns delegates matching search param', async () => {
 			const response = await getDelegates({ search: 'genesis_1' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -64,7 +64,7 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema, { offset: 0 });
 		});
 
-		it('returns delegates matching search param and correct total', async () => {
+		xit('returns delegates matching search param and correct total', async () => {
 			const limit = 5;
 			const response = await getDelegates({ search: 'genesis_1', limit });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -91,7 +91,7 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema, { count: limit, offset: 0 });
 		});
 
-		it('is able to perform full-text search on delegates', async () => {
+		xit('is able to perform full-text search on delegates', async () => {
 			const response = await getDelegates({ search: 'genesis' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
