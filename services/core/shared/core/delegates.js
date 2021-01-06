@@ -121,8 +121,8 @@ const getDelegates = async params => {
 				|| (acc.username && acc.username === params.username),
 		);
 	} else {
-		const offset = params.offset || 0;
-		const limit = params.limit || 10;
+		const offset = Number(params.offset) || 0;
+		const limit = Number(params.limit) || 10;
 		if (!params.sort) params.sort = 'rank:asc';
 		const sortComparator = (sortProp, sortOrder) => {
 			const comparator = (a, b) => {
