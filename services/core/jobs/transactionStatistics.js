@@ -26,12 +26,16 @@ module.exports = [
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
 		init: () => {
-			logger.debug('Scheduling delegate list init...');
-			transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+			if (config.transactionStatistics.enabled) {
+				logger.debug('Scheduling delegate list init...');
+				transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+			}
 		},
 		controller: async () => {
-			logger.debug('Scheduling delegate list reload...');
-			transactionStatistics.updateTodayStats();
+			if (config.transactionStatistics.enabled) {
+				logger.debug('Scheduling delegate list reload...');
+				transactionStatistics.updateTodayStats();
+			}
 		},
 	},
 ];

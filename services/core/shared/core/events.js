@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const core = require('./compat');
 const signals = require('../signals');
 const { getBlocks } = require('./blocks');
-const { getEstimateFeeByteNormal, getEstimateFeeByteQuick } = require('./dynamicFees');
+const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
+
+const config = require('../../config.js');
+
+const logger = Logger();
 
 const events = {
 	newBlock: async data => {
@@ -27,9 +32,19 @@ const events = {
 		signals.get('newRound').dispatch(data);
 	},
 	calculateFeeEstimate: async () => {
-		getEstimateFeeByteNormal();
-		const feeEstimate = await getEstimateFeeByteQuick();
-		signals.get('newFeeEstimate').dispatch(feeEstimate);
+		if (core.getSDKVersion() >= 4) {
+			if (config.feeEstimates.fullAlgorithmEnabled) {
+				logger.debug('Initiate the dynamic fee estimates computation (full computation)');
+				calculateEstimateFeeByteNormal();
+			}
+			if (config.feeEstimates.quickAlgorithmEnabled) {
+				logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
+				const feeEstimate = await calculateEstimateFeeByteQuick();
+
+				// TODO: Make a better control over the estimate process
+				signals.get('newFeeEstimate').dispatch(feeEstimate);
+			}
+		}
 	},
 };
 

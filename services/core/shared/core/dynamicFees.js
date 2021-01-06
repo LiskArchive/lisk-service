@@ -277,7 +277,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 	return result;
 };
 
-const getEstimateFeeByteNormal = async () => {
+const calculateEstimateFeeByteNormal = async () => {
 	const latestBlock = getLastBlock();
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
@@ -293,7 +293,7 @@ const getEstimateFeeByteNormal = async () => {
 	return cachedFeeEstPerByteNormal;
 };
 
-const getEstimateFeeByteQuick = async () => {
+const calculateEstimateFeeByteQuick = async () => {
 	// For the cold start scenario
 	const latestBlock = getLastBlock();
 	const batchSize = config.feeEstimates.coldStartBatchSize;
@@ -337,10 +337,12 @@ const getEstimateFeeByte = async () => {
 };
 
 module.exports = {
-	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteNormal,
-	getEstimateFeeByteQuick,
+	calculateEstimateFeeByteNormal,
+	calculateEstimateFeeByteQuick,
+
+	// For Unit tests
+	EMAcalc,
 	getEstimateFeeByteForBlock,
 	getTransactionInstanceByType,
 	calculateBlockSize,
