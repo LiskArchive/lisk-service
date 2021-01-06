@@ -34,7 +34,7 @@ const getNetworkConstants = async () => {
 		return isProperObject(result) ? result : {};
 	} catch (_) {
 		return {
-			data: { error: 'Service Core not started' },
+			data: { error: 'Core service could not be started' },
 		};
 	}
 };
