@@ -20,8 +20,15 @@ const liskAddress = config.endpoints.liskWs;
 let clientCache;
 
 const getClient = async () => {
-    clientCache = await createWSClient(`${liskAddress}/ws`);
-    return clientCache;
+    try {
+        clientCache = await createWSClient(`${liskAddress}/ws`);
+        return clientCache;
+    } catch (err) {
+        return {
+            data: { error: 'Action not supported' },
+            status: 'METHOD_NOT_ALLOWED',
+        };
+    }
 };
 
 module.exports = {

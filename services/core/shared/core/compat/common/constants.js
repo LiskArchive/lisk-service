@@ -15,7 +15,7 @@
  */
 const { Utils } = require('lisk-service-framework');
 const http = require('./httpRequest');
-// const ws = require('./wsRequest');
+const ws = require('./wsRequest');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
@@ -24,17 +24,23 @@ let coreVersion = '1.0.0-alpha.0';
 let readyStatus;
 
 const getNetworkConstants = async () => {
-	let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
-	if (Object.getOwnPropertyNames(result).length === 0) {
-		// const apiClient = await ws.getClient();
-		// const info = await apiClient.node.getNodeInfo();
-		// result = {
-		// 	data: info,
-		// };
-		result = await http.get('/node/info');
+	try {
+		let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
+		if (Object.getOwnPropertyNames(result).length === 0) {
+			const apiClient = await ws.getClient();
+			const info = await apiClient.node.getNodeInfo();
+			result = {
+				data: info,
+			};
+			result = await http.get('/node/info');
+		}
+		if (!isProperObject(result)) return {};
+		return result;
+	} catch (_) {
+		return {
+			data: { error: 'Service Core is not started' },
+		};
 	}
-	if (!isProperObject(result)) return {};
-	return result;
 };
 
 const setCoreVersion = version => coreVersion = version;
