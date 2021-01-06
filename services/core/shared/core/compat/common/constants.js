@@ -32,7 +32,6 @@ const getNetworkConstants = async () => {
 			result = {
 				data: info,
 			};
-			result = await http.get('/node/info');
 		}
 		if (!isProperObject(result)) return {};
 		return result;
