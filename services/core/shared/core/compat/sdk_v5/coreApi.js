@@ -20,9 +20,7 @@ const coreApi = async () => {
 
     const getNetworkStatus = async () => {
         const result = await clientCache.node.getNodeInfo();
-        return {
-            data: result,
-        };
+        return { data: result };
     };
 
     return {

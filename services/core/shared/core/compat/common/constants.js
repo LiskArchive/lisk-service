@@ -29,15 +29,12 @@ const getNetworkConstants = async () => {
 		if (Object.getOwnPropertyNames(result).length === 0) {
 			const apiClient = await ws.getClient();
 			const info = await apiClient.node.getNodeInfo();
-			result = {
-				data: info,
-			};
+			result = { data: info };
 		}
-		if (!isProperObject(result)) return {};
-		return result;
+		return isProperObject(result) ? result : {};
 	} catch (_) {
 		return {
-			data: { error: 'Service Core is not started' },
+			data: { error: 'Service Core not started' },
 		};
 	}
 };
