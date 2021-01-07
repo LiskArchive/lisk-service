@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const stringSimilarity = require('string-similarity');
+// const stringSimilarity = require('string-similarity');
 
 const CoreService = require('../../shared/core');
 
@@ -48,24 +48,24 @@ const searchBy = {
 		return mapDataItems(response, mapAddressFields);
 	},
 
-	delegateName: async searchTerm => {
-		const mapDelegateFields = ({ account, username }) => ({
-			id: account.address,
-			description: username,
-			score: stringSimilarity.compareTwoStrings(searchTerm, username),
-			type: 'address',
-		});
+	// delegateName: async searchTerm => {
+	// 	const mapDelegateFields = ({ account, username }) => ({
+	// 		id: account.address,
+	// 		description: username,
+	// 		score: stringSimilarity.compareTwoStrings(searchTerm, username),
+	// 		type: 'address',
+	// 	});
 
-		const response = await CoreService.getDelegates({
-			search: searchTerm,
-			sort: 'username:asc',
-		});
-		return {
-			...response,
-			data: (response.data || [])
-				.map(mapDelegateFields),
-		};
-	},
+	// 	const response = await CoreService.getDelegates({
+	// 		search: searchTerm,
+	// 		sort: 'username:asc',
+	// 	});
+	// 	return {
+	// 		...response,
+	// 		data: (response.data || [])
+	// 			.map(mapDelegateFields),
+	// 	};
+	// },
 
 	transactionId: async searchTerm => {
 		const mapTransactionFields = ({ id }) => ({ id, score: 1, type: 'tx' });
@@ -81,7 +81,8 @@ const searchBy = {
 
 	blockHeight: async searchTerm => {
 		const response = await CoreService.getBlocks({ height: searchTerm });
-		return mapDataItems(response, mapBlockFields);
+		const data = mapDataItems(response, mapBlockFields);
+		return data;
 	},
 };
 
@@ -94,7 +95,7 @@ const getSearches = searchTerm => (
 
 const resolveAll = (apiCalls, searchTerm) => {
 	const promises = apiCalls.map(apiCall => apiCall(searchTerm)
-			.catch(err => err));
+		.catch(err => err));
 
 	return Promise.all(promises)
 		.then(results => (results.reduce((accumulator, response) => ({

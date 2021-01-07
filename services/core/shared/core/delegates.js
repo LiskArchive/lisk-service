@@ -113,12 +113,39 @@ const getDelegates = async params => {
 	};
 	const allDelegates = await getAllDelegates();
 
-	delegates.data = allDelegates.filter(
-		(acc) => (acc.address && acc.address === params.address)
-			|| (acc.publicKey && acc.publicKey === params.publicKey)
-			|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
-			|| (acc.username && acc.username === params.username),
-	);
+	if (params.address || params.publicKey || params.secondPublicKey || params.username) {
+		delegates.data = allDelegates.filter(
+			(acc) => (acc.address && acc.address === params.address)
+				|| (acc.publicKey && acc.publicKey === params.publicKey)
+				|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
+				|| (acc.username && acc.username === params.username),
+		);
+	} else {
+		const offset = Number(params.offset) || 0;
+		const limit = Number(params.limit) || 10;
+		if (!params.sort) params.sort = 'rank:asc';
+		const sortComparator = (sortProp, sortOrder) => {
+			const comparator = (a, b) => {
+				try {
+					if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting');
+					return (sortOrder === 'asc')
+						? a[sortProp] - b[sortProp]
+						: b[sortProp] - a[sortProp];
+				} catch (_) {
+					return (sortOrder === 'asc')
+						? a[sortProp].localeCompare(b[sortProp])
+						: b[sortProp].localeCompare(a[sortProp]);
+				}
+			};
+			return comparator;
+		};
+		const sortProp = params.sort.split(':')[0];
+		const sortOrder = params.sort.split(':')[1];
+
+		delegates.data = allDelegates
+			.sort(sortComparator(sortProp, sortOrder))
+			.slice(offset, offset + limit);
+	}
 	// if (delegates.data.length === 0) {
 	// 	const dbResult = await coreApi.getDelegates(params);
 	// 	if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);

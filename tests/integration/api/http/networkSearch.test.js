@@ -40,7 +40,7 @@ describe('GET /search', () => {
 		[refTransaction] = (await api.get(`${baseUrlV1}/transactions?limit=1`)).data;
 	});
 
-	it('returns delegate by name ', async () => {
+	xit('returns delegate by name ', async () => {
 		const q = refDelegate.username;
 		const response = await api.get(`${endpoint}?q=${q}`);
 		expect(response).toMap(goodRequestSchema);
@@ -50,7 +50,7 @@ describe('GET /search', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('returns multiple delegate by name part ', async () => {
+	xit('returns multiple delegate by name part ', async () => {
 		const q = refDelegate.username.slice(0, -1);
 		const response = await api.get(`${endpoint}?q=${q}`);
 		expect(response).toMap(goodRequestSchema);
