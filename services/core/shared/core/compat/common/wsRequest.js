@@ -21,7 +21,7 @@ let clientCache;
 
 const getClient = async () => {
     try {
-        clientCache = await createWSClient(`${liskAddress}/ws`);
+        if (!clientCache) clientCache = await createWSClient(`${liskAddress}/ws`);
         return clientCache;
     } catch (err) {
         return {
