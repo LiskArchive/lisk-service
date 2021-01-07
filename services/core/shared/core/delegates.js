@@ -113,43 +113,45 @@ const getDelegates = async params => {
 	};
 	const allDelegates = await getAllDelegates();
 
+	const offset = Number(params.offset) || 0;
+	const limit = Number(params.limit) || 10;
+	if (!params.sort) params.sort = 'rank:asc';
+
+	const sortComparator = (sortParam) => {
+		const sortProp = sortParam.split(':')[0];
+		const sortOrder = sortParam.split(':')[1];
+
+		const comparator = (a, b) => {
+			try {
+				if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting');
+				return (sortOrder === 'asc')
+					? a[sortProp] - b[sortProp]
+					: b[sortProp] - a[sortProp];
+			} catch (_) {
+				return (sortOrder === 'asc')
+					? a[sortProp].localeCompare(b[sortProp])
+					: b[sortProp].localeCompare(a[sortProp]);
+			}
+		};
+		return comparator;
+	};
+
 	if (params.address || params.publicKey || params.secondPublicKey || params.username) {
 		delegates.data = allDelegates.filter(
 			(acc) => (acc.address && acc.address === params.address)
 				|| (acc.publicKey && acc.publicKey === params.publicKey)
 				|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
-				|| (acc.username && acc.username === params.username),
+				|| (acc.username && acc.username === params.username)
+				|| (acc.search && String(acc.search).match(new RegExp(params.search, 'i'))),
 		);
 	} else {
-		const offset = Number(params.offset) || 0;
-		const limit = Number(params.limit) || 10;
-		if (!params.sort) params.sort = 'rank:asc';
-		const sortComparator = (sortProp, sortOrder) => {
-			const comparator = (a, b) => {
-				try {
-					if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting');
-					return (sortOrder === 'asc')
-						? a[sortProp] - b[sortProp]
-						: b[sortProp] - a[sortProp];
-				} catch (_) {
-					return (sortOrder === 'asc')
-						? a[sortProp].localeCompare(b[sortProp])
-						: b[sortProp].localeCompare(a[sortProp]);
-				}
-			};
-			return comparator;
-		};
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-
-		delegates.data = allDelegates
-			.sort(sortComparator(sortProp, sortOrder))
-			.slice(offset, offset + limit);
+		delegates.data = allDelegates;
 	}
-	// if (delegates.data.length === 0) {
-	// 	const dbResult = await coreApi.getDelegates(params);
-	// 	if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
-	// }
+
+	delegates.data = delegates.data
+		.sort(sortComparator(params.sort))
+		.slice(offset, offset + limit);
+
 	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = params.offset || 0;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
