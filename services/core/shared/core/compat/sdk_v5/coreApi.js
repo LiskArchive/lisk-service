@@ -16,8 +16,8 @@
 const { getClient } = require('../common/wsRequest');
 
 const getApiClient = async () => {
-    const clientCache = await getClient();
-    return clientCache;
+    const wsClient = await getClient();
+    return wsClient;
 };
 
 const getNetworkStatus = async () => {
