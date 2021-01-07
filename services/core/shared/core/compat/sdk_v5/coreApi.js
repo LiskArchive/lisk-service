@@ -15,17 +15,17 @@
  */
 const { getClient } = require('../common/wsRequest');
 
-const coreApi = async () => {
+const getApiClient = async () => {
     const clientCache = await getClient();
-
-    const getNetworkStatus = async () => {
-        const result = await clientCache.node.getNodeInfo();
-        return { data: result };
-    };
-
-    return {
-        getNetworkStatus,
-    };
+    return clientCache;
 };
 
-module.exports = coreApi;
+const getNetworkStatus = async () => {
+    const apiClient = await getApiClient();
+    const result = await apiClient.node.getNodeInfo();
+    return { data: result };
+};
+
+module.exports = {
+    getNetworkStatus,
+};

@@ -16,8 +16,7 @@
 const coreApi = require('./coreApi');
 
 const getNetworkStatus = async () => {
-	const core = await coreApi();
-	const status = await core.getNetworkStatus();
+	const status = await coreApi.getNetworkStatus();
 	return status;
 };
 
