@@ -17,6 +17,7 @@ const coreApi = require('./coreApi');
 
 const getNetworkStatus = async () => {
 	const status = await coreApi.getNetworkStatus();
+	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
 	return status;
 };
 

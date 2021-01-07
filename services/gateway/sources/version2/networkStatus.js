@@ -14,25 +14,28 @@
  *
  */
 module.exports = {
-	type: 'moleculer',
-	params: {},
-	method: 'core.network.status',
-	definition: {
+    type: 'moleculer',
+    params: {},
+    method: 'core.network.status',
+    definition: {
         data: {
             height: '=,string',
             finalizedHeight: '=,number',
-            milestone: '=,number',
+            milestone: 'data.genesisConfig.rewards.milestones',
             networkVersion: '=,string',
             networkIdentifier: '=,string',
-            reward: '=,string',
+            reward: 'data.genesisConfig.rewards.distance,number',
             supply: '=,string',
-            registeredModules: '=,string',
-            operations: '=,string',
-            blockTime: '=,string',
-            communityIdentifier: '=,string',
-            maxPayloadLength: '=,string',
+            registeredModules: '=',
+            operations: '=',
+            blockTime: 'data.genesisConfig.blockTime,number',
+            communityIdentifier: 'data.genesisConfig.communityIdentifier,string',
+            maxPayloadLength: 'data.genesisConfig.maxPayloadLength,number',
         },
-        meta: {},
+        meta: {
+            lastBlockHeight: 'data.height,string',
+            lastBlockId: 'data.lastBlockID,string',
+        },
         links: {},
-	},
+    },
 };
