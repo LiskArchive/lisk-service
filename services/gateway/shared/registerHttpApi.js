@@ -171,6 +171,11 @@ const registerApi = (apiName, config) => {
 				return;
 			}
 
+			if (paramReport.required.length) {
+				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}`);
+				return;
+			}
+
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
