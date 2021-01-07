@@ -62,7 +62,7 @@ describe('Delegates API', () => {
 			expect(response).toMap(wrongInputParamSchema);
 		});
 
-		xit('search delegates -> ok', async () => {
+		it('search delegates -> ok', async () => {
 			const response = await api.get(`${endpoint}?search=genesis`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
