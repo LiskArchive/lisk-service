@@ -117,47 +117,73 @@ Updates about forging delegates, first 101 delegates by voting power.
     "meta": {
         "update": 1565107927,
         "count": 101
-    }, 
+    },
 }
 ```
 
-## `update.round` _(not implemented)_
+## `update.round`
 
 Updates about current round, delegates and their forging status.
 
 ```json
 {
     "data": {
-        "participants": [
-            {
-                "address": "123L",
-                "username": "genesis_12",
-                "forgingStatusInRound": "DONE", // "DONE", "AWAITING", "MISSED",
-                "forgedBlocks": 2,
-                "forgedBlockIds": ["6258354802676165798", "9368354802426379221"],
-            }
-        ],
         "nextForgers": [
             {
-            "address": "4935562234363081651L",
-            "approval": "35.77",
-            "missedBlocks": 157,
-            "producedBlocks": 55222,
-            "productivity": "99.72",
-            "publicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-            "secondPublicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-            "rank": 93,
-            "username": "genesis_84",
-            "vote": "4630668157412954"
-            }
+                "address": "9447508130077835324L",
+                "publicKey": "95c34c5ff1c3483f32d41ce641fc02f385a9ca97085bd88c4faebb25b4b5e2c2",
+                "username": "genesis_92",
+                "isDelegate": true,
+                "nonce": "2",
+                "balance": "0",
+                "votes": [
+                    {
+                        "amount": "1000000000000",
+                        "delegateAddress": "9447508130077835324L"
+                    }
+                ],
+                "unlocking": [],
+                "totalVotesReceived": 0,
+                "delegate": {
+                    "isBanned": false,
+                    "pomHeights": [],
+                    "lastForgedHeight": 0,
+                    "consecutiveMissedBlocks": 0,
+                    "approval": 0
+                },
+                "asset": {
+                },
+                "missedBlocks": 1,
+                "producedBlocks": 6,
+                "fees": "0",
+                "rewards": "0",
+                "productivity": 85.71,
+                "keys": {
+                    "optionalKeys": [],
+                    "mandatoryKeys": [],
+                    "numberOfSignatures": 0
+                },
+                "account": {
+                    "address": "9447508130077835324L",
+                    "publicKey": "95c34c5ff1c3483f32d41ce641fc02f385a9ca97085bd88c4faebb25b4b5e2c2"
+                },
+                "delegateWeight": 1000000000000,
+                "vote": 1000000000000,
+                "isBanned": false,
+                "pomHeights": [],
+                "lastForgedHeight": 0,
+                "consecutiveMissedBlocks": 0,
+                "rank": 103,
+                "status": "active"
+            },
+            ...
         ],
     },
     "meta": {
-        "update": 1565107927,
-        "roundStart": 1565107927,
-        "roundEnd": 1565107927,
-        "blocksForged": 12
-    }, 
+        "count": 103,
+        "offset": 0,
+        "total": 103,
+    },
 }
 ```
 
@@ -258,7 +284,7 @@ Updates about unconfirmed transactions on per-account basis.
     "meta": {
         "update": 1565107927,
         "count": 5
-    }, 
+    },
 }
 ```
 
@@ -299,6 +325,6 @@ Updates about active peers.
     "meta": {
         "update": 1565107927,
         "count": 217
-    }, 
+    },
 }
 ```
