@@ -17,6 +17,7 @@ const { Logger } = require('lisk-service-framework');
 const core = require('./compat');
 const signals = require('../signals');
 const { getBlocks } = require('./blocks');
+const { reloadNextForgersCache, getNextForgers } = require('./delegates');
 const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
 
 const config = require('../../config.js');
@@ -28,8 +29,15 @@ const events = {
 		const block = await getBlocks({ blockId: data.id });
 		signals.get('newBlock').dispatch(block.data[0]);
 	},
-	newRound: data => {
-		signals.get('newRound').dispatch(data);
+	newRound: async () => {
+		await reloadNextForgersCache();
+		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
+		const nextForgers = await getNextForgers({ limit });
+		const response = {
+			data: { nextForgers: nextForgers.data },
+			meta: nextForgers.meta,
+		};
+		signals.get('newRound').dispatch(response);
 	},
 	calculateFeeEstimate: async () => {
 		if (core.getSDKVersion() >= 4) {
