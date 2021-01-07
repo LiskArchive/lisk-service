@@ -136,18 +136,20 @@ const getDelegates = async params => {
 		return comparator;
 	};
 
-	if (params.address
-			|| params.publicKey
-			|| params.secondPublicKey
-			|| params.username
-			|| params.search) {
-		delegates.data = allDelegates.filter(
-			(acc) => (acc.address && acc.address === params.address)
-				|| (acc.publicKey && acc.publicKey === params.publicKey)
-				|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
-				|| (acc.username && acc.username === params.username)
-				|| (acc.username && String(acc.username).match(new RegExp(params.search, 'i'))),
-		);
+	const filterBy = (list, entity)	=> list.filter((acc) => (acc[entity]
+		&& acc[entity] === params[entity]));
+
+	if (params.address) {
+		delegates.data = filterBy(allDelegates, 'address');
+	} else if (params.publicKey) {
+		delegates.data = filterBy(allDelegates, 'publicKey');
+	} else if (params.secondPublicKey) {
+		delegates.data = filterBy(allDelegates, 'secondPublicKey');
+	} else if (params.username) {
+		delegates.data = filterBy(allDelegates, 'username');
+	} else if (params.search) {
+		delegates.data = allDelegates.filter((acc) => (acc.username
+			&& String(acc.username).match(new RegExp(params.search, 'i'))));
 	} else {
 		delegates.data = allDelegates;
 	}
