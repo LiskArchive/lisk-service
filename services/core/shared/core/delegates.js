@@ -136,13 +136,17 @@ const getDelegates = async params => {
 		return comparator;
 	};
 
-	if (params.address || params.publicKey || params.secondPublicKey || params.username) {
+	if (params.address
+			|| params.publicKey
+			|| params.secondPublicKey
+			|| params.username
+			|| params.search) {
 		delegates.data = allDelegates.filter(
 			(acc) => (acc.address && acc.address === params.address)
 				|| (acc.publicKey && acc.publicKey === params.publicKey)
 				|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
 				|| (acc.username && acc.username === params.username)
-				|| (acc.search && String(acc.search).match(new RegExp(params.search, 'i'))),
+				|| (acc.username && String(acc.username).match(new RegExp(params.search, 'i'))),
 		);
 	} else {
 		delegates.data = allDelegates;
