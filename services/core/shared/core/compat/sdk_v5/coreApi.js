@@ -31,7 +31,7 @@ const getBlocks = async params => {
     } else if (params.ids) {
         blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.ids });
     } else if (params.height) {
-        block = await apiClient.block.getBlockByHeight({ height: params.height });
+        block = await apiClient.block.getByHeight({ height: params.height });
     } else if (params.heightRange) {
         blocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', params.heightRange);
     }
