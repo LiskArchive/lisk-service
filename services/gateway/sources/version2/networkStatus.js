@@ -33,8 +33,10 @@ module.exports = {
             maxPayloadLength: 'data.genesisConfig.maxPayloadLength,number',
         },
         meta: {
+            lastUpdate: 'data.lastUpdate,number',
             lastBlockHeight: 'data.height,string',
             lastBlockId: 'data.lastBlockID,string',
+
         },
         links: {},
     },

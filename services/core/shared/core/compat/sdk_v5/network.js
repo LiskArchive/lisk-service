@@ -18,6 +18,7 @@ const coreApi = require('./coreApi');
 const getNetworkStatus = async () => {
 	const status = await coreApi.getNetworkStatus();
 	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
+	status.data.lastUpdate = Math.floor(Date.now() / 1000);
 	return status;
 };
 
