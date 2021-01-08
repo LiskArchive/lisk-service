@@ -1,6 +1,6 @@
 # Lisk Service Subscribe API Documentation
 
-The Lisk Service is a web application that interacts with the whole Lisk ecosystem in various aspects: by accessing blockchain data, storing users' private data, retrieving and storing market data and interacting with social media.
+The Lisk Service is a web application that interacts with the whole Lisk ecosystem in various aspects. Update about blockchain events is one of them.
 
 The Subscribe API is sometimes called publish/subscribe or Event-Driven API. The biggest difference between Event-Driven and regular REST API is not only technical: in practice, they use two-way streaming connection, which means that not only client can request server for a data (and potential updates), but also the server can notify the client about new data instantly, as they arrive.
 
@@ -14,7 +14,7 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 * [Endpoint Logic](#endpoint-logic)
 * [Responses](#responses)
 * [Date Format](#date-format)
-* [Sample client implementations](#sample-client-implementations)
+* [Example of a client implementation](#example-of-a-client-implementation)
     * [Node.js](#node.js)
 * [`update.block`](#`update.block`)
     * [Response](#response)
@@ -24,10 +24,6 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
     * [Response](#response-2)
 * [`update.transactions.unconfirmed`](#`update.transactions.unconfirmed`)
     * [Response](#response-3)
-* [`update.transactions.<Lisk_ID>` _(not implemented)_](#`update.transactions.<lisk_id>`-_(not-implemented)_)
-    * [Response](#response-4)
-* [`update.peers.connected` _(not implemented)_](#`update.peers.connected`-_(not-implemented)_)
-    * [Response](#response-5)
 
 <!-- vscode-markdown-toc-config
 	numbering=false
@@ -39,11 +35,11 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 
 The blockchain update API can be accessed by the following path `https://service.lisk.io/blockchain`.
 
-The market update API can be accessed by the following path `https://service.lisk.io/market`.
+You might also be interested in accessing the `testnet` network by using the `https://testnet-service.lisk.io/blockchain` endpoint.
 
-You can also access the testnet network by using the `https://testnet-service.lisk.io` address.
+**Important:** The Lisk Service WebSocket API uses the `socket.io` library. This implementation is compatible with the version 2.0 of `socket.io` library. Using a wrong major version might result in broken connection and messages not being passed.
 
-The Lisk Service WebSocket API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard. The specification below contains numerous examples how to use the API in practice.
+The specification below contains numerous examples how to use the API in practice.
 
 ## <a name='endpoint-logic'></a>Endpoint Logic
 
@@ -70,7 +66,7 @@ Each API request has the following structure:
 
 In the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
 
-## <a name='sample-client-implementations'></a>Sample client implementations
+## <a name='example-of-a-client-implementation'></a>Example of a client implementation
 
 ### <a name='node.js'></a>Node.js
 
@@ -90,30 +86,23 @@ Updates about a newly forged block with its all data.
 
 ```jsonc
 {
-    "data": [
-        {
-        "id": "3226008563694255110",
-        "height": 26998,
-        "version": 1,
-        "timestamp": 1573059290,
-        "generatorAddress": "6214967903930344618L",
-        "generatorPublicKey": "85b07e51ffe528f272b7eb734d0496158f2b0f890155ebe59ba2989a8ccc9a49",
-        "payloadLength": 468,
-        "payloadHash": "c38b0a05a6f10d40e5e7bb2d6a1508be9d45c508d53f525ba4b2d6b972fceac2",
-        "blockSignature": "7405a0d0772fab3947a2e9ff3b60eb1afc857cd941e8a0f481e579f6c9888f4f6732a47e9d56dec082829fb9d78b7cc364a335daf26d9cbac0d98f7b1c3e1d04",
-        "confirmations": 1,
-        "previousBlockId": "631995364195044204",
-        "numberOfTransactions": 4,
-        "totalAmount": "400000000",
-        "totalFee": "40000000",
-        "reward": "500000000",
-        "totalForged": "540000000"
-        }
-    ],
-    "meta": {
-        "count": 1,
-        "timestamp": 1573059291
-    }
+    id: "6286637019365913992",
+    version: 1,
+    timestamp: 146010410,
+    height: 12659996,
+    numberOfTransactions: 0,
+    totalAmount: "0",
+    totalFee: "0",
+    reward: "100000000",
+    payloadLength: 0,
+    payloadHash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    generatorPublicKey: "bfd925085aeb9d2d21973363d6a3e8d394b25116e252b4db701e3dabe319b016",
+    blockSignature: "7e57deaf35bdf6ec804a402f04aaca6e70ecb1a928d28e98277219fa9caa5a770b0dea3ecf402cdfc35c7b8a84d1611a5b794d70bf3c29d51c28b8ded3b5920c",
+    confirmations: 1,
+    totalForged: "100000000",
+    generatorAddress: "3865707283477759335L",
+    previousBlockId: "9424602178629894603",
+    unixTimestamp: 1610119610
 }
 ```
 
@@ -171,35 +160,6 @@ Updates about transactions from the last block.
     "meta": {
         "count": 4,
         "timestamp": 1573059291
-    }
-}
-```
-
-## <a name='`update.transactions.unconfirmed`'></a>`update.transactions.unconfirmed`
-
-Updates about unconfirmed transactions.
-
-### <a name='response-3'></a>Response
-
-```jsonc
-{
-    "data": [
-        {
-            "amount": "100000000",
-            "recipientId": "16313739661670634666L",
-            "senderPublicKey": "c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f",
-            "type": 0,
-            "fee": "10000000",
-            "asset": {},
-            "signature": "8b93bddbc51411f45dd2be352496f0b4a8dcc37bdf632eb311d292c7f2de75e5182c1ac554f54031313a5c7f9fcfa091dee7790aa40c2ee96091ba52710b600e",
-            "id": "12761961644475138241",
-            "senderId": "16313739661670634666L",
-            "relays": 1
-        }
-    ],
-    "meta": {
-        "count": 1,
-        "timestamp": 1573059285
     }
 }
 ```
