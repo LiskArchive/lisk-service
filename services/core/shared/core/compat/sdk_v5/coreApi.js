@@ -26,10 +26,10 @@ const getBlocks = async params => {
     let block;
     let blocks;
 
-    if (params.id) {
-        block = await apiClient.block.get(params.id);
-    } else if (params.ids) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.ids });
+    if (params.blockId) {
+        block = await apiClient.block.get(params.blockId);
+    } else if (params.blockIds) {
+        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.blockIds });
     } else if (params.height) {
         block = await apiClient.block.getByHeight(params.height);
     } else if (params.heightRange) {
