@@ -13,12 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getClient } = require('../common/wsRequest');
-
-const getApiClient = async () => {
-    const wsClient = await getClient();
-    return wsClient;
-};
+const { getApiClient } = require('../common/wsRequest');
 
 const getNetworkStatus = async () => {
     const apiClient = await getApiClient();
@@ -28,20 +23,21 @@ const getNetworkStatus = async () => {
 
 const getBlocks = async params => {
     const apiClient = await getApiClient();
-    let block, blocks;
+    let block;
+    let blocks;
+
     if (params.id) {
         block = await apiClient.block.get({ id: params.id });
     } else if (params.ids) {
-        blocks = await apiClient._channel
-            .invoke('app:getBlocksByIDs', { ids: params.ids });
+        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.ids });
     } else if (params.height) {
         block = await apiClient.block.getBlockByHeight({ height: params.height });
     } else if (params.heightRange) {
-        blocks = await apiClient._channel
-            .invoke('app:getBlocksByHeightBetween', params.heightRange);
+        blocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', params.heightRange);
     }
-    if (blocks) blocks = blocks.map(block => apiClient.block.decode(block));
-    const result = blocks ? blocks : [block];
+
+    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(blk));
+    const result = blocks || [block];
     return { data: result };
 };
 
