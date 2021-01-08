@@ -17,6 +17,22 @@ const coreApi = require('./coreApi');
 
 const getNetworkStatus = async () => {
 	const status = await coreApi.getNetworkStatus();
+	const data = [];
+	status.data.registeredModules.map(acc => {
+		const { id, name } = acc;
+		if (acc.transactionAssets.length) {
+			acc.transactionAssets.map(asset => {
+				const assetId = `${id}:${asset.id}`;
+				const assetName = `${name}:${asset.name}`;
+				data.push({ id: assetId, name: assetName });
+				return data;
+			});
+		} else {
+			data.push({ id, name });
+		}
+		return data;
+	});
+	status.data.operations = data;
 	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
 	status.data.lastUpdate = Math.floor(Date.now() / 1000);
 	return status;
