@@ -26,6 +26,22 @@ const getNetworkStatus = async () => {
     return { data: result };
 };
 
+const getTransactions = async params => {
+    const apiClient = await getApiClient();
+    let transaction;
+    let transactions;
+
+    if (params.id) {
+        transaction = await apiClient.transaction.get(params.id);
+    } else if (params.ids) {
+        transactions = await apiClient._channel.invoke('app:getTransactionsByIDs', { ids: params.ids });
+    }
+
+    if (transactions) transactions = transactions.map(blk => apiClient.transaction.decode(blk));
+    const result = transactions || [transaction];
+    return { data: result };
+};
 module.exports = {
     getNetworkStatus,
+    getTransactions,
 };
