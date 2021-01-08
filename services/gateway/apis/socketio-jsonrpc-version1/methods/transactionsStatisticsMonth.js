@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsStatisticsMonthSource = require('../../../sources/transactionsStatisticsMonth');
+const transactionsStatisticsMonthSource = require('../../../sources/version1/transactionsStatisticsMonth');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {

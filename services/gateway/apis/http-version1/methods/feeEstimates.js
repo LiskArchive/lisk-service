@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const feeEstimatesSource = require('../../../sources/feeEstimates');
+const feeEstimatesSource = require('../../../sources/version1/feeEstimates');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {

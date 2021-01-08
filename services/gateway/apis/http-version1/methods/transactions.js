@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsSource = require('../../../sources/transactions');
+const transactionsSource = require('../../../sources/version1/transactions');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 const { transformParams, response } = require('../swagger/utils');
 

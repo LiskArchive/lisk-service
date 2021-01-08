@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,16 +13,31 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const networkSearchSource = require('../../../sources/version1/networkSearch');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const peer = require('../mappings/peer');
 
 module.exports = {
-	version: '2.0',
-	method: 'get.search',
-	envelope,
+	type: 'moleculer',
+	method: 'core.peers',
 	params: {
-		q: { required: true },
+		ip: '=,string',
+		httpPort: '=,string',
+		wsPort: '=,string',
+		os: '=,string',
+		version: '=,string',
+		state: '=,string',
+		height: '=,number',
+		broadhash: '=',
+		limit: '=,number',
+		offset: '=,number',
+		sort: '=,string',
 	},
-	source: networkSearchSource,
+	definition: {
+		data: ['data', peer],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };

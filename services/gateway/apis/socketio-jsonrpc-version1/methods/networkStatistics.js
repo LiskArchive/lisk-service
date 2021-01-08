@@ -14,7 +14,7 @@
  *
  */
 
-const networkStatisticsSource = require('../../../sources/networkStatistics');
+const networkStatisticsSource = require('../../../sources/version1/networkStatistics');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {

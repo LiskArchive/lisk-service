@@ -13,15 +13,35 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const votesSource = require('../../../sources/version1/votes');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const transaction = require('../mappings/transaction');
 
 module.exports = {
-	version: '2.0',
-	swaggerApiPath: '/account/{address}/votes',
+	type: 'moleculer',
+	method: 'core.transactions',
 	params: {
-		address: { optional: false, type: 'string', min: 1, max: 24 },
+		id: '=',
+		type: '=',
+		senderIdOrRecipientId: 'address',
+		senderId: 'sender',
+		recipientId: 'recipient',
+		offset: '=',
+		limit: '=',
+		minAmount: 'min',
+		maxAmount: 'max',
+		fromTimestamp: 'from',
+		toTimestamp: 'to',
+		blockId: 'block',
+		height: '=',
+		sort: '=',
+		data: '=',
 	},
-	source: votesSource,
-	envelope,
+	definition: {
+		data: ['data', transaction],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
