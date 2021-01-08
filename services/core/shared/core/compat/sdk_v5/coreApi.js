@@ -26,6 +26,26 @@ const getNetworkStatus = async () => {
     return { data: result };
 };
 
+const getBlocks = async params => {
+    const apiClient = await getApiClient();
+    let block, blocks;
+    if (params.id) {
+        block = await apiClient.block.get({ id: params.id });
+    } else if (params.ids) {
+        blocks = await apiClient._channel
+            .invoke('app:getBlocksByIDs', { ids: params.ids });
+    } else if (params.height) {
+        block = await apiClient.block.getBlockByHeight({ height: params.height });
+    } else if (params.heightRange) {
+        blocks = await apiClient._channel
+            .invoke('app:getBlocksByHeightBetween', params.heightRange);
+    }
+    if (blocks) blocks = blocks.map(block => apiClient.block.decode(block));
+    const result = blocks ? blocks : [block];
+    return { data: result };
+};
+
 module.exports = {
+    getBlocks,
     getNetworkStatus,
 };
