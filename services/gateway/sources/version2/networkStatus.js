@@ -36,7 +36,6 @@ module.exports = {
             lastUpdate: 'data.lastUpdate,number',
             lastBlockHeight: 'data.height,string',
             lastBlockId: 'data.lastBlockID,string',
-
         },
         links: {},
     },
