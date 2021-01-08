@@ -23,7 +23,7 @@ const { webSocket, events } = require('../constants/event');
 
 jsome.params.colored = true;
 
-const socket = io(webSocket.endpoint, {
+const socket = io(process.env.WS_ENDPOINT || webSocket.endpoint, {
 	forceNew: true,
 	transports: ['websocket'],
 });

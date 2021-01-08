@@ -117,47 +117,28 @@ Updates about forging delegates, first 101 delegates by voting power.
     "meta": {
         "update": 1565107927,
         "count": 101
-    }, 
+    },
 }
 ```
 
-## `update.round` _(not implemented)_
+## `update.round`
 
-Updates about current round, delegates and their forging status.
+Updates about the forging delegates for the next round.
 
 ```json
 {
-    "data": {
-        "participants": [
-            {
-                "address": "123L",
-                "username": "genesis_12",
-                "forgingStatusInRound": "DONE", // "DONE", "AWAITING", "MISSED",
-                "forgedBlocks": 2,
-                "forgedBlockIds": ["6258354802676165798", "9368354802426379221"],
-            }
-        ],
-        "nextForgers": [
-            {
-            "address": "4935562234363081651L",
-            "approval": "35.77",
-            "missedBlocks": 157,
-            "producedBlocks": 55222,
-            "productivity": "99.72",
-            "publicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-            "secondPublicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-            "rank": 93,
-            "username": "genesis_84",
-            "vote": "4630668157412954"
-            }
-        ],
-    },
-    "meta": {
-        "update": 1565107927,
-        "roundStart": 1565107927,
-        "roundEnd": 1565107927,
-        "blocksForged": 12
-    }, 
+  "nextForgers": [
+        "9447508130077835324L",
+        "923992554593700306L",
+        "9164804013838025941L",
+        "9077548379631877989L",
+        ...
+        ...
+        "10452881617068866990L",
+        "10431315846496304288L",
+        "10045031187186962062L",
+        "10016685355739180605L",
+    ],
 }
 ```
 
@@ -258,7 +239,7 @@ Updates about unconfirmed transactions on per-account basis.
     "meta": {
         "update": 1565107927,
         "count": 5
-    }, 
+    },
 }
 ```
 
@@ -299,6 +280,6 @@ Updates about active peers.
     "meta": {
         "update": 1565107927,
         "count": 217
-    }, 
+    },
 }
 ```
