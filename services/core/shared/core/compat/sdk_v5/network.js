@@ -18,10 +18,10 @@ const coreApi = require('./coreApi');
 const getNetworkStatus = async () => {
 	const status = await coreApi.getNetworkStatus();
 	const data = [];
-	status.data.registeredModules.map(acc => {
-		const { id, name } = acc;
-		if (acc.transactionAssets.length) {
-			acc.transactionAssets.map(asset => {
+	status.data.registeredModules.map(module => {
+		const { id, name } = module;
+		if (module.transactionAssets.length) {
+			module.transactionAssets.map(asset => {
 				const assetId = `${id}:${asset.id}`;
 				const assetName = `${name}:${asset.name}`;
 				data.push({ id: assetId, name: assetName });
