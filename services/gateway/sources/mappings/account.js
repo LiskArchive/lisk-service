@@ -69,8 +69,8 @@ module.exports = {
 	unlocking: ['unlocking', {
 		amount: '=,string',
 		height: {
-			start: '=,number',
-			end: '=,number',
+			start: '=,string',
+			end: '=,string',
 		},
 		delegateAddress: '=,string',
 	}],

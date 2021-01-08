@@ -19,10 +19,15 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 * [`update.block`](#`update.block`)
     * [Response](#response)
 * [`update.round`](#`update.round`)
-* [`update.transactions.confirmed`](#`update.transactions.confirmed`)
     * [Response](#response-1)
-* [`update.transactions.unconfirmed`](#`update.transactions.unconfirmed`)
+* [`update.transactions.confirmed`](#`update.transactions.confirmed`)
     * [Response](#response-2)
+* [`update.transactions.unconfirmed`](#`update.transactions.unconfirmed`)
+    * [Response](#response-3)
+* [`update.transactions.<Lisk_ID>` _(not implemented)_](#`update.transactions.<lisk_id>`-_(not-implemented)_)
+    * [Response](#response-4)
+* [`update.peers.connected` _(not implemented)_](#`update.peers.connected`-_(not-implemented)_)
+    * [Response](#response-5)
 
 <!-- vscode-markdown-toc-config
 	numbering=false
@@ -114,41 +119,24 @@ Updates about a newly forged block with its all data.
 
 ## <a name='`update.round`'></a>`update.round`
 
-Updates about current round, delegates and their forging status.
+Updates about the forging delegates for the next round.
+
+### <a name='response-1'></a>Response
 
 ```jsonc
 {
-    "data": {
-        "participants": [
-            {
-                "address": "123L",
-                "username": "genesis_12",
-                "forgingStatusInRound": "DONE", // "DONE", "AWAITING", "MISSED",
-                "forgedBlocks": 2,
-                "forgedBlockIds": ["6258354802676165798", "9368354802426379221"],
-            }
-        ],
-        "nextForgers": [
-            {
-            "address": "4935562234363081651L",
-            "approval": "35.77",
-            "missedBlocks": 157,
-            "producedBlocks": 55222,
-            "productivity": "99.72",
-            "publicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-            "secondPublicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-            "rank": 93,
-            "username": "genesis_84",
-            "vote": "4630668157412954"
-            }
-        ],
-    },
-    "meta": {
-        "update": 1565107927,
-        "roundStart": 1565107927,
-        "roundEnd": 1565107927,
-        "blocksForged": 12
-    }, 
+  "nextForgers": [
+        "9447508130077835324L",
+        "923992554593700306L",
+        "9164804013838025941L",
+        "9077548379631877989L",
+        ...
+        ...
+        "10452881617068866990L",
+        "10431315846496304288L",
+        "10045031187186962062L",
+        "10016685355739180605L",
+    ],
 }
 ```
 
@@ -156,7 +144,7 @@ Updates about current round, delegates and their forging status.
 
 Updates about transactions from the last block.
 
-### <a name='response-1'></a>Response
+### <a name='response-2'></a>Response
 
 ```jsonc
 {
@@ -191,7 +179,7 @@ Updates about transactions from the last block.
 
 Updates about unconfirmed transactions.
 
-### <a name='response-2'></a>Response
+### <a name='response-3'></a>Response
 
 ```jsonc
 {
