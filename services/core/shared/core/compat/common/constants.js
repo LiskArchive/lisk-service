@@ -23,8 +23,6 @@ let coreVersion = '1.0.0-alpha.0';
 let readyStatus;
 
 const getNetworkConstants = async () => {
-	// const expireMiliseconds = Number(config.ttl.stable) * 1000;
-	// const result = await coreApiCached.getNetworkConstants(null, { expireMiliseconds });
 	const result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
 	if (!isProperObject(result)) return {};
 	return result;

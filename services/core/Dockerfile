@@ -1,6 +1,6 @@
 FROM node:12-alpine AS builder
 
-RUN apk add --no-cache alpine-sdk python2 git
+RUN apk add --no-cache alpine-sdk python2 git libtool autoconf automake
 RUN adduser -D builder
 
 USER builder

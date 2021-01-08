@@ -82,7 +82,6 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
 // Time in seconds to keep the general cache
 config.cacheTTL = 20;
 config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
-config.cacheNumOfAccounts = Number(process.env.CACHE_N_ACCOUNTS) || 500;
 
 /**
  * Cache delegate info in order to replace address by username
@@ -94,8 +93,9 @@ config.cacheDelegateAddress.enabled = true;
 config.cacheDelegateAddress.updateInterval = 60000;
 
 config.transactionStatistics = {
+	enabled: Boolean(process.env.ENABLE_TRANSACTION_STATS || false),
 	updateInterval: Number(process.env.TRANSACTION_STATS_UPDATE_INTERVAL || 10 * 60), // seconds
-	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 366),
+	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 5),
 };
 
 config.ttl = {
@@ -104,6 +104,8 @@ config.ttl = {
 };
 
 config.feeEstimates = {
+	quickAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_QUICK || true),
+	fullAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_FULL || false),
 	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 1),
 	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1),
 	medEstLowerPercentile: 25,
