@@ -123,67 +123,22 @@ Updates about forging delegates, first 101 delegates by voting power.
 
 ## `update.round`
 
-Updates about current round, delegates and their forging status.
+Updates about the forging delegates for the next round.
 
 ```json
 {
-    "data": {
-        "nextForgers": [
-            {
-                "address": "9447508130077835324L",
-                "publicKey": "95c34c5ff1c3483f32d41ce641fc02f385a9ca97085bd88c4faebb25b4b5e2c2",
-                "username": "genesis_92",
-                "isDelegate": true,
-                "nonce": "2",
-                "balance": "0",
-                "votes": [
-                    {
-                        "amount": "1000000000000",
-                        "delegateAddress": "9447508130077835324L"
-                    }
-                ],
-                "unlocking": [],
-                "totalVotesReceived": 0,
-                "delegate": {
-                    "isBanned": false,
-                    "pomHeights": [],
-                    "lastForgedHeight": 0,
-                    "consecutiveMissedBlocks": 0,
-                    "approval": 0
-                },
-                "asset": {
-                },
-                "missedBlocks": 1,
-                "producedBlocks": 6,
-                "fees": "0",
-                "rewards": "0",
-                "productivity": 85.71,
-                "keys": {
-                    "optionalKeys": [],
-                    "mandatoryKeys": [],
-                    "numberOfSignatures": 0
-                },
-                "account": {
-                    "address": "9447508130077835324L",
-                    "publicKey": "95c34c5ff1c3483f32d41ce641fc02f385a9ca97085bd88c4faebb25b4b5e2c2"
-                },
-                "delegateWeight": 1000000000000,
-                "vote": 1000000000000,
-                "isBanned": false,
-                "pomHeights": [],
-                "lastForgedHeight": 0,
-                "consecutiveMissedBlocks": 0,
-                "rank": 103,
-                "status": "active"
-            },
-            ...
-        ],
-    },
-    "meta": {
-        "count": 103,
-        "offset": 0,
-        "total": 103,
-    },
+  "nextForgers": [
+        "9447508130077835324L",
+        "923992554593700306L",
+        "9164804013838025941L",
+        "9077548379631877989L",
+        ...
+        ...
+        "10452881617068866990L",
+        "10431315846496304288L",
+        "10045031187186962062L",
+        "10016685355739180605L",
+    ],
 }
 ```
 

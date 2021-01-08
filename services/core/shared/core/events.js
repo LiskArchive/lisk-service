@@ -33,10 +33,7 @@ const events = {
 		await reloadNextForgersCache();
 		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
 		const nextForgers = await getNextForgers({ limit });
-		const response = {
-			data: { nextForgers: nextForgers.data },
-			meta: nextForgers.meta,
-		};
+		const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
 		signals.get('newRound').dispatch(response);
 	},
 	calculateFeeEstimate: async () => {
