@@ -20,7 +20,8 @@ module.exports = {
 	method: 'core.transactions',
 	params: {
 		id: '=',
-		type: '=',
+		operationId: '=',
+		operationName: '=',
 		senderIdOrRecipientId: 'address',
 		senderId: 'sender',
 		recipientId: 'recipient',

@@ -14,8 +14,10 @@
  *
  */
 const { getNetworkStatus } = require('./network');
+const { getTransactions } = require('./transactions');
 
 module.exports = {
     ...require('../sdk_v4'),
     getNetworkStatus,
+    getTransactions,
 };
