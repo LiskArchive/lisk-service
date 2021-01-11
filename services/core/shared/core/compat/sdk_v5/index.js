@@ -16,8 +16,11 @@
 const { getBlocks } = require('./blocks');
 const { getNetworkStatus } = require('./network');
 
+const events = require('./events');
+
 module.exports = {
     ...require('../sdk_v4'),
+    events,
     getBlocks,
     getNetworkStatus,
 };
