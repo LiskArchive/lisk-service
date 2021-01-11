@@ -13,15 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transaction = require('../mappings/transaction');
+const transaction = require('./mappings/transaction');
 
 module.exports = {
 	type: 'moleculer',
 	method: 'core.transactions',
 	params: {
 		id: '=',
-		operationId: '=',
-		operationName: '=',
 		senderIdOrRecipientId: 'address',
 		senderId: 'sender',
 		recipientId: 'recipient',

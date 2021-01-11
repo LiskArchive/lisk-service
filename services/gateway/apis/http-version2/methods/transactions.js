@@ -14,7 +14,7 @@
  *
  */
 const transactionsSource = require('../../../sources/version2/transactions');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const envelope = require('../../../sources/version2/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const voter = require('../mappings/voter');
+const voter = require('./mappings/voter');
 
 module.exports = {
 	type: 'moleculer',
