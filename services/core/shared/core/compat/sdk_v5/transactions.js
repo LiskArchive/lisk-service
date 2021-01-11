@@ -14,9 +14,15 @@
  *
  */
 const coreApi = require('./coreApi');
+const { getRegisteredModules } = require('../common');
 
 const normalizeTransaction = tx => {
+	const liskModules = getRegisteredModules();
+	const txModule = liskModules
+		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 	tx.id = tx.id.toString('hex');
+	tx.operationId = txModule[0].id;
+	tx.operationName = txModule[0].name;
 	tx.fee = Number(tx.fee);
 	tx.nonce = Number(tx.nonce);
 	tx.senderPublicKey = tx.senderPublicKey.toString('hex');
