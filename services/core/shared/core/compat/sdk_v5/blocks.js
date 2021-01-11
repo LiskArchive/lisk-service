@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { transactions } = require('lisk-sdk');
+
 const coreApi = require('./coreApi');
 const {
 	getBlockchainTime,
@@ -70,10 +72,11 @@ const getBlocks = async params => {
 		block.totalFee = 0;
 
 		block.payload.forEach(txn => {
-			// TODO: Update logic to properly determine txn minFee
+			const txnMinFee = Number(transactions.computeMinFee(txn));
+
 			block.totalForged += Number(txn.fee);
-			block.totalBurnt += Number(txn.minFee);
-			block.totalFee += Number(txn.fee) - Number(txn.minFee);
+			block.totalBurnt += txnMinFee;
+			block.totalFee += Number(txn.fee) - txnMinFee;
 		});
 		delete block.payload;
 		return block;
