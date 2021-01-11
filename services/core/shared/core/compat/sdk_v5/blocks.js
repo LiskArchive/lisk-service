@@ -20,6 +20,18 @@ const {
 	validateTimestamp,
 } = require('../common');
 
+let finalizedHeight;
+
+const setFinalizedHeight = (height) => finalizedHeight = height;
+
+const updateFinalizedHeight = async () => {
+	const result = await coreApi.getNetworkStatus();
+	setFinalizedHeight(result.data.finalizedHeight);
+	return result;
+};
+
+const getFinalizedHeight = () => finalizedHeight;
+
 const normalizeBlock = block => {
 	block.id = block.id.toString('hex');
 	block.signature = block.signature.toString('hex');
@@ -62,4 +74,6 @@ const getBlocks = async params => {
 
 module.exports = {
 	getBlocks,
+	updateFinalizedHeight,
+	getFinalizedHeight,
 };

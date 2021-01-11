@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getBlocks } = require('./blocks');
+const {
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
+} = require('./blocks');
+
 const { getNetworkStatus } = require('./network');
 
 const events = require('./events');
@@ -22,5 +27,7 @@ module.exports = {
     ...require('../sdk_v4'),
     events,
     getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
     getNetworkStatus,
 };
