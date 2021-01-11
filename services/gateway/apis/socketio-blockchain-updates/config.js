@@ -77,7 +77,7 @@ module.exports = {
 			},
 		},
 		{
-			name: 'rounds',
+			name: 'update.round',
 			type: 'event',
 			cache: false,
 			source: {

@@ -24,7 +24,7 @@ const register = (events) => {
 
 	coreSocket.socket.on('blocks/change', async data => events.newBlock(data));
 	coreSocket.socket.on('blocks/change', async data => events.calculateFeeEstimate(data));
-	coreSocket.socket.on('round/change', async data => events.newRound(data));
+	coreSocket.socket.on('rounds/change', async data => events.newRound(data));
 };
 
 module.exports = { register };

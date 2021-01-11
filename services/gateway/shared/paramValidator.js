@@ -56,6 +56,18 @@ const parseParams = (p) => {
 };
 
 const validateInputParams = (rawInputParams = {}, specs) => {
+	const validateFromParamPairings = (paramsRequired = false, inputParamKeys, paramPairings) => {
+		if (!paramsRequired) return [];
+
+		const relevantPairings = paramPairings
+			.filter(pairing => inputParamKeys.some(key => pairing.includes(key)));
+		if (relevantPairings.length === 0) return paramPairings;
+
+		const result = relevantPairings
+			.some(pairing => pairing.every(param => inputParamKeys.includes(param)));
+		return result ? [] : paramPairings;
+	};
+
 	const checkMissingParams = (routeParams, requestParams) => {
 		const requiredParamList = Object.keys(routeParams)
 			.filter(o => routeParams[o].required === true);
@@ -72,8 +84,6 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 			return acc;
 		}, {});
 
-	const specParams = specs.params || {};
-
 	const looseSpecParams = (specPar) => Object.keys(specPar).reduce((acc, cur) => {
 		if (specPar[cur].type === 'number' || specPar[cur].type === 'boolean') {
 			acc[cur] = { convert: true, ...specPar[cur] };
@@ -81,17 +91,25 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 		return acc;
 	}, {}); // adds convert: true
 
+	const specParams = specs.params || {};
 	const inputParams = rawInputParams;
+
+	const paramPairings = specs.validParamPairings || [];
+	const inputParamKeys = Object.getOwnPropertyNames(inputParams);
 
 	const paramReport = parseParams({
 		swaggerParams: parseAllParams(specParams, inputParams),
 		inputParams: { ...parseDefaultParams(specParams), ...inputParams },
 	});
 
+	paramReport.required = validateFromParamPairings(
+		specs.paramsRequired, inputParamKeys, paramPairings);
+
 	paramReport.missing = checkMissingParams(specParams, inputParams);
 
 	if (paramReport.missing.length > 0) return paramReport;
 	if (Object.keys(paramReport.unknown).length > 0) return paramReport;
+	if (paramReport.required.length) return paramReport;
 
 	paramReport.invalid = validator.validate(
 		dropEmptyProps(inputParams),
