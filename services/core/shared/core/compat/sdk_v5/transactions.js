@@ -23,7 +23,21 @@ const getTransactions = async params => {
 
 	const response = await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data;
-	if (response.meta) transactions.meta = response.meta;
+    if (response.meta) transactions.meta = response.meta;
+    
+    // timestamp logic to transactions
+    // transactions.data = await BluebirdPromise.map(
+	// 	transactions.data,
+	// 	async transaction => {
+	// 		if (!transaction.timestamp) {
+	// 			const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
+	// 			transaction.timestamp = txBlock.timestamp;
+	// 		}
+	// 		transaction.unixTimestamp = await getUnixTime(transaction.timestamp);
+	// 		return transaction;
+	// 	},
+	// 	{ concurrency: transactions.data.length },
+	// );
 
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
