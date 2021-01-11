@@ -23,7 +23,7 @@ const register = async (events) => {
 	const apiClient = await getApiClient();
 	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
-	client.subscribe('app:block:new', data => {
+	apiClient.subscribe('app:block:new', data => {
 		const block = apiClient.block.decode(data.block);
 		events.newBlock({ id: block.header.id.toString('hex') });
 		// events.calculateFeeEstimate();
