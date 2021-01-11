@@ -26,6 +26,7 @@ const normalizeBlock = block => {
 	block.previousBlockID = block.previousBlockID.toString('hex');
 	block.transactionRoot = block.transactionRoot.toString('hex');
 	block.generatorPublicKey = block.generatorPublicKey.toString('hex');
+	block.reward = Number(block.reward);
 	block.asset.seedReveal = block.asset.seedReveal.toString('hex');
 
 	return block;
