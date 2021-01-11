@@ -15,14 +15,11 @@
  */
 module.exports = {
 	id: '=,string',
-	operationId: '=,string',
-	operationName: '=,string',
 	amount: '=,string',
 	fee: '=,string',
 	type: '=,number',
 	height: '=,number',
 	nonce: '=,string',
-	block: '=',
 	blockId: '=,string',
 	timestamp: 'unixTimestamp,number',
 	senderId: '=,string',
@@ -37,5 +34,5 @@ module.exports = {
 	asset: '=',
 	receivedAt: '=,string',
 	relays: '=,number',
-	isPending: '=,boolean',
+	ready: '=,boolean',
 };
