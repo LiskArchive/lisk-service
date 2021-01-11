@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const {
@@ -20,6 +21,11 @@ const {
 	validateTimestamp,
 	getUnixTime,
 } = require('../common');
+
+const config = require('../../../../config');
+
+const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
+// const bHeightCache = CacheRedis('blockHeightToTimestamp', config.endpoints.redis);
 
 const getTransactionsByBlock = async block => {
 	const transactions = await coreApi.getTransactions({ height: block.height });
@@ -58,7 +64,7 @@ const getTransactions = async params => {
 		);
 	} else {
 		let timestampSortOrder;
-		if (params.sort.includes('timestamp')) {
+		if (params.sort && params.sort.includes('timestamp')) {
 			if (params.address) params.sort = params.sort.replace('timestamp', 'nonce');
 			else {
 				[, timestampSortOrder] = params.sort.split(':');
@@ -78,6 +84,7 @@ const getTransactions = async params => {
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,
 		async transaction => {
+			transaction.timestamp = await bIdCache.get(transaction.blockId);
 			if (!transaction.timestamp) {
 				const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
 				transaction.timestamp = txBlock.timestamp;
