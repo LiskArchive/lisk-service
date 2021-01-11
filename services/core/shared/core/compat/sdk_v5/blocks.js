@@ -59,10 +59,23 @@ const getBlocks = async params => {
 	);
 
 	const response = await coreApi.getBlocks(params);
-	if (response.data) blocks.data = response.data.map(block => normalizeBlock(block.header));
+	if (response.data) blocks.data = response.data.map(block => Object
+		.assign(normalizeBlock(block.header), { payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
-	blocks.data.map(block => block.unixTimestamp = block.timestamp);
+	blocks.data.map(block => {
+		block.unixTimestamp = block.timestamp;
+		block.totalForged = block.reward;
+		block.totalBurnt = 0;
+		block.totalFee = 0;
+
+		block.payload.forEach(txn => {
+			// TODO: Update logic to properly determine txn minFee
+			block.totalForged += txn.fee;
+			block.totalBurnt += txn.minFee;
+			block.totalFee += txn.fee - txn.minFee;
+		});
+	});
 
 	return blocks;
 };
