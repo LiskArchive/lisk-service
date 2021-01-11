@@ -65,15 +65,15 @@ const getBlocks = async params => {
 
 	blocks.data.map(block => {
 		block.unixTimestamp = block.timestamp;
-		block.totalForged = block.reward;
+		block.totalForged = Number(block.reward);
 		block.totalBurnt = 0;
 		block.totalFee = 0;
 
 		block.payload.forEach(txn => {
 			// TODO: Update logic to properly determine txn minFee
-			block.totalForged += txn.fee;
-			block.totalBurnt += txn.minFee;
-			block.totalFee += txn.fee - txn.minFee;
+			block.totalForged += Number(txn.fee);
+			block.totalBurnt += Number(txn.minFee);
+			block.totalFee += Number(txn.fee) - Number(txn.minFee);
 		});
 		delete block.payload;
 		return block;
