@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { transactions } = require('lisk-sdk');
+const { computeMinFee } = require('@liskhq/lisk-transactions-v5');
 
 const coreApi = require('./coreApi');
 const {
@@ -72,7 +72,7 @@ const getBlocks = async params => {
 		block.totalFee = 0;
 
 		block.payload.forEach(txn => {
-			const txnMinFee = Number(transactions.computeMinFee(txn));
+			const txnMinFee = Number(computeMinFee(txn));
 
 			block.totalForged += Number(txn.fee);
 			block.totalBurnt += txnMinFee;
