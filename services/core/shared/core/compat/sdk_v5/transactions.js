@@ -15,11 +15,14 @@
  */
 const coreApi = require('./coreApi');
 
-
 const normalizeTransaction = tx => {
 	tx.id = tx.id.toString('hex');
+	tx.fee = Number(tx.fee);
+	tx.nonce = Number(tx.nonce);
 	tx.senderPublicKey = tx.senderPublicKey.toString('hex');
 	tx.signatures = tx.signatures.map(signature => signature.toString('hex'));
+	tx.asset.amount = Number(tx.asset.amount);
+	tx.asset.recipientAddress = tx.asset.recipientAddress.toString('hex');
 	return tx;
 };
 
@@ -31,10 +34,10 @@ const getTransactions = async params => {
 
 	const response = await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
-    if (response.meta) transactions.meta = response.meta;
+	if (response.meta) transactions.meta = response.meta;
 
-    // timestamp logic to transactions
-    // transactions.data = await BluebirdPromise.map(
+	// timestamp logic for transactions
+	// transactions.data = await BluebirdPromise.map(
 	// 	transactions.data,
 	// 	async transaction => {
 	// 		if (!transaction.timestamp) {
@@ -54,4 +57,6 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-module.exports = { getTransactions };
+module.exports = {
+	getTransactions,
+};
