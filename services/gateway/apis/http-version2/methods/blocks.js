@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -33,12 +33,7 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: [
-				'height:asc', 'height:desc',
-				'totalAmount:asc', 'totalAmount:desc',
-				'totalFee:asc', 'totalFee:desc',
-				'timestamp:asc', 'timestamp:desc',
-			],
+			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'height:desc',
 		},
 	},
