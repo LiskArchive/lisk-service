@@ -31,6 +31,24 @@ const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
 // const getTransactionsByBlockHeight = (height) => coreApi.getTransactions({ height });
 const getTransactionsByBlockId = (blockId) => coreApi.getTransactions({ blockId });
 
+const addToIndex = async (tx) => {
+	const { id, senderId, recipientId, timestamp } = tx;
+
+	const sndAddrIndex = await redis(`trx:address:${senderId}`, ['timestamp']);
+	await sndAddrIndex.writeRange(timestamp, id);
+
+	const senderIndex = await redis(`trx:sender:${senderId}`, ['timestamp']);
+	await senderIndex.writeRange(timestamp, id);
+
+	if (recipientId) {
+		const rcpAddrIndex = await redis(`trx:address:${recipientId}`, ['timestamp']);
+		await rcpAddrIndex.writeRange(timestamp, id);
+
+		const recipientIndex = await redis(`trx:recipient:${recipientId}`, ['timestamp']);
+		await recipientIndex.writeRange(timestamp, id);
+	}
+};
+
 const getTransactions = async params => {
 	const transactions = {
 		data: [],
@@ -47,7 +65,12 @@ const getTransactions = async params => {
 		return Promise.resolve();
 	}));
 
-	const timestampDb = await redis('timestampDb', ['timestamp']);
+	let collection = 'timestampDb';
+	if (params.address) collection = `trx:address:${params.address}`;
+	else if (params.senderId) collection = `trx:sender:${params.senderId}`;
+	else if (params.recipientId) collection = `trx:recipient:${params.recipientId}`;
+
+	const timestampDb = await redis(collection, ['timestamp']);
 
 	if (params.fromTimestamp || params.toTimestamp
 		|| (params.sort && params.sort.includes('timestamp'))) {
@@ -87,6 +110,8 @@ const getTransactions = async params => {
 		},
 		{ concurrency: transactions.data.length },
 	);
+
+	if (transactions.data) transactions.data.forEach((tx) => addToIndex(tx));
 
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
