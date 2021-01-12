@@ -32,6 +32,22 @@ const {
 } = require('./accounts');
 
 const {
+	parseAddress,
+	confirmAddress,
+	confirmUsername,
+	confirmPublicKey,
+	confirmSecondPublicKey,
+	confirmAnyId,
+	getUsernameByAddress,
+	getAddressByPublicKey,
+	getAddressByUsername,
+	getAddressByAny,
+	getPublicKeyByAddress,
+	getPublicKeyByUsername,
+	getPublicKeyByAny,
+} = require('./accountUtils');
+
+const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
@@ -40,8 +56,8 @@ const {
 } = require('./delegates');
 
 const {
-	getUsernameByAddress,
-	getAddressByUsername,
+	// getUsernameByAddress,
+	// getAddressByUsername,
 } = require('./delegateUtils');
 
 const {
@@ -66,19 +82,8 @@ const {
 
 const {
 	get,
-	parseAddress,
 	validateAddress,
 	validatePublicKey,
-	confirmAddress,
-	confirmPublicKey,
-	confirmSecondPublicKey,
-	confirmUsername,
-	confirmAnyId,
-	getAddressByAny,
-	getAddressByPublicKey,
-	getPublicKeyByAny,
-	getPublicKeyByAddress,
-	getPublicKeyByUsername,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,

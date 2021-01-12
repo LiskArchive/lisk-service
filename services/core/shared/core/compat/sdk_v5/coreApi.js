@@ -44,7 +44,24 @@ const getBlocks = async params => {
     return { data: result };
 };
 
+const getAccounts = async params => {
+    const apiClient = await getApiClient();
+    let account;
+    let accounts;
+
+    if (params.address) {
+        account = await apiClient.account.get(params.address);
+    } else if (params.blockIds) {
+        accounts = await apiClient._channel.invoke('app:getAccounts', { address: params.addresses });
+    }
+
+    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(acc));
+    const result = accounts || [account];
+    return { data: result };
+};
+
 module.exports = {
     getBlocks,
+    getAccounts,
     getNetworkStatus,
 };

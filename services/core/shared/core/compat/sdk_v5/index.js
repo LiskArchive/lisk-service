@@ -19,15 +19,31 @@ const {
     getFinalizedHeight,
 } = require('./blocks');
 
-const { getNetworkStatus } = require('./network');
+const {
+    getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
+} = require('./accounts');
+
+const {
+    getNetworkStatus,
+} = require('./network');
 
 const events = require('./events');
 
 module.exports = {
     ...require('../sdk_v4'),
+    ...require('./coreCache'),
+
     events,
+
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
+
+    getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
+
     getNetworkStatus,
 };
