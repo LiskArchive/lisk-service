@@ -42,8 +42,8 @@ module.exports = {
 		description: '=,string',
 	},
 	multisignatureAccount: {
-		lifetime: 'multisignatureGroups.lifetime,number', // returns no data at a delegate account
-		minimalNumberAcccounts: 'multisignatureGroups.min,number', // returns no data at a delegate account
+		lifetime: 'multisignatureGroups.lifetime,number', // returns no data for delegate accounts
+		minimalNumberAcccounts: 'multisignatureGroups.min,number', // returns no data for delegate accounts
 		numberOfReqSignatures: 'multisignatureGroups.numberOfReqSignatures,number',
 		members: ['multisignatureGroups.members', {
 			address: '=,string',
