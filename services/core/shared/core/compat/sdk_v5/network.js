@@ -14,21 +14,11 @@
  *
  */
 const coreApi = require('./coreApi');
+const { resolveOperations } = require('../common/constants');
 
 const getNetworkStatus = async () => {
 	const status = await coreApi.getNetworkStatus();
-	status.data.operations = [];
-	status.data.registeredModules.forEach(liskModule => {
-		if (liskModule.transactionAssets.length) {
-			status.data.operations = status.data.operations
-			.concat(
-				liskModule.transactionAssets.map(asset => {
-				const id = String(liskModule.id).concat(':').concat(asset.id);
-				const name = liskModule.name.concat(':').concat(asset.name);
-				return { id, name };
-			}));
-		}
-	});
+	status.data.operations = await resolveOperations(status.data.registeredModules);
 	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
 	status.data.lastUpdate = Math.floor(Date.now() / 1000);
 	return status;

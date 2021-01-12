@@ -39,7 +39,6 @@ const resolveOperations = async (data) => {
 					}));
 		}
 	});
-	setRegisteredmodules(result);
 	return result;
 };
 
@@ -49,10 +48,8 @@ const getNetworkConstants = async () => {
 		if (Object.getOwnPropertyNames(result).length === 0) {
 			const apiClient = await ws.getClient();
 			const info = await apiClient.node.getNodeInfo();
+			info.operations = await resolveOperations(info.registeredModules);
 			result = { data: info };
-		}
-		if (result.data.registeredModules) {
-			await resolveOperations(result.data.registeredModules);
 		}
 		return isProperObject(result) ? result : {};
 	} catch (_) {
@@ -79,4 +76,6 @@ module.exports = {
 	setReadyStatus,
 	getReadyStatus,
 	getRegisteredModules,
+	setRegisteredmodules,
+	resolveOperations,
 };
