@@ -25,7 +25,7 @@ const {
 	validateTimestamp,
 } = require('../common');
 
-// const timestampDb = require('../../../redis')('timestampDb', ['timestamp']);
+const redis = require('../../../redis');
 
 const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
 // const bHeightCache = CacheRedis('blockHeightToTimestamp', config.endpoints.redis);
@@ -77,14 +77,19 @@ const getBlocks = async (params) => {
 		),
 	);
 
+	const timestampDb = await redis('timestampDb', ['timestamp']);
+	const unixTimestampDb = await redis('unixTimestampDb', ['timestamp']);
+
 	blocks.data.forEach(block => {
-		if (block.numberOfTransactions > 0) { // block.isFinal === true && ??
+		if (block.numberOfTransactions > 0) {
 			bIdCache.set(block.id, block.timestamp);
 			// bHeightCache.set(block.height, block.timestamp); // block.unixTimestamp
-			// timestampDb.write({
-			// 	id: block.id,
-			// 	timestamp: block.timestamp,
-			// });
+
+			timestampDb.writeRange(block.timestamp, block.id);
+			unixTimestampDb.writeRange(block.unixTimestamp, {
+				id: block.id,
+				numberOfTransactions: block.numberOfTransactions,
+			});
 		}
 	});
 

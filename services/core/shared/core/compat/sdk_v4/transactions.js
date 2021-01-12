@@ -23,25 +23,22 @@ const {
 } = require('../common');
 
 const config = require('../../../../config');
+const redis = require('../../../redis');
 
 const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
 // const bHeightCache = CacheRedis('blockHeightToTimestamp', config.endpoints.redis);
 
-const getTransactionsByBlock = async block => {
-	const transactions = await coreApi.getTransactions({ height: block.height });
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => ({ ...transaction, timestamp: block.timestamp }),
-		{ concurrency: transactions.data.length },
-	);
-	return transactions;
-};
+// const getTransactionsByBlockHeight = (height) => coreApi.getTransactions({ height });
+const getTransactionsByBlockId = (blockId) => coreApi.getTransactions({ blockId });
 
 const getTransactions = async params => {
 	const transactions = {
 		data: [],
 		meta: {},
 	};
+
+	const limit = params.limit || 10;
+	const offset = params.offset || 0;
 
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 		if (await validateTimestamp(params[timestamp])) {
@@ -50,35 +47,31 @@ const getTransactions = async params => {
 		return Promise.resolve();
 	}));
 
-	if (params.fromTimestamp || params.toTimestamp) {
-		const blocks = await coreApi.getBlocks(params);
-		transactions.meta.count = 0;
+	const timestampDb = await redis('timestampDb', ['timestamp']);
+
+	if (params.fromTimestamp || params.toTimestamp
+		|| (params.sort && params.sort.includes('timestamp'))) {
+		const [, timestampSortOrder] = params.sort.split(':');
+		const blockIds = await timestampDb.findByRange('timestamp',
+			params.fromTimestamp,
+			params.toTimestamp,
+			timestampSortOrder === 'desc',
+			limit,
+			offset);
+
 		await BluebirdPromise.map(
-			blocks.data,
-			async (block) => {
-				const blkTransactions = await getTransactionsByBlock(block);
+			blockIds,
+			async (blockId) => {
+				const blkTransactions = await getTransactionsByBlockId(blockId);
 				transactions.data = transactions.data.concat(blkTransactions.data);
 				transactions.meta.count += blkTransactions.meta.count;
 			},
-			{ concurrency: blocks.data.length },
+			{ concurrency: 4 },
 		);
 	} else {
-		let timestampSortOrder;
-		if (params.sort && params.sort.includes('timestamp')) {
-			if (params.address) params.sort = params.sort.replace('timestamp', 'nonce');
-			else {
-				[, timestampSortOrder] = params.sort.split(':');
-				delete params.sort;
-			}
-		}
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
-
-		if (timestampSortOrder) transactions.data.sort(
-			(t1, t2) => timestampSortOrder === 'asc'
-				? t1.height - t2.height : t2.height - t1.height,
-		);
 	}
 
 	transactions.data = await BluebirdPromise.map(
