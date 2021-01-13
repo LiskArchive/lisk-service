@@ -20,7 +20,7 @@ const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
 const getForgers = async params => {
-	const result = await coreApi.getNextForgers(params);
+	const result = await coreApi.getForgers(params);
 	return isProperObject(result) && Array.isArray(result.data) ? result : [];
 };
 
