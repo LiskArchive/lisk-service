@@ -23,13 +23,13 @@ module.exports = {
 	nonce: '=,string',
 	block: {
 		id: 'block.id,string',
-		height: '=',
-		timestamp: '=',
+		height: '=,number',
+		timestamp: '=,number',
 	},
 	sender: {
-        address: '=',
+        address: '=,string',
         publicKey: 'senderPublicKey,string',
-        username: '=',
+        username: '=,string',
       },
 	signatures: '=',
 	confirmations: '=,number',

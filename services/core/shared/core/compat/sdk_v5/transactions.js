@@ -17,8 +17,8 @@ const coreApi = require('./coreApi');
 const { getRegisteredModules } = require('../common');
 
 const normalizeTransaction = tx => {
-	const liskModules = getRegisteredModules();
-	const txModule = liskModules
+	const availableLiskModules = getRegisteredModules();
+	const txModule = availableLiskModules
 		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 	tx.id = tx.id.toString('hex');
 	tx.operationId = txModule[0].id;

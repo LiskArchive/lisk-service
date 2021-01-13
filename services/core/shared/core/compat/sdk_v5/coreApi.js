@@ -37,7 +37,7 @@ const getTransactions = async params => {
         transactions = await apiClient._channel.invoke('app:getTransactionsByIDs', { ids: params.ids });
     }
 
-    if (transactions) transactions = transactions.map(blk => apiClient.transaction.decode(blk));
+    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(tx));
     const result = transactions || [transaction];
     return { data: result };
 };

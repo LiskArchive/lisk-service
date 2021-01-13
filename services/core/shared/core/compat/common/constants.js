@@ -22,9 +22,9 @@ const { isProperObject } = ObjectUtilService;
 
 let coreVersion = '1.0.0-alpha.0';
 let readyStatus;
-let liskModules;
+let registeredLiskModules;
 
-const setRegisteredmodules = modules => liskModules = modules;
+const setRegisteredmodules = modules => registeredLiskModules = modules;
 
 const resolveOperations = async (data) => {
 	let result = [];
@@ -67,7 +67,7 @@ const setReadyStatus = status => readyStatus = status;
 
 const getReadyStatus = () => readyStatus;
 
-const getRegisteredModules = () => liskModules;
+const getRegisteredModules = () => registeredLiskModules;
 
 module.exports = {
 	getNetworkConstants,
