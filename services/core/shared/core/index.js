@@ -41,6 +41,7 @@ const {
 
 const {
 	getForgers,
+	reloadForgersCache,
 } = require('./forgers');
 
 const {
@@ -162,4 +163,5 @@ module.exports = {
 	getSDKVersion,
 	waitForLastBlock,
 	getForgers,
+	reloadForgersCache,
 };

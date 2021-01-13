@@ -30,6 +30,8 @@ module.exports = [
 				logger.debug('Scheduling initial list update...');
 				await core.reloadDelegateCache();
 				await core.reloadNextForgersCache();
+			} else {
+				await core.reloadForgersCache();
 			}
 		},
 		controller: async () => {

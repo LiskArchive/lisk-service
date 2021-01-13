@@ -13,7 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const coreApi = require('./compat');
+
+const logger = Logger();
+const sdkVersion = coreApi.getSDKVersion();
+
+let nextForgers = [];
 
 const getForgers = async params => {
     const forgers = {
@@ -23,8 +29,7 @@ const getForgers = async params => {
 
     const offset = params.offset || 0;
     const limit = params.limit || 10;
-    const nextForgers = await coreApi.getForgers();
-    forgers.data = nextForgers.data.slice(offset, offset + limit);
+    forgers.data = nextForgers.slice(offset, offset + limit);
 
     forgers.meta.count = forgers.data.length;
     forgers.meta.offset = offset;
@@ -33,6 +38,24 @@ const getForgers = async params => {
     return forgers;
 };
 
+
+const loadAllNextForgers = async (forgers = []) => {
+    const maxCount = (sdkVersion < 4) ? 101 : 103;
+    const response = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
+    forgers = [...forgers, ...response.data];
+    if (forgers.length >= nextForgers.length) {
+        nextForgers = forgers;
+    }
+    if (response.data.length !== maxCount) {
+        loadAllNextForgers(forgers);
+    } else {
+        logger.info(`Initialized/Updated next forgers cache with ${nextForgers.length} delegates.`);
+    }
+};
+
+const reloadForgersCache = () => loadAllNextForgers();
+
 module.exports = {
     getForgers,
+    reloadForgersCache,
 };
