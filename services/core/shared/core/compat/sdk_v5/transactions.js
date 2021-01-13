@@ -47,7 +47,7 @@ const getTransactions = async params => {
 	// 	transactions.data,
 	// 	async transaction => {
 	// 		const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
-	// 		transaction.timestamp = txBlock.timestamp;
+	// 		transaction.unixTimestamp = txBlock.timestamp;
 	// 		return transaction;
 	// 	},
 	// 	{ concurrency: transactions.data.length },
