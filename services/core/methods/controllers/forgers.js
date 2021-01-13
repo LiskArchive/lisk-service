@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2019 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,13 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNetworkStatus } = require('./network');
-const { getTransactions } = require('./transactions');
-const { getForgers } = require('./forgers');
+const { Utils } = require('lisk-service-framework');
+
+const ObjectUtilService = Utils.Data;
+
+const CoreService = require('../../shared/core');
+
+const { isEmptyObject } = ObjectUtilService;
+
+
+const getForgers = async params => {
+    const forgers = await CoreService.getForgers(params);
+    if (isEmptyObject(forgers)) return {};
+
+    return {
+        data: forgers.data,
+        meta: forgers.meta,
+    };
+};
 
 module.exports = {
-    ...require('../sdk_v4'),
-    getNetworkStatus,
-    getTransactions,
     getForgers,
 };

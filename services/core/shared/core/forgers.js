@@ -13,13 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNetworkStatus } = require('./network');
-const { getTransactions } = require('./transactions');
-const { getForgers } = require('./forgers');
+const coreApi = require('./compat');
+
+const getForgers = async params => {
+    const forgers = {
+        data: [],
+        meta: {},
+    };
+
+    const offset = params.offset || 0;
+    const limit = params.limit || 10;
+    const nextForgers = await coreApi.getForgers();
+    forgers.data = nextForgers.data.slice(offset, offset + limit);
+
+    forgers.meta.count = forgers.data.length;
+    forgers.meta.offset = offset;
+    forgers.meta.total = nextForgers.length;
+
+    return forgers;
+};
 
 module.exports = {
-    ...require('../sdk_v4'),
-    getNetworkStatus,
-    getTransactions,
     getForgers,
 };

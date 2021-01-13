@@ -41,7 +41,15 @@ const getTransactions = async params => {
     const result = transactions || [transaction];
     return { data: result };
 };
+
+const getNextForgers = async () => {
+    const apiClient = await getApiClient();
+    const forgers = await apiClient._channel.invoke('app:getForgers', {});
+    return { data: forgers };
+};
+
 module.exports = {
     getNetworkStatus,
     getTransactions,
+    getNextForgers,
 };
