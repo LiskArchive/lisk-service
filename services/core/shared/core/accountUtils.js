@@ -40,7 +40,7 @@ const validatePublicKey = publicKey => isStringType(publicKey) && publicKey.matc
 const confirmAddress = async address => {
     if (!address || typeof address !== 'string') return false;
     const account = await getCachedAccountByAddress(parseAddress(address));
-    return account && account.address === address;
+    return account && account.address.toUpperCase() === address;
 };
 
 const confirmUsername = async username => {

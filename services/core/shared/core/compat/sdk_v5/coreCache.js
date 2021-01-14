@@ -23,6 +23,19 @@ const config = require('../../../../config');
 const cache = CacheLRU();
 const getCacheKey = (key, value) => `account:${key}:${value}`;
 
+const normalizeAccount = account => {
+	account.address = account.address.toString('hex');
+	account.token.balance = Number(account.token.balance);
+	account.sequence.nonce = Number(account.sequence.nonce);
+	account.dpos.sentVotes = account.dpos.sentVotes.map(vote => {
+		vote.delegateAddress = vote.delegateAddress.toString('hex');
+		vote.amount = Number(vote.amount);
+		return vote;
+	});
+
+	return account;
+};
+
 const getCachedAccountBy = async (key, value) => {
 	const cacheKey = getCacheKey(key, value);
 	let account = await cache.get(cacheKey);
@@ -33,8 +46,8 @@ const getCachedAccountBy = async (key, value) => {
 			cache.set(cacheKey, null, expireMiliseconds);
 			return null;
 		}
-		const { address, publicKey, secondPublicKey, delegate: { username } = {} } = result.data[0];
-		account = { address, publicKey, secondPublicKey, username };
+		const { address, dpos: { delegate: { username } } } = normalizeAccount(result.data[0]);
+		account = { address, username };
 		Object.entries(account).forEach(([k, v]) => {
 			if (v) cache.set(getCacheKey(k, v), account);
 		});

@@ -68,6 +68,19 @@ const resolveAccountsInfo = async accounts => {
 	return accounts;
 };
 
+const normalizeAccount = account => {
+	account.address = account.address.toString('hex');
+	account.token.balance = Number(account.token.balance);
+	account.sequence.nonce = Number(account.sequence.nonce);
+	account.dpos.sentVotes = account.dpos.sentVotes.map(vote => {
+		vote.delegateAddress = vote.delegateAddress.toString('hex');
+		vote.amount = Number(vote.amount);
+		return vote;
+	});
+
+	return account;
+};
+
 const getAccounts = async params => {
 	const accounts = {
 		data: [],
@@ -102,7 +115,7 @@ const getAccounts = async params => {
 	}
 
 	const response = await coreApi.getAccounts(requestParams);
-	if (response.data) accounts.data = response.data;
+	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 
 	accounts.data = await resolveAccountsInfo(accounts.data);
