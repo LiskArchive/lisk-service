@@ -39,7 +39,7 @@ const getBlocks = async params => {
         block = apiClient.block.decode(block);
     }
 
-    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(blk));
+    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
     const result = blocks || [block];
     return { data: result };
 };
@@ -51,11 +51,11 @@ const getAccounts = async params => {
 
     if (params.address) {
         account = await apiClient.account.get(params.address);
-    } else if (params.blockIds) {
+    } else if (params.addresses) {
         accounts = await apiClient._channel.invoke('app:getAccounts', { address: params.addresses });
     }
 
-    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(acc));
+    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
     const result = accounts || [account];
     return { data: result };
 };
