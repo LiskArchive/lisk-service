@@ -16,6 +16,7 @@
 const { CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
+const signals = require('../../../signals');
 const {
 	getBlockchainTime,
 	validateTimestamp,
@@ -24,6 +25,8 @@ const {
 
 const config = require('../../../../config');
 const redis = require('../../../redis');
+
+const MAX_TX_LIMIT_PP = 100;
 
 const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
 // const bHeightCache = CacheRedis('blockHeightToTimestamp', config.endpoints.redis);
@@ -120,6 +123,10 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+signals.get('indexTransactions').add(async blockId => {
+	const block = await bIdCache.get(blockId);
+	if (!block) getTransactions({ blockId, limit: MAX_TX_LIMIT_PP });
+});
 
 const getPendingTransactions = async params => {
 	const pendingTx = await coreApi.getPendingTransactions(params);
