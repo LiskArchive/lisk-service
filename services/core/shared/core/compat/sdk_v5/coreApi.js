@@ -42,6 +42,20 @@ const getTransactions = async params => {
     return { data: result };
 };
 
+const getAccounts = async params => {
+    const apiClient = await getApiClient();
+    let account;
+    let accounts;
+    if (params.address) {
+        account = await apiClient.account.get(params.address);
+    } else if (params.addresses) {
+        accounts = await apiClient._channel.invoke('app:getAccounts', { address: params.addresses });
+    }
+    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
+    const result = accounts || [account];
+    return { data: result };
+};
+
 const getForgers = async () => {
     const apiClient = await getApiClient();
     const forgers = await apiClient._channel.invoke('app:getForgers', {});
@@ -52,4 +66,5 @@ module.exports = {
     getNetworkStatus,
     getTransactions,
     getForgers,
+    getAccounts,
 };
