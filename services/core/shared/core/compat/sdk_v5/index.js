@@ -14,8 +14,9 @@
  *
  */
 const {
+    peerStates,
     getPeers,
-} = require('./coreApi');
+} = require('./peers');
 
 const {
     getBlocks,
@@ -34,5 +35,6 @@ module.exports = {
     updateFinalizedHeight,
     getFinalizedHeight,
     getNetworkStatus,
+    peerStates,
     getPeers,
 };
