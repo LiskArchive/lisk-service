@@ -21,7 +21,9 @@ let clientCache;
 
 const getApiClient = async () => {
     try {
-        if (!clientCache) clientCache = await createWSClient(`${liskAddress}/ws`);
+        if (!clientCache || !clientCache._channel.isAlive) {
+            clientCache = await createWSClient(`${liskAddress}/ws`);
+        }
         return clientCache;
     } catch (err) {
         return {
