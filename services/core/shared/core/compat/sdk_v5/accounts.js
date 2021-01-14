@@ -51,7 +51,7 @@ const confirmSecondPublicKey = async secondPublicKey => {
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
 		if (account.isDelegate) {
-			const delegateInfo = {}; //(await getDelegates({ address: account.address })).data[0];
+			const delegateInfo = {}; // (await getDelegates({ address: account.address })).data[0];
 			account.delegate = delegateInfo;
 		}
 		account.unlocking = account.unlocking.map(item => {

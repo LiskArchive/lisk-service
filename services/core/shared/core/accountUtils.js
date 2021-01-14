@@ -22,6 +22,7 @@ const {
     getCachedAccountByUsername,
 } = require('./compat');
 
+const { getAccounts } = require('./accounts');
 const { getDelegates } = require('./delegates');
 
 // Utils & helpers

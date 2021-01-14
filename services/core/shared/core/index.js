@@ -55,10 +55,10 @@ const {
 	getNextForgers,
 } = require('./delegates');
 
-const {
-	// getUsernameByAddress,
-	// getAddressByUsername,
-} = require('./delegateUtils');
+// const {
+// getUsernameByAddress,
+// getAddressByUsername,
+// } = require('./delegateUtils');
 
 const {
 	getPeers,

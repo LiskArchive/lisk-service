@@ -52,6 +52,8 @@ const { isProperObject } = ObjectUtilService;
 
 const isStringType = value => typeof value === 'string';
 
+const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
+
 const validateAddress = address => isStringType(address) && address.match(/^[0-9]{1,20}[L|l]$/g);
 
 // Lisk Core API functions
