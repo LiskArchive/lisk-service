@@ -18,6 +18,7 @@ const core = require('./compat');
 const signals = require('../signals');
 const { getBlocks } = require('./blocks');
 const { reloadNextForgersCache, getNextForgers } = require('./delegates');
+const { reloadForgersCache, getForgers } = require('./forgers');
 const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
 
 const config = require('../../config.js');
@@ -30,10 +31,17 @@ const events = {
 		signals.get('newBlock').dispatch(block.data[0]);
 	},
 	newRound: async () => {
-		await reloadNextForgersCache();
+		let response;
 		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
-		const nextForgers = await getNextForgers({ limit });
-		const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+		if (core.getSDKVersion() <= 4) {
+			await reloadNextForgersCache();
+			const nextForgers = await getNextForgers({ limit });
+			response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+		} else {
+			await reloadForgersCache();
+			const nextForgers = await getForgers({ limit });
+			response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+		}
 		signals.get('newRound').dispatch(response);
 	},
 	calculateFeeEstimate: async () => {
