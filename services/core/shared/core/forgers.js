@@ -46,7 +46,7 @@ const loadAllNextForgers = async (forgers = []) => {
     if (forgers.length >= nextForgers.length) {
         nextForgers = forgers;
     }
-    if (response.data.length !== maxCount) {
+    if (nextForgers.length !== maxCount) {
         loadAllNextForgers(forgers);
     } else {
         logger.info(`Initialized/Updated next forgers cache with ${nextForgers.length} delegates.`);
