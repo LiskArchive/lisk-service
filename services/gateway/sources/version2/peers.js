@@ -20,7 +20,7 @@ module.exports = {
 	method: 'core.peers',
 	params: {
 		ip: '=,string',
-		version: '=,string',
+		networkVersion: '=,string',
 		state: '=,string',
 		height: '=,number',
 		limit: '=,number',

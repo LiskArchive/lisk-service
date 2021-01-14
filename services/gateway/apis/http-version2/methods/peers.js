@@ -24,7 +24,7 @@ module.exports = {
 	tags: ['Peers'],
 	params: {
 		ip: { optional: true, type: 'string' },
-		version: { optional: true, type: 'string' },
+		networkVersion: { optional: true, type: 'string' },
 		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
 		height: { optional: true, type: 'number', integer: true },
 		limit: { optional: true, min: 1, type: 'number', integer: true },
