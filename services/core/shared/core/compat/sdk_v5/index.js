@@ -16,10 +16,12 @@
 const { getNetworkStatus } = require('./network');
 const { getTransactions } = require('./transactions');
 const { getForgers } = require('./forgers');
+const events = require('./events');
 
 module.exports = {
     ...require('../sdk_v4'),
     getNetworkStatus,
     getTransactions,
     getForgers,
+    events,
 };
