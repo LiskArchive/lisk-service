@@ -268,16 +268,21 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 	let result = await cacheRedisFees.get(cacheKey);
 	if (!executionStatus[cacheKey]) {
-		// If the process (normal / quick) is already running,
-		// do not allow it to run again until the prior execution finishes
-		executionStatus[cacheKey] = true;
-		result = await getEstimateFeeByteForBatch(fromHeight, toHeight, cacheKey);
-		executionStatus[cacheKey] = false;
+		try {
+			// If the process (normal / quick) is already running,
+			// do not allow it to run again until the prior execution finishes
+			executionStatus[cacheKey] = true;
+			result = await getEstimateFeeByteForBatch(fromHeight, toHeight, cacheKey);
+		} catch (err) {
+			logger.error(err.stack || err.message);
+		} finally {
+			executionStatus[cacheKey] = false;
+		}
 	}
 	return result;
 };
 
-const getEstimateFeeByteNormal = async () => {
+const calculateEstimateFeeByteNormal = async () => {
 	const latestBlock = getLastBlock();
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
@@ -293,7 +298,7 @@ const getEstimateFeeByteNormal = async () => {
 	return cachedFeeEstPerByteNormal;
 };
 
-const getEstimateFeeByteQuick = async () => {
+const calculateEstimateFeeByteQuick = async () => {
 	// For the cold start scenario
 	const latestBlock = getLastBlock();
 	const batchSize = config.feeEstimates.coldStartBatchSize;
@@ -337,10 +342,12 @@ const getEstimateFeeByte = async () => {
 };
 
 module.exports = {
-	EMAcalc,
 	getEstimateFeeByte,
-	getEstimateFeeByteNormal,
-	getEstimateFeeByteQuick,
+	calculateEstimateFeeByteNormal,
+	calculateEstimateFeeByteQuick,
+
+	// For Unit tests
+	EMAcalc,
 	getEstimateFeeByteForBlock,
 	getTransactionInstanceByType,
 	calculateBlockSize,

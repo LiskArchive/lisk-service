@@ -22,6 +22,11 @@ const { isProperObject } = ObjectUtilService;
 
 const getDelegates = async params => {
 	const delegates = await coreApi.getDelegates(params);
+	delegates.data.map((delegate) => {
+		delegate.secondPublicKey = delegate.account.secondPublicKey;
+		return delegate;
+	});
+
 	return delegates;
 };
 
