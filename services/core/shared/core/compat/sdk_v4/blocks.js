@@ -13,9 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheRedis } = require('lisk-service-framework');
+const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
+const signals = require('../../../signals');
 
 const config = require('../../../../config');
 
@@ -27,8 +28,11 @@ const {
 
 const redis = require('../../../redis');
 
+const logger = Logger();
+
 const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
-// const bHeightCache = CacheRedis('blockHeightToTimestamp', config.endpoints.redis);
+
+const MAX_BLOCKS_LIMIT_PP = 100;
 
 let currentHeight = 0;
 
@@ -45,6 +49,22 @@ const updateFinalizedHeight = async () => {
 };
 
 const getFinalizedHeight = () => heightFinalized;
+
+const indexBlock = async block => {
+	const timestampDb = await redis('timestampDb', ['timestamp']);
+	const unixTimestampDb = await redis('unixTimestampDb', ['timestamp']);
+
+	bIdCache.set(block.id, block.timestamp);
+
+	bIdCache.set('lowestIndexedHeight', block.height);
+	bIdCache.set('topIndexedHeight', block.height);
+
+	timestampDb.writeRange(block.timestamp, block.id);
+	unixTimestampDb.writeRange(block.unixTimestamp, {
+		id: block.id,
+		numberOfTransactions: block.numberOfTransactions,
+	});
+};
 
 const getBlocks = async (params) => {
 	const blocks = {
@@ -77,24 +97,78 @@ const getBlocks = async (params) => {
 		),
 	);
 
-	const timestampDb = await redis('timestampDb', ['timestamp']);
-	const unixTimestampDb = await redis('unixTimestampDb', ['timestamp']);
-
 	blocks.data.forEach(block => {
 		if (block.numberOfTransactions > 0) {
-			bIdCache.set(block.id, block.timestamp);
-			// bHeightCache.set(block.height, block.timestamp); // block.unixTimestamp
-
-			timestampDb.writeRange(block.timestamp, block.id);
-			unixTimestampDb.writeRange(block.unixTimestamp, {
-				id: block.id,
-				numberOfTransactions: block.numberOfTransactions,
-			});
+			indexBlock(block);
+			signals.get('indexTransactions').dispatch(block.id);
 		}
 	});
 
 	return blocks;
 };
+
+const buildIndex = async (from, to) => {
+	logger.info('Building index of blocks');
+
+	if (from >= to) {
+		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
+		return;
+	}
+
+	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+
+	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
+		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+		// eslint-disable-next-line no-await-in-loop
+		const blocks = await getBlocks({
+			limit: MAX_BLOCKS_LIMIT_PP,
+			offset: offset - 1,
+			sort: 'height:asc',
+		});
+		blocks.data.forEach(async block => {
+			if (!(await bIdCache.get(block.id))) {
+				if (block.numberOfTransactions > 0) {
+					indexBlock(block);
+					signals.get('indexTransactions').dispatch(block.id);
+				}
+			}
+		});
+		const topHeightFromBatch = (blocks.data.pop()).height;
+		// eslint-disable-next-line no-await-in-loop
+		await bIdCache.set('lastIndexedHeight', topHeightFromBatch);
+	}
+	logger.info(`Finished building block index (${from}-${to})`);
+};
+
+const init = async () => {
+	try {
+		currentHeight = (await coreApi.getNodeStatus()).data.height;
+
+		let blockIndexLowerRange = currentHeight - config.indexNumOfBlocks;
+		const lastNumOfBlocks = await bIdCache.get('lastNumOfBlocks');
+
+		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
+			// Everything seems allright, continue at height where stopped last time
+			blockIndexLowerRange = await bIdCache.get('lastIndexedHeight');
+		} else {
+			logger.info('Configuration changed since the last time, re-index eveything');
+			await bIdCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
+			await bIdCache.set('lastIndexedHeight', blockIndexLowerRange);
+		}
+
+		if (Number.isInteger(blockIndexLowerRange)) {
+			await buildIndex(blockIndexLowerRange, currentHeight);
+		} else {
+			await buildIndex(0, currentHeight);
+		}
+	} catch (err) {
+		logger.warn('Unable to build block cache');
+		logger.warn(err.message);
+	}
+};
+
+init();
 
 module.exports = {
 	getBlocks,
