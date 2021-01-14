@@ -53,7 +53,10 @@ const getPeers = async () => {
     const disconnectedPeers = await apiClient._channel.invoke('app:getDisconnectedPeers');
     disconnectedPeers.forEach(peer => peer.state = 'disconnected');
 
-    return { data: [...connectedPeers, ...disconnectedPeers] };
+    return {
+        data: [...connectedPeers, ...disconnectedPeers],
+        meta: { count: connectedPeers.length + disconnectedPeers.length },
+    };
 };
 
 module.exports = {

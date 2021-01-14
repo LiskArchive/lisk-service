@@ -21,7 +21,6 @@ const reverseMap = (originalMap) => {
 };
 
 const peerStates = {
-
     DISCONNECTED: 'disconnected',
     CONNECTED: 'connected',
 };
