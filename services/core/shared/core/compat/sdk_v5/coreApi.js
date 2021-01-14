@@ -44,7 +44,20 @@ const getBlocks = async params => {
     return { data: result };
 };
 
+const getPeers = async () => {
+    const apiClient = await getApiClient();
+
+    const connectedPeers = await apiClient._channel.invoke('app:getConnectedPeers');
+    connectedPeers.forEach(peer => peer.state = 'connected');
+
+    const disconnectedPeers = await apiClient._channel.invoke('app:getDisconnectedPeers');
+    disconnectedPeers.forEach(peer => peer.state = 'disconnected');
+
+    return { data: [...connectedPeers, ...disconnectedPeers] };
+};
+
 module.exports = {
     getBlocks,
     getNetworkStatus,
+    getPeers,
 };
