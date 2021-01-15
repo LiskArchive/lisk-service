@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peer = require('../mappings/peer');
+const peer = require('./mappings/peer');
 
 module.exports = {
 	type: 'moleculer',
