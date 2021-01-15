@@ -61,8 +61,12 @@ module.exports = [
 		controller: callback => {
 			signals.get('newRound').add(async data => {
 				logger.debug('New round, updating delegates...');
-				core.reloadDelegateCache();
-				core.reloadNextForgersCache();
+				if (core.getSDKVersion() <= 4) {
+					core.reloadDelegateCache();
+					core.reloadNextForgersCache();
+				} else {
+					core.reloadForgersCache();
+				}
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
 			});
