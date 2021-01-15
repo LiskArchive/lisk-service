@@ -22,7 +22,12 @@ const peerStates = {
 
 const getPeers = async () => {
 	const connectedPeers = await coreApi.getPeers(peerStates.CONNECTED);
-	connectedPeers.data.forEach(peer => peer.state = peerStates.CONNECTED);
+	connectedPeers.data.forEach(peer => {
+		peer.state = peerStates.CONNECTED;
+		peer.height = peer.options.height;
+		peer.version = peer.networKVersion;
+		return peer;
+	});
 
 	const disconnectedPeers = await coreApi.getPeers(peerStates.DISCONNECTED);
 	disconnectedPeers.data.forEach(peer => peer.state = peerStates.DISCONNECTED);
