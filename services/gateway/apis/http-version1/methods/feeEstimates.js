@@ -14,7 +14,7 @@
  *
  */
 const feeEstimatesSource = require('../../../sources/version1/feeEstimates');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',

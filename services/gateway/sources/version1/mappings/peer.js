@@ -15,12 +15,14 @@
  */
 module.exports = {
 	ip: '=,string',
-	port: '=,number',
+	httpPort: '=,number',
+	wsPort: '=,number',
 	os: '=,string',
-	networkVersion: '=,string',
-	state: '=,string',
+	version: '=,string',
+	state: '=,number',
+	stateName: '=,string',
 	height: '=,number',
-	networkIdentifier: '=,string',
+	broadhash: '=,string',
 	nonce: '=,string',
 	hostname: '=,string',
 	location: {

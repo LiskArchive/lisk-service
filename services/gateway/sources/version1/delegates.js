@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegate = require('../mappings/delegate');
+const delegate = require('./mappings/delegate');
 
 module.exports = {
 	type: 'moleculer',

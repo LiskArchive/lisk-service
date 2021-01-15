@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transaction = require('../mappings/transaction');
+const transaction = require('./mappings/transaction');
 
 module.exports = {
 	type: 'moleculer',
