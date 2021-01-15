@@ -25,7 +25,6 @@ const getPeers = async () => {
 	connectedPeers.data.forEach(peer => {
 		peer.state = peerStates.CONNECTED;
 		peer.height = peer.options.height;
-		peer.version = peer.networKVersion;
 		return peer;
 	});
 
