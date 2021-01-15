@@ -15,7 +15,6 @@
  */
 const peersSource = require('../../../sources/version2/peers');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
@@ -30,26 +29,6 @@ module.exports = {
 		limit: { optional: true, min: 1, type: 'number', integer: true },
 		offset: { optional: true, min: 0, type: 'number', integer: true },
 		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'networkVersion:asc', 'networkVersion:desc'], default: 'height:desc' },
-	},
-	get schema() {
-		const peerSchema = {};
-		peerSchema[this.swaggerApiPath] = { get: {} };
-		peerSchema[this.swaggerApiPath].get.tags = this.tags;
-		peerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
-		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
-		peerSchema[this.swaggerApiPath].get.responses = {
-			200: {
-				description: 'array of peers with details',
-				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/PeersWithEnvelope',
-					},
-				},
-			},
-		};
-		Object.assign(peerSchema[this.swaggerApiPath].get.responses, response);
-		return peerSchema;
 	},
 	source: peersSource,
 	envelope,
