@@ -13,23 +13,43 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const core = require('./compat');
 const signals = require('../signals');
 const { getBlocks } = require('./blocks');
-const { getEstimateFeeByteNormal, getEstimateFeeByteQuick } = require('./dynamicFees');
+const { reloadNextForgersCache, getNextForgers } = require('./delegates');
+const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
+
+const config = require('../../config.js');
+
+const logger = Logger();
 
 const events = {
 	newBlock: async data => {
 		const block = await getBlocks({ blockId: data.id });
 		signals.get('newBlock').dispatch(block.data[0]);
 	},
-	newRound: data => {
-		signals.get('newRound').dispatch(data);
+	newRound: async () => {
+		await reloadNextForgersCache();
+		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
+		const nextForgers = await getNextForgers({ limit });
+		const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+		signals.get('newRound').dispatch(response);
 	},
 	calculateFeeEstimate: async () => {
-		getEstimateFeeByteNormal();
-		const feeEstimate = await getEstimateFeeByteQuick();
-		signals.get('newFeeEstimate').dispatch(feeEstimate);
+		if (core.getSDKVersion() >= 4) {
+			if (config.feeEstimates.fullAlgorithmEnabled) {
+				logger.debug('Initiate the dynamic fee estimates computation (full computation)');
+				calculateEstimateFeeByteNormal();
+			}
+			if (config.feeEstimates.quickAlgorithmEnabled) {
+				logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
+				const feeEstimate = await calculateEstimateFeeByteQuick();
+
+				// TODO: Make a better control over the estimate process
+				signals.get('newFeeEstimate').dispatch(feeEstimate);
+			}
+		}
 	},
 };
 

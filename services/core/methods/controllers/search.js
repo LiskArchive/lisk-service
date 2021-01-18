@@ -81,7 +81,8 @@ const searchBy = {
 
 	blockHeight: async searchTerm => {
 		const response = await CoreService.getBlocks({ height: searchTerm });
-		return mapDataItems(response, mapBlockFields);
+		const data = mapDataItems(response, mapBlockFields);
+		return data;
 	},
 };
 
@@ -94,7 +95,7 @@ const getSearches = searchTerm => (
 
 const resolveAll = (apiCalls, searchTerm) => {
 	const promises = apiCalls.map(apiCall => apiCall(searchTerm)
-			.catch(err => err));
+		.catch(err => err));
 
 	return Promise.all(promises)
 		.then(results => (results.reduce((accumulator, response) => ({
