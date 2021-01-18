@@ -14,7 +14,7 @@
  *
  */
 const transactionsStatisticsMonthSource = require('../../../sources/version1/transactionsStatisticsMonth');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',

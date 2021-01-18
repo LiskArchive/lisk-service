@@ -13,15 +13,34 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blocksSource = require('../../../sources/version1/blocks');
-const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const transaction = require('./mappings/transaction');
 
 module.exports = {
-	version: '2.0',
-	swaggerApiPath: '/block/{id}',
+	type: 'moleculer',
+	method: 'core.transactions',
 	params: {
-		id: { optional: false, type: 'string', min: 1, max: 24 },
+		id: '=',
+		senderIdOrRecipientId: 'address',
+		senderId: 'sender',
+		recipientId: 'recipient',
+		offset: '=',
+		limit: '=',
+		minAmount: 'min',
+		maxAmount: 'max',
+		fromTimestamp: 'from',
+		toTimestamp: 'to',
+		blockId: 'block',
+		height: '=',
+		sort: '=',
+		data: '=',
 	},
-	source: blocksSource,
-	envelope,
+	definition: {
+		data: ['data', transaction],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };

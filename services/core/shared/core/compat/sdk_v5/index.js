@@ -20,6 +20,7 @@ const {
 } = require('./blocks');
 
 const { getNetworkStatus } = require('./network');
+const { getTransactions } = require('./transactions');
 
 const events = require('./events');
 
@@ -30,4 +31,5 @@ module.exports = {
     updateFinalizedHeight,
     getFinalizedHeight,
     getNetworkStatus,
+    getTransactions,
 };

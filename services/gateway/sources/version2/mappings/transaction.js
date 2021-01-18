@@ -13,16 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const networkSearchSource = require('../../../sources/version1/networkSearch');
-const envelope = require('../../../sources/version1/mappings/stdEnvelope');
-
 module.exports = {
-	version: '2.0',
-	method: 'get.search',
-	envelope,
-	params: {
-		q: { required: true },
+	id: '=,string',
+	operationId: '=,string',
+	operationName: '=,string',
+	amount: '=,string',
+	fee: '=,string',
+	height: '=,number',
+	nonce: '=,string',
+	block: {
+		id: 'block.id,string',
+		height: '=,number',
+		timestamp: '=,number',
 	},
-	source: networkSearchSource,
+	sender: {
+        address: '=,string',
+        publicKey: 'senderPublicKey,string',
+        username: '=,string',
+      },
+	signatures: '=',
+	confirmations: '=,number',
+	asset: '=',
+	relays: '=,number',
+	isPending: '=,boolean',
 };

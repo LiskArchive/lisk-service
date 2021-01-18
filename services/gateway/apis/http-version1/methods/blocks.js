@@ -14,7 +14,7 @@
  *
  */
 const blocksSource = require('../../../sources/version1/blocks');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
