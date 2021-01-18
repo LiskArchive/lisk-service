@@ -34,7 +34,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
 const baseEndpoint = `${baseUrlV1}/transactions/statistics`;
 
-describe('Transaction statistics API', () => {
+xdescribe('Transaction statistics API', () => {
 	describe('GET /transactions/statistics/{aggregateBy}', () => {
 		[{
 			aggregateBy: 'day',

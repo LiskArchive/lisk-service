@@ -19,7 +19,7 @@ const config = require('../../../../config');
 const liskAddress = config.endpoints.liskWs;
 let clientCache;
 
-const getClient = async () => {
+const getApiClient = async () => {
     try {
         if (!clientCache) clientCache = await createWSClient(`${liskAddress}/ws`);
         return clientCache;
@@ -32,5 +32,5 @@ const getClient = async () => {
 };
 
 module.exports = {
-    getClient,
+    getApiClient,
 };

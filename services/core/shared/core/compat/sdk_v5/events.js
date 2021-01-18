@@ -14,17 +14,20 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { SocketClient } = require('lisk-service-framework');
+
+const { getApiClient } = require('../common/wsRequest');
 
 const config = require('../../../../config');
 
-const register = (events) => {
-	const coreSocket = SocketClient(config.endpoints.liskWs);
+const register = async (events) => {
+	const apiClient = await getApiClient();
 	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
-	coreSocket.socket.on('blocks/change', async data => events.newBlock(data));
-	coreSocket.socket.on('blocks/change', async data => events.calculateFeeEstimate(data));
-	coreSocket.socket.on('rounds/change', async data => events.newRound(data));
+	apiClient.subscribe('app:block:new', data => {
+		const block = apiClient.block.decode(data.block);
+		events.newBlock({ id: block.header.id.toString('hex') });
+		// events.calculateFeeEstimate();
+	});
 };
 
 module.exports = { register };

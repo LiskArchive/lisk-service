@@ -27,6 +27,15 @@ const { getLastBlock } = require('./blocks');
 const logger = Logger();
 const sdkVersion = coreApi.getSDKVersion();
 
+const delegateStatus = {
+	ACTIVE: 'active',
+	STANDBY: 'standby',
+	BANNED: 'banned',
+	PUNISHED: 'punished',
+	NON_ELIGIBLE: 'non-eligible',
+};
+
+let rawNextForgers = [];
 let nextForgers = [];
 let delegateList = [];
 
@@ -52,18 +61,22 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	return relevantDelegates.length;
 };
 
-const getRankAndStatus = async allDelegates => {
-	const numActiveForgers = 101;
+const computeDelegateRank = async () => {
+	if (sdkVersion >= 4) {
+		delegateList.sort(delegateComparator);
+		delegateList.map((delegate, index) => {
+			delegate.rank = index + 1;
+			return delegate;
+		});
+	}
+};
 
-	const delegateStatus = {
-		ACTIVE: 'active',
-		STANDBY: 'standby',
-		BANNED: 'banned',
-		PUNISHED: 'punished',
-		NON_ELIGIBLE: 'non-eligible',
-	};
+const computeDelegateStatus = async () => {
+	// TODO: These feature should be handled by the compatibility layer
+	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
+
 	const lastestBlock = getLastBlock();
-	const allNextForgersAddressList = nextForgers.map(forger => forger.account.address);
+	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
 
 	const verifyIfPunished = delegate => {
@@ -73,14 +86,13 @@ const getRankAndStatus = async allDelegates => {
 		return isPunished;
 	};
 
-	if (sdkVersion >= 4) allDelegates.sort(delegateComparator);
-	allDelegates.map((delegate, index) => {
+	delegateList.map((delegate) => {
 		if (sdkVersion < 4) {
 			if (activeNextForgersList.includes(delegate.account.address)) {
 				delegate.status = delegateStatus.ACTIVE;
 			} else delegate.status = delegateStatus.STANDBY;
 		} else {
-			delegate.rank = index + 1;
+			logger.debug('Determine delegate status');
 			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
 			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
 			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
@@ -91,7 +103,7 @@ const getRankAndStatus = async allDelegates => {
 
 		return delegate;
 	});
-	return allDelegates;
+	return delegateList;
 };
 
 const getDelegates = async params => {
@@ -101,16 +113,51 @@ const getDelegates = async params => {
 	};
 	const allDelegates = await getAllDelegates();
 
-	delegates.data = allDelegates.filter(
-		(acc) => (acc.address && acc.address === params.address)
-			|| (acc.publicKey && acc.publicKey === params.publicKey)
-			|| (acc.secondPublicKey && acc.secondPublicKey === params.secondPublicKey)
-			|| (acc.username && acc.username === params.username),
-	);
-	if (delegates.data.length === 0) {
-		const dbResult = await coreApi.getDelegates(params);
-		if (dbResult.data.length) delegates.data = await getRankAndStatus(dbResult.data);
+	const offset = Number(params.offset) || 0;
+	const limit = Number(params.limit) || 10;
+	if (!params.sort) params.sort = 'rank:asc';
+
+	const sortComparator = (sortParam) => {
+		const sortProp = sortParam.split(':')[0];
+		const sortOrder = sortParam.split(':')[1];
+
+		const comparator = (a, b) => {
+			try {
+				if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting');
+				return (sortOrder === 'asc')
+					? a[sortProp] - b[sortProp]
+					: b[sortProp] - a[sortProp];
+			} catch (_) {
+				return (sortOrder === 'asc')
+					? a[sortProp].localeCompare(b[sortProp])
+					: b[sortProp].localeCompare(a[sortProp]);
+			}
+		};
+		return comparator;
+	};
+
+	const filterBy = (list, entity)	=> list.filter((acc) => (acc[entity]
+		&& acc[entity] === params[entity]));
+
+	if (params.address) {
+		delegates.data = filterBy(allDelegates, 'address');
+	} else if (params.publicKey) {
+		delegates.data = filterBy(allDelegates, 'publicKey');
+	} else if (params.secondPublicKey) {
+		delegates.data = filterBy(allDelegates, 'secondPublicKey');
+	} else if (params.username) {
+		delegates.data = filterBy(allDelegates, 'username');
+	} else if (params.search) {
+		delegates.data = allDelegates.filter((acc) => (acc.username
+			&& String(acc.username).match(new RegExp(params.search, 'i'))));
+	} else {
+		delegates.data = allDelegates;
 	}
+
+	delegates.data = delegates.data
+		.sort(sortComparator(params.sort))
+		.slice(offset, offset + limit);
+
 	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = params.offset || 0;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
@@ -124,21 +171,18 @@ const loadAllDelegates = async () => {
 	await BluebirdPromise.map(
 		delegateList,
 		async delegate => {
-			await cacheRedisDelegates.set(delegate.account.address, delegate);
+			delegate.address = delegate.account.address;
+			delegate.publicKey = delegate.account.publicKey;
+			await cacheRedisDelegates.set(delegate.address, delegate);
 			await cacheRedisDelegates.set(delegate.username, delegate);
 			return delegate;
 		},
 		{ concurrency: delegateList.length },
 	);
-	if (delegateList.length) {
-		logger.info(`Initialized/Updated delegates cache with ${delegateList.length} delegates.`);
-	}
-};
 
-const computeDelegateRankAndStatus = async () => {
-	const result = await getAllDelegates();
-	const allDelegates = await getRankAndStatus(result);
-	if (allDelegates.length) delegateList = allDelegates;
+	if (delegateList.length) {
+		logger.info(`Updated delegate list with ${delegateList.length} delegates.`);
+	}
 };
 
 const getNextForgers = async params => {
@@ -160,30 +204,29 @@ const getNextForgers = async params => {
 };
 
 const loadAllNextForgers = async () => {
+	// TODO: These feature should be handled by the compatibility layer
 	const maxCount = (sdkVersion < 4) ? 101 : 103;
-	const rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
+	rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
 
-	nextForgers = await BluebirdPromise.map(
-		rawNextForgers,
-		async forger => (await getDelegates({ address: forger.address })).data[0],
-		{ concurrency: rawNextForgers.length });
-	nextForgers.sort(delegateComparator);
-
-	await computeDelegateRankAndStatus(); // Necessary to immediately update the delegate status
-	nextForgers = await BluebirdPromise.map(
-		nextForgers,
-		async forger => (await getDelegates({ address: forger.account.address })).data[0],
-		{ concurrency: nextForgers.length },
-	); // Update local in-mem cache with the updated delegate status information
-
-	logger.info(`Initialized/Updated next forgers cache with ${nextForgers.length} delegates.`);
+	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
 
-const reloadNextForgersCache = () => loadAllNextForgers();
+const resolveNextForgers = async () => {
+	nextForgers = await BluebirdPromise.map(rawNextForgers,
+		async forger => delegateList.find(o => o.address === forger.address));
+	logger.debug('Finished collecting delegates');
+};
+
+const reloadNextForgersCache = async () => {
+	await loadAllNextForgers();
+	await resolveNextForgers();
+};
 
 const reload = async () => {
 	await loadAllDelegates();
-	await computeDelegateRankAndStatus();
+	await loadAllNextForgers();
+	await computeDelegateRank();
+	await computeDelegateStatus();
 };
 
 module.exports = {
