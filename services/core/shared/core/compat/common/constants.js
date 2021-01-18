@@ -35,8 +35,11 @@ const resolveOperations = async (data) => {
 				.concat(
 					liskModule.transactionAssets.map(asset => {
 						const id = String(liskModule.id).concat(':').concat(asset.id);
-						const name = liskModule.name.concat(':').concat(asset.name);
-						return { id, name };
+						if (liskModule.name && asset.name) {
+							const name = liskModule.name.concat(':').concat(asset.name);
+							return { id, name };
+						}
+						return { id };
 					}));
 		}
 	});
