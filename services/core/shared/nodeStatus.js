@@ -22,6 +22,8 @@ const {
 	setReadyStatus,
 } = require('./core/compat/common');
 
+const waitForIt = require('./waitForIt');
+
 const liskCoreAddress = config.endpoints.liskHttp;
 const logger = Logger();
 
@@ -40,31 +42,23 @@ const checkStatus = () => new Promise((resolve, reject) => {
 				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 				logConnectStatus = false;
 			}
+			logger.debug(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 			resolve(networkConstants.data);
 		} else {
 			setReadyStatus(false);
-			logger.warn(`The node ${liskCoreAddress} has an incompatible API or is not available at the moment.`);
+			logger.debug(`The node ${liskCoreAddress} has an incompatible API or is not available at the moment.`);
 			logConnectStatus = true;
 			reject();
 		}
 	}).catch(() => {
 		setReadyStatus(false);
-		logger.warn(`The node ${liskCoreAddress} not available at the moment.`);
+		logger.debug(`The node ${liskCoreAddress} not available at the moment.`);
 		logConnectStatus = true;
 		reject();
 	});
 });
 
-const waitForNode = () => new Promise((resolve) => {
-	setInterval(async () => {
-		try {
-			const result = await checkStatus();
-			resolve(result);
-		} catch (err) {
-			logger.debug('Could not connect with a Lisk Core node (yet)');
-		}
-	}, CORE_DISCOVERY_INTERVAL);
-});
+const waitForNode = () => waitForIt(checkStatus, CORE_DISCOVERY_INTERVAL);
 
 const getStatus = () => logConnectStatus;
 

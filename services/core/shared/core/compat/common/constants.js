@@ -22,10 +22,15 @@ const { isProperObject } = ObjectUtilService;
 let coreVersion = '1.0.0-alpha.0';
 let readyStatus;
 
+let constants;
+
 const getNetworkConstants = async () => {
-	const result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
-	if (!isProperObject(result)) return {};
-	return result;
+	if (!constants) {
+		const result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
+		if (!isProperObject(result)) return {};
+		constants = result;
+	}
+	return constants;
 };
 
 const setCoreVersion = version => coreVersion = version;
