@@ -24,7 +24,6 @@ const request = async (url, params) => {
 	return transformedResponse;
 };
 
-const getNodeStatus = () => request('/node/status');
 const getAccounts = params => request('/accounts', params);
 const getBlocks = params => request('/blocks', params);
 const getDelegates = params => request('/delegates', params);
@@ -41,7 +40,6 @@ const getVotes = params => request('/votes', params);
 const getPendingTransactions = params => request('/node/transactions', params);
 
 module.exports = {
-	getNodeStatus,
 	getAccounts,
 	getBlocks,
 	getDelegates,

@@ -143,7 +143,7 @@ const buildIndex = async (from, to) => {
 
 const init = async () => {
 	try {
-		currentHeight = (await coreApi.getNodeStatus()).data.height;
+		currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
 		let blockIndexLowerRange = currentHeight - config.indexNumOfBlocks;
 		const lastNumOfBlocks = await bIdCache.get('lastNumOfBlocks');
