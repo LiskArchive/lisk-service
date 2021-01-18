@@ -13,26 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peer = require('./mappings/peer');
+const account = require('../mappings/account');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.peers',
+	method: 'core.accounts',
 	params: {
-		ip: '=,string',
-		httpPort: '=,string',
-		wsPort: '=,string',
-		os: '=,string',
-		version: '=,string',
-		state: '=,string',
-		height: '=,number',
-		broadhash: '=',
-		limit: '=,number',
-		offset: '=,number',
-		sort: '=,string',
+		address: '=',
+		publicKey: 'publickey',
+		secondPublicKey: 'secpubkey',
+		username: '=',
+		limit: '=',
+		offset: '=',
+		sort: '=',
 	},
 	definition: {
-		data: ['data', peer],
+		data: ['data', account],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

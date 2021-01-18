@@ -13,28 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const voter = require('./mappings/voter');
+const peer = require('../mappings/peer');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.voters',
+	method: 'core.peers',
 	params: {
-		address: '=,string',
-		username: '=,string',
-		publicKey: 'publickey,string',
-		secondPublicKey: 'secpubkey,string',
+		ip: '=,string',
+		httpPort: '=,string',
+		wsPort: '=,string',
+		os: '=,string',
+		version: '=,string',
+		state: '=,string',
+		height: '=,number',
+		broadhash: '=',
 		limit: '=,number',
 		offset: '=,number',
+		sort: '=,string',
 	},
 	definition: {
-		data: ['data', voter],
+		data: ['data', peer],
 		meta: {
 			count: '=,number',
 			offset: '=,number',
 			total: '=,number',
-			address: '=,string',
-			publicKey: '=,string',
-			username: '=,string',
 		},
 		links: {},
 	},

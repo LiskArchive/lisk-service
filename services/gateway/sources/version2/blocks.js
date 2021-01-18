@@ -13,30 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transaction = require('./mappings/transaction');
+const block = require('../mappings/block');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions',
+	method: 'core.blocks',
 	params: {
-		id: '=',
-		type: '=',
-		senderIdOrRecipientId: 'address',
-		senderId: 'sender',
-		recipientId: 'recipient',
-		offset: '=',
-		limit: '=',
-		minAmount: 'min',
-		maxAmount: 'max',
+		offset: '=,number',
+		limit: '=,number',
+		height: '=,number',
+		blockId: 'id',
+		sort: '=',
+		address: '=',
+		username: '=,string',
 		fromTimestamp: 'from',
 		toTimestamp: 'to',
-		blockId: 'block',
-		height: '=',
-		sort: '=',
-		data: '=',
 	},
 	definition: {
-		data: ['data', transaction],
+		data: ['data', block],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

@@ -14,7 +14,7 @@
  *
  */
 
-const networkSearchSource = require('../../../sources/networkSearch');
+const networkSearchSource = require('../../../sources/version1/networkSearch');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {

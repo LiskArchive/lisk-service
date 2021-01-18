@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,9 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blocksSource = require('../../../sources/version1/blocks');
+const blocksSource = require('../../../sources/version2/blocks');
 const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
 	version: '2.0',
@@ -23,7 +22,7 @@ module.exports = {
 	rpcMethod: 'get.blocks',
 	tags: ['Blocks'],
 	params: {
-		id: { optional: true, type: 'string', min: 1, max: 24 },
+		id: { optional: true, type: 'string', min: 1, max: 64 },
 		height: { optional: true, type: 'number', min: 1 },
 		from: { optional: true, type: 'number' },
 		to: { optional: true, type: 'number' },
@@ -34,34 +33,9 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: [
-				'height:asc', 'height:desc',
-				'totalAmount:asc', 'totalAmount:desc',
-				'totalFee:asc', 'totalFee:desc',
-				'timestamp:asc', 'timestamp:desc',
-			],
+			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'height:desc',
 		},
-	},
-	get schema() {
-		const blockSchema = {};
-		blockSchema[this.swaggerApiPath] = { get: {} };
-		blockSchema[this.swaggerApiPath].get.tags = this.tags;
-		blockSchema[this.swaggerApiPath].get.summary = 'Requests blocks data';
-		blockSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
-		blockSchema[this.swaggerApiPath].get.responses = {
-			200: {
-				description: 'array of blocks',
-				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/BlocksWithEnvelope',
-					},
-				},
-			},
-		};
-		Object.assign(blockSchema[this.swaggerApiPath].get.responses, response);
-		return blockSchema;
 	},
 	source: blocksSource,
 	envelope,

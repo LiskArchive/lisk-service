@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const votesSource = require('../../../sources/votes');
+const votesSource = require('../../../sources/version1/votes');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 const { transformParams, response } = require('../swagger/utils');
 
@@ -31,6 +31,13 @@ module.exports = {
 		limit: { optional: true, min: 1, max: 100, type: 'number' },
 		offset: { optional: true, min: 0, type: 'number' },
 	},
+	paramsRequired: true,
+	validParamPairings: [
+		['address'],
+		['username'],
+		['publickey'],
+		['secpubkey'],
+	],
 	get schema() {
 		const votesSchema = {};
 		votesSchema[this.swaggerApiPath] = { get: {} };

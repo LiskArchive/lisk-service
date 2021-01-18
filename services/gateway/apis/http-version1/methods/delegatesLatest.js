@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegatesSource = require('../../../sources/delegates');
+const delegatesSource = require('../../../sources/version1/delegates');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 const { transformParams, response } = require('../swagger/utils');
 

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const definition = require('./mappings/transactionsStatistics');
+const definition = require('../mappings/transactionsStatistics');
 
 module.exports = {
 	type: 'moleculer',

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,20 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const coreApi = require('./coreApi');
+const definition = require('../mappings/transactionsStatistics');
 
-const {
-	...coreApiGetters
-} = coreApi;
-
-const coreApiCached = Object.keys(coreApiGetters).reduce((accumulator, key) => ({
-	...accumulator,
-	[key]: (requestParams, { expireMiliseconds } = {}) => (
-		coreApi[key]({
-			...requestParams,
-			cacheTTL: expireMiliseconds,
-		})
-	),
-}), {});
-
-module.exports = coreApiCached;
+module.exports = {
+	type: 'moleculer',
+	method: 'core.transactions.statistics.day',
+	params: {
+		offset: '=',
+		limit: '=',
+	},
+	definition,
+};

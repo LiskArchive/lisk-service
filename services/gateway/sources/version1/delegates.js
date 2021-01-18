@@ -13,22 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const account = require('./mappings/account');
+const delegate = require('../mappings/delegate');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.accounts',
+	method: 'core.delegates',
 	params: {
 		address: '=',
 		publicKey: 'publickey',
 		secondPublicKey: 'secpubkey',
 		username: '=',
-		limit: '=',
 		offset: '=',
+		limit: '=',
+		search: '=',
 		sort: '=',
 	},
 	definition: {
-		data: ['data', account],
+		data: ['data', delegate],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

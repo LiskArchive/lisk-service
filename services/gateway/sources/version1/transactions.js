@@ -13,14 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transaction = require('./mappings/transaction');
+const transaction = require('../mappings/transaction');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions.pending',
+	method: 'core.transactions',
 	params: {
+		id: '=',
+		type: '=',
+		senderIdOrRecipientId: 'address',
+		senderId: 'sender',
+		recipientId: 'recipient',
 		offset: '=',
 		limit: '=',
+		minAmount: 'min',
+		maxAmount: 'max',
+		fromTimestamp: 'from',
+		toTimestamp: 'to',
+		blockId: 'block',
+		height: '=',
+		sort: '=',
+		data: '=',
 	},
 	definition: {
 		data: ['data', transaction],

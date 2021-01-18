@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const votesSource = require('../../../sources/votes');
+const votesSource = require('../../../sources/version1/votes');
 const envelope = require('../../../sources/mappings/stdEnvelope');
 
 module.exports = {

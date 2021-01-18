@@ -13,23 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegate = require('./mappings/delegate');
+const transaction = require('../mappings/transaction');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.delegates',
+	method: 'core.transactions.pending',
 	params: {
-		address: '=',
-		publicKey: 'publickey',
-		secondPublicKey: 'secpubkey',
-		username: '=',
 		offset: '=',
 		limit: '=',
-		search: '=',
-		sort: '=',
 	},
 	definition: {
-		data: ['data', delegate],
+		data: ['data', transaction],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

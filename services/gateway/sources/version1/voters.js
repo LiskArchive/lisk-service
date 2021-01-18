@@ -13,14 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const definition = require('./mappings/transactionsStatistics');
+const voter = require('../mappings/voter');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions.statistics.day',
+	method: 'core.voters',
 	params: {
-		offset: '=',
-		limit: '=',
+		address: '=,string',
+		username: '=,string',
+		publicKey: 'publickey,string',
+		secondPublicKey: 'secpubkey,string',
+		limit: '=,number',
+		offset: '=,number',
 	},
-	definition,
+	definition: {
+		data: ['data', voter],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+			address: '=,string',
+			publicKey: '=,string',
+			username: '=,string',
+		},
+		links: {},
+	},
 };
