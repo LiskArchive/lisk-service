@@ -36,6 +36,7 @@ const getTransactions = async params => {
     const result = transactions || [transaction];
     return { data: result };
 };
+
 const getBlocks = async params => {
     const apiClient = await getApiClient();
     let block;

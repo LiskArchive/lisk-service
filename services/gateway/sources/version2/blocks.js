@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const block = require('../mappings/block');
+const block = require('./mappings/block');
 
 module.exports = {
 	type: 'moleculer',
