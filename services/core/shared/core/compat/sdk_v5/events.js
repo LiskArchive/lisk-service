@@ -15,12 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const { getClient } = require('../common/wsRequest');
-
-const getApiClient = async () => {
-    const wsClient = await getClient();
-    return wsClient;
-};
+const { getApiClient } = require('../common/wsRequest');
 
 const config = require('../../../../config');
 
@@ -28,8 +23,10 @@ const register = async (events) => {
 	const apiClient = await getApiClient();
 	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
-	apiClient.subscribe('app:chain:validators:change', data => {
-		events.newRound(data);
+	apiClient.subscribe('app:block:new', data => {
+		const block = apiClient.block.decode(data.block);
+		events.newBlock({ id: block.header.id.toString('hex') });
+		// events.calculateFeeEstimate();
 	});
 };
 

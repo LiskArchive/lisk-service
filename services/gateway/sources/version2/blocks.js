@@ -13,25 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('./blocks');
-
-const { getNetworkStatus } = require('./network');
-const { getTransactions } = require('./transactions');
-const { getForgers } = require('./forgers');
-
-const events = require('./events');
+const block = require('./mappings/block');
 
 module.exports = {
-    ...require('../sdk_v4'),
-    events,
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getNetworkStatus,
-    getTransactions,
-    getForgers,
+	type: 'moleculer',
+	method: 'core.blocks',
+	params: {
+		offset: '=,number',
+		limit: '=,number',
+		height: '=,number',
+		blockId: 'id',
+		sort: '=',
+		address: '=',
+		username: '=,string',
+		fromTimestamp: 'from',
+		toTimestamp: 'to',
+	},
+	definition: {
+		data: ['data', block],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
