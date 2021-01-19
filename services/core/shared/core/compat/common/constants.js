@@ -54,7 +54,7 @@ const getNetworkConstants = async () => {
 			if (Object.getOwnPropertyNames(result).length === 0) {
 				const apiClient = await getApiClient();
 				const info = await apiClient.node.getNodeInfo();
-				info.operations = await resolveOperations(info.registeredModules);
+				info.operations = await resolvemoduleAssets(info.registeredModules);
 				result = { data: info };
 			}
 			if (!isProperObject(result)) return {};
