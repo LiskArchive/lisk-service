@@ -24,21 +24,21 @@ const sdkVersion = coreApi.getSDKVersion();
 
 const logger = Logger();
 
-let pendingTransactionsList = [];
-
 const getPendingTransactions = async params => {
 	const pendingTransactions = {
 		data: [],
 		meta: {},
 	};
+	const db = await pouchdb(config.db.collections.pending_transactions.name);
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
-	if (pendingTransactionsList.length) {
-		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
+	const dbResult = await db.findAll();
+	if (dbResult.length) {
+		pendingTransactions.data = dbResult.slice(offset, offset + limit);
 		pendingTransactions.meta = {
 			count: pendingTransactions.data.length,
 			offset,
-			total: pendingTransactionsList.length,
+			total: dbResult.length,
 		};
 	}
 	return pendingTransactions;
@@ -67,13 +67,20 @@ const getTransactions = async params => {
 
 
 const loadAllPendingTransactions = async () => {
+	let pendingTransactions;
+	const db = await pouchdb(config.db.collections.pending_transactions.name);
+	const dbResult = await db.findAll();
 	if (sdkVersion <= 4) {
 		const limit = 100;
-		pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
+		pendingTransactions = await requestAll(coreApi.getPendingTransactions, {}, limit);
 	} else {
-		pendingTransactionsList = await coreApi.getPendingTransactions();
+		pendingTransactions = await coreApi.getPendingTransactions();
 	}
-	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
+	if (pendingTransactions.length) {
+		if (dbResult.length) await db.deleteBatch(dbResult);
+		await db.writeBatch(pendingTransactions);
+		logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`);
+	}
 };
 
 const initPendingTransactionsList = (() => loadAllPendingTransactions())();
