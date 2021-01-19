@@ -41,14 +41,14 @@ module.exports = {
 				address: '=,string',
 				publicKey: '=,string',
 				isMandatory: '=,boolean',
-			}
+			},
 		],
 		memberships: [
 			{
 				address: '=,string',
 				publicKey: '=,string',
 				username: '=,string',
-			}
+			},
 		],
 	},
 	dpos: {
@@ -77,5 +77,5 @@ module.exports = {
 			amount: '=,string',
 			unvoteHeight: '=,number',
 		}],
-	}
+	},
 };

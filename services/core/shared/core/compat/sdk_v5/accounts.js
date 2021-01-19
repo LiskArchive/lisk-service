@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -11,7 +11,6 @@
  * LICENSE file.
  *
  * Removal or modification of this copyright notice is prohibited.
- *
  */
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
@@ -20,8 +19,8 @@ const coreCache = require('./coreCache');
 
 // const { getDelegates } = require('./delegates');
 
-const balanceUnlockWaitHeightSelf = 260000;
-const balanceUnlockWaitHeightDefault = 2000;
+// const balanceUnlockWaitHeightSelf = 260000;
+// const balanceUnlockWaitHeightDefault = 2000;
 
 const parseAddress = address => {
 	if (typeof address !== 'string') return '';
@@ -48,25 +47,25 @@ const confirmSecondPublicKey = async secondPublicKey => {
 	return (account && account.secondPublicKey === secondPublicKey);
 };
 
-const resolveAccountsInfo = async accounts => {
-	accounts.map(async account => {
-		if (account.isDelegate) {
-			const delegateInfo = {}; // (await getDelegates({ address: account.address })).data[0];
-			account.delegate = delegateInfo;
-		}
-		account.unlocking = account.unlocking.map(item => {
-			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
-			item.height = {
-				start: item.unvoteHeight,
-				end: item.unvoteHeight + balanceUnlockWaitHeight,
-			};
-			return item;
-		});
-		return account;
-	});
-	return accounts;
-};
+// const resolveAccountsInfo = async accounts => {
+// 	accounts.map(async account => {
+// 		if (account.isDelegate) {
+// 			const delegateInfo = {}; // (await getDelegates({ address: account.address })).data[0];
+// 			account.delegate = delegateInfo;
+// 		}
+// 		account.unlocking = account.unlocking.map(item => {
+// 			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+// 				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
+// 			item.height = {
+// 				start: item.unvoteHeight,
+// 				end: item.unvoteHeight + balanceUnlockWaitHeight,
+// 			};
+// 			return item;
+// 		});
+// 		return account;
+// 	});
+// 	return accounts;
+// };
 
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
@@ -118,7 +117,7 @@ const getAccounts = async params => {
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 
-	accounts.data = await resolveAccountsInfo(accounts.data);
+	// accounts.data = await resolveAccountsInfo(accounts.data);
 
 	return accounts;
 };
