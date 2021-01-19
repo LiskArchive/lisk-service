@@ -69,7 +69,8 @@ const confirmSecondPublicKey = async secondPublicKey => {
 
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
-	account.isDelegate = account.dpos && account.dpos.delegate;
+	account.isDelegate = !!(account.dpos && account.dpos.delegate);
+	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
 	account.token.balance = Number(account.token.balance);
 	account.sequence.nonce = Number(account.sequence.nonce);
 
