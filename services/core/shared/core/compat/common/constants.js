@@ -32,16 +32,16 @@ const resolveOperations = async (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
-			result = result
-				.concat(
-					liskModule.transactionAssets.map(asset => {
-						const id = String(liskModule.id).concat(':').concat(asset.id);
-						if (liskModule.name && asset.name) {
-							const name = liskModule.name.concat(':').concat(asset.name);
-							return { id, name };
-						}
-						return { id };
-					}));
+			result = result.concat(
+				liskModule.transactionAssets.map(asset => {
+					const id = String(liskModule.id).concat(':').concat(asset.id);
+					if (liskModule.name && asset.name) {
+						const name = liskModule.name.concat(':').concat(asset.name);
+						return { id, name };
+					}
+					return { id };
+				})
+			);
 		}
 	});
 	return result;
