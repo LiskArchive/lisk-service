@@ -43,13 +43,13 @@ const getCachedAccountBy = async (key, value) => {
 		const result = await getAccounts({ [key]: value });
 		if (!Array.isArray(result.data) || isEmptyArray(result.data)) {
 			const expireMiliseconds = config.ttl.affectedByNewBlocks;
-			cache.set(cacheKey, null, expireMiliseconds);
+			await cache.set(cacheKey, null, expireMiliseconds);
 			return null;
 		}
 		const { address, dpos: { delegate: { username } } } = normalizeAccount(result.data[0]);
 		account = { address, username };
-		Object.entries(account).forEach(([k, v]) => {
-			if (v) cache.set(getCacheKey(k, v), account);
+		Object.entries(account).forEach(async ([k, v]) => {
+			if (v) await cache.set(getCacheKey(k, v), account);
 		});
 	}
 	return account;

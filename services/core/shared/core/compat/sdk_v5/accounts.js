@@ -33,7 +33,7 @@ const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicK
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
 	const account = await coreCache.getCachedAccountByAddress(parseAddress(address));
-	return (account && account.address === address);
+	return (account && parseAddress(account.address) === parseAddress(address));
 };
 
 const confirmPublicKey = async publicKey => {
