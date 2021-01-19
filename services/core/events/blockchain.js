@@ -59,10 +59,9 @@ module.exports = [
 		name: 'forgers.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			signals.get('newBlock').add(async data => {
-				logger.debug(`New block arrived (${data.id})...`);
+			signals.get('newBlock').add(async () => {
 				await core.reloadNextForgersCache();
-				const forgers = await core.getNextForgers({});
+				const forgers = await core.getNextForgers({ limit: 25 });
 				callback(forgers);
 			});
 		},
