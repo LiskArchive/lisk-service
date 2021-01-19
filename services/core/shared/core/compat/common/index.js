@@ -23,7 +23,7 @@ const {
     setReadyStatus,
     getRegisteredModules,
     setRegisteredmodules,
-    resolveOperations,
+    resolvemoduleAssets,
 } = require('./constants');
 
 const {
@@ -43,7 +43,7 @@ module.exports = {
     setReadyStatus,
     getRegisteredModules,
     setRegisteredmodules,
-    resolveOperations,
+    resolvemoduleAssets,
 
     getBlockchainTime,
     getEpochUnixTime,

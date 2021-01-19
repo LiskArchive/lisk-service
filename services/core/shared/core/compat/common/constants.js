@@ -28,7 +28,7 @@ let registeredLiskModules;
 
 const setRegisteredmodules = modules => registeredLiskModules = modules;
 
-const resolveOperations = async (data) => {
+const resolvemoduleAssets = async (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -86,5 +86,5 @@ module.exports = {
 	getReadyStatus,
 	getRegisteredModules,
 	setRegisteredmodules,
-	resolveOperations,
+	resolvemoduleAssets,
 };

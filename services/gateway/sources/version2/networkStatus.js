@@ -28,7 +28,7 @@ module.exports = {
             rewards: 'data.genesisConfig.rewards',
             supply: '=,string',
             registeredModules: '=',
-            operations: '=',
+            moduleAssets: '=',
             blockTime: 'data.genesisConfig.blockTime,number',
             communityIdentifier: 'data.genesisConfig.communityIdentifier,string',
             minRemainingBalance: 'data.genesisConfig.minRemainingBalance,string',
