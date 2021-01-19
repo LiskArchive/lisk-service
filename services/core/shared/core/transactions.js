@@ -20,6 +20,8 @@ const pouchdb = require('../database/pouchdb');
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 
+const sdkVersion = coreApi.getSDKVersion();
+
 const logger = Logger();
 
 let pendingTransactionsList = [];
@@ -65,8 +67,12 @@ const getTransactions = async params => {
 
 
 const loadAllPendingTransactions = async () => {
-	const limit = 100;
-	pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
+	if (sdkVersion <= 4) {
+		const limit = 100;
+		pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
+	} else {
+		pendingTransactionsList = await coreApi.getPendingTransactions();
+	}
 	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
 };
 

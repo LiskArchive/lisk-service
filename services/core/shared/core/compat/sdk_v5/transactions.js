@@ -62,7 +62,6 @@ const getTransactions = async params => {
 };
 
 const getPendingTransactions = async params => {
-	if (params.includePending) params.includePending = JSON.parse(params.includePending);
 	const pendingTx = await coreApi.getPendingTransactions(params);
 	return pendingTx;
 };
