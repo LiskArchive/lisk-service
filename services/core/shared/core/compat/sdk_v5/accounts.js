@@ -69,13 +69,16 @@ const confirmSecondPublicKey = async secondPublicKey => {
 
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
+	account.isDelegate = account.dpos && account.dpos.delegate;
 	account.token.balance = Number(account.token.balance);
 	account.sequence.nonce = Number(account.sequence.nonce);
-	account.dpos.sentVotes = account.dpos.sentVotes.map(vote => {
-		vote.delegateAddress = vote.delegateAddress.toString('hex');
-		vote.amount = Number(vote.amount);
-		return vote;
-	});
+
+	if (account.dpos) account.dpos.sentVotes = account.dpos.sentVotes
+		.map(vote => {
+			vote.delegateAddress = vote.delegateAddress.toString('hex');
+			vote.amount = Number(vote.amount);
+			return vote;
+		});
 
 	return account;
 };
@@ -125,6 +128,7 @@ const getAccounts = async params => {
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
 	if (account.keys.numberOfSignatures) {
+		multisignatureAccount.isMultisignature = true;
 		multisignatureAccount.numberOfReqSignatures = account.keys.numberOfSignatures;
 		multisignatureAccount.members = [];
 
@@ -144,7 +148,7 @@ const getMultisignatureGroups = async account => {
 			},
 			{ concurrency: account.keys.optionalKeys.length },
 		);
-	}
+	} else multisignatureAccount.isMultisignature = false;
 	return multisignatureAccount;
 };
 

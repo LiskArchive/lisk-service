@@ -40,7 +40,7 @@ const resolveOperations = async (data) => {
 						return { id, name };
 					}
 					return { id };
-				})
+				}),
 			);
 		}
 	});
