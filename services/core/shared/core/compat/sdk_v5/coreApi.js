@@ -21,6 +21,22 @@ const getNetworkStatus = async () => {
     return { data: result };
 };
 
+const getTransactions = async params => {
+    const apiClient = await getApiClient();
+    let transaction;
+    let transactions;
+
+    if (params.id) {
+        transaction = await apiClient.transaction.get(params.id);
+    } else if (params.ids) {
+        transactions = await apiClient._channel.invoke('app:getTransactionsByIDs', { ids: params.ids });
+    }
+
+    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
+    const result = transactions || [transaction];
+    return { data: result };
+};
+
 const getBlocks = async params => {
     const apiClient = await getApiClient();
     let block;
@@ -57,5 +73,6 @@ const getPeers = async (state = 'connected') => {
 module.exports = {
     getBlocks,
     getNetworkStatus,
+    getTransactions,
     getPeers,
 };

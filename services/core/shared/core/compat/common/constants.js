@@ -23,6 +23,28 @@ const { isProperObject } = ObjectUtilService;
 
 let coreVersion = '1.0.0-alpha.0';
 let readyStatus;
+let registeredLiskModules;
+
+const setRegisteredmodules = modules => registeredLiskModules = modules;
+
+const resolveOperations = async (data) => {
+	let result = [];
+	data.forEach(liskModule => {
+		if (liskModule.transactionAssets.length) {
+			result = result
+				.concat(
+					liskModule.transactionAssets.map(asset => {
+						const id = String(liskModule.id).concat(':').concat(asset.id);
+						if (liskModule.name && asset.name) {
+							const name = liskModule.name.concat(':').concat(asset.name);
+							return { id, name };
+						}
+						return { id };
+					}));
+		}
+	});
+	return result;
+};
 
 const getNetworkConstants = async () => {
 	try {
@@ -30,6 +52,7 @@ const getNetworkConstants = async () => {
 		if (Object.getOwnPropertyNames(result).length === 0) {
 			const apiClient = await getApiClient();
 			const info = await apiClient.node.getNodeInfo();
+			info.operations = await resolveOperations(info.registeredModules);
 			result = { data: info };
 		}
 		return isProperObject(result) ? result : {};
@@ -48,10 +71,15 @@ const setReadyStatus = status => readyStatus = status;
 
 const getReadyStatus = () => readyStatus;
 
+const getRegisteredModules = () => registeredLiskModules;
+
 module.exports = {
 	getNetworkConstants,
 	setCoreVersion,
 	getCoreVersion,
 	setReadyStatus,
 	getReadyStatus,
+	getRegisteredModules,
+	setRegisteredmodules,
+	resolveOperations,
 };

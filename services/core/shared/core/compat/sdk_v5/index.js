@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    peerStates,
-    getPeers,
-} = require('./peers');
+const events = require('./events');
 
 const {
     getBlocks,
@@ -24,17 +21,32 @@ const {
     getFinalizedHeight,
 } = require('./blocks');
 
-const { getNetworkStatus } = require('./network');
+const {
+    getNetworkStatus,
+} = require('./network');
 
-const events = require('./events');
+const {
+    getTransactions,
+} = require('./transactions');
+
+const {
+    peerStates,
+    getPeers,
+} = require('./peers');
 
 module.exports = {
     ...require('../sdk_v4'),
+
     events,
+
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
+
     getNetworkStatus,
+
+    getTransactions,
+
     peerStates,
     getPeers,
 };
