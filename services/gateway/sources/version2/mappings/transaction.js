@@ -15,8 +15,8 @@
  */
 module.exports = {
 	id: '=,string',
-	operationId: '=,string',
-	operationName: '=,string',
+	moduleAssetId: '=,string',
+	moduleAssetName: '=,string',
 	amount: '=,string',
 	fee: '=,string',
 	height: '=,number',

@@ -27,7 +27,7 @@ let registeredLiskModules;
 
 const setRegisteredmodules = modules => registeredLiskModules = modules;
 
-const resolveOperations = async (data) => {
+const resolvemoduleAssets = async (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -52,7 +52,7 @@ const getNetworkConstants = async () => {
 		if (Object.getOwnPropertyNames(result).length === 0) {
 			const apiClient = await getApiClient();
 			const info = await apiClient.node.getNodeInfo();
-			info.operations = await resolveOperations(info.registeredModules);
+			info.moduleAssets = await resolvemoduleAssets(info.registeredModules);
 			result = { data: info };
 		}
 		return isProperObject(result) ? result : {};
@@ -81,5 +81,5 @@ module.exports = {
 	getReadyStatus,
 	getRegisteredModules,
 	setRegisteredmodules,
-	resolveOperations,
+	resolvemoduleAssets,
 };

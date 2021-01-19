@@ -23,8 +23,8 @@ module.exports = {
 	tags: ['Transactions'],
 	params: {
 		id: { optional: true, type: 'string', min: 1, max: 64 },
-		operationId: { optional: true, type: 'string', min: 1, max: 3 },
-		operationName: { optional: true, type: 'string', min: 1 },
+		moduleAssetId: { optional: true, type: 'string', min: 1, max: 3 },
+		moduleAssetName: { optional: true, type: 'string', min: 1 },
 		address: { optional: true, type: 'string', min: 38, max: 41 },
 		sender: { optional: true, type: 'string', min: 1, max: 64 },
 		recipient: { optional: true, type: 'string', min: 1, max: 64 },

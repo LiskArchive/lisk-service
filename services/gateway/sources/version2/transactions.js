@@ -22,6 +22,8 @@ module.exports = {
 		id: '=',
 		senderIdOrRecipientId: 'address',
 		senderId: 'sender',
+		moduleAssetId: '=',
+		moduleAssetName: '=',
 		recipientId: 'recipient',
 		offset: '=',
 		limit: '=',
