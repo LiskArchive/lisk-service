@@ -40,21 +40,24 @@ const getTransactions = async params => {
 		meta: {},
 	};
 
-	const response = await coreApi.getTransactions(params);
-	if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
-	if (response.meta) transactions.meta = response.meta;
+	// TODO: Remove the check. Send empty response for non-ID based requests
+	if (params.id || params.ids) {
 
-	// TODO: Indexed transactions to blockId
-	// transactions.data = await BluebirdPromise.map(
-	// 	transactions.data,
-	// 	async transaction => {
-	// 		const txBlock = (await getBlocks({ id: transaction.id })).data[0];
-	// 		transaction.unixTimestamp = txBlock.timestamp;
-	// 		return transaction;
-	// 	},
-	// 	{ concurrency: transactions.data.length },
-	// );
+		const response = await coreApi.getTransactions(params);
+		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
+		if (response.meta) transactions.meta = response.meta;
 
+		// TODO: Indexed transactions to blockId
+		// transactions.data = await BluebirdPromise.map(
+		// 	transactions.data,
+		// 	async transaction => {
+		// 		const txBlock = (await getBlocks({ id: transaction.id })).data[0];
+		// 		transaction.unixTimestamp = txBlock.timestamp;
+		// 		return transaction;
+		// 	},
+		// 	{ concurrency: transactions.data.length },
+		// );
+	}
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset || 0;
