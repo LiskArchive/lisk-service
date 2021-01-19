@@ -20,6 +20,7 @@ const {
 	getEpochUnixTime,
 	getNetworkConstants,
 	setReadyStatus,
+	setRegisteredmodules,
 } = require('./core/compat/common');
 
 const liskCoreAddress = config.endpoints.liskHttp;
@@ -39,6 +40,9 @@ const checkStatus = () => new Promise((resolve, reject) => {
 			if (logConnectStatus) {
 				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 				logConnectStatus = false;
+			}
+			if (networkConstants.data.operations) {
+				setRegisteredmodules(networkConstants.data.operations);
 			}
 			resolve(networkConstants.data);
 		} else {

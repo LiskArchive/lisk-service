@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const events = require('./events');
+
 const {
     getBlocks,
     updateFinalizedHeight,
@@ -29,7 +31,9 @@ const {
     getNetworkStatus,
 } = require('./network');
 
-const events = require('./events');
+const {
+    getTransactions,
+} = require('./transactions');
 
 module.exports = {
     ...require('../sdk_v4'),
@@ -46,4 +50,6 @@ module.exports = {
     getMultisignatureMemberships,
 
     getNetworkStatus,
+
+    getTransactions,
 };
