@@ -41,8 +41,8 @@ const checkStatus = () => new Promise((resolve, reject) => {
 				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 				logConnectStatus = false;
 			}
-			if (networkConstants.data.operations) {
-				setRegisteredmodules(networkConstants.data.operations);
+			if (networkConstants.data.moduleAssets) {
+				setRegisteredmodules(networkConstants.data.moduleAssets);
 			}
 			resolve(networkConstants.data);
 		} else {
