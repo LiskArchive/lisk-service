@@ -14,8 +14,9 @@
  *
  */
 const { Utils } = require('lisk-service-framework');
+
 const http = require('./httpRequest');
-const ws = require('./wsRequest');
+const { getApiClient } = require('./wsRequest');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
@@ -26,7 +27,7 @@ let registeredLiskModules;
 
 const setRegisteredmodules = modules => registeredLiskModules = modules;
 
-const resolveOperations = async (data) => {
+const resolvemoduleAssets = async (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -34,8 +35,11 @@ const resolveOperations = async (data) => {
 				.concat(
 					liskModule.transactionAssets.map(asset => {
 						const id = String(liskModule.id).concat(':').concat(asset.id);
-						const name = liskModule.name.concat(':').concat(asset.name);
-						return { id, name };
+						if (liskModule.name && asset.name) {
+							const name = liskModule.name.concat(':').concat(asset.name);
+							return { id, name };
+						}
+						return { id };
 					}));
 		}
 	});
@@ -46,9 +50,9 @@ const getNetworkConstants = async () => {
 	try {
 		let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
 		if (Object.getOwnPropertyNames(result).length === 0) {
-			const apiClient = await ws.getClient();
+			const apiClient = await getApiClient();
 			const info = await apiClient.node.getNodeInfo();
-			info.operations = await resolveOperations(info.registeredModules);
+			info.moduleAssets = await resolvemoduleAssets(info.registeredModules);
 			result = { data: info };
 		}
 		return isProperObject(result) ? result : {};
@@ -77,5 +81,5 @@ module.exports = {
 	getReadyStatus,
 	getRegisteredModules,
 	setRegisteredmodules,
-	resolveOperations,
+	resolvemoduleAssets,
 };

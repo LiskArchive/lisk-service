@@ -14,26 +14,24 @@
  *
  */
 module.exports = {
-	id: '=,string',
-	moduleAssetId: '=,string',
-	moduleAssetName: '=,string',
-	amount: '=,string',
-	fee: '=,string',
+	ip: '=,string',
+	port: '=,number',
+	os: '=,string',
+	networkVersion: '=,string',
+	state: '=,string',
 	height: '=,number',
+	networkIdentifier: '=,string',
 	nonce: '=,string',
-	block: {
-		id: 'block.id,string',
-		height: '=,number',
-		timestamp: '=,number',
+	hostname: '=,string',
+	location: {
+		city: 'location.city,string',
+		countryCode: 'location.country_code,string',
+		ip: 'location.ip,string',
+		latitude: 'location.latitude,string',
+		longitude: 'location.longitude,string',
+		regionCode: 'location.region_code,string',
+		regionName: 'location.region_name,string',
+		timeZone: 'location.time_zone,string',
+		zipCode: 'location.zip_code',
 	},
-	sender: {
-        address: '=,string',
-        publicKey: 'senderPublicKey,string',
-        username: '=,string',
-      },
-	signatures: '=',
-	confirmations: '=,number',
-	asset: '=',
-	relays: '=,number',
-	isPending: '=,boolean',
 };

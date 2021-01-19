@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
+// const { getBlocks } = require('./blocks');
 const { getRegisteredModules } = require('../common');
 
 const normalizeTransaction = tx => {
@@ -21,8 +23,8 @@ const normalizeTransaction = tx => {
 	const txModule = availableLiskModules
 		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 	tx.id = tx.id.toString('hex');
-	tx.operationId = txModule[0].id;
-	tx.operationName = txModule[0].name;
+	tx.moduleAssetId = txModule[0].id;
+	tx.moduleAssetName = txModule[0].name;
 	tx.fee = Number(tx.fee);
 	tx.nonce = Number(tx.nonce);
 	tx.senderPublicKey = tx.senderPublicKey.toString('hex');
@@ -42,11 +44,11 @@ const getTransactions = async params => {
 	if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
 	if (response.meta) transactions.meta = response.meta;
 
-	// timestamp logic for transactions
+	// TODO: Indexed transactions to blockId
 	// transactions.data = await BluebirdPromise.map(
 	// 	transactions.data,
 	// 	async transaction => {
-	// 		const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
+	// 		const txBlock = (await getBlocks({ id: transaction.id })).data[0];
 	// 		transaction.unixTimestamp = txBlock.timestamp;
 	// 		return transaction;
 	// 	},

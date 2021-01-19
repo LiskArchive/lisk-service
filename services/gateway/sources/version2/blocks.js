@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,27 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const block = require('./mappings/block');
+
 module.exports = {
-	id: '=,string',
-	moduleAssetId: '=,string',
-	moduleAssetName: '=,string',
-	amount: '=,string',
-	fee: '=,string',
-	height: '=,number',
-	nonce: '=,string',
-	block: {
-		id: 'block.id,string',
+	type: 'moleculer',
+	method: 'core.blocks',
+	params: {
+		offset: '=,number',
+		limit: '=,number',
 		height: '=,number',
-		timestamp: '=,number',
+		blockId: 'id',
+		sort: '=',
+		address: '=',
+		username: '=,string',
+		fromTimestamp: 'from',
+		toTimestamp: 'to',
 	},
-	sender: {
-        address: '=,string',
-        publicKey: 'senderPublicKey,string',
-        username: '=,string',
-      },
-	signatures: '=',
-	confirmations: '=,number',
-	asset: '=',
-	relays: '=,number',
-	isPending: '=,boolean',
+	definition: {
+		data: ['data', block],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
