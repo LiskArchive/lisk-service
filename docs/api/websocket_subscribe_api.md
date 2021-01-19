@@ -152,47 +152,10 @@ Updates the current forgers' list, so the current forger is on the first positio
 {
     "data": [
         {
-            address: '2676478818871314230L',
-            publicKey: '83360be7f7f93528296de85894785eb8fcaca276f87b500afe0b68b68eab130b',
-            username: 'genesis_73',
-            isDelegate: true,
-            nonce: '2',
-            balance: '2910126740000',
-            votes: [
-                {
-                amount: '1000000000000',
-                delegateAddress: '2676478818871314230L'
-                }
-            ],
-            unlocking: [],
-            totalVotesReceived: 0,
-            delegate: {
-                isBanned: false,
-                pomHeights: [],
-                lastForgedHeight: 0,
-                consecutiveMissedBlocks: 0,
-                approval: 0
-            },
-            asset: {},
-            missedBlocks: 1,
-            producedBlocks: 5852,
-            fees: '0',
-            rewards: '0',
-            productivity: 99.98,
-            keys: { optionalKeys: [], mandatoryKeys: [], numberOfSignatures: 0 },
-            account: {
-                address: '2676478818871314230L',
-                publicKey: '83360be7f7f93528296de85894785eb8fcaca276f87b500afe0b68b68eab130b'
-            },
-            delegateWeight: 1000000000000,
-            vote: 1000000000000,
-            isBanned: false,
-            pomHeights: [],
-            lastForgedHeight: 0,
-            consecutiveMissedBlocks: 0,
-            rank: 83,
-            status: 'active'
-        },
+            address: "1492771550241913308L",
+            publicKey: "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
+            username: "genesis_66"
+        }
         ...
     ],
     "meta": {
