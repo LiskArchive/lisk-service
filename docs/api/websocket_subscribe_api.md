@@ -148,13 +148,13 @@ Updates the current forgers' list, so the current forger is on the first positio
 
 ### Response
 
-```json
+```jsonc
 {
     "data": [
         {
-            address: "1492771550241913308L",
-            publicKey: "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
-            username: "genesis_66"
+            "address": "1492771550241913308L",
+            "publicKey": "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
+            "username": "genesis_66"
         }
         ...
     ],
