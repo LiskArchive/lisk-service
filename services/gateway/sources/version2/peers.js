@@ -13,40 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const events = require('./events');
-
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('./blocks');
-
-const {
-    getNetworkStatus,
-} = require('./network');
-
-const {
-    getTransactions,
-} = require('./transactions');
-
-const {
-    peerStates,
-    getPeers,
-} = require('./peers');
+const peer = require('./mappings/peer');
 
 module.exports = {
-    ...require('../sdk_v4'),
-
-    events,
-
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-
-    getNetworkStatus,
-
-    getTransactions,
-
-    peerStates,
-    getPeers,
+	type: 'moleculer',
+	method: 'core.peers',
+	params: {
+		ip: '=,string',
+		networkVersion: '=,string',
+		state: '=,string',
+		height: '=,number',
+		limit: '=,number',
+		offset: '=,number',
+		sort: '=,string',
+	},
+	definition: {
+		data: ['data', peer],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
