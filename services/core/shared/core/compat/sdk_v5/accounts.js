@@ -67,6 +67,17 @@ const confirmSecondPublicKey = async secondPublicKey => {
 // 	return accounts;
 // };
 
+const parseBigIntToNumber = obj => {
+	const result = {};
+	Object.entries(obj)
+		.forEach(([k, v]) => {
+			if (typeof v === 'object' && v !== null) result[k] = parseBigIntToNumber(v);
+			else if (typeof v === 'bigint') result[k] = Number(v);
+			else result[k] = v;
+		});
+	return result;
+};
+
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
 	account.isDelegate = !!(account.dpos && account.dpos.delegate);
@@ -81,7 +92,7 @@ const normalizeAccount = account => {
 			return vote;
 		});
 
-	return account;
+	return parseBigIntToNumber(account);
 };
 
 const getAccounts = async params => {
