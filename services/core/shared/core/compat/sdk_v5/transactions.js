@@ -42,7 +42,6 @@ const getTransactions = async params => {
 
 	// TODO: Remove the check. Send empty response for non-ID based requests
 	if (params.id || params.ids) {
-
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
 		if (response.meta) transactions.meta = response.meta;
