@@ -28,6 +28,11 @@ const {
 } = require('./transactions');
 
 const {
+	getIncomingTxsCount,
+	getOutgoingTxsCount,
+} = require('./transactionUtils');
+
+const {
 	getAccounts,
 } = require('./accounts');
 
@@ -86,8 +91,6 @@ const {
 	validatePublicKey,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	getIncomingTxsCount,
-	getOutgoingTxsCount,
 	getForgingStats,
 	getNetworkStatus,
 	getNetworkConstants,

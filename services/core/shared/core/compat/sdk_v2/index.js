@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
-
 const coreApi = require('./coreApi');
 
 const { request } = require('./request');
@@ -37,8 +35,6 @@ const { getNetworkStatus } = require('./network');
 
 const events = require('./events');
 
-const ObjectUtilService = Utils.Data;
-
 const numOfActiveDelegates = 101;
 
 const peerStates = {
@@ -48,8 +44,6 @@ const peerStates = {
 };
 
 // Utils & helpers
-const { isProperObject } = ObjectUtilService;
-
 const isStringType = value => typeof value === 'string';
 
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
@@ -57,33 +51,6 @@ const parseAddress = address => isStringType(address) ? address.toUpperCase() : 
 const validateAddress = address => isStringType(address) && address.match(/^[0-9]{1,20}[L|l]$/g);
 
 // Lisk Core API functions
-const getIncomingTxsCount = async address => {
-	const result = await coreApi.getTransactions({
-		recipientId: parseAddress(address),
-		limit: 1,
-	});
-	if (!isProperObject(result)
-		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)) {
-		throw new Error('Could not retrieve incoming transaction count.');
-	}
-	return result.meta.count;
-};
-
-const getOutgoingTxsCount = async address => {
-	const result = await coreApi.getTransactions({
-		senderId: parseAddress(address),
-		limit: 1,
-	});
-	if (!isProperObject(result)
-		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)) {
-		throw new Error('Could not retrieve outgoing transaction count.');
-	}
-
-	return result.meta.count;
-};
-
 const getForgingStats = async address => {
 	if (!validateAddress(address)) throw new Error('Missing/Invalid address');
 	try {
@@ -107,8 +74,6 @@ module.exports = {
 	getBlocks,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	getIncomingTxsCount,
-	getOutgoingTxsCount,
 	getVotes,
 	getVoters,
 	getDelegates,
