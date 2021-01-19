@@ -97,7 +97,7 @@ module.exports = {
 				endpoint: 'moleculer',
 				event: 'forgers.change',
 				mapper: {
-					data: [require('./mappers/socketRound')],
+					data: [require('./mappers/socketDelegate')],
 					meta: {},
 				},
 			},
