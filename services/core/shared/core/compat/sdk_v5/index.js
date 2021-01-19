@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -35,9 +35,13 @@ const {
     getTransactions,
 } = require('./transactions');
 
+const {
+    peerStates,
+    getPeers,
+} = require('./peers');
+
 module.exports = {
     ...require('../sdk_v4'),
-    ...require('./coreCache'),
 
     events,
 
@@ -52,4 +56,7 @@ module.exports = {
     getNetworkStatus,
 
     getTransactions,
+
+    peerStates,
+    getPeers,
 };

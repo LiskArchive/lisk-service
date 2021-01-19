@@ -40,7 +40,7 @@ const getPeers = async params => {
         return [...new Set(a)].filter(x => setB.has(x));
     };
 
-    const filterParams = ['ip', 'httpPort', 'wsPort', 'os', 'version', 'height', 'broadhash'];
+    const filterParams = ['ip', 'httpPort', 'wsPort', 'os', 'version', 'networkVersion', 'height', 'broadhash'];
     const activeParams = Object.keys(params).filter(item => params[item]);
     const activeFilters = intersect(filterParams, activeParams);
 
