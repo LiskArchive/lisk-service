@@ -29,10 +29,15 @@ const events = {
 		const block = await getBlocks({ blockId: data.id });
 		signals.get('newBlock').dispatch(block.data[0]);
 	},
-	newRound: async () => {
-		await reloadNextForgersCache();
+	newRound: async data => {
+		let nextForgers;
 		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
-		const nextForgers = await getNextForgers({ limit });
+		if (core.getSDKVersion() <= 4) {
+			await reloadNextForgersCache();
+			nextForgers = await getNextForgers({ limit });
+		} else {
+			nextForgers = { data: data.validators };
+		}
 		const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
 		signals.get('newRound').dispatch(response);
 	},
