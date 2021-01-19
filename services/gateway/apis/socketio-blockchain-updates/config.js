@@ -89,5 +89,18 @@ module.exports = {
 				},
 			},
 		},
+		{
+			name: 'update.forgers',
+			type: 'event',
+			cache: false,
+			source: {
+				endpoint: 'moleculer',
+				event: 'forgers.change',
+				mapper: {
+					data: [require('./mappers/socketRound')],
+					meta: {},
+				},
+			},
+		},
 	],
 };
