@@ -192,7 +192,8 @@ const getNextForgers = async params => {
 	};
 
 	const offset = params.offset || 0;
-	const limit = params.limit || 10;
+	let limit = params.limit || 103;
+	if (sdkVersion < 4) limit = 101;
 
 	forgers.data = nextForgers.slice(offset, offset + limit);
 

@@ -56,6 +56,18 @@ module.exports = [
 		},
 	},
 	{
+		name: 'forgers.change',
+		description: 'Track round change updates',
+		controller: callback => {
+			signals.get('newBlock').add(async data => {
+				logger.debug(`New block arrived (${data.id})...`);
+				await core.reloadNextForgersCache();
+				const forgers = await core.getNextForgers({});
+				callback(forgers);
+			});
+		},
+	},
+	{
 		name: 'round.change',
 		description: 'Track round change updates',
 		controller: callback => {
