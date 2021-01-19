@@ -142,6 +142,66 @@ Updates about the forging delegates for the next round.
 }
 ```
 
+## `update.forgers`
+
+Updates the current forgers' list, so the current forger is on the first position.
+
+### Response
+
+```json
+{
+    "data": [
+        {
+            address: '2676478818871314230L',
+            publicKey: '83360be7f7f93528296de85894785eb8fcaca276f87b500afe0b68b68eab130b',
+            username: 'genesis_73',
+            isDelegate: true,
+            nonce: '2',
+            balance: '2910126740000',
+            votes: [
+                {
+                amount: '1000000000000',
+                delegateAddress: '2676478818871314230L'
+                }
+            ],
+            unlocking: [],
+            totalVotesReceived: 0,
+            delegate: {
+                isBanned: false,
+                pomHeights: [],
+                lastForgedHeight: 0,
+                consecutiveMissedBlocks: 0,
+                approval: 0
+            },
+            asset: {},
+            missedBlocks: 1,
+            producedBlocks: 5852,
+            fees: '0',
+            rewards: '0',
+            productivity: 99.98,
+            keys: { optionalKeys: [], mandatoryKeys: [], numberOfSignatures: 0 },
+            account: {
+                address: '2676478818871314230L',
+                publicKey: '83360be7f7f93528296de85894785eb8fcaca276f87b500afe0b68b68eab130b'
+            },
+            delegateWeight: 1000000000000,
+            vote: 1000000000000,
+            isBanned: false,
+            pomHeights: [],
+            lastForgedHeight: 0,
+            consecutiveMissedBlocks: 0,
+            rank: 83,
+            status: 'active'
+        },
+        ...
+    ],
+    "meta": {
+        "count": 4,
+        "timestamp": 1573059291
+    }
+}
+```
+
 ## `update.transactions.confirmed`
 
 Updates about transactions from the last block.
