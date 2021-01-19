@@ -60,8 +60,16 @@ const getBlocks = async params => {
     return { data: result };
 };
 
+const getPendingTransactions = async () => {
+    const apiClient = await getApiClient();
+    let transactions = await apiClient._channel.invoke('app:getTransactionsFromPool', {});
+    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
+    return { data: transactions };
+};
+
 module.exports = {
     getBlocks,
     getNetworkStatus,
     getTransactions,
+    getPendingTransactions,
 };

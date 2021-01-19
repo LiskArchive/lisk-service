@@ -61,6 +61,13 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const getPendingTransactions = async params => {
+	if (params.includePending) params.includePending = JSON.parse(params.includePending);
+	const pendingTx = await coreApi.getPendingTransactions(params);
+	return pendingTx;
+};
+
 module.exports = {
 	getTransactions,
+	getPendingTransactions,
 };

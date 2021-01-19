@@ -33,6 +33,7 @@ module.exports = {
 		height: '=',
 		sort: '=',
 		data: '=',
+		includePending: '=',
 	},
 	definition: {
 		data: ['data', transaction],
