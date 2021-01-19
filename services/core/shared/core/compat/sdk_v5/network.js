@@ -14,13 +14,13 @@
  *
  */
 const coreApi = require('./coreApi');
-const { resolveOperations } = require('../common/constants');
+const { resolvemoduleAssets } = require('../common/constants');
 
 const getNetworkStatus = async () => {
 	const status = await coreApi.getNetworkStatus();
 	const { offset } = status.data.genesisConfig.rewards;
 	const { distance } = status.data.genesisConfig.rewards;
-	status.data.operations = await resolveOperations(status.data.registeredModules);
+	status.data.moduleAssets = await resolvemoduleAssets(status.data.registeredModules);
 	const rewardIndex = Math.floor((status.data.height - offset) / distance);
 	const finalRewardIndex = rewardIndex >= status.data.genesisConfig.rewards.milestones.length
 		? status.data.genesisConfig.rewards.milestones.length - 1 : rewardIndex;
