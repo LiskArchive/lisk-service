@@ -20,6 +20,7 @@ const logger = Logger();
 
 const coreApi = require('./compat');
 const { getUsernameByAddress } = require('./delegateUtils');
+const signals = require('../signals');
 
 let lastBlock = {};
 
@@ -124,11 +125,16 @@ const preloadBlocksByPage = async (n) => {
 
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
+const performLastBlockUpdate = async () => {
+	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
+	setLastBlock(block.data[0]);
+	logger.debug(`Current block height: ${block.data[0].height}  (id=${block.data[0].id})`);
+};
+
 const initBlocks = (async () => {
 	await coreApi.updateFinalizedHeight();
-	const block = await getBlocks({ limit: 1, sort: 'height:desc' });
-	logger.debug('Storing the first block');
-	setLastBlock(block.data[0]);
+
+	performLastBlockUpdate();
 })();
 
 module.exports = {
@@ -140,4 +146,5 @@ module.exports = {
 	waitForLastBlock,
 	initBlocks,
 	reloadBlocks,
+	performLastBlockUpdate,
 };
