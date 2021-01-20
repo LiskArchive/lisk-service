@@ -1,29 +1,25 @@
 # Lisk Service Subscribe API Documentation
 
-The Lisk Service is a web application that interacts with the whole Lisk ecosystem in various aspects. Update about blockchain events is one of them.
+The Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects. For example, one key aspect is an update about blockchain events.
 
-The Subscribe API is sometimes called publish/subscribe or Event-Driven API. The biggest difference between Event-Driven and regular REST API is not only technical: in practice, they use two-way streaming connection, which means that not only client can request server for a data (and potential updates), but also the server can notify the client about new data instantly, as they arrive.
+The Subscribe API is sometimes called publish/subscribe or Event-Driven API. The biggest difference between Event-Driven and regular REST API is not only technical. In practice, a two-way streaming connection is used, which means that not only can the client request the server for a data update, (and also potential updates) but also the server can notify the client about new data instantly as it arrives.
 
 Lisk Service leverages the two-way communication approach by utilizing the WebSocket library responsible for updating users about changes in the blockchain network and markets.
 
 ## <a name='table-of-contents'></a>Table of Contents
 
 <!-- vscode-markdown-toc -->
-* [Table of Contents](#table-of-contents)
 * [Access paths and compatibility](#access-paths-and-compatibility)
 * [Endpoint Logic](#endpoint-logic)
 * [Responses](#responses)
 * [Date Format](#date-format)
 * [Example of a client implementation](#example-of-a-client-implementation)
     * [Node.js](#node.js)
-* [`update.block`](#`update.block`)
-    * [Response](#response)
-* [`update.round`](#`update.round`)
-    * [Response](#response-1)
-* [`update.transactions.confirmed`](#`update.transactions.confirmed`)
-    * [Response](#response-2)
-* [`update.transactions.unconfirmed`](#`update.transactions.unconfirmed`)
-    * [Response](#response-3)
+* [Emitted blockchain updates](#blockchain-updates-\(`/blockchain`\))
+    * [`update.block`](#`update.block`)
+    * [`update.round`](#`update.round`)
+    * [`update.transactions.confirmed`](#`update.transactions.confirmed`)
+    * [`update.transactions.unconfirmed`](#`update.transactions.unconfirmed`)
 
 <!-- vscode-markdown-toc-config
 	numbering=false
@@ -37,7 +33,7 @@ The blockchain update API can be accessed by the following path `https://service
 
 You might also be interested in accessing the `testnet` network by using the `https://testnet-service.lisk.io/blockchain` endpoint.
 
-**Important:** The Lisk Service WebSocket API uses the `socket.io` library. This implementation is compatible with the version 2.0 of `socket.io` library. Using a wrong major version might result in broken connection and messages not being passed.
+**Important:** The Lisk Service WebSocket API uses the `socket.io` library. This implementation is compatible with the version 2.0 of `socket.io` library. Using the wrong major version might result in a broken connection and messages not being passed.
 
 The specification below contains numerous examples how to use the API in practice.
 
@@ -64,7 +60,7 @@ Each API request has the following structure:
 
 ## <a name='date-format'></a>Date Format
 
-In the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
+On the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
 
 ## <a name='example-of-a-client-implementation'></a>Example of a client implementation
 
