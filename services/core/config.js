@@ -86,6 +86,20 @@ config.cacheTTL = 20;
 config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
 
 /**
+ * Indexing
+ *
+ * Important: The number of blocks makes the process responsible of creating
+ * and maintaining search index of the given number of blocks behind the current height.
+ *
+ * indexNumOfBlocks = 0 means that index will consist of all blocks.
+ *
+ * The block index may trigger indexing of other entities that are part of the block
+ * such as transactions, accounts, votes etc.
+ */
+config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS) || 202;
+
+
+/**
  * Cache delegate info in order to replace address by username
  * Delegate caching support (true - enabled, false - disabled)
  */

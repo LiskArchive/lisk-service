@@ -37,7 +37,7 @@ const getDelegates = async params => {
 			publicKey: delegate.publicKey,
 		};
 
-		const adder = (acc, curr) => acc + curr.amount;
+		const adder = (acc, curr) => Number(acc) + Number(curr.amount);
 		const totalVotes = delegate.votes.reduce(adder, 0);
 		const selfVotes = delegate.votes
 			.filter(vote => vote.delegateAddress === delegate.address).reduce(adder, 0);
