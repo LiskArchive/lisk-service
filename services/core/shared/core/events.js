@@ -18,6 +18,7 @@ const core = require('./compat');
 const signals = require('../signals');
 const { reloadNextForgersCache, getNextForgers } = require('./delegates');
 const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
+const { performLastBlockUpdate } = require('./blocks');
 
 const config = require('../../config.js');
 
@@ -26,6 +27,7 @@ const logger = Logger();
 const events = {
 	newBlock: async data => {
 		signals.get('newBlock').dispatch(data);
+		performLastBlockUpdate();
 	},
 	newRound: async () => {
 		await reloadNextForgersCache();

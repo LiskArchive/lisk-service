@@ -23,4 +23,7 @@ logs:
 logs-%:
 	$(compose) logs $*
 
+print-config:
+	$(compose) config
+
 mrproper: down

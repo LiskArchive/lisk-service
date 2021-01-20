@@ -107,7 +107,7 @@ config.cacheDelegateAddress.enabled = true;
 config.cacheDelegateAddress.updateInterval = 60000;
 
 config.transactionStatistics = {
-	enabled: Boolean(process.env.ENABLE_TRANSACTION_STATS || false),
+	enabled: Boolean(process.env.ENABLE_TRANSACTION_STATS === 'true' || false),
 	updateInterval: Number(process.env.TRANSACTION_STATS_UPDATE_INTERVAL || 10 * 60), // seconds
 	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 5),
 };
@@ -118,8 +118,8 @@ config.ttl = {
 };
 
 config.feeEstimates = {
-	quickAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_QUICK || true),
-	fullAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_FULL || false),
+	quickAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_QUICK === 'true' || true),
+	fullAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_FULL === 'true' || false),
 	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 1),
 	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1),
 	medEstLowerPercentile: 25,
