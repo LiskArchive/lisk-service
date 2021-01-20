@@ -40,11 +40,6 @@ const {
 } = require('./delegates');
 
 const {
-	getForgers,
-	reloadForgersCache,
-} = require('./forgers');
-
-const {
 	getUsernameByAddress,
 	getAddressByUsername,
 } = require('./delegateUtils');
@@ -162,6 +157,4 @@ module.exports = {
 	events,
 	getSDKVersion,
 	waitForLastBlock,
-	getForgers,
-	reloadForgersCache,
 };

@@ -26,15 +26,17 @@ module.exports = [
 		updateOnInit: true,
 		init: async () => {
 			const sdkVersion = core.getSDKVersion();
+			// TODO: Remove if condition once delegate cache implemented for SDKv5
 			if (sdkVersion <= 4) {
 				logger.debug('Scheduling initial list update...');
 				await core.reloadDelegateCache();
 				await core.reloadNextForgersCache();
 			} else {
-				await core.reloadForgersCache();
+				await core.reloadNextForgersCache();
 			}
 		},
 		controller: async () => {
+			// TODO: Remove if condition once delegate cache implemented for SDKv5
 			const sdkVersion = core.getSDKVersion();
 			if (sdkVersion <= 4) {
 				logger.debug('Scheduling delegate list reload...');

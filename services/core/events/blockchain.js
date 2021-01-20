@@ -72,11 +72,12 @@ module.exports = [
 		controller: callback => {
 			signals.get('newRound').add(async data => {
 				logger.debug('New round, updating delegates...');
+				// TODO: Remove if condition once delegate cache implemented for SDKv5
 				if (core.getSDKVersion() <= 4) {
 					core.reloadDelegateCache();
 					core.reloadNextForgersCache();
 				} else {
-					core.reloadForgersCache();
+					core.reloadNextForgersCache();
 				}
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
