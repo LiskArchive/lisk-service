@@ -77,7 +77,8 @@ const getTransactions = async params => {
 
 	if (params.fromTimestamp || params.toTimestamp
 		|| (params.sort && params.sort.includes('timestamp'))) {
-		const [, timestampSortOrder] = params.sort.split(':');
+		let timestampSortOrder = 'desc';
+		if (params.sort) [, timestampSortOrder] = params.sort.split(':');
 		const blockIds = await timestampDb.findByRange('timestamp',
 			params.fromTimestamp,
 			params.toTimestamp,
