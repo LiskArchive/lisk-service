@@ -20,7 +20,6 @@ const logger = Logger();
 
 const coreApi = require('./compat');
 const { getUsernameByAddress } = require('./delegateUtils');
-const signals = require('../signals');
 
 let lastBlock = {};
 
