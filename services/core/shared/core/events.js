@@ -16,9 +16,9 @@
 const { Logger } = require('lisk-service-framework');
 const core = require('./compat');
 const signals = require('../signals');
-const { getBlocks } = require('./blocks');
 const { reloadNextForgersCache, getNextForgers } = require('./delegates');
 const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
+const { performLastBlockUpdate } = require('./blocks');
 
 const config = require('../../config.js');
 
@@ -26,8 +26,8 @@ const logger = Logger();
 
 const events = {
 	newBlock: async data => {
-		const block = await getBlocks({ blockId: data.id });
-		signals.get('newBlock').dispatch(block.data[0]);
+		signals.get('newBlock').dispatch(data);
+		performLastBlockUpdate();
 	},
 	newRound: async () => {
 		await reloadNextForgersCache();

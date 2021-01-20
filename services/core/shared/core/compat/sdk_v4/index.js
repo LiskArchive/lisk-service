@@ -14,6 +14,12 @@
  *
  */
 const {
+    getBlocks,
+    updateFinalizedHeight,
+    getFinalizedHeight,
+} = require('./blocks');
+
+const {
     getDelegates,
     getNextForgers,
 } = require('./delegates');
@@ -32,11 +38,6 @@ const {
 const { mapToOriginal } = require('./reverseMappings');
 const { getVotes } = require('./votes');
 const { getVoters } = require('./voters');
-const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-} = require('../sdk_v3');
 const events = require('./events');
 const { getNetworkStatus } = require('./network');
 

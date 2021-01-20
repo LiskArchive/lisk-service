@@ -9,17 +9,21 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 ## <a name='table-of-contents'></a>Table of Contents
 
 <!-- vscode-markdown-toc -->
+* [Table of Contents](#table-of-contents)
 * [Access paths and compatibility](#access-paths-and-compatibility)
 * [Endpoint Logic](#endpoint-logic)
 * [Responses](#responses)
 * [Date Format](#date-format)
 * [Example of a client implementation](#example-of-a-client-implementation)
     * [Node.js](#node.js)
-* [Emitted blockchain updates](#blockchain-updates-\(`/blockchain`\))
-    * [`update.block`](#`update.block`)
-    * [`update.round`](#`update.round`)
-    * [`update.transactions.confirmed`](#`update.transactions.confirmed`)
-    * [`update.transactions.unconfirmed`](#`update.transactions.unconfirmed`)
+* [`update.block`](#`update.block`)
+    * [Response](#response)
+* [`update.round`](#`update.round`)
+    * [Response](#response-1)
+* [`update.forgers`](#`update.forgers`)
+    * [Response](#response-2)
+* [`update.transactions.confirmed`](#`update.transactions.confirmed`)
+    * [Response](#response-3)
 
 <!-- vscode-markdown-toc-config
 	numbering=false
@@ -110,18 +114,41 @@ Updates about the forging delegates for the next round.
 
 ```jsonc
 {
-  "nextForgers": [
-        "9447508130077835324L",
-        "923992554593700306L",
-        "9164804013838025941L",
-        "9077548379631877989L",
+    "data": [
+        {
+            "address": "1492771550241913308L",
+            "publicKey": "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
+            "username": "genesis_66"
+        }
         ...
-        ...
-        "10452881617068866990L",
-        "10431315846496304288L",
-        "10045031187186962062L",
-        "10016685355739180605L",
     ],
+    "meta": {
+        "count": 25,
+        "timestamp": 1573059291
+    }
+}
+```
+
+## <a name='`update.forgers`'></a>`update.forgers`
+
+Updates the current forgers' list, so the current forger is on the first position.
+
+### <a name='response-2'></a>Response
+
+```jsonc
+{
+    "data": [
+        {
+            "address": "1492771550241913308L",
+            "publicKey": "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
+            "username": "genesis_66"
+        }
+        ...
+    ],
+    "meta": {
+        "count": 25,
+        "timestamp": 1573059291
+    }
 }
 ```
 
@@ -129,7 +156,7 @@ Updates about the forging delegates for the next round.
 
 Updates about transactions from the last block.
 
-### <a name='response-2'></a>Response
+### <a name='response-3'></a>Response
 
 ```jsonc
 {
