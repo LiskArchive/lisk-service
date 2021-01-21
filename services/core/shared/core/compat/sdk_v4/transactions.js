@@ -26,6 +26,8 @@ const {
 const config = require('../../../../config');
 const redis = require('../../../redis');
 
+const { mapParams } = require('./mappings');
+
 const MAX_TX_LIMIT_PP = 100;
 
 const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
@@ -77,6 +79,8 @@ const getTransactions = async params => {
 
 	if (params.fromTimestamp || params.toTimestamp
 		|| (params.sort && params.sort.includes('timestamp'))) {
+		params = mapParams(params, '/transactions');
+
 		let timestampSortOrder = 'desc';
 		if (params.sort) [, timestampSortOrder] = params.sort.split(':');
 		const blockIds = await timestampDb.findByRange('timestamp',
