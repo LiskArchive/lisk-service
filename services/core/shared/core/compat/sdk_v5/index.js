@@ -37,6 +37,8 @@ const {
     getPeers,
 } = require('./peers');
 
+const nop = async () => { };
+
 module.exports = {
     ...require('../sdk_v4'),
 
@@ -54,4 +56,7 @@ module.exports = {
     getPeers,
 
     getForgers,
+
+    getDelegates: nop,
+
 };

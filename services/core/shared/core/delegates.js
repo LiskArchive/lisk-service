@@ -209,18 +209,19 @@ const loadAllNextForgers = async () => {
 	if (sdkVersion <= 4) {
 		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
 	} else {
-		rawNextForgers = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
+		rawNextForgers = (await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length }))
+			.data;
 	}
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
 
 const resolveNextForgers = async () => {
-	if (sdkVersion <= 4) {
-		nextForgers = await BluebirdPromise.map(rawNextForgers,
-			async forger => delegateList.find(o => o.address === forger.address));
-	} else {
-		nextForgers = rawNextForgers.data;
-	}
+	nextForgers = await BluebirdPromise.map(
+		rawNextForgers,
+		async forger => sdkVersion <= 4
+			? delegateList.find(o => o.address === forger.address)
+			: forger,
+	);
 	logger.debug('Finished collecting delegates');
 };
 

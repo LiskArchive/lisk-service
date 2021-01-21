@@ -25,23 +25,13 @@ module.exports = [
 		schedule: '*/5 * * * *', // Every 5 min
 		updateOnInit: true,
 		init: async () => {
-			const sdkVersion = core.getSDKVersion();
-			// TODO: Remove if condition once delegate cache implemented for SDKv5
-			if (sdkVersion <= 4) {
-				logger.debug('Scheduling initial list update...');
-				await core.reloadDelegateCache();
-				await core.reloadNextForgersCache();
-			} else {
-				await core.reloadNextForgersCache();
-			}
+			logger.debug('Scheduling initial list update...');
+			await core.reloadDelegateCache();
+			await core.reloadNextForgersCache();
 		},
 		controller: async () => {
-			// TODO: Remove if condition once delegate cache implemented for SDKv5
-			const sdkVersion = core.getSDKVersion();
-			if (sdkVersion <= 4) {
-				logger.debug('Scheduling delegate list reload...');
-				core.reloadDelegateCache();
-			}
+			logger.debug('Scheduling delegate list reload...');
+			core.reloadDelegateCache();
 		},
 	},
 ];
