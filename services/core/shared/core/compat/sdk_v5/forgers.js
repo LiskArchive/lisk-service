@@ -25,10 +25,10 @@ const getForgers = async params => {
 	const forgerAddresses = forgers.data.map(forger => forger.address);
 	const forgerAccounts = await coreApi.getAccounts({ addresses: forgerAddresses });
 	forgers.data = forgers.data.map(forger => {
-		const filterAcc = forgerAccounts.data
+		const filteredAcc = forgerAccounts.data
 			.filter(account => account.address.toString('hex') === forger.address);
-		forger.username = filterAcc[0].dpos.delegate.username;
-		forger.totalVotesReceived = Number(filterAcc[0].dpos.delegate.totalVotesReceived);
+		forger.username = filteredAcc[0].dpos.delegate.username;
+		forger.totalVotesReceived = Number(filteredAcc[0].dpos.delegate.totalVotesReceived);
 		return forger;
 	});
 	return isProperObject(forgers) && Array.isArray(forgers.data) ? forgers : [];
