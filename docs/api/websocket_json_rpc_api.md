@@ -21,7 +21,7 @@ The Lisk Service is a web application that interacts with the whole Lisk ecosyst
          * [get.blocks](#getblocks)
       * [Delegates](#delegates)
          * [get.delegates](#getdelegates)
-         * [get.next_forgers](#getnext_forgers)
+         * [get.delegates.next_forgers](#getnext_forgers)
       * [Peers](#peers)
          * [get.peers](#getpeers)
       * [Transactions](#transactions)
@@ -35,9 +35,9 @@ The Lisk Service is a web application that interacts with the whole Lisk ecosyst
 
 ## Access paths and compatibility
 
-The WebSocket API can be accessed by the `wss://service.lisk.io/rpc`.
+The WebSocket API can be accessed by the `wss://service.lisk.io/rpc-v1`.
 
-You can also access the testnet network by `wss://testnet-service.lisk.io/rpc`.
+You can also access the testnet network by `wss://testnet-service.lisk.io/rpc-v1`.
 
 The Lisk Service WebSocket API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard. The specification below contains numerous examples how to use the API in practice.
 
@@ -73,7 +73,7 @@ A request can consist of an array of multiple responses.
 
 ```
 [
-    { "jsonrpc": "2.0", "id": 1, "method": "get.newsfeed", "params": {} },
+    { "jsonrpc": "2.0", "id": 1, "method": "get.blocks", "params": {} },
     { "jsonrpc": "2.0", "id": 2, "method": "get.transactions", "params": { "height": "16" } },
     { "jsonrpc": "2.0", "id": 3, "method": "get.accounts", "params": { "id": "123L"} }
 ]
@@ -87,7 +87,7 @@ Response
         "jsonrpc": "2.0",
         "result": {
             "data": [
-                ... // Newsfeed
+                ... // List of blocks
             ],
             "meta": {},
         },
@@ -433,7 +433,7 @@ _Supports pagination._
 
 > TODO: More examples
 
-### get.next_forgers
+### get.delegates.next_forgers
 
 Retrieves next forgers with details in the current round.
 
@@ -478,7 +478,7 @@ Get 20 items, skip first 50
 
 ```
 {
-    "method": "get.next_forgers",
+    "method": "get.delegates.next_forgers",
     "params": {
         "limit": "20",
         "offset": "50"
@@ -530,13 +530,6 @@ _Supports pagination._
         "countryCode": "DE",
         "countryName": "Germany",
         "hostname": "host.210.239.23.62.rev.coltfrance.com",
-        "ip": "210.239.23.62",
-        "latitude": "52.5073",
-        "longitude": "13.3643",
-        "regionCode": "BE",
-        "regionName": "Land Berlin",
-        "timeZone": "Europe/Berlin",
-        "zipCode": "10785"
       }
     }
   ],
