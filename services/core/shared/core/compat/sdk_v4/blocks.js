@@ -145,7 +145,8 @@ const init = async () => {
 	try {
 		currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
-		let blockIndexLowerRange = currentHeight - config.indexNumOfBlocks;
+		let blockIndexLowerRange = config.indexNumOfBlocks > 0
+			? currentHeight - config.indexNumOfBlocks : 1;
 		const lastNumOfBlocks = await bIdCache.get('lastNumOfBlocks');
 
 		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
@@ -157,11 +158,8 @@ const init = async () => {
 			await bIdCache.set('lastIndexedHeight', blockIndexLowerRange);
 		}
 
-		if (Number.isInteger(blockIndexLowerRange)) {
-			await buildIndex(blockIndexLowerRange, currentHeight);
-		} else {
-			await buildIndex(0, currentHeight);
-		}
+		await buildIndex(blockIndexLowerRange, currentHeight);
+
 	} catch (err) {
 		logger.warn('Unable to build block cache');
 		logger.warn(err.message);
