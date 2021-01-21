@@ -37,7 +37,7 @@ const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
 const getTransactionsByBlockId = (blockId) => coreApi.getTransactions({ blockId });
 
 const addToIndex = async (tx) => {
-	const { id, senderId, recipientId, timestamp } = tx;
+	const { id, type, senderId, recipientId, timestamp, blockId } = tx;
 
 	const sndAddrIndex = await redis(`trx:address:${senderId}`, ['timestamp']);
 	await sndAddrIndex.writeRange(timestamp, id);
@@ -51,6 +51,11 @@ const addToIndex = async (tx) => {
 
 		const recipientIndex = await redis(`trx:recipient:${recipientId}`, ['timestamp']);
 		await recipientIndex.writeRange(timestamp, id);
+	}
+
+	if (type === 10) {
+		const delegateRegIndex = await redis('trx:delegate:registration', ['timestamp']);
+		await delegateRegIndex.writeRange(timestamp, blockId);
 	}
 };
 
@@ -74,6 +79,7 @@ const getTransactions = async params => {
 	if (params.address) collection = `trx:address:${params.address}`;
 	else if (params.senderId) collection = `trx:sender:${params.senderId}`;
 	else if (params.recipientId) collection = `trx:recipient:${params.recipientId}`;
+	else if (params.type === 'REGISTERDELEGATE') collection = 'trx:delegate:registration';
 
 	const timestampDb = await redis(collection, ['timestamp']);
 
