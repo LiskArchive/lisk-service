@@ -1,36 +1,57 @@
 # Lisk Service Subscribe API Documentation
 
-The Lisk Service is a web application that interacts with the whole Lisk ecosystem in various aspects: by accessing blockchain data, storing users' private data, retrieving and storing market data and interacting with social media.
+The Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects. For example, one key aspect is an update about blockchain events.
 
-The Subscribe API is sometimes called publish/subscribe or Event-Driven API. The biggest difference between Event-Driven and regular REST API is not only technical: in practice, they use two-way streaming connection, which means that not only client can request server for a data (and potential updates), but also the server can notify the client about new data instantly, as they arrive.
+The Subscribe API is sometimes called publish/subscribe or Event-Driven API. The biggest difference between Event-Driven and regular REST API is not only technical. In practice, a two-way streaming connection is used, which means that not only can the client request the server for a data update, (and also potential updates) but also the server can notify the client about new data instantly as it arrives.
 
 Lisk Service leverages the two-way communication approach by utilizing the WebSocket library responsible for updating users about changes in the blockchain network and markets.
 
-## Table of Contents
+## <a name='table-of-contents'></a>Table of Contents
 
-TBD
+<!-- vscode-markdown-toc -->
+* [Table of Contents](#table-of-contents)
+* [Access paths and compatibility](#access-paths-and-compatibility)
+* [Endpoint Logic](#endpoint-logic)
+* [Responses](#responses)
+* [Date Format](#date-format)
+* [Example of a client implementation](#example-of-a-client-implementation)
+    * [Node.js](#node.js)
+* [`update.block`](#`update.block`)
+    * [Response](#response)
+* [`update.round`](#`update.round`)
+    * [Response](#response-1)
+* [`update.forgers`](#`update.forgers`)
+    * [Response](#response-2)
+* [`update.transactions.confirmed`](#`update.transactions.confirmed`)
+    * [Response](#response-3)
 
-## Access paths and compatibility
+<!-- vscode-markdown-toc-config
+	numbering=false
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+## <a name='access-paths-and-compatibility'></a>Access paths and compatibility
 
 The blockchain update API can be accessed by the following path `https://service.lisk.io/blockchain`.
 
-The market update API can be accessed by the following path `https://service.lisk.io/market`.
+You might also be interested in accessing the `testnet` network by using the `https://testnet-service.lisk.io/blockchain` endpoint.
 
-You can also access the testnet network by using the `https://testnet-service.lisk.io` address.
+**Important:** The Lisk Service WebSocket API uses the `socket.io` library. This implementation is compatible with the version 2.0 of `socket.io` library. Using the wrong major version might result in a broken connection and messages not being passed.
 
-The Lisk Service WebSocket API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard. The specification below contains numerous examples how to use the API in practice.
+The specification below contains numerous examples how to use the API in practice.
 
-## Endpoint Logic
+## <a name='endpoint-logic'></a>Endpoint Logic
 
 The logic of the endpoints comes as follows: the method naming is always based on the following pattern: `<action>.<entity>`, where the `action` is equivalent to method type performed on server (ie. update) and `entity` is a part of the application logic, ex. `accounts`, `transactions`.
 
-## Responses
+## <a name='responses'></a>Responses
 
 All responses are returned in the JSON format - application/json.
 
 Each API request has the following structure:
 
-```json
+```jsonc
 {
     "data": {}, // Contains the requested data
     "meta": {
@@ -41,13 +62,13 @@ Each API request has the following structure:
 }
 ```
 
-## Date Format
+## <a name='date-format'></a>Date Format
 
-In the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
+On the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
 
-## Sample client implementations
+## <a name='example-of-a-client-implementation'></a>Example of a client implementation
 
-### Node.js
+### <a name='node.js'></a>Node.js
 
 ```javascript
 const io = require('socket.io-client');
@@ -57,96 +78,39 @@ connection.on('update.block', (block) => { (...) });
 
 # Blockchain updates (`/blockchain`)
 
-## `update.block`
+## <a name='`update.block`'></a>`update.block`
 
 Updates about a newly forged block with its all data.
 
-### Response
+### <a name='response'></a>Response
 
-```json
+```jsonc
 {
-    "data": [
-        {
-        "id": "3226008563694255110",
-        "height": 26998,
-        "version": 1,
-        "timestamp": 1573059290,
-        "generatorAddress": "6214967903930344618L",
-        "generatorPublicKey": "85b07e51ffe528f272b7eb734d0496158f2b0f890155ebe59ba2989a8ccc9a49",
-        "payloadLength": 468,
-        "payloadHash": "c38b0a05a6f10d40e5e7bb2d6a1508be9d45c508d53f525ba4b2d6b972fceac2",
-        "blockSignature": "7405a0d0772fab3947a2e9ff3b60eb1afc857cd941e8a0f481e579f6c9888f4f6732a47e9d56dec082829fb9d78b7cc364a335daf26d9cbac0d98f7b1c3e1d04",
-        "confirmations": 1,
-        "previousBlockId": "631995364195044204",
-        "numberOfTransactions": 4,
-        "totalAmount": "400000000",
-        "totalFee": "40000000",
-        "reward": "500000000",
-        "totalForged": "540000000"
-        }
-    ],
-    "meta": {
-        "count": 1,
-        "timestamp": 1573059291
-    }
+    id: "6286637019365913992",
+    version: 1,
+    timestamp: 146010410,
+    height: 12659996,
+    numberOfTransactions: 0,
+    totalAmount: "0",
+    totalFee: "0",
+    reward: "100000000",
+    payloadLength: 0,
+    payloadHash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    generatorPublicKey: "bfd925085aeb9d2d21973363d6a3e8d394b25116e252b4db701e3dabe319b016",
+    blockSignature: "7e57deaf35bdf6ec804a402f04aaca6e70ecb1a928d28e98277219fa9caa5a770b0dea3ecf402cdfc35c7b8a84d1611a5b794d70bf3c29d51c28b8ded3b5920c",
+    confirmations: 1,
+    totalForged: "100000000",
+    generatorAddress: "3865707283477759335L",
+    previousBlockId: "9424602178629894603",
+    unixTimestamp: 1610119610
 }
 ```
 
-## `update.delegates.forging` _(not implemented)_
-
-Updates about forging delegates, first 101 delegates by voting power.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-        "address": "4935562234363081651L",
-        "approval": "35.77",
-        "missedBlocks": 157,
-        "producedBlocks": 55222,
-        "productivity": "99.72",
-        "publicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-        "secondPublicKey": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-        "rank": 93,
-        "username": "genesis_84",
-        "vote": "4630668157412954"
-        }
-    ],
-    "meta": {
-        "update": 1565107927,
-        "count": 101
-    },
-}
-```
-
-## `update.round`
+## <a name='`update.round`'></a>`update.round`
 
 Updates about the forging delegates for the next round.
 
-```json
-{
-  "nextForgers": [
-        "9447508130077835324L",
-        "923992554593700306L",
-        "9164804013838025941L",
-        "9077548379631877989L",
-        ...
-        ...
-        "10452881617068866990L",
-        "10431315846496304288L",
-        "10045031187186962062L",
-        "10016685355739180605L",
-    ],
-}
-```
-
-## `update.forgers`
-
-Updates the current forgers' list, so the current forger is on the first position.
-
-### Response
+### <a name='response-1'></a>Response
 
 ```jsonc
 {
@@ -159,19 +123,42 @@ Updates the current forgers' list, so the current forger is on the first positio
         ...
     ],
     "meta": {
-        "count": 4,
+        "count": 25,
         "timestamp": 1573059291
     }
 }
 ```
 
-## `update.transactions.confirmed`
+## <a name='`update.forgers`'></a>`update.forgers`
+
+Updates the current forgers' list, so the current forger is on the first position.
+
+### <a name='response-2'></a>Response
+
+```jsonc
+{
+    "data": [
+        {
+            "address": "1492771550241913308L",
+            "publicKey": "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
+            "username": "genesis_66"
+        }
+        ...
+    ],
+    "meta": {
+        "count": 25,
+        "timestamp": 1573059291
+    }
+}
+```
+
+## <a name='`update.transactions.confirmed`'></a>`update.transactions.confirmed`
 
 Updates about transactions from the last block.
 
-### Response
+### <a name='response-3'></a>Response
 
-```json
+```jsonc
 {
     "data": [
         {
@@ -197,112 +184,5 @@ Updates about transactions from the last block.
         "count": 4,
         "timestamp": 1573059291
     }
-}
-```
-
-## `update.transactions.unconfirmed`
-
-Updates about unconfirmed transactions.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-            "amount": "100000000",
-            "recipientId": "16313739661670634666L",
-            "senderPublicKey": "c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f",
-            "type": 0,
-            "fee": "10000000",
-            "asset": {},
-            "signature": "8b93bddbc51411f45dd2be352496f0b4a8dcc37bdf632eb311d292c7f2de75e5182c1ac554f54031313a5c7f9fcfa091dee7790aa40c2ee96091ba52710b600e",
-            "id": "12761961644475138241",
-            "senderId": "16313739661670634666L",
-            "relays": 1
-        }
-    ],
-    "meta": {
-        "count": 1,
-        "timestamp": 1573059285
-    }
-}
-```
-
-## `update.transactions.<Lisk_ID>` _(not implemented)_
-
-Updates about unconfirmed transactions on per-account basis.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-        "id": "222675625422353767",
-        "amount": "150000000",
-        "fee": "1000000",
-        "type": 0,
-        "timestamp": 28227090,
-        "senderId": "4935562234363081651L",
-        "senderPublicKey": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-        "senderSecondPublicKey": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-        "recipientId": "4935562234363081651L",
-        "recipientPublicKey": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-        "signature": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-        "signSignature": "2821d93a742c4edf5fd960efad41a4def7bf0fd0f7c09869aed524f6f52bf9c97a617095e2c712bd28b4279078a29509b339ac55187854006591aa759784c205",
-        "signatures": [
-            "72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a"
-        ],
-        "asset": {},
-        "receivedAt": "2019-08-07T10:12:25.938Z",
-        "ready": false
-        }
-    ],
-    "meta": {
-        "update": 1565107927,
-        "count": 5
-    },
-}
-```
-
-## `update.peers.connected` _(not implemented)_
-
-Updates about active peers.
-
-### Response
-
-```json
-{
-    "data": [
-        {
-            "ip": "210.239.23.62",
-            "httpPort": 8000,
-            "wsPort": 8001,
-            "os": "debian",
-            "version": "v0.8.0",
-            "state": 2,
-            "height": 8350681,
-            "broadhash": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-            "nonce": "sYHEDBKcScaAAAYg",
-            "location": {
-                "city": "Berlin",
-                "countryCode": "DE",
-                "countryName": "Germany",
-                "hostname": "host.210.239.23.62.rev.coltfrance.com",
-                "ip": "210.239.23.62",
-                "latitude": "52.5073",
-                "longitude": "13.3643",
-                "regionCode": "BE",
-                "regionName": "Land Berlin",
-                "timeZone": "Europe/Berlin",
-                "zipCode": "10785"
-            }
-        }
-    ],
-    "meta": {
-        "update": 1565107927,
-        "count": 217
-    },
 }
 ```

@@ -276,7 +276,7 @@
 					"type": "string",
 					"format": "address",
 					"example": "4935562234363081651L",
-					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a big 'L' at the end.\n"
+					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
 				},
 				"publicKey": {
 					"type": "string",
@@ -352,7 +352,7 @@
 								"type": "string",
 								"format": "address",
 								"example": "4935562234363081651L",
-								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a big 'L' at the end.\n"
+								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
 							},
 							"balance": {
 								"type": "string",
@@ -398,7 +398,7 @@
 					"type": "string",
 					"format": "address",
 					"example": "4935562234363081651L",
-					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a big 'L' at the end.\n"
+					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
 				},
 				"publicKey": {
 					"type": "string",
@@ -453,7 +453,7 @@
 					"type": "integer",
 					"example": 0,
 					"minimum": 0,
-					"description": "Versioning for future upgrades of the lisk protocol."
+					"description": "Versioning for future upgrades of the Lisk protocol."
 				},
 				"timestamp": {
 					"type": "integer",
@@ -485,7 +485,7 @@
 					"type": "string",
 					"format": "hex",
 					"example": "4e4d91be041e09a2e54bb7dd38f1f2a02ee7432ec9f169ba63cd1f193a733dd2",
-					"description": "Hash of the payload of the block.\nThe payload of a block is comprised of the transactions the block contains.\nFor each type of transaction exists a different maximum size for the payload.\n"
+					"description": "Hash of the payload of the block.\nThe payload of a block is comprised of the transactions contained in the block.\nFor each type of transaction a different maximum size exists for the payload.\n"
 				},
 				"blockSignature": {
 					"type": "string",
@@ -570,7 +570,7 @@
 					"type": "string",
 					"format": "publicKey",
 					"example": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-					"description": "Public key of th edelagte who forged the block."
+					"description": "Public key of the delegate who forged the block."
 				},
 				"rank": {
 					"type": "integer",
@@ -722,7 +722,7 @@
 					"minLength": 1,
 					"maxLength": 20,
 					"example": "6258354802676165798",
-					"description": "The Id of the block, this transaction is included in.\n"
+					"description": "The Id of the block, included in this transaction.\n"
 				},
 				"timestamp": {
 					"type": "integer",
@@ -789,7 +789,7 @@
 					"minLength": 1,
 					"maxLength": 20,
 					"example": "6258354802676165798",
-					"description": "The Id of the block, this transaction is included in.\n"
+					"description": "The Id of the block that this transaction is included in.\n"
 				},
 				"date": {
 					"type": "string",
@@ -858,7 +858,7 @@
 				"os": {
 					"type": "string",
 					"example": "debian",
-					"description": "The Operating System, that the peer node runs on."
+					"description": "The Operating System that the peer node runs on."
 				},
 				"version": {
 					"type": "string",
@@ -981,12 +981,12 @@
 				"milestone": {
 					"type": "string",
 					"example": "500000000",
-					"description": "The Reward, each forger will get for forging a block at the current slot.\nAfter a certain amount of slots, the reward will be reduced.\n"
+					"description": "The Reward each forger will get for forging a block at the current slot.\nAfter a certain amount of slots, the reward will be reduced.\n"
 				},
 				"nethash": {
 					"type": "string",
 					"example": "ed14889723f24ecc54871d058d98ce91ff2f973192075c0155ba2b7b70ad2511",
-					"description": "Describes the network.\nThe nethash describes e.g. the Mainnet or the Testnet, that the node is connecting to.\n"
+					"description": "Describes the network.\nFor example, the nethash describes the Mainnet or the Testnet, that the node is connecting to.\n"
 				},
 				"supply": {
 					"type": "string",
@@ -996,7 +996,7 @@
 				"reward": {
 					"type": "string",
 					"example": "500000000",
-					"description": "The reward a delegate will get for forging a block.\nDepends on the slot height.\n"
+					"description": "The reward a delegate will get for forging a block.\nDependant on the slot height.\n"
 				}
 			}
 		},
@@ -1254,12 +1254,12 @@
 						"properties": {
 							"timestamp": {
 								"type": "integer",
-								"description": "UNIX timestamp representing beginning of the aggregation interval",
+								"description": "UNIX timestamp representing the beginning of the aggregation interval",
 								"example": 1556100060
 							},
 							"date": {
 								"type": "string",
-								"description": "Date representing beginning of the aggregation interval",
+								"description": "Date representing the beginning of the aggregation interval",
 								"example": "2019-11-27"
 							},
 							"transactionCount": {
@@ -1786,7 +1786,7 @@
 			"properties": {
 				"data": {
 					"type": "object",
-					"description": "List of values from a given excahnge",
+					"description": "List of values from a given exchange",
 					"properties": {
 						"btcVolume": {
 							"type": "string",
@@ -1795,7 +1795,7 @@
 						},
 						"high": {
 							"type": "string",
-							"description": "The biggest price",
+							"description": "The highest price",
 							"example": "0.00035990"
 						},
 						"last": {
