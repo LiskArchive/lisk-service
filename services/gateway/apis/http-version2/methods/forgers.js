@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const forgersSoruce = require('../../../sources/version2/forgers');
+const forgersSource = require('../../../sources/version2/forgers');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
 
 module.exports = {
@@ -25,6 +25,6 @@ module.exports = {
 		offset: { optional: true, min: 0, type: 'number' },
 	},
     tags: ['Forgers'],
-    source: forgersSoruce,
+    source: forgersSource,
     envelope,
 };
