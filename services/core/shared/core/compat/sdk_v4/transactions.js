@@ -80,6 +80,8 @@ const getTransactions = async params => {
 	if (params.fromTimestamp || params.toTimestamp
 		|| (params.sort && params.sort.includes('timestamp'))) {
 		params = mapParams(params, '/transactions');
+		if (!params.fromTimestamp) params.fromTimestamp = 0;
+		if (!params.toTimestamp) params.toTimestamp = Math.floor(Date.now() / 1000);
 
 		let timestampSortOrder = 'desc';
 		if (params.sort) [, timestampSortOrder] = params.sort.split(':');
