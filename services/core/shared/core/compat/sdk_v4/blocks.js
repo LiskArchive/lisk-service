@@ -159,7 +159,6 @@ const init = async () => {
 		}
 
 		await buildIndex(blockIndexLowerRange, currentHeight);
-
 	} catch (err) {
 		logger.warn('Unable to build block cache');
 		logger.warn(err.message);
