@@ -38,6 +38,7 @@ const getTransactions = params => request('/transactions', params);
 const getVoters = params => request('/voters', params);
 const getVotes = params => request('/votes', params);
 const getPendingTransactions = params => request('/node/transactions', params);
+
 module.exports = {
 	getAccounts,
 	getBlocks,

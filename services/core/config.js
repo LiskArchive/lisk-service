@@ -86,6 +86,20 @@ config.cacheTTL = 20;
 config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
 
 /**
+ * Indexing
+ *
+ * Important: The number of blocks makes the process responsible of creating
+ * and maintaining search index of the given number of blocks behind the current height.
+ *
+ * indexNumOfBlocks = 0 means that index will consist of all blocks.
+ *
+ * The block index may trigger indexing of other entities that are part of the block
+ * such as transactions, accounts, votes etc.
+ */
+config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS || 202);
+
+
+/**
  * Cache delegate info in order to replace address by username
  * Delegate caching support (true - enabled, false - disabled)
  */
@@ -95,7 +109,7 @@ config.cacheDelegateAddress.enabled = true;
 config.cacheDelegateAddress.updateInterval = 60000;
 
 config.transactionStatistics = {
-	enabled: Boolean(process.env.ENABLE_TRANSACTION_STATS || false),
+	enabled: Boolean(process.env.ENABLE_TRANSACTION_STATS === 'true' || false),
 	updateInterval: Number(process.env.TRANSACTION_STATS_UPDATE_INTERVAL || 10 * 60), // seconds
 	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 5),
 };
@@ -106,8 +120,8 @@ config.ttl = {
 };
 
 config.feeEstimates = {
-	quickAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_QUICK || true),
-	fullAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_FULL || false),
+	quickAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_QUICK === 'true' || true),
+	fullAlgorithmEnabled: Boolean(process.env.ENABLE_FEE_ESTIMATOR_FULL === 'true' || false),
 	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 1),
 	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1),
 	medEstLowerPercentile: 25,

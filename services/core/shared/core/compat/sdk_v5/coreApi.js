@@ -21,22 +21,6 @@ const getNetworkStatus = async () => {
     return { data: result };
 };
 
-const getTransactions = async params => {
-    const apiClient = await getApiClient();
-    let transaction;
-    let transactions;
-
-    if (params.id) {
-        transaction = await apiClient.transaction.get(params.id);
-    } else if (params.ids) {
-        transactions = await apiClient._channel.invoke('app:getTransactionsByIDs', { ids: params.ids });
-    }
-
-    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
-    const result = transactions || [transaction];
-    return { data: result };
-};
-
 const getBlocks = async params => {
     const apiClient = await getApiClient();
     let block;
@@ -60,6 +44,22 @@ const getBlocks = async params => {
     return { data: result };
 };
 
+const getTransactions = async params => {
+    const apiClient = await getApiClient();
+    let transaction;
+    let transactions;
+
+    if (params.id) {
+        transaction = await apiClient.transaction.get(params.id);
+    } else if (params.ids) {
+        transactions = await apiClient._channel.invoke('app:getTransactionsByIDs', { ids: params.ids });
+    }
+
+    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
+    const result = transactions || [transaction];
+    return { data: result };
+};
+
 const getPeers = async (state = 'connected') => {
     const apiClient = await getApiClient();
 
@@ -70,9 +70,31 @@ const getPeers = async (state = 'connected') => {
     return { data: peers };
 };
 
+const getAccounts = async params => {
+    const apiClient = await getApiClient();
+    let account;
+    let accounts;
+    if (params.address) {
+        account = await apiClient.account.get(params.address);
+    } else if (params.addresses) {
+        accounts = await apiClient._channel.invoke('app:getAccounts', { address: params.addresses });
+    }
+    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
+    const result = accounts || [account];
+    return { data: result };
+};
+
+const getForgers = async () => {
+    const apiClient = await getApiClient();
+    const forgers = await apiClient._channel.invoke('app:getForgers', {});
+    return { data: forgers };
+};
+
 module.exports = {
     getBlocks,
     getNetworkStatus,
     getTransactions,
     getPeers,
+    getForgers,
+    getAccounts,
 };
