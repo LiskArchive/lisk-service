@@ -37,7 +37,7 @@ const getVoters = async (params) => {
 				voter = {
 					...voter,
 					balance: voters.data.balance,
-					username: voters.data.username,
+					username: voters.data.username || undefined,
 				};
 			} else {
 				const voterInfo = (await getAccounts({ address: voter.address }))
@@ -45,7 +45,7 @@ const getVoters = async (params) => {
 				voter = {
 					...voter,
 					balance: voterInfo.balance,
-					username: voterInfo.username,
+					username: voterInfo.username || undefined,
 				};
 			}
 			voter.amount = voter.votes
