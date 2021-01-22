@@ -26,6 +26,8 @@ const {
 const config = require('../../../../config');
 const redis = require('../../../redis');
 
+const { mapParams } = require('./mappings');
+
 const MAX_TX_LIMIT_PP = 100;
 
 const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
@@ -35,7 +37,7 @@ const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
 const getTransactionsByBlockId = (blockId) => coreApi.getTransactions({ blockId });
 
 const addToIndex = async (tx) => {
-	const { id, senderId, recipientId, timestamp } = tx;
+	const { id, type, senderId, recipientId, timestamp, blockId } = tx;
 
 	const sndAddrIndex = await redis(`trx:address:${senderId}`, ['timestamp']);
 	await sndAddrIndex.writeRange(timestamp, id);
@@ -49,6 +51,11 @@ const addToIndex = async (tx) => {
 
 		const recipientIndex = await redis(`trx:recipient:${recipientId}`, ['timestamp']);
 		await recipientIndex.writeRange(timestamp, id);
+	}
+
+	if (type === 10) {
+		const delegateRegIndex = await redis('trx:delegate:registration', ['timestamp']);
+		await delegateRegIndex.writeRange(timestamp, blockId);
 	}
 };
 
@@ -72,11 +79,16 @@ const getTransactions = async params => {
 	if (params.address) collection = `trx:address:${params.address}`;
 	else if (params.senderId) collection = `trx:sender:${params.senderId}`;
 	else if (params.recipientId) collection = `trx:recipient:${params.recipientId}`;
+	else if (params.type === 'REGISTERDELEGATE') collection = 'trx:delegate:registration';
 
 	const timestampDb = await redis(collection, ['timestamp']);
 
 	if (params.fromTimestamp || params.toTimestamp
 		|| (params.sort && params.sort.includes('timestamp'))) {
+		params = mapParams(params, '/transactions');
+		if (!params.fromTimestamp) params.fromTimestamp = 0;
+		if (!params.toTimestamp) params.toTimestamp = Math.floor(Date.now() / 1000);
+
 		let timestampSortOrder = 'desc';
 		if (params.sort) [, timestampSortOrder] = params.sort.split(':');
 		const blockIds = await timestampDb.findByRange('timestamp',

@@ -96,7 +96,7 @@ config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
  * The block index may trigger indexing of other entities that are part of the block
  * such as transactions, accounts, votes etc.
  */
-config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS) || 202;
+config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS || 202);
 
 
 /**
