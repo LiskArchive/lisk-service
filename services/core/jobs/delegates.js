@@ -29,7 +29,7 @@ module.exports = [
 			await core.reloadDelegateCache();
 			await core.reloadNextForgersCache();
 		},
-		controller: async () => {
+		controller: () => {
 			logger.debug('Scheduling delegate list reload...');
 			core.reloadDelegateCache();
 		},
