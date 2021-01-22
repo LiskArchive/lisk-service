@@ -13,17 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
-
 const coreApi = require('./coreApi');
 
 const { request } = require('./request');
-const {
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
-} = require('./coreCache');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 const {
@@ -43,8 +35,6 @@ const { getNetworkStatus } = require('./network');
 
 const events = require('./events');
 
-const ObjectUtilService = Utils.Data;
-
 const numOfActiveDelegates = 101;
 
 const peerStates = {
@@ -54,142 +44,13 @@ const peerStates = {
 };
 
 // Utils & helpers
-const parseAddress = address => {
-	if (typeof address !== 'string') return '';
-	return address.toUpperCase();
-};
-const validateAddress = address => (typeof address === 'string' && address.match(/^[0-9]{1,20}[L|l]$/g));
-const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
-const { isProperObject } = ObjectUtilService;
-const { isEmptyArray } = ObjectUtilService;
+const isStringType = value => typeof value === 'string';
+
+const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
+
+const validateAddress = address => isStringType(address) && address.match(/^[0-9]{1,20}[L|l]$/g);
 
 // Lisk Core API functions
-const confirmAddress = async address => {
-	if (!address || typeof address !== 'string') return false;
-	const account = await getCachedAccountByAddress(parseAddress(address));
-	return account && account.address === address;
-};
-
-const confirmPublicKey = async publicKey => {
-	if (!publicKey || typeof publicKey !== 'string') return false;
-	const account = await getCachedAccountByPublicKey(publicKey);
-	return account && account.publicKey === publicKey;
-};
-
-const confirmSecondPublicKey = async secondPublicKey => {
-	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
-	const account = await getCachedAccountBySecondPublicKey(secondPublicKey);
-	return account && account.secondPublicKey === secondPublicKey;
-};
-
-const confirmUsername = async username => {
-	if (!username || typeof username !== 'string') return false;
-	const result = await coreApi.getDelegates({ username });
-	if (!Array.isArray(result.data) || isEmptyArray(result.data)) return false;
-	return result.data[0].username === username;
-};
-
-const confirmAnyId = async params => {
-	if (
-		(typeof params.username === 'string' && !(await confirmUsername(params.username)))
-		|| (typeof params.address === 'string' && !(await confirmAddress(parseAddress(params.address))))
-		|| (typeof params.publicKey === 'string' && (!(await confirmPublicKey(params.publicKey))))
-		|| (typeof params.secondPublicKey === 'string' && (!(await confirmSecondPublicKey(params.secondPublicKey))))
-	) return false;
-
-	return true;
-};
-
-const getUsernameByAddress = async address => {
-	const account = await getCachedAccountByAddress(parseAddress(address));
-	return account && account.username;
-};
-
-const getAddressByPublicKey = async publicKey => {
-	if (!publicKey || typeof publicKey !== 'string') return '';
-	const account = await getCachedAccountByPublicKey(publicKey);
-	return account ? account.address : '';
-};
-
-const getAddressByUsername = async username => {
-	if (!username || typeof username !== 'string') return '';
-	const account = await getCachedAccountByUsername(username);
-	return account ? account.address : '';
-};
-
-const getAddressByAny = async param => {
-	const paramNames = {
-		'username:': getAddressByUsername,
-		'address:': parseAddress,
-		'publickey:': getAddressByPublicKey,
-	};
-
-	const hasPrefix = p => !!Object.keys(paramNames).filter(item => p.indexOf(item) === 0).length;
-
-	const separateParam = p => Object.keys(paramNames)
-		.filter(prefix => p.indexOf(prefix) === 0)
-		.reduce((array, prefix) => [...array, prefix, p.slice(prefix.length)], []);
-
-	if (!hasPrefix(param)) {
-		const parsedAddress = parseAddress(param);
-		if (validateAddress(parsedAddress)
-			&& await confirmAddress(parsedAddress)) return parsedAddress;
-	}
-
-	const [prefix, body] = separateParam(param);
-	if (prefix && body) return paramNames[prefix](body);
-	return null;
-};
-
-const getPublicKeyByAddress = async address => {
-	if (!address || typeof address !== 'string') return '';
-	const account = await getAccounts({ address });
-	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
-	return account.data[0].publicKey;
-};
-
-const getPublicKeyByUsername = async username => {
-	if (!username || typeof username !== 'string') return '';
-	const account = await getAccounts({ username });
-	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
-	const { publicKey } = account.data[0];
-	return publicKey;
-};
-
-const getPublicKeyByAny = async param => {
-	if (!param || typeof param !== 'string') return '';
-	if (validatePublicKey(param) && (await confirmPublicKey(param))) return param;
-	if (validateAddress(param)) return getPublicKeyByAddress(param);
-	return getPublicKeyByUsername(param);
-};
-
-const getIncomingTxsCount = async address => {
-	const result = await coreApi.getTransactions({
-		recipientId: parseAddress(address),
-		limit: 1,
-	});
-	if (!isProperObject(result)
-		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)) {
-		throw new Error('Could not retrieve incoming transaction count.');
-	}
-	return result.meta.count;
-};
-
-const getOutgoingTxsCount = async address => {
-	const result = await coreApi.getTransactions({
-		senderId: parseAddress(address),
-		limit: 1,
-	});
-	if (!isProperObject(result)
-		|| !isProperObject(result.meta)
-		|| !Number.isInteger(result.meta.count)) {
-		throw new Error('Could not retrieve outgoing transaction count.');
-	}
-
-	return result.meta.count;
-};
-
 const getForgingStats = async address => {
 	if (!validateAddress(address)) throw new Error('Missing/Invalid address');
 	try {
@@ -205,29 +66,14 @@ const updateFinalizedHeight = () => null;
 const getPendingTransactions = () => ({ data: [], meta: {} });
 
 module.exports = {
+	...require('./coreCache'),
 	get: request,
 	request,
-	parseAddress,
 	validateAddress,
-	validatePublicKey,
-	confirmAddress,
-	confirmPublicKey,
-	confirmSecondPublicKey,
-	confirmUsername,
-	confirmAnyId,
-	getAddressByAny,
-	getAddressByPublicKey,
-	getAddressByUsername,
-	getPublicKeyByAny,
-	getPublicKeyByAddress,
-	getPublicKeyByUsername,
-	getUsernameByAddress,
 	getAccounts,
 	getBlocks,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	getIncomingTxsCount,
-	getOutgoingTxsCount,
 	getVotes,
 	getVoters,
 	getDelegates,
@@ -249,9 +95,5 @@ module.exports = {
 	calculateWeightedAvg: nop,
 	updateFinalizedHeight,
 	getPendingTransactions,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
 	events,
 };

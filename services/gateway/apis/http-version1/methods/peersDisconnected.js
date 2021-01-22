@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peersSource = require('../../../sources/peers');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const peersSource = require('../../../sources/version1/peers');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',

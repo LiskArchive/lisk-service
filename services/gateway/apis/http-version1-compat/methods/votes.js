@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const votesSource = require('../../../sources/votes');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const votesSource = require('../../../sources/version1/votes');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 const { transformParams, response } = require('../../http-version1/swagger/utils');
 
 module.exports = {

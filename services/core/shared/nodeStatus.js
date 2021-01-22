@@ -20,6 +20,7 @@ const {
 	getEpochUnixTime,
 	getNetworkConstants,
 	setReadyStatus,
+	setRegisteredmodules,
 } = require('./core/compat/common');
 
 const waitForIt = require('./waitForIt');
@@ -39,10 +40,12 @@ const checkStatus = () => new Promise((resolve, reject) => {
 			getEpochUnixTime();
 			setReadyStatus(true);
 			if (logConnectStatus) {
-				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
+				logger.debug(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 				logConnectStatus = false;
 			}
-			logger.debug(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
+			if (networkConstants.data.moduleAssets) {
+				setRegisteredmodules(networkConstants.data.moduleAssets);
+			}
 			resolve(networkConstants.data);
 		} else {
 			setReadyStatus(false);

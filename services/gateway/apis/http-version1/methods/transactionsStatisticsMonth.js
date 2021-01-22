@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsStatisticsMonthSource = require('../../../sources/transactionsStatisticsMonth');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const transactionsStatisticsMonthSource = require('../../../sources/version1/transactionsStatisticsMonth');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 const { transformParams, response } = require('../swagger/utils');
 
 module.exports = {
