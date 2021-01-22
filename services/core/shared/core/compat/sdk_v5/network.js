@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -28,6 +28,10 @@ const getNetworkStatus = async () => {
 		? status.data.genesisConfig.rewards.milestones[finalRewardIndex] : 0;
 	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
 	status.data.lastUpdate = Math.floor(Date.now() / 1000);
+
+	// Required to fetch knownAccounts
+	status.data.constants = { nethash: status.data.networkIdentifier };
+
 	return status;
 };
 

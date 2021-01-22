@@ -40,13 +40,12 @@ const checkStatus = () => new Promise((resolve, reject) => {
 			getEpochUnixTime();
 			setReadyStatus(true);
 			if (logConnectStatus) {
-				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
+				logger.debug(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 				logConnectStatus = false;
 			}
 			if (networkConstants.data.moduleAssets) {
 				setRegisteredmodules(networkConstants.data.moduleAssets);
 			}
-			logger.debug(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 			resolve(networkConstants.data);
 		} else {
 			setReadyStatus(false);

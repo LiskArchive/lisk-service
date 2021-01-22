@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -20,6 +20,12 @@ const {
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('./blocks');
+
+const {
+    getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
+} = require('./accounts');
 
 const {
     getNetworkStatus,
@@ -47,6 +53,10 @@ module.exports = {
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
+
+    getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
 
     getNetworkStatus,
 

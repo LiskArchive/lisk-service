@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -39,7 +39,7 @@ const getBlocks = async params => {
         block = apiClient.block.decode(block);
     }
 
-    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(blk));
+    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
     const result = blocks || [block];
     return { data: result };
 };
@@ -60,16 +60,6 @@ const getTransactions = async params => {
     return { data: result };
 };
 
-const getPeers = async (state = 'connected') => {
-    const apiClient = await getApiClient();
-
-    const peers = state === 'connected'
-        ? await apiClient._channel.invoke('app:getConnectedPeers')
-        : await apiClient._channel.invoke('app:getDisconnectedPeers');
-
-    return { data: peers };
-};
-
 const getAccounts = async params => {
     const apiClient = await getApiClient();
     let account;
@@ -84,6 +74,16 @@ const getAccounts = async params => {
     return { data: result };
 };
 
+const getPeers = async (state = 'connected') => {
+    const apiClient = await getApiClient();
+
+    const peers = state === 'connected'
+        ? await apiClient._channel.invoke('app:getConnectedPeers')
+        : await apiClient._channel.invoke('app:getDisconnectedPeers');
+
+    return { data: peers };
+};
+
 const getForgers = async () => {
     const apiClient = await getApiClient();
     const forgers = await apiClient._channel.invoke('app:getForgers', {});
@@ -92,9 +92,9 @@ const getForgers = async () => {
 
 module.exports = {
     getBlocks,
+    getAccounts,
     getNetworkStatus,
     getTransactions,
     getPeers,
     getForgers,
-    getAccounts,
 };
