@@ -30,7 +30,7 @@ const updateFinalizedHeight = async () => {
 
 const getFinalizedHeight = () => finalizedHeight;
 
-const writeBlocksToDB = async originalBlocks => {
+const indexBlocks = async originalBlocks => {
 	const blocksDB = await knex('blocks');
 	const blocks = originalBlocks.map(block => {
 		const skimmedBlock = {};
@@ -86,7 +86,7 @@ const getBlocks = async params => {
 		return block;
 	});
 
-	if (params.limit === 1) await writeBlocksToDB(blocks.data);
+	if (params.limit === 1) await indexBlocks(blocks.data);
 
 	return blocks;
 };
