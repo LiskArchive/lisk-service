@@ -17,7 +17,7 @@ const { computeMinFee } = require('@liskhq/lisk-transactions-v5');
 
 const coreApi = require('./coreApi');
 const { knex } = require('../../../database');
-// const { indexTransactions } = require('./transactions');
+const { indexTransactions } = require('./transactions');
 
 let finalizedHeight;
 
@@ -46,9 +46,7 @@ const indexBlocks = async originalBlocks => {
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
-
-	// TODO: Test and fix when indexTransactions is implemented
-	// await indexTransactions(originalBlocks);
+	await indexTransactions(originalBlocks);
 };
 
 const normalizeBlock = block => {
