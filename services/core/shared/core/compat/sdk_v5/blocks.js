@@ -17,6 +17,7 @@ const { computeMinFee } = require('@liskhq/lisk-transactions-v5');
 
 const coreApi = require('./coreApi');
 const { knex } = require('../../../database');
+// const { indexTransactions } = require('./transactions');
 
 let finalizedHeight;
 
@@ -44,8 +45,12 @@ const indexBlocks = async originalBlocks => {
 		skimmedBlock.generatorUsername = block.generatorUsername || null;
 		return skimmedBlock;
 	});
-	const result = await blocksDB.writeBatch(blocks);
-	return result;
+	await blocksDB.writeBatch(blocks);
+
+	// TODO: Test and fix when indexTransactions is implemented
+	// const blockTransactions = originalBlocks
+	// 	.map(block => Object.assign(block.payload, { blockId: block.id }));
+	// await indexTransactions(blockTransactions);
 };
 
 const normalizeBlock = block => {
@@ -74,8 +79,12 @@ const getBlocks = async params => {
 		params.sort = [{ column: sortProp, order: sortOrder }];
 	}
 
+	const blockId = params.blockId;
+	delete params.blockId;
+	if (blockId) params.id = blockId;
+
 	const resultSet = await blocksDB.find(params);
-	params.blockIds = resultSet.map(row => row.blockId);
+	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 
 	const response = await coreApi.getBlocks(params);
 	if (response.data) blocks.data = response.data.map(block => Object
