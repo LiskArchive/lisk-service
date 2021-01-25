@@ -61,10 +61,21 @@ const normalizeBlock = block => {
 };
 
 const getBlocks = async params => {
+	const blocksDB = await knex('blocks');
 	const blocks = {
 		data: [],
 		meta: {},
 	};
+
+	if (params.sort
+		&& ['height', 'timestamp'].some(prop => params.sort.includes(prop))) {
+		const sortProp = params.sort.split(':')[0];
+		const sortOrder = params.sort.split(':')[1];
+		params.sort = [{ column: sortProp, order: sortOrder }];
+	}
+
+	const resultSet = await blocksDB.find(params);
+	params.blockIds = resultSet.map(row => row.blockId);
 
 	const response = await coreApi.getBlocks(params);
 	if (response.data) blocks.data = response.data.map(block => Object
