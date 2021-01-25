@@ -34,12 +34,14 @@ const indexBlocks = async originalBlocks => {
 	const blocksDB = await knex('blocks');
 	const blocks = originalBlocks.map(block => {
 		const skimmedBlock = {};
-		skimmedBlock['blockId'] = block['id'];
-		skimmedBlock['height'] = block['height'];
-		skimmedBlock['unixTimestamp'] = block['unixTimestamp'];
-		skimmedBlock['generatorPublicKey'] = block['generatorPublicKey'];
-		skimmedBlock['generatorAddress'] = block['generatorAddress'] || null;
-		skimmedBlock['generatorUsername'] = block['generatorUsername'] || null;
+		skimmedBlock.blockId = block.id;
+		skimmedBlock.height = block.height;
+		skimmedBlock.unixTimestamp = block.unixTimestamp;
+		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
+
+		// TODO: Check accounts and update the below params. Better to use 3NF instead.
+		skimmedBlock.generatorAddress = block.generatorAddress || null;
+		skimmedBlock.generatorUsername = block.generatorUsername || null;
 		return skimmedBlock;
 	});
 	const result = await blocksDB.writeBatch(blocks);
