@@ -16,10 +16,6 @@
 const { computeMinFee } = require('@liskhq/lisk-transactions-v5');
 
 const coreApi = require('./coreApi');
-const {
-	getBlockchainTime,
-	validateTimestamp,
-} = require('../common');
 
 let finalizedHeight;
 
@@ -50,15 +46,6 @@ const getBlocks = async params => {
 		data: [],
 		meta: {},
 	};
-
-	await Promise.all(
-		['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
-			if (await validateTimestamp(params[timestamp])) {
-				params[timestamp] = await getBlockchainTime(params[timestamp]);
-			}
-			return Promise.resolve();
-		}),
-	);
 
 	const response = await coreApi.getBlocks(params);
 	if (response.data) blocks.data = response.data.map(block => Object
