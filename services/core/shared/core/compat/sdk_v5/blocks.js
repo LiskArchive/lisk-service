@@ -16,6 +16,7 @@
 const { computeMinFee } = require('@liskhq/lisk-transactions-v5');
 
 const coreApi = require('./coreApi');
+const { knex } = require('../../../database');
 
 let finalizedHeight;
 
@@ -28,6 +29,22 @@ const updateFinalizedHeight = async () => {
 };
 
 const getFinalizedHeight = () => finalizedHeight;
+
+const writeBlocksToDB = async originalBlocks => {
+	const blocksDB = await knex('blocks');
+	const blocks = originalBlocks.map(block => {
+		const skimmedBlock = {};
+		skimmedBlock['blockId'] = block['id'];
+		skimmedBlock['height'] = block['height'];
+		skimmedBlock['unixTimestamp'] = block['unixTimestamp'];
+		skimmedBlock['generatorPublicKey'] = block['generatorPublicKey'];
+		skimmedBlock['generatorAddress'] = block['generatorAddress'] || null;
+		skimmedBlock['generatorUsername'] = block['generatorUsername'] || null;
+		return skimmedBlock;
+	});
+	const result = await blocksDB.writeBatch(blocks);
+	return result;
+};
 
 const normalizeBlock = block => {
 	block.id = block.id.toString('hex');
@@ -68,6 +85,8 @@ const getBlocks = async params => {
 		delete block.payload;
 		return block;
 	});
+
+	if (params.limit === 1) await writeBlocksToDB(blocks.data);
 
 	return blocks;
 };
