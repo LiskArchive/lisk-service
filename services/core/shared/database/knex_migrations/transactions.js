@@ -15,28 +15,24 @@
  */
 const config = require('../../../config');
 
-const tableName = config.db.collections.blocks.name;
+const tableName = config.db.collections.transactions.name;
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
-        // Indexed properties
         table.string('id').primary();
-        table.integer('height').notNullable().index();
-        table.integer('unixTimestamp').notNullable().index();
-        table.string('generatorAddress').notNullable().index();
-        table.string('generatorPublicKey').index();
-
-        // Non-indexed properties
-        table.string('blockSignature');
-        table.integer('numberOfTransactions');
-        table.string('payloadHash');
-        table.integer('payloadLength');
-        table.string('previousBlockId');
-        table.string('reward');
-        table.string('totalAmount');
-        table.string('totalFee');
-        table.string('totalForged');
-        table.integer('version');
+        table.string('amount');
+        table.string('fee');
+        table.integer('type');
+        table.integer('height');
+        table.string('nonce');
+        table.string('blockId');
+        table.integer('timestamp');
+        table.string('senderId');
+        table.string('senderPublicKey');
+        table.string('recipientId');
+        // table.string('signatures');
+        table.integer('confirmations');
+        // table.string('asset');
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
