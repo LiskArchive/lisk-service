@@ -19,20 +19,27 @@ const tableName = config.db.collections.transactions.name;
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
+        // Indexed properties
         table.string('id').primary();
-        table.string('amount');
-        table.string('fee');
-        table.integer('type');
-        table.integer('height');
-        table.string('nonce');
-        table.string('blockId');
-        table.integer('timestamp');
-        table.string('senderId');
-        table.string('senderPublicKey');
-        table.string('recipientId');
-        // table.string('signatures');
+        table.integer('height').notNullable().index();
+        table.string('moduleAssetsId').notNullable().index();
+        table.string('moduleAssetsName').index();
+        table.string('nonce').notNullable().index();
+        table.string('blockId').index();
+        table.integer('timestamp').index();
+        table.string('senderId').index();
+        table.string('senderPublicKey').index();
+        table.string('senderUsername').index();
+        table.string('recipientId').index();
+        table.string('recipientPublicKey').index();
+        table.string('recipientUsername').index();
+
+        // Non-indexed properties
+        table.string('signatures');
         table.integer('confirmations');
         // table.string('asset');
+        table.string('amount');
+        table.string('fee');
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
