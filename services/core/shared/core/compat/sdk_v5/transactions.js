@@ -33,6 +33,8 @@ const indexTransactions = async block => {
 		skimmedTransaction.moduleAssetName = txModule[0].name;
 		skimmedTransaction.unixTimestamp = block.unixTimestamp;
 		skimmedTransaction.senderPublicKey = tx.senderPublicKey;
+		skimmedTransaction.nonce = tx.nonce;
+		skimmedTransaction.amount = tx.asset.amount;
 		skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
 		return skimmedTransaction;
 	});
