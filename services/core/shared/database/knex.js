@@ -112,14 +112,14 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
         return knex(tableName).where(whereParams).del();
     };
 
-    const deleteById = async (id) => deleteByProperty('id', id);
+    const deleteById = async (id) => deleteByProperty({ id });
 
     const deleteBatch = async (rows) => {
         if (rows instanceof Array && rows.length === 0) return null;
         return knex(tableName).delete().whereIn('id', rows.map(row => row.id));
     };
 
-    const getCount = async () => knex(tableName).count({ count: '*' });
+    const getCount = async () => knex(tableName).count({ count: 'id' });
 
     return {
         write,

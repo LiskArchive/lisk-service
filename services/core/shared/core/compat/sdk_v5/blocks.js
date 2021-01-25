@@ -16,10 +16,8 @@
 const { computeMinFee } = require('@liskhq/lisk-transactions-v5');
 
 const coreApi = require('./coreApi');
-const {
-	getBlockchainTime,
-	validateTimestamp,
-} = require('../common');
+const { knex } = require('../../../database');
+// const { indexTransactions } = require('./transactions');
 
 let finalizedHeight;
 
@@ -32,6 +30,26 @@ const updateFinalizedHeight = async () => {
 };
 
 const getFinalizedHeight = () => finalizedHeight;
+
+const indexBlocks = async originalBlocks => {
+	const blocksDB = await knex('blocks');
+	const blocks = originalBlocks.map(block => {
+		const skimmedBlock = {};
+		skimmedBlock.id = block.id;
+		skimmedBlock.height = block.height;
+		skimmedBlock.unixTimestamp = block.unixTimestamp;
+		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
+
+		// TODO: Check accounts and update the below params. Better to use 3NF instead.
+		skimmedBlock.generatorAddress = block.generatorAddress || null;
+		skimmedBlock.generatorUsername = block.generatorUsername || null;
+		return skimmedBlock;
+	});
+	await blocksDB.writeBatch(blocks);
+
+	// TODO: Test and fix when indexTransactions is implemented
+	// await indexTransactions(originalBlocks);
+};
 
 const normalizeBlock = block => {
 	block.id = block.id.toString('hex');
@@ -46,19 +64,25 @@ const normalizeBlock = block => {
 };
 
 const getBlocks = async params => {
+	const blocksDB = await knex('blocks');
 	const blocks = {
 		data: [],
 		meta: {},
 	};
 
-	await Promise.all(
-		['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
-			if (await validateTimestamp(params[timestamp])) {
-				params[timestamp] = await getBlockchainTime(params[timestamp]);
-			}
-			return Promise.resolve();
-		}),
-	);
+	if (params.sort
+		&& ['height', 'timestamp'].some(prop => params.sort.includes(prop))) {
+		const sortProp = params.sort.split(':')[0];
+		const sortOrder = params.sort.split(':')[1];
+		params.sort = [{ column: sortProp, order: sortOrder }];
+	}
+
+	const { blockId } = params;
+	delete params.blockId;
+	if (blockId) params.id = blockId;
+
+	const resultSet = await blocksDB.find(params);
+	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 
 	const response = await coreApi.getBlocks(params);
 	if (response.data) blocks.data = response.data.map(block => Object
@@ -81,6 +105,8 @@ const getBlocks = async params => {
 		delete block.payload;
 		return block;
 	});
+
+	if (params.limit === 1) await indexBlocks(blocks.data);
 
 	return blocks;
 };

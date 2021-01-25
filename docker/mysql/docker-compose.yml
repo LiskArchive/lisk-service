@@ -17,6 +17,8 @@ services:
       MYSQL_PASSWORD: ${ENV_LISK_DB_PASSWORD}
     expose:
       - 3306
+    ports:
+      - "3306:3306"
     healthcheck:
       test: ['CMD', 'healthcheck']
       interval: 1m
