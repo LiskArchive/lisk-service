@@ -79,7 +79,7 @@ const getBlocks = async params => {
 		params.sort = [{ column: sortProp, order: sortOrder }];
 	}
 
-	const blockId = params.blockId;
+	const { blockId } = params;
 	delete params.blockId;
 	if (blockId) params.id = blockId;
 
