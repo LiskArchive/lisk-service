@@ -21,8 +21,8 @@ exports.up = knex => knex.schema
         table.string('blockId').primary();
         table.integer('height').notNullable().index();
         table.integer('unixTimestamp').notNullable().index();
-        table.string('generatorAddress').notNullable().index();
-        table.string('generatorPublicKey').index();
+        table.string('generatorPublicKey').notNullable().index();
+        table.string('generatorAddress').index();
         table.string('generatorUsername').index();
     });
 
