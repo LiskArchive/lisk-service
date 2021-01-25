@@ -25,7 +25,7 @@ const createDb = async (migrationDir, connEndpoint) => {
         client: 'mysql',
         version: '5.7',
         connection: connEndpoint,
-        // useNullAsDefault: true,
+        useNullAsDefault: true,
         log: {
             warn(message) { logger.warn(message); },
             error(message) { logger.error(message); },
@@ -43,7 +43,7 @@ const createDb = async (migrationDir, connEndpoint) => {
     return knex;
 };
 
-const getDbInstance = async (tableName, migrationDir = './database/knex_migrations', connEndpoint = config.endpoints.mysql) => {
+const getDbInstance = async (tableName, migrationDir = './shared/database/knex_migrations', connEndpoint = config.endpoints.mysql) => {
     const userName = connEndpoint.split('//')[1].split(':')[0];
     const hostPort = connEndpoint.split('@')[1].split('/')[0];
     const connPoolKey = [userName, hostPort].join('@');
