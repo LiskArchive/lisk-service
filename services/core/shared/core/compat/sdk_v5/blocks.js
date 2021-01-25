@@ -48,9 +48,7 @@ const indexBlocks = async originalBlocks => {
 	await blocksDB.writeBatch(blocks);
 
 	// TODO: Test and fix when indexTransactions is implemented
-	// const blockTransactions = originalBlocks
-	// 	.map(block => Object.assign(block.payload, { blockId: block.id }));
-	// await indexTransactions(blockTransactions);
+	// await indexTransactions(originalBlocks);
 };
 
 const normalizeBlock = block => {
