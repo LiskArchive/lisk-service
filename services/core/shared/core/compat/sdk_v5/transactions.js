@@ -17,6 +17,28 @@
 const coreApi = require('./coreApi');
 // const { getBlocks } = require('./blocks');
 const { getRegisteredModules } = require('../common');
+const { knex } = require('../../../database');
+
+const indexTransactions = async block => {
+	const transactionsDB = await knex('transactions');
+	const transactions = block.payload.map(tx => {
+		const availableLiskModules = getRegisteredModules();
+		const txModule = availableLiskModules
+			.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+		const skimmedTransaction = {};
+		skimmedTransaction.id = tx.id;
+		skimmedTransaction.height = block.height;
+		skimmedTransaction.blockId = block.id;
+		skimmedTransaction.moduleAssetId = txModule[0].id;
+		skimmedTransaction.moduleAssetName = txModule[0].name;
+		skimmedTransaction.unixTimestamp = block.unixTimestamp;
+		skimmedTransaction.senderPublicKey = tx.sender.publicKey;
+		skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+		return skimmedTransaction;
+	});
+	const result = await transactionsDB.writeBatch(transactions);
+	return result;
+};
 
 const normalizeTransaction = tx => {
 	const availableLiskModules = getRegisteredModules();
@@ -65,4 +87,5 @@ const getTransactions = async params => {
 
 module.exports = {
 	getTransactions,
+	indexTransactions,
 };
