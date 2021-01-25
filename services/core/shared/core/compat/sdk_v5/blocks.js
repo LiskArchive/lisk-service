@@ -34,7 +34,7 @@ const indexBlocks = async originalBlocks => {
 	const blocksDB = await knex('blocks');
 	const blocks = originalBlocks.map(block => {
 		const skimmedBlock = {};
-		skimmedBlock.blockId = block.id;
+		skimmedBlock.id = block.id;
 		skimmedBlock.height = block.height;
 		skimmedBlock.unixTimestamp = block.unixTimestamp;
 		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
