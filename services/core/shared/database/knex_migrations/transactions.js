@@ -22,23 +22,20 @@ exports.up = knex => knex.schema
         // Indexed properties
         table.string('id').primary();
         table.integer('height').notNullable().index();
-        table.string('moduleAssetsId').notNullable().index();
-        table.string('moduleAssetsName').index();
+        table.string('moduleAssetId').notNullable().index();
+        table.string('moduleAssetName').index();
         table.string('nonce').notNullable().index();
         table.string('blockId').index();
         table.integer('timestamp').index();
         table.string('senderId').index();
         table.string('senderPublicKey').index();
-        table.string('senderUsername').index();
         table.string('recipientId').index();
         table.string('recipientPublicKey').index();
-        table.string('recipientUsername').index();
 
         // Non-indexed properties
         table.string('signatures');
         table.integer('confirmations');
         // table.string('asset');
-        table.string('amount');
         table.string('fee');
     });
 
