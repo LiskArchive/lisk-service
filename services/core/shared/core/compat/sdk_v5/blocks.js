@@ -64,8 +64,7 @@ const normalizeBlock = block => {
 	block.transactionRoot = block.transactionRoot.toString('hex');
 	block.generatorPublicKey = block.generatorPublicKey.toString('hex');
 	block.reward = Number(block.reward);
-	if (block.asset.seedReveal)
-		block.asset.seedReveal = block.asset.seedReveal.toString('hex');
+	if (block.asset.seedReveal) block.asset.seedReveal = block.asset.seedReveal.toString('hex');
 
 	return block;
 };
@@ -83,7 +82,8 @@ const getBlocks = async params => {
 	if (blockId) params.id = blockId;
 
 	// TODO: Remove the check when fully implemented. Currently added for cold start bootstrapping.
-	if (!params.heightRange && !(Object.getOwnPropertyNames(params).length === 1 && params.limit === 1)) {
+	if (!params.heightRange
+		&& !(Object.getOwnPropertyNames(params).length === 1 && params.limit === 1)) {
 		const resultSet = await blocksDB.find(params);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
