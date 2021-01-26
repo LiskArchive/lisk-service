@@ -13,13 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
 const parseToJSONCompatObj = obj => {
+    if (obj instanceof Buffer) return Buffer.from(obj).toString('hex');
+    else if (typeof obj === 'bigint') return Number(obj);
+
     const result = {};
     Object.entries(obj)
         .forEach(([k, v]) => {
             if (v instanceof Buffer) result[k] = Buffer.from(v).toString('hex');
             else if (typeof v === 'bigint') result[k] = Number(v);
+            else if (typeof v === 'object' && Array.isArray(v)) result[k] = v.map(o => parseToJSONCompatObj(o));
             else if (typeof v === 'object' && v !== null) result[k] = parseToJSONCompatObj(v);
             else result[k] = v;
         });
