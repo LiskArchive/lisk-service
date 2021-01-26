@@ -38,11 +38,16 @@ const indexTransactions = async blocks => {
 				skimmedTransaction.nonce = tx.nonce;
 				skimmedTransaction.amount = tx.asset.amount;
 				skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
-				skimmedTransaction.recipientPublicKey = null;
+
+				// TODO: Check accounts and update the below params
+				skimmedTransaction.recipientPublicKey = tx.recipientPublicKey || null;
+				skimmedTransaction.senderId = tx.senderId || null;
+
 				return skimmedTransaction;
 			});
 			return transactions;
 		}
+		return block;
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
