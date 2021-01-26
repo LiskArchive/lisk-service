@@ -16,7 +16,7 @@
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 // const { getBlocks } = require('./blocks');
-const { getRegisteredModules } = require('../common');
+const { getRegisteredModules, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
 const indexTransactions = async blocks => {
@@ -52,21 +52,7 @@ const indexTransactions = async blocks => {
 	return result;
 };
 
-const normalizeTransaction = tx => {
-	const availableLiskModules = getRegisteredModules();
-	const txModule = availableLiskModules
-		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-	tx.id = tx.id.toString('hex');
-	tx.moduleAssetId = txModule[0].id;
-	tx.moduleAssetName = txModule[0].name;
-	tx.fee = Number(tx.fee);
-	tx.nonce = Number(tx.nonce);
-	tx.senderPublicKey = tx.senderPublicKey.toString('hex');
-	tx.signatures = tx.signatures.map(signature => signature.toString('hex'));
-	tx.asset.amount = Number(tx.asset.amount);
-	tx.asset.recipientAddress = tx.asset.recipientAddress.toString('hex');
-	return tx;
-};
+const normalizeTransaction = tx => parseToJSONCompatObj(tx);
 
 const getTransactions = async params => {
 	const transactionsDB = await knex('transactions');
