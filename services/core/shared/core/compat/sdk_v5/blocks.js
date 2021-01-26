@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { computeMinFee } = require('@liskhq/lisk-transactions-v5');
-
 const coreApi = require('./coreApi');
-const { knex } = require('../../../database');
+
 const { indexTransactions } = require('./transactions');
+const { getApiClient } = require('../common/wsRequest');
+const { knex } = require('../../../database');
 
 let finalizedHeight;
 
@@ -37,7 +37,7 @@ const indexBlocks = async originalBlocks => {
 		const skimmedBlock = {};
 		skimmedBlock.id = block.id;
 		skimmedBlock.height = block.height;
-		skimmedBlock.unixTimestamp = block.unixTimestamp;
+		skimmedBlock.unixTimestamp = block.timestamp;
 		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
 
 		// TODO: Check accounts and update the below params. Better to use 3NF instead.
@@ -62,6 +62,7 @@ const normalizeBlock = block => {
 };
 
 const getBlocks = async params => {
+	const apiClient = await getApiClient();
 	const blocksDB = await knex('blocks');
 	const blocks = {
 		data: [],
@@ -87,6 +88,9 @@ const getBlocks = async params => {
 		.assign(normalizeBlock(block.header), { payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
+	// Attempt indexing only when the latest block is being fetched
+	if (params.limit === 1) await indexBlocks(blocks.data);
+
 	blocks.data.map(block => {
 		block.unixTimestamp = block.timestamp;
 		block.totalForged = Number(block.reward);
@@ -94,7 +98,7 @@ const getBlocks = async params => {
 		block.totalFee = 0;
 
 		block.payload.forEach(txn => {
-			const txnMinFee = Number(computeMinFee(txn));
+			const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
 
 			block.totalForged += Number(txn.fee);
 			block.totalBurnt += txnMinFee;
@@ -103,8 +107,6 @@ const getBlocks = async params => {
 		delete block.payload;
 		return block;
 	});
-
-	if (params.limit === 1) await indexBlocks(blocks.data);
 
 	return blocks;
 };
