@@ -126,7 +126,7 @@ const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
 const performLastBlockUpdate = async () => {
 	try {
-		const block = await getBlocks({ limit: 1, sort: 'height:desc' });
+		const block = await getBlocks({ limit: 1 });
 		setLastBlock(block.data[0]);
 		logger.debug(`Current block height: ${block.data[0].height}  (id=${block.data[0].id})`);
 	} catch (err) {
