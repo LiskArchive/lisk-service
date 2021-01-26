@@ -89,12 +89,21 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
     const find = async (params) => {
         // TODO: Remove after PouchDB specific code is removed from the shared layer
         if (params.selector) params = params.selector;
-        const sortParams = params.sort;
-        delete params.sort;
 
-        const res = sortParams
-            ? await knex.select().table(tableName).where(params).orderBy(sortParams)
-            : await knex.select().table(tableName).where(params);
+        const sortParams = params.sort;
+        const propBetween = params.propBetween;
+        delete params.sort;
+        delete params.propBetween;
+
+        let res;
+        if (propBetween) {
+            res = await knex.select().table(tableName)
+                .whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+        } else if (sortParams) {
+            res = await knex.select().table(tableName).where(params).orderBy(sortParams);
+        } else {
+            res = await knex.select().table(tableName).where(params);
+        }
         return res;
     };
 
