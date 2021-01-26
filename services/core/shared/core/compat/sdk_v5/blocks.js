@@ -97,7 +97,6 @@ const getBlocks = async params => {
 			block.totalFee += Number(txn.fee) - txnMinFee;
 		});
 		block.payload = block.payload.map(o => parseToJSONCompatObj(o));
-		// delete block.payload;
 		return block;
 	});
 	indexBlocks(blocks.data);

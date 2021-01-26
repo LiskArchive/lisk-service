@@ -19,11 +19,12 @@ const coreApi = require('./coreApi');
 const { getRegisteredModules, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
+const availableLiskModules = getRegisteredModules();
+
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
-			const availableLiskModules = getRegisteredModules();
 			const txModule = availableLiskModules
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 			const skimmedTransaction = {};
@@ -48,7 +49,6 @@ const indexTransactions = async blocks => {
 };
 
 const normalizeTransaction = tx => {
-	const availableLiskModules = getRegisteredModules();
 	const txModule = availableLiskModules
 		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 	tx = parseToJSONCompatObj(tx);
@@ -72,7 +72,6 @@ const getTransactions = async params => {
 	}
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
-	// TODO: Remove the check. Send empty response for non-ID based requests
 	const response = await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
 	if (response.meta) transactions.meta = response.meta;
