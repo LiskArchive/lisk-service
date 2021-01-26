@@ -13,11 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { CacheRedis, Logger } = require('lisk-service-framework');
+
 const coreApi = require('./coreApi');
+const config = require('../../../../config');
 
 // const { indexTransactions } = require('./transactions');
 const { getApiClient } = require('../common/wsRequest');
 const { knex } = require('../../../database');
+
+const logger = Logger();
+const blocksCache = CacheRedis('blocks_SDKv5', config.endpoints.redis);
 
 let finalizedHeight;
 
@@ -82,16 +88,18 @@ const getBlocks = async params => {
 	delete params.blockId;
 	if (blockId) params.id = blockId;
 
-	const resultSet = await blocksDB.find(params);
-	if (resultSet.length) params.ids = resultSet.map(row => row.id);
+	// TODO: Remove the check when fully implemented. Currently added for cold start bootstrapping.
+	if (!params.heightRange) {
+		const resultSet = await blocksDB.find(params);
+		if (resultSet.length) params.ids = resultSet.map(row => row.id);
+	}
 
 	const response = await coreApi.getBlocks(params);
 	if (response.data) blocks.data = response.data.map(block => Object
 		.assign(normalizeBlock(block.header), { payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
-	// Attempt indexing only when the latest block is being fetched
-	if (params.limit === 1) await indexBlocks(blocks.data);
+	indexBlocks(blocks.data);
 
 	blocks.data.map(block => {
 		block.unixTimestamp = block.timestamp;
@@ -112,6 +120,61 @@ const getBlocks = async params => {
 
 	return blocks;
 };
+
+const buildIndex = async (from, to) => {
+	logger.info('Building index of blocks');
+
+	if (from >= to) {
+		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
+		return;
+	}
+
+	const MAX_BLOCKS_LIMIT_PP = 100;
+	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+
+	Array(numOfPages).fill().forEach(async (_, pageNum) => {
+		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
+		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+		// TODO: Revert to standard notation, once getBlocks is fully implemented
+		// const blocks = await getBlocks({
+		// 	limit: MAX_BLOCKS_LIMIT_PP,
+		// 	offset: offset - 1,
+		// 	sort: 'height:asc',
+		// });
+		const blocks = await getBlocks({
+			heightRange: { from: offset, to: offset + MAX_BLOCKS_LIMIT_PP },
+		});
+		const topHeightFromBatch = (blocks.data.pop()).height;
+		await blocksCache.set('lastIndexedHeight', topHeightFromBatch);
+	});
+	logger.info(`Finished building block index (${from}-${to})`);
+};
+
+const init = async () => {
+	try {
+		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+
+		let blockIndexLowerRange = config.indexNumOfBlocks > 0
+			? currentHeight - config.indexNumOfBlocks : 1;
+		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
+
+		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
+			// Everything seems allright, continue at height where stopped last time
+			blockIndexLowerRange = await blocksCache.get('lastIndexedHeight');
+		} else {
+			logger.info('Configuration has been updated, re-index eveything');
+			await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
+			await blocksCache.set('lastIndexedHeight', blockIndexLowerRange);
+		}
+
+		await buildIndex(blockIndexLowerRange, currentHeight);
+	} catch (err) {
+		logger.warn('Unable to update block index');
+		logger.warn(err.message);
+	}
+};
+
+init();
 
 module.exports = {
 	getBlocks,
