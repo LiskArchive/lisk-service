@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const networkStatusSource = require('../../../sources/networkStatus');
+const networkStatusSource = require('../../../sources/version1/networkStatus');
 
 module.exports = {
 	version: '2.0',

@@ -53,10 +53,10 @@ const refreshStatistics = async () => {
 	basicStats.disconnectedPeers = disconnected.length;
 
 	const heightArr = connected.map(elem => elem.height);
-	heightArr.forEach(elem => heightStats[elem] = (heightStats[elem] || 0) + 1);
+	heightArr.forEach(elem => { if (elem) heightStats[elem] = (heightStats[elem] || 0) + 1; });
 
 	const coreVerArr = connected.map(elem => elem.version);
-	coreVerArr.forEach(elem => coreVerStats[elem] = (coreVerStats[elem] || 0) + 1);
+	coreVerArr.forEach(elem => { if (elem) coreVerStats[elem] = (coreVerStats[elem] || 0) + 1; });
 
 	const osArr = connected.map(elem => elem.os);
 	const mappedOs = osArr.map((elem) => {
@@ -66,7 +66,7 @@ const refreshStatistics = async () => {
 		}
 		return elem;
 	});
-	mappedOs.forEach(elem => osStats[elem] = (osStats[elem] || 0) + 1);
+	mappedOs.forEach(elem => { if (elem) osStats[elem] = (osStats[elem] || 0) + 1; });
 
 	return {
 		basic: basicStats,

@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegatesSource = require('../../../sources/delegates');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const delegatesSource = require('../../../sources/version1/delegates');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',

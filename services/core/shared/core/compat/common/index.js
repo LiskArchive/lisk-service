@@ -21,6 +21,9 @@ const {
     getCoreVersion,
     getReadyStatus,
     setReadyStatus,
+    getRegisteredModules,
+    setRegisteredmodules,
+    resolvemoduleAssets,
 } = require('./constants');
 
 const {
@@ -38,6 +41,9 @@ module.exports = {
     getCoreVersion,
     getReadyStatus,
     setReadyStatus,
+    getRegisteredModules,
+    setRegisteredmodules,
+    resolvemoduleAssets,
 
     getBlockchainTime,
     getEpochUnixTime,

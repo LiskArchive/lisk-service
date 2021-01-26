@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blocksSource = require('../../../sources/blocks');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const blocksSource = require('../../../sources/version1/blocks');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',

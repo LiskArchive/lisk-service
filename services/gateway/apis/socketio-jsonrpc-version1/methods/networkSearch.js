@@ -14,8 +14,8 @@
  *
  */
 
-const networkSearchSource = require('../../../sources/networkSearch');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const networkSearchSource = require('../../../sources/version1/networkSearch');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',

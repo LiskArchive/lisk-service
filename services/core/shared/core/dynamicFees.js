@@ -26,7 +26,7 @@ const {
 	VoteTransaction,
 	UnlockTransaction,
 	ProofOfMisbehaviorTransaction,
-} = require('@liskhq/lisk-transactions');
+} = require('@liskhq/lisk-transactions-v4');
 
 const util = require('util');
 

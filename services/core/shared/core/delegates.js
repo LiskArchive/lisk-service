@@ -136,7 +136,7 @@ const getDelegates = async params => {
 		return comparator;
 	};
 
-	const filterBy = (list, entity)	=> list.filter((acc) => (acc[entity]
+	const filterBy = (list, entity) => list.filter((acc) => (acc[entity]
 		&& acc[entity] === params[entity]));
 
 	if (params.address) {
@@ -206,14 +206,22 @@ const getNextForgers = async params => {
 const loadAllNextForgers = async () => {
 	// TODO: These feature should be handled by the compatibility layer
 	const maxCount = (sdkVersion < 4) ? 101 : 103;
-	rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
-
+	if (sdkVersion <= 4) {
+		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
+	} else {
+		rawNextForgers = (await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length }))
+			.data;
+	}
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
 
 const resolveNextForgers = async () => {
-	nextForgers = await BluebirdPromise.map(rawNextForgers,
-		async forger => delegateList.find(o => o.address === forger.address));
+	nextForgers = await BluebirdPromise.map(
+		rawNextForgers,
+		async forger => sdkVersion <= 4
+			? delegateList.find(o => o.address === forger.address)
+			: forger,
+	);
 	logger.debug('Finished collecting delegates');
 };
 
