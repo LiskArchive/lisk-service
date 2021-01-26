@@ -105,6 +105,7 @@ const getBlocks = async params => {
 		return block;
 	});
 
+	// Attempt indexing only when the latest block is being fetched
 	if (params.limit === 1) await indexBlocks(blocks.data);
 
 	return blocks;
