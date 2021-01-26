@@ -91,12 +91,16 @@ const getTransactions = async params => {
 
 		let timestampSortOrder = 'desc';
 		if (params.sort) [, timestampSortOrder] = params.sort.split(':');
-		const blockIds = await timestampDb.findByRange('timestamp',
-			params.fromTimestamp,
-			params.toTimestamp,
-			timestampSortOrder === 'desc',
+
+		const blockIds = await timestampDb.find({
+			timestamp: {
+				from: params.fromTimestamp,
+				to: params.toTimestamp,
+				reverse: (timestampSortOrder === 'desc'),
+			},
 			limit,
-			offset);
+			offset,
+		});
 
 		await BluebirdPromise.map(
 			blockIds,

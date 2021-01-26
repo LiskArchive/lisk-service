@@ -24,7 +24,7 @@ const connectionPool = {};
 
 const getDbInstance = async (
 	collectionName,
-	customIndexes = [],
+	idxConfig = {},
 	endpoint = config.endpoints.redis,
 	) => {
 	if (!connectionPool[endpoint]) {
@@ -33,34 +33,52 @@ const getDbInstance = async (
 	}
 
 	const db = connectionPool[endpoint];
-	const collection = config.db.collections[collectionName] || { indexes: [] };
-	const { indexes } = collection;
+	const { primaryId, schema, indexes, purge } = idxConfig;
+
+	const cast = (val, type) => {
+		if (type === 'number') return Number(val);
+		if (type === 'string') return String(val);
+		if (type === 'boolean') return Boolean(val);
+		return val;
+	};
+
+	const writeKey = async (setName, key, value) => {
+		db.hset(`idx:${collectionName}:${setName}`, key, value);
+	};
+
+	const writeRange = async (setName, index, value) => {
+		db.zadd(`idx:${collectionName}:${setName}`, Number(index), value);
+	};
 
 	const write = async (doc) => {
-		// Secondary indexes mapping properties to entity IDs
-		[...indexes, ...customIndexes].forEach(prop => {
-			if (['timestamp'].includes(prop)) db.zadd(collectionName, Number(doc[prop]), doc.id);
-			// else if (doc[prop]) db.hmset(`${collectionName}_${prop}`, doc[prop], doc.id);
+		const item = {};
+		const itemToWrite = {};
+		Object.keys(schema).forEach(o => {
+			item[o] = cast(doc[o], schema[o].type);
+			if (o.store === true) itemToWrite;
 		});
-		// return db.hmset(collectionName, doc.id, JSON.stringify(doc));
+
+		Object.keys(indexes).forEach(idx => {
+			const [ from, to ] = idx.split(':');
+			if (to) {
+				const { type } = indexes[idx];
+				if (type === 'key') return writeKey(`${from}:${to}`, item[from], item[to]);
+				if (type === 'range') return writeRange(`${from}:${to}`, item[from], item[to]);
+			} else {
+				const data = indexes[idx].json === true ? JSON.stringify(item) : item;
+				if (type === 'key') return writeKey(`${from}:${to}`, item[from], data);
+				if (type === 'range') return writeRange(`${from}:${to}`, item[from], data);
+			}
+		});
 	};
 
-	const writeRange = async (index, value) => {
-		db.zadd(collectionName, Number(index), value);
+	const findProperty = async (key, prop) => {
+		if (schema[key]) {
+			if (schema[key]) {}
+		}
+		db.hset(`idx:${index}`, key, value);
+		
 	};
-
-	const writeOnce = async (doc) => write(doc);
-
-	const writeBatch = async (docs) => Promise.all(docs.map(async doc => write(doc)));
-
-	const findAll = async () => new Promise(resolve => {
-		db.hgetall(collectionName, async (err, result) => {
-			if (err) logger.error(`Error retrieving ${collectionName} data: `, err);
-
-			const res = Object.values(result).map(v => JSON.parse(v));
-			return resolve(res);
-		});
-	});
 
 	const find = async (params) => {
 		const offset = params.offset || 0;
@@ -86,9 +104,9 @@ const getDbInstance = async (
 		return filteredResult.slice(offset, offset + limit);
 	};
 
-	const findById = async (id) => new Promise(resolve => {
-		db.hget(collectionName, id, async (err, result) => {
-			if (err) logger.error(`Error retrieving ${collectionName} data with id ${id}: `, err);
+	const readKey = async (index, key) => new Promise(resolve => {
+		db.hget(`idx:${index}`, key, async (err, result) => {
+			if (err) logger.error(`Error retrieving ${collectionName} data with id ${key}: `, err);
 
 			const res = [];
 			if (result) res.push(JSON.parse(result));
@@ -96,19 +114,26 @@ const getDbInstance = async (
 		});
 	});
 
-	const findOneByProperty = async (prop, value) => {
-		if ([...indexes, ...customIndexes].includes(prop)) {
-			const id = ['timestamp'].includes(prop)
-				? await db.zrangebyscore(collectionName, value, value, 'LIMIT', 0, 1)
-				: await db.hget(`${collectionName}_${prop}`, value);
+	const findById = async (id) => readKey(`${collectionName}:default`, id);
 
-			return findById(id);
+	const findByProperty = async (prop, value, to) => {
+		schema[prop].index.find(o => o.to === '')
+		if (schema[prop] === '')
+	};
+
+	const find = async (params) => {
+
+	};
+
+	const findRange = async () => async (prop, from, to, reverse, limit = 1, offset = 0) => {
+		const [ index, target ] = prop.split(':');
+		if (indexes[`idx:${collectionName}:${index}:${target}`]) {
+			return findByRange(prop, from, to, reverse, limit, offset);
+		} else if (schema[index]) {
+			const ids = await findByRange(`${index}:${primaryKey}`, from, to, reverse, limit, offset);
+			return ids.map(async id => (await findById(`idx:${collectionName}:${index}`, id))[target]);
 		}
-
-		const params = {};
-		params[prop] = value;
-		params.limit = 1;
-		return find(params);
+		return [];
 	};
 
 	const findByRange = async (prop, from, to, reverse, limit = 1, offset = 0) => {
@@ -119,6 +144,15 @@ const getDbInstance = async (
 					'LIMIT', Number(offset), Number(limit));
 			}
 			return db.zrangebyscore(collectionName,
+				Number(from) || 0, Number(to) || '+Inf',
+				'LIMIT', Number(offset), Number(limit));
+		}
+		return [];
+	};
+
+	const deleteByRange = async (prop, from, to) => {
+		if ([...indexes, ...customIndexes].includes(prop)) {
+			return db.zrem(collectionName,
 				Number(from) || 0, Number(to) || '+Inf',
 				'LIMIT', Number(offset), Number(limit));
 		}

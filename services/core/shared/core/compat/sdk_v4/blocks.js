@@ -50,6 +50,30 @@ const updateFinalizedHeight = async () => {
 
 const getFinalizedHeight = () => heightFinalized;
 
+const blockIdxSchema = {
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string', store: true },
+		height: { type: 'number', store: true },
+		timestamp: { type: 'number', store: true },
+		unixTimestamp: { type: 'number', store: true },
+		numberOfTransactions: { type: 'number', store: true },
+	},
+	indexes: {
+		id: { type: 'key', json: true },
+		'height:id': { type: 'range' },
+		'timestamp:id': { type: 'range' },
+		'unixTimestamp:numberOfTransactions': { type: 'range' },
+	},
+	purge: {
+		interval: 3600, // second
+		maxItems: 202,
+		purgeBy: 'height',
+	},
+};
+
+const getBlockIdx = () => redis('blockIdx', blockIdxSchema);
+
 const indexBlock = async block => {
 	const timestampDb = await redis('timestampDb', ['timestamp']);
 	const unixTimestampDb = await redis('unixTimestampDb', ['timestamp']);
@@ -97,9 +121,12 @@ const getBlocks = async (params) => {
 		),
 	);
 
+	const blockIdx = await getBlockIdx();
+
 	blocks.data.forEach(block => {
 		if (block.numberOfTransactions > 0) {
-			indexBlock(block);
+			// indexBlock(block);
+			blockIdx.write(block);
 			signals.get('indexTransactions').dispatch(block.id);
 		}
 	});
@@ -109,6 +136,8 @@ const getBlocks = async (params) => {
 
 const buildIndex = async (from, to) => {
 	logger.info('Building index of blocks');
+
+	const blockIdx = await getBlockIdx();
 
 	if (from >= to) {
 		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
@@ -129,7 +158,8 @@ const buildIndex = async (from, to) => {
 		blocks.data.forEach(async block => {
 			if (!(await bIdCache.get(block.id))) {
 				if (block.numberOfTransactions > 0) {
-					indexBlock(block);
+					// indexBlock(block);
+					blockIdx.write(block);
 					signals.get('indexTransactions').dispatch(block.id);
 				}
 			}
@@ -171,4 +201,5 @@ module.exports = {
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
+	getBlockIdx,
 };
