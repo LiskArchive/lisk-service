@@ -17,13 +17,10 @@ const tableName = 'blocks';
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
-        // Indexed properties
         table.string('id').primary();
         table.integer('height').notNullable().index();
         table.integer('unixTimestamp').notNullable().index();
         table.string('generatorPublicKey').notNullable().index();
-        table.string('generatorAddress').index();
-        table.string('generatorUsername').index();
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
