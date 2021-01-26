@@ -24,7 +24,7 @@ exports.up = knex => knex.schema
         table.integer('height').notNullable().index();
         table.string('moduleAssetId').notNullable().index();
         table.string('moduleAssetName').index();
-        table.string('nonce').notNullable().index();
+        table.integer('nonce').notNullable().index();
         table.string('blockId').index();
         table.integer('timestamp').index();
         table.string('senderId').index();

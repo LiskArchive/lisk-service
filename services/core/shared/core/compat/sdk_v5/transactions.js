@@ -28,16 +28,16 @@ const indexTransactions = async blocks => {
 				const txModule = availableLiskModules
 					.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 				const skimmedTransaction = {};
-				skimmedTransaction.id = tx.id;
+				skimmedTransaction.id = tx.id.toString('hex');
 				skimmedTransaction.height = block.height;
 				skimmedTransaction.blockId = block.id;
 				skimmedTransaction.moduleAssetId = txModule[0].id;
 				skimmedTransaction.moduleAssetName = txModule[0].name;
-				skimmedTransaction.unixTimestamp = block.unixTimestamp;
-				skimmedTransaction.senderPublicKey = tx.senderPublicKey;
-				skimmedTransaction.nonce = tx.nonce;
-				skimmedTransaction.amount = tx.asset.amount;
-				skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+				skimmedTransaction.timestamp = block.unixTimestamp;
+				skimmedTransaction.senderPublicKey = tx.senderPublicKey.toString('hex');
+				skimmedTransaction.nonce = Number(tx.nonce);
+				skimmedTransaction.amount = Number(tx.asset.amount);
+				skimmedTransaction.recipientId = tx.asset.recipientAddress.toString('hex') || null;
 
 				// TODO: Check accounts and update the below params
 				skimmedTransaction.recipientPublicKey = tx.recipientPublicKey || null;
@@ -98,7 +98,7 @@ const getTransactions = async params => {
 		async transaction => {
 			resultSet.filter(tx => {
 				if (tx.id === transaction.id) {
-					transaction.unixTimestamp = tx.unixTimestamp;
+					transaction.unixTimestamp = tx.timestamp;
 					transaction.height = tx.height;
 					transaction.blockId = tx.blockId;
 				}
