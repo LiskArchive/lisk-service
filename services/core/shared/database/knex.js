@@ -91,7 +91,7 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
         if (params.selector) params = params.selector;
 
         const sortParams = params.sort;
-        const propBetween = params.propBetween;
+        const { propBetween } = params;
         delete params.sort;
         delete params.propBetween;
 
