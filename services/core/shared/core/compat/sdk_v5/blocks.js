@@ -76,7 +76,8 @@ const getBlocks = async params => {
 	}
 
 	const response = await coreApi.getBlocks(params);
-	if (response.data) blocks.data = response.data.map(block => ({ ...block.header, payload: block.payload }));
+	if (response.data) blocks.data = response.data
+		.map(block => ({ ...block.header, payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
 	blocks.data = blocks.data.map(block => {

@@ -15,7 +15,7 @@
  */
 const parseToJSONCompatObj = obj => {
     if (obj instanceof Buffer) return Buffer.from(obj).toString('hex');
-    else if (typeof obj === 'bigint') return Number(obj);
+    if (typeof obj === 'bigint') return Number(obj);
 
     const result = {};
     Object.entries(obj)
