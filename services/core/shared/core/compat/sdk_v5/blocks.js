@@ -19,7 +19,7 @@ const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
 const { indexTransactions } = require('./transactions');
-const { getApiClient } = require('../common/wsRequest');
+const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
 const logger = Logger();
@@ -55,17 +55,7 @@ const indexBlocks = async originalBlocks => {
 	await indexTransactions(originalBlocks);
 };
 
-const normalizeBlock = block => {
-	block.id = block.id.toString('hex');
-	block.signature = block.signature.toString('hex');
-	block.previousBlockID = block.previousBlockID.toString('hex');
-	block.transactionRoot = block.transactionRoot.toString('hex');
-	block.generatorPublicKey = block.generatorPublicKey.toString('hex');
-	block.reward = Number(block.reward);
-	block.asset.seedReveal = block.asset.seedReveal.toString('hex');
-
-	return block;
-};
+const normalizeBlock = block => parseToJSONCompatObj(block);
 
 const getBlocks = async params => {
 	const apiClient = await getApiClient();
