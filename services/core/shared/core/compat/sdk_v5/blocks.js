@@ -78,7 +78,6 @@ const getBlocks = async params => {
 		.assign(normalizeBlock(block.header), { payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
-	indexBlocks(blocks.data);
 
 	blocks.data.map(block => {
 		// TODO: Update the below params after accounts index is implemented
@@ -97,10 +96,10 @@ const getBlocks = async params => {
 			block.totalBurnt += txnMinFee;
 			block.totalFee += Number(txn.fee) - txnMinFee;
 		});
-		delete block.payload;
+		// delete block.payload;
 		return block;
 	});
-
+	indexBlocks(blocks.data);
 	return blocks;
 };
 

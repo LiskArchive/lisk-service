@@ -27,10 +27,8 @@ exports.up = knex => knex.schema
         table.integer('nonce').notNullable().index();
         table.string('blockId').index();
         table.integer('timestamp').index();
-        table.string('senderId').index();
         table.string('senderPublicKey').notNullable().index();
         table.string('recipientId').index();
-        table.string('recipientPublicKey').index();
         table.integer('amount').notNullable().index();
     });
 

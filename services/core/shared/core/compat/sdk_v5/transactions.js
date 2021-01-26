@@ -32,16 +32,11 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.blockId = block.id;
 			skimmedTransaction.moduleAssetId = txModule[0].id;
 			skimmedTransaction.moduleAssetName = txModule[0].name;
-			skimmedTransaction.timestamp = block.unixTimestamp;
+			skimmedTransaction.timestamp = block.timestamp;
 			skimmedTransaction.senderPublicKey = tx.senderPublicKey.toString('hex');
 			skimmedTransaction.nonce = Number(tx.nonce);
 			skimmedTransaction.amount = Number(tx.asset.amount);
 			skimmedTransaction.recipientId = tx.asset.recipientAddress.toString('hex') || null;
-
-			// TODO: Check accounts and update the below params
-			skimmedTransaction.recipientPublicKey = tx.recipientPublicKey || null;
-			skimmedTransaction.senderId = tx.senderId || null;
-
 			return skimmedTransaction;
 		});
 		return transactions;
@@ -52,7 +47,15 @@ const indexTransactions = async blocks => {
 	return result;
 };
 
-const normalizeTransaction = tx => parseToJSONCompatObj(tx);
+const normalizeTransaction = tx => {
+	const availableLiskModules = getRegisteredModules();
+	const txModule = availableLiskModules
+		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+	tx = parseToJSONCompatObj(tx);
+	tx.moduleAssetId = txModule[0].id;
+	tx.moduleAssetName = txModule[0].name;
+	return tx;
+};
 
 const getTransactions = async params => {
 	const transactionsDB = await knex('transactions');
@@ -60,13 +63,6 @@ const getTransactions = async params => {
 		data: [],
 		meta: {},
 	};
-
-	if (params.sort
-		&& ['nonce', 'timestamp', 'amount'].some(prop => params.sort.includes(prop))) {
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-		params.sort = [{ column: sortProp, order: sortOrder }];
-	}
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
 			property: 'timestamp',
@@ -81,7 +77,6 @@ const getTransactions = async params => {
 	if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
 	if (response.meta) transactions.meta = response.meta;
 
-	// TODO: Indexed transactions to blockId
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,
 		async transaction => {
