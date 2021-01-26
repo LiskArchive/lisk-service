@@ -22,25 +22,27 @@ const { knex } = require('../../../database');
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
-		const transactions = block.payload.map(tx => {
-			const availableLiskModules = getRegisteredModules();
-			const txModule = availableLiskModules
-				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-			const skimmedTransaction = {};
-			skimmedTransaction.id = tx.id;
-			skimmedTransaction.height = block.height;
-			skimmedTransaction.blockId = block.id;
-			skimmedTransaction.moduleAssetId = txModule[0].id;
-			skimmedTransaction.moduleAssetName = txModule[0].name;
-			skimmedTransaction.unixTimestamp = block.unixTimestamp;
-			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
-			skimmedTransaction.nonce = tx.nonce;
-			skimmedTransaction.amount = tx.asset.amount;
-			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
-			skimmedTransaction.recipientPublicKey = null;
-			return skimmedTransaction;
-		});
-		return transactions;
+		if (block.payload) {
+			const transactions = block.payload.map(tx => {
+				const availableLiskModules = getRegisteredModules();
+				const txModule = availableLiskModules
+					.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+				const skimmedTransaction = {};
+				skimmedTransaction.id = tx.id;
+				skimmedTransaction.height = block.height;
+				skimmedTransaction.blockId = block.id;
+				skimmedTransaction.moduleAssetId = txModule[0].id;
+				skimmedTransaction.moduleAssetName = txModule[0].name;
+				skimmedTransaction.unixTimestamp = block.unixTimestamp;
+				skimmedTransaction.senderPublicKey = tx.senderPublicKey;
+				skimmedTransaction.nonce = tx.nonce;
+				skimmedTransaction.amount = tx.asset.amount;
+				skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+				skimmedTransaction.recipientPublicKey = null;
+				return skimmedTransaction;
+			});
+			return transactions;
+		}
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
