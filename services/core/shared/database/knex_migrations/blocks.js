@@ -13,25 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../../config');
-
-const tableName = config.db.collections.transactions.name;
+const tableName = 'blocks';
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
         // Indexed properties
         table.string('id').primary();
         table.integer('height').notNullable().index();
-        table.string('moduleAssetId').notNullable().index();
-        table.string('moduleAssetName').index();
-        table.string('nonce').notNullable().index();
-        table.string('blockId').index();
-        table.integer('timestamp').index();
-        table.string('senderId').index();
-        table.string('senderPublicKey').notNullable().index();
-        table.string('recipientId').index();
-        table.string('recipientPublicKey').index();
-        table.integer('amount').notNullable().index();
+        table.integer('unixTimestamp').notNullable().index();
+        table.string('generatorPublicKey').notNullable().index();
+        table.string('generatorAddress').index();
+        table.string('generatorUsername').index();
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
