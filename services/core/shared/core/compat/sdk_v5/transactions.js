@@ -22,29 +22,29 @@ const { knex } = require('../../../database');
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
-			const transactions = block.payload.map(tx => {
-				const availableLiskModules = getRegisteredModules();
-				const txModule = availableLiskModules
-					.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-				const skimmedTransaction = {};
-				skimmedTransaction.id = tx.id.toString('hex');
-				skimmedTransaction.height = block.height;
-				skimmedTransaction.blockId = block.id;
-				skimmedTransaction.moduleAssetId = txModule[0].id;
-				skimmedTransaction.moduleAssetName = txModule[0].name;
-				skimmedTransaction.timestamp = block.unixTimestamp;
-				skimmedTransaction.senderPublicKey = tx.senderPublicKey.toString('hex');
-				skimmedTransaction.nonce = Number(tx.nonce);
-				skimmedTransaction.amount = Number(tx.asset.amount);
-				skimmedTransaction.recipientId = tx.asset.recipientAddress.toString('hex') || null;
+		const transactions = block.payload.map(tx => {
+			const availableLiskModules = getRegisteredModules();
+			const txModule = availableLiskModules
+				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			const skimmedTransaction = {};
+			skimmedTransaction.id = tx.id.toString('hex');
+			skimmedTransaction.height = block.height;
+			skimmedTransaction.blockId = block.id;
+			skimmedTransaction.moduleAssetId = txModule[0].id;
+			skimmedTransaction.moduleAssetName = txModule[0].name;
+			skimmedTransaction.timestamp = block.unixTimestamp;
+			skimmedTransaction.senderPublicKey = tx.senderPublicKey.toString('hex');
+			skimmedTransaction.nonce = Number(tx.nonce);
+			skimmedTransaction.amount = Number(tx.asset.amount);
+			skimmedTransaction.recipientId = tx.asset.recipientAddress.toString('hex') || null;
 
-				// TODO: Check accounts and update the below params
-				skimmedTransaction.recipientPublicKey = tx.recipientPublicKey || null;
-				skimmedTransaction.senderId = tx.senderId || null;
+			// TODO: Check accounts and update the below params
+			skimmedTransaction.recipientPublicKey = tx.recipientPublicKey || null;
+			skimmedTransaction.senderId = tx.senderId || null;
 
-				return skimmedTransaction;
-			});
-			return transactions;
+			return skimmedTransaction;
+		});
+		return transactions;
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
@@ -81,7 +81,10 @@ const getTransactions = async params => {
 		const sortOrder = params.sort.split(':')[1];
 		params.sort = [{ column: sortProp, order: sortOrder }];
 	}
-
+	if (params.fromTimestamp || params.toTimestamp) {
+		params.fromTimestamp = Number(params.fromTimestamp) || 0;
+		params.toTimestamp = Number(params.toTimestamp) || Math.floor(Date.now() / 1000);
+	}
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	// TODO: Remove the check. Send empty response for non-ID based requests

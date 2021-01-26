@@ -91,10 +91,15 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
         if (params.selector) params = params.selector;
         const sortParams = params.sort;
         delete params.sort;
-
-        const res = sortParams
-            ? await knex.select().table(tableName).where(params).orderBy(sortParams)
-            : await knex.select().table(tableName).where(params);
+        let res;
+        if (params.fromTimestamp && params.toTimestamp) {
+            res = await knex.select().table(tableName)
+                .whereBetween('timestamp', [params.fromTimestamp, params.toTimestamp]);
+        } else if (sortParams) {
+            res = await knex.select().table(tableName).where(params).orderBy(sortParams);
+        } else {
+            res = await knex.select().table(tableName).where(params);
+        }
         return res;
     };
 
