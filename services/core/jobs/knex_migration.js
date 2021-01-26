@@ -30,7 +30,7 @@ module.exports = [
 			logger.info('Initiating DB migrations');
 			Object.keys(config.db.collections).forEach(async table => {
 				logger.debug(`Creating DB connection for table: ${table}`);
-				await getDbInstance();
+				await getDbInstance(table);
 			});
 		},
 		controller: () => { },

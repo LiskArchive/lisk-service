@@ -51,7 +51,7 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
         connectionPool[connPoolKey] = await createDb(migrationDir, connEndpoint);
     }
 
-    const knex = connectionPool[connPoolKey];
+    const knex = await connectionPool[connPoolKey];
 
     const write = async (row) => knex.transaction(async trx => {
         const inserts = await trx(tableName).insert(row).onConflict('id').merge()
