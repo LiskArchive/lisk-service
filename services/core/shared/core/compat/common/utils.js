@@ -18,7 +18,7 @@ const parseToJSONCompatObj = obj => {
     const result = {};
     Object.entries(obj)
         .forEach(([k, v]) => {
-            if (v instanceof Buffer) result[k] = Buffer(v).toString('hex');
+            if (v instanceof Buffer) result[k] = Buffer.from(v).toString('hex');
             else if (typeof v === 'bigint') result[k] = Number(v);
             else if (typeof v === 'object' && v !== null) result[k] = parseToJSONCompatObj(v);
             else result[k] = v;
