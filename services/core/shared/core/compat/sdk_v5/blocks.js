@@ -77,13 +77,6 @@ const getBlocks = async params => {
 		meta: {},
 	};
 
-	if (params.sort
-		&& ['height', 'timestamp'].some(prop => params.sort.includes(prop))) {
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-		params.sort = [{ column: sortProp, order: sortOrder }];
-	}
-
 	const { blockId } = params;
 	delete params.blockId;
 	if (blockId) params.id = blockId;
