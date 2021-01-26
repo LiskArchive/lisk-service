@@ -102,7 +102,6 @@ const getBlocks = async params => {
 			block.totalBurnt += txnMinFee;
 			block.totalFee += Number(txn.fee) - txnMinFee;
 		});
-		delete block.payload;
 		return block;
 	});
 
