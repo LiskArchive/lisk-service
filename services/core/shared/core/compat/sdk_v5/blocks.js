@@ -46,9 +46,6 @@ const indexBlocks = async originalBlocks => {
 		skimmedBlock.unixTimestamp = block.timestamp;
 		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
 
-		// TODO: Check accounts and update the below params. Better to use 3NF instead.
-		skimmedBlock.generatorAddress = block.generatorAddress || null;
-		skimmedBlock.generatorUsername = block.generatorUsername || null;
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
@@ -86,6 +83,10 @@ const getBlocks = async params => {
 	indexBlocks(blocks.data);
 
 	blocks.data.map(block => {
+		// TODO: Update the below params after accounts index is implemented
+		block.generatorAddress = null;
+		block.generatorUsername = null;
+
 		block.unixTimestamp = block.timestamp;
 		block.totalForged = Number(block.reward);
 		block.totalBurnt = 0;
