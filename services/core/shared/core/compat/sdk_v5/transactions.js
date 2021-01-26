@@ -22,7 +22,6 @@ const { knex } = require('../../../database');
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
-		if (block.payload) {
 			const transactions = block.payload.map(tx => {
 				const availableLiskModules = getRegisteredModules();
 				const txModule = availableLiskModules
@@ -46,8 +45,6 @@ const indexTransactions = async blocks => {
 				return skimmedTransaction;
 			});
 			return transactions;
-		}
-		return block;
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
