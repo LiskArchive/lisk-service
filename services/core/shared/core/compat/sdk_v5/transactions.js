@@ -85,8 +85,8 @@ const getTransactions = async params => {
 		params.propBetween = {
 			property: 'timestamp',
 			from: Number(params.fromTimestamp) || 0,
-			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000)
-		}
+			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
+		};
 	}
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);

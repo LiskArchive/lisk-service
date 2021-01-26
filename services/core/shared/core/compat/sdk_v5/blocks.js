@@ -80,7 +80,8 @@ const getBlocks = async params => {
 	if (blockId) params.id = blockId;
 
 	// TODO: Remove the check when fully implemented. Currently added for cold start bootstrapping.
-	if (!params.heightRange && !(Object.getOwnPropertyNames(params).length === 1 && params.limit === 1)) {
+	if (!params.heightRange
+		&& !(Object.getOwnPropertyNames(params).length === 1 && params.limit === 1)) {
 		const resultSet = await blocksDB.find(params);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
