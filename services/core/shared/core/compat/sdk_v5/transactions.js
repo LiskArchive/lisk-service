@@ -16,23 +16,38 @@
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 // const { getBlocks } = require('./blocks');
-const { getRegisteredModules, parseToJSONCompatObj } = require('../common');
+const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
-const availableLiskModules = getRegisteredModules();
+const availableLiskModuleAssets = getRegisteredModuleAssets();
 
+const resolveModuleAsset = (moduleAssetVal) => {
+	const [module, asset] = moduleAssetVal.split(':');
+	let response;
+	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(asset))) {
+		const [{ name }] = (availableLiskModuleAssets
+			.filter(moduleAsset => moduleAsset.id === moduleAssetVal));
+		response = name;
+	} else {
+		const [{ id }] = (availableLiskModuleAssets
+			.filter(moduleAsset => moduleAsset.name === moduleAssetVal));
+		response = id;
+	}
+	if ([undefined, null, '']
+		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
+	return response;
+};
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
-			const { id, name } = (availableLiskModules
-				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID)))[0];
+			const [{ id }] = availableLiskModuleAssets
+				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 			const skimmedTransaction = {};
 			skimmedTransaction.id = tx.id;
 			skimmedTransaction.height = block.height;
 			skimmedTransaction.blockId = block.id;
 			skimmedTransaction.moduleAssetId = id;
-			skimmedTransaction.moduleAssetName = name;
 			skimmedTransaction.timestamp = block.timestamp;
 			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
 			skimmedTransaction.nonce = tx.nonce;
@@ -49,8 +64,8 @@ const indexTransactions = async blocks => {
 };
 
 const normalizeTransaction = tx => {
-	const { id, name } = (availableLiskModules
-		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID)))[0];
+	const [{ id, name }] = availableLiskModuleAssets
+		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 	tx = parseToJSONCompatObj(tx);
 	tx.moduleAssetId = id;
 	tx.moduleAssetName = name;
@@ -70,6 +85,11 @@ const getTransactions = async params => {
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		};
 	}
+	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
+	delete params.moduleAssetName;
+
+	// TODO: Add check to ensure nonce based sorting always requires senderId,
+	// Update once account index is implemented.
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	const response = await coreApi.getTransactions(params);
