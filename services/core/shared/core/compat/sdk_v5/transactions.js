@@ -38,10 +38,6 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.nonce = tx.nonce;
 			skimmedTransaction.amount = tx.asset.amount;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
-
-			// TODO: Update the below params after accounts index is implemented
-			skimmedTransaction.recipientPublicKey = null;
-			skimmedTransaction.senderId = null;
 			return skimmedTransaction;
 		});
 		return transactions;
