@@ -25,14 +25,14 @@ const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
-			const [moduleAssetId, moduleAssetName] = availableLiskModules
-				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			const { id, name } = (availableLiskModules
+				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID)))[0];
 			const skimmedTransaction = {};
 			skimmedTransaction.id = tx.id;
 			skimmedTransaction.height = block.height;
 			skimmedTransaction.blockId = block.id;
-			skimmedTransaction.moduleAssetId = moduleAssetId;
-			skimmedTransaction.moduleAssetName = moduleAssetName;
+			skimmedTransaction.moduleAssetId = id;
+			skimmedTransaction.moduleAssetName = name;
 			skimmedTransaction.timestamp = block.timestamp;
 			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
 			skimmedTransaction.nonce = tx.nonce;
@@ -49,11 +49,11 @@ const indexTransactions = async blocks => {
 };
 
 const normalizeTransaction = tx => {
-	const [moduleAssetId, moduleAssetName] = availableLiskModules
-		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+	const { id, name } = (availableLiskModules
+		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID)))[0];
 	tx = parseToJSONCompatObj(tx);
-	tx.moduleAssetId = moduleAssetId;
-	tx.moduleAssetName = moduleAssetName;
+	tx.moduleAssetId = id;
+	tx.moduleAssetName = name;
 	return tx;
 };
 
@@ -79,7 +79,7 @@ const getTransactions = async params => {
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,
 		async transaction => {
-			resultSet.filter(tx => {
+			resultSet.map(tx => {
 				if (tx.id === transaction.id) {
 					transaction.unixTimestamp = tx.timestamp;
 					transaction.height = tx.height;
