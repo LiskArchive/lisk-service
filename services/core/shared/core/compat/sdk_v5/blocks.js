@@ -23,7 +23,7 @@ const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
 const logger = Logger();
-const blocksCache = CacheRedis('blocks_SDKv5', config.endpoints.redis);
+const blocksCache = CacheRedis('blocks', config.endpoints.redis);
 
 let finalizedHeight;
 
