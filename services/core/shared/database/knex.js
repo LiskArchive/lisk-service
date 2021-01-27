@@ -25,7 +25,7 @@ const createDb = async (migrationDir, connEndpoint) => {
         client: 'mysql',
         version: '5.7',
         connection: connEndpoint,
-        // useNullAsDefault: true,
+        useNullAsDefault: true,
         log: {
             warn(message) { logger.warn(message); },
             error(message) { logger.error(message); },
@@ -51,7 +51,7 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
         connectionPool[connPoolKey] = await createDb(migrationDir, connEndpoint);
     }
 
-    const knex = connectionPool[connPoolKey];
+    const knex = await connectionPool[connPoolKey];
 
     const write = async (row) => knex.transaction(async trx => {
         const inserts = await trx(tableName).insert(row).onConflict('id').merge()
@@ -89,7 +89,20 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
     const find = async (params) => {
         // TODO: Remove after PouchDB specific code is removed from the shared layer
         if (params.selector) params = params.selector;
-        const res = await knex.select().table(tableName).where(params);
+
+        let res;
+        if (params.propBetween) {
+            const { propBetween } = params;
+            delete params.propBetween;
+            res = await knex.select().table(tableName)
+                .whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+        } else if (params.sort) {
+            const [sortProp, sortOrder] = params.sort.split(':');
+            delete params.sort;
+            res = await knex.select().table(tableName).where(params).orderBy(sortProp, sortOrder);
+        } else {
+            res = await knex.select().table(tableName).where(params);
+        }
         return res;
     };
 
@@ -107,14 +120,14 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
         return knex(tableName).where(whereParams).del();
     };
 
-    const deleteById = async (id) => deleteByProperty('id', id);
+    const deleteById = async (id) => deleteByProperty({ id });
 
     const deleteBatch = async (rows) => {
         if (rows instanceof Array && rows.length === 0) return null;
         return knex(tableName).delete().whereIn('id', rows.map(row => row.id));
     };
 
-    const getCount = async () => knex(tableName).count({ count: '*' });
+    const getCount = async () => knex(tableName).count({ count: 'id' });
 
     return {
         write,

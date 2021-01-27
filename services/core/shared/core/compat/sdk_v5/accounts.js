@@ -14,11 +14,11 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const coreApi = require('./coreApi');
 
+const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
 const { knex } = require('../../../database');
-
+const { parseToJSONCompatObj } = require('../common');
 // const { getDelegates } = require('./delegates');
 
 // const balanceUnlockWaitHeightSelf = 260000;
@@ -69,17 +69,6 @@ const confirmSecondPublicKey = async secondPublicKey => {
 // 	return accounts;
 // };
 
-const parseBigIntToNumber = obj => {
-	const result = {};
-	Object.entries(obj)
-		.forEach(([k, v]) => {
-			if (typeof v === 'object' && v !== null) result[k] = parseBigIntToNumber(v);
-			else if (typeof v === 'bigint') result[k] = Number(v);
-			else result[k] = v;
-		});
-	return result;
-};
-
 const indexAccounts = async accounttoIndex => {
 	const accountsDB = await knex('accounts');
 	const accounts = accounttoIndex.map(account => {
@@ -108,7 +97,7 @@ const normalizeAccount = account => {
 			return vote;
 		});
 
-	return parseBigIntToNumber(account);
+	return parseToJSONCompatObj(account);
 };
 
 const getAccounts = async params => {

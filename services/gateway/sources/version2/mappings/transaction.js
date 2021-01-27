@@ -22,9 +22,9 @@ module.exports = {
 	height: '=,number',
 	nonce: '=,string',
 	block: {
-		id: 'block.id,string',
+		id: 'blockId,string',
 		height: '=,number',
-		timestamp: '=,number',
+		timestamp: 'unixTimestamp,number',
 	},
 	sender: {
         address: '=,string',

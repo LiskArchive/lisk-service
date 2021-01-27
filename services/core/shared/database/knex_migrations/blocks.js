@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,17 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tableName = 'accounts';
+const tableName = 'blocks';
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
-        // Indexed properties
-        table.string('address').primary();
-        table.string('publicKey').index();
-        table.boolean('isDelegate').notNullable().index();
-        table.bigInteger('balance').notNullable().index();
-        table.integer('rank').index();
-        table.string('username').index();
+        table.string('id').primary();
+        table.integer('height').notNullable().index();
+        table.integer('unixTimestamp').notNullable().index();
+        table.string('generatorPublicKey').notNullable().index();
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
