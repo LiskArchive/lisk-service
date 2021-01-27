@@ -14,8 +14,8 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const coreApi = require('./coreApi');
-// const { getBlocks } = require('./blocks');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
@@ -43,6 +43,7 @@ const indexTransactions = async blocks => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			const senderId = getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'));
 			const skimmedTransaction = {};
 			skimmedTransaction.id = tx.id;
 			skimmedTransaction.height = block.height;
@@ -50,6 +51,7 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.moduleAssetId = id;
 			skimmedTransaction.timestamp = block.timestamp;
 			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
+			skimmedTransaction.senderId = senderId.toString('hex');
 			skimmedTransaction.nonce = tx.nonce;
 			skimmedTransaction.amount = tx.asset.amount || null;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
@@ -103,7 +105,7 @@ const getTransactions = async params => {
 			transaction.unixTimestamp = indexedTxInfo.timestamp;
 			transaction.height = indexedTxInfo.height;
 			transaction.blockId = indexedTxInfo.blockId;
-
+			transaction.senderId = indexedTxInfo.senderId;
 			return transaction;
 		},
 		{ concurrency: transactions.data.length },
