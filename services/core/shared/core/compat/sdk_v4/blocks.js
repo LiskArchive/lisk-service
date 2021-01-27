@@ -26,7 +26,10 @@ const {
 	validateTimestamp,
 } = require('../common');
 
-const redis = require('../../../redis');
+const mysqlIdx = require('../../../indexdb/mysql');
+const blockIdxSchema = require('./schema/blocks');
+
+const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
 
 const logger = Logger();
 
@@ -49,46 +52,6 @@ const updateFinalizedHeight = async () => {
 };
 
 const getFinalizedHeight = () => heightFinalized;
-
-const blockIdxSchema = {
-	primaryKey: 'id',
-	schema: {
-		id: { type: 'string', store: true },
-		height: { type: 'number', store: true },
-		timestamp: { type: 'number', store: true },
-		unixTimestamp: { type: 'number', store: true },
-		numberOfTransactions: { type: 'number', store: true },
-	},
-	indexes: {
-		id: { type: 'key', json: true },
-		'height:id': { type: 'range' },
-		'timestamp:id': { type: 'range' },
-		'unixTimestamp:numberOfTransactions': { type: 'range' },
-	},
-	purge: {
-		interval: 3600, // second
-		maxItems: 202,
-		purgeBy: 'height',
-	},
-};
-
-const getBlockIdx = () => redis('blockIdx', blockIdxSchema);
-
-const indexBlock = async block => {
-	const timestampDb = await redis('timestampDb', ['timestamp']);
-	const unixTimestampDb = await redis('unixTimestampDb', ['timestamp']);
-
-	bIdCache.set(block.id, block.timestamp);
-
-	bIdCache.set('lowestIndexedHeight', block.height);
-	bIdCache.set('topIndexedHeight', block.height);
-
-	timestampDb.writeRange(block.timestamp, block.id);
-	unixTimestampDb.writeRange(block.unixTimestamp, {
-		id: block.id,
-		numberOfTransactions: block.numberOfTransactions,
-	});
-};
 
 const getBlocks = async (params) => {
 	const blocks = {
@@ -125,8 +88,7 @@ const getBlocks = async (params) => {
 
 	blocks.data.forEach(block => {
 		if (block.numberOfTransactions > 0) {
-			// indexBlock(block);
-			blockIdx.write(block);
+			blockIdx.upsert(block);
 			signals.get('indexTransactions').dispatch(block.id);
 		}
 	});
@@ -158,8 +120,7 @@ const buildIndex = async (from, to) => {
 		blocks.data.forEach(async block => {
 			if (!(await bIdCache.get(block.id))) {
 				if (block.numberOfTransactions > 0) {
-					// indexBlock(block);
-					blockIdx.write(block);
+					blockIdx.upsert(block);
 					signals.get('indexTransactions').dispatch(block.id);
 				}
 			}
@@ -195,6 +156,7 @@ const init = async () => {
 	}
 };
 
+// TODO: remove auto-init, breaks unit tests
 init();
 
 module.exports = {
