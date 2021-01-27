@@ -74,12 +74,11 @@ const getBlocks = async params => {
 	}
 
 	const response = await coreApi.getBlocks(params);
-	if (response.data) blocks.data = response.data.map(block => Object
-		.assign(normalizeBlock(block.header), { payload: block.payload }));
+	if (response.data) blocks.data = response.data
+		.map(block => ({ ...block.header, payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
-
-	blocks.data.map(block => {
+	blocks.data = blocks.data.map(block => {
 		// TODO: Update the below params after accounts index is implemented
 		block.generatorAddress = null;
 		block.generatorUsername = null;
@@ -96,10 +95,12 @@ const getBlocks = async params => {
 			block.totalBurnt += txnMinFee;
 			block.totalFee += Number(txn.fee) - txnMinFee;
 		});
-		block.payload = block.payload.map(o => parseToJSONCompatObj(o));
-		return block;
+
+		return normalizeBlock(block);
 	});
+
 	indexBlocks(blocks.data);
+
 	return blocks;
 };
 
