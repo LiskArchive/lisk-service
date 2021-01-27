@@ -51,7 +51,7 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.timestamp = block.timestamp;
 			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
 			skimmedTransaction.nonce = tx.nonce;
-			skimmedTransaction.amount = tx.asset.amount;
+			skimmedTransaction.amount = tx.asset.amount || null;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
 			return skimmedTransaction;
 		});
@@ -99,14 +99,11 @@ const getTransactions = async params => {
 	transactions.data = await BluebirdPromise.map(
 		transactions.data,
 		async transaction => {
-			resultSet.map(tx => {
-				if (tx.id === transaction.id) {
-					transaction.unixTimestamp = tx.timestamp;
-					transaction.height = tx.height;
-					transaction.blockId = tx.blockId;
-				}
-				return tx;
-			});
+			const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
+			transaction.unixTimestamp = indexedTxInfo.timestamp;
+			transaction.height = indexedTxInfo.height;
+			transaction.blockId = indexedTxInfo.blockId;
+
 			return transaction;
 		},
 		{ concurrency: transactions.data.length },
