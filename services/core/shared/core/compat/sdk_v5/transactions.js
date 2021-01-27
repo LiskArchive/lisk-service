@@ -25,14 +25,14 @@ const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
-			const txModule = availableLiskModules
+			const [moduleAssetId, moduleAssetName] = availableLiskModules
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 			const skimmedTransaction = {};
 			skimmedTransaction.id = tx.id;
 			skimmedTransaction.height = block.height;
 			skimmedTransaction.blockId = block.id;
-			skimmedTransaction.moduleAssetId = txModule[0].id;
-			skimmedTransaction.moduleAssetName = txModule[0].name;
+			skimmedTransaction.moduleAssetId = moduleAssetId;
+			skimmedTransaction.moduleAssetName = moduleAssetName;
 			skimmedTransaction.timestamp = block.timestamp;
 			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
 			skimmedTransaction.nonce = tx.nonce;
@@ -53,11 +53,11 @@ const indexTransactions = async blocks => {
 };
 
 const normalizeTransaction = tx => {
-	const txModule = availableLiskModules
+	const [moduleAssetId, moduleAssetName] = availableLiskModules
 		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 	tx = parseToJSONCompatObj(tx);
-	tx.moduleAssetId = txModule[0].id;
-	tx.moduleAssetName = txModule[0].name;
+	tx.moduleAssetId = moduleAssetId;
+	tx.moduleAssetName = moduleAssetName;
 	return tx;
 };
 
