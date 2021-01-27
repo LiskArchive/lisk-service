@@ -43,12 +43,6 @@ const confirmPublicKey = async publicKey => {
 	return (account && account.publicKey === publicKey);
 };
 
-const confirmSecondPublicKey = async secondPublicKey => {
-	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
-	const account = await coreCache.getCachedAccountBySecondPublicKey(secondPublicKey);
-	return (account && account.secondPublicKey === secondPublicKey);
-};
-
 // const resolveAccountsInfo = async accounts => {
 // 	accounts.map(async account => {
 // 		if (account.isDelegate) {
@@ -71,13 +65,13 @@ const confirmSecondPublicKey = async secondPublicKey => {
 
 const indexAccounts = async accounttoIndex => {
 	const accountsDB = await knex('accounts');
-	const transactionsDB = await knex('transactions');
+	const blocksDB = await knex('blocks');
 	const accounts = await BluebirdPromise.map(
 		accounttoIndex, async account => {
 			const skimmedAccounts = {};
-			const [{ senderId }] = await transactionsDB.find({ senderId: account.address });
+			const [{ generatorPublicKey }] = await blocksDB.find({ generatorAddress: account.address });
 			skimmedAccounts.address = account.address;
-			skimmedAccounts.publicKey = senderId || null;
+			skimmedAccounts.publicKey = generatorPublicKey || null;
 			skimmedAccounts.isDelegate = account.isDelegate;
 			skimmedAccounts.username = account.dpos.delegate.username || null;
 			skimmedAccounts.balance = account.token.balance;
@@ -129,20 +123,12 @@ const getAccounts = async params => {
 		}
 		requestParams.publicKey = params.publicKey;
 	}
-	if (params.secondPublicKey && typeof params.secondPublicKey === 'string') {
-		if (!validatePublicKey(params.secondPublicKey)
-			|| !(await confirmSecondPublicKey(params.secondPublicKey))
-		) {
-			return {};
-		}
-		requestParams.secondPublicKey = params.secondPublicKey;
-	}
 	const response = await coreApi.getAccounts(requestParams);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
+	indexAccounts(accounts.data);
 
 	// accounts.data = await resolveAccountsInfo(accounts.data);
-	indexAccounts(accounts.data);
 	return accounts;
 };
 

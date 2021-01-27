@@ -94,8 +94,8 @@ const getTransactions = async params => {
 	// TODO: Add check to ensure nonce based sorting always requires senderId,
 	// Update once account index is implemented.
 	const resultSet = await transactionsDB.find(params);
-	if (resultSet.length) {
-		params.ids = resultSet.map(row => row.id);
+	if (resultSet.length) params.ids = resultSet.map(row => row.id);
+	if (params.ids || params.id) {
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
 		if (response.meta) transactions.meta = response.meta;
