@@ -43,10 +43,18 @@ const {
     getPeers,
 } = require('./peers');
 
+const {
+    getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
+} = require('./coreCache');
+
 const nop = async () => { };
 
 module.exports = {
     ...require('../sdk_v4'),
+    ...require('./coreCache'),
 
     events,
 
@@ -66,6 +74,11 @@ module.exports = {
     getPeers,
 
     getForgers,
+
+    getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
 
     getDelegates: nop,
 
