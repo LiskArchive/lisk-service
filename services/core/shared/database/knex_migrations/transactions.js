@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -29,7 +29,7 @@ exports.up = knex => knex.schema
         table.integer('timestamp').index();
         table.string('senderPublicKey').notNullable().index();
         table.string('recipientId').index();
-        table.integer('amount').notNullable().index();
+        table.integer('amount').index();
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
