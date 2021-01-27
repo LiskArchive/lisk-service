@@ -71,15 +71,20 @@ const confirmSecondPublicKey = async secondPublicKey => {
 
 const indexAccounts = async accounttoIndex => {
 	const accountsDB = await knex('accounts');
-	const accounts = accounttoIndex.map(account => {
-		const skimmedAccounts = {};
-		skimmedAccounts.address = account.address;
-		skimmedAccounts.publicKey = account.publicKey || null;
-		skimmedAccounts.isDelegate = account.isDelegate;
-		skimmedAccounts.username = account.dpos.delegate.username || null;
-		skimmedAccounts.balance = account.token.balance;
-		return skimmedAccounts;
-	});
+	const transactionsDB = await knex('transactions');
+	const accounts = await BluebirdPromise.map(
+		accounttoIndex, async account => {
+			const skimmedAccounts = {};
+			const [{ senderId }] = await transactionsDB.find({ senderId: account.address });
+			skimmedAccounts.address = account.address;
+			skimmedAccounts.publicKey = senderId || null;
+			skimmedAccounts.isDelegate = account.isDelegate;
+			skimmedAccounts.username = account.dpos.delegate.username || null;
+			skimmedAccounts.balance = account.token.balance;
+			return skimmedAccounts;
+		},
+		{ concurrency: accounttoIndex.length },
+	);
 	await accountsDB.writeBatch(accounts);
 };
 
@@ -132,7 +137,6 @@ const getAccounts = async params => {
 		}
 		requestParams.secondPublicKey = params.secondPublicKey;
 	}
-
 	const response = await coreApi.getAccounts(requestParams);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;

@@ -37,6 +37,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
 	return response;
 };
+
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
 	const txnMultiArray = blocks.map(block => {
@@ -93,23 +94,25 @@ const getTransactions = async params => {
 	// TODO: Add check to ensure nonce based sorting always requires senderId,
 	// Update once account index is implemented.
 	const resultSet = await transactionsDB.find(params);
-	if (resultSet.length) params.ids = resultSet.map(row => row.id);
-	const response = await coreApi.getTransactions(params);
-	if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
-	if (response.meta) transactions.meta = response.meta;
+	if (resultSet.length) {
+		params.ids = resultSet.map(row => row.id);
+		const response = await coreApi.getTransactions(params);
+		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
+		if (response.meta) transactions.meta = response.meta;
 
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => {
-			const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
-			transaction.unixTimestamp = indexedTxInfo.timestamp;
-			transaction.height = indexedTxInfo.height;
-			transaction.blockId = indexedTxInfo.blockId;
-			transaction.senderId = indexedTxInfo.senderId;
-			return transaction;
-		},
-		{ concurrency: transactions.data.length },
-	);
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
+				transaction.unixTimestamp = indexedTxInfo.timestamp;
+				transaction.height = indexedTxInfo.height;
+				transaction.blockId = indexedTxInfo.blockId;
+				transaction.senderId = indexedTxInfo.senderId;
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
+	}
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset || 0;
