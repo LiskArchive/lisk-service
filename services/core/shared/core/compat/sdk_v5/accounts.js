@@ -83,13 +83,13 @@ const parseBigIntToNumber = obj => {
 const indexAccounts = async accounttoIndex => {
 	const accountsDB = await knex('accounts');
 	const accounts = accounttoIndex.map(account => {
-		const skimmedTransaction = {};
-		skimmedTransaction.address = account.address;
-		skimmedTransaction.publicKey = account.publicKey || null;
-		skimmedTransaction.isDelegate = account.isDelegate;
-		skimmedTransaction.username = account.dpos.delegate.username || null;
-		skimmedTransaction.balance = account.token.balance;
-		return skimmedTransaction;
+		const skimmedAccounts = {};
+		skimmedAccounts.address = account.address;
+		skimmedAccounts.publicKey = account.publicKey || null;
+		skimmedAccounts.isDelegate = account.isDelegate;
+		skimmedAccounts.username = account.dpos.delegate.username || null;
+		skimmedAccounts.balance = account.token.balance;
+		return skimmedAccounts;
 	});
 	await accountsDB.writeBatch(accounts);
 };
