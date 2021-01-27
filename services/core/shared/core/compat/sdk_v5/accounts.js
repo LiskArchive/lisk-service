@@ -17,6 +17,7 @@ const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 
 const coreCache = require('./coreCache');
+const { knex } = require('../../../database');
 
 // const { getDelegates } = require('./delegates');
 
@@ -79,6 +80,20 @@ const parseBigIntToNumber = obj => {
 	return result;
 };
 
+const indexAccounts = async accounttoIndex => {
+	const accountsDB = await knex('accounts');
+	const accounts = accounttoIndex.map(account => {
+		const skimmedTransaction = {};
+		skimmedTransaction.address = account.address;
+		skimmedTransaction.publicKey = account.publicKey || null;
+		skimmedTransaction.isDelegate = account.isDelegate;
+		skimmedTransaction.username = account.dpos.delegate.username || null;
+		skimmedTransaction.balance = account.token.balance;
+		return skimmedTransaction;
+	});
+	await accountsDB.writeBatch(accounts);
+};
+
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
 	account.isDelegate = !!(account.dpos && account.dpos.delegate);
@@ -134,7 +149,7 @@ const getAccounts = async params => {
 	if (response.meta) accounts.meta = response.meta;
 
 	// accounts.data = await resolveAccountsInfo(accounts.data);
-
+	indexAccounts(accounts.data);
 	return accounts;
 };
 
