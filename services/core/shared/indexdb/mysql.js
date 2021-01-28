@@ -119,22 +119,37 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 	};
 
-	const find = async (params) => {
+	const find = async (params, columns) => {
 		// TODO: Remove after PouchDB specific code is removed from the shared layer
 		if (params.selector) params = params.selector;
+
+		const limit = params.limit || 1;
+		const offset = params.offset || 0;
+
+		delete params.limit;
+		delete params.offset;
 
 		let res;
 		if (params.propBetween) {
 			const { propBetween } = params;
 			delete params.propBetween;
-			res = await knex.select().table(tableName)
+			res = await knex.select(columns).table(tableName)
 				.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
 		} else if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			delete params.sort;
-			res = await knex.select().table(tableName).where(params).orderBy(sortProp, sortOrder);
+			res = await knex.select(columns)
+				.table(tableName)
+				.where(params)
+				.orderBy(sortProp, sortOrder)
+				.limit(limit)
+				.offset(offset);
 		} else {
-			res = await knex.select().table(tableName).where(params);
+			res = await knex.select(columns)
+				.table(tableName)
+				.where(params)
+				.limit(limit)
+				.offset(offset);
 		}
 		return res;
 	};
