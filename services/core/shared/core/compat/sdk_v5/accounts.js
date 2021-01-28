@@ -28,6 +28,11 @@ const parseAddress = address => {
 	return address.toUpperCase();
 };
 
+const validateBoolean = val => {
+	if (val.toString().match(/^(true|[1-9][0-9]*|[0-9]*[1-9]+|yes)$/i)) return true;
+	return false;
+};
+
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
 const confirmAddress = async address => {
@@ -117,6 +122,7 @@ const getAccounts = async params => {
 			return {};
 		}
 	}
+	if (params.isDelegate) params.isDelegate = validateBoolean(params.isDelegate);
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet.map(row => row.address);
 	const response = await coreApi.getAccounts(params);
