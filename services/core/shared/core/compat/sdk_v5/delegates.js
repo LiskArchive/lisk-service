@@ -32,6 +32,7 @@ const getDelegates = async () => {
             address: delegate.address,
             publicKey: delegate.publicKey,
         };
+        delegate.username = delegate.dpos.delegate.username;
         delegate.balance = delegate.token.balance;
         delegate.pomHeights = delegate.dpos.delegate.pomHeights
             .sort((a, b) => a - b).reverse().slice(0, 5)
