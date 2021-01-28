@@ -19,23 +19,28 @@ const config = require('../../config');
 const logger = Logger();
 
 const connectionPool = {};
+const tablePool = {};
 
 const loadSchema = async (knex, tableName, tableConfig) => {
-	const { primaryKey, schema, index } = tableConfig;
+	const { primaryKey, schema, indexes } = tableConfig;
+
+	if (await knex.schema.hasTable(tableName)) return knex;
 
 	await knex.schema
 	.createTable(tableName, table => {
 		Object.keys(schema).map(p => {
-			const kProp = table[schema[p].type](schema[p]);
+			const kProp = (table[schema[p].type])(p);
 			if (schema[p].null === false) kProp.notNullable();
 			if (p === primaryKey) kProp.primary();
-			if (index[p]) kProp.index();
+			if (indexes[p]) kProp.index();
 			return kProp;
 		});
 	});
+
+	return knex;
 };
 
-const createDb = async (tableName, tableConfig, connEndpoint) => {
+const createDb = async (connEndpoint) => {
 	const knex = require('knex')({
 		client: 'mysql',
 		version: '5.7',
@@ -49,36 +54,53 @@ const createDb = async (tableName, tableConfig, connEndpoint) => {
 		},
 	});
 
-	await loadSchema(knex, tableName, tableConfig);
-
-	// await knex.migrate.latest(); // ?
-
 	return knex;
 };
 
-const getDbInstance = async (tableName, schema, connEndpoint = config.endpoints.mysql) => {
-	const userName = connEndpoint.split('//')[1].split(':')[0];
-	const hostPort = connEndpoint.split('@')[1].split('/')[0];
-	const connPoolKey = [userName, hostPort].join('@');
-	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
-	if (!connectionPool[connPoolKeyTable]) {
-		connectionPool[connPoolKeyTable] = await createDb(tableName, schema, connEndpoint);
+const cast = (val, type) => {
+	if (type === 'number') return Number(val);
+	if (type === 'integer') return Number(val);
+	if (type === 'string') return String(val);
+	if (type === 'boolean') return Boolean(val);
+	return val;
+};
+
+const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
+	// const userName = connEndpoint.split('//')[1].split(':')[0];
+	// const hostPort = connEndpoint.split('@')[1].split('/')[0];
+	// const connPoolKey = [userName, hostPort].join('@');
+	const connPoolKeyTable = `${connEndpoint}/${tableName}`;
+
+	if (!connectionPool[connEndpoint]) {
+		connectionPool[connEndpoint] = await createDb(connEndpoint);
 	}
 
-	const knex = connectionPool[connPoolKeyTable];
+	const knex = connectionPool[connEndpoint];
 
-	const upsertOne = async (row) => knex.transaction(async trx => {
-		const inserts = await trx(tableName).insert(row).onConflict('id').merge()
-			.transacting(trx);
-		logger.info(`${inserts.length} row inserted/updated in '${tableName}' table`);
-		return inserts;
-	});
+	if (!tablePool[connPoolKeyTable]) {
+		await loadSchema(knex, tableName, tableConfig);
+		tablePool[connPoolKeyTable] = true;
+	}
 
-	const upsert = async (rows) => {
+	const { schema } = tableConfig;
+
+	const upsert = async (inputRows) => {
+		let rawRows = inputRows;
+		if (!Array.isArray(rawRows)) rawRows = [inputRows];
+
+		const rows = [];
+		rawRows.forEach(item => {
+			const row = {};
+			Object.keys(schema).forEach(o => {
+				row[o] = cast(item[o], schema[o].type);
+			});
+			rows.push(row);
+		});
+
 		try {
 			const chunkSize = 1000;
 			const ids = await knex.batchInsert(tableName, rows, chunkSize);
-			logger.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 			return ids;
 		} catch (error) {
 			const errCode = error.code;
@@ -91,7 +113,7 @@ const getDbInstance = async (tableName, schema, connEndpoint = config.endpoints.
 				// TODO: Consider replacing promise all to Bluebird
 				const inserts = await Promise.all(rows.map(row => trx(tableName).insert(row).onConflict('id').merge()
 					.transacting(trx)));
-				logger.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+				logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 				return inserts;
 			});
 		}
