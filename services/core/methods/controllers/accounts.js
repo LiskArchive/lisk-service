@@ -43,7 +43,12 @@ const getKnownAccounts = async () => {
 };
 
 const getDataForAccounts = async params => {
-	const accounts = await CoreService.getAccounts(params);
+	let accounts;
+	if (params.isDelegate) {
+		accounts = await CoreService.getDelegates(params);
+	} else {
+		accounts = await CoreService.getAccounts(params);
+	}
 
 	const response = {};
 	response.data = [];
@@ -82,12 +87,7 @@ const getAccounts = async params => {
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
 	try {
-		let response = [];
-		if (params.isDelegate) {
-			response = await CoreService.getDelegates(params);
-		} else {
-			response = await getDataForAccounts({ sort: 'balance:asc', ...params });
-		}
+		const response = await getDataForAccounts({ sort: 'balance:asc', ...params });
 
 		return {
 			data: response.data,
