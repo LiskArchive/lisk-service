@@ -92,7 +92,6 @@ const indexAccounts = async accounttoIndex => {
 
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
-	account.isDelegate = !(account.dpos.delegate.username.length === 0);
 	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
 	account.token.balance = Number(account.token.balance);
 	account.sequence.nonce = Number(account.sequence.nonce);
@@ -103,6 +102,7 @@ const normalizeAccount = account => {
 			vote.amount = Number(vote.amount);
 			return vote;
 		});
+	account.isDelegate = !(account.dpos.delegate.username.length === 0);
 
 	return parseToJSONCompatObj(account);
 };
