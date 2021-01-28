@@ -44,7 +44,7 @@ const indexAccountbyTxs = async txs => {
 	await BluebirdPromise.map(
 		txs,
 		async tx => {
-			getAccounts({ address: tx.senderId });
+			await getAccounts({ address: tx.senderId });
 		},
 		{ concurrency: txs.length },
 	);
@@ -75,7 +75,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	const result = await transactionsDB.writeBatch(allTransactions);
-	if (allTransactions.lastIndexOf) indexAccountbyTxs(allTransactions);
+	if (allTransactions.lastIndexOf) await indexAccountbyTxs(allTransactions);
 	return result;
 };
 

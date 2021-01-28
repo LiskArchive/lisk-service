@@ -45,12 +45,14 @@ const {
 
 const {
     getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
+    getCachedAccountByPublicKey,
+    getCachedAccountBySecondPublicKey,
+    getCachedAccountByUsername,
 } = require('./coreCache');
 
-const nop = async () => { };
+const {
+    getDelegates,
+} = require('./delegates');
 
 module.exports = {
     ...require('../sdk_v4'),
@@ -76,10 +78,10 @@ module.exports = {
     getForgers,
 
     getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
+    getCachedAccountByPublicKey,
+    getCachedAccountBySecondPublicKey,
+    getCachedAccountByUsername,
 
-    getDelegates: nop,
+    getDelegates,
 
 };

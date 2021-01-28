@@ -44,7 +44,7 @@ const indexAccountbyBlock = async blocks => {
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
-			getAccounts({ address: block.generatorAddress });
+			await getAccounts({ address: block.generatorAddress });
 		},
 		{ concurrency: blocks.length },
 	);
@@ -63,7 +63,7 @@ const indexBlocks = async originalBlocks => {
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
-	indexAccountbyBlock(blocks);
+	await indexAccountbyBlock(blocks);
 	await indexTransactions(originalBlocks);
 };
 

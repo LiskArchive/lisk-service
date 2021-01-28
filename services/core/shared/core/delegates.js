@@ -167,12 +167,16 @@ const getDelegates = async params => {
 
 const loadAllDelegates = async () => {
 	const maxCount = 10000;
-	delegateList = await requestAll(coreApi.getDelegates, {}, maxCount);
+	if (sdkVersion <= 4) {
+		delegateList = await requestAll(coreApi.getDelegates, {}, maxCount);
+	} else {
+		delegateList = (await coreApi.getDelegates()).data;
+	}
 	await BluebirdPromise.map(
 		delegateList,
 		async delegate => {
-			delegate.address = delegate.account.address;
-			delegate.publicKey = delegate.account.publicKey;
+			delegate.address = delegate.account ? delegate.account.address : delegate.address;
+			delegate.publicKey = delegate.account ? delegate.account.publicKey : delegate.publicKey;
 			await cacheRedisDelegates.set(delegate.address, delegate);
 			await cacheRedisDelegates.set(delegate.username, delegate);
 			return delegate;
