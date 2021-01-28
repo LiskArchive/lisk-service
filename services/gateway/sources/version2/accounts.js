@@ -21,8 +21,8 @@ module.exports = {
 	params: {
 		address: '=',
 		publicKey: 'publickey',
-		secondPublicKey: 'secpubkey',
 		username: '=',
+		isDelegate: '=',
 		limit: '=',
 		offset: '=',
 		sort: '=',

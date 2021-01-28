@@ -58,15 +58,23 @@ const resolveAccountsInfo = async accounts => {
 	return accounts;
 };
 
+const resolvePublicKeyByAddress = async (address) => {
+	const blocksDB = await knex('blocks');
+	const transactionsDB = await knex('transactions');
+	let [response] = await blocksDB.find({ generatorAddress: address });
+	if (!response) [response] = await transactionsDB.find({ senderId: address });
+	const publickey = response.generatorPublicKey || response.senderPublicKey;
+	return publickey;
+};
+
 const indexAccounts = async accounttoIndex => {
 	const accountsDB = await knex('accounts');
-	const blocksDB = await knex('blocks');
 	const accounts = await BluebirdPromise.map(
 		accounttoIndex, async account => {
 			const skimmedAccounts = {};
-			const [{ generatorPublicKey }] = await blocksDB.find({ generatorAddress: account.address });
+			const publickey = await resolvePublicKeyByAddress(account.address);
 			skimmedAccounts.address = account.address;
-			skimmedAccounts.publicKey = generatorPublicKey || null;
+			skimmedAccounts.publicKey = publickey || null;
 			skimmedAccounts.isDelegate = account.isDelegate;
 			skimmedAccounts.username = account.dpos.delegate.username || null;
 			skimmedAccounts.balance = account.token.balance;

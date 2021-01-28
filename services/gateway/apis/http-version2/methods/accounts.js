@@ -25,6 +25,7 @@ module.exports = {
 		address: { optional: true, type: 'string', min: 3, max: 41 },
 		publickey: { optional: true, type: 'string', min: 64, max: 64 },
 		username: { optional: true, type: 'string', min: 1, max: 20 },
+		isDelegate: { optional: true, type: 'boolean', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
