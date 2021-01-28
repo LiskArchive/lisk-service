@@ -44,7 +44,7 @@ const confirmPublicKey = async publicKey => {
 
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
-		account.dpos.delegate.unlocking = account.dpos.delegate.unlocking.map(item => {
+		account.dpos.unlocking = account.dpos.unlocking.map(item => {
 			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
 				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
 			item.height = {
@@ -79,7 +79,7 @@ const indexAccounts = async accounttoIndex => {
 
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
-	account.isDelegate = !!(account.dpos && account.dpos.delegate);
+	account.isDelegate = !(account.dpos.delegate.username.length === 0);
 	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
 	account.token.balance = Number(account.token.balance);
 	account.sequence.nonce = Number(account.sequence.nonce);
@@ -95,33 +95,35 @@ const normalizeAccount = account => {
 };
 
 const getAccounts = async params => {
+	const accountsDB = await knex('accounts');
 	const accounts = {
 		data: [],
 		meta: {},
 	};
 
-	const requestParams = {
-		limit: params.limit,
-		offset: params.offset,
-		sort: params.sort,
-		username: params.username,
-	};
-
 	if (params.address && typeof params.address === 'string') {
-		const parsedAddress = parseAddress(params.address);
-		if (!(await confirmAddress(parsedAddress))) return {};
-		requestParams.address = parsedAddress;
+		if (!(await confirmAddress(params.address))) return {};
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey) || !(await confirmPublicKey(params.publicKey))) {
 			return {};
 		}
-		requestParams.publicKey = params.publicKey;
 	}
-	const response = await coreApi.getAccounts(requestParams);
+	const resultSet = await accountsDB.find(params);
+	if (resultSet.length) params.addresses = resultSet.map(row => row.address);
+	const response = await coreApi.getAccounts(params);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 
+	accounts.data = await BluebirdPromise.map(
+		accounts.data,
+		async account => {
+			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
+			if (indexedAccount) account.publicKey = indexedAccount.publicKey;
+			return account;
+		},
+		{ concurrency: accounts.data.length },
+	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
 	indexAccounts(accounts.data);
 	return accounts;
