@@ -107,12 +107,19 @@ const normalizeAccount = account => {
 	return parseToJSONCompatObj(account);
 };
 
-const getAccounts = async params => {
-	const accountsDB = await knex('accounts');
+const getAccountsFromCore = async (params) => {
 	const accounts = {
 		data: [],
 		meta: {},
 	};
+	const response = await coreApi.getAccounts(params);
+	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
+	if (response.meta) accounts.meta = response.meta;
+	return accounts;
+};
+
+const getAccounts = async params => {
+	const accountsDB = await knex('accounts');
 
 	// if (params.address && typeof params.address === 'string') {
 	// 	if (!(await confirmAddress(params.address))) return {};
@@ -125,10 +132,8 @@ const getAccounts = async params => {
 	if (params.isDelegate) params.isDelegate = validateBoolean(params.isDelegate);
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet.map(row => row.address);
-	const response = await coreApi.getAccounts(params);
-	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
-	if (response.meta) accounts.meta = response.meta;
 
+	const accounts = await getAccountsFromCore(params);
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
