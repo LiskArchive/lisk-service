@@ -30,8 +30,8 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: ['balance:asc', 'balance:desc', 'rank:asc', 'rank:desc', 'productivity:asc', 'productivity:desc'],
-			default: 'balance:asc',
+			enum: ['balance:asc', 'balance:desc', 'rank:asc', 'rank:desc'],
+			default: 'balance:desc',
 		},
 	},
 	source: accountsSource,
