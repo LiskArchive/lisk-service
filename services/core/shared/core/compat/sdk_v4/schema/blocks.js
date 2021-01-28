@@ -24,7 +24,7 @@ module.exports = {
 		numberOfTransactions: { type: 'integer' },
 	},
 	indexes: {
-		id: { type: 'key' },
+		// id: { type: 'key' },
 		height: { type: 'range' },
 		timestamp: { type: 'range' },
 		unixTimestamp: { type: 'range' },
