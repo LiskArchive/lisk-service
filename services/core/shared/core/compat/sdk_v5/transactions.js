@@ -16,6 +16,8 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const coreApi = require('./coreApi');
+const { getAccounts } = require('./accounts');
+
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
@@ -36,6 +38,16 @@ const resolveModuleAsset = (moduleAssetVal) => {
 	if ([undefined, null, '']
 		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
 	return response;
+};
+
+const indexAccountbyTxs = async txs => {
+	await BluebirdPromise.map(
+		txs,
+		async tx => {
+			getAccounts({ address: tx.senderId });
+		},
+		{ concurrency: txs.length },
+	);
 };
 
 const indexTransactions = async blocks => {
@@ -63,6 +75,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	const result = await transactionsDB.writeBatch(allTransactions);
+	if (allTransactions.lastIndexOf) indexAccountbyTxs(allTransactions);
 	return result;
 };
 
