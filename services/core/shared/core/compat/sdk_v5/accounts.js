@@ -19,10 +19,9 @@ const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
 const { knex } = require('../../../database');
 const { parseToJSONCompatObj } = require('../common');
-// const { getDelegates } = require('./delegates');
 
-// const balanceUnlockWaitHeightSelf = 260000;
-// const balanceUnlockWaitHeightDefault = 2000;
+const balanceUnlockWaitHeightSelf = 260000;
+const balanceUnlockWaitHeightDefault = 2000;
 
 const parseAddress = address => {
 	if (typeof address !== 'string') return '';
@@ -43,25 +42,21 @@ const confirmPublicKey = async publicKey => {
 	return (account && account.publicKey === publicKey);
 };
 
-// const resolveAccountsInfo = async accounts => {
-// 	accounts.map(async account => {
-// 		if (account.isDelegate) {
-// 			const delegateInfo = {}; // (await getDelegates({ address: account.address })).data[0];
-// 			account.delegate = delegateInfo;
-// 		}
-// 		account.unlocking = account.unlocking.map(item => {
-// 			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-// 				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
-// 			item.height = {
-// 				start: item.unvoteHeight,
-// 				end: item.unvoteHeight + balanceUnlockWaitHeight,
-// 			};
-// 			return item;
-// 		});
-// 		return account;
-// 	});
-// 	return accounts;
-// };
+const resolveAccountsInfo = async accounts => {
+	accounts.map(async account => {
+		account.dpos.delegate.unlocking = account.dpos.delegate.unlocking.map(item => {
+			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
+			item.height = {
+				start: item.unvoteHeight,
+				end: item.unvoteHeight + balanceUnlockWaitHeight,
+			};
+			return item;
+		});
+		return account;
+	});
+	return accounts;
+};
 
 const indexAccounts = async accounttoIndex => {
 	const accountsDB = await knex('accounts');
@@ -126,9 +121,9 @@ const getAccounts = async params => {
 	const response = await coreApi.getAccounts(requestParams);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
-	indexAccounts(accounts.data);
 
-	// accounts.data = await resolveAccountsInfo(accounts.data);
+	accounts.data = await resolveAccountsInfo(accounts.data);
+	indexAccounts(accounts.data);
 	return accounts;
 };
 
