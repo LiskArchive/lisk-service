@@ -44,7 +44,7 @@ const getKnownAccounts = async () => {
 
 const getDataForAccounts = async params => {
 	let accounts;
-	if (params.isDelegate) {
+	if (params.isDelegate === 'true') {
 		accounts = await CoreService.getDelegates(params);
 	} else {
 		accounts = await CoreService.getAccounts(params);

@@ -16,39 +16,13 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const coreApi = require('./coreApi');
-const { getAccounts } = require('./accounts');
+
+const { indexAccountbyTxs, resolveModuleAsset } = require('./helper');
 
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
-
-const resolveModuleAsset = (moduleAssetVal) => {
-	const [module, asset] = moduleAssetVal.split(':');
-	let response;
-	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(asset))) {
-		const [{ name }] = (availableLiskModuleAssets
-			.filter(moduleAsset => moduleAsset.id === moduleAssetVal));
-		response = name;
-	} else {
-		const [{ id }] = (availableLiskModuleAssets
-			.filter(moduleAsset => moduleAsset.name === moduleAssetVal));
-		response = id;
-	}
-	if ([undefined, null, '']
-		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
-	return response;
-};
-
-const indexAccountbyTxs = async txs => {
-	await BluebirdPromise.map(
-		txs,
-		async tx => {
-			await getAccounts({ address: tx.senderId });
-		},
-		{ concurrency: txs.length },
-	);
-};
 
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
@@ -75,7 +49,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	const result = await transactionsDB.writeBatch(allTransactions);
-	if (allTransactions.lastIndexOf) await indexAccountbyTxs(allTransactions);
+	if (allTransactions.lastIndexOf) indexAccountbyTxs(allTransactions);
 	return result;
 };
 

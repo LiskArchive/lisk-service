@@ -15,9 +15,8 @@
  */
 const { CacheRedis, Logger } = require('lisk-service-framework');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
-const BluebirdPromise = require('bluebird');
 
-const { getAccounts } = require('./accounts');
+const { indexAccountbyBlock } = require('./helper');
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
@@ -40,16 +39,6 @@ const updateFinalizedHeight = async () => {
 
 const getFinalizedHeight = () => finalizedHeight;
 
-const indexAccountbyBlock = async blocks => {
-	await BluebirdPromise.map(
-		blocks,
-		async block => {
-			await getAccounts({ address: block.generatorAddress });
-		},
-		{ concurrency: blocks.length },
-	);
-};
-
 const indexBlocks = async originalBlocks => {
 	const blocksDB = await knex('blocks');
 	const blocks = originalBlocks.map(block => {
@@ -63,7 +52,7 @@ const indexBlocks = async originalBlocks => {
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
-	await indexAccountbyBlock(blocks);
+	indexAccountbyBlock(blocks);
 	await indexTransactions(originalBlocks);
 };
 
