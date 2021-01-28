@@ -134,6 +134,8 @@ const buildIndex = async (from, to) => {
 
 const init = async () => {
 	try {
+		await getBlockIdx();
+
 		currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
 		let blockIndexLowerRange = config.indexNumOfBlocks > 0
