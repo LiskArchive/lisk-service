@@ -159,7 +159,7 @@ const init = async () => {
 	}
 };
 
-init();
+setTimeout(init, 5000);
 
 module.exports = {
 	getBlocks,
