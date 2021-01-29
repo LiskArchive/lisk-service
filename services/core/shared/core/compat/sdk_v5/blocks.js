@@ -147,7 +147,8 @@ const init = async () => {
 		const genesisHeight = 1;
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
-		const blockIndexLowerRange = config.indexNumOfBlocks > 0 ? currentHeight - config.indexNumOfBlocks : genesisHeight;
+		const blockIndexLowerRange = config.indexNumOfBlocks > 0
+			? currentHeight - config.indexNumOfBlocks : genesisHeight;
 		const blockIndexHigherRange = currentHeight;
 
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
