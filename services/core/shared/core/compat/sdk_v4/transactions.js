@@ -79,6 +79,12 @@ const getTransactions = async params => {
 		};
 	}
 
+	if (params.senderIdOrRecipientId) {
+		params.senderId = params.senderIdOrRecipientId;
+		params.orWhere = { recipientId: params.senderIdOrRecipientId };
+		delete params.senderIdOrRecipientId;
+	}
+
 	// TODO: Add search by message
 
 	const resultSet = await transactionIdx.find(params);
