@@ -16,7 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
-const { indexAccountbyPublicKey } = require('./accounts');
+const { indexAccountsbyPublicKey } = require('./accounts');
 const { getPublicKeyByAddress, getIndexedAccountByPublicKey } = require('./helper');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
@@ -42,7 +42,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
-	const publicKeys = [];
+	const publicKeysToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
@@ -57,7 +57,7 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.nonce = tx.nonce;
 			skimmedTransaction.amount = tx.asset.amount || null;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
-			publicKeys.push(tx.senderPublicKey);
+			publicKeysToIndex.push(tx.senderPublicKey);
 			return skimmedTransaction;
 		});
 		return transactions;
@@ -65,7 +65,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	const result = await transactionsDB.writeBatch(allTransactions);
-	if (allTransactions.length) await indexAccountbyPublicKey(publicKeys);
+	if (allTransactions.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 	return result;
 };
 
@@ -103,6 +103,9 @@ const getTransactions = async params => {
 	params = await validateParams(params);
 	// TODO: Add check to ensure nonce based sorting always requires senderId,
 	// Update once account index is implemented.
+	if (params.sort && params.sort.includes('nonce')) {
+		if (!params.senderId) return new Error('Nonce based sorting is only possible along with senderId');
+	}
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	if (params.ids || params.id) {

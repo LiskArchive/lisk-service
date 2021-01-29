@@ -18,7 +18,7 @@ const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
-const { indexAccountbyPublicKey } = require('./accounts');
+const { indexAccountsbyPublicKey } = require('./accounts');
 const { getIndexedAccountByPublicKey } = require('./helper');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
@@ -41,18 +41,18 @@ const getFinalizedHeight = () => finalizedHeight;
 
 const indexBlocks = async originalBlocks => {
 	const blocksDB = await knex('blocks');
-	const publicKeys = [];
+	const publicKeysToIndex = [];
 	const blocks = originalBlocks.map(block => {
 		const skimmedBlock = {};
 		skimmedBlock.id = block.id;
 		skimmedBlock.height = block.height;
 		skimmedBlock.unixTimestamp = block.timestamp;
 		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
-		publicKeys.push(block.generatorPublicKey);
+		publicKeysToIndex.push(block.generatorPublicKey);
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
-	await indexAccountbyPublicKey(publicKeys);
+	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(originalBlocks);
 };
 
@@ -124,7 +124,7 @@ const buildIndex = async (from, to) => {
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	Array(numOfPages).fill().forEach(async (_, pageNum) => {
-		const offset = from + (MAX_BLOCKS_LIMIT_PP * (numOfPages - pageNum));
+		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
 		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 		// TODO: Revert to standard notation, once getBlocks is fully implemented
 		// const blocks = await getBlocks({

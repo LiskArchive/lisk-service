@@ -33,9 +33,6 @@ const validateBoolean = val => {
 	if (val.toString().match(/^(true|[1-9][0-9]*|[0-9]*[1-9]+|yes)$/i)) return true;
 	return false;
 };
-const isStringType = value => typeof value === 'string';
-
-const validateAddress = address => isStringType(address) && address.match(/^([a-hjkm-z]|[2-9]){38}$/g);
 
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
@@ -86,7 +83,7 @@ const indexAccounts = async accounttoIndex => {
 
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
-	account.isDelegate = !(account.dpos && account.dpos.delegate.username.length === 0);
+	account.isDelegate = !(account.dpos && Number(account.dpos.delegate.totalVotesReceived) === 0);
 	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
 	account.token.balance = Number(account.token.balance);
 	account.sequence.nonce = Number(account.sequence.nonce);
@@ -169,17 +166,18 @@ const getMultisignatureGroups = async account => {
 	return multisignatureAccount;
 };
 
-const indexAccountbyPublicKey = async (publicKeys) => {
-	await BluebirdPromise.map(
+const indexAccountsbyPublicKey = async (publicKeys) => {
+	const accountsToIndex = await BluebirdPromise.map(
 		publicKeys,
 		async publicKey => {
 			const address = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
-			const account = await getAccountsFromCore({ address });
-			account.data[0].publicKey = publicKey;
-			await indexAccounts(account.data);
+			const account = (await getAccountsFromCore({ address })).data[0];
+			account.publicKey = publicKey;
+			return account;
 		},
 		{ concurrency: publicKeys.length },
 	);
+	indexAccounts(accountsToIndex);
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
@@ -188,6 +186,5 @@ module.exports = {
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	indexAccountbyPublicKey,
-	validateAddress,
+	indexAccountsbyPublicKey,
 };
