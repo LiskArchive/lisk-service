@@ -15,14 +15,14 @@
  */
 const { getAccounts } = require('./accounts');
 
-const getDelegates = async () => {
+const getDelegates = async (params) => {
     const delegates = {
         data: [],
         meta: {},
     };
 
     const punishmentHeight = 780000;
-    const response = await getAccounts({ isDelegate: true });
+    const response = await getAccounts(params);
     if (response.data) delegates.data = response.data;
     if (response.meta) delegates.meta = response.meta;
 
