@@ -26,17 +26,17 @@ const getBlocks = async params => {
     let block;
     let blocks;
 
-    if (params.blockId) {
-        block = await apiClient.block.get(params.blockId);
-    } else if (params.blockIds) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.blockIds });
+    if (params.id) {
+        block = await apiClient.block.get(params.id);
+    } else if (params.ids) {
+        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.ids });
     } else if (params.height) {
         block = await apiClient.block.getByHeight(params.height);
     } else if (params.heightRange) {
         blocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', params.heightRange);
     } else if (params.limit === 1 && Object.getOwnPropertyNames(params).length === 1) {
         block = await apiClient._channel.invoke('app:getLastBlock');
-        block = apiClient.block.decode(block);
+        block = apiClient.block.decode(Buffer.from(block, 'hex'));
     }
 
     if (blocks) blocks = blocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
