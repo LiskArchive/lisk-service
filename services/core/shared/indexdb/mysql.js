@@ -66,16 +66,16 @@ const cast = (val, type) => {
 };
 
 const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
-	// const userName = connEndpoint.split('//')[1].split(':')[0];
-	// const hostPort = connEndpoint.split('@')[1].split('/')[0];
-	// const connPoolKey = [userName, hostPort].join('@');
-	const connPoolKeyTable = `${connEndpoint}/${tableName}`;
+	const userName = connEndpoint.split('//')[1].split('@')[0].split(':')[0];
+	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
+	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
+	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
-	if (!connectionPool[connEndpoint]) {
-		connectionPool[connEndpoint] = await createDb(connEndpoint);
+	if (!connectionPool[connPoolKey]) {
+		connectionPool[connPoolKey] = await createDb(connEndpoint);
 	}
 
-	const knex = connectionPool[connEndpoint];
+	const knex = connectionPool[connPoolKey];
 
 	if (!tablePool[connPoolKeyTable]) {
 		await loadSchema(knex, tableName, tableConfig);
