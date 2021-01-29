@@ -125,52 +125,46 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 	};
 
-	const find = async (params, columns) => {
-		// TODO: Remove after PouchDB specific code is removed from the shared layer
-		if (params.selector) params = params.selector;
-
+	const queryBuilder = (params, columns) => {
 		const limit = params.limit || 1;
 		const offset = params.offset || 0;
 
 		delete params.limit;
 		delete params.offset;
 
-		let res;
+		const query = knex.select(columns).table(tableName);
+
 		if (params.propBetween) {
 			const { propBetween } = params;
 			delete params.propBetween;
-			if (params.sort) {
-				const [sortProp, sortOrder] = params.sort.split(':');
-				delete params.sort;
-				res = await knex.select(columns).table(tableName)
-				.whereBetween(propBetween.property, [propBetween.from, propBetween.to])
-				.orderBy(sortProp, sortOrder)
-				.limit(limit)
-				.offset(offset);
-			} else {
-				res = await knex.select(columns).table(tableName)
-				.whereBetween(propBetween.property, [propBetween.from, propBetween.to])
-				.limit(limit)
-				.offset(offset);
-			}
-		} else if (params.sort) {
+			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+		}
+
+		if (params.orWhere) {
+			const { orWhere } = params;
+			delete params.orWhere;
+			query.orWhere(orWhere);
+		}
+
+		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			delete params.sort;
-			res = await knex.select(columns)
-				.table(tableName)
-				.where(params)
-				.orderBy(sortProp, sortOrder)
-				.limit(limit)
-				.offset(offset);
-		} else {
-			res = await knex.select(columns)
-				.table(tableName)
-				.where(params)
-				.limit(limit)
-				.offset(offset);
+			query.orderBy(sortProp, sortOrder);
 		}
-		return res;
+
+		return query.andWhere(params)
+			.limit(limit)
+			.offset(offset);
 	};
+
+	const find = (params, columns) => new Promise((resolve, reject) => {
+		queryBuilder(params, columns).then(response => {
+			resolve(response);
+		}).catch(err => {
+			logger.error(err.message);
+			reject(err);
+		});
+	});
 
 	const deleteIds = async ids => knex(tableName)
 		.whereIn(primaryKey, ids)
