@@ -125,6 +125,9 @@ const getAccounts = async params => {
 	if (resultSet.length) params.addresses = resultSet.map(row => row.address);
 
 	const accounts = await getAccountsFromCore(params);
+
+	if (!resultSet.length && accounts.data.length) indexAccounts(accounts.data);
+
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
@@ -135,7 +138,6 @@ const getAccounts = async params => {
 		{ concurrency: accounts.data.length },
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
-	indexAccounts(accounts.data);
 	return accounts;
 };
 
@@ -166,16 +168,16 @@ const getMultisignatureGroups = async account => {
 	return multisignatureAccount;
 };
 
-const indexAccountsbyPublicKey = async (publicKeys) => {
+const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
-		publicKeys,
+		publicKeysToIndex,
 		async publicKey => {
 			const address = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = publicKey;
 			return account;
 		},
-		{ concurrency: publicKeys.length },
+		{ concurrency: publicKeysToIndex.length },
 	);
 	indexAccounts(accountsToIndex);
 };
