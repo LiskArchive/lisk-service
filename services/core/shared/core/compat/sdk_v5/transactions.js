@@ -77,12 +77,13 @@ const normalizeTransaction = tx => {
 	return tx;
 };
 
-const getTransactions = async params => {
-	const transactionsDB = await knex('transactions');
-	const transactions = {
-		data: [],
-		meta: {},
-	};
+const getPublicKeyByAddress = async address => {
+	const accountsDB = await knex('accounts');
+	const [{ publicKey }] = await accountsDB.find({ address });
+	return publicKey;
+};
+
+const validateParams = async params => {
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
 			property: 'timestamp',
@@ -90,9 +91,21 @@ const getTransactions = async params => {
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		};
 	}
+	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
+	delete params.senderId;
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
 	delete params.moduleAssetName;
+	return params;
+}
 
+const getTransactions = async params => {
+	const transactionsDB = await knex('transactions');
+	const transactions = {
+		data: [],
+		meta: {},
+	};
+
+	params = await validateParams(params);
 	// TODO: Add check to ensure nonce based sorting always requires senderId,
 	// Update once account index is implemented.
 	const resultSet = await transactionsDB.find(params);

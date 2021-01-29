@@ -140,11 +140,9 @@ const init = async () => {
 
 		let blockIndexLowerRange = config.indexNumOfBlocks > 0
 			? currentHeight - config.indexNumOfBlocks : 1;
-		await blocksCache.delete('lastNumOfBlocks');
 		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
 
 		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
-			await blocksCache.delete('lastIndexedHeight');
 			// Everything seems allright, continue at height where stopped last time
 			blockIndexLowerRange = await blocksCache.get('lastIndexedHeight');
 		} else {

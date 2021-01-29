@@ -104,7 +104,12 @@ const getDbInstance = async (tableName, migrationDir = './shared/database/knex_m
         } else if (params.sort) {
             const [sortProp, sortOrder] = params.sort.split(':');
             delete params.sort;
-            res = await knex.select().table(tableName).where(params).orderBy(sortProp, sortOrder);
+            res = await knex.select()
+                .table(tableName)
+                .where(params)
+                .orderBy(sortProp, sortOrder)
+                .limit(limit)
+                .offset(offset);
         } else {
             res = await knex.select()
                 .table(tableName)
