@@ -82,7 +82,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		tablePool[connPoolKeyTable] = true;
 	}
 
-	const { schema } = tableConfig;
+	const { primaryKey, schema } = tableConfig;
 
 	const upsert = async (inputRows) => {
 		let rawRows = inputRows;
@@ -154,25 +154,18 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return res;
 	};
 
-	// const deleteByProperty = async (property, value) => {
-	// 	const whereParams = {};
-	// 	whereParams[property] = value;
-	// 	return knex(tableName).where(whereParams).del();
-	// };
-
-	// const deleteById = async (id) => deleteByProperty({ id });
-
-	// const deleteBatch = async (rows) => {
-	// 	if (rows instanceof Array && rows.length === 0) return null;
-	// 	return knex(tableName).delete().whereIn('id', rows.map(row => row.id));
-	// };
+	const deleteIds = async ids => {
+		const whereParams = {};
+		whereParams[primaryKey] = ids;
+		return knex(tableName).where(whereParams).del();
+	};
 
 	const count = async () => knex(tableName).count({ count: 'id' });
 
 	return {
 		upsert,
 		find,
-		// delete,
+		deleteIds,
 		count,
 	};
 };
