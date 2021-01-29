@@ -18,7 +18,7 @@ const { CacheRedis, Logger } = require('lisk-service-framework');
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
-// const { indexTransactions } = require('./transactions');
+const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
@@ -49,9 +49,7 @@ const indexBlocks = async originalBlocks => {
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
-
-	// TODO: Test and fix when indexTransactions is implemented
-	// await indexTransactions(originalBlocks);
+	await indexTransactions(originalBlocks);
 };
 
 const normalizeBlock = block => parseToJSONCompatObj(block);

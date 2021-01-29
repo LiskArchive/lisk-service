@@ -39,8 +39,8 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			max: 1,
-			enum: ['amount:asc', 'amount:desc', 'timestamp:asc', 'timestamp:desc'],
+			min: 1,
+			enum: ['amount:asc', 'amount:desc', 'timestamp:asc', 'timestamp:desc', 'nonce:asc', 'nonce:desc'],
 			default: 'timestamp:desc',
 		},
 	},

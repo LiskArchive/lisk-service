@@ -15,13 +15,12 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const config = require('../../config');
-const pouchdb = require('../database/pouchdb');
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 
 const logger = Logger();
 
+let pendingTransactionsList = [];
 const getTransactions = async params => {
 	const transactions = {
 		data: [],
@@ -31,11 +30,6 @@ const getTransactions = async params => {
 	const response = await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
-
-	if (transactions.data.length) {
-		const db = await pouchdb(config.db.collections.transactions.name);
-		db.writeBatch(transactions.data);
-	}
 	return transactions;
 };
 
@@ -44,31 +38,23 @@ const getPendingTransactions = async params => {
 		data: [],
 		meta: {},
 	};
-	const db = await pouchdb(config.db.collections.pending_transactions.name);
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
-	const dbResult = await db.findAll();
-	if (dbResult.length) {
-		pendingTransactions.data = dbResult.slice(offset, offset + limit);
+	if (pendingTransactionsList.length) {
+		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
 		pendingTransactions.meta = {
 			count: pendingTransactions.data.length,
 			offset,
-			total: dbResult.length,
+			total: pendingTransactionsList.length,
 		};
 	}
 	return pendingTransactions;
 };
 
 const loadAllPendingTransactions = async () => {
-	const db = await pouchdb(config.db.collections.pending_transactions.name);
-	const dbResult = await db.findAll();
 	const limit = 100;
-	const pendingTransactions = await requestAll(coreApi.getPendingTransactions, {}, limit);
-	if (pendingTransactions.length) {
-		if (dbResult.length) await db.deleteBatch(dbResult);
-		await db.writeBatch(pendingTransactions);
-		logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactions.length} transactions.`);
-	}
+	pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
+	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
 };
 
 const initPendingTransactionsList = (() => loadAllPendingTransactions())();
