@@ -99,7 +99,7 @@ const getBlocks = async params => {
 		return normalizeBlock(block);
 	});
 
-	indexBlocks(blocks.data);
+	if (blocks.data.length === 1) indexBlocks(blocks.data);
 
 	return blocks;
 };
@@ -128,6 +128,7 @@ const buildIndex = async (from, to) => {
 		const blocks = await getBlocks({
 			heightRange: { from: offset + 1, to: offset + MAX_BLOCKS_LIMIT_PP },
 		});
+		await indexBlocks(blocks.data);
 		const topHeightFromBatch = (blocks.data.pop()).height;
 		await blocksCache.set('lastIndexedHeight', topHeightFromBatch);
 	});
