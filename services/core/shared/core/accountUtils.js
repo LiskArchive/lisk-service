@@ -20,6 +20,7 @@ const {
     getCachedAccountByPublicKey,
     getCachedAccountBySecondPublicKey,
     getCachedAccountByUsername,
+    validateAddress,
 } = require('./compat');
 
 const { getAccounts } = require('./accounts');
@@ -32,8 +33,6 @@ const { isEmptyArray } = ObjectUtilService;
 const isStringType = value => typeof value === 'string';
 
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
-
-const validateAddress = address => isStringType(address) && address.match(/^[0-9]{1,20}[L|l]$/g);
 
 const validatePublicKey = publicKey => isStringType(publicKey) && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g);
 

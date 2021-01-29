@@ -25,6 +25,7 @@ const {
     getAccounts,
     getMultisignatureGroups,
     getMultisignatureMemberships,
+    validateAddress,
 } = require('./accounts');
 
 const {
@@ -67,6 +68,7 @@ module.exports = {
     getAccounts,
     getMultisignatureGroups,
     getMultisignatureMemberships,
+    validateAddress,
 
     getNetworkStatus,
 

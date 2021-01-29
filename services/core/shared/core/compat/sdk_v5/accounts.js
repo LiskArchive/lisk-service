@@ -33,6 +33,9 @@ const validateBoolean = val => {
 	if (val.toString().match(/^(true|[1-9][0-9]*|[0-9]*[1-9]+|yes)$/i)) return true;
 	return false;
 };
+const isStringType = value => typeof value === 'string';
+
+const validateAddress = address => isStringType(address) && address.match(/^([a-hjkm-z]|[2-9]){38}$/g);
 
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
@@ -186,4 +189,5 @@ module.exports = {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountbyPublicKey,
+	validateAddress,
 };

@@ -27,14 +27,7 @@ const getIndexedAccountByPublicKey = async publicKey => {
     return account;
 };
 
-const getPublicKeyByUsername = async address => {
-    const accountsDB = await knex('accounts');
-    const [{ username }] = await accountsDB.find({ address });
-    return username;
-};
-
 module.exports = {
     getPublicKeyByAddress,
     getIndexedAccountByPublicKey,
-    getPublicKeyByUsername,
 };
