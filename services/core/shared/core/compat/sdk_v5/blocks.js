@@ -14,10 +14,12 @@
  *
  */
 const { CacheRedis, Logger } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 const { indexAccountbyPublicKey } = require('./accounts');
+const { getIndexedAccountByPublicKey } = require('./helper');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
@@ -80,26 +82,31 @@ const getBlocks = async params => {
 		.map(block => ({ ...block.header, payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
-	blocks.data = blocks.data.map(block => {
-		// TODO: Update the below params after accounts index is implemented
-		block.generatorAddress = null;
-		block.generatorUsername = null;
+	blocks.data = await BluebirdPromise.map(
+		blocks.data,
+		async block => {
+			const [{ address, username }] = await getIndexedAccountByPublicKey((block.generatorPublicKey)
+				.toString('hex'));
+			block.generatorAddress = address;
+			block.generatorUsername = username;
 
-		block.unixTimestamp = block.timestamp;
-		block.totalForged = Number(block.reward);
-		block.totalBurnt = 0;
-		block.totalFee = 0;
+			block.unixTimestamp = block.timestamp;
+			block.totalForged = Number(block.reward);
+			block.totalBurnt = 0;
+			block.totalFee = 0;
 
-		block.payload.forEach(txn => {
-			const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
+			block.payload.forEach(txn => {
+				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
 
-			block.totalForged += Number(txn.fee);
-			block.totalBurnt += txnMinFee;
-			block.totalFee += Number(txn.fee) - txnMinFee;
-		});
+				block.totalForged += Number(txn.fee);
+				block.totalBurnt += txnMinFee;
+				block.totalFee += Number(txn.fee) - txnMinFee;
+			});
 
-		return normalizeBlock(block);
-	});
+			return normalizeBlock(block);
+		},
+		{ concurrency: blocks.data.length },
+	);
 
 	indexBlocks(blocks.data);
 	return blocks;
