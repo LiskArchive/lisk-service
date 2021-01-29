@@ -86,6 +86,9 @@ const validateParams = async params => {
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		};
 	}
+	if (params.sort && params.sort.includes('nonce')) {
+		if (!params.senderId) return new Error('Nonce based sorting is only possible along with senderId');
+	}
 	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
 	delete params.senderId;
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
@@ -101,11 +104,7 @@ const getTransactions = async params => {
 	};
 
 	params = await validateParams(params);
-	// TODO: Add check to ensure nonce based sorting always requires senderId,
-	// Update once account index is implemented.
-	if (params.sort && params.sort.includes('nonce')) {
-		if (!params.senderId) return new Error('Nonce based sorting is only possible along with senderId');
-	}
+
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	if (params.ids || params.id) {
