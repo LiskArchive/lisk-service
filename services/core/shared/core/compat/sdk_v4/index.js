@@ -27,6 +27,8 @@ const {
 const {
     getTransactions,
     getPendingTransactions,
+    getTransactionById,
+	getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
@@ -49,6 +51,8 @@ module.exports = {
     getAccounts,
     mapToOriginal,
     getTransactions,
+    getTransactionById,
+	getTransactionsByBlockId,
     getDelegates,
     getNextForgers,
     getPendingTransactions,

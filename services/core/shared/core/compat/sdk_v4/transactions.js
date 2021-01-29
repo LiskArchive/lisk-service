@@ -26,8 +26,42 @@ const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema)
 
 const MAX_TX_LIMIT_PP = 100;
 
+const _getTrxFromCore = async params => {
+	const blockIdx = await getBlockIdx();
+	const transactions = await coreApi.getTransactions(params);
+	if (Object.getOwnPropertyNames(transactions).length) {
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				const response = await blockIdx.find(
+					{ id: transaction.blockId },
+					['timestamp', 'unixTimestamp']);
+				if (response.length > 0) {
+					transaction.timestamp = response[0].timestamp;
+					transaction.unixTimestamp = response[0].unixTimestamp;
+				}
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
+	}
+	return transactions;
+};
+
+const getTransactionById = id => _getTrxFromCore({ id });
+const getTransactionByIds = ids => BluebirdPromise.map(
+	ids,
+	async id => {
+		const { data } = await _getTrxFromCore({ id });
+		if (Array.isArray(data) && data.length > 0) return data[0];
+		return {};
+	},
+	{ concurrency: 4 },
+);
+const getTransactionsByBlockId = blockId => _getTrxFromCore({ blockId, limit: MAX_TX_LIMIT_PP });
+
 const getTransactions = async params => {
-	const transactionsDB = await getTransactionIdx();
+	const transactionIdx = await getTransactionIdx();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -37,15 +71,9 @@ const getTransactions = async params => {
 	if (!params.limit) params.limit = 10;
 	if (!params.offset) params.offset = 0;
 
-	if (params.sort
-		&& ['nonce', 'timestamp', 'amount'].some(prop => params.sort.includes(prop))) {
-		const sortProp = params.sort.split(':')[0];
-		const sortOrder = params.sort.split(':')[1];
-		params.sort = [{ column: sortProp, order: sortOrder }];
-	}
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
-			property: 'timestamp',
+			property: 'unixTimestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		};
@@ -53,29 +81,12 @@ const getTransactions = async params => {
 
 	// TODO: Add search by message
 
-	const resultSet = await transactionsDB.find(params);
-	if (resultSet.length) params.ids = resultSet.map(row => row.id);
-	// TODO: Remove the check. Send empty response for non-ID based requests
-	const response = await coreApi.getTransactions(params);
-	if (response.data) transactions.data = response.data; // .map(tx => normalizeTransaction(tx));
-	if (response.meta) transactions.meta = response.meta;
+	const resultSet = await transactionIdx.find(params);
 
-	// TODO: Indexed transactions to blockId
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => {
-			resultSet.filter(tx => {
-				if (tx.id === transaction.id) {
-					transaction.unixTimestamp = tx.timestamp;
-					transaction.height = tx.height;
-					transaction.blockId = tx.blockId;
-				}
-				return tx;
-			});
-			return transaction;
-		},
-		{ concurrency: transactions.data.length },
-	);
+	if (resultSet.length > 0) {
+		const trxIds = resultSet.map(row => row.id);
+		transactions.data = await getTransactionByIds(trxIds);
+	}
 
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
@@ -88,7 +99,7 @@ signals.get('indexTransactions').add(async blockId => {
 	const blockResult = await transactionIdx.find({ blockId }, 'id');
 	if (blockResult.length > 0) return;
 
-	const transactions = await coreApi.getTransactions({ blockId, limit: MAX_TX_LIMIT_PP });
+	const transactions = await getTransactionsByBlockId(blockId);
 	const blockIdx = await getBlockIdx();
 	const blockRes = await blockIdx.find({ id: blockId }, ['timestamp', 'unixTimestamp']);
 	if (blockRes.length !== 1) return;
@@ -106,4 +117,9 @@ const getPendingTransactions = async params => {
 	return pendingTx;
 };
 
-module.exports = { getTransactions, getPendingTransactions };
+module.exports = {
+	getTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
+	getPendingTransactions,
+};
