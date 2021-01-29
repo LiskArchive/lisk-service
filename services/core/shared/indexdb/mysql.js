@@ -154,14 +154,6 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return res;
 	};
 
-	// const findById = async (id) => find({ id });
-
-	// const findOneByProperty = async (property, value) => {
-	// 	const params = {};
-	// 	params[property] = value;
-	// 	return find(params);
-	// };
-
 	// const deleteByProperty = async (property, value) => {
 	// 	const whereParams = {};
 	// 	whereParams[property] = value;
@@ -175,13 +167,13 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	// 	return knex(tableName).delete().whereIn('id', rows.map(row => row.id));
 	// };
 
-	// const getCount = async () => knex(tableName).count({ count: 'id' });
+	const count = async () => knex(tableName).count({ count: 'id' });
 
 	return {
 		upsert,
 		find,
 		// delete,
-		// getCount,
+		count,
 	};
 };
 
