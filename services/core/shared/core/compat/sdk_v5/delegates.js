@@ -32,6 +32,13 @@ const getDelegates = async (params) => {
             address: delegate.address,
             publicKey: delegate.publicKey,
         };
+
+        const adder = (acc, curr) => Number(acc) + Number(curr.amount);
+        const totalVotes = delegate.dpos.sentVotes.reduce(adder, 0);
+        const selfVotes = delegate.dpos.sentVotes
+            .filter(vote => vote.delegateAddress === delegate.address).reduce(adder, 0);
+
+        delegate.delegateWeight = Math.min(10 * selfVotes, totalVotes);
         delegate.username = delegate.dpos.delegate.username;
         delegate.balance = delegate.token.balance;
         delegate.pomHeights = delegate.dpos.delegate.pomHeights
