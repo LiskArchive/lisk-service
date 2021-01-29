@@ -25,6 +25,8 @@ const {
 	getTransactions,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
@@ -128,6 +130,8 @@ module.exports = {
 	getAccounts,
 	getBlocks,
 	getTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
