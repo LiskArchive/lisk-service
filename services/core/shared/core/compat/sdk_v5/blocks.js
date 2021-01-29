@@ -116,7 +116,8 @@ const buildIndex = async (from, to) => {
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	Array(numOfPages).fill().forEach(async (_, pageNum) => {
-		const offset = from + (MAX_BLOCKS_LIMIT_PP * (numOfPages - pageNum));
+		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+		const offset = pseudoOffset > from ? pseudoOffset : from;
 		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 		// TODO: Revert to standard notation, once getBlocks is fully implemented
 		// const blocks = await getBlocks({
