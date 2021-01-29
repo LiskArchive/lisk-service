@@ -14,6 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
@@ -63,23 +64,13 @@ const resolveAccountsInfo = async accounts => {
 	return accounts;
 };
 
-const resolvePublicKeyByAddress = async (address) => {
-	const blocksDB = await knex('blocks');
-	const transactionsDB = await knex('transactions');
-	let [response] = await blocksDB.find({ generatorAddress: address });
-	if (!response) [response] = await transactionsDB.find({ senderId: address });
-	const publickey = response.generatorPublicKey || response.senderPublicKey;
-	return publickey;
-};
-
 const indexAccounts = async accounttoIndex => {
 	const accountsDB = await knex('accounts');
 	const accounts = await BluebirdPromise.map(
 		accounttoIndex, async account => {
 			const skimmedAccounts = {};
-			const publickey = await resolvePublicKeyByAddress(account.address);
 			skimmedAccounts.address = account.address;
-			skimmedAccounts.publicKey = publickey || null;
+			skimmedAccounts.publicKey = account.publicKey;
 			skimmedAccounts.isDelegate = account.isDelegate;
 			skimmedAccounts.username = account.dpos.delegate.username || null;
 			skimmedAccounts.balance = account.token.balance;
@@ -175,10 +166,24 @@ const getMultisignatureGroups = async account => {
 	return multisignatureAccount;
 };
 
+const indexAccountbyPublicKey = async (publicKeys) => {
+	await BluebirdPromise.map(
+		publicKeys,
+		async publicKey => {
+			const address = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
+			const account = await getAccountsFromCore({ address });
+			account.data[0].publicKey = publicKey;
+			await indexAccounts(account.data);
+		},
+		{ concurrency: publicKeys.length },
+	);
+};
+
 const getMultisignatureMemberships = async () => []; // TODO
 
 module.exports = {
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
+	indexAccountbyPublicKey,
 };

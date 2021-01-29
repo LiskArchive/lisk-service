@@ -14,23 +14,38 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
+
 const coreApi = require('./coreApi');
-
-const { indexAccountbyTxs, resolveModuleAsset } = require('./helper');
-
+const { indexAccountbyPublicKey } = require('./accounts');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 
+const resolveModuleAsset = (moduleAssetVal) => {
+	const [module, asset] = moduleAssetVal.split(':');
+	let response;
+	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(asset))) {
+		const [{ name }] = (availableLiskModuleAssets
+			.filter(moduleAsset => moduleAsset.id === moduleAssetVal));
+		response = name;
+	} else {
+		const [{ id }] = (availableLiskModuleAssets
+			.filter(moduleAsset => moduleAsset.name === moduleAssetVal));
+		response = id;
+	}
+	if ([undefined, null, '']
+		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
+	return response;
+};
+
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
+	const publicKeys = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-			const senderId = getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'));
 			const skimmedTransaction = {};
 			skimmedTransaction.id = tx.id;
 			skimmedTransaction.height = block.height;
@@ -38,10 +53,10 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.moduleAssetId = id;
 			skimmedTransaction.timestamp = block.timestamp;
 			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
-			skimmedTransaction.senderId = senderId.toString('hex');
 			skimmedTransaction.nonce = tx.nonce;
 			skimmedTransaction.amount = tx.asset.amount || null;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+			publicKeys.push(tx.senderPublicKey);
 			return skimmedTransaction;
 		});
 		return transactions;
@@ -49,7 +64,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	const result = await transactionsDB.writeBatch(allTransactions);
-	if (allTransactions.length) indexAccountbyTxs(allTransactions);
+	if (allTransactions.length) await indexAccountbyPublicKey(publicKeys);
 	return result;
 };
 

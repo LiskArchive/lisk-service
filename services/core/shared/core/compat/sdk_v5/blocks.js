@@ -14,12 +14,10 @@
  *
  */
 const { CacheRedis, Logger } = require('lisk-service-framework');
-const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const { indexAccountbyBlock } = require('./helper');
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
-
+const { indexAccountbyPublicKey } = require('./accounts');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
@@ -41,18 +39,18 @@ const getFinalizedHeight = () => finalizedHeight;
 
 const indexBlocks = async originalBlocks => {
 	const blocksDB = await knex('blocks');
+	const publicKeys = [];
 	const blocks = originalBlocks.map(block => {
 		const skimmedBlock = {};
-		const generatorAddress = getAddressFromPublicKey(Buffer.from(block.generatorPublicKey, 'hex'));
 		skimmedBlock.id = block.id;
 		skimmedBlock.height = block.height;
 		skimmedBlock.unixTimestamp = block.timestamp;
 		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
-		skimmedBlock.generatorAddress = generatorAddress.toString('hex');
+		publicKeys.push(block.generatorPublicKey);
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
-	indexAccountbyBlock(blocks);
+	await indexAccountbyPublicKey(publicKeys);
 	await indexTransactions(originalBlocks);
 };
 
@@ -142,9 +140,11 @@ const init = async () => {
 
 		let blockIndexLowerRange = config.indexNumOfBlocks > 0
 			? currentHeight - config.indexNumOfBlocks : 1;
+		await blocksCache.delete('lastNumOfBlocks');
 		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
 
 		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
+			await blocksCache.delete('lastIndexedHeight');
 			// Everything seems allright, continue at height where stopped last time
 			blockIndexLowerRange = await blocksCache.get('lastIndexedHeight');
 		} else {

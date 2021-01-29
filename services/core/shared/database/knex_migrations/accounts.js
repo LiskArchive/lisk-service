@@ -19,10 +19,9 @@ exports.up = knex => knex.schema
     .createTable(tableName, table => {
         // Indexed properties
         table.string('address').primary();
-        table.string('publicKey').index();
+        table.string('publicKey').notNullable().index();
         table.boolean('isDelegate').notNullable().index();
         table.bigInteger('balance').notNullable().index();
-        table.integer('rank').index();
         table.string('username').index();
     });
 

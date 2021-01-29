@@ -21,7 +21,6 @@ exports.up = knex => knex.schema
         table.integer('height').notNullable().index();
         table.integer('unixTimestamp').notNullable().index();
         table.string('generatorPublicKey').notNullable().index();
-        table.string('generatorAddress').notNullable().index();
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
