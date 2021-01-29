@@ -117,8 +117,8 @@ const buildIndex = async (from, to) => {
 
 	Array(numOfPages).fill().forEach(async (_, pageNum) => {
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset > from ? pseudoOffset : from;
-		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 		// TODO: Revert to standard notation, once getBlocks is fully implemented
 		// const blocks = await getBlocks({
 		// 	limit: MAX_BLOCKS_LIMIT_PP,
@@ -126,7 +126,7 @@ const buildIndex = async (from, to) => {
 		// 	sort: 'height:asc',
 		// });
 		const blocks = await getBlocks({
-			heightRange: { from: offset, to: offset + MAX_BLOCKS_LIMIT_PP },
+			heightRange: { from: offset + 1, to: offset + MAX_BLOCKS_LIMIT_PP },
 		});
 		const topHeightFromBatch = (blocks.data.pop()).height;
 		await blocksCache.set('lastIndexedHeight', topHeightFromBatch);
