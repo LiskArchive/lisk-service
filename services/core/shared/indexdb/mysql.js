@@ -172,11 +172,9 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return res;
 	};
 
-	const deleteIds = async ids => {
-		const whereParams = {};
-		whereParams[primaryKey] = ids;
-		return knex(tableName).where(whereParams).del();
-	};
+	const deleteIds = async ids => knex(tableName)
+		.whereIn(primaryKey, ids)
+		.del();
 
 	const count = async () => knex(tableName).count({ count: 'id' });
 
