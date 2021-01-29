@@ -49,7 +49,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	const result = await transactionsDB.writeBatch(allTransactions);
-	if (allTransactions.lastIndexOf) indexAccountbyTxs(allTransactions);
+	if (allTransactions.length) indexAccountbyTxs(allTransactions);
 	return result;
 };
 
