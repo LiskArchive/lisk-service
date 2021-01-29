@@ -139,8 +139,20 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.propBetween) {
 			const { propBetween } = params;
 			delete params.propBetween;
-			res = await knex.select(columns).table(tableName)
-				.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+			if (params.sort) {
+				const [sortProp, sortOrder] = params.sort.split(':');
+				delete params.sort;
+				res = await knex.select(columns).table(tableName)
+				.whereBetween(propBetween.property, [propBetween.from, propBetween.to])
+				.orderBy(sortProp, sortOrder)
+				.limit(limit)
+				.offset(offset);
+			} else {
+				res = await knex.select(columns).table(tableName)
+				.whereBetween(propBetween.property, [propBetween.from, propBetween.to])
+				.limit(limit)
+				.offset(offset);
+			}
 		} else if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			delete params.sort;
