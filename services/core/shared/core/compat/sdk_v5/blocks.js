@@ -25,7 +25,7 @@ const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
 const logger = Logger();
-const blocksCache = CacheRedis('blocks_SDKv5', config.endpoints.redis);
+const blocksCache = CacheRedis('blocks', config.endpoints.redis);
 
 let finalizedHeight;
 
@@ -124,7 +124,7 @@ const buildIndex = async (from, to) => {
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	Array(numOfPages).fill().forEach(async (_, pageNum) => {
-		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
+		const offset = from + (MAX_BLOCKS_LIMIT_PP * (numOfPages - pageNum));
 		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 		// TODO: Revert to standard notation, once getBlocks is fully implemented
 		// const blocks = await getBlocks({
