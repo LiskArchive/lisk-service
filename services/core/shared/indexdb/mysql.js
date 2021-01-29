@@ -65,6 +65,12 @@ const cast = (val, type) => {
 	return val;
 };
 
+const getValue = (val) => {
+	if (typeof val === 'undefined') return null;
+	if (Number.isNaN(val)) return null;
+	return val;
+};
+
 const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
 	const userName = connEndpoint.split('//')[1].split('@')[0].split(':')[0];
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
@@ -92,7 +98,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		rawRows.forEach(item => {
 			const row = {};
 			Object.keys(schema).forEach(o => {
-				row[o] = cast(item[o], schema[o].type);
+				row[o] = getValue(cast(item[o], schema[o].type));
 			});
 			rows.push(row);
 		});
