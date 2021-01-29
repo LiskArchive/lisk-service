@@ -22,7 +22,7 @@ const getDelegates = async (params) => {
     };
 
     const punishmentHeight = 780000;
-    const response = await getAccounts(params);
+    const response = await getAccounts({ isDelegate: true, limit: params.limit });
     if (response.data) delegates.data = response.data;
     if (response.meta) delegates.meta = response.meta;
 
