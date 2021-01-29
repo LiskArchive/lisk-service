@@ -24,10 +24,10 @@ const { parseToJSONCompatObj } = require('../common');
 const balanceUnlockWaitHeightSelf = 260000;
 const balanceUnlockWaitHeightDefault = 2000;
 
-// const parseAddress = address => {
-// 	if (typeof address !== 'string') return '';
-// 	return address.toUpperCase();
-// };
+const parseAddress = address => {
+	if (typeof address !== 'string') return '';
+	return address.toUpperCase();
+};
 
 const validateBoolean = val => {
 	if (val.toString().match(/^(true|[1-9][0-9]*|[0-9]*[1-9]+|yes)$/i)) return true;
@@ -36,11 +36,11 @@ const validateBoolean = val => {
 
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
-// const confirmAddress = async address => {
-// 	if (!address || typeof address !== 'string') return false;
-// 	const account = await coreCache.getCachedAccountByAddress(address);
-// 	return (account && parseAddress(account.address) === parseAddress(address));
-// };
+const confirmAddress = async address => {
+	if (!address || typeof address !== 'string') return false;
+	const account = await coreCache.getCachedAccountByAddress(address);
+	return (account && parseAddress(account.address) === parseAddress(address));
+};
 
 const confirmPublicKey = async publicKey => {
 	if (!publicKey || typeof publicKey !== 'string') return false;
@@ -112,9 +112,9 @@ const getAccountsFromCore = async (params) => {
 const getAccounts = async params => {
 	const accountsDB = await knex('accounts');
 
-	// if (params.address && typeof params.address === 'string') {
-	// 	if (!(await confirmAddress(params.address))) return {};
-	// }
+	if (params.address && typeof params.address === 'string') {
+		if (!(await confirmAddress(params.address))) return {};
+	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey) || !(await confirmPublicKey(params.publicKey))) {
 			return {};
