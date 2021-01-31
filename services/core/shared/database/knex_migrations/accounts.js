@@ -13,27 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const account = require('./mappings/account');
+const tableName = 'accounts';
 
-module.exports = {
-	type: 'moleculer',
-	method: 'core.accounts',
-	params: {
-		address: '=',
-		publicKey: 'publickey',
-		username: '=',
-		isDelegate: '=',
-		limit: '=',
-		offset: '=',
-		sort: '=',
-	},
-	definition: {
-		data: ['data', account],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
-};
+exports.up = knex => knex.schema
+    .createTable(tableName, table => {
+        // Indexed properties
+        table.string('address').primary();
+        table.string('publicKey').notNullable().index();
+        table.boolean('isDelegate').notNullable().index();
+        table.bigInteger('balance').notNullable().index();
+        table.string('username').index();
+    });
+
+exports.down = knex => knex.schema.dropTable(tableName);
+
+exports.config = { transaction: false };

@@ -13,27 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const account = require('./mappings/account');
+const { knex } = require('../../../database');
+
+const getPublicKeyByAddress = async address => {
+    const accountsDB = await knex('accounts');
+    const [{ publicKey }] = await accountsDB.find({ address });
+    return publicKey;
+};
+
+const getIndexedAccountByPublicKey = async publicKey => {
+    const accountsDB = await knex('accounts');
+    const account = await accountsDB.find({ publicKey });
+    return account;
+};
 
 module.exports = {
-	type: 'moleculer',
-	method: 'core.accounts',
-	params: {
-		address: '=',
-		publicKey: 'publickey',
-		username: '=',
-		isDelegate: '=',
-		limit: '=',
-		offset: '=',
-		sort: '=',
-	},
-	definition: {
-		data: ['data', account],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+    getPublicKeyByAddress,
+    getIndexedAccountByPublicKey,
 };

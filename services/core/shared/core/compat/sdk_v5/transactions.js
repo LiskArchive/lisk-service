@@ -14,8 +14,10 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+
 const coreApi = require('./coreApi');
-// const { getBlocks } = require('./blocks');
+const { indexAccountsbyPublicKey } = require('./accounts');
+const { getPublicKeyByAddress, getIndexedAccountByPublicKey } = require('./helper');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
@@ -37,8 +39,10 @@ const resolveModuleAsset = (moduleAssetVal) => {
 		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
 	return response;
 };
+
 const indexTransactions = async blocks => {
 	const transactionsDB = await knex('transactions');
+	const publicKeysToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
@@ -53,6 +57,7 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.nonce = tx.nonce;
 			skimmedTransaction.amount = tx.asset.amount || null;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+			publicKeysToIndex.push(tx.senderPublicKey);
 			return skimmedTransaction;
 		});
 		return transactions;
@@ -60,6 +65,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	const result = await transactionsDB.writeBatch(allTransactions);
+	if (allTransactions.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 	return result;
 };
 
@@ -72,12 +78,7 @@ const normalizeTransaction = tx => {
 	return tx;
 };
 
-const getTransactions = async params => {
-	const transactionsDB = await knex('transactions');
-	const transactions = {
-		data: [],
-		meta: {},
-	};
+const validateParams = async params => {
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
 			property: 'timestamp',
@@ -85,29 +86,50 @@ const getTransactions = async params => {
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		};
 	}
+	if (params.sort && params.sort.includes('nonce')) {
+		if (!params.senderId) return new Error('Nonce based sorting is only possible along with senderId');
+	}
+	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
+	delete params.senderId;
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
 	delete params.moduleAssetName;
+	return params;
+};
 
-	// TODO: Add check to ensure nonce based sorting always requires senderId,
-	// Update once account index is implemented.
+const getTransactions = async params => {
+	const transactionsDB = await knex('transactions');
+	const transactions = {
+		data: [],
+		meta: {},
+	};
+
+	params = await validateParams(params);
+
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
-	const response = await coreApi.getTransactions(params);
-	if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
-	if (response.meta) transactions.meta = response.meta;
+	if (params.ids || params.id) {
+		const response = await coreApi.getTransactions(params);
+		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
+		if (response.meta) transactions.meta = response.meta;
 
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => {
-			const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
-			transaction.unixTimestamp = indexedTxInfo.timestamp;
-			transaction.height = indexedTxInfo.height;
-			transaction.blockId = indexedTxInfo.blockId;
-
-			return transaction;
-		},
-		{ concurrency: transactions.data.length },
-	);
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
+				transaction.unixTimestamp = indexedTxInfo.timestamp;
+				transaction.height = indexedTxInfo.height;
+				transaction.blockId = indexedTxInfo.blockId;
+				const [{
+					address,
+					username,
+				}] = await getIndexedAccountByPublicKey(transaction.senderPublicKey);
+				transaction.senderId = address;
+				transaction.username = username || undefined;
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
+	}
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset || 0;

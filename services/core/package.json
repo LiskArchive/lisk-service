@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@liskhq/lisk-api-client": "^5.0.1",
+    "@liskhq/lisk-cryptography": "^3.0.0",
     "@liskhq/lisk-transactions-v4": "npm:@liskhq/lisk-transactions@^4.0.0",
     "@liskhq/lisk-transactions-v5": "npm:@liskhq/lisk-transactions@^5.0.1",
     "async": "^3.2.0",

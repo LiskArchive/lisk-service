@@ -27,7 +27,7 @@ module.exports = {
 		timestamp: 'unixTimestamp,number',
 	},
 	sender: {
-        address: '=,string',
+        address: 'senderId,string',
         publicKey: 'senderPublicKey,string',
         username: '=,string',
       },
