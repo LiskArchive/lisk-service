@@ -20,6 +20,7 @@ const signals = require('../../../signals');
 const mysqlIdx = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 const transactionIdxSchema = require('./schema/transactions');
+const { transactionTypes } = require('./mappings');
 
 const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
 const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema);
@@ -85,6 +86,10 @@ const getTransactions = async params => {
 		delete params.senderIdOrRecipientId;
 	}
 
+	if (params.type) {
+		if (transactionTypes[params.type]) params.type = transactionTypes[params.type];
+	}
+
 	// TODO: Add search by message
 
 	const resultSet = await transactionIdx.find(params);
@@ -123,9 +128,15 @@ const getPendingTransactions = async params => {
 	return pendingTx;
 };
 
+const init = async () => {
+	// Initialize the database
+	await getTransactionIdx();
+};
+
 module.exports = {
 	getTransactions,
 	getTransactionById,
 	getTransactionsByBlockId,
 	getPendingTransactions,
+	init,
 };
