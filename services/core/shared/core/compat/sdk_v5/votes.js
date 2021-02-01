@@ -35,7 +35,8 @@ const getVotes = async params => {
 	delete params.username;
 	delete params.publicKey;
 
-	const response = await getAccounts({ id: params.sentAddress });
+	// TODO: Pass address as ID, when getAccounts supports
+	const response = await getAccounts({ address: params.sentAddress });
 	if (response.data) voter.data.votes = response.data.map(acc => normalizeVote(acc.dpos.sentVotes));
 	if (response.meta) voter.meta = response.meta;
 
