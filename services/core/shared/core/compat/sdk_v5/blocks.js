@@ -21,7 +21,7 @@ const config = require('../../../../config');
 
 const {
 	indexAccountsbyPublicKey,
-	getIndexedAccountByPublicKey
+	getIndexedAccountByPublicKey,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
