@@ -45,14 +45,14 @@ const getVotes = async params => {
 			vote.username = ''; // TODO: Util method from accounts
 			return vote;
 		},
-		{ concurrency: voter.data.length },
+		{ concurrency: voter.data.votes.length },
 	);
 	voter.data.address = params.receivedAddress;
 	voter.data.username = ''; // TODO: Util method from accounts
 	voter.data.votesUsed = voter.data.votes.length;
 
-	voter.meta.total = voter.meta.count;
-	voter.meta.count = voter.data.length;
+	voter.meta.total = voter.data.votes.length;
+	voter.meta.count = voter.data.votes.length;
 	voter.meta.offset = params.offset || 0;
 	return voter;
 };

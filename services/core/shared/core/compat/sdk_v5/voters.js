@@ -32,12 +32,12 @@ const indexVotes = async blocks => {
 			.map(tx => {
 				const voteEntries = tx.asset.votes.map(vote => {
 					const voteEntry = {};
-					const sentAddress = (getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'))).toString('hex');
-					voteEntry.sentAddress = sentAddress;
+
+					voteEntry.id = tx.id;
+					voteEntry.sentAddress = (getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'))).toString('hex');
 					voteEntry.receivedAddress = vote.delegateAddress;
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
-					voteEntry.transactionId = tx.id;
 					return voteEntry;
 				});
 				return voteEntries;
@@ -67,7 +67,7 @@ const getVoters = async params => {
 	delete params.publicKey;
 
 	const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
-	if (resultSet.length) params.ids = resultSet.map(row => row.transactionId);
+	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 
 	const response = await coreApi.getTransactions(params);
 	if (response.data) votes.data.votes = response.data.map(tx => normalizeVote(tx.asset.votes));
