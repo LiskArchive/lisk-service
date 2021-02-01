@@ -71,22 +71,29 @@ const getVoters = async params => {
 		params.ids = resultSet.map(row => row.id);
 
 		const response = await coreApi.getTransactions(params);
-		if (response.data) votes.data.votes = response.data.map(tx => normalizeVote(tx.asset.votes));
+		if (response.data) {
+			const voteMultiArray = response.data.map(tx => normalizeVote(tx).asset.votes);
+			let allVotes = [];
+			voteMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
+			votes.data.votes = allVotes;
+		}
 		if (response.meta) votes.meta = response.meta;
 	}
 
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
-		async vote => {
-			vote.username = ''; // TODO: Util method from accounts
-			return vote;
-		},
+		async vote => ({
+			...vote,
+			username: '', // TODO: Util method from accounts
+		}),
 		{ concurrency: votes.data.votes.length },
 	);
 
-	votes.data.address = params.receivedAddress;
-	votes.data.username = ''; // TODO: Util method from accounts
-	votes.data.votesUsed = votes.data.votes.length;
+	votes.data.account = {
+		address: params.receivedAddress,
+		username: '', // TODO: Util method from accounts
+		votesUsed: votes.data.votes.length,
+	};
 
 	votes.meta.total = resultSet.length;
 	votes.meta.count = votes.data.votes.length;

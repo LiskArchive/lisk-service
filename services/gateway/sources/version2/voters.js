@@ -30,6 +30,7 @@ module.exports = {
 			account: {
 				address: '=,string',
 				username: '=,string',
+				votesUsed: '=,number',
 			},
 			votes: ['votes', vote],
 		},
