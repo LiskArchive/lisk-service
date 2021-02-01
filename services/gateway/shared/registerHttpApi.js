@@ -80,6 +80,7 @@ const typeMappings = {
 	string_number: (input) => Number(input),
 	number_string: (input) => String(input),
 	array_string: (input) => input.join(','),
+	string_boolean: (input) => String(input).toLowerCase() === 'true',
 };
 
 const convertType = (item, type) => {
