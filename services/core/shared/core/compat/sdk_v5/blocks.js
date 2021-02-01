@@ -106,7 +106,8 @@ const getBlocks = async params => {
 		{ concurrency: blocks.data.length },
 	);
 
-	indexBlocks(blocks.data);
+	if (blocks.data.length === 1) indexBlocks(blocks.data);
+
 	return blocks;
 };
 
@@ -121,9 +122,11 @@ const buildIndex = async (from, to) => {
 	const MAX_BLOCKS_LIMIT_PP = 100;
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
+	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
 	Array(numOfPages).fill().forEach(async (_, pageNum) => {
-		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
-		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 		// TODO: Revert to standard notation, once getBlocks is fully implemented
 		// const blocks = await getBlocks({
 		// 	limit: MAX_BLOCKS_LIMIT_PP,
@@ -131,39 +134,54 @@ const buildIndex = async (from, to) => {
 		// 	sort: 'height:asc',
 		// });
 		const blocks = await getBlocks({
-			heightRange: { from: offset, to: offset + MAX_BLOCKS_LIMIT_PP },
+			heightRange: { from: offset + 1, to: offset + MAX_BLOCKS_LIMIT_PP },
 		});
+		await indexBlocks(blocks.data);
+
+		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
+
 		const topHeightFromBatch = (blocks.data.pop()).height;
-		await blocksCache.set('lastIndexedHeight', topHeightFromBatch);
+		const bottomHeightFromBatch = (blocks.data.shift()).height;
+		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
+		if (bottomHeightFromBatch < lowestIndexedHeight) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
+		if (topHeightFromBatch > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', topHeightFromBatch);
 	});
 	logger.info(`Finished building block index (${from}-${to})`);
 };
 
 const init = async () => {
 	try {
+		const genesisHeight = 1;
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
-		let blockIndexLowerRange = config.indexNumOfBlocks > 0
-			? currentHeight - config.indexNumOfBlocks : 1;
-		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
+		const blockIndexLowerRange = config.indexNumOfBlocks > 0
+			? currentHeight - config.indexNumOfBlocks : genesisHeight;
+		const blockIndexHigherRange = currentHeight;
 
-		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
-			// Everything seems allright, continue at height where stopped last time
-			blockIndexLowerRange = await blocksCache.get('lastIndexedHeight');
-		} else {
+		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
+
+		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
+		if (lastNumOfBlocks !== config.indexNumOfBlocks) {
 			logger.info('Configuration has been updated, re-index eveything');
 			await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
-			await blocksCache.set('lastIndexedHeight', blockIndexLowerRange);
+			await blocksCache.set('lowestIndexedHeight', genesisHeight);
+			await blocksCache.set('highestIndexedHeight', currentHeight);
 		}
 
-		await buildIndex(blockIndexLowerRange, currentHeight);
+		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+
+		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight') || genesisHeight;
+		if (blockIndexLowerRange < lowestIndexedHeight) {
+			// If the indexing is partially built
+			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
+		}
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
 	}
 };
 
-init();
+setTimeout(init, 5000);
 
 module.exports = {
 	getBlocks,
