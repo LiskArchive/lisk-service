@@ -78,6 +78,8 @@ const getTransactions = async params => {
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		};
+		delete params.fromTimestamp;
+		delete params.toTimestamp;
 	}
 
 	if (params.senderIdOrRecipientId) {
