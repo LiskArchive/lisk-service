@@ -13,136 +13,116 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const signals = require('../../../signals');
-const {
-	getBlockchainTime,
-	validateTimestamp,
-	getUnixTime,
-} = require('../common');
 
-const config = require('../../../../config');
-const redis = require('../../../redis');
+const mysqlIdx = require('../../../indexdb/mysql');
+const blockIdxSchema = require('./schema/blocks');
+const transactionIdxSchema = require('./schema/transactions');
+const { transactionTypes } = require('./mappings');
 
-const { mapParams } = require('./mappings');
+const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
+const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema);
 
 const MAX_TX_LIMIT_PP = 100;
 
-const bIdCache = CacheRedis('blockIdToTimestamp', config.endpoints.redis);
-// const bHeightCache = CacheRedis('blockHeightToTimestamp', config.endpoints.redis);
-
-// const getTransactionsByBlockHeight = (height) => coreApi.getTransactions({ height });
-const getTransactionsByBlockId = (blockId) => coreApi.getTransactions({ blockId });
-
-const addToIndex = async (tx) => {
-	const { id, type, senderId, recipientId, timestamp, blockId } = tx;
-
-	const sndAddrIndex = await redis(`trx:address:${senderId}`, ['timestamp']);
-	await sndAddrIndex.writeRange(timestamp, id);
-
-	const senderIndex = await redis(`trx:sender:${senderId}`, ['timestamp']);
-	await senderIndex.writeRange(timestamp, id);
-
-	if (recipientId) {
-		const rcpAddrIndex = await redis(`trx:address:${recipientId}`, ['timestamp']);
-		await rcpAddrIndex.writeRange(timestamp, id);
-
-		const recipientIndex = await redis(`trx:recipient:${recipientId}`, ['timestamp']);
-		await recipientIndex.writeRange(timestamp, id);
+const _getTrxFromCore = async params => {
+	const blockIdx = await getBlockIdx();
+	const transactions = await coreApi.getTransactions(params);
+	if (Object.getOwnPropertyNames(transactions).length) {
+		transactions.data = await BluebirdPromise.map(
+			transactions.data,
+			async transaction => {
+				const response = await blockIdx.find(
+					{ id: transaction.blockId },
+					['timestamp', 'unixTimestamp']);
+				if (response.length > 0) {
+					transaction.timestamp = response[0].timestamp;
+					transaction.unixTimestamp = response[0].unixTimestamp;
+				}
+				return transaction;
+			},
+			{ concurrency: transactions.data.length },
+		);
 	}
-
-	if (type === 10) {
-		const delegateRegIndex = await redis('trx:delegate:registration', ['timestamp']);
-		await delegateRegIndex.writeRange(timestamp, blockId);
-	}
+	return transactions;
 };
 
+const getTransactionById = id => _getTrxFromCore({ id });
+const getTransactionByIds = ids => BluebirdPromise.map(
+	ids,
+	async id => {
+		const { data } = await _getTrxFromCore({ id });
+		if (Array.isArray(data) && data.length > 0) return data[0];
+		return {};
+	},
+	{ concurrency: 4 },
+);
+const getTransactionsByBlockId = blockId => _getTrxFromCore({ blockId, limit: MAX_TX_LIMIT_PP });
+
 const getTransactions = async params => {
+	const transactionIdx = await getTransactionIdx();
 	const transactions = {
 		data: [],
 		meta: {},
 	};
 
-	const limit = params.limit || 10;
-	const offset = params.offset || 0;
+	if (!params) params = {};
+	if (!params.limit) params.limit = 10;
+	if (!params.offset) params.offset = 0;
 
-	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
-		if (await validateTimestamp(params[timestamp])) {
-			params[timestamp] = await getBlockchainTime(params[timestamp]);
-		}
-		return Promise.resolve();
-	}));
-
-	let collection = 'timestampDb';
-	if (params.address) collection = `trx:address:${params.address}`;
-	else if (params.senderId) collection = `trx:sender:${params.senderId}`;
-	else if (params.recipientId) collection = `trx:recipient:${params.recipientId}`;
-	else if (params.type === 'REGISTERDELEGATE') collection = 'trx:delegate:registration';
-
-	const timestampDb = await redis(collection, ['timestamp']);
-
-	if (params.fromTimestamp || params.toTimestamp
-		|| (params.sort && params.sort.includes('timestamp'))) {
-		params = mapParams(params, '/transactions');
-		if (!params.fromTimestamp) params.fromTimestamp = 0;
-		if (!params.toTimestamp) params.toTimestamp = Math.floor(Date.now() / 1000);
-
-		let timestampSortOrder = 'desc';
-		if (params.sort) [, timestampSortOrder] = params.sort.split(':');
-
-		const blockIds = await timestampDb.find({
-			timestamp: {
-				from: params.fromTimestamp,
-				to: params.toTimestamp,
-				reverse: (timestampSortOrder === 'desc'),
-			},
-			limit,
-			offset,
-		});
-
-		await BluebirdPromise.map(
-			blockIds,
-			async (blockId) => {
-				const blkTransactions = await getTransactionsByBlockId(blockId);
-				transactions.data = transactions.data.concat(blkTransactions.data);
-				transactions.meta.count += blkTransactions.meta.count;
-			},
-			{ concurrency: 4 },
-		);
-	} else {
-		const response = await coreApi.getTransactions(params);
-		if (response.data) transactions.data = response.data;
-		if (response.meta) transactions.meta = response.meta;
+	if (params.fromTimestamp || params.toTimestamp) {
+		params.propBetween = {
+			property: 'unixTimestamp',
+			from: Number(params.fromTimestamp) || 0,
+			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
+		};
+		delete params.fromTimestamp;
+		delete params.toTimestamp;
 	}
 
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => {
-			transaction.timestamp = await bIdCache.get(transaction.blockId);
-			if (!transaction.timestamp) {
-				const txBlock = (await coreApi.getBlocks({ height: transaction.height })).data[0];
-				transaction.timestamp = txBlock.timestamp;
-			}
-			transaction.unixTimestamp = await getUnixTime(transaction.timestamp);
-			return transaction;
-		},
-		{ concurrency: transactions.data.length },
-	);
+	if (params.senderIdOrRecipientId) {
+		params.senderId = params.senderIdOrRecipientId;
+		params.orWhere = { recipientId: params.senderIdOrRecipientId };
+		delete params.senderIdOrRecipientId;
+	}
 
-	if (transactions.data) transactions.data.forEach((tx) => addToIndex(tx));
+	if (params.type) {
+		if (transactionTypes[params.type]) params.type = transactionTypes[params.type];
+	}
+
+	// TODO: Add search by message
+
+	const resultSet = await transactionIdx.find(params);
+
+	if (resultSet.length > 0) {
+		const trxIds = resultSet.map(row => row.id);
+		transactions.data = await getTransactionByIds(trxIds);
+	}
 
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset || 0;
-
 	return transactions;
 };
 
 signals.get('indexTransactions').add(async blockId => {
-	const block = await bIdCache.get(blockId);
-	if (!block) getTransactions({ blockId, limit: MAX_TX_LIMIT_PP });
+	const transactionIdx = await getTransactionIdx();
+	const blockResult = await transactionIdx.find({ blockId }, 'id');
+	if (blockResult.length > 0) return;
+
+	const transactions = await getTransactionsByBlockId(blockId);
+	const blockIdx = await getBlockIdx();
+	const blockRes = await blockIdx.find({ id: blockId }, ['timestamp', 'unixTimestamp']);
+	if (blockRes.length !== 1) return;
+
+	const { timestamp, unixTimestamp } = blockRes[0];
+	transactions.data.forEach(tx => {
+		tx.timestamp = timestamp;
+		tx.unixTimestamp = unixTimestamp;
+	});
+	transactionIdx.upsert(transactions.data);
 });
 
 const getPendingTransactions = async params => {
@@ -150,4 +130,15 @@ const getPendingTransactions = async params => {
 	return pendingTx;
 };
 
-module.exports = { getTransactions, getPendingTransactions };
+const init = async () => {
+	// Initialize the database
+	await getTransactionIdx();
+};
+
+module.exports = {
+	getTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
+	getPendingTransactions,
+	init,
+};

@@ -69,4 +69,5 @@ module.exports = {
 
     getDelegates: nop,
 
+    init: nop,
 };

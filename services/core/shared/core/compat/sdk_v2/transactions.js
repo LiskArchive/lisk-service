@@ -22,6 +22,8 @@ const {
 	getUnixTime,
 } = require('../common');
 
+const MAX_TX_LIMIT_PP = 100;
+
 const getTransactions = async params => {
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 		if (await validateTimestamp(params[timestamp])) {
@@ -45,4 +47,11 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-module.exports = { getTransactions };
+const getTransactionById = id => getTransactions({ id });
+const getTransactionsByBlockId = blockId => getTransactions({ blockId, limit: MAX_TX_LIMIT_PP });
+
+module.exports = {
+	getTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
+};

@@ -13,32 +13,34 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../../config');
-const db = require('../../database')[config.db.collections.accounts.db || config.db.defaults.db];
+// const config = require('../../../config');
+// const db = require('../../database')[config.db.collections.accounts.db || config.db.defaults.db];
 
-const getAddressByPublickKey = async (publicKey) => {
-    const accountdb = await db(config.db.collections.accounts.name);
-    const [address] = await accountdb.find(publicKey);
-    if (address) return address;
-    return null;
-};
+// const getAddressByPublickKey = async (publicKey) => {
+//     const accountdb = await db(config.db.collections.accounts.name);
+//     const [address] = await accountdb.find(publicKey);
+//     if (address) return address;
+//     return null;
+// };
 
-const getAddressBySecPublickKey = async (publicKey) => {
-    const accountdb = await db(config.db.collections.accounts.name);
-    const [address] = await accountdb.find(publicKey);
-    if (address) return address;
-    return null;
-};
+// const getAddressBySecPublickKey = async (publicKey) => {
+//     const accountdb = await db(config.db.collections.accounts.name);
+//     const [address] = await accountdb.find(publicKey);
+//     if (address) return address;
+//     return null;
+// };
 
-const getAddressByusername = async (username) => {
-    const accountdb = await db(config.db.collections.accounts.name);
-    const [address] = await accountdb.find(username);
-    if (address) return address;
-    return null;
-};
+// const getAddressByusername = async (username) => {
+//     const accountdb = await db(config.db.collections.accounts.name);
+//     const [address] = await accountdb.find(username);
+//     if (address) return address;
+//     return null;
+// };
+
+const nop = () => {};
 
 module.exports = {
-    getAddressByPublickKey,
-    getAddressBySecPublickKey,
-    getAddressByusername,
+    getAddressByPublickKey: nop,
+    getAddressBySecPublickKey: nop,
+    getAddressByusername: nop,
 };
