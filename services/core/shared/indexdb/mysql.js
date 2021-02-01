@@ -40,7 +40,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 	return knex;
 };
 
-const createDb = async (connEndpoint) => {
+const createDbConnection = async (connEndpoint) => {
 	const knex = require('knex')({
 		client: 'mysql',
 		version: '5.7',
@@ -62,6 +62,7 @@ const cast = (val, type) => {
 	if (type === 'integer') return Number(val);
 	if (type === 'string') return String(val);
 	if (type === 'boolean') return Boolean(val);
+	if (type === 'bigInteger') return BigInt(val);
 	return val;
 };
 
@@ -78,7 +79,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
 	if (!connectionPool[connPoolKey]) {
-		connectionPool[connPoolKey] = await createDb(connEndpoint);
+		connectionPool[connPoolKey] = await createDbConnection(connEndpoint);
 	}
 
 	const knex = connectionPool[connPoolKey];
