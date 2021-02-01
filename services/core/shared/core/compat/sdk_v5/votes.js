@@ -38,6 +38,7 @@ const indexVotes = async blocks => {
 					voteEntry.receivedAddress = vote.delegateAddress;
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
+					voteEntry.transactionId = tx.id;
 					return voteEntry;
 				});
 				return voteEntries;

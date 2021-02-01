@@ -21,6 +21,7 @@ exports.up = knex => knex.schema
         table.integer('receivedAddress').notNullable().index();
         table.integer('amount').notNullable().index();
         table.integer('timestamp').notNullable().index();
+        table.string('transactionId').notNullable();
 
         table.primary(['sentAddress', 'receivedAddress', 'timestamp']);
     });
