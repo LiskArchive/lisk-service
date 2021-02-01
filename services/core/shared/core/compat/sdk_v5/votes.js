@@ -51,8 +51,8 @@ const getVotes = async params => {
 	voter.data.username = ''; // TODO: Util method from accounts
 	voter.data.votesUsed = voter.data.votes.length;
 
-	voter.meta.total = votes.meta.count;
-	voter.meta.count = votes.data.length;
+	voter.meta.total = voter.meta.count;
+	voter.meta.count = voter.data.length;
 	voter.meta.offset = params.offset || 0;
 	return voter;
 };
