@@ -15,7 +15,7 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const requestAll = require('../requestAll');
+// const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 
 const logger = Logger();
@@ -52,8 +52,10 @@ const getPendingTransactions = async params => {
 };
 
 const loadAllPendingTransactions = async () => {
-	const limit = 100;
-	pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
+	// const limit = 100;
+	// TODO: To be fixed by Retrieve pending transactions #242
+	// pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
+	pendingTransactionsList = [];
 	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
 };
 
