@@ -26,13 +26,13 @@ const getCachedAccountBy = async (key, value) => {
 	const cacheKey = getCacheKey(key, value);
 	let account = await cache.get(cacheKey);
 	if (!account) {
-		const result = await accountsDB.find({ [key]: value });
+		const [result] = await accountsDB.find({ [key]: value });
 		if (result === undefined) {
 			const expireMiliseconds = config.ttl.affectedByNewBlocks;
 			await cache.set(cacheKey, null, expireMiliseconds);
 			return null;
 		}
-		const [{ address, username, publicKey }] = result;
+		const { address, username, publicKey } = result;
 		account = { address, username, publicKey };
 		Object.entries(account).forEach(async ([k, v]) => {
 			if (v) await cache.set(getCacheKey(k, v), account);

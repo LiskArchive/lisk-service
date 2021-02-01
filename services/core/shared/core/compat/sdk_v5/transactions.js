@@ -85,8 +85,8 @@ const validateParams = async params => {
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		};
 	}
-	if (params.sort && params.sort.includes('nonce')) {
-		if (!params.senderId) return new Error('Nonce based sorting is only possible along with senderId');
+	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
+		return new Error('Nonce based sorting is only possible along with senderId');
 	}
 	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
 	delete params.senderId;
