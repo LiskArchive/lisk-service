@@ -16,82 +16,47 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const coreApi = require('./coreApi');
-
+const { getAccounts } = require('./accounts');
 const { parseToJSONCompatObj } = require('../common');
-const { knex } = require('../../../database');
-
-const dposModuleID = 5;
-const voteTransactionAssetID = 1;
-
-const indexVotes = async blocks => {
-	const votesDB = await knex('votes');
-	const votesMultiArray = blocks.map(block => {
-		const votes = block.payload
-			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
-			.map(tx => {
-				const voteEntries = tx.asset.votes.map(vote => {
-					const voteEntry = {};
-					const sentAddress = (getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'))).toString('hex');
-					voteEntry.sentAddress = sentAddress;
-					voteEntry.receivedAddress = vote.delegateAddress;
-					voteEntry.amount = vote.amount;
-					voteEntry.timestamp = block.timestamp;
-					voteEntry.transactionId = tx.id;
-					return voteEntry;
-				});
-				return voteEntries;
-			});
-		return votes;
-	});
-	let allVotes = [];
-	votesMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
-	await votesDB.writeBatch(allVotes);
-};
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
 
 const getVotes = async params => {
-	const votesDB = await knex('votes');
-	const votes = {
+	const voter = {
 		data: { votes: [] },
 		meta: {},
 	};
 
-	if (params.address) params.sentAddress = params.address;
-	if (params.username) params.sentAddress = ''; // TODO: Util method from accounts
-	if (params.publicKey) params.sentAddress = (getAddressFromPublicKey(Buffer.from(params.publicKey, 'hex'))).toString('hex');
+	if (params.address) params.receivedAddress = params.address;
+	if (params.username) params.receivedAddress = ''; // TODO: Util method from accounts
+	if (params.publicKey) params.receivedAddress = (getAddressFromPublicKey(Buffer.from(params.publicKey, 'hex'))).toString('hex');
 
 	delete params.address;
 	delete params.username;
 	delete params.publicKey;
 
-	const resultSet = await votesDB.find({ sort: 'timestamp:desc', sentAddress: params.sentAddress });
-	if (resultSet.length) params.ids = resultSet.map(row => row.transactionId);
+	const response = await getAccounts({ id: params.receivedAddress });
+	if (response.data) voter.data.votes = response.data.map(acc => normalizeVote(acc.dpos.sentVotes));
+	if (response.meta) voter.meta = response.meta;
 
-	const response = await coreApi.getTransactions(params);
-	if (response.data) votes.data.votes = response.data.map(tx => normalizeVote(tx.asset.votes));
-	if (response.meta) votes.meta = response.meta;
-
-	votes.data.votes = await BluebirdPromise.map(
-		votes.data.votes,
+	voter.data.votes = await BluebirdPromise.map(
+		voter.data.votes,
 		async vote => {
 			vote.username = ''; // TODO: Util method from accounts
 			return vote;
 		},
-		{ concurrency: votes.data.length },
+		{ concurrency: voter.data.length },
 	);
-	votes.data.address = params.sentAddress;
-	votes.data.username = ''; // TODO: Util method from accounts
-	votes.data.votesUsed = votes.data.votes.length;
+	voter.data.address = params.receivedAddress;
+	voter.data.username = ''; // TODO: Util method from accounts
+	voter.data.votesUsed = voter.data.votes.length;
 
-	votes.meta.total = votes.meta.count;
-	votes.meta.count = votes.data.length;
-	votes.meta.offset = params.offset || 0;
-	return votes;
+	voter.meta.total = votes.meta.count;
+	voter.meta.count = votes.data.length;
+	voter.meta.offset = params.offset || 0;
+	return voter;
 };
 
 module.exports = {
 	getVotes,
-	indexVotes,
 };
