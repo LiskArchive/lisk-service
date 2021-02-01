@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -42,7 +42,7 @@ const getDelegates = async (params) => {
         delegate.username = delegate.dpos.delegate.username;
         delegate.balance = delegate.token.balance;
         delegate.pomHeights = delegate.dpos.delegate.pomHeights
-            .sort((a, b) => a - b).reverse().slice(0, 5)
+            .sort((a, b) => b - a).slice(0, 5)
             .map(height => ({ start: height, end: height + punishmentHeight }));
         return delegate;
     });

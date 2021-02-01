@@ -16,8 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
-const { indexAccountsbyPublicKey } = require('./accounts');
-const { getPublicKeyByAddress, getIndexedAccountByPublicKey } = require('./helper');
+const { indexAccountsbyPublicKey, getPublicKeyByAddress, getIndexedAccountByPublicKey } = require('./accounts');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
@@ -119,12 +118,9 @@ const getTransactions = async params => {
 				transaction.unixTimestamp = indexedTxInfo.timestamp;
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
-				const [{
-					address,
-					username,
-				}] = await getIndexedAccountByPublicKey(transaction.senderPublicKey);
-				transaction.senderId = address;
-				transaction.username = username || undefined;
+				const [account] = await getIndexedAccountByPublicKey(transaction.senderPublicKey);
+				transaction.senderId = account && account.address ? account.address : undefined;
+				transaction.username = account && account.username ? account.username : undefined;
 				return transaction;
 			},
 			{ concurrency: transactions.data.length },
