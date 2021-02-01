@@ -22,7 +22,7 @@ module.exports = {
 		address: '=',
 		publicKey: 'publickey',
 		username: '=',
-		isDelegate: '=',
+		isDelegate: '=,boolean',
 		limit: '=',
 		offset: '=',
 		sort: '=',

@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils, CacheLRU } = require('lisk-service-framework');
-
-const { isEmptyArray } = Utils.Data;
+const { CacheLRU } = require('lisk-service-framework');
 
 const config = require('../../../../config');
 const { knex } = require('../../../database');
@@ -28,13 +26,13 @@ const getCachedAccountBy = async (key, value) => {
 	const cacheKey = getCacheKey(key, value);
 	let account = await cache.get(cacheKey);
 	if (!account) {
-		const result = await accountsDB.find({ [key]: value });
-		if (!Array.isArray(result) || isEmptyArray(result)) {
+		const [result] = await accountsDB.find({ [key]: value });
+		if (result === undefined) {
 			const expireMiliseconds = config.ttl.affectedByNewBlocks;
 			await cache.set(cacheKey, null, expireMiliseconds);
 			return null;
 		}
-		const { address, username, publicKey } = result[0];
+		const { address, username, publicKey } = result;
 		account = { address, username, publicKey };
 		Object.entries(account).forEach(async ([k, v]) => {
 			if (v) await cache.set(getCacheKey(k, v), account);

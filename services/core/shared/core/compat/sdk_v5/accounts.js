@@ -29,11 +29,6 @@ const parseAddress = address => {
 	return address.toUpperCase();
 };
 
-const validateBoolean = val => {
-	if (val.toString().match(/^(true|[1-9][0-9]*|[0-9]*[1-9]+|yes)$/i)) return true;
-	return false;
-};
-
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
 const confirmAddress = async address => {
@@ -46,6 +41,18 @@ const confirmPublicKey = async publicKey => {
 	if (!publicKey || typeof publicKey !== 'string') return false;
 	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
 	return (account && account.publicKey === publicKey);
+};
+
+const getPublicKeyByAddress = async address => {
+	const accountsDB = await knex('accounts');
+	const [{ publicKey }] = await accountsDB.find({ address });
+	return publicKey;
+};
+
+const getIndexedAccountByPublicKey = async publicKey => {
+	const accountsDB = await knex('accounts');
+	const account = await accountsDB.find({ publicKey });
+	return account;
 };
 
 const resolveAccountsInfo = async accounts => {
@@ -120,7 +127,6 @@ const getAccounts = async params => {
 			return {};
 		}
 	}
-	if (params.isDelegate) params.isDelegate = validateBoolean(params.isDelegate);
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet.map(row => row.address);
 
@@ -189,4 +195,6 @@ module.exports = {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountsbyPublicKey,
+	getPublicKeyByAddress,
+	getIndexedAccountByPublicKey,
 };

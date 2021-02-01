@@ -18,9 +18,12 @@ const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
-const { indexAccountsbyPublicKey } = require('./accounts');
+
+const {
+	indexAccountsbyPublicKey,
+	getIndexedAccountByPublicKey
+} = require('./accounts');
 const { indexVotes } = require('./voters');
-const { getIndexedAccountByPublicKey } = require('./helper');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
@@ -87,10 +90,9 @@ const getBlocks = async params => {
 	blocks.data = await BluebirdPromise.map(
 		blocks.data,
 		async block => {
-			block.generatorPublicKey = block.generatorPublicKey.toString('hex');
-			const [res] = await getIndexedAccountByPublicKey(block.generatorPublicKey);
-			block.generatorAddress = res && res.address ? res.address : undefined;
-			block.generatorUsername = res && res.username ? res.username : undefined;
+			const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
+			block.generatorAddress = account && account.address ? account.address : undefined;
+			block.generatorUsername = account && account.username ? account.username : undefined;
 
 			block.unixTimestamp = block.timestamp;
 			block.totalForged = Number(block.reward);
