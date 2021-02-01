@@ -27,7 +27,7 @@ const getVoters = async params => {
 		limit: response.meta.limit,
 		count: response.data.voters ? response.data.voters.length : response.meta.count,
 		offset: response.meta.offset,
-		total: response.data.voteCount || response.data.votesUsed,
+		total: response.data.voteCount || response.meta.total,
 		address: response.data.address,
 		publicKey: response.data.publicKey,
 		username: response.data.username,
