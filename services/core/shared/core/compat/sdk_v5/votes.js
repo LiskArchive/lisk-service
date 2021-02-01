@@ -60,7 +60,7 @@ const getVotes = async params => {
 
 	if (params.address) params.sentAddress = params.address;
 	if (params.username) params.sentAddress = ''; // TODO: Util method from accounts
-	if (params.publicKey) params.sentAddress = (getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'))).toString('hex');
+	if (params.publicKey) params.sentAddress = (getAddressFromPublicKey(Buffer.from(params.publicKey, 'hex'))).toString('hex');
 
 	delete params.address;
 	delete params.username;

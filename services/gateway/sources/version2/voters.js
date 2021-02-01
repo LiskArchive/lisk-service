@@ -31,7 +31,7 @@ module.exports = {
 				address: '=,string',
 				username: '=,string',
 			},
-			votes: ['votes', vote]
+			votes: ['votes', vote],
 		},
 		meta: {
 			count: '=,number',

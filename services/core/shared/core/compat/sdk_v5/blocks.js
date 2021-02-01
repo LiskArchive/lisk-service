@@ -88,9 +88,9 @@ const getBlocks = async params => {
 		blocks.data,
 		async block => {
 			block.generatorPublicKey = block.generatorPublicKey.toString('hex');
-			const [response] = await getIndexedAccountByPublicKey(block.generatorPublicKey);
-			block.generatorAddress = response && response.address ? response.address : undefined;
-			block.generatorUsername = response && response.username ? response.username : undefined;
+			const [res] = await getIndexedAccountByPublicKey(block.generatorPublicKey);
+			block.generatorAddress = res && res.address ? res.address : undefined;
+			block.generatorUsername = res && res.username ? res.username : undefined;
 
 			block.unixTimestamp = block.timestamp;
 			block.totalForged = Number(block.reward);
