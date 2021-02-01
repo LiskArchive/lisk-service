@@ -23,7 +23,6 @@ const { knex } = require('../../../database');
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
-const voteModuleAssetID = String(dposModuleID).concat(':').concat(voteTransactionAssetID);
 
 const indexVotes = async blocks => {
 	const votesDB = await knex('votes');
@@ -53,46 +52,39 @@ const indexVotes = async blocks => {
 const normalizeVote = vote => parseToJSONCompatObj(vote);
 
 const getVotes = async params => {
-	const transactionsDB = await knex('transactions');
+	const votesDB = await knex('votes');
 	const votes = {
-		data: [],
+		data: { votes: [] },
 		meta: {},
 	};
 
-	if (params.sentUsername) params.sentAddress = '';
-	if (params.receivedUsername) params.receivedAddress = '';
+	if (params.address) params.sentAddress = params.address;
+	if (params.username) params.sentAddress = ''; // TODO: Util method from accounts
+	if (params.publicKey) params.sentAddress = (getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'))).toString('hex');
 
-	delete params.sentUsername;
-	delete params.receivedUsername;
+	delete params.address;
+	delete params.username;
+	delete params.publicKey;
 
-	if (params.fromTimestamp || params.toTimestamp) {
-		params.propBetween = {
-			property: 'timestamp',
-			from: Number(params.fromTimestamp) || 0,
-			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
-		};
-	}
-	params.moduleAssetId = voteModuleAssetID;
-
-	const resultSet = await transactionsDB.find(params);
-	if (resultSet.length) params.ids = resultSet.map(row => row.id);
+	const resultSet = await votesDB.find({ sort: 'timestamp:desc', sentAddress: params.sentAddress });
+	if (resultSet.length) params.ids = resultSet.map(row => row.transactionId);
 
 	const response = await coreApi.getTransactions(params);
-	if (response.data) votes.data = response.data.map(tx => normalizeVote(tx));
+	if (response.data) votes.data.votes = response.data.map(tx => normalizeVote(tx.asset.votes));
 	if (response.meta) votes.meta = response.meta;
 
-	votes.data = await BluebirdPromise.map(
-		votes.data,
+	votes.data.votes = await BluebirdPromise.map(
+		votes.data.votes,
 		async vote => {
-			const [indexedTxInfo] = resultSet.filter(tx => tx.id === vote.id);
-			vote.unixTimestamp = indexedTxInfo.timestamp;
-			vote.height = indexedTxInfo.height;
-			vote.blockId = indexedTxInfo.blockId;
-
+			vote.username = ''; // TODO: Util method from accounts
 			return vote;
 		},
 		{ concurrency: votes.data.length },
 	);
+	votes.data.address = params.sentAddress;
+	votes.data.username = ''; // TODO: Util method from accounts
+	votes.data.votesUsed = votes.data.votes.length;
+
 	votes.meta.total = votes.meta.count;
 	votes.meta.count = votes.data.length;
 	votes.meta.offset = params.offset || 0;
