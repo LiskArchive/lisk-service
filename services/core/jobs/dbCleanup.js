@@ -17,6 +17,7 @@ const logger = require('lisk-service-framework').Logger();
 
 const config = require('../config');
 const purger = require('../shared/core/purge');
+const core = require('../shared/core');
 
 module.exports = [
 	{
@@ -25,6 +26,7 @@ module.exports = [
 		schedule: '0 0 * * *', // Every day at mid-night
 		updateOnInit: true,
 		init: () => {
+			core.init();
 			logger.debug('Scheduling delegate list init...');
 			purger.purgeTransactions(config.db.collections.transactions.purge_limit);
 		},

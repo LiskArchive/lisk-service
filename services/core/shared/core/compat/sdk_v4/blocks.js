@@ -158,12 +158,10 @@ const init = async () => {
 	}
 };
 
-// TODO: remove auto-init, breaks unit tests
-init();
-
 module.exports = {
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 	getBlockIdx,
+	init,
 };

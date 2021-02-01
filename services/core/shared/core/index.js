@@ -106,6 +106,7 @@ const {
 	getUnixTime,
 	updateFinalizedHeight,
 	getSDKVersion,
+	init,
 } = require('./compat');
 
 const events = require('./events');
@@ -169,4 +170,5 @@ module.exports = {
 	events,
 	getSDKVersion,
 	waitForLastBlock,
+	init,
 };
