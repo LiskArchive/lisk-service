@@ -84,7 +84,7 @@ const getVoters = async params => {
 		{ concurrency: votes.data.votes.length },
 	);
 
-	votes.data.address = params.sentAddress;
+	votes.data.address = params.receivedAddress;
 	votes.data.username = ''; // TODO: Util method from accounts
 	votes.data.votesUsed = votes.data.votes.length;
 
