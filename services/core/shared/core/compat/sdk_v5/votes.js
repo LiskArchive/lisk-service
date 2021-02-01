@@ -14,11 +14,40 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
+
 const coreApi = require('./coreApi');
+
 const { parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
-const voteModuleAssetID = '5:1';
+const dposModuleID = 5;
+const voteTransactionAssetID = 1;
+const voteModuleAssetID = String(dposModuleID).concat(':').concat(voteTransactionAssetID);
+
+const indexVotes = async blocks => {
+	const votesDB = await knex('votes');
+	const votesMultiArray = blocks.map(block => {
+		const votes = block.payload
+			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
+			.map(tx => {
+				const voteEntries = tx.asset.votes.map(vote => {
+					const voteEntry = {};
+					const sentAddress = (getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'))).toString('hex');
+					voteEntry.sentAddress = sentAddress;
+					voteEntry.receivedAddress = vote.delegateAddress;
+					voteEntry.amount = vote.amount;
+					voteEntry.timestamp = block.timestamp;
+					return voteEntry;
+				});
+				return voteEntries;
+			});
+		return votes;
+	});
+	let allVotes = [];
+	votesMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
+	await votesDB.writeBatch(allVotes);
+};
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
 
@@ -28,6 +57,13 @@ const getVotes = async params => {
 		data: [],
 		meta: {},
 	};
+
+	if (params.sentUsername) params.sentAddress = '';
+	if (params.receivedUsername) params.receivedAddress = '';
+
+	delete params.sentUsername;
+	delete params.receivedUsername;
+
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
 			property: 'timestamp',
@@ -64,4 +100,5 @@ const getVotes = async params => {
 
 module.exports = {
 	getVotes,
+	indexVotes,
 };
