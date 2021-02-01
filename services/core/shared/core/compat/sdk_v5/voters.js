@@ -72,9 +72,9 @@ const getVoters = async params => {
 
 		const response = await coreApi.getTransactions(params);
 		if (response.data) {
-			const voteMultiArray = response.data.map(tx => normalizeVote(tx).asset.votes);
+			const voteMultiArray = response.data.map(tx => tx.asset.votes);
 			let allVotes = [];
-			voteMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
+			voteMultiArray.forEach(votes => allVotes = allVotes.concat(votes.map(v => normalizeVote(v))));
 			votes.data.votes = allVotes;
 		}
 		if (response.meta) votes.meta = response.meta;

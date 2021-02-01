@@ -32,7 +32,7 @@ module.exports = {
 				username: '=,string',
 				votesUsed: '=,number',
 			},
-			votes: ['votes', vote],
+			votes: '=',
 		},
 		meta: {
 			count: '=,number',
