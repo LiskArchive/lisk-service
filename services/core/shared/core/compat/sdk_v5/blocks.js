@@ -19,6 +19,7 @@ const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 const { indexAccountsbyPublicKey } = require('./accounts');
+const { indexVotes } = require('./votes');
 const { getIndexedAccountByPublicKey } = require('./helper');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
@@ -54,6 +55,7 @@ const indexBlocks = async originalBlocks => {
 	await blocksDB.writeBatch(blocks);
 	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(originalBlocks);
+	await indexVotes(originalBlocks);
 };
 
 const normalizeBlock = block => parseToJSONCompatObj(block);
@@ -85,8 +87,8 @@ const getBlocks = async params => {
 	blocks.data = await BluebirdPromise.map(
 		blocks.data,
 		async block => {
-			const [{ address, username }] = await getIndexedAccountByPublicKey((block.generatorPublicKey)
-				.toString('hex'));
+			block.generatorPublicKey = block.generatorPublicKey.toString('hex');
+			const [{ address, username }] = await getIndexedAccountByPublicKey(block.generatorPublicKey);
 			block.generatorAddress = address;
 			block.generatorUsername = username;
 
