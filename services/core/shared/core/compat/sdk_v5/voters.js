@@ -74,7 +74,8 @@ const getVoters = async params => {
 		if (response.data) {
 			const voteMultiArray = response.data.map(tx => tx.asset.votes);
 			let allVotes = [];
-			voteMultiArray.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => normalizeVote(v))));
+			voteMultiArray
+				.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => normalizeVote(v))));
 			votes.data.votes = allVotes;
 		}
 		if (response.meta) votes.meta = response.meta;
