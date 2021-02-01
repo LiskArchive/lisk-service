@@ -67,11 +67,13 @@ const getVoters = async params => {
 	delete params.publicKey;
 
 	const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
-	if (resultSet.length) params.ids = resultSet.map(row => row.id);
+	if (resultSet.length) {
+		params.ids = resultSet.map(row => row.id);
 
-	const response = await coreApi.getTransactions(params);
-	if (response.data) votes.data.votes = response.data.map(tx => normalizeVote(tx.asset.votes));
-	if (response.meta) votes.meta = response.meta;
+		const response = await coreApi.getTransactions(params);
+		if (response.data) votes.data.votes = response.data.map(tx => normalizeVote(tx.asset.votes));
+		if (response.meta) votes.meta = response.meta;
+	}
 
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
@@ -81,12 +83,13 @@ const getVoters = async params => {
 		},
 		{ concurrency: votes.data.length },
 	);
+
 	votes.data.address = params.sentAddress;
 	votes.data.username = ''; // TODO: Util method from accounts
 	votes.data.votesUsed = votes.data.votes.length;
 
-	votes.meta.total = votes.meta.count;
-	votes.meta.count = votes.data.length;
+	votes.meta.total = resultSet.length;
+	votes.meta.count = votes.data.votes.length;
 	votes.meta.offset = params.offset || 0;
 	return votes;
 };
