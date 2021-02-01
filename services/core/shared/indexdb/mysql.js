@@ -33,7 +33,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			if (schema[p].null === false) kProp.notNullable();
 			if (p === primaryKey) kProp.primary();
 			if (indexes[p]) kProp.index();
-			
+
 			// TODO: Add support for composite primary keys and foreign keys
 			return kProp;
 		});
