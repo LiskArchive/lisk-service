@@ -85,10 +85,9 @@ const getBlocks = async params => {
 	blocks.data = await BluebirdPromise.map(
 		blocks.data,
 		async block => {
-			const [{ address, username }] = await getIndexedAccountByPublicKey((block.generatorPublicKey)
-				.toString('hex'));
-			block.generatorAddress = address;
-			block.generatorUsername = username;
+			const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey);
+			block.generatorAddress = account && account.address ? account.address : undefined;
+			block.generatorUsername = account && account.username ? account.username : undefined;
 
 			block.unixTimestamp = block.timestamp;
 			block.totalForged = Number(block.reward);
