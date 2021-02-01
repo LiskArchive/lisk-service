@@ -19,8 +19,8 @@ exports.up = knex => knex.schema
     .createTable(tableName, table => {
         table.string('id').notNullable().primary();
         table.string('sentAddress').notNullable().index();
-        table.integer('receivedAddress').notNullable().index();
-        table.integer('amount').notNullable().index();
+        table.string('receivedAddress').notNullable().index();
+        table.bigInteger('amount').notNullable().index();
         table.integer('timestamp').notNullable().index();
     });
 

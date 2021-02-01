@@ -28,7 +28,7 @@ exports.up = knex => knex.schema
         table.integer('timestamp').index();
         table.string('senderPublicKey').notNullable().index();
         table.string('recipientId').index();
-        table.integer('amount').index();
+        table.bigInteger('amount').index();
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
