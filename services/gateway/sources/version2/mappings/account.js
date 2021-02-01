@@ -68,14 +68,7 @@ module.exports = {
 			rank: '=,number',
 			rewards: '=,string',
 		},
-		sentVotes: ['sentVotes', {
-			delegateAddress: '=,string',
-			amount: '=,string',
-		}],
-		unlocking: ['unlocking', {
-			delegateAddress: '=,string',
-			amount: '=,string',
-			unvoteHeight: '=,number',
-		}],
+		sentVotes: '=',
+		unlocking: '=',
 	},
 };

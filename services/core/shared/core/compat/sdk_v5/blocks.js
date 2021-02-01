@@ -14,10 +14,11 @@
  *
  */
 const { CacheRedis, Logger } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
-
+const { indexAccountsbyPublicKey, getIndexedAccountByPublicKey } = require('./accounts');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
@@ -39,16 +40,18 @@ const getFinalizedHeight = () => finalizedHeight;
 
 const indexBlocks = async originalBlocks => {
 	const blocksDB = await knex('blocks');
+	const publicKeysToIndex = [];
 	const blocks = originalBlocks.map(block => {
 		const skimmedBlock = {};
 		skimmedBlock.id = block.id;
 		skimmedBlock.height = block.height;
 		skimmedBlock.unixTimestamp = block.timestamp;
 		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
-
+		publicKeysToIndex.push(block.generatorPublicKey);
 		return skimmedBlock;
 	});
 	await blocksDB.writeBatch(blocks);
+	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(originalBlocks);
 };
 
@@ -78,29 +81,32 @@ const getBlocks = async params => {
 		.map(block => ({ ...block.header, payload: block.payload }));
 	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
 
-	blocks.data = blocks.data.map(block => {
-		// TODO: Update the below params after accounts index is implemented
-		block.generatorAddress = null;
-		block.generatorUsername = null;
+	blocks.data = await BluebirdPromise.map(
+		blocks.data,
+		async block => {
+			const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
+			block.generatorAddress = account && account.address ? account.address : undefined;
+			block.generatorUsername = account && account.username ? account.username : undefined;
 
-		block.unixTimestamp = block.timestamp;
-		block.totalForged = Number(block.reward);
-		block.totalBurnt = 0;
-		block.totalFee = 0;
+			block.unixTimestamp = block.timestamp;
+			block.totalForged = Number(block.reward);
+			block.totalBurnt = 0;
+			block.totalFee = 0;
 
-		block.payload.forEach(txn => {
-			const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
+			block.payload.forEach(txn => {
+				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
 
-			block.totalForged += Number(txn.fee);
-			block.totalBurnt += txnMinFee;
-			block.totalFee += Number(txn.fee) - txnMinFee;
-		});
+				block.totalForged += Number(txn.fee);
+				block.totalBurnt += txnMinFee;
+				block.totalFee += Number(txn.fee) - txnMinFee;
+			});
 
-		return normalizeBlock(block);
-	});
+			return normalizeBlock(block);
+		},
+		{ concurrency: blocks.data.length },
+	);
 
 	indexBlocks(blocks.data);
-
 	return blocks;
 };
 
@@ -116,7 +122,7 @@ const buildIndex = async (from, to) => {
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	Array(numOfPages).fill().forEach(async (_, pageNum) => {
-		const offset = from + (MAX_BLOCKS_LIMIT_PP * (numOfPages - pageNum));
+		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
 		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 		// TODO: Revert to standard notation, once getBlocks is fully implemented
 		// const blocks = await getBlocks({
