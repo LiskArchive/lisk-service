@@ -27,15 +27,15 @@ const getVotes = async params => {
 		meta: {},
 	};
 
-	if (params.address) params.receivedAddress = params.address;
-	if (params.username) params.receivedAddress = ''; // TODO: Util method from accounts
-	if (params.publicKey) params.receivedAddress = (getAddressFromPublicKey(Buffer.from(params.publicKey, 'hex'))).toString('hex');
+	if (params.address) params.sentAddress = params.address;
+	if (params.username) params.sentAddress = ''; // TODO: Util method from accounts
+	if (params.publicKey) params.sentAddress = (getAddressFromPublicKey(Buffer.from(params.publicKey, 'hex'))).toString('hex');
 
 	delete params.address;
 	delete params.username;
 	delete params.publicKey;
 
-	const response = await getAccounts({ id: params.receivedAddress });
+	const response = await getAccounts({ id: params.sentAddress });
 	if (response.data) voter.data.votes = response.data.map(acc => normalizeVote(acc.dpos.sentVotes));
 	if (response.meta) voter.meta = response.meta;
 
@@ -47,7 +47,7 @@ const getVotes = async params => {
 		},
 		{ concurrency: voter.data.votes.length },
 	);
-	voter.data.address = params.receivedAddress;
+	voter.data.address = params.sentAddress;
 	voter.data.username = ''; // TODO: Util method from accounts
 	voter.data.votesUsed = voter.data.votes.length;
 
