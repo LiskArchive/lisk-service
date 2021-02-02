@@ -25,7 +25,8 @@ const getVotes = async params => {
 	};
 
 	const response = await coreApi.getVotes(params);
-	votes.data = await BluebirdPromise.map(
+	votes.data = response.data;
+	votes.data.votes = await BluebirdPromise.map(
 		response.data.votes,
 		async vote => {
 			if (!vote.publicKey) {
@@ -41,7 +42,7 @@ const getVotes = async params => {
 		limit: response.meta.limit,
 		count: response.data.votes.length,
 		offset: response.meta.offset,
-		total: response.data.votesUsed,
+		total: response.data.votesUsed || response.meta.total,
 		address: response.data.address,
 		publicKey: response.data.publicKey,
 		username: response.data.username,

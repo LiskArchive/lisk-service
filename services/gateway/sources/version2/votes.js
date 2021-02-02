@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const vote = require('./mappings/vote');
+
 module.exports = {
 	type: 'moleculer',
 	method: 'core.votes',
@@ -30,7 +32,7 @@ module.exports = {
 				username: '=,string',
 				votesUsed: '=,number',
 			},
-			votes: '=',
+			votes: ['data.votes', vote],
 		},
 		meta: {
 			count: '=,number',

@@ -14,7 +14,7 @@
  *
  */
 module.exports = {
-	address: 'delegateAddress,string',
+	address: '=,string',
 	amount: '=,string',
 	username: '=,string',
 };
