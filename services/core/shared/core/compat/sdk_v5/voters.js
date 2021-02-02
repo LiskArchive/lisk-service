@@ -18,11 +18,14 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 
+const { getIndexedAccountInfo } = require('./accounts');
 const { parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
+
+const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
 const indexVotes = async blocks => {
 	const votesDB = await knex('votes');
@@ -34,7 +37,7 @@ const indexVotes = async blocks => {
 					const voteEntry = {};
 
 					voteEntry.id = tx.id;
-					voteEntry.sentAddress = (getAddressFromPublicKey(Buffer.from(tx.senderPublicKey, 'hex'))).toString('hex');
+					voteEntry.sentAddress = extractAddressFromPublicKey(tx.senderPublicKey);
 					voteEntry.receivedAddress = vote.delegateAddress;
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
@@ -59,8 +62,12 @@ const getVoters = async params => {
 	};
 
 	if (params.address) params.receivedAddress = params.address;
-	if (params.username) params.receivedAddress = ''; // TODO: Util method from accounts
-	if (params.publicKey) params.receivedAddress = (getAddressFromPublicKey(Buffer.from(params.publicKey, 'hex'))).toString('hex');
+	if (params.username) {
+		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		params.receivedAddress = accountInfo.address;
+	}
+	if (params.publicKey) params.receivedAddress = extractAddressFromPublicKey(params.publicKey);
 
 	delete params.address;
 	delete params.username;
@@ -72,10 +79,14 @@ const getVoters = async params => {
 
 		const response = await coreApi.getTransactions(params);
 		if (response.data) {
-			const voteMultiArray = response.data.map(tx => tx.asset.votes);
+			const voteMultiArray = response.data
+				.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));
 			let allVotes = [];
 			voteMultiArray
-				.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => normalizeVote(v))));
+				.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => ({
+					...normalizeVote(v),
+					sentAddress: extractAddressFromPublicKey(v.senderPublicKey),
+				}))));
 			votes.data.votes = allVotes;
 		}
 		if (response.meta) votes.meta = response.meta;
@@ -83,16 +94,19 @@ const getVoters = async params => {
 
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
-		async vote => ({
-			...vote,
-			username: '', // TODO: Util method from accounts
-		}),
+		async vote => {
+			const [accountInfo] = await getIndexedAccountInfo({ address: vote.sentAddress });
+			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
+			const { amount, sentAddress, username } = vote;
+			return { amount, address: sentAddress, username };
+		},
 		{ concurrency: votes.data.votes.length },
 	);
 
+	const [accountInfo] = await getIndexedAccountInfo({ address: params.receivedAddress });
 	votes.data.account = {
 		address: params.receivedAddress,
-		username: '', // TODO: Util method from accounts
+		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
 		votesUsed: votes.data.votes.length,
 	};
 

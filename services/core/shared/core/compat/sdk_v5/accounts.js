@@ -55,6 +55,12 @@ const getIndexedAccountByPublicKey = async publicKey => {
 	return account;
 };
 
+const getIndexedAccountInfo = async params => {
+	const accountsDB = await knex('accounts');
+	const account = await accountsDB.find(params);
+	return account;
+};
+
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
 		account.dpos.unlocking = account.dpos.unlocking.map(item => {
@@ -197,4 +203,5 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountByPublicKey,
+	getIndexedAccountInfo,
 };
