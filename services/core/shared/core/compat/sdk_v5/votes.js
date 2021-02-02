@@ -16,7 +16,7 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const { getAccounts } = require('./accounts');
+const { getAccounts, getIndexedAccountInfo } = require('./accounts');
 const { parseToJSONCompatObj } = require('../common');
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
@@ -28,7 +28,11 @@ const getVotes = async params => {
 	};
 
 	if (params.address) params.sentAddress = params.address;
-	if (params.username) params.sentAddress = ''; // TODO: Util method from accounts
+	if (params.username) {
+		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		params.sentAddress = accountInfo.address;
+	}
 	if (params.publicKey) params.sentAddress = (getAddressFromPublicKey(Buffer.from(params.publicKey, 'hex'))).toString('hex');
 
 	delete params.address;
@@ -37,19 +41,23 @@ const getVotes = async params => {
 
 	// TODO: Pass address as ID, when getAccounts supports
 	const response = await getAccounts({ address: params.sentAddress });
-	if (response.data) voter.data.votes = response.data.map(acc => normalizeVote(acc.dpos.sentVotes));
+	if (response.data) response.data.
+		forEach(acc => voter.data.votes = voter.data.votes.concat(normalizeVote(acc).dpos.sentVotes));
 	if (response.meta) voter.meta = response.meta;
 
 	voter.data.votes = await BluebirdPromise.map(
 		voter.data.votes,
 		async vote => {
-			vote.username = ''; // TODO: Util method from accounts
-			return vote;
+			const [accountInfo] = await getIndexedAccountInfo({ address: vote.delegateAddress });
+			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
+			const { amount, delegateAddress, username } = vote;
+			return { amount, address: delegateAddress, username };
 		},
 		{ concurrency: voter.data.votes.length },
 	);
 	voter.data.address = params.sentAddress;
-	voter.data.username = ''; // TODO: Util method from accounts
+	const [accountInfo] = await getIndexedAccountInfo({ address: voter.data.address });
+	voter.data.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
 	voter.data.votesUsed = voter.data.votes.length;
 
 	voter.meta.total = voter.data.votes.length;
