@@ -39,8 +39,7 @@ const getVotes = async params => {
 	delete params.username;
 	delete params.publicKey;
 
-	// TODO: Pass address as ID, when getAccounts supports
-	const response = await getAccounts({ address: params.sentAddress });
+	const response = await getAccounts({ id: params.sentAddress });
 	if (response.data) response.data
 		.forEach(acc => voter.data.votes = voter.data.votes.concat(normalizeVote(acc).dpos.sentVotes));
 	if (response.meta) voter.meta = response.meta;
@@ -55,10 +54,13 @@ const getVotes = async params => {
 		},
 		{ concurrency: voter.data.votes.length },
 	);
-	voter.data.address = params.sentAddress;
-	const [accountInfo] = await getIndexedAccountInfo({ address: voter.data.address });
-	voter.data.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
-	voter.data.votesUsed = voter.data.votes.length;
+
+	const [accountInfo] = await getIndexedAccountInfo({ address: params.sentAddress });
+	voter.data.account = {
+		address: params.sentAddress,
+		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
+		votesUsed: voter.data.votes.length,
+	};
 
 	voter.meta.total = voter.data.votes.length;
 	voter.meta.count = voter.data.votes.length;
