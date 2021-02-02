@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,24 +13,91 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const events = require('./events');
+
 const {
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('./blocks');
 
-const { getNetworkStatus } = require('./network');
-const { getTransactions, getPendingTransactions } = require('./transactions');
+const {
+    getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
+    validateAddress,
+} = require('./accounts');
 
-const events = require('./events');
+const {
+    getNetworkStatus,
+} = require('./network');
+
+const {
+    getTransactions,
+    getPendingTransactions,
+} = require('./transactions');
+
+const {
+    getForgers,
+} = require('./forgers');
+const {
+    peerStates,
+    getPeers,
+} = require('./peers');
+
+const {
+    getCachedAccountByAddress,
+    getCachedAccountByPublicKey,
+    getCachedAccountBySecondPublicKey,
+    getCachedAccountByUsername,
+} = require('./coreCache');
+
+const {
+    getDelegates,
+} = require('./delegates');
+
+const {
+    getVotes,
+} = require('./votes');
+
+const {
+    getVoters,
+} = require('./voters');
 
 module.exports = {
     ...require('../sdk_v4'),
+    ...require('./coreCache'),
+
     events,
+
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
+
+    getAccounts,
+    getMultisignatureGroups,
+    getMultisignatureMemberships,
+    validateAddress,
+
     getNetworkStatus,
+
     getTransactions,
     getPendingTransactions,
+
+    peerStates,
+    getPeers,
+
+    getForgers,
+
+    getCachedAccountByAddress,
+    getCachedAccountByPublicKey,
+    getCachedAccountBySecondPublicKey,
+    getCachedAccountByUsername,
+
+    getDelegates,
+
+    getVotes,
+
+    getVoters,
+
 };

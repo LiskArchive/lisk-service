@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -21,6 +21,29 @@ const getNetworkStatus = async () => {
     return { data: result };
 };
 
+const getBlocks = async params => {
+    const apiClient = await getApiClient();
+    let block;
+    let blocks;
+
+    if (params.id) {
+        block = await apiClient.block.get(params.id);
+    } else if (params.ids) {
+        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.ids });
+    } else if (params.height) {
+        block = await apiClient.block.getByHeight(params.height);
+    } else if (params.heightRange) {
+        blocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', params.heightRange);
+    } else if (params.limit === 1 && Object.getOwnPropertyNames(params).length === 1) {
+        block = await apiClient._channel.invoke('app:getLastBlock');
+        block = apiClient.block.decode(Buffer.from(block, 'hex'));
+    }
+
+    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
+    const result = blocks || [block];
+    return { data: result };
+};
+
 const getTransactions = async params => {
     const apiClient = await getApiClient();
     let transaction;
@@ -37,27 +60,34 @@ const getTransactions = async params => {
     return { data: result };
 };
 
-const getBlocks = async params => {
+const getAccounts = async params => {
     const apiClient = await getApiClient();
-    let block;
-    let blocks;
-
-    if (params.blockId) {
-        block = await apiClient.block.get(params.blockId);
-    } else if (params.blockIds) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.blockIds });
-    } else if (params.height) {
-        block = await apiClient.block.getByHeight(params.height);
-    } else if (params.heightRange) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', params.heightRange);
-    } else if (params.limit === 1 && Object.getOwnPropertyNames(params).length === 1) {
-        block = await apiClient._channel.invoke('app:getLastBlock');
-        block = apiClient.block.decode(block);
+    let account;
+    let accounts;
+    if (params.address) {
+        account = await apiClient.account.get(params.address);
+    } else if (params.addresses) {
+        accounts = await apiClient._channel.invoke('app:getAccounts', { address: params.addresses });
     }
-
-    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(blk));
-    const result = blocks || [block];
+    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
+    const result = accounts || [account];
     return { data: result };
+};
+
+const getPeers = async (state = 'connected') => {
+    const apiClient = await getApiClient();
+
+    const peers = state === 'connected'
+        ? await apiClient._channel.invoke('app:getConnectedPeers')
+        : await apiClient._channel.invoke('app:getDisconnectedPeers');
+
+    return { data: peers };
+};
+
+const getForgers = async () => {
+    const apiClient = await getApiClient();
+    const forgers = await apiClient._channel.invoke('app:getForgers', {});
+    return { data: forgers };
 };
 
 const getPendingTransactions = async () => {
@@ -65,11 +95,14 @@ const getPendingTransactions = async () => {
     let transactions = await apiClient._channel.invoke('app:getTransactionsFromPool', {});
     if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
     return { data: transactions };
-};
+}
 
 module.exports = {
     getBlocks,
+    getAccounts,
     getNetworkStatus,
     getTransactions,
+    getPeers,
+    getForgers,
     getPendingTransactions,
 };

@@ -16,13 +16,17 @@
 const http = require('./httpRequest');
 
 const {
+    getApiClient,
+} = require('./wsRequest');
+
+const {
     getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
     getReadyStatus,
     setReadyStatus,
-    getRegisteredModules,
-    setRegisteredmodules,
+    getRegisteredModuleAssets,
+    setRegisteredmoduleAssets,
     resolvemoduleAssets,
 } = require('./constants');
 
@@ -33,20 +37,28 @@ const {
     validateTimestamp,
 } = require('./time');
 
+const {
+    parseToJSONCompatObj,
+} = require('./utils');
+
 module.exports = {
     http,
+
+    getApiClient,
 
     getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
     getReadyStatus,
     setReadyStatus,
-    getRegisteredModules,
-    setRegisteredmodules,
+    getRegisteredModuleAssets,
+    setRegisteredmoduleAssets,
     resolvemoduleAssets,
 
     getBlockchainTime,
     getEpochUnixTime,
     getUnixTime,
     validateTimestamp,
+
+    parseToJSONCompatObj,
 };

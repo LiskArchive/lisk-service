@@ -22,25 +22,26 @@ const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
 let coreVersion = '1.0.0-alpha.0';
+let constants;
 let readyStatus;
-let registeredLiskModules;
+let registeredLiskModuleAssets;
 
-const setRegisteredmodules = modules => registeredLiskModules = modules;
+const setRegisteredmoduleAssets = moduleAssets => registeredLiskModuleAssets = moduleAssets;
 
 const resolvemoduleAssets = async (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
-			result = result
-				.concat(
-					liskModule.transactionAssets.map(asset => {
-						const id = String(liskModule.id).concat(':').concat(asset.id);
-						if (liskModule.name && asset.name) {
-							const name = liskModule.name.concat(':').concat(asset.name);
-							return { id, name };
-						}
-						return { id };
-					}));
+			result = result.concat(
+				liskModule.transactionAssets.map(asset => {
+					const id = String(liskModule.id).concat(':').concat(asset.id);
+					if (liskModule.name && asset.name) {
+						const name = liskModule.name.concat(':').concat(asset.name);
+						return { id, name };
+					}
+					return { id };
+				}),
+			);
 		}
 	});
 	return result;
@@ -48,14 +49,18 @@ const resolvemoduleAssets = async (data) => {
 
 const getNetworkConstants = async () => {
 	try {
-		let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
-		if (Object.getOwnPropertyNames(result).length === 0) {
-			const apiClient = await getApiClient();
-			const info = await apiClient.node.getNodeInfo();
-			info.moduleAssets = await resolvemoduleAssets(info.registeredModules);
-			result = { data: info };
+		if (!constants) {
+			let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
+			if (Object.getOwnPropertyNames(result).length === 0) {
+				const apiClient = await getApiClient();
+				const info = await apiClient.node.getNodeInfo();
+				info.moduleAssets = await resolvemoduleAssets(info.registeredModules);
+				result = { data: info };
+			}
+			if (!isProperObject(result)) return {};
+			constants = result;
 		}
-		return isProperObject(result) ? result : {};
+		return constants;
 	} catch (_) {
 		return {
 			data: { error: 'Core service could not be started' },
@@ -71,7 +76,7 @@ const setReadyStatus = status => readyStatus = status;
 
 const getReadyStatus = () => readyStatus;
 
-const getRegisteredModules = () => registeredLiskModules;
+const getRegisteredModuleAssets = () => registeredLiskModuleAssets;
 
 module.exports = {
 	getNetworkConstants,
@@ -79,7 +84,7 @@ module.exports = {
 	getCoreVersion,
 	setReadyStatus,
 	getReadyStatus,
-	getRegisteredModules,
-	setRegisteredmodules,
+	getRegisteredModuleAssets,
+	setRegisteredmoduleAssets,
 	resolvemoduleAssets,
 };

@@ -25,7 +25,7 @@ const createDb = async (migrationDir, connEndpoint) => {
         client: 'mysql',
         version: '5.7',
         connection: connEndpoint,
-        // useNullAsDefault: true,
+        useNullAsDefault: true,
         log: {
             warn(message) { logger.warn(message); },
             error(message) { logger.error(message); },
@@ -43,7 +43,7 @@ const createDb = async (migrationDir, connEndpoint) => {
     return knex;
 };
 
-const getDbInstance = async (tableName, migrationDir = './database/knex_migrations', connEndpoint = config.endpoints.mysql) => {
+const getDbInstance = async (tableName, migrationDir = './shared/database/knex_migrations', connEndpoint = config.endpoints.mysql) => {
     const userName = connEndpoint.split('//')[1].split(':')[0];
     const hostPort = connEndpoint.split('@')[1].split('/')[0];
     const connPoolKey = [userName, hostPort].join('@');
@@ -51,7 +51,7 @@ const getDbInstance = async (tableName, migrationDir = './database/knex_migratio
         connectionPool[connPoolKey] = await createDb(migrationDir, connEndpoint);
     }
 
-    const knex = connectionPool[connPoolKey];
+    const knex = await connectionPool[connPoolKey];
 
     const write = async (row) => knex.transaction(async trx => {
         const inserts = await trx(tableName).insert(row).onConflict('id').merge()
@@ -89,7 +89,34 @@ const getDbInstance = async (tableName, migrationDir = './database/knex_migratio
     const find = async (params) => {
         // TODO: Remove after PouchDB specific code is removed from the shared layer
         if (params.selector) params = params.selector;
-        const res = await knex.select().table(tableName).where(params);
+        const limit = params.limit || 10;
+        const offset = params.offset || 0;
+
+        delete params.limit;
+        delete params.offset;
+
+        let res;
+        if (params.propBetween) {
+            const { propBetween } = params;
+            delete params.propBetween;
+            res = await knex.select().table(tableName)
+                .whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+        } else if (params.sort) {
+            const [sortProp, sortOrder] = params.sort.split(':');
+            delete params.sort;
+            res = await knex.select()
+                .table(tableName)
+                .where(params)
+                .orderBy(sortProp, sortOrder)
+                .limit(limit)
+                .offset(offset);
+        } else {
+            res = await knex.select()
+                .table(tableName)
+                .where(params)
+                .limit(limit)
+                .offset(offset);
+        }
         return res;
     };
 
@@ -107,14 +134,14 @@ const getDbInstance = async (tableName, migrationDir = './database/knex_migratio
         return knex(tableName).where(whereParams).del();
     };
 
-    const deleteById = async (id) => deleteByProperty('id', id);
+    const deleteById = async (id) => deleteByProperty({ id });
 
     const deleteBatch = async (rows) => {
         if (rows instanceof Array && rows.length === 0) return null;
         return knex(tableName).delete().whereIn('id', rows.map(row => row.id));
     };
 
-    const getCount = async () => knex(tableName).count({ count: '*' });
+    const getCount = async () => knex(tableName).count({ count: 'id' });
 
     return {
         write,

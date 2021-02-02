@@ -28,8 +28,29 @@ const {
 } = require('./transactions');
 
 const {
+	getIncomingTxsCount,
+	getOutgoingTxsCount,
+} = require('./transactionUtils');
+
+const {
 	getAccounts,
 } = require('./accounts');
+
+const {
+	parseAddress,
+	confirmAddress,
+	confirmUsername,
+	confirmPublicKey,
+	confirmSecondPublicKey,
+	confirmAnyId,
+	getUsernameByAddress,
+	getAddressByPublicKey,
+	getAddressByUsername,
+	getAddressByAny,
+	getPublicKeyByAddress,
+	getPublicKeyByUsername,
+	getPublicKeyByAny,
+} = require('./accountUtils');
 
 const {
 	reloadDelegateCache,
@@ -39,10 +60,10 @@ const {
 	getNextForgers,
 } = require('./delegates');
 
-const {
-	getUsernameByAddress,
-	getAddressByUsername,
-} = require('./delegateUtils');
+// const {
+// getUsernameByAddress,
+// getAddressByUsername,
+// } = require('./delegateUtils');
 
 const {
 	getPeers,
@@ -66,23 +87,10 @@ const {
 
 const {
 	get,
-	parseAddress,
 	validateAddress,
 	validatePublicKey,
-	confirmAddress,
-	confirmPublicKey,
-	confirmSecondPublicKey,
-	confirmUsername,
-	confirmAnyId,
-	getAddressByAny,
-	getAddressByPublicKey,
-	getPublicKeyByAny,
-	getPublicKeyByAddress,
-	getPublicKeyByUsername,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	getIncomingTxsCount,
-	getOutgoingTxsCount,
 	getForgingStats,
 	getNetworkStatus,
 	getNetworkConstants,

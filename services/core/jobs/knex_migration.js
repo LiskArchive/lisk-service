@@ -15,7 +15,6 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const config = require('../config');
 const getDbInstance = require('../shared/database/knex');
 
 const logger = Logger();
@@ -26,12 +25,9 @@ module.exports = [
 		description: 'Initiate database migration',
 		schedule: '0 0 1 1 *', // Once a year
 		updateOnInit: true,
-		init: () => {
+		init: async () => {
 			logger.info('Initiating DB migrations');
-			Object.keys(config.db.collections).forEach(async table => {
-				logger.debug(`Creating DB connection for table: ${table}`);
-				await getDbInstance();
-			});
+			await getDbInstance('');
 		},
 		controller: () => { },
 	},
