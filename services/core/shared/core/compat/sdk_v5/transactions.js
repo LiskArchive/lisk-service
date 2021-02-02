@@ -63,9 +63,8 @@ const indexTransactions = async blocks => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	const result = await transactionsDB.writeBatch(allTransactions);
-	if (allTransactions.length) await indexAccountsbyPublicKey(publicKeysToIndex);
-	return result;
+	if (allTransactions.length) await transactionsDB.writeBatch(allTransactions);
+	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };
 
 const normalizeTransaction = tx => {

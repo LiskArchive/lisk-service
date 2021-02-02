@@ -18,7 +18,12 @@ const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
-const { indexAccountsbyPublicKey, getIndexedAccountByPublicKey } = require('./accounts');
+
+const {
+	indexAccountsbyPublicKey,
+	getIndexedAccountByPublicKey,
+} = require('./accounts');
+const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
@@ -53,6 +58,7 @@ const indexBlocks = async originalBlocks => {
 	await blocksDB.writeBatch(blocks);
 	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(originalBlocks);
+	await indexVotes(originalBlocks);
 };
 
 const normalizeBlock = block => parseToJSONCompatObj(block);

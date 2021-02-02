@@ -55,6 +55,14 @@ const {
     getDelegates,
 } = require('./delegates');
 
+const {
+    getVotes,
+} = require('./votes');
+
+const {
+    getVoters,
+} = require('./voters');
+
 module.exports = {
     ...require('../sdk_v4'),
     ...require('./coreCache'),
@@ -85,5 +93,9 @@ module.exports = {
     getCachedAccountByUsername,
 
     getDelegates,
+
+    getVotes,
+
+    getVoters,
 
 };

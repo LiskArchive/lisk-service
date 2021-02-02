@@ -55,6 +55,12 @@ const getIndexedAccountByPublicKey = async publicKey => {
 	return account;
 };
 
+const getIndexedAccountInfo = async params => {
+	const accountsDB = await knex('accounts');
+	const account = await accountsDB.find(params);
+	return account;
+};
+
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
 		account.dpos.unlocking = account.dpos.unlocking.map(item => {
@@ -71,10 +77,11 @@ const resolveAccountsInfo = async accounts => {
 	return accounts;
 };
 
-const indexAccounts = async accounttoIndex => {
+const indexAccounts = async accountsToIndex => {
 	const accountsDB = await knex('accounts');
 	const accounts = await BluebirdPromise.map(
-		accounttoIndex, async account => {
+		accountsToIndex,
+		async account => {
 			const skimmedAccounts = {};
 			skimmedAccounts.address = account.address;
 			skimmedAccounts.publicKey = account.publicKey;
@@ -83,7 +90,7 @@ const indexAccounts = async accounttoIndex => {
 			skimmedAccounts.balance = account.token.balance;
 			return skimmedAccounts;
 		},
-		{ concurrency: accounttoIndex.length },
+		{ concurrency: accountsToIndex.length },
 	);
 	await accountsDB.writeBatch(accounts);
 };
@@ -118,7 +125,10 @@ const getAccountsFromCore = async (params) => {
 
 const getAccounts = async params => {
 	const accountsDB = await knex('accounts');
-
+	if (params.id) {
+		params.address = params.id;
+		delete params.id;
+	}
 	if (params.address && typeof params.address === 'string') {
 		if (!(await confirmAddress(params.address))) return {};
 	}
@@ -185,7 +195,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 		},
 		{ concurrency: publicKeysToIndex.length },
 	);
-	indexAccounts(accountsToIndex);
+	await indexAccounts(accountsToIndex);
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
@@ -197,4 +207,5 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountByPublicKey,
+	getIndexedAccountInfo,
 };

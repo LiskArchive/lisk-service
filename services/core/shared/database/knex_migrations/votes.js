@@ -13,22 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../../config');
-
-const tableName = config.db.collections.transactions.name;
+const tableName = 'votes';
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
-        // Indexed properties
-        table.string('id').primary();
-        table.integer('height').notNullable().index();
-        table.string('moduleAssetId').notNullable().index();
-        table.integer('nonce').notNullable().index();
-        table.string('blockId').index();
-        table.integer('timestamp').index();
-        table.string('senderPublicKey').notNullable().index();
-        table.string('recipientId').index();
-        table.bigInteger('amount').index();
+        table.string('id').notNullable().index();
+        table.string('sentAddress').notNullable().index();
+        table.string('receivedAddress').notNullable().index();
+        table.bigInteger('amount').notNullable().index();
+        table.integer('timestamp').notNullable().index();
+
+        // Single transaction can contain multiple votes
+        table.primary(['id', 'receivedAddress']);
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
