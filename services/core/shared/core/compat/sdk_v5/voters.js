@@ -49,7 +49,7 @@ const indexVotes = async blocks => {
 	});
 	let allVotes = [];
 	votesMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
-	await votesDB.writeBatch(allVotes);
+	if(allVotes.length) await votesDB.writeBatch(allVotes);
 };
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
