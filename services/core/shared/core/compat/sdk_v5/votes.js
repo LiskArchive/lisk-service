@@ -41,8 +41,8 @@ const getVotes = async params => {
 
 	// TODO: Pass address as ID, when getAccounts supports
 	const response = await getAccounts({ address: params.sentAddress });
-	if (response.data) response.data.
-		forEach(acc => voter.data.votes = voter.data.votes.concat(normalizeVote(acc).dpos.sentVotes));
+	if (response.data) response.data
+		.forEach(acc => voter.data.votes = voter.data.votes.concat(normalizeVote(acc).dpos.sentVotes));
 	if (response.meta) voter.meta = response.meta;
 
 	voter.data.votes = await BluebirdPromise.map(
