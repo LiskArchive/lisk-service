@@ -56,6 +56,19 @@ const createDbConnection = async (connEndpoint) => {
 		},
 	});
 
+	knex.select(1)
+		.on('query-error', (error) => {
+			logger.error(error);
+		})
+		.catch((err) => {
+			if (err.code === 'ECONNREFUSED') {
+				logger.error(err.message);
+				logger.error('Database error, shutting down the process');
+				process.exit(1);
+			}
+			logger.error(err);
+		});
+
 	return knex;
 };
 
