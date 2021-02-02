@@ -27,7 +27,7 @@ module.exports = {
 		offset: '=,number',
 	},
 	definition: {
-		data: ['data.votes', vote],
+		data: ['data', vote],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

@@ -38,6 +38,8 @@ const getVotes = async params => {
 		{ concurrency: response.data.votes.length },
 	);
 
+	if (!votes.data.account) votes.data = votes.data.votes;
+
 	votes.meta = {
 		limit: response.meta.limit,
 		count: response.data.votes.length,
