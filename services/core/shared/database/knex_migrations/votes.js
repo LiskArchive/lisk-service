@@ -17,11 +17,14 @@ const tableName = 'votes';
 
 exports.up = knex => knex.schema
     .createTable(tableName, table => {
-        table.string('id').notNullable().primary();
+        table.string('id').notNullable().index();
         table.string('sentAddress').notNullable().index();
         table.string('receivedAddress').notNullable().index();
         table.bigInteger('amount').notNullable().index();
         table.integer('timestamp').notNullable().index();
+
+        // Single transaction can contain multiple votes
+        table.primary(['id', 'receivedAddress']);
     });
 
 exports.down = knex => knex.schema.dropTable(tableName);
