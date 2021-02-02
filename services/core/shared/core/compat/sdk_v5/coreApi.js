@@ -95,7 +95,7 @@ const getPendingTransactions = async () => {
     let transactions = await apiClient._channel.invoke('app:getTransactionsFromPool', {});
     if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
     return { data: transactions };
-}
+};
 
 module.exports = {
     getBlocks,

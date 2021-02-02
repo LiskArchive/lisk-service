@@ -15,23 +15,14 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-// const requestAll = require('../requestAll');
+const requestAll = require('../requestAll');
 const coreApi = require('./compat');
+
+const sdkVersion = coreApi.getSDKVersion();
 
 const logger = Logger();
 
 let pendingTransactionsList = [];
-const getTransactions = async params => {
-	const transactions = {
-		data: [],
-		meta: {},
-	};
-
-	const response = await coreApi.getTransactions(params);
-	if (response.data) transactions.data = response.data;
-	if (response.meta) transactions.meta = response.meta;
-	return transactions;
-};
 
 const getPendingTransactions = async params => {
 	const pendingTransactions = {
@@ -63,15 +54,9 @@ const getTransactions = async params => {
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
-
-		if (transactions.data.length) {
-			const db = await pouchdb(config.db.collections.transactions.name);
-			db.writeBatch(transactions.data);
-		}
 	}
 	return transactions;
 };
-
 
 const loadAllPendingTransactions = async () => {
 	if (sdkVersion <= 4) {
