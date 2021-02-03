@@ -96,7 +96,6 @@ const getTransactions = async params => {
 	// TODO: Add search by message
 
 	const resultSet = await transactionIdx.find(params);
-	const [{ count }] = await transactionIdx.count();
 	if (resultSet.length > 0) {
 		const trxIds = resultSet.map(row => row.id);
 		transactions.data = await getTransactionByIds(trxIds);
