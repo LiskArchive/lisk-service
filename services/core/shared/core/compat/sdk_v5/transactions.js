@@ -16,7 +16,11 @@
 const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
-const { indexAccountsbyPublicKey, getPublicKeyByAddress, getIndexedAccountByPublicKey } = require('./accounts');
+const { indexAccountsbyPublicKey,
+	getPublicKeyByAddress,
+	getIndexedAccountByPublicKey,
+	getIndexedAccountInfo,
+} = require('./accounts');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 const { knex } = require('../../../database');
 
@@ -77,7 +81,7 @@ const normalizeTransaction = tx => {
 };
 
 const validateParams = async params => {
-	if (params.timestamp.includes(':')) [params.fromTimestamp, params.toTimestamp] = params.timestamp.split(':');
+	if (params.timestamp && params.timestamp.includes(':')) [params.fromTimestamp, params.toTimestamp] = params.timestamp.split(':');
 	delete params.timestamp;
 
 	if (params.amount) {
@@ -101,10 +105,20 @@ const validateParams = async params => {
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
 		return new Error('Nonce based sorting is only possible along with senderId');
 	}
+
+	if (params.username) {
+		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		params.senderPublicKey = accountInfo.publicKey;
+		delete params.username;
+	}
+
 	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
 	delete params.senderId;
+
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
 	delete params.moduleAssetName;
+
 	return params;
 };
 
