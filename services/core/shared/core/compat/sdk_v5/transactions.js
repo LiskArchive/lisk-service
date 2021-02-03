@@ -22,7 +22,11 @@ const { indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 } = require('./accounts');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
-const { knex } = require('../../../database');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const transactionsIndexSchema = require('./schema/transactions');
+
+const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 
@@ -44,7 +48,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 };
 
 const indexTransactions = async blocks => {
-	const transactionsDB = await knex('transactions');
+	const transactionsDB = await getTransactionsIndex();
 	const publicKeysToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
@@ -67,7 +71,7 @@ const indexTransactions = async blocks => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	if (allTransactions.length) await transactionsDB.writeBatch(allTransactions);
+	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };
 
@@ -123,7 +127,7 @@ const validateParams = async params => {
 };
 
 const getTransactions = async params => {
-	const transactionsDB = await knex('transactions');
+	const transactionsDB = await getTransactionsIndex();
 	const transactions = {
 		data: [],
 		meta: {},

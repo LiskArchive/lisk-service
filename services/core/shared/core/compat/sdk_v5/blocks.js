@@ -27,7 +27,11 @@ const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { initializeQueue } = require('../../queue');
-const { knex } = require('../../../database');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const blocksIndexSchema = require('./schema/blocks');
+
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
 const blocksCache = CacheRedis('blocks', config.endpoints.redis);
@@ -46,7 +50,7 @@ const getFinalizedHeight = () => finalizedHeight;
 
 const indexBlocks = async job => {
 	const { blocks } = job.data;
-	const blocksDB = await knex('blocks');
+	const blocksDB = await getBlocksIndex();
 	const publicKeysToIndex = [];
 	const skimmedBlocks = blocks.map(block => {
 		const skimmedBlock = {};
@@ -57,7 +61,7 @@ const indexBlocks = async job => {
 		publicKeysToIndex.push(block.generatorPublicKey);
 		return skimmedBlock;
 	});
-	await blocksDB.writeBatch(skimmedBlocks);
+	await blocksDB.upsert(skimmedBlocks);
 	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(blocks);
 	await indexVotes(blocks);
@@ -69,7 +73,7 @@ const normalizeBlock = block => parseToJSONCompatObj(block);
 
 const getBlocks = async params => {
 	const apiClient = await getApiClient();
-	const blocksDB = await knex('blocks');
+	const blocksDB = await getBlocksIndex();
 	const blocks = {
 		data: [],
 		meta: {},

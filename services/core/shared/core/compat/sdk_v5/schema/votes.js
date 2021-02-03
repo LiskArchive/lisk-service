@@ -14,27 +14,22 @@
  *
  */
 module.exports = {
-	primaryKey: 'id',
+	primaryKey: 'tempId',
 	schema: {
+		// TODO: Remove 'tempId' after composite PK support is added
+		tempId: { type: 'string' }, // ['id', 'receivedAddress']
 		id: { type: 'string' },
-		height: { type: 'integer' },
-		moduleAssetId: { type: 'string' },
-		nonce: { type: 'integer' },
-		blockId: { type: 'string' },
-		timestamp: { type: 'integer' },
-		senderPublicKey: { type: 'string' },
-		recipientId: { type: 'string' },
+		sentAddress: { type: 'string' },
+		receivedAddress: { type: 'string' },
 		amount: { type: 'bigInteger' },
+		timestamp: { type: 'integer' },
 	},
 	indexes: {
-		height: { type: 'range' },
-		moduleAssetId: { type: 'key' },
-		nonce: { type: 'range' },
-		blockId: { type: 'key' },
-		timestamp: { type: 'range' },
-		senderPublicKey: { type: 'key' },
-		recipientId: { type: 'key' },
+		id: { type: 'key' },
+		sentAddress: { type: 'key' },
+		receivedAddress: { type: 'stkeyring' },
 		amount: { type: 'range' },
+		timestamp: { type: 'range' },
 	},
 	purge: {},
 };
