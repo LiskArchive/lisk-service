@@ -64,7 +64,7 @@ const indexBlocks = async job => {
 	await blocksDB.upsert(skimmedBlocks);
 	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(blocks);
-	// await indexVotes(blocks);
+	await indexVotes(blocks);
 };
 
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);

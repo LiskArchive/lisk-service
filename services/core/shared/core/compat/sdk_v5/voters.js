@@ -20,7 +20,11 @@ const coreApi = require('./coreApi');
 
 const { getIndexedAccountInfo } = require('./accounts');
 const { parseToJSONCompatObj } = require('../common');
-const { knex } = require('../../../database');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const votesIndexSchema = require('./schema/votes');
+
+const getVotesIndex = () => mysqlIndex('blocks', votesIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
@@ -28,7 +32,7 @@ const voteTransactionAssetID = 1;
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
 const indexVotes = async blocks => {
-	const votesDB = await knex('votes');
+	const votesDB = await getVotesIndex();
 	const votesMultiArray = blocks.map(block => {
 		const votes = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
@@ -36,6 +40,8 @@ const indexVotes = async blocks => {
 				const voteEntries = tx.asset.votes.map(vote => {
 					const voteEntry = {};
 
+					// TODO: Remove 'tempId' after composite PK support is added
+					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
 					voteEntry.id = tx.id;
 					voteEntry.sentAddress = extractAddressFromPublicKey(tx.senderPublicKey);
 					voteEntry.receivedAddress = vote.delegateAddress;
@@ -49,13 +55,13 @@ const indexVotes = async blocks => {
 	});
 	let allVotes = [];
 	votesMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
-	if (allVotes.length) await votesDB.writeBatch(allVotes);
+	if (allVotes.length) await votesDB.upsert(allVotes);
 };
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
 
 const getVoters = async params => {
-	const votesDB = await knex('votes');
+	const votesDB = await getVotesIndex();
 	const votes = {
 		data: { votes: [] },
 		meta: {},
