@@ -120,6 +120,12 @@ const validateParams = async params => {
 	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
 	delete params.senderId;
 
+	if (params.senderIdOrRecipientId) {
+		params.senderId = params.senderIdOrRecipientId;
+		params.orWhere = { recipientId: params.senderIdOrRecipientId };
+		delete params.senderIdOrRecipientId;
+	}
+
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
 	delete params.moduleAssetName;
 
