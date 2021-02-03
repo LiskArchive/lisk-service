@@ -62,7 +62,7 @@ const indexBlocks = async job => {
 		return skimmedBlock;
 	});
 	await blocksDB.upsert(skimmedBlocks);
-	// await indexAccountsbyPublicKey(publicKeysToIndex);
+	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(blocks);
 	// await indexVotes(blocks);
 };
