@@ -142,7 +142,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	};
 
 	const queryBuilder = async (params, columns) => {
-		const limit = Number(params.limit) || 1;
+		const limit = Number(params.limit) || 10;
 		const offset = Number(params.offset) || 0;
 
 		delete params.limit;
@@ -172,7 +172,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			countQuery.where(params).orWhere(orWhere);
 		}
 
-		const [{ count }] = (await countQuery.andWhere(params));
+		const [{ count }] = await countQuery.andWhere(params);
 
 		return {
 			resultSet: await query.andWhere(params)
