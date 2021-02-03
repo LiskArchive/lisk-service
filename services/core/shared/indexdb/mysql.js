@@ -144,7 +144,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	};
 
 	const queryBuilder = (params, columns) => {
-		const limit = params.limit || 1;
+		const limit = params.limit || 10;
 		const offset = params.offset || 0;
 
 		delete params.limit;
