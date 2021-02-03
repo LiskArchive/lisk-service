@@ -24,7 +24,7 @@ const {
 	getIndexedAccountByPublicKey,
 } = require('./accounts');
 // const { indexVotes } = require('./voters');
-// const { indexTransactions } = require('./transactions');
+const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { initializeQueue } = require('../../queue');
 
@@ -63,7 +63,7 @@ const indexBlocks = async job => {
 	});
 	await blocksDB.upsert(skimmedBlocks);
 	// await indexAccountsbyPublicKey(publicKeysToIndex);
-	// await indexTransactions(blocks);
+	await indexTransactions(blocks);
 	// await indexVotes(blocks);
 };
 
