@@ -34,7 +34,7 @@ const isStringType = value => typeof value === 'string';
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
 
 const validateAddress = address => isStringType(address)
-    && (address.match(/^[0-9]{1,20}[L|l]$/g) || address.match(/^[a-zA-Z0-9]{40}$/g));
+    && (address.match(/^[0-9]{1,20}[L|l]$/g) || address.match(/^[A-Fa-f0-9]{40}$/g));
 
 const validatePublicKey = publicKey => isStringType(publicKey) && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g);
 
