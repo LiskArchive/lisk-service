@@ -24,7 +24,7 @@ const { parseToJSONCompatObj } = require('../common');
 const mysqlIndex = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
 
-const getVotesIndex = () => mysqlIndex('blocks', votesIndexSchema);
+const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
