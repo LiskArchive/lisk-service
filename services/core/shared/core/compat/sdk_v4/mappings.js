@@ -166,4 +166,5 @@ const mapParams = (params, url) => {
 module.exports = {
     mapResponse,
     mapParams,
+    transactionTypes,
 };
