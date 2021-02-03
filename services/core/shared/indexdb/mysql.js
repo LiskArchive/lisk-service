@@ -186,7 +186,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.whereIn(primaryKey, ids)
 		.del();
 
-	const count = async () => knex(tableName).count({ count: 'id' });
+	const count = async () => knex(tableName).count({ count: '*' });
 
 	return {
 		upsert,
