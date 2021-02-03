@@ -34,7 +34,7 @@ const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(p
 const indexVotes = async blocks => {
 	const votesDB = await getVotesIndex();
 	const votesMultiArray = blocks.map(block => {
-		const votes = block.payload
+		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
 			.map(tx => {
 				const voteEntries = tx.asset.votes.map(vote => {
@@ -51,6 +51,8 @@ const indexVotes = async blocks => {
 				});
 				return voteEntries;
 			});
+		let votes = [];
+		votesArray.forEach(arr => votes = votes.concat(arr));
 		return votes;
 	});
 	let allVotes = [];
