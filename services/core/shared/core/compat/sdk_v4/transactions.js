@@ -34,12 +34,12 @@ const _getTrxFromCore = async params => {
 		transactions.data = await BluebirdPromise.map(
 			transactions.data,
 			async transaction => {
-				const response = await blockIdx.find(
+				const { resultSet } = await blockIdx.find(
 					{ id: transaction.blockId },
 					['timestamp', 'unixTimestamp']);
-				if (response.length > 0) {
-					transaction.timestamp = response[0].timestamp;
-					transaction.unixTimestamp = response[0].unixTimestamp;
+				if (resultSet.length > 0) {
+					transaction.timestamp = resultSet[0].timestamp;
+					transaction.unixTimestamp = resultSet[0].unixTimestamp;
 				}
 				return transaction;
 			},
@@ -94,8 +94,8 @@ const getTransactions = async params => {
 	}
 
 	// TODO: Add search by message
+	const { resultSet, total: [{ count }] } = await transactionIdx.find(params);
 
-	const resultSet = await transactionIdx.find(params);
 	if (resultSet.length > 0) {
 		const trxIds = resultSet.map(row => row.id);
 		transactions.data = await getTransactionByIds(trxIds);
@@ -110,14 +110,14 @@ const getTransactions = async params => {
 signals.get('indexTransactions').add(async blockId => {
 	const transactionIdx = await getTransactionIdx();
 	const blockResult = await transactionIdx.find({ blockId }, 'id');
-	if (blockResult.length > 0) return;
+	if (blockResult.resultSet.length > 0) return;
 
 	const transactions = await getTransactionsByBlockId(blockId);
 	const blockIdx = await getBlockIdx();
 	const blockRes = await blockIdx.find({ id: blockId }, ['timestamp', 'unixTimestamp']);
-	if (blockRes.length !== 1) return;
+	if (blockRes.resultSet.length !== 1) return;
 
-	const { timestamp, unixTimestamp } = blockRes[0];
+	const { timestamp, unixTimestamp } = blockRes.resultSet[0];
 	transactions.data.forEach(tx => {
 		tx.timestamp = timestamp;
 		tx.unixTimestamp = unixTimestamp;

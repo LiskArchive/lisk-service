@@ -141,7 +141,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 	};
 
-	const queryBuilder = (params, columns) => {
+	const queryBuilder = async (params, columns) => {
 		const limit = params.limit || 1;
 		const offset = params.offset || 0;
 
@@ -149,28 +149,35 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		delete params.offset;
 
 		const query = knex.select(columns).table(tableName);
+		const countQuery = knex.count('id as count').table(tableName);
 
 		if (params.propBetween) {
 			const { propBetween } = params;
 			delete params.propBetween;
 			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+			countQuery.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
 		}
 
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			delete params.sort;
 			query.orderBy(sortProp, sortOrder);
+			countQuery.orderBy(sortProp, sortOrder);
 		}
 
 		if (params.orWhere) {
 			const { orWhere } = params;
 			delete params.orWhere;
 			query.where(params).orWhere(orWhere);
+			countQuery.where(params).orWhere(orWhere);
 		}
 
-		return query.andWhere(params)
-			.limit(limit)
-			.offset(offset);
+		return {
+			resultSet: await query.andWhere(params)
+				.limit(limit)
+				.offset(offset),
+			total: await countQuery.andWhere(params),
+		};
 	};
 
 	const find = (params, columns) => new Promise((resolve, reject) => {
