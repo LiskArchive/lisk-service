@@ -102,7 +102,7 @@ const getTransactions = async params => {
 
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.total = total;
-	transactions.meta.offset = Number(offset) || 0;
+	transactions.meta.offset = offset;
 	return transactions;
 };
 
