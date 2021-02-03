@@ -27,17 +27,17 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 	if (await knex.schema.hasTable(tableName)) return knex;
 
 	await knex.schema
-	.createTable(tableName, table => {
-		Object.keys(schema).map(p => {
-			const kProp = (table[schema[p].type])(p);
-			if (schema[p].null === false) kProp.notNullable();
-			if (p === primaryKey) kProp.primary();
-			if (indexes[p]) kProp.index();
+		.createTable(tableName, table => {
+			Object.keys(schema).map(p => {
+				const kProp = (table[schema[p].type])(p);
+				if (schema[p].null === false) kProp.notNullable();
+				if (p === primaryKey) kProp.primary();
+				if (indexes[p]) kProp.index();
 
-			// TODO: Add support for composite primary keys and foreign keys
-			return kProp;
+				// TODO: Add support for composite primary keys and foreign keys
+				return kProp;
+			});
 		});
-	});
 
 	return knex;
 };

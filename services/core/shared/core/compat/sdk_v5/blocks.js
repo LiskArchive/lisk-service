@@ -20,10 +20,10 @@ const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
 const {
-	// indexAccountsbyPublicKey,
+	indexAccountsbyPublicKey,
 	getIndexedAccountByPublicKey,
 } = require('./accounts');
-// const { indexVotes } = require('./voters');
+const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
 const { initializeQueue } = require('../../queue');
