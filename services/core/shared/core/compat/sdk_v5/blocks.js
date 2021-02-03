@@ -26,6 +26,7 @@ const {
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
 const { getApiClient, parseToJSONCompatObj } = require('../common');
+const { initializeQueue } = require('../../queue');
 const { knex } = require('../../../database');
 
 const logger = Logger();
@@ -43,10 +44,11 @@ const updateFinalizedHeight = async () => {
 
 const getFinalizedHeight = () => finalizedHeight;
 
-const indexBlocks = async originalBlocks => {
+const indexBlocks = async job => {
+	const { blocks } = job.data;
 	const blocksDB = await knex('blocks');
 	const publicKeysToIndex = [];
-	const blocks = originalBlocks.map(block => {
+	const skimmedBlocks = blocks.map(block => {
 		const skimmedBlock = {};
 		skimmedBlock.id = block.id;
 		skimmedBlock.height = block.height;
@@ -55,11 +57,13 @@ const indexBlocks = async originalBlocks => {
 		publicKeysToIndex.push(block.generatorPublicKey);
 		return skimmedBlock;
 	});
-	await blocksDB.writeBatch(blocks);
+	await blocksDB.writeBatch(skimmedBlocks);
 	await indexAccountsbyPublicKey(publicKeysToIndex);
-	await indexTransactions(originalBlocks);
-	await indexVotes(originalBlocks);
+	await indexTransactions(blocks);
+	await indexVotes(blocks);
 };
+
+const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 
 const normalizeBlock = block => parseToJSONCompatObj(block);
 
@@ -112,7 +116,7 @@ const getBlocks = async params => {
 		{ concurrency: blocks.data.length },
 	);
 
-	if (blocks.data.length === 1) indexBlocks(blocks.data);
+	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 	return blocks;
 };
@@ -129,10 +133,12 @@ const buildIndex = async (from, to) => {
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
-	Array(numOfPages).fill().forEach(async (_, pageNum) => {
+	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+
+		/* eslint-disable no-await-in-loop */
 		// TODO: Revert to standard notation, once getBlocks is fully implemented
 		// const blocks = await getBlocks({
 		// 	limit: MAX_BLOCKS_LIMIT_PP,
@@ -142,16 +148,18 @@ const buildIndex = async (from, to) => {
 		const blocks = await getBlocks({
 			heightRange: { from: offset + 1, to: offset + MAX_BLOCKS_LIMIT_PP },
 		});
-		await indexBlocks(blocks.data);
+
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
 
 		const topHeightFromBatch = (blocks.data.pop()).height;
 		const bottomHeightFromBatch = (blocks.data.shift()).height;
 		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
-		if (bottomHeightFromBatch < lowestIndexedHeight) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
+		if (bottomHeightFromBatch < lowestIndexedHeight || lowestIndexedHeight === 0) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
 		if (topHeightFromBatch > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', topHeightFromBatch);
-	});
+		/* eslint-enable no-await-in-loop */
+	}
 	logger.info(`Finished building block index (${from}-${to})`);
 };
 
@@ -170,15 +178,15 @@ const init = async () => {
 		if (lastNumOfBlocks !== config.indexNumOfBlocks) {
 			logger.info('Configuration has been updated, re-index eveything');
 			await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
-			await blocksCache.set('lowestIndexedHeight', genesisHeight);
+			await blocksCache.set('lowestIndexedHeight', 0);
 			await blocksCache.set('highestIndexedHeight', currentHeight);
 		}
 
 		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
 
-		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight') || genesisHeight;
+		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
 		if (blockIndexLowerRange < lowestIndexedHeight) {
-			// If the indexing is partially built
+			// For when the index is partially built
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 	} catch (err) {
