@@ -71,7 +71,6 @@ const getTransactions = async params => {
 	if (!params) params = {};
 	if (!params.limit) params.limit = 10;
 	if (!params.offset) params.offset = 0;
-	const { offset } = params;
 
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
@@ -94,7 +93,7 @@ const getTransactions = async params => {
 	}
 
 	// TODO: Add search by message
-	const { resultSet, total: [{ count }] } = await transactionIdx.find(params);
+	const { resultSet, offset, total } = await transactionIdx.find(params);
 
 	if (resultSet.length > 0) {
 		const trxIds = resultSet.map(row => row.id);
@@ -102,8 +101,8 @@ const getTransactions = async params => {
 	}
 
 	transactions.meta.count = transactions.data.length;
-	transactions.meta.total = count;
-	transactions.meta.offset = offset || 0;
+	transactions.meta.total = total;
+	transactions.meta.offset = Number(offset) || 0;
 	return transactions;
 };
 

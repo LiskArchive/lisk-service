@@ -172,11 +172,14 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			countQuery.where(params).orWhere(orWhere);
 		}
 
+		const [{ count }] = (await countQuery.andWhere(params));
+
 		return {
 			resultSet: await query.andWhere(params)
 				.limit(limit)
 				.offset(offset),
-			total: await countQuery.andWhere(params),
+			total: count,
+			offset,
 		};
 	};
 
