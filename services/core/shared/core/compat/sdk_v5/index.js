@@ -63,6 +63,8 @@ const {
     getVoters,
 } = require('./voters');
 
+const nop = async () => { };
+
 module.exports = {
     ...require('../sdk_v4'),
     ...require('./coreCache'),
