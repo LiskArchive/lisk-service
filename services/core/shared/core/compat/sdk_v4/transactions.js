@@ -71,6 +71,7 @@ const getTransactions = async params => {
 	if (!params) params = {};
 	if (!params.limit) params.limit = 10;
 	if (!params.offset) params.offset = 0;
+	const { offset } = params;
 
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
@@ -103,7 +104,7 @@ const getTransactions = async params => {
 
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.total = count;
-	transactions.meta.offset = params.offset || 0;
+	transactions.meta.offset = offset || 0;
 	return transactions;
 };
 
