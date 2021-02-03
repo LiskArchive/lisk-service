@@ -27,17 +27,17 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 	if (await knex.schema.hasTable(tableName)) return knex;
 
 	await knex.schema
-	.createTable(tableName, table => {
-		Object.keys(schema).map(p => {
-			const kProp = (table[schema[p].type])(p);
-			if (schema[p].null === false) kProp.notNullable();
-			if (p === primaryKey) kProp.primary();
-			if (indexes[p]) kProp.index();
+		.createTable(tableName, table => {
+			Object.keys(schema).map(p => {
+				const kProp = (table[schema[p].type])(p);
+				if (schema[p].null === false) kProp.notNullable();
+				if (p === primaryKey) kProp.primary();
+				if (indexes[p]) kProp.index();
 
-			// TODO: Add support for composite primary keys and foreign keys
-			return kProp;
+				// TODO: Add support for composite primary keys and foreign keys
+				return kProp;
+			});
 		});
-	});
 
 	return knex;
 };
@@ -156,16 +156,16 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
 		}
 
-		if (params.orWhere) {
-			const { orWhere } = params;
-			delete params.orWhere;
-			query.orWhere(orWhere);
-		}
-
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			delete params.sort;
 			query.orderBy(sortProp, sortOrder);
+		}
+
+		if (params.orWhere) {
+			const { orWhere } = params;
+			delete params.orWhere;
+			query.where(params).orWhere(orWhere);
 		}
 
 		return query.andWhere(params)
