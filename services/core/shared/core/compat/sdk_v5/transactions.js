@@ -77,13 +77,24 @@ const normalizeTransaction = tx => {
 };
 
 const validateParams = async params => {
-	if (params.fromTimestamp || params.toTimestamp) {
+	if (params.timestamp) {
 		params.propBetween = {
 			property: 'timestamp',
-			from: Number(params.fromTimestamp) || 0,
-			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
+			from: Number(params.timestamp.split(':')[0]) || 0,
+			to: Number(params.timestamp.split(':')[1]) || Math.floor(Date.now() / 1000),
 		};
+		delete params.timestamp;
 	}
+
+	if (params.amount) {
+		params.propBetween = {
+			property: 'amount',
+			from: Number(params.amount.split(':')[0]),
+			to: Number(params.amount.split(':')[1]),
+		};
+		delete params.amount;
+	}
+
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
 		return new Error('Nonce based sorting is only possible along with senderId');
 	}
