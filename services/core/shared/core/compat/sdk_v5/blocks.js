@@ -153,9 +153,21 @@ const getBlocks = async params => {
 	if (params.username) accountInfo = await getIndexedAccountInfo({ username: params.username });
 	if (accountInfo && accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
 
-	if (params.timestamp) {
+	if (params.height && params.height.includes(':')) {
+		const [from, to] = params.height.split(':');
+		if (from > to) return new Error('From height cannot be greater than to height');
+		delete params.height;
+		params.propBetween = {
+			property: 'height',
+			from,
+			to,
+		};
+	}
+
+	if (params.timestamp && params.timestamp.includes(':')) {
 		const [from, to] = params.timestamp.split(':');
 		if (from > to) return new Error('From timestamp cannot be greater than to timestamp');
+		delete params.timestamp;
 		params.propBetween = {
 			property: 'timestamp',
 			from,
@@ -167,7 +179,6 @@ const getBlocks = async params => {
 	delete params.publicKey;
 	delete params.address;
 	delete params.username;
-	delete params.timestamp;
 
 	if (isQueryFromDB(params)) {
 		const resultSet = await blocksDB.find(params);

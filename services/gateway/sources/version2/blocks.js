@@ -20,7 +20,7 @@ module.exports = {
 	method: 'core.blocks',
 	params: {
 		blockId: '=,string',
-		height: '=,number',
+		height: '=,string',
 		generatorAddress: 'address,string',
 		generatorPublicKey: 'publicKey,string',
 		generatorUsername: 'username,string',

@@ -23,8 +23,8 @@ module.exports = {
 	tags: ['Blocks'],
 	params: {
 		blockId: { optional: true, type: 'string', min: 1, max: 64 },
-		height: { optional: true, type: 'number', min: 1 },
-		timestamp: { optional: true, type: 'string' },
+		height: { optional: true, type: 'string', min: 1 },
+		timestamp: { optional: true, type: 'string', min: 1 },
 		generatorAddress: { optional: true, type: 'string', min: 38, max: 41 },
 		generatorPublicKey: { optional: true, type: 'string', min: 1, max: 64 },
 		generatorUsername: { optional: true, type: 'string', min: 1, max: 20 },
