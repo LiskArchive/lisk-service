@@ -16,13 +16,16 @@
 const { CacheLRU } = require('lisk-service-framework');
 
 const config = require('../../../../config');
-const { knex } = require('../../../database');
+const mysqlIndex = require('../../../indexdb/mysql');
+const accountsIndexSchema = require('./schema/accounts');
+
+const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const cache = CacheLRU();
 const getCacheKey = (key, value) => `account:${key}:${value}`;
 
 const getCachedAccountBy = async (key, value) => {
-	const accountsDB = await knex('accounts');
+	const accountsDB = await getAccountsIndex();
 	const cacheKey = getCacheKey(key, value);
 	let account = await cache.get(cacheKey);
 	if (!account) {
