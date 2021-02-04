@@ -22,12 +22,12 @@ module.exports = {
 	rpcMethod: 'get.blocks',
 	tags: ['Blocks'],
 	params: {
-		id: { optional: true, type: 'string', min: 1, max: 64 },
+		blockId: { optional: true, type: 'string', min: 1, max: 64 },
 		height: { optional: true, type: 'number', min: 1 },
-		from: { optional: true, type: 'number' },
-		to: { optional: true, type: 'number' },
-		address: { optional: true, type: 'string', min: 2 },
-		username: { optional: true, type: 'string', min: 1 },
+		timestamp: { optional: true, type: 'string' },
+		generatorAddress: { optional: true, type: 'string', min: 38, max: 41 },
+		generatorPublicKey: { optional: true, type: 'string', min: 1, max: 64 },
+		generatorUsername: { optional: true, type: 'string', min: 1, max: 20 },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
