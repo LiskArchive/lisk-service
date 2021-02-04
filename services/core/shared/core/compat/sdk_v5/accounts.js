@@ -62,7 +62,7 @@ const getIndexedAccountByPublicKey = async publicKey => {
 
 const getIndexedAccountInfo = async params => {
 	const accountsDB = await getAccountsIndex();
-	const account = await accountsDB.find(params);
+	const [account] = await accountsDB.find(params);
 	return account;
 };
 
