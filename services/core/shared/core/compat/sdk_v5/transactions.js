@@ -134,8 +134,8 @@ const validateParams = async params => {
 		const addresses = await BluebirdPromise.map(
 			accounts,
 			async account => {
-				const senderPub = await getPublicKeyByAddress(account.address);
-				publicKeys.push(senderPub);
+				const publickey = await getPublicKeyByAddress(account.address);
+				publicKeys.push(publickey);
 				return account.address;
 			},
 			{ concurrency: accounts.length },

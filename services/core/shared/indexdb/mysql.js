@@ -158,10 +158,16 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
 		}
 
+		if (params.sort) {
+			const [sortProp, sortOrder] = params.sort.split(':');
+			delete params.sort;
+			query.orderBy(sortProp, sortOrder);
+		}
+
 		if (params.orWhere) {
 			const { orWhere } = params;
 			delete params.orWhere;
-			query.orWhere(orWhere);
+			query.where(params).orWhere(orWhere);
 		}
 
 		if (params.whereIn) {
@@ -180,12 +186,6 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			const { property, pattern } = params.search;
 			delete params.search;
 			query.where(`${property}`, 'like', `%${pattern}%`);
-		}
-
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			delete params.sort;
-			query.orderBy(sortProp, sortOrder);
 		}
 
 		return query.andWhere(params)
