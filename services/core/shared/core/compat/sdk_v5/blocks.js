@@ -21,7 +21,7 @@ const config = require('../../../../config');
 
 const {
 	indexAccountsbyPublicKey,
-	getIndexedAccountByPublicKey,
+	getIndexedAccountInfo,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
@@ -75,9 +75,9 @@ const normalizeBlocks = async blocks => {
 	const normalizedBlocks = BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
-			const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
-			block.generatorAddress = account && account.address ? account.address : undefined;
-			block.generatorUsername = account && account.username ? account.username : undefined;
+			const accountInfo = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
+			block.generatorAddress = accountInfo && accountInfo.address ? accountInfo.address : undefined;
+			block.generatorUsername = accountInfo && accountInfo.username ? accountInfo.username : undefined;
 
 			block.totalForged = Number(block.reward);
 			block.totalBurnt = 0;
@@ -135,6 +135,13 @@ const getBlocks = async params => {
 	if (blockId) params.id = blockId;
 
 	delete params.blockId;
+
+	let accountInfo;
+	if (params.address) accountInfo = await getIndexedAccountInfo({ address: params.address });
+	if (params.publicKey) accountInfo = await getIndexedAccountInfo({ address: params.publicKey });
+	if (params.username) accountInfo = await getIndexedAccountInfo({ address: params.username });
+
+	// TODO: Use accountInfo
 
 	if (params.timestamp) {
 		const [from, to] = params.timestamp.split(':');
