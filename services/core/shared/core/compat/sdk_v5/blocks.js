@@ -69,8 +69,6 @@ const indexBlocks = async job => {
 
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 
-const normalizeBlock = block => parseToJSONCompatObj(block);
-
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
 
@@ -134,48 +132,29 @@ const getBlocks = async params => {
 		meta: {},
 	};
 
-	const { blockId } = params;
-	delete params.blockId;
+	const { blockId, offset } = params;
 	if (blockId) params.id = blockId;
 
-	// TODO: Remove the check when fully implemented. Currently added for cold start bootstrapping.
-	if (!params.heightRange
-		&& !(Object.getOwnPropertyNames(params).length === 1 && params.limit === 1)) {
+	delete params.blockId;
+
+	if (!params.id && !params.height) {
 		const resultSet = await blocksDB.find(params);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
 
-	const response = await coreApi.getBlocks(params);
-	if (response.data) blocks.data = response.data
-		.map(block => ({ ...block.header, payload: block.payload }));
-	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
-
-	blocks.data = await BluebirdPromise.map(
-		blocks.data,
-		async block => {
-			const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
-			block.generatorAddress = account && account.address ? account.address : undefined;
-			block.generatorUsername = account && account.username ? account.username : undefined;
-
-			block.unixTimestamp = block.timestamp;
-			block.totalForged = Number(block.reward);
-			block.totalBurnt = 0;
-			block.totalFee = 0;
-
-			block.payload.forEach(txn => {
-				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
-
-				block.totalForged += Number(txn.fee);
-				block.totalBurnt += txnMinFee;
-				block.totalFee += Number(txn.fee) - txnMinFee;
-			});
-
-			return normalizeBlock(block);
-		},
-		{ concurrency: blocks.data.length },
-	);
+	if (params.id) blocks.data = await getBlockByID(params.id);
+	if (params.ids) blocks.data = await getBlocksByIDs(params.ids);
+	if (params.height) blocks.data = await getBlockByHeight(params.height);
+	if (params.heightBetween) blocks.data = await getBlocksByHeightBetween(params.heightBetween.from, params.heightBetween.to);
+	if (Object.getOwnPropertyNames(params).length === 1 && params.limit === 1) blocks.data = await getLastBlock();
 
 	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+
+	blocks.meta = {
+		count: blocks.data.length,
+		offset,
+		total: 0, // TODO: Merge changes from 'Fix transaction endpoint pagination and address param #340'
+	};
 
 	return blocks;
 };
