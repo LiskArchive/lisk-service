@@ -124,6 +124,17 @@ const getLastBlock = async () => {
 	return normalizeBlocks(response.data);
 };
 
+const isQueryFromDB = params => {
+	const paramProps = Object.getOwnPropertyNames(params);
+
+	const isDirectQuery = ['id', 'height', 'heightBetween'].some(prop => paramProps.includes(prop));
+
+	const sortOrder = params.sort ? params.sort.split(':')[1] : undefined;
+	const isLatestBlockFetch = (paramProps.length === 3 && params.limit === 1 && params.offset === 0 && sortOrder === 'desc');
+
+	return !isDirectQuery && !isLatestBlockFetch;
+};
+
 const getBlocks = async params => {
 	const blocksDB = await getBlocksIndex();
 	const blocks = {
@@ -132,6 +143,9 @@ const getBlocks = async params => {
 	};
 
 	if (params.blockId) params.id = params.blockId;
+	if (!params.limit) params.limit = 10;
+	if (!params.offset) params.offset = 0;
+	if (!params.sort) params.sort = 'height:desc';
 
 	let accountInfo;
 	if (params.publicKey) accountInfo = { publicKey: params.publicKey };
@@ -141,6 +155,7 @@ const getBlocks = async params => {
 
 	if (params.timestamp) {
 		const [from, to] = params.timestamp.split(':');
+		if (from > to) return new Error('From timestamp cannot be greater than to timestamp');
 		params.propBetween = {
 			property: 'timestamp',
 			from,
@@ -154,7 +169,7 @@ const getBlocks = async params => {
 	delete params.username;
 	delete params.timestamp;
 
-	if (!params.id && !params.height) {
+	if (isQueryFromDB(params)) {
 		const resultSet = await blocksDB.find(params);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
@@ -168,6 +183,12 @@ const getBlocks = async params => {
 	} else if (params.heightBetween) {
 		const { from, to } = params.heightBetween;
 		blocks.data = await getBlocksByHeightBetween(from, to);
+		if (params.sort) {
+			const [sortProp, sortOrder] = params.sort.split(':');
+			blocks.data = blocks.data.sort(
+				(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
+			);
+		}
 	} else {
 		blocks.data = await getLastBlock();
 	}
