@@ -54,12 +54,6 @@ const getPublicKeyByAddress = async address => {
 	return publicKey;
 };
 
-const getIndexedAccountByPublicKey = async publicKey => {
-	const accountsDB = await getAccountsIndex();
-	const account = await accountsDB.find({ publicKey });
-	return account;
-};
-
 const getIndexedAccountInfo = async params => {
 	const accountsDB = await getAccountsIndex();
 	const [account] = await accountsDB.find(params);
@@ -214,6 +208,5 @@ module.exports = {
 	getMultisignatureMemberships,
 	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
-	getIndexedAccountByPublicKey,
 	getIndexedAccountInfo,
 };
