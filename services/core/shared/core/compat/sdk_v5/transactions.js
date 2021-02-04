@@ -89,7 +89,7 @@ const validateParams = async params => {
 	if (params.timestamp && params.timestamp.includes(':')) [params.fromTimestamp, params.toTimestamp] = params.timestamp.split(':');
 	delete params.timestamp;
 
-	if (params.amount) {
+	if (params.amount && params.amount.includes(':')) {
 		params.propBetween = {
 			property: 'amount',
 			from: Number(params.amount.split(':')[0]),
@@ -107,6 +107,7 @@ const validateParams = async params => {
 		delete params.fromTimestamp;
 		delete params.toTimestamp;
 	}
+
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
 		throw new Error('Nonce based sorting is only possible along with senderId');
 	}
