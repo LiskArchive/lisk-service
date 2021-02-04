@@ -56,7 +56,7 @@ const indexBlocks = async job => {
 		const skimmedBlock = {};
 		skimmedBlock.id = block.id;
 		skimmedBlock.height = block.height;
-		skimmedBlock.unixTimestamp = block.timestamp;
+		skimmedBlock.timestamp = block.timestamp;
 		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
 		publicKeysToIndex.push(block.generatorPublicKey);
 		return skimmedBlock;
@@ -136,12 +136,11 @@ const getBlocks = async params => {
 	let accountInfo;
 	if (params.publicKey) accountInfo = { publicKey: params.publicKey };
 	if (params.address) accountInfo = await getIndexedAccountInfo({ address: params.address });
-	if (params.username) accountInfo = await getIndexedAccountInfo({ address: params.username });
+	if (params.username) accountInfo = await getIndexedAccountInfo({ username: params.username });
 	if (accountInfo && accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
 
 	if (params.timestamp) {
 		const [from, to] = params.timestamp.split(':');
-		delete params.timestamp;
 		params.propBetween = {
 			property: 'timestamp',
 			from,
@@ -153,6 +152,7 @@ const getBlocks = async params => {
 	delete params.publicKey;
 	delete params.address;
 	delete params.username;
+	delete params.timestamp;
 
 	if (!params.id && !params.height) {
 		const resultSet = await blocksDB.find(params);
