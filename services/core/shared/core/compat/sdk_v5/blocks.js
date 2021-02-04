@@ -124,7 +124,7 @@ const getLastBlock = async () => {
 	return normalizeBlocks(response.data);
 };
 
-const isQueryFromDB = params => {
+const isQueryFromIndex = params => {
 	const paramProps = Object.getOwnPropertyNames(params);
 
 	const isDirectQuery = ['id', 'height', 'heightBetween'].some(prop => paramProps.includes(prop));
@@ -180,7 +180,7 @@ const getBlocks = async params => {
 	delete params.address;
 	delete params.username;
 
-	if (isQueryFromDB(params)) {
+	if (isQueryFromIndex(params)) {
 		const resultSet = await blocksDB.find(params);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
