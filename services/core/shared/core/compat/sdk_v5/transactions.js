@@ -92,8 +92,8 @@ const validateParams = async params => {
 	if (params.amount && params.amount.includes(':')) {
 		params.propBetween = {
 			property: 'amount',
-			from: Number(params.amount.split(':')[0]),
-			to: Number(params.amount.split(':')[1]),
+			from: params.amount.split(':')[0],
+			to: params.amount.split(':')[1],
 		};
 		delete params.amount;
 	}
@@ -101,8 +101,8 @@ const validateParams = async params => {
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
 			property: 'timestamp',
-			from: Number(params.fromTimestamp) || 0,
-			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
+			from: params.fromTimestamp || 0,
+			to: params.toTimestamp || Math.floor(Date.now() / 1000),
 		};
 		delete params.fromTimestamp;
 		delete params.toTimestamp;
