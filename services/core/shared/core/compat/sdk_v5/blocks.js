@@ -143,10 +143,10 @@ const getBlocks = async params => {
 	}
 
 	if (params.id) blocks.data = await getBlockByID(params.id);
-	if (params.ids) blocks.data = await getBlocksByIDs(params.ids);
-	if (params.height) blocks.data = await getBlockByHeight(params.height);
-	if (params.heightBetween) blocks.data = await getBlocksByHeightBetween(params.heightBetween.from, params.heightBetween.to);
-	if (Object.getOwnPropertyNames(params).length === 1 && params.limit === 1) blocks.data = await getLastBlock();
+	else if (params.ids) blocks.data = await getBlocksByIDs(params.ids);
+	else if (params.height) blocks.data = await getBlockByHeight(params.height);
+	else if (params.heightBetween) blocks.data = await getBlocksByHeightBetween(params.heightBetween.from, params.heightBetween.to);
+	else blocks.data = await getLastBlock();
 
 	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
