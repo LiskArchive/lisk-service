@@ -14,7 +14,7 @@
  *
  */
 module.exports = {
-	primaryKey: 'id',
+	primaryKey: 'height',
 	schema: {
 		id: { type: 'string' },
 		height: { type: 'integer' },
