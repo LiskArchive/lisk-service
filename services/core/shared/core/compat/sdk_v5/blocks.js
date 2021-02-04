@@ -98,7 +98,7 @@ const normalizeBlocks = async blocks => {
 	);
 
 	return normalizedBlocks;
-}
+};
 
 const getBlockByID = async id => {
 	const response = await coreApi.getBlockByID(id);
@@ -142,18 +142,26 @@ const getBlocks = async params => {
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
 
-	if (params.id) blocks.data = await getBlockByID(params.id);
-	else if (params.ids) blocks.data = await getBlocksByIDs(params.ids);
-	else if (params.height) blocks.data = await getBlockByHeight(params.height);
-	else if (params.heightBetween) blocks.data = await getBlocksByHeightBetween(params.heightBetween.from, params.heightBetween.to);
-	else blocks.data = await getLastBlock();
+	if (params.id) {
+		blocks.data = await getBlockByID(params.id);
+	} else if (params.ids) {
+		blocks.data = await getBlocksByIDs(params.ids);
+	} else if (params.height) {
+		blocks.data = await getBlockByHeight(params.height);
+	} else if (params.heightBetween) {
+		const { from, to } = params.heightBetween;
+		blocks.data = await getBlocksByHeightBetween(from, to);
+	} else {
+		blocks.data = await getLastBlock();
+	}
 
 	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 	blocks.meta = {
 		count: blocks.data.length,
 		offset,
-		total: 0, // TODO: Merge changes from 'Fix transaction endpoint pagination and address param #340'
+		total: 0,
+		// TODO: Merge 'Fix transaction endpoint pagination and address param #340' for total
 	};
 
 	return blocks;
