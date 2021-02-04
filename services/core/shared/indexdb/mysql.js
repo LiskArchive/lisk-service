@@ -163,14 +163,14 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
 		}
 
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			query.orderBy(sortProp, sortOrder);
-		}
-
 		if (params.orWhere) {
 			const { orWhere } = params;
 			query.where(queryParams).orWhere(orWhere);
+		}
+
+		if (params.sort) {
+			const [sortProp, sortOrder] = params.sort.split(':');
+			query.orderBy(sortProp, sortOrder);
 		}
 
 		return query.andWhere(queryParams)
