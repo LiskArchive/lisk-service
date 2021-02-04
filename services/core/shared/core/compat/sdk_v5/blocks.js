@@ -71,31 +71,36 @@ const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 
 const normalizeBlock = block => parseToJSONCompatObj(block);
 
-const normalizeBlocks = async blocks => BluebirdPromise.map(
-	blocks.map(block => ({ ...block.header, payload: block.payload })),
-	async block => {
-		const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
-		block.generatorAddress = account && account.address ? account.address : undefined;
-		block.generatorUsername = account && account.username ? account.username : undefined;
+const normalizeBlocks = async blocks => {
+	const apiClient = await getApiClient();
 
-		block.unixTimestamp = block.timestamp;
-		block.totalForged = Number(block.reward);
-		block.totalBurnt = 0;
-		block.totalFee = 0;
+	const normalizedBlocks = BluebirdPromise.map(
+		blocks.map(block => ({ ...block.header, payload: block.payload })),
+		async block => {
+			const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
+			block.generatorAddress = account && account.address ? account.address : undefined;
+			block.generatorUsername = account && account.username ? account.username : undefined;
 
-		block.payload.forEach(txn => {
-			const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
+			block.unixTimestamp = block.timestamp;
+			block.totalForged = Number(block.reward);
+			block.totalBurnt = 0;
+			block.totalFee = 0;
 
-			block.totalForged += Number(txn.fee);
-			block.totalBurnt += txnMinFee;
-			block.totalFee += Number(txn.fee) - txnMinFee;
-		});
+			block.payload.forEach(txn => {
+				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
 
-		return parseToJSONCompatObj(block);
-	},
-	{ concurrency: blocks.length },
-);
+				block.totalForged += Number(txn.fee);
+				block.totalBurnt += txnMinFee;
+				block.totalFee += Number(txn.fee) - txnMinFee;
+			});
 
+			return parseToJSONCompatObj(block);
+		},
+		{ concurrency: blocks.length },
+	);
+
+	return normalizedBlocks;
+}
 
 const getBlockByID = async id => {
 	const response = await coreApi.getBlockByID(id);
@@ -123,7 +128,6 @@ const getLastBlock = async () => {
 };
 
 const getBlocks = async params => {
-	const apiClient = await getApiClient();
 	const blocksDB = await getBlocksIndex();
 	const blocks = {
 		data: [],
