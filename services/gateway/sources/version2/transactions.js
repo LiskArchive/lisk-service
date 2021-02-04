@@ -31,6 +31,7 @@ module.exports = {
 		timestamp: '=',
 		blockId: 'block',
 		height: '=',
+		search: '=',
 		sort: '=',
 		data: '=',
 	},

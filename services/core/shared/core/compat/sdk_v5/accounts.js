@@ -66,6 +66,18 @@ const getIndexedAccountInfo = async params => {
 	return account;
 };
 
+const getAccountsBySearch = async searchString => {
+	const accountsDB = await getAccountsIndex();
+	const params = {
+		search: {
+			property: 'username',
+			pattern: searchString,
+		},
+	};
+	const account = await accountsDB.find(params);
+	return account;
+};
+
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
 		account.dpos.unlocking = account.dpos.unlocking.map(item => {
@@ -216,4 +228,5 @@ module.exports = {
 	getPublicKeyByAddress,
 	getIndexedAccountByPublicKey,
 	getIndexedAccountInfo,
+	getAccountsBySearch,
 };

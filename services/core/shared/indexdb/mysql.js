@@ -164,6 +164,24 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.orWhere(orWhere);
 		}
 
+		if (params.whereIn) {
+			const { property, values } = params.whereIn;
+			delete params.whereIn;
+			query.whereIn(property, values);
+		}
+
+		if (params.orWhereIn) {
+			const { property, values } = params.orWhereIn;
+			delete params.orWhereIn;
+			query.orWhereIn(property, values);
+		}
+
+		if (params.search) {
+			const { property, pattern } = params.search;
+			delete params.search;
+			query.where(`${property}`, 'like', `%${pattern}%`);
+		}
+
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			delete params.sort;

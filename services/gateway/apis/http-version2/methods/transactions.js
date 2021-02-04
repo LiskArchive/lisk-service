@@ -32,6 +32,7 @@ module.exports = {
 		timestamp: { optional: true, type: 'string', min: 1 },
 		block: { optional: true, type: 'string', min: 1 },
 		height: { optional: true, type: 'string', min: 1 },
+		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100 },
 		offset: { optional: true, type: 'number', min: 0 },
 		sort: {

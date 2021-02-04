@@ -20,6 +20,7 @@ const { indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountByPublicKey,
 	getIndexedAccountInfo,
+	getAccountsBySearch,
 } = require('./accounts');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
 
@@ -117,13 +118,30 @@ const validateParams = async params => {
 		delete params.username;
 	}
 
-	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
-	delete params.senderId;
-
 	if (params.senderIdOrRecipientId) {
 		params.senderId = params.senderIdOrRecipientId;
 		params.orWhere = { recipientId: params.senderIdOrRecipientId };
 		delete params.senderIdOrRecipientId;
+	}
+
+	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
+	delete params.senderId;
+
+	if (params.search) {
+		const accounts = await getAccountsBySearch(params.search);
+		delete params.search;
+		const publicKeys = accounts.map(account => account.publicKey);
+		const addresses = await BluebirdPromise.map(
+			accounts,
+			async account => {
+				const senderPub = await getPublicKeyByAddress(account.address);
+				publicKeys.push(senderPub);
+				return account.address;
+			},
+			{ concurrency: accounts.length },
+		);
+		params.whereIn = { property: 'senderPublicKey', values: publicKeys };
+		params.orWhereIn = { property: 'recipientId', values: addresses };
 	}
 
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
