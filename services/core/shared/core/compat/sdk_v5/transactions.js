@@ -108,7 +108,7 @@ const validateParams = async params => {
 		delete params.toTimestamp;
 	}
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
-		return new Error('Nonce based sorting is only possible along with senderId');
+		throw new Error('Nonce based sorting is only possible along with senderId');
 	}
 
 	if (params.username) {
