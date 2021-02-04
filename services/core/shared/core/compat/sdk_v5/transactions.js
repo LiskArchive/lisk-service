@@ -65,6 +65,7 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.nonce = tx.nonce;
 			skimmedTransaction.amount = tx.asset.amount || null;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+			skimmedTransaction.data = tx.asset.data || null;
 			publicKeysToIndex.push(tx.senderPublicKey);
 			return skimmedTransaction;
 		});
@@ -143,6 +144,14 @@ const validateParams = async params => {
 		);
 		params.whereIn = { property: 'senderPublicKey', values: publicKeys };
 		params.orWhereIn = { property: 'recipientId', values: addresses };
+	}
+
+	if (params.data) {
+		params.search = {
+			property: 'data',
+			pattern: params.data,
+		};
+		delete params.data;
 	}
 
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
