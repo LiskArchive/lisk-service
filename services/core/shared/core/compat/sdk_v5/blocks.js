@@ -137,7 +137,7 @@ const getBlocks = async params => {
 	if (params.publicKey) accountInfo = { publicKey: params.publicKey };
 	if (params.address) accountInfo = await getIndexedAccountInfo({ address: params.address });
 	if (params.username) accountInfo = await getIndexedAccountInfo({ address: params.username });
-	if (accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
+	if (accountInfo && accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
 
 	if (params.timestamp) {
 		const [from, to] = params.timestamp.split(':');
