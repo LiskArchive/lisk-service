@@ -172,7 +172,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	describe('GET /delegates/active', () => {
+	describe('Retrieve active delegates', () => {
 		it('default -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&limit=101`);
 			expect(response.data).toBeArrayOfSize(101);
@@ -195,11 +195,11 @@ describe('Delegates API', () => {
 		});
 	});
 
-	describe('GET /delegates/standby', () => {
+	describe('Retrieve standby delegates', () => {
 		it('default -> ok', async () => {
-			const response = await api.get(`${endpoint}?sort=rank:asc&offset=101&limit=101`);
+			const response = await api.get(`${endpoint}?sort=rank:asc&offset=101`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(101);
+			expect(response.data).toBeArrayOfSize(10);
 			response.data.map(delegate => expect(delegate).toMap(delegateSchema, { status: 'standby' }));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -207,7 +207,7 @@ describe('Delegates API', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&offset=102&limit=100`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(100);
+			expect(response.data.length).toBeGreaterThan(10);
 			response.data.map(delegate => expect(delegate).toMap(delegateSchema, { status: 'standby' }));
 			expect(response.meta).toMap(metaSchema);
 		});
