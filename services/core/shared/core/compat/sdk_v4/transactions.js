@@ -34,12 +34,12 @@ const _getTrxFromCore = async params => {
 		transactions.data = await BluebirdPromise.map(
 			transactions.data,
 			async transaction => {
-				const resultSet = await blockIdx.find(
+				const response = await blockIdx.find(
 					{ id: transaction.blockId },
 					['timestamp', 'unixTimestamp']);
-				if (resultSet.length > 0) {
-					transaction.timestamp = resultSet[0].timestamp;
-					transaction.unixTimestamp = resultSet[0].unixTimestamp;
+				if (response.length > 0) {
+					transaction.timestamp = response[0].timestamp;
+					transaction.unixTimestamp = response[0].unixTimestamp;
 				}
 				return transaction;
 			},
