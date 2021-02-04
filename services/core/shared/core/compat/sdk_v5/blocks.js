@@ -71,6 +71,57 @@ const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 
 const normalizeBlock = block => parseToJSONCompatObj(block);
 
+const normalizeBlocks = async blocks => BluebirdPromise.map(
+	blocks.map(block => ({ ...block.header, payload: block.payload })),
+	async block => {
+		const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
+		block.generatorAddress = account && account.address ? account.address : undefined;
+		block.generatorUsername = account && account.username ? account.username : undefined;
+
+		block.unixTimestamp = block.timestamp;
+		block.totalForged = Number(block.reward);
+		block.totalBurnt = 0;
+		block.totalFee = 0;
+
+		block.payload.forEach(txn => {
+			const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
+
+			block.totalForged += Number(txn.fee);
+			block.totalBurnt += txnMinFee;
+			block.totalFee += Number(txn.fee) - txnMinFee;
+		});
+
+		return parseToJSONCompatObj(block);
+	},
+	{ concurrency: blocks.length },
+);
+
+
+const getBlockByID = async id => {
+	const response = await coreApi.getBlockByID(id);
+	return normalizeBlocks(response.data);
+};
+
+const getBlocksByIDs = async ids => {
+	const response = await coreApi.getBlocksByIDs(ids);
+	return normalizeBlocks(response.data);
+};
+
+const getBlockByHeight = async height => {
+	const response = await coreApi.getBlockByHeight(height);
+	return normalizeBlocks(response.data);
+};
+
+const getBlocksByHeightBetween = async (from, to) => {
+	const response = await coreApi.getBlocksByHeightBetween(from, to);
+	return normalizeBlocks(response.data);
+};
+
+const getLastBlock = async () => {
+	const response = await coreApi.getLastBlock();
+	return normalizeBlocks(response.data);
+};
+
 const getBlocks = async params => {
 	const apiClient = await getApiClient();
 	const blocksDB = await getBlocksIndex();
@@ -143,22 +194,14 @@ const buildIndex = async (from, to) => {
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 
 		/* eslint-disable no-await-in-loop */
-		// TODO: Revert to standard notation, once getBlocks is fully implemented
-		// const blocks = await getBlocks({
-		// 	limit: MAX_BLOCKS_LIMIT_PP,
-		// 	offset: offset - 1,
-		// 	sort: 'height:asc',
-		// });
-		const blocks = await getBlocks({
-			heightRange: { from: offset + 1, to: offset + MAX_BLOCKS_LIMIT_PP },
-		});
+		const blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
 
-		await indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
 
-		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
+		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
 
-		const topHeightFromBatch = (blocks.data.pop()).height;
-		const bottomHeightFromBatch = (blocks.data.shift()).height;
+		const topHeightFromBatch = (sortedBlocks.pop()).height;
+		const bottomHeightFromBatch = (sortedBlocks.shift()).height;
 		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
 		if (bottomHeightFromBatch < lowestIndexedHeight || lowestIndexedHeight === 0) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
 		if (topHeightFromBatch > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', topHeightFromBatch);
