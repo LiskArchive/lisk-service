@@ -121,9 +121,9 @@ const getTransactions = async params => {
 				transaction.unixTimestamp = indexedTxInfo.timestamp;
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
-				const accountInfo = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
-				transaction.senderId = accountInfo && accountInfo.address ? accountInfo.address : undefined;
-				transaction.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
+				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+				transaction.senderId = account && account.address ? account.address : undefined;
+				transaction.username = account && account.username ? account.username : undefined;
 				return transaction;
 			},
 			{ concurrency: transactions.data.length },
