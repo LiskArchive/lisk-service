@@ -79,7 +79,6 @@ const normalizeBlocks = async blocks => {
 			block.generatorAddress = account && account.address ? account.address : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
 
-			block.unixTimestamp = block.timestamp;
 			block.totalForged = Number(block.reward);
 			block.totalBurnt = 0;
 			block.totalFee = 0;
@@ -136,6 +135,16 @@ const getBlocks = async params => {
 	if (blockId) params.id = blockId;
 
 	delete params.blockId;
+
+	if (params.timestamp) {
+		const [from, to] = params.timestamp.split(':');
+		delete params.timestamp;
+		params.propBetween = {
+			property: 'timestamp',
+			from,
+			to,
+		};
+	}
 
 	if (!params.id && !params.height) {
 		const resultSet = await blocksDB.find(params);
