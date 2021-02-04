@@ -131,17 +131,13 @@ const getBlocks = async params => {
 		meta: {},
 	};
 
-	const { blockId, offset } = params;
-	if (blockId) params.id = blockId;
-
-	delete params.blockId;
+	if (params.blockId) params.id = params.blockId;
 
 	let accountInfo;
+	if (params.publicKey) accountInfo = { publicKey: params.publicKey };
 	if (params.address) accountInfo = await getIndexedAccountInfo({ address: params.address });
-	if (params.publicKey) accountInfo = await getIndexedAccountInfo({ address: params.publicKey });
 	if (params.username) accountInfo = await getIndexedAccountInfo({ address: params.username });
-
-	// TODO: Use accountInfo
+	if (accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
 
 	if (params.timestamp) {
 		const [from, to] = params.timestamp.split(':');
@@ -152,6 +148,11 @@ const getBlocks = async params => {
 			to,
 		};
 	}
+
+	delete params.blockId;
+	delete params.publicKey;
+	delete params.address;
+	delete params.username;
 
 	if (!params.id && !params.height) {
 		const resultSet = await blocksDB.find(params);
@@ -175,9 +176,9 @@ const getBlocks = async params => {
 
 	blocks.meta = {
 		count: blocks.data.length,
-		offset,
+		offset: params.offset,
 		total: 0,
-		// TODO: Merge 'Fix transaction endpoint pagination and address param #340' for total
+		// TODO: Merge 'Fix transaction endpoint pagination and address param #340' for total/offset
 	};
 
 	return blocks;
