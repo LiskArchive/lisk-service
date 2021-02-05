@@ -118,17 +118,18 @@ const buildIndex = async (from, to) => {
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
-
-		const blocks = await getBlocks({
-			limit: MAX_BLOCKS_LIMIT_PP,
-			offset: offset - 1,
-			sort: 'height:asc',
-		});
+		let blocks;
+		do {
+			blocks = await getBlocks({
+				limit: MAX_BLOCKS_LIMIT_PP,
+				offset: offset - 1,
+				sort: 'height:asc',
+			});
+		} while (!blocks.data && !blocks.data.length);
 
 		await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
 
 		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
-
 		const topHeightFromBatch = (blocks.data.pop()).height;
 		const bottomHeightFromBatch = (blocks.data.shift()).height;
 		const lowestIndexedHeight = await bIdCache.get('lowestIndexedHeight');
@@ -167,8 +168,8 @@ const init = async () => {
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 	} catch (err) {
-		logger.error('Unable to build block cache');
-		logger.warn(err.message);
+		logger.warn('Unable to build block cache');
+		logger.warn(err);
 	}
 };
 
