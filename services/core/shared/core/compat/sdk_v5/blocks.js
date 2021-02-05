@@ -133,6 +133,7 @@ const buildIndex = async (from, to) => {
 		// 	offset: offset - 1,
 		// 	sort: 'height:asc',
 		// });
+		// TODO: Add check when below call fails similar to SDKv4
 		const blocks = await getBlocks({
 			heightRange: { from: offset, to: offset + MAX_BLOCKS_LIMIT_PP },
 		});
