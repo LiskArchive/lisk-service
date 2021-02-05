@@ -220,7 +220,7 @@ describe('Method get.delegates', () => {
 		});
 
 		it('returns INVALID_PARAMS (-32602) with wrong delegate status value', async () => {
-			const response = await getDelegates({ status: 'falseValue', });
+			const response = await getDelegates({ status: 'falseValue' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
