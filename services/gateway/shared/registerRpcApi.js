@@ -171,8 +171,7 @@ const registerApi = (apiNames, config) => {
 						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
 					}
 
-					request.params = transformRequest(request.method,
-						{ ...paramReport.valid, ...request.params });
+					request.params = transformRequest(request.method, request.params);
 				},
 
 				onAfterCall: async (ctx, socket, request, data) => transformResponse(request.method, data),
