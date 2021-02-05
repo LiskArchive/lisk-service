@@ -30,7 +30,7 @@ module.exports = {
 		status: {
 			optional: true,
 			type: 'string',
-			pattern: /\b(?:active|standby|banned|punished|non-eligible)\b/
+			pattern: /^(?:\b(?:active|standby|banned|punished|non-eligible)\b|\b(?:active|standby|banned|punished|non-eligible|,){3,}\b){1}$/,
 		},
 		search: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 101, default: 10 },
