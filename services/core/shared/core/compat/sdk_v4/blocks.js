@@ -125,7 +125,7 @@ const buildIndex = async (from, to) => {
 				offset: offset - 1,
 				sort: 'height:asc',
 			});
-		} while (!blocks.data && !blocks.data.length);
+		} while (!blocks.data || !blocks.data.length);
 
 		await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
 
