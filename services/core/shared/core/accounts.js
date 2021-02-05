@@ -29,7 +29,7 @@ const getAccounts = async params => {
 	await Promise.all(accounts.data.map(async account => {
 		if (account.isDelegate) {
 			const delegate = await getDelegates({ address: account.address });
-			[account.delegate] = delegate.data;
+			account.delegate = { ...account.delegate, ...delegate.data[0] };
 		}
 	}));
 
