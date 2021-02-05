@@ -29,7 +29,9 @@ const getAccounts = async params => {
 	await Promise.all(accounts.data.map(async account => {
 		if (account.isDelegate === true) {
 			const delegate = await getDelegates({ address: account.address });
-			account.delegate = { ...account.delegate, ...delegate.data[0] };
+			const delegateOrigProps = JSON.parse(JSON.stringify(account.delegate));
+			const delegateExtraProps = JSON.parse(JSON.stringify(delegate.data[0]));
+			account.delegate = { ...delegateOrigProps, ...delegateExtraProps };
 		} else {
 			delete account.delegate;
 			delete account.approval;

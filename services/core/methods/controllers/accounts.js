@@ -14,6 +14,7 @@
  *
  */
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
+const Bluebird = require('bluebird');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray } = Utils.Data;
@@ -31,22 +32,27 @@ const getDataForAccounts = async params => {
 	response.meta = {};
 	response.links = {};
 
+	const accountDataCopy = JSON.parse(JSON.stringify(accounts.data));
+
 	if (!accounts.data || isEmptyArray(accounts.data)) {
 		response.meta.count = 0;
 		response.meta.total = 0;
 	} else {
-		response.data = accounts.data;
-		await Promise.all(response.data.map(async account => {
-			account.multisignatureGroups = await CoreService.getMultisignatureGroups(account);
-			account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
-			account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
-			account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
-				account);
-			account.knowledge = getAccountKnowledge(account.address);
-			return account;
-		}));
+		await Bluebird.map(accountDataCopy, async account => {
+			try {
+				account.multisignatureGroups = await CoreService.getMultisignatureGroups(account);
+				account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
+				account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
+				account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
+					account);
+					account.knowledge = await getAccountKnowledge(account.address);
+			} catch (err) {
+				logger.warn(err.message);
+			}
+		}, { concurrency: 4 });
 
-		response.meta.count = response.data.length;
+		response.data = accountDataCopy;
+		response.meta.count = accounts.data.length;
 		response.meta.offset = parseInt(params.offset, 10);
 	}
 
