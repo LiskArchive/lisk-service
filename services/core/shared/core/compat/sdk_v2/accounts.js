@@ -20,7 +20,7 @@ const coreCache = require('./coreCache');
 
 const ObjectUtilService = Utils.Data;
 
-const { isProperObject } = ObjectUtilService;
+const { isObject } = ObjectUtilService;
 
 const parseAddress = address => {
 	if (typeof address !== 'string') return '';
@@ -76,17 +76,24 @@ const getAccounts = async params => {
 	}
 
 	const result = await coreApi.getAccounts(requestParams);
+
+	result.data.forEach(account => {
+		if ((isObject(account.delegate) && account.delegate.username)) {
+			account.isDelegate = true;
+		}
+	});
+
 	return result;
 };
 
 const getMultisignatureGroups = async address => {
 	const result = await coreApi.getMultisignatureGroups(parseAddress(address));
-	return isProperObject(result) && Array.isArray(result.data) ? result.data[0] : [];
+	return isObject(result) && Array.isArray(result.data) ? result.data[0] : [];
 };
 
 const getMultisignatureMemberships = async address => {
 	const result = await coreApi.getMultisignatureMemberships(parseAddress(address));
-	return isProperObject(result) && Array.isArray(result.data) ? result.data : [];
+	return isObject(result) && Array.isArray(result.data) ? result.data : [];
 };
 
 
