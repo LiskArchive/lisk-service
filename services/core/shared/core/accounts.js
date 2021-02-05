@@ -13,12 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
-
 const coreApi = require('./compat');
 const { getDelegates } = require('./delegates');
-
-const { isObject } = Utils.Data;
 
 const getAccounts = async params => {
 	const accounts = {
@@ -31,7 +27,7 @@ const getAccounts = async params => {
 	if (response.meta) accounts.meta = response.meta;
 
 	await Promise.all(accounts.data.map(async account => {
-		if (account.isDelegate === true || (isObject(account.delegate) && account.delegate.username)) {
+		if (account.isDelegate === true) {
 			const delegate = await getDelegates({ address: account.address });
 			account.delegate = { ...account.delegate, ...delegate.data[0] };
 		} else {
