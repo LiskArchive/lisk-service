@@ -15,42 +15,44 @@
  */
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
-const { StatusCodes: { NOT_FOUND } } = HTTP;
-const { isEmptyArray } = Utils.Data;
+const { isObject } = Utils.Data;
 
+const { waitForLastBlock, getNetworkStatus } = require('./core');
 const config = require('../config');
 
-// const logger = Logger();
+const logger = Logger();
 
 const knownExpireMiliseconds = 5 * 60 * 1000;
-// const staticUrl = config.endpoints.liskStatic;
+const staticUrl = config.endpoints.liskStatic;
 
-// const getKnownAccounts = async () => {
-// 	const result = await CoreService.getNetworkStatus();
-// 	const { nethash } = result.data.constants;
-// 	const cacheTTL = knownExpireMiliseconds;
-
-// 	try {
-// 		// const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`, { cacheTTL });
-// 		// if (knownNetworks.data[nethash]) {
-// 		// 	return (await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`, { cacheTTL })).data;
-// 		// }
-// 		return {};
-// 	} catch (err) {
-// 		return {};
-// 	}
-// };
-
-const knowledge = {};
+let knowledge = {};
 
 const getAccountKnowledge = (address) => {
 	if (knowledge[address]) return knowledge[address];
 	return {};
 };
 
+const reloadKnowledge = async () => {
+	logger.debug('Reloading known accounts...');
 
-const reloadKnowledge = () => {
+	await waitForLastBlock();
+	const netStatus = await getNetworkStatus();
+	const { nethash } = netStatus.data.constants;
 
+	try {
+		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`);
+		if (knownNetworks.data[nethash]) {
+			const knownAccounts = await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`);
+			if (isObject(knownAccounts.data)) {
+				knowledge = knownAccounts.data;
+				logger.debug(`Updated known accounts database with ${Object.keys(knowledge).length} entries`);
+			}
+		} else {
+			logger.debug(`NetworkId does not exist in the database: ${nethash}`);
+		}
+	} catch (err) {
+		logger.debug(`Could not reload known accounts: ${err.message}`);
+	}
 };
 
 const init = () => {
@@ -58,6 +60,7 @@ const init = () => {
 	setInterval(reloadKnowledge, knownExpireMiliseconds);
 };
 
+init();
 
 module.exports = {
 	init,
