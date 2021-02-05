@@ -169,7 +169,7 @@ const init = async () => {
 		}
 	} catch (err) {
 		logger.warn('Unable to build block cache');
-		logger.warn(err);
+		logger.warn(err.message);
 	}
 };
 
