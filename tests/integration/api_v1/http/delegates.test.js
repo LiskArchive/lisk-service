@@ -130,6 +130,39 @@ describe('Delegates API', () => {
 		});
 	});
 
+	describe('GET /delegates?status', () => {
+		it('filter active delegates -> ok', async () => {
+			const response = await api.get(`${endpoint}?status=active`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(10);
+			response.data.map(delegate => expect(delegate)
+				.toMap(delegateSchema, { status: 'active' }));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('filter standby delegates -> ok', async () => {
+			const response = await api.get(`${endpoint}?status=standby`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(10);
+			response.data.map(delegate => expect(delegate)
+				.toMap(delegateSchema, { status: 'standby' }));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('filter delegates by combination -> ok', async () => {
+			const response = await api.get(`${endpoint}?status=active,standby&offset=95`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(10);
+			response.data.map(delegate => expect(delegate).toMap(delegateSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('wrong status input -> 400', async () => {
+			const response = await api.get(`${endpoint}?status=falseValue`, 400);
+			expect(response).toMap(notFoundSchema);
+		});
+	});
+
 	describe('GET /delegates/latest_registrations', () => {
 		xit('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/latest_registrations?limit=100`);

@@ -136,8 +136,10 @@ const getDelegates = async params => {
 		return comparator;
 	};
 
-	const filterBy = (list, entity) => list.filter((acc) => (acc[entity]
-		&& acc[entity] === params[entity]));
+	const filterBy = (list, entity) => list.filter((acc) => params[entity].includes(',')
+		? (acc[entity] && params[entity].split(',').includes(acc[entity]))
+		: (acc[entity] && acc[entity] === params[entity]),
+	);
 
 	if (params.address) {
 		delegates.data = filterBy(allDelegates, 'address');
@@ -147,6 +149,8 @@ const getDelegates = async params => {
 		delegates.data = filterBy(allDelegates, 'secondPublicKey');
 	} else if (params.username) {
 		delegates.data = filterBy(allDelegates, 'username');
+	} else if (params.status) {
+		delegates.data = filterBy(allDelegates, 'status');
 	} else if (params.search) {
 		delegates.data = allDelegates.filter((acc) => (acc.username
 			&& String(acc.username).match(new RegExp(params.search, 'i'))));

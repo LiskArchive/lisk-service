@@ -23,6 +23,7 @@ module.exports = {
 		publicKey: 'publickey',
 		secondPublicKey: 'secpubkey',
 		username: '=',
+		status: '=',
 		offset: '=',
 		limit: '=',
 		search: '=',
