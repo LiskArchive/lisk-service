@@ -19,6 +19,7 @@ const coreApi = require('./coreApi');
 const signals = require('../../../signals');
 
 const config = require('../../../../config');
+const { initializeQueue } = require('../../queue');
 
 const {
 	getUnixTime,
@@ -53,6 +54,19 @@ const updateFinalizedHeight = async () => {
 
 const getFinalizedHeight = () => heightFinalized;
 
+const indexBlocks = async job => {
+	const { blocks } = job.data;
+	const blockIdx = await getBlockIdx();
+	blocks.forEach(block => {
+		if (block.numberOfTransactions > 0) {
+			blockIdx.upsert(block);
+			signals.get('indexTransactions').dispatch(block.id);
+		}
+	});
+};
+
+const indexBlocksQueuev4 = initializeQueue('indexBlocksQueuev4', indexBlocks);
+
 const getBlocks = async (params) => {
 	const blocks = {
 		data: [],
@@ -83,23 +97,13 @@ const getBlocks = async (params) => {
 		}),
 		),
 	);
-
-	const blockIdx = await getBlockIdx();
-
-	blocks.data.forEach(block => {
-		if (block.numberOfTransactions > 0) {
-			blockIdx.upsert(block);
-			signals.get('indexTransactions').dispatch(block.id);
-		}
-	});
+	if (blocks.data.length === 1) await indexBlocksQueuev4.add('indexBlocksQueuev4', { blocks: blocks.data });
 
 	return blocks;
 };
 
 const buildIndex = async (from, to) => {
 	logger.info('Building index of blocks');
-
-	const blockIdx = await getBlockIdx();
 
 	if (from >= to) {
 		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
@@ -109,25 +113,18 @@ const buildIndex = async (from, to) => {
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		/* eslint-disable no-await-in-loop */
 		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
 		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
-		// eslint-disable-next-line no-await-in-loop
 		const blocks = await getBlocks({
 			limit: MAX_BLOCKS_LIMIT_PP,
 			offset: offset - 1,
 			sort: 'height:asc',
 		});
-		blocks.data.forEach(async block => {
-			if (!(await bIdCache.get(block.id))) {
-				if (block.numberOfTransactions > 0) {
-					blockIdx.upsert(block);
-					signals.get('indexTransactions').dispatch(block.id);
-				}
-			}
-		});
+		await indexBlocksQueuev4.add('indexBlocksQueuev4', { blocks: blocks.data });
 		const topHeightFromBatch = (blocks.data.pop()).height;
-		// eslint-disable-next-line no-await-in-loop
 		await bIdCache.set('lastIndexedHeight', topHeightFromBatch);
+		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished building block index (${from}-${to})`);
 };
