@@ -83,7 +83,7 @@ const unlockingItemSchema = {
 
 const accountSchema = {
 	address: Joi.string().required(),
-	publicKey: Joi.string().required(),
+	publicKey: Joi.string().allow('').required(),
 	secondPublicKey: Joi.string().allow('').optional(),
 	balance: Joi.string().required(),
 	nonce: Joi.string().optional(),
