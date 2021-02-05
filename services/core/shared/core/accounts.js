@@ -27,14 +27,10 @@ const getAccounts = async params => {
 	if (response.meta) accounts.meta = response.meta;
 
 	await Promise.all(accounts.data.map(async account => {
-		if (account.isDelegate) {
+		if (account.isDelegate === true) {
 			const delegate = await getDelegates({ address: account.address });
-			[account.delegate] = delegate.data;
-		}
-	}));
-
-	accounts.data.forEach(async account => {
-		if (!account.isDelegate) {
+			account.delegate = { ...account.delegate, ...delegate.data[0] };
+		} else {
 			delete account.delegate;
 			delete account.approval;
 			delete account.missedBlocks;
@@ -50,9 +46,7 @@ const getAccounts = async params => {
 			delete account.lastForgedHeight;
 			delete account.consecutiveMissedBlocks;
 		}
-
-		return account;
-	});
+	}));
 
 	return accounts;
 };
