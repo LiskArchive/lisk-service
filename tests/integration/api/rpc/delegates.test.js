@@ -218,6 +218,11 @@ describe('Method get.delegates', () => {
 			result.data.forEach(delegate => expect(delegate).toMap(delegateSchema));
 			expect(result.meta).toMap(metaSchema, { count: 10, offset: 95 });
 		});
+
+		it('returns INVALID_PARAMS (-32602) with wrong delegate status value', async () => {
+			const response = await getDelegates({ status: 'falseValue', });
+			expect(response).toMap(invalidParamsSchema);
+		});
 	});
 
 	describe('returns INVALID_PARAMS', () => {

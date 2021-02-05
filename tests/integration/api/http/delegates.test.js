@@ -156,6 +156,11 @@ describe('Delegates API', () => {
 			response.data.map(delegate => expect(delegate).toMap(delegateSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		it('wrong status input -> 400', async () => {
+			const response = await api.get(`${endpoint}?status=falseValue`, 400);
+			expect(response).toMap(notFoundSchema);
+		});
 	});
 
 	describe('GET /delegates/latest_registrations', () => {
