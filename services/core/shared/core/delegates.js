@@ -136,8 +136,10 @@ const getDelegates = async params => {
 		return comparator;
 	};
 
-	const filterBy = (list, entity) => list.filter((acc) => (acc[entity]
-		&& acc[entity] === params[entity]));
+	const filterBy = (list, entity) => list.filter((acc) => params[entity].includes(',')
+		? (acc[entity] && params[entity].split(',').includes(acc[entity]))
+		: (acc[entity] && acc[entity] === params[entity]),
+	);
 
 	if (params.address) {
 		delegates.data = filterBy(allDelegates, 'address');
