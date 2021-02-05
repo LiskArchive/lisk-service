@@ -14,6 +14,7 @@
  *
  */
 const coreApi = require('./compat');
+const { getDelegates } = require('./delegates');
 
 const getAccounts = async params => {
 	const accounts = {
@@ -25,11 +26,15 @@ const getAccounts = async params => {
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
-	accounts.data.forEach(account => {
-		if (
-			!!Object.getOwnPropertyDescriptor(account, 'isDelegate') && !account.isDelegate
-			|| account.delegate && !account.delegate.rank
-		) {
+	await Promise.all(accounts.data.map(async account => {
+		if (account.isDelegate) {
+			const delegate = await getDelegates({ address: account.address });
+			[account.delegate] = delegate.data;
+		}
+	}));
+
+	accounts.data.forEach(async account => {
+		if (!account.isDelegate) {
 			delete account.delegate;
 			delete account.approval;
 			delete account.missedBlocks;
@@ -45,6 +50,7 @@ const getAccounts = async params => {
 			delete account.lastForgedHeight;
 			delete account.consecutiveMissedBlocks;
 		}
+
 		return account;
 	});
 
