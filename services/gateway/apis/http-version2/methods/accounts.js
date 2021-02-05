@@ -26,8 +26,8 @@ module.exports = {
 		publicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
 		username: { optional: true, type: 'string', min: 1, max: 20, pattern: /^[a-z0-9!@$&_.]{1,20}$/ },
 		isDelegate: { optional: true, type: 'boolean', min: 1, pattern: /^(true|false)$/ },
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /0*(?:[1-9][0-9]?|100)/ },
-		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^[1-9][0-9]*$/ },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
 		sort: {
 			optional: true,
 			type: 'string',
