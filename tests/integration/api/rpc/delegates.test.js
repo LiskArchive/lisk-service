@@ -188,6 +188,38 @@ describe('Method get.delegates', () => {
 		});
 	});
 
+	describe.only('returns delegates based on status', () => {
+		it('returns active delegates by status', async () => {
+			const response = await getDelegates({ status: 'active' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeArrayOfSize(10);
+			result.data.forEach(delegate => expect(delegate).toMap(delegateSchema, { status: 'active' }));
+			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
+		});
+
+		it('returns standby delegates by status', async () => {
+			const response = await getDelegates({ status: 'standby' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeArrayOfSize(10);
+			result.data.forEach(delegate => expect(delegate).toMap(delegateSchema, { status: 'standby' }));
+			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
+		});
+
+		it('returns standby delegates by status', async () => {
+			const response = await getDelegates({ status: 'active,standby', offset: 95 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeArrayOfSize(10);
+			result.data.forEach(delegate => expect(delegate).toMap(delegateSchema));
+			expect(result.meta).toMap(metaSchema, { count: 10, offset: 95 });
+		});
+	});
+
 	describe('returns INVALID_PARAMS', () => {
 		// current response is -32600 as invalid parameter response
 		it('returns INVALID_PARAMS (-32602) when invalid param name', async () => {
