@@ -27,6 +27,11 @@ module.exports = {
 		publickey: { optional: true, type: 'string', min: 1 },
 		secpubkey: { optional: true, type: 'string', min: 1 },
 		username: { optional: true, type: 'string', min: 1 },
+		status: {
+			optional: true,
+			type: 'string',
+			enum: ['active', 'standby', 'banned', 'punished', 'non-eligible'],
+		},
 		search: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 101, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
