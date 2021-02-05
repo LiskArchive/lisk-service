@@ -147,6 +147,8 @@ const getDelegates = async params => {
 		delegates.data = filterBy(allDelegates, 'secondPublicKey');
 	} else if (params.username) {
 		delegates.data = filterBy(allDelegates, 'username');
+	} else if (params.status) {
+		delegates.data = filterBy(allDelegates, 'status');
 	} else if (params.search) {
 		delegates.data = allDelegates.filter((acc) => (acc.username
 			&& String(acc.username).match(new RegExp(params.search, 'i'))));
