@@ -27,17 +27,17 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 	if (await knex.schema.hasTable(tableName)) return knex;
 
 	await knex.schema
-	.createTable(tableName, table => {
-		Object.keys(schema).map(p => {
-			const kProp = (table[schema[p].type])(p);
-			if (schema[p].null === false) kProp.notNullable();
-			if (p === primaryKey) kProp.primary();
-			if (indexes[p]) kProp.index();
+		.createTable(tableName, table => {
+			Object.keys(schema).map(p => {
+				const kProp = (table[schema[p].type])(p);
+				if (schema[p].null === false) kProp.notNullable();
+				if (p === primaryKey) kProp.primary();
+				if (indexes[p]) kProp.index();
 
-			// TODO: Add support for composite primary keys and foreign keys
-			return kProp;
+				// TODO: Add support for composite primary keys and foreign keys
+				return kProp;
+			});
 		});
-	});
 
 	return knex;
 };
@@ -79,6 +79,17 @@ const cast = (val, type) => {
 	if (type === 'boolean') return Boolean(val);
 	if (type === 'bigInteger') return BigInt(val);
 	return val;
+};
+
+const resolveQueryParams = (params) => {
+	const queryParams = Object.keys(params)
+		.filter(key => !['sort', 'limit', 'propBetween', 'orWhere', 'offset']
+			.includes(key))
+		.reduce((obj, key) => {
+			obj[key] = params[key];
+			return obj;
+		}, {});
+	return queryParams;
 };
 
 const getValue = (val) => {
@@ -142,33 +153,27 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	};
 
 	const queryBuilder = (params, columns) => {
-		const limit = params.limit || 1;
-		const offset = params.offset || 0;
-
-		delete params.limit;
-		delete params.offset;
-
+		const limit = Number(params.limit) || 10;
+		const offset = Number(params.offset) || 0;
 		const query = knex.select(columns).table(tableName);
+		const queryParams = resolveQueryParams(params);
 
 		if (params.propBetween) {
 			const { propBetween } = params;
-			delete params.propBetween;
 			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
 		}
 
 		if (params.orWhere) {
 			const { orWhere } = params;
-			delete params.orWhere;
-			query.orWhere(orWhere);
+			query.where(queryParams).orWhere(orWhere);
 		}
 
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
-			delete params.sort;
 			query.orderBy(sortProp, sortOrder);
 		}
 
-		return query.andWhere(params)
+		return query.andWhere(queryParams)
 			.limit(limit)
 			.offset(offset);
 	};
@@ -186,7 +191,23 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.whereIn(primaryKey, ids)
 		.del();
 
-	const count = async () => knex(tableName).count({ count: 'id' });
+	const count = async (params) => {
+		const countQuery = knex.count('id as count').table(tableName);
+		const queryParams = resolveQueryParams(params);
+
+		if (params.propBetween) {
+			const { propBetween } = params;
+			countQuery.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+		}
+
+		if (params.orWhere) {
+			const { orWhere } = params;
+			countQuery.where(queryParams).orWhere(orWhere);
+		}
+
+		const [totalCount] = await countQuery.andWhere(queryParams);
+		return totalCount.count;
+	};
 
 	return {
 		upsert,

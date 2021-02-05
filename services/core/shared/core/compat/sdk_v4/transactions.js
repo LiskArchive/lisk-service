@@ -93,17 +93,17 @@ const getTransactions = async params => {
 	}
 
 	// TODO: Add search by message
-
 	const resultSet = await transactionIdx.find(params);
+	const total = await transactionIdx.count(params);
 
 	if (resultSet.length > 0) {
 		const trxIds = resultSet.map(row => row.id);
 		transactions.data = await getTransactionByIds(trxIds);
 	}
 
-	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
-	transactions.meta.offset = params.offset || 0;
+	transactions.meta.total = total;
+	transactions.meta.offset = params.offset;
 	return transactions;
 };
 

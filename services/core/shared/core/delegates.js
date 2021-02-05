@@ -57,6 +57,7 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 		&& (!params.address || delegate.account.address === params.address)
 		&& (!params.publickey || delegate.account.publicKey === params.publickey)
 		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
+		&& (!params.status || params.status.includes(delegate.status))
 	));
 	return relevantDelegates.length;
 };
