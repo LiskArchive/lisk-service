@@ -65,7 +65,7 @@ const indexBlocks = async job => {
 	});
 };
 
-const indexBlocksQueuev4 = initializeQueue('indexBlocksQueuev4', indexBlocks);
+const indexBlocksQueue = initializeQueue('indexBlocksQueuev4', indexBlocks);
 
 const getBlocks = async (params) => {
 	const blocks = {
@@ -97,7 +97,7 @@ const getBlocks = async (params) => {
 		}),
 		),
 	);
-	if (blocks.data.length === 1) await indexBlocksQueuev4.add('indexBlocksQueuev4', { blocks: blocks.data });
+	if (blocks.data.length === 1) await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
 
 	return blocks;
 };
@@ -111,19 +111,29 @@ const buildIndex = async (from, to) => {
 	}
 
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+	const highestIndexedHeight = await bIdCache.get('highestIndexedHeight');
 
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 		/* eslint-disable no-await-in-loop */
-		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
-		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+
 		const blocks = await getBlocks({
 			limit: MAX_BLOCKS_LIMIT_PP,
 			offset: offset - 1,
 			sort: 'height:asc',
 		});
-		await indexBlocksQueuev4.add('indexBlocksQueuev4', { blocks: blocks.data });
+
+		await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
+
+		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
+
 		const topHeightFromBatch = (blocks.data.pop()).height;
-		await bIdCache.set('lastIndexedHeight', topHeightFromBatch);
+		const bottomHeightFromBatch = (blocks.data.shift()).height;
+		const lowestIndexedHeight = await bIdCache.get('lowestIndexedHeight');
+		if (bottomHeightFromBatch < lowestIndexedHeight || lowestIndexedHeight === 0) await bIdCache.set('lowestIndexedHeight', bottomHeightFromBatch);
+		if (topHeightFromBatch > highestIndexedHeight) await bIdCache.set('highestIndexedHeight', topHeightFromBatch);
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished building block index (${from}-${to})`);
@@ -132,25 +142,32 @@ const buildIndex = async (from, to) => {
 const init = async () => {
 	try {
 		await getBlockIdx();
-
+		const genesisHeight = 1;
 		currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
-		let blockIndexLowerRange = config.indexNumOfBlocks > 0
-			? currentHeight - config.indexNumOfBlocks : 1;
-		const lastNumOfBlocks = await bIdCache.get('lastNumOfBlocks');
+		const blockIndexLowerRange = config.indexNumOfBlocks > 0
+			? currentHeight - config.indexNumOfBlocks : genesisHeight;
+		const blockIndexHigherRange = currentHeight;
 
-		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
-			// Everything seems allright, continue at height where stopped last time
-			blockIndexLowerRange = await bIdCache.get('lastIndexedHeight');
-		} else {
-			logger.info('Configuration changed since the last time, re-index eveything');
+		const highestIndexedHeight = await bIdCache.get('highestIndexedHeight') || blockIndexLowerRange;
+
+		const lastNumOfBlocks = await bIdCache.get('lastNumOfBlocks');
+		if (lastNumOfBlocks !== config.indexNumOfBlocks) {
+			logger.info('Configuration has been updated, re-index eveything');
 			await bIdCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
-			await bIdCache.set('lastIndexedHeight', blockIndexLowerRange);
+			await bIdCache.set('lowestIndexedHeight', 0);
+			await bIdCache.set('highestIndexedHeight', currentHeight);
 		}
 
-		await buildIndex(blockIndexLowerRange, currentHeight);
+		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+
+		const lowestIndexedHeight = await bIdCache.get('lowestIndexedHeight');
+		if (blockIndexLowerRange < lowestIndexedHeight) {
+			// For when the index is partially built
+			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
+		}
 	} catch (err) {
-		logger.warn('Unable to build block cache');
+		logger.error('Unable to build block cache');
 		logger.warn(err.message);
 	}
 };
