@@ -17,6 +17,8 @@ const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const signals = require('../../../signals');
 
+const requestAll = require('../../../requestAll');
+
 const mysqlIdx = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 const transactionIdxSchema = require('./schema/transactions');
@@ -24,8 +26,6 @@ const { transactionTypes } = require('./mappings');
 
 const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
 const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema);
-
-const MAX_TX_LIMIT_PP = 100;
 
 const _getTrxFromCore = async params => {
 	const blockIdx = await getBlockIdx();
@@ -59,7 +59,17 @@ const getTransactionByIds = ids => BluebirdPromise.map(
 	},
 	{ concurrency: 4 },
 );
-const getTransactionsByBlockId = blockId => _getTrxFromCore({ blockId, limit: MAX_TX_LIMIT_PP });
+
+const getTransactionsByBlockId = async blockId => {
+	const transactions = await requestAll(_getTrxFromCore, { blockId });
+	return {
+		data: transactions,
+		meta: {
+			offset: 0,
+			count: transactions.length,
+		},
+	};
+};
 
 const getTransactions = async params => {
 	const transactionIdx = await getTransactionIdx();
