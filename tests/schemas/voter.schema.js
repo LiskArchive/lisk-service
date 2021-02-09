@@ -26,6 +26,7 @@ const voterSchema = {
 const metaSchema = {
 	count: Joi.number().integer().min(0).required(),
 	limit: Joi.number().integer().min(0).optional(),
+	total: Joi.number().integer().min(0).optional(),
 	offset: Joi.number().integer().min(0).required(),
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),

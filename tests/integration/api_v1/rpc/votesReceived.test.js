@@ -49,7 +49,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toEqual(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			result.data.forEach(block => expect(block).toMap(voterSchema));
 			expect(result.meta).toMap(metaSchema, {
 				address: refDelegate.address,
@@ -64,7 +64,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result.data).toBeInstanceOf(Array);
-				expect(result.data.length).toEqual(10);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
 				result.data.forEach(block => expect(block).toMap(voterSchema));
 				expect(result.meta).toMap(metaSchema, {
 					address: refDelegate.address,
@@ -75,13 +75,13 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 		});
 
 		// TODO: Fails CI pipeline
-		xit('Returns list of voters when requested for existing account by publickey', async () => {
+		it('Returns list of voters when requested for existing account by publickey', async () => {
 			if (refDelegate.publicKey) {
-				const response = await getVoters({ publickey: refDelegate.publickey });
+				const response = await getVoters({ publickey: refDelegate.publicKey });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result.data).toBeInstanceOf(Array);
-				expect(result.data.length).toEqual(10);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
 				result.data.forEach(block => expect(block).toMap(voterSchema));
 				expect(result.meta).toMap(metaSchema, {
 					address: refDelegate.address,
@@ -97,7 +97,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result.data).toBeInstanceOf(Array);
-				expect(result.data.length).toEqual(10);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
 				result.data.forEach(block => expect(block).toMap(voterSchema));
 				expect(result.meta).toMap(metaSchema, {
 					address: refDelegate.address,
@@ -112,7 +112,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toEqual(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			result.data.forEach(block => expect(block).toMap(voterSchema));
 			expect(result.meta).toMap(metaSchema, {
 				address: refDelegate.address,
