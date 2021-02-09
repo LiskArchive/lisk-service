@@ -167,7 +167,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 		if (params.propBetween) {
 			const { propBetween } = params;
-			propBetween.forEach(prop => query.whereBetween(prop.property, [prop.from, prop.to]));
+			propBetween.forEach(entry => query.whereBetween(entry.property, [entry.from, entry.to]));
 		}
 
 		if (params.sort) {
@@ -199,13 +199,20 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 		if (params.orWhere) {
 			const { orWhere } = params;
-			countQuery.where(queryParams).orWhere(orWhere);
-		}
-		if (params.propBetween) {
-			const { propBetween } = params;
-			propBetween.forEach(prop => countQuery.whereBetween(prop.property, [prop.from, prop.to]));
+			countQuery.where(function () {
+				this.where(orWhere);
+			}).orWhere(queryParams);
 		}
 
+		if (params.propBetween) {
+			const { propBetween } = params;
+			propBetween.forEach(entry => countQuery.whereBetween(entry.property, [entry.from, entry.to]));
+		}
+
+		if (params.sort) {
+			const [sortProp, sortOrder] = params.sort.split(':');
+			countQuery.orderBy(sortProp, sortOrder);
+		}
 
 		const [totalCount] = await countQuery.andWhere(queryParams);
 		return totalCount.count;
