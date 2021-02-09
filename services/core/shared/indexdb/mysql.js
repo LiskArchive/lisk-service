@@ -165,7 +165,9 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 		if (params.orWhere) {
 			const { orWhere } = params;
-			query.where(queryParams).orWhere(orWhere);
+			query.where(function () {
+				this.where(orWhere);
+			}).orWhere(queryParams);
 		}
 
 		if (params.sort) {
