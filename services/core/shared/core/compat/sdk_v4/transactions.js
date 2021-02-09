@@ -83,8 +83,8 @@ const getTransactions = async params => {
 	if (!params.offset) params.offset = 0;
 
 	if (params.fromTimestamp || params.toTimestamp) {
-		if (!params.propBetween) params.propBetween = [];
-		params.propBetween.push({
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
 			property: 'unixTimestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
@@ -94,8 +94,8 @@ const getTransactions = async params => {
 	}
 
 	if (params.minAmount || params.maxAmount) {
-		if (!params.propBetween) params.propBetween = [];
-		params.propBetween.push({
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
 			property: 'amount',
 			from: Number(params.minAmount) || 0,
 			to: Number(params.maxAmount) || (2 ** 64) - 1,

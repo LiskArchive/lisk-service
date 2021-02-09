@@ -81,13 +81,18 @@ const getTransactions = async params => {
 		const sortOrder = params.sort.split(':')[1];
 		params.sort = [{ column: sortProp, order: sortOrder }];
 	}
+
 	if (params.fromTimestamp || params.toTimestamp) {
-		params.propBetween = {
-			property: 'timestamp',
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
+			property: 'unixTimestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
-		};
+		});
+		delete params.fromTimestamp;
+		delete params.toTimestamp;
 	}
+
 	const resultSet = await transactionsDB.find(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	// TODO: Remove the check. Send empty response for non-ID based requests

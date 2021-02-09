@@ -83,7 +83,7 @@ const cast = (val, type) => {
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetween', 'orWhere', 'offset']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -165,9 +165,9 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			}).orWhere(queryParams);
 		}
 
-		if (params.propBetween) {
-			const { propBetween } = params;
-			propBetween.forEach(entry => query.whereBetween(entry.property, [entry.from, entry.to]));
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(entry => query.whereBetween(entry.property, [entry.from, entry.to]));
 		}
 
 		if (params.sort) {
@@ -204,9 +204,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			}).orWhere(queryParams);
 		}
 
-		if (params.propBetween) {
-			const { propBetween } = params;
-			propBetween.forEach(entry => countQuery.whereBetween(entry.property, [entry.from, entry.to]));
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(entry => countQuery
+				.whereBetween(entry.property, [entry.from, entry.to]));
 		}
 
 		if (params.sort) {
