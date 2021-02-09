@@ -21,7 +21,7 @@ const config = require('../../../../config');
 
 const {
 	indexAccountsbyPublicKey,
-	getIndexedAccountByPublicKey,
+	getIndexedAccountInfo,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
@@ -98,7 +98,7 @@ const getBlocks = async params => {
 	blocks.data = await BluebirdPromise.map(
 		blocks.data,
 		async block => {
-			const [account] = await getIndexedAccountByPublicKey(block.generatorPublicKey.toString('hex'));
+			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
 			block.generatorAddress = account && account.address ? account.address : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
 
@@ -141,14 +141,7 @@ const buildIndex = async (from, to) => {
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
-
 		/* eslint-disable no-await-in-loop */
-		// TODO: Revert to standard notation, once getBlocks is fully implemented
-		// const blocks = await getBlocks({
-		// 	limit: MAX_BLOCKS_LIMIT_PP,
-		// 	offset: offset - 1,
-		// 	sort: 'height:asc',
-		// });
 		const blocks = await getBlocks({
 			heightRange: { from: offset + 1, to: offset + MAX_BLOCKS_LIMIT_PP },
 		});

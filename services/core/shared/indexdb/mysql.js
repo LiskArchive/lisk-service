@@ -83,6 +83,17 @@ const cast = (val, type) => {
 	return val;
 };
 
+const resolveQueryParams = (params) => {
+	const queryParams = Object.keys(params)
+		.filter(key => !['sort', 'limit', 'propBetween', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search']
+			.includes(key))
+		.reduce((obj, key) => {
+			obj[key] = params[key];
+			return obj;
+		}, {});
+	return queryParams;
+};
+
 const getValue = (val) => {
 	if (typeof val === 'undefined') return null;
 	if (Number.isNaN(val)) return null;
@@ -144,13 +155,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	};
 
 	const queryBuilder = (params, columns) => {
-		const limit = params.limit || 10;
-		const offset = params.offset || 0;
-
-		delete params.limit;
-		delete params.offset;
-
+		const limit = Number(params.limit) || 10;
+		const offset = Number(params.offset) || 0;
 		const query = knex.select(columns).table(tableName);
+		const queryParams = resolveQueryParams(params);
 
 		if (params.propBetween) {
 			const { propBetween } = params;
@@ -164,16 +172,17 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.orderBy(sortProp, sortOrder);
 		}
 
-		if (params.orWhere) {
-			const { orWhere } = params;
-			delete params.orWhere;
-			query.where(params).orWhere(orWhere);
-		}
-
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			delete params.whereIn;
 			query.whereIn(property, values);
+		}
+
+		if (params.orWhere) {
+			const { orWhere } = params;
+			query.where(function () {
+				this.where(orWhere);
+			}).orWhere(queryParams);
 		}
 
 		if (params.orWhereIn) {
@@ -188,7 +197,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		return query.andWhere(params)
+		return query.andWhere(queryParams)
 			.limit(limit)
 			.offset(offset);
 	};
@@ -206,7 +215,43 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.whereIn(primaryKey, ids)
 		.del();
 
-	const count = async () => knex(tableName).count({ count: 'id' });
+	const count = async (params) => {
+		const countQuery = knex.count('id as count').table(tableName);
+		const queryParams = resolveQueryParams(params);
+
+		if (params.propBetween) {
+			const { propBetween } = params;
+			countQuery.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+		}
+
+		if (params.orWhere) {
+			const { orWhere } = params;
+			countQuery.where(function () {
+				this.where(orWhere);
+			}).orWhere(queryParams);
+		}
+
+		if (params.whereIn) {
+			const { property, values } = params.whereIn;
+			delete params.whereIn;
+			countQuery.whereIn(property, values);
+		}
+
+		if (params.orWhereIn) {
+			const { property, values } = params.orWhereIn;
+			delete params.orWhereIn;
+			countQuery.orWhereIn(property, values);
+		}
+
+		if (params.search) {
+			const { property, pattern } = params.search;
+			delete params.search;
+			countQuery.where(`${property}`, 'like', `%${pattern}%`);
+		}
+
+		const [totalCount] = await countQuery.andWhere(queryParams);
+		return totalCount.count;
+	};
 
 	return {
 		upsert,

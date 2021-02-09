@@ -16,9 +16,8 @@
 const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
-const { indexAccountsbyPublicKey,
-	getPublicKeyByAddress,
-	getIndexedAccountByPublicKey,
+const {
+	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 } = require('./accounts');
@@ -126,8 +125,11 @@ const validateParams = async params => {
 		delete params.senderIdOrRecipientId;
 	}
 
-	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
-	delete params.senderId;
+	if (params.senderId) {
+		const account = await getIndexedAccountInfo({ address: params.senderId });
+		params.senderPublicKey = account.publicKey;
+		delete params.senderId;
+	}
 
 	if (params.search) {
 		const accounts = await getAccountsBySearch(params.search);
@@ -136,8 +138,8 @@ const validateParams = async params => {
 		const addresses = await BluebirdPromise.map(
 			accounts,
 			async account => {
-				const publickey = await getPublicKeyByAddress(account.address);
-				publicKeys.push(publickey);
+				const accountInfo = await getIndexedAccountInfo({ address: account.address });
+				publicKeys.push(accountInfo.publicKey);
 				return account.address;
 			},
 			{ concurrency: accounts.length },
@@ -183,7 +185,7 @@ const getTransactions = async params => {
 				transaction.unixTimestamp = indexedTxInfo.timestamp;
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
-				const [account] = await getIndexedAccountByPublicKey(transaction.senderPublicKey);
+				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
 				transaction.senderId = account && account.address ? account.address : undefined;
 				transaction.username = account && account.username ? account.username : undefined;
 				return transaction;

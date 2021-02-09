@@ -48,21 +48,9 @@ const confirmPublicKey = async publicKey => {
 	return (account && account.publicKey === publicKey);
 };
 
-const getPublicKeyByAddress = async address => {
-	const accountsDB = await getAccountsIndex();
-	const [{ publicKey }] = await accountsDB.find({ address });
-	return publicKey;
-};
-
-const getIndexedAccountByPublicKey = async publicKey => {
-	const accountsDB = await getAccountsIndex();
-	const account = await accountsDB.find({ publicKey });
-	return account;
-};
-
 const getIndexedAccountInfo = async params => {
 	const accountsDB = await getAccountsIndex();
-	const account = await accountsDB.find(params);
+	const [account] = await accountsDB.find(params);
 	return account;
 };
 
@@ -225,8 +213,6 @@ module.exports = {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountsbyPublicKey,
-	getPublicKeyByAddress,
-	getIndexedAccountByPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 };
