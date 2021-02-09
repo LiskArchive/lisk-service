@@ -158,16 +158,16 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
-		if (params.propBetween) {
-			const { propBetween } = params;
-			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
-		}
-
 		if (params.orWhere) {
 			const { orWhere } = params;
 			query.where(function () {
 				this.where(orWhere);
 			}).orWhere(queryParams);
+		}
+
+		if (params.propBetween) {
+			const { propBetween } = params;
+			propBetween.forEach(prop => query.whereBetween(prop.property, [prop.from, prop.to]));
 		}
 
 		if (params.sort) {
@@ -197,15 +197,15 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const countQuery = knex.count('id as count').table(tableName);
 		const queryParams = resolveQueryParams(params);
 
-		if (params.propBetween) {
-			const { propBetween } = params;
-			countQuery.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
-		}
-
 		if (params.orWhere) {
 			const { orWhere } = params;
 			countQuery.where(queryParams).orWhere(orWhere);
 		}
+		if (params.propBetween) {
+			const { propBetween } = params;
+			propBetween.forEach(prop => countQuery.whereBetween(prop.property, [prop.from, prop.to]));
+		}
+
 
 		const [totalCount] = await countQuery.andWhere(queryParams);
 		return totalCount.count;
