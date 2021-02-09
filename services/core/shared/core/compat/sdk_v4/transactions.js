@@ -104,6 +104,17 @@ const getTransactions = async params => {
 		delete params.toTimestamp;
 	}
 
+	if (params.minAmount || params.maxAmount) {
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
+			property: 'amount',
+			from: Number(params.minAmount) || 0,
+			to: Number(params.maxAmount) || (2 ** 64) - 1,
+		});
+		delete params.minAmount;
+		delete params.maxAmount;
+	}
+
 	if (params.senderIdOrRecipientId) {
 		params.senderId = params.senderIdOrRecipientId;
 		params.orWhere = { recipientId: params.senderIdOrRecipientId };
