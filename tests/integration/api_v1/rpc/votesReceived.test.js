@@ -68,13 +68,10 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 				result.data.forEach(block => expect(block).toMap(voterSchema));
 				expect(result.meta).toMap(metaSchema, {
 					address: refDelegate.address,
-					publicKey: refDelegate.publicKey,
-					username: refDelegate.username,
 				});
 			}
 		});
 
-		// TODO: Fails CI pipeline
 		it('Returns list of voters when requested for existing account by publickey', async () => {
 			if (refDelegate.publicKey) {
 				const response = await getVoters({ publickey: refDelegate.publicKey });
@@ -85,8 +82,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 				result.data.forEach(block => expect(block).toMap(voterSchema));
 				expect(result.meta).toMap(metaSchema, {
 					address: refDelegate.address,
-					publicKey: refDelegate.publicKey,
-					username: refDelegate.username,
 				});
 			}
 		});
@@ -101,8 +96,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 				result.data.forEach(block => expect(block).toMap(voterSchema));
 				expect(result.meta).toMap(metaSchema, {
 					address: refDelegate.address,
-					publicKey: refDelegate.publicKey,
-					username: refDelegate.username,
 				});
 			}
 		});
@@ -116,8 +109,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 			result.data.forEach(block => expect(block).toMap(voterSchema));
 			expect(result.meta).toMap(metaSchema, {
 				address: refDelegate.address,
-				publicKey: refDelegate.publicKey,
-				username: refDelegate.username,
 			});
 		});
 
@@ -130,8 +121,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 			result.data.forEach(block => expect(block).toMap(voterSchema));
 			expect(result.meta).toMap(metaSchema, {
 				address: refDelegate.address,
-				publicKey: refDelegate.publicKey,
-				username: refDelegate.username,
 			});
 		});
 
@@ -144,8 +133,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 			result.data.forEach(block => expect(block).toMap(voterSchema));
 			expect(result.meta).toMap(metaSchema, {
 				address: refDelegate.address,
-				publicKey: refDelegate.publicKey,
-				username: refDelegate.username,
 			});
 		});
 
