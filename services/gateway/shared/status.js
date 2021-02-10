@@ -19,6 +19,15 @@ const packageJson = require('../package.json');
 const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
 const config = require('../config.js');
+const waitForIt = require('./waitForIt');
+
+const svcStatus = {
+	lisk_blocks: false,
+	lisk_transactions: false,
+	lisk_accounts: false,
+	lisk_delegates: false,
+	lisk_peers: false,
+};
 
 const getBuildTimestamp = () => {
 	let timestamp;
@@ -102,16 +111,47 @@ const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
 		});
 });
 
-const getReady = async () => ({
-	services: {
-		lisk_blocks: await checkAPI('/blocks', true),
-		lisk_transactions: await checkAPI('/transactions', true),
-		lisk_transaction_statistics: await checkAPI('/transactions/statistics/day', false),
-		lisk_accounts: await checkAPI('/accounts', true),
-		lisk_delegates: await checkAPI('/delegates', true),
-		lisk_peers: await checkAPI('/peers', true),
-	},
+const getReady = () => {
+	/* eslint-disable camelcase */
+	const {
+		lisk_blocks,
+		lisk_transactions,
+		lisk_accounts,
+		lisk_delegates,
+		lisk_peers,
+	} = svcStatus;
+
+	return {
+		services: {
+			lisk_blocks,
+			lisk_transactions,
+			lisk_accounts,
+			lisk_delegates,
+			lisk_peers,
+		},
+	};
+};
+
+const checkApiMapBoolean = (url, prop) => new Promise((resolve, reject) => {
+	checkAPI(url, true).then(resp => {
+		if (resp === true) {
+			svcStatus[prop] = true;
+			resolve(true);
+		} else {
+			reject();
+		}
+	});
 });
+
+const init = () => {
+	waitForIt(() => checkApiMapBoolean('/blocks', 'lisk_blocks'), 500);
+	waitForIt(() => checkApiMapBoolean('/transactions', 'lisk_transactions'), 500);
+	waitForIt(() => checkApiMapBoolean('/accounts', 'lisk_accounts'), 500);
+	waitForIt(() => checkApiMapBoolean('/delegates', 'lisk_delegates'), 500);
+	waitForIt(() => checkApiMapBoolean('/peers', 'lisk_peers'), 500);
+};
+
+init();
 
 module.exports = {
 	getReady,
