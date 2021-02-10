@@ -241,7 +241,7 @@ describe('Delegates API', () => {
 		it('limit = 100 -> ok', async () => {
 			const response = await api.get(`${endpoint}?sort=rank:asc&status=standby&limit=100`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array); 
+			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThan(10); // Not always equals 100 (betanet)
 			response.data.map(delegate => expect(delegate).toMap(delegateSchema, { status: 'standby' }));
 			expect(response.meta).toMap(metaSchema);

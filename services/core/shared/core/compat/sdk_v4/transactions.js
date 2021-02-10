@@ -27,6 +27,8 @@ const { transactionTypes } = require('./mappings');
 const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
 const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema);
 
+const MAX_TRANSACTION_AMOUNT = '9223372036854775807';
+
 const _getTrxFromCore = async params => {
 	const blockIdx = await getBlockIdx();
 	const transactions = await coreApi.getTransactions(params);
@@ -109,7 +111,7 @@ const getTransactions = async params => {
 		params.propBetweens.push({
 			property: 'amount',
 			from: Number(params.minAmount) || 0,
-			to: Number(params.maxAmount) || (2 ** 64) - 1,
+			to: Number(params.maxAmount) || MAX_TRANSACTION_AMOUNT,
 		});
 		delete params.minAmount;
 		delete params.maxAmount;

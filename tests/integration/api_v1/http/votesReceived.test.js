@@ -91,7 +91,7 @@ const {
 				if (refDelegate.secondPublicKey) {
 					const response = await api.get(`${endpoint}?secpubkey=${refDelegate.secondPublicKey}`);
 					expect(response).toMap(goodRequestSchema);
-					expect(response.data).toBeInstanceOf(Array); 
+					expect(response.data).toBeInstanceOf(Array);
 					expect(response.data.length).toBeGreaterThanOrEqual(1);
 					response.data.forEach(voter => expect(voter).toMap(voterSchema));
 					expect(response.meta).toMap(metaSchema, {
