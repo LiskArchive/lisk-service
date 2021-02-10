@@ -48,6 +48,11 @@ const confirmSecondPublicKey = async secondPublicKey => {
 };
 
 const getAccounts = async params => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+
 	const requestParams = {
 		limit: params.limit,
 		offset: params.offset,
@@ -75,15 +80,17 @@ const getAccounts = async params => {
 		requestParams.secondPublicKey = params.secondPublicKey;
 	}
 
-	const result = await coreApi.getAccounts(requestParams);
+	const response = await coreApi.getAccounts(requestParams);
+	if (response.data) accounts.data = response.data;
+	if (response.meta) accounts.meta = response.meta;
 
-	result.data.forEach(account => {
+	accounts.data.forEach(account => {
 		if ((isObject(account.delegate) && account.delegate.username)) {
 			account.isDelegate = true;
 		}
 	});
 
-	return result;
+	return accounts;
 };
 
 const getMultisignatureGroups = async address => {
@@ -101,4 +108,4 @@ module.exports = {
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
- };
+};
