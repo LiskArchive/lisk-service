@@ -14,9 +14,9 @@
  *
  */
 module.exports = {
-	address: '=',
-	amount: '=',
-	balance: '=',
-	publicKey: '=',
-	username: '=',
+	address: '=,string',
+	amount: '=,string',
+	balance: '=,string',
+	publicKey: '=,string',
+	username: '=,string',
 };

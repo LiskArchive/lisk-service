@@ -45,7 +45,7 @@ const multisignatureAccountMemberSchema = {
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),
 	secondPublicKey: Joi.string().optional(),
-	balance: Joi.number().required(),
+	balance: Joi.string().required(),
 	unconfirmedSignature: Joi.number().optional(),
 	isMandatory: Joi.boolean().optional(),
 };
