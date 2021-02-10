@@ -18,8 +18,13 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
-const { knex } = require('../../../database');
+const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../common');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const accountsIndexSchema = require('./schema/accounts');
+
+const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const balanceUnlockWaitHeightSelf = 260000;
 const balanceUnlockWaitHeightDefault = 2000;
@@ -43,20 +48,20 @@ const confirmPublicKey = async publicKey => {
 	return (account && account.publicKey === publicKey);
 };
 
-const getPublicKeyByAddress = async address => {
-	const accountsDB = await knex('accounts');
-	const [{ publicKey }] = await accountsDB.find({ address });
-	return publicKey;
-};
-
-const getIndexedAccountByPublicKey = async publicKey => {
-	const accountsDB = await knex('accounts');
-	const account = await accountsDB.find({ publicKey });
+const getIndexedAccountInfo = async params => {
+	const accountsDB = await getAccountsIndex();
+	const [account] = await accountsDB.find(params);
 	return account;
 };
 
-const getIndexedAccountInfo = async params => {
-	const accountsDB = await knex('accounts');
+const getAccountsBySearch = async searchString => {
+	const accountsDB = await getAccountsIndex();
+	const params = {
+		search: {
+			property: 'username',
+			pattern: searchString,
+		},
+	};
 	const account = await accountsDB.find(params);
 	return account;
 };
@@ -77,23 +82,26 @@ const resolveAccountsInfo = async accounts => {
 	return accounts;
 };
 
-const indexAccounts = async accountsToIndex => {
-	const accountsDB = await knex('accounts');
-	const accounts = await BluebirdPromise.map(
-		accountsToIndex,
+const indexAccounts = async job => {
+	const { accounts } = job.data;
+	const accountsDB = await getAccountsIndex();
+	const skimmedAccounts = await BluebirdPromise.map(
+		accounts,
 		async account => {
-			const skimmedAccounts = {};
-			skimmedAccounts.address = account.address;
-			skimmedAccounts.publicKey = account.publicKey;
-			skimmedAccounts.isDelegate = account.isDelegate;
-			skimmedAccounts.username = account.dpos.delegate.username || null;
-			skimmedAccounts.balance = account.token.balance;
-			return skimmedAccounts;
+			const skimmedAccount = {};
+			skimmedAccount.address = account.address;
+			skimmedAccount.publicKey = account.publicKey;
+			skimmedAccount.isDelegate = account.isDelegate;
+			skimmedAccount.username = account.dpos.delegate.username || null;
+			skimmedAccount.balance = account.token.balance;
+			return skimmedAccount;
 		},
-		{ concurrency: accountsToIndex.length },
+		{ concurrency: accounts.length },
 	);
-	await accountsDB.writeBatch(accounts);
+	await accountsDB.upsert(skimmedAccounts);
 };
+
+const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
 
 const normalizeAccount = account => {
 	account.address = account.address.toString('hex');
@@ -124,7 +132,7 @@ const getAccountsFromCore = async (params) => {
 };
 
 const getAccounts = async params => {
-	const accountsDB = await knex('accounts');
+	const accountsDB = await getAccountsIndex();
 	if (params.id) {
 		params.address = params.id;
 		delete params.id;
@@ -142,7 +150,7 @@ const getAccounts = async params => {
 
 	const accounts = await getAccountsFromCore(params);
 
-	if (!resultSet.length && accounts.data.length) indexAccounts(accounts.data);
+	if (!resultSet.length && accounts.data.length) indexAccountsQueue.add('indexAccountsQueue', { accounts: accounts.data });
 
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
@@ -195,7 +203,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 		},
 		{ concurrency: publicKeysToIndex.length },
 	);
-	await indexAccounts(accountsToIndex);
+	indexAccountsQueue.add('indexAccountsQueue', { accounts: accountsToIndex });
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
@@ -205,7 +213,6 @@ module.exports = {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountsbyPublicKey,
-	getPublicKeyByAddress,
-	getIndexedAccountByPublicKey,
 	getIndexedAccountInfo,
+	getAccountsBySearch,
 };

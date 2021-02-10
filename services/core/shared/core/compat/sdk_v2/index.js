@@ -96,4 +96,5 @@ module.exports = {
 	updateFinalizedHeight,
 	getPendingTransactions,
 	events,
+	init: nop,
 };

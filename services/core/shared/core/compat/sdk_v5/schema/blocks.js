@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,22 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
-
-const getDbInstance = require('../shared/database/knex');
-
-const logger = Logger();
-
-module.exports = [
-	{
-		name: 'init.database.migration',
-		description: 'Initiate database migration',
-		schedule: '0 0 1 1 *', // Once a year
-		updateOnInit: true,
-		init: async () => {
-			logger.info('Initiating DB migrations');
-			await getDbInstance('');
-		},
-		controller: () => { },
+module.exports = {
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string' },
+		height: { type: 'integer' },
+		unixTimestamp: { type: 'integer' },
+		generatorPublicKey: { type: 'string' },
 	},
-];
+	indexes: {
+		height: { type: 'range' },
+		timestamp: { type: 'range' },
+		unixTimestamp: { type: 'range' },
+	},
+	purge: {},
+};

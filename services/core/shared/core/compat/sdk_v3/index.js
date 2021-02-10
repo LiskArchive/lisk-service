@@ -28,6 +28,8 @@ const { getVoters } = require('./voters');
 const events = require('./events');
 const { getNetworkStatus } = require('./network');
 
+const nop = () => { };
+
 module.exports = {
 	...require('../sdk_v2'),
 	getBlocks,
@@ -39,4 +41,5 @@ module.exports = {
 	getVoters,
 	events,
 	getNetworkStatus,
+	init: nop,
 };

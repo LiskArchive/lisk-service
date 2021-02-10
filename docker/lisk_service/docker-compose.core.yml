@@ -6,6 +6,7 @@ services:
     depends_on:
       - redis_common
       - redis_core
+      - mysql_core
     networks:
       - services_network
       - core_network
@@ -25,9 +26,26 @@ services:
     healthcheck:
       test: redis-cli ping
 
+  mysql_core:
+    image: mysql:5.7
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - core_network
+    env_file:
+      - ./lisk_service/env/core.env
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
   gateway:
     depends_on:
       - core
+
+volumes:
+  mysql-data:
 
 networks:
   core_network:

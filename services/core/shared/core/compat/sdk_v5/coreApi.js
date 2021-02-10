@@ -21,6 +21,39 @@ const getNetworkStatus = async () => {
     return { data: result };
 };
 
+const getBlockByID = async id => {
+    const apiClient = await getApiClient();
+    const block = await apiClient.block.get(id);
+    return { data: [block] };
+};
+
+const getBlocksByIDs = async ids => {
+    const apiClient = await getApiClient();
+    const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids });
+    const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
+    return { data: blocks };
+};
+
+const getBlockByHeight = async height => {
+    const apiClient = await getApiClient();
+    const block = await apiClient.block.getByHeight(height);
+    return { data: [block] };
+};
+
+const getBlocksByHeightBetween = async (from, to) => {
+    const apiClient = await getApiClient();
+    const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', { from, to });
+    const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
+    return { data: blocks };
+};
+
+const getLastBlock = async () => {
+    const apiClient = await getApiClient();
+    const encodedBlock = await apiClient._channel.invoke('app:getLastBlock');
+    const block = apiClient.block.decode(Buffer.from(encodedBlock, 'hex'));
+    return { data: [block] };
+};
+
 const getBlocks = async params => {
     const apiClient = await getApiClient();
     let block;
@@ -98,6 +131,11 @@ const getPendingTransactions = async () => {
 };
 
 module.exports = {
+    getBlockByID,
+    getBlocksByIDs,
+    getBlockByHeight,
+    getBlocksByHeightBetween,
+    getLastBlock,
     getBlocks,
     getAccounts,
     getNetworkStatus,

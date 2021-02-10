@@ -77,4 +77,6 @@ module.exports = {
 	getPendingTransactions,
 	initPendingTransactionsList,
 	reloadAllPendingTransactions: reload,
+	getTransactionById: coreApi.getTransactionById,
+	getTransactionsByBlockId: coreApi.getTransactionsByBlockId,
 };

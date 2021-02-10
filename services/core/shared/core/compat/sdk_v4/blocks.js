@@ -26,7 +26,10 @@ const {
 	validateTimestamp,
 } = require('../common');
 
-const redis = require('../../../redis');
+const mysqlIdx = require('../../../indexdb/mysql');
+const blockIdxSchema = require('./schema/blocks');
+
+const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
 
 const logger = Logger();
 
@@ -49,22 +52,6 @@ const updateFinalizedHeight = async () => {
 };
 
 const getFinalizedHeight = () => heightFinalized;
-
-const indexBlock = async block => {
-	const timestampDb = await redis('timestampDb', ['timestamp']);
-	const unixTimestampDb = await redis('unixTimestampDb', ['timestamp']);
-
-	bIdCache.set(block.id, block.timestamp);
-
-	bIdCache.set('lowestIndexedHeight', block.height);
-	bIdCache.set('topIndexedHeight', block.height);
-
-	timestampDb.writeRange(block.timestamp, block.id);
-	unixTimestampDb.writeRange(block.unixTimestamp, {
-		id: block.id,
-		numberOfTransactions: block.numberOfTransactions,
-	});
-};
 
 const getBlocks = async (params) => {
 	const blocks = {
@@ -97,9 +84,11 @@ const getBlocks = async (params) => {
 		),
 	);
 
+	const blockIdx = await getBlockIdx();
+
 	blocks.data.forEach(block => {
 		if (block.numberOfTransactions > 0) {
-			indexBlock(block);
+			blockIdx.upsert(block);
 			signals.get('indexTransactions').dispatch(block.id);
 		}
 	});
@@ -109,6 +98,8 @@ const getBlocks = async (params) => {
 
 const buildIndex = async (from, to) => {
 	logger.info('Building index of blocks');
+
+	const blockIdx = await getBlockIdx();
 
 	if (from >= to) {
 		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
@@ -129,7 +120,7 @@ const buildIndex = async (from, to) => {
 		blocks.data.forEach(async block => {
 			if (!(await bIdCache.get(block.id))) {
 				if (block.numberOfTransactions > 0) {
-					indexBlock(block);
+					blockIdx.upsert(block);
 					signals.get('indexTransactions').dispatch(block.id);
 				}
 			}
@@ -143,6 +134,8 @@ const buildIndex = async (from, to) => {
 
 const init = async () => {
 	try {
+		await getBlockIdx();
+
 		currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
 		let blockIndexLowerRange = config.indexNumOfBlocks > 0
@@ -165,10 +158,10 @@ const init = async () => {
 	}
 };
 
-init();
-
 module.exports = {
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
+	getBlockIdx,
+	init,
 };

@@ -16,9 +16,17 @@
 const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
-const { indexAccountsbyPublicKey, getPublicKeyByAddress, getIndexedAccountByPublicKey } = require('./accounts');
+const {
+	indexAccountsbyPublicKey,
+	getIndexedAccountInfo,
+	getAccountsBySearch,
+} = require('./accounts');
 const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
-const { knex } = require('../../../database');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const transactionsIndexSchema = require('./schema/transactions');
+
+const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 
@@ -40,7 +48,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 };
 
 const indexTransactions = async blocks => {
-	const transactionsDB = await knex('transactions');
+	const transactionsDB = await getTransactionsIndex();
 	const publicKeysToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
@@ -56,6 +64,7 @@ const indexTransactions = async blocks => {
 			skimmedTransaction.nonce = tx.nonce;
 			skimmedTransaction.amount = tx.asset.amount || null;
 			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+			skimmedTransaction.data = tx.asset.data || null;
 			publicKeysToIndex.push(tx.senderPublicKey);
 			return skimmedTransaction;
 		});
@@ -63,7 +72,7 @@ const indexTransactions = async blocks => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	if (allTransactions.length) await transactionsDB.writeBatch(allTransactions);
+	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };
 
@@ -77,25 +86,84 @@ const normalizeTransaction = tx => {
 };
 
 const validateParams = async params => {
+	if (params.timestamp && params.timestamp.includes(':')) [params.fromTimestamp, params.toTimestamp] = params.timestamp.split(':');
+	delete params.timestamp;
+
+	if (params.amount && params.amount.includes(':')) {
+		params.propBetween = {
+			property: 'amount',
+			from: params.amount.split(':')[0],
+			to: params.amount.split(':')[1],
+		};
+		delete params.amount;
+	}
+
 	if (params.fromTimestamp || params.toTimestamp) {
 		params.propBetween = {
 			property: 'timestamp',
-			from: Number(params.fromTimestamp) || 0,
-			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
+			from: params.fromTimestamp || 0,
+			to: params.toTimestamp || Math.floor(Date.now() / 1000),
 		};
+		delete params.fromTimestamp;
+		delete params.toTimestamp;
 	}
+
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
-		return new Error('Nonce based sorting is only possible along with senderId');
+		throw new Error('Nonce based sorting is only possible along with senderId');
 	}
-	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
-	delete params.senderId;
+
+	if (params.username) {
+		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		params.senderPublicKey = accountInfo.publicKey;
+		delete params.username;
+	}
+
+	if (params.senderIdOrRecipientId) {
+		params.senderId = params.senderIdOrRecipientId;
+		params.orWhere = { recipientId: params.senderIdOrRecipientId };
+		delete params.senderIdOrRecipientId;
+	}
+
+	if (params.senderId) {
+		const account = await getIndexedAccountInfo({ address: params.senderId });
+		params.senderPublicKey = account.publicKey;
+		delete params.senderId;
+	}
+
+	if (params.search) {
+		const accounts = await getAccountsBySearch(params.search);
+		delete params.search;
+		const publicKeys = accounts.map(account => account.publicKey);
+		const addresses = await BluebirdPromise.map(
+			accounts,
+			async account => {
+				const accountInfo = await getIndexedAccountInfo({ address: account.address });
+				publicKeys.push(accountInfo.publicKey);
+				return account.address;
+			},
+			{ concurrency: accounts.length },
+		);
+		params.whereIn = { property: 'senderPublicKey', values: publicKeys };
+		params.orWhereIn = { property: 'recipientId', values: addresses };
+	}
+
+	if (params.data) {
+		params.search = {
+			property: 'data',
+			pattern: params.data,
+		};
+		delete params.data;
+	}
+
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
 	delete params.moduleAssetName;
+
 	return params;
 };
 
 const getTransactions = async params => {
-	const transactionsDB = await knex('transactions');
+	const transactionsDB = await getTransactionsIndex();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -117,7 +185,7 @@ const getTransactions = async params => {
 				transaction.unixTimestamp = indexedTxInfo.timestamp;
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
-				const [account] = await getIndexedAccountByPublicKey(transaction.senderPublicKey);
+				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
 				transaction.senderId = account && account.address ? account.address : undefined;
 				transaction.username = account && account.username ? account.username : undefined;
 				return transaction;

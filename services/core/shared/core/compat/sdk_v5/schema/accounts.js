@@ -13,18 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const tableName = 'accounts';
-
-exports.up = knex => knex.schema
-    .createTable(tableName, table => {
-        // Indexed properties
-        table.string('address').primary();
-        table.string('publicKey').notNullable().index();
-        table.boolean('isDelegate').notNullable().index();
-        table.bigInteger('balance').notNullable().index();
-        table.string('username').index();
-    });
-
-exports.down = knex => knex.schema.dropTable(tableName);
-
-exports.config = { transaction: false };
+module.exports = {
+	primaryKey: 'address',
+	schema: {
+		address: { type: 'string' },
+		publicKey: { type: 'string' },
+		isDelegate: { type: 'boolean' },
+		balance: { type: 'bigInteger' },
+		username: { type: 'string' },
+	},
+	indexes: {
+		address: { type: 'key' },
+		publicKey: { type: 'key' },
+		// isDelegate: { type: 'boolean' }, // type??
+		balance: { type: 'range' },
+		username: { type: 'key' },
+	},
+	purge: {},
+};
