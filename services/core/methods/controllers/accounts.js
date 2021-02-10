@@ -21,6 +21,7 @@ const { isEmptyArray } = Utils.Data;
 
 const CoreService = require('../../shared/core');
 const { getAccountKnowledge } = require('../../shared/knownAccounts');
+const { parseToJSONCompatObj } = require('../../shared/jsonTools');
 
 const logger = Logger();
 
@@ -32,7 +33,7 @@ const getDataForAccounts = async params => {
 	response.meta = {};
 	response.links = {};
 
-	const accountDataCopy = JSON.parse(JSON.stringify(accounts.data));
+	const accountDataCopy = parseToJSONCompatObj(accounts.data);
 
 	if (!accounts.data || isEmptyArray(accounts.data)) {
 		response.meta.count = 0;

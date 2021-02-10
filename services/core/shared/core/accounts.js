@@ -15,6 +15,7 @@
  */
 const coreApi = require('./compat');
 const { getDelegates } = require('./delegates');
+const { parseToJSONCompatObj } = require('../jsonTools');
 
 const getAccounts = async params => {
 	const accounts = {
@@ -29,8 +30,8 @@ const getAccounts = async params => {
 	await Promise.all(accounts.data.map(async account => {
 		if (account.isDelegate === true) {
 			const delegate = await getDelegates({ address: account.address });
-			const delegateOrigProps = JSON.parse(JSON.stringify(account.delegate));
-			const delegateExtraProps = JSON.parse(JSON.stringify(delegate.data[0]));
+			const delegateOrigProps = parseToJSONCompatObj(account.delegate);
+			const delegateExtraProps = parseToJSONCompatObj(delegate.data[0]);
 			account.delegate = { ...delegateOrigProps, ...delegateExtraProps };
 		} else {
 			delete account.delegate;
