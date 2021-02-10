@@ -47,6 +47,7 @@ const {
 			it('Returns list of votes when requested for existing account by account ID', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}`);
 				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
 				expect(response.data.length).toBeGreaterThanOrEqual(1);
 				response.data.forEach(vote => expect(vote).toMap(voteSchema));
 				expect(response.meta).toMap(metaSchema, {
@@ -60,6 +61,7 @@ const {
 				if (refDelegate.username) {
 					const response = await api.get(`${endpoint}?username=${refDelegate.username}`);
 					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toBeInstanceOf(Array); 
 					expect(response.data.length).toBeGreaterThanOrEqual(1);
 					response.data.forEach(vote => expect(vote).toMap(voteSchema));
 					expect(response.meta).toMap(metaSchema, {
@@ -74,6 +76,7 @@ const {
 				if (refDelegate.publicKey) {
 					const response = await api.get(`${endpoint}?publickey=${refDelegate.publicKey}`);
 					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toBeInstanceOf(Array);
 					expect(response.data.length).toBeGreaterThanOrEqual(1);
 					response.data.forEach(vote => expect(vote).toMap(voteSchema));
 					expect(response.meta).toMap(metaSchema, {
@@ -89,6 +92,7 @@ const {
 					const response = await api.get(`${endpoint}?secpubkey=${refDelegate.secondPublicKey}`);
 					expect(response).toMap(goodRequestSchema);
 					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toBeInstanceOf(Array); 
 					expect(response.data.length).toBeGreaterThanOrEqual(1);
 					response.data.forEach(vote => expect(vote).toMap(voteSchema));
 					expect(response.meta).toMap(metaSchema, {
@@ -102,6 +106,7 @@ const {
 			it('Returns list of votes when requested with offset', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`);
 				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array); 
 				expect(response.data.length).toBeGreaterThanOrEqual(1);
 				response.data.forEach(vote => expect(vote).toMap(voteSchema));
 				expect(response.meta).toMap(metaSchema, {

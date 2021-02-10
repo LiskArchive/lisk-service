@@ -52,7 +52,7 @@ const getDataForAccounts = async params => {
 		}, { concurrency: 4 });
 
 		response.data = accountDataCopy;
-		response.meta.count = accounts.data.length;
+		response.meta.count = accountDataCopy.length;
 		response.meta.offset = parseInt(params.offset, 10);
 	}
 
