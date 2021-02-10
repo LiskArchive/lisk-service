@@ -46,7 +46,7 @@ const getDataForAccounts = async params => {
 				account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
 				account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
 					account);
-					account.knowledge = await getAccountKnowledge(account.address);
+				account.knowledge = await getAccountKnowledge(account.address);
 			} catch (err) {
 				logger.warn(err.message);
 			}
@@ -54,7 +54,7 @@ const getDataForAccounts = async params => {
 
 		response.data = accountDataCopy;
 		response.meta.count = accountDataCopy.length;
-		response.meta.offset = parseInt(params.offset, 10);
+		response.meta.offset = parseInt(params.offset || 0, 10);
 	}
 
 	return response;
