@@ -3,13 +3,11 @@
 Makefile = 'Makefile.jenkins'
 
 def waitForHttp() {
-	timeout(1) {
-		waitUntil {
-			script {
-				dir('./docker') {
-					def api_available = sh script: "make -f ${Makefile} ready", returnStatus: true
-					return (api_available == 0)
-				}
+	waitUntil {
+		script {
+			dir('./docker') {
+				def api_available = sh script: "make -f ${Makefile} ready", returnStatus: true
+				return (api_available == 0)
 			}
 		}
 	}
@@ -85,8 +83,9 @@ pipeline {
 
 		stage('Check API gateway status') {
 			steps {
-				waitForHttp()
-				// sleep(1)
+				timeout(time: 3, unit: 'MINUTES') {
+					waitForHttp()
+				}
 			}
 		}
 
