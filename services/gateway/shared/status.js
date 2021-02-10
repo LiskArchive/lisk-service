@@ -86,7 +86,7 @@ const getStatus = async () => ({
 });
 
 const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
-	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`, { timeout: 500 })
 		.then((response) => {
 			try {
 				if (!response) resolve(false);
