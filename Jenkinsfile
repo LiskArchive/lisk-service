@@ -17,6 +17,9 @@ def waitForHttp() {
 
 pipeline {
 	agent { node { label 'lisk-service' } }
+	options {
+		timeout(time: 90, unit: 'SECONDS')
+	}
 	environment {
 		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
 		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test'
