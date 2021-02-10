@@ -84,17 +84,6 @@ const getTransactions = async params => {
 	if (!params.limit) params.limit = 10;
 	if (!params.offset) params.offset = 0;
 
-	if (params.minAmount || params.maxAmount) {
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'amount',
-			from: params.minAmount || 0,
-			to: params.maxAmount || (2 ** 64) - 1,
-		});
-		delete params.minAmount;
-		delete params.maxAmount;
-	}
-
 	if (params.fromTimestamp || params.toTimestamp) {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
