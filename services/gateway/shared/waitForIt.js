@@ -29,7 +29,7 @@ const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
 		}
 	};
 	hInterval = setInterval(checkIfReady, intervalMs);
-	checkIfReady(hInterval);
+	checkIfReady();
 });
 
 module.exports = waitForIt;
