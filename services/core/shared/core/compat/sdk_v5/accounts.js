@@ -54,11 +54,11 @@ const getIndexedAccountInfo = async params => {
 	return account;
 };
 
-const getAccountsBySearch = async searchString => {
+const getAccountsBySearch = async (searchProp, searchString) => {
 	const accountsDB = await getAccountsIndex();
 	const params = {
 		search: {
-			property: 'username',
+			property: searchProp,
 			pattern: searchString,
 		},
 	};
