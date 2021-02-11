@@ -142,21 +142,26 @@ const getDelegates = async params => {
 		: (acc[entity] && acc[entity] === params[entity]),
 	);
 
+	delegates.data = allDelegates;
+
 	if (params.address) {
-		delegates.data = filterBy(allDelegates, 'address');
-	} else if (params.publicKey) {
-		delegates.data = filterBy(allDelegates, 'publicKey');
-	} else if (params.secondPublicKey) {
-		delegates.data = filterBy(allDelegates, 'secondPublicKey');
-	} else if (params.username) {
-		delegates.data = filterBy(allDelegates, 'username');
-	} else if (params.status) {
-		delegates.data = filterBy(allDelegates, 'status');
-	} else if (params.search) {
-		delegates.data = allDelegates.filter((acc) => (acc.username
+		delegates.data = filterBy(delegates.data, 'address');
+	}
+	if (params.publicKey) {
+		delegates.data = filterBy(delegates.data, 'publicKey');
+	}
+	if (params.secondPublicKey) {
+		delegates.data = filterBy(delegates.data, 'secondPublicKey');
+	}
+	if (params.username) {
+		delegates.data = filterBy(delegates.data, 'username');
+	}
+	if (params.status) {
+		delegates.data = filterBy(delegates.data, 'status');
+	}
+	if (params.search) {
+		delegates.data = delegates.data.filter((acc) => (acc.username
 			&& String(acc.username).match(new RegExp(params.search, 'i'))));
-	} else {
-		delegates.data = allDelegates;
 	}
 
 	delegates.data = delegates.data
