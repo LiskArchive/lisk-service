@@ -19,6 +19,7 @@ const packageJson = require('../package.json');
 const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
 const config = require('../config.js');
+const waitForIt = require('./waitForIt');
 
 const svcStatus = {
 	lisk_blocks: false,
@@ -143,11 +144,11 @@ const checkApiMapBoolean = (url, prop) => new Promise((resolve, reject) => {
 });
 
 const init = () => {
-	checkApiMapBoolean('/blocks', 'lisk_blocks');
-	checkApiMapBoolean('/transactions', 'lisk_transactions');
-	checkApiMapBoolean('/peers', 'lisk_peers');
-	checkApiMapBoolean('/delegates', 'lisk_delegates');
-	checkApiMapBoolean('/accounts', 'lisk_accounts');
+	waitForIt(() => checkApiMapBoolean('/blocks', 'lisk_blocks'), 1500);
+	waitForIt(() => checkApiMapBoolean('/transactions', 'lisk_transactions'), 1500);
+	waitForIt(() => checkApiMapBoolean('/accounts', 'lisk_accounts'), 1500);
+	waitForIt(() => checkApiMapBoolean('/delegates', 'lisk_delegates'), 1500);
+	waitForIt(() => checkApiMapBoolean('/peers', 'lisk_peers'), 1500);
 };
 
 module.exports = {
