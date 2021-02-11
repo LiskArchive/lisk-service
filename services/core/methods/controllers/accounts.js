@@ -14,33 +14,16 @@
  *
  */
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
+const Bluebird = require('bluebird');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray } = Utils.Data;
 
 const CoreService = require('../../shared/core');
-const config = require('../../config');
+const { getAccountKnowledge } = require('../../shared/knownAccounts');
+const { parseToJSONCompatObj } = require('../../shared/jsonTools');
 
 const logger = Logger();
-
-const knownExpireMiliseconds = 5 * 60 * 1000;
-const staticUrl = config.endpoints.liskStatic;
-
-const getKnownAccounts = async () => {
-	const result = await CoreService.getNetworkStatus();
-	const { nethash } = result.data.constants;
-	const cacheTTL = knownExpireMiliseconds;
-
-	try {
-		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`, { cacheTTL });
-		if (knownNetworks.data[nethash]) {
-			return (await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`, { cacheTTL })).data;
-		}
-		return {};
-	} catch (err) {
-		return {};
-	}
-};
 
 const getDataForAccounts = async params => {
 	const accounts = params.isDelegate
@@ -52,24 +35,28 @@ const getDataForAccounts = async params => {
 	response.meta = {};
 	response.links = {};
 
+	const accountDataCopy = parseToJSONCompatObj(accounts.data);
+
 	if (!accounts.data || isEmptyArray(accounts.data)) {
 		response.meta.count = 0;
 		response.meta.total = 0;
 	} else {
-		const knownAccounts = await getKnownAccounts();
-		const data = await Promise.all(accounts.data.map(async account => {
-			account.multisignatureGroups = await CoreService.getMultisignatureGroups(account);
-			account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
-			account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
-			account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
-				account);
-			account.knowledge = knownAccounts[account.address] || {};
-			return account;
-		}));
+		await Bluebird.map(accountDataCopy, async account => {
+			try {
+				account.multisignatureGroups = await CoreService.getMultisignatureGroups(account);
+				account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
+				account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
+				account.multisignatureMemberships = await CoreService.getMultisignatureMemberships(
+					account);
+				account.knowledge = await getAccountKnowledge(account.address);
+			} catch (err) {
+				logger.warn(err.message);
+			}
+		}, { concurrency: 4 });
 
-		response.data = data;
-		response.meta.count = data.length;
-		response.meta.offset = parseInt(params.offset, 10);
+		response.data = accountDataCopy;
+		response.meta.count = accountDataCopy.length;
+		response.meta.offset = parseInt(params.offset || 0, 10);
 	}
 
 	return response;

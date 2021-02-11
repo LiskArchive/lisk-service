@@ -14,25 +14,27 @@
  *
  */
 const {
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
+	getBlocks,
+	updateFinalizedHeight,
+	getFinalizedHeight,
 } = require('./blocks');
 
 const {
-    getDelegates,
-    getNextForgers,
+	getDelegates,
+	getNextForgers,
 } = require('./delegates');
 
 const {
-    getTransactions,
-    getPendingTransactions,
+	getTransactions,
+	getPendingTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
-    getAccounts,
-    getMultisignatureGroups,
-    getMultisignatureMemberships,
+	getAccounts,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
 } = require('./accounts');
 
 const { mapToOriginal } = require('./reverseMappings');
@@ -41,21 +43,29 @@ const { getVoters } = require('./voters');
 const events = require('./events');
 const { getNetworkStatus } = require('./network');
 
+const init = () => {
+	require('./blocks').init();
+	require('./transactions').init();
+};
+
 module.exports = {
-    ...require('../sdk_v2'),
-    getBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
-    getAccounts,
-    mapToOriginal,
-    getTransactions,
-    getDelegates,
-    getNextForgers,
-    getPendingTransactions,
-    getMultisignatureGroups,
-    getMultisignatureMemberships,
-    getVotes,
-    getVoters,
-    events,
-    getNetworkStatus,
+	...require('../sdk_v2'),
+	getBlocks,
+	updateFinalizedHeight,
+	getFinalizedHeight,
+	getAccounts,
+	mapToOriginal,
+	getTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
+	getDelegates,
+	getNextForgers,
+	getPendingTransactions,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
+	getVotes,
+	getVoters,
+	events,
+	getNetworkStatus,
+	init,
 };

@@ -21,6 +21,7 @@ const coreApi = require('./compat');
 const logger = Logger();
 
 let pendingTransactionsList = [];
+
 const getTransactions = async params => {
 	const transactions = {
 		data: [],
@@ -68,4 +69,6 @@ module.exports = {
 	getPendingTransactions,
 	initPendingTransactionsList,
 	reloadAllPendingTransactions: reload,
+	getTransactionById: coreApi.getTransactionById,
+	getTransactionsByBlockId: coreApi.getTransactionsByBlockId,
 };

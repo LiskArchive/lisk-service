@@ -49,7 +49,7 @@ module.exports = {
 			address: '=,string',
 			publicKey: '=,string',
 			secondPublicKey: '=,string',
-			balance: '=,number',
+			balance: '=,string',
 			unconfirmedSignature: '=,number',
 			isMandatory: '=,boolean',
 		}],

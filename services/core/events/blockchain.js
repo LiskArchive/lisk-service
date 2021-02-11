@@ -49,7 +49,7 @@ module.exports = [
 			signals.get('newBlock').add(async (block) => {
 				if (block.numberOfTransactions > 0) {
 					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
-					const transactionData = await core.getTransactions({ blockId: block.id });
+					const transactionData = await core.getTransactionsByBlockId({ blockId: block.id });
 					callback(transactionData);
 				}
 			});

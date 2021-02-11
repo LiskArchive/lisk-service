@@ -15,20 +15,21 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const getDbInstance = require('../shared/database/knex');
-
 const logger = Logger();
 
-module.exports = [
-	{
-		name: 'init.database.migration',
-		description: 'Initiate database migration',
-		schedule: '0 0 1 1 *', // Once a year
-		updateOnInit: true,
-		init: async () => {
-			logger.info('Initiating DB migrations');
-			await getDbInstance('');
-		},
-		controller: () => { },
-	},
-];
+const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
+	let hInterval;
+	const checkIfReady = async function () {
+		try {
+			const result = await fn();
+			clearInterval(hInterval);
+			resolve(result);
+		} catch (err) {
+			logger.debug(`Waiting ${intervalMs}...`);
+		}
+	};
+	hInterval = setInterval(checkIfReady, intervalMs);
+	checkIfReady();
+});
+
+module.exports = waitForIt;

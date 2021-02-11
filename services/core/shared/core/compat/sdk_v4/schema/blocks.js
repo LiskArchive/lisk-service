@@ -1,6 +1,7 @@
+
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,9 +15,23 @@
  *
  */
 module.exports = {
-	address: '=,string',
-	amount: '=,string',
-	balance: '=,string',
-	publicKey: '=,string',
-	username: '=,string',
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string' },
+		height: { type: 'integer' },
+		timestamp: { type: 'integer' },
+		unixTimestamp: { type: 'integer' },
+		numberOfTransactions: { type: 'integer' },
+	},
+	indexes: {
+		// id: { type: 'key' },
+		height: { type: 'range' },
+		timestamp: { type: 'range' },
+		unixTimestamp: { type: 'range' },
+	},
+	purge: {
+		interval: 3600, // seconds
+		maxItems: 202,
+		purgeBy: 'height',
+	},
 };
