@@ -43,18 +43,15 @@ const getPendingTransactions = async params => {
 };
 
 const getTransactions = async params => {
-	let transactions = {
+	const transactions = {
 		data: [],
 		meta: {},
 	};
-
-	if (params.includePending) {
-		transactions = getPendingTransactions(params);
-	} else {
-		const response = await coreApi.getTransactions(params);
-		if (response.data) transactions.data = response.data;
-		if (response.meta) transactions.meta = response.meta;
-	}
+	const response = params.includePending
+		? await getPendingTransactions(params)
+		: await coreApi.getTransactions(params);
+	if (response.data) transactions.data = response.data;
+	if (response.meta) transactions.meta = response.meta;
 	return transactions;
 };
 
