@@ -132,7 +132,7 @@ const validateParams = async params => {
 	}
 
 	if (params.search) {
-		const accounts = await getAccountsBySearch(params.search);
+		const accounts = await getAccountsBySearch('username', params.search);
 		delete params.search;
 		const publicKeys = accounts.map(account => account.publicKey);
 		const addresses = await BluebirdPromise.map(
