@@ -67,9 +67,6 @@ const getBlocks = async (params = {}) => {
 		meta: {},
 	};
 
-	if (!params.offset) params.offset = 0;
-	if (!params.limit) params.limit = 10;
-
 	if (blocks.data.length === 0) {
 		blocks = await getBlocksFromServer(params);
 	}

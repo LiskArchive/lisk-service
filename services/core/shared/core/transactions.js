@@ -28,9 +28,6 @@ const getTransactions = async params => {
 		meta: {},
 	};
 
-	if (!params.offset) params.offset = 0;
-	if (!params.limit) params.limit = 10;
-
 	const response = await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
