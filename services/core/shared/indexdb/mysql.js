@@ -83,7 +83,7 @@ const cast = (val, type) => {
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetween', 'orWhere', 'offset']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -158,14 +158,20 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
-		if (params.propBetween) {
-			const { propBetween } = params;
-			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
-		}
-
 		if (params.orWhere) {
 			const { orWhere } = params;
-			query.where(queryParams).orWhere(orWhere);
+			query.where(function () {
+				this.where(queryParams).orWhere(orWhere);
+			});
+		} else {
+			query.where(queryParams);
+		}
+
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(
+				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
+			);
 		}
 
 		if (params.sort) {
@@ -173,7 +179,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.orderBy(sortProp, sortOrder);
 		}
 
-		return query.andWhere(queryParams)
+		return query
 			.limit(limit)
 			.offset(offset);
 	};
@@ -192,20 +198,26 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.del();
 
 	const count = async (params) => {
-		const countQuery = knex.count('id as count').table(tableName);
+		const query = knex.count('id as count').table(tableName);
 		const queryParams = resolveQueryParams(params);
-
-		if (params.propBetween) {
-			const { propBetween } = params;
-			countQuery.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
-		}
 
 		if (params.orWhere) {
 			const { orWhere } = params;
-			countQuery.where(queryParams).orWhere(orWhere);
+			query.where(function () {
+				this.where(queryParams).orWhere(orWhere);
+			});
+		} else {
+			query.where(queryParams);
 		}
 
-		const [totalCount] = await countQuery.andWhere(queryParams);
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(
+				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
+			);
+		}
+
+		const [totalCount] = await query;
 		return totalCount.count;
 	};
 

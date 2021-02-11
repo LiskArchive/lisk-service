@@ -122,7 +122,7 @@ const buildIndex = async (from, to) => {
 		do {
 			blocks = await getBlocks({
 				limit: MAX_BLOCKS_LIMIT_PP,
-				offset: offset - 1,
+				offset,
 				sort: 'height:asc',
 			});
 		} while (!(blocks.data.length && blocks.data.every(block => !!block && !!block.height)));

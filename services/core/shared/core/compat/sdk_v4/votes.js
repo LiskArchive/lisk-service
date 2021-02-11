@@ -29,30 +29,34 @@ const getVotes = async params => {
 	if (response.data) votes.data = response.data;
 	if (response.meta) votes.meta = response.meta;
 
-	votes.data.votes = await BluebirdPromise.map(
-		votes.data.votes,
-		async (vote) => {
-			vote.address = vote.delegateAddress;
-			vote.publicKey = null;
-			vote.username = vote.delegate.username;
-			if (vote.address === votes.data.address) {
-				vote = {
-					...vote,
-					balance: votes.data.balance,
-				};
-			} else {
-				const voteInfo = (await getAccounts({ address: vote.address }))
-					.data[0];
-				vote = {
-					...vote,
-					balance: voteInfo.balance,
-				};
-			}
-			return vote;
-		},
-		{ concurrency: votes.data.votes.length },
-	);
-	votes.data.votesUsed = maxVotesPerAccount - votes.data.votesAvailable;
+	if (!votes.data.votes) votes.data.votes = [];
+	else {
+		votes.data.votes = await BluebirdPromise.map(
+			votes.data.votes,
+			async (vote) => {
+				vote.address = vote.delegateAddress;
+				vote.publicKey = null;
+				vote.username = vote.delegate.username;
+				if (vote.address === votes.data.address) {
+					vote = {
+						...vote,
+						balance: votes.data.balance,
+					};
+				} else {
+					const voteInfo = (await getAccounts({ address: vote.address }))
+						.data[0];
+					vote = {
+						...vote,
+						balance: voteInfo.balance,
+					};
+				}
+				return vote;
+			},
+			{ concurrency: votes.data.votes.length },
+		);
+
+		votes.data.votesUsed = maxVotesPerAccount - votes.data.votesAvailable;
+	}
 
 	return votes;
 };
