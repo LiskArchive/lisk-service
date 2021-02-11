@@ -224,7 +224,7 @@ Get address with certain Lisk account ID
 
 > TODO: Add some more examples
 
-### get.votes
+### get.votes_sent
 
 Retrieves votes for a single account based on address, public key or delegate name.
 
@@ -265,14 +265,14 @@ _Supports pagination._
 
 ```
 {
-    "method": "get.votes",
+    "method": "get.votes_sent",
     "params": {
         "address": "4935562234363081651L"
     }
 }
 ```
 
-### get.voters
+### get.votes_received
 
 #### Parameters
 
@@ -309,7 +309,7 @@ _Supports pagination._
 
 ```
 {
-    "method": "get.voters",
+    "method": "get.votes_received",
     "params": {
         "address": "4935562234363081651L"
     }
