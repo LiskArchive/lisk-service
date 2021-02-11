@@ -112,11 +112,15 @@ const getDelegates = async params => {
 		data: [],
 		meta: {},
 	};
-	const allDelegates = await getAllDelegates();
 
-	const offset = Number(params.offset) || 0;
-	const limit = Number(params.limit) || 10;
+	if (!params.offset) params.offset = 0;
+	if (!params.limit) params.limit = 10;
 	if (!params.sort) params.sort = 'rank:asc';
+
+	const offset = Number(params.offset);
+	const limit = Number(params.limit);
+
+	const allDelegates = await getAllDelegates();
 
 	const sortComparator = (sortParam) => {
 		const sortProp = sortParam.split(':')[0];

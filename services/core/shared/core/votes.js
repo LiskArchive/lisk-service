@@ -24,6 +24,9 @@ const getVotes = async params => {
 		meta: {},
 	};
 
+	if (!params.offset) params.offset = 0;
+	if (!params.limit) params.limit = 10;
+
 	const response = await coreApi.getVotes(params);
 	votes.data = await BluebirdPromise.map(
 		response.data.votes,
