@@ -35,6 +35,16 @@ sudo apt install -y redis-server
 
 > Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variables `SERVICE_BROKER` and `SERVICE_CORE_REDIS` accordingly.
 
+### MySQL
+
+[MySQL 5.7](https://dev.mysql.com/downloads/mysql/5.7.html) is used for storing persistent data.
+
+```bash
+sudo apt update
+sudo apt install mysql-server
+sudo mysql_secure_installation
+```
+
 ### Node.js
 
 3. [Node.js 12.x](<https://nodejs.org/>) serves as the underlying engine for code execution.
