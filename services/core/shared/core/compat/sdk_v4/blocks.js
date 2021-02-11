@@ -151,7 +151,7 @@ const init = async () => {
 		const blockIndexHigherRange = currentHeight;
 
 		// Index genesis block first
-		await buildIndex(genesisHeight, genesisHeight + 1);
+		await getBlocks({ height: genesisHeight });
 
 		const highestIndexedHeight = await bIdCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
