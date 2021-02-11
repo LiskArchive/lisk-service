@@ -97,6 +97,4 @@ module.exports = {
     getVotes,
 
     getVoters,
-
-    init: nop,
 };
