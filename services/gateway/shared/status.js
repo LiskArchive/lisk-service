@@ -144,16 +144,15 @@ const checkApiMapBoolean = (url, prop) => new Promise((resolve, reject) => {
 });
 
 const init = () => {
-	waitForIt(() => checkApiMapBoolean('/blocks', 'lisk_blocks'), 500);
-	waitForIt(() => checkApiMapBoolean('/transactions', 'lisk_transactions'), 500);
-	waitForIt(() => checkApiMapBoolean('/accounts', 'lisk_accounts'), 500);
-	waitForIt(() => checkApiMapBoolean('/delegates', 'lisk_delegates'), 500);
-	waitForIt(() => checkApiMapBoolean('/peers', 'lisk_peers'), 500);
+	waitForIt(() => checkApiMapBoolean('/blocks', 'lisk_blocks'), 1500);
+	waitForIt(() => checkApiMapBoolean('/transactions', 'lisk_transactions'), 1500);
+	waitForIt(() => checkApiMapBoolean('/accounts', 'lisk_accounts'), 1500);
+	waitForIt(() => checkApiMapBoolean('/delegates', 'lisk_delegates'), 1500);
+	waitForIt(() => checkApiMapBoolean('/peers', 'lisk_peers'), 1500);
 };
 
-init();
-
 module.exports = {
+	updateServiceStatus: init,
 	getReady,
 	getStatus,
 };
