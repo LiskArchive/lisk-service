@@ -150,6 +150,9 @@ const init = async () => {
 			? currentHeight - config.indexNumOfBlocks : genesisHeight;
 		const blockIndexHigherRange = currentHeight;
 
+		// Index genesis block first
+		await buildIndex(genesisHeight, genesisHeight + 1);
+
 		const highestIndexedHeight = await bIdCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
 		const lastNumOfBlocks = await bIdCache.get('lastNumOfBlocks');
