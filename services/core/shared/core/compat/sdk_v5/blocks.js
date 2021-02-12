@@ -256,6 +256,7 @@ const buildIndex = async (from, to) => {
 };
 
 const init = async () => {
+	await getBlockIdx();
 	try {
 		const genesisHeight = 1;
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
