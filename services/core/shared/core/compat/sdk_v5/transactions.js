@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const {
-	// indexAccountsbyPublicKey,
+	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountInfo,
 } = require('./accounts');
