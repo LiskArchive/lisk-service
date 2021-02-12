@@ -14,17 +14,17 @@
  *
  */
 module.exports = {
-	primaryKey: 'id',
+	primaryKey: 'height',
 	schema: {
 		id: { type: 'string' },
 		height: { type: 'integer' },
-		unixTimestamp: { type: 'integer' },
+		timestamp: { type: 'integer' },
 		generatorPublicKey: { type: 'string' },
 	},
 	indexes: {
 		height: { type: 'range' },
 		timestamp: { type: 'range' },
-		unixTimestamp: { type: 'range' },
+		generatorPublicKey: { type: 'key' },
 	},
 	purge: {},
 };

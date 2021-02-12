@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -19,15 +19,15 @@ module.exports = {
 	type: 'moleculer',
 	method: 'core.blocks',
 	params: {
+		blockId: '=,string',
+		height: '=,string',
+		address: 'generatorAddress,string',
+		publicKey: 'generatorPublicKey,string',
+		username: 'generatorUsername,string',
+		timestamp: '=,string',
 		offset: '=,number',
 		limit: '=,number',
-		height: '=,number',
-		blockId: 'id',
-		sort: '=',
-		address: '=',
-		username: '=,string',
-		fromTimestamp: 'from',
-		toTimestamp: 'to',
+		sort: '=,string',
 	},
 	definition: {
 		data: ['data', block],

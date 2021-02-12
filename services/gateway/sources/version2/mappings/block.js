@@ -17,7 +17,7 @@ module.exports = {
 	id: '=,string',
 	height: '=,number',
 	version: '=,number',
-	timestamp: 'unixTimestamp,number',
+	timestamp: '=,number',
 	generatorAddress: '=,string',
 	generatorPublicKey: '=,string',
 	generatorUsername: '=,string',
