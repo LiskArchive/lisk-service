@@ -25,6 +25,8 @@ const {
 	getTransactions,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
@@ -104,6 +106,7 @@ const {
 	getUnixTime,
 	updateFinalizedHeight,
 	getSDKVersion,
+	init,
 } = require('./compat');
 
 const events = require('./events');
@@ -128,6 +131,8 @@ module.exports = {
 	getAccounts,
 	getBlocks,
 	getTransactions,
+	getTransactionById,
+	getTransactionsByBlockId,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
@@ -165,4 +170,5 @@ module.exports = {
 	events,
 	getSDKVersion,
 	waitForLastBlock,
+	init,
 };

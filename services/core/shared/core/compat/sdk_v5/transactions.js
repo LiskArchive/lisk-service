@@ -78,11 +78,14 @@ const normalizeTransaction = tx => {
 
 const validateParams = async params => {
 	if (params.fromTimestamp || params.toTimestamp) {
-		params.propBetween = {
-			property: 'timestamp',
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
+			property: 'unixTimestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
-		};
+		});
+		delete params.fromTimestamp;
+		delete params.toTimestamp;
 	}
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
 		return new Error('Nonce based sorting is only possible along with senderId');
