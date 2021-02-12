@@ -25,7 +25,7 @@ module.exports = {
 	indexes: {
 		address: { type: 'key' },
 		publicKey: { type: 'key' },
-		// isDelegate: { type: 'boolean' }, // type??
+		isDelegate: { type: 'key' },
 		balance: { type: 'range' },
 		username: { type: 'key' },
 	},
