@@ -233,7 +233,34 @@ const getPendingTransactions = async params => {
 	};
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
+
+	if (params.username) {
+		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		params.senderPublicKey = accountInfo.publicKey;
+		delete params.username;
+	}
+
+	if (params.senderIdOrRecipientId) {
+		params.senderId = params.senderIdOrRecipientId;
+		params.recipientId = params.senderIdOrRecipientId;
+		delete params.senderIdOrRecipientId;
+	}
+
+	if (params.senderId) {
+		const account = await getIndexedAccountInfo({ address: params.senderId });
+		params.senderPublicKey = account.publicKey;
+		delete params.senderId;
+	}
+
 	if (pendingTransactionsList.length) {
+		pendingTransactions.data = pendingTransactionsList.filter(transaction => (
+			(!params.senderPublicKey || transaction.senderPublicKey === params.senderPublicKey)
+			&& (!params.recipientId || transaction.asset.recipientAddress === params.recipientId)
+			&& (!params.moduleAssetId || transaction.amoduleAssetId === params.moduleAssetId)
+			&& (!params.moduleAssetName || transaction.moduleAssetName === params.moduleAssetName)
+			&& (!params.data || transaction.asset.data.includes(params.data))
+		));
 		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
 		pendingTransactions.meta = {
 			count: pendingTransactions.data.length,
