@@ -229,7 +229,7 @@ Get address with certain Lisk account ID
 
 ### get.votes_sent
 
-Retrieves votes for a single account based on address, public key or delegate name.
+Retrieves votes for a single account based on address, public key, or delegate name.
 
 _Supports pagination._
 
