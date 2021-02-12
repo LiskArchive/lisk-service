@@ -204,7 +204,8 @@ const getTransactions = async params => {
 };
 
 const getPendingTransactionsFromCore = async () => {
-	const pendingTx = await coreApi.getPendingTransactions();
+	const response = await coreApi.getPendingTransactions();
+	const pendingTx = response.data.map(tx => normalizeTransaction(tx));
 	return pendingTx;
 };
 
