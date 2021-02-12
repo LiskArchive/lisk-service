@@ -20,7 +20,7 @@ const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
 const {
-	// indexAccountsbyPublicKey,
+	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
@@ -62,7 +62,7 @@ const indexBlocks = async job => {
 		return skimmedBlock;
 	});
 	await blocksDB.upsert(skimmedBlocks);
-	// await indexAccountsbyPublicKey(publicKeysToIndex);
+	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(blocks);
 	await indexVotes(blocks);
 };
