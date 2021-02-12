@@ -236,8 +236,10 @@ const buildIndex = async (from, to) => {
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 
 		/* eslint-disable no-await-in-loop */
-		// TODO: Add check when below call fails similar to SDKv4
-		const blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
+		let blocks;
+		do {
+			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
+		} while (!(blocks.length && blocks.every(block => !!block && !!block.height)));
 
 		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
 
