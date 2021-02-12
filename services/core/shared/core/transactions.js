@@ -28,6 +28,18 @@ const getPendingTransactions = async params => {
 	return pendingtransactions;
 };
 
+const mergeTransactions = async (params) => {
+	const allTransactions = {
+		data: [],
+		meta: {},
+	};
+	const pendingTxs = await getPendingTransactions(params);
+	delete params.includePending;
+	const transactions = await coreApi.getTransactions(params);
+	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(params.limit || 10);
+	return allTransactions;
+};
+
 const getTransactions = async params => {
 	const transactions = {
 		data: [],
@@ -38,7 +50,9 @@ const getTransactions = async params => {
 		pendingTransactions = (await getPendingTransactions(params)).data;
 		delete params.includePending;
 	}
-	const response = await coreApi.getTransactions(params);
+	const response = params.includePending
+		? await mergeTransactions(params)
+		: await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
 	transactions.data = pendingTransactions.concat(transactions.data);
