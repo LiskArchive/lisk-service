@@ -25,8 +25,9 @@ const {
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
-const { getApiClient, parseToJSONCompatObj } = require('../common');
+const { getApiClient } = require('../common');
 const { initializeQueue } = require('../../queue');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');

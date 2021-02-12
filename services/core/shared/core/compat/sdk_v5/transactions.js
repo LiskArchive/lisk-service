@@ -21,7 +21,8 @@ const {
 	getPublicKeyByAddress,
 	getIndexedAccountInfo,
 } = require('./accounts');
-const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
+const { getRegisteredModuleAssets } = require('../common');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const transactionsIndexSchema = require('./schema/transactions');
