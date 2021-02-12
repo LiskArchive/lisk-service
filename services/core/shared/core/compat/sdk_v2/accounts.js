@@ -20,7 +20,7 @@ const coreCache = require('./coreCache');
 
 const ObjectUtilService = Utils.Data;
 
-const { isProperObject } = ObjectUtilService;
+const { isObject } = ObjectUtilService;
 
 const parseAddress = address => {
 	if (typeof address !== 'string') return '';
@@ -48,6 +48,11 @@ const confirmSecondPublicKey = async secondPublicKey => {
 };
 
 const getAccounts = async params => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+
 	const requestParams = {
 		limit: params.limit,
 		offset: params.offset,
@@ -75,18 +80,27 @@ const getAccounts = async params => {
 		requestParams.secondPublicKey = params.secondPublicKey;
 	}
 
-	const result = await coreApi.getAccounts(requestParams);
-	return result;
+	const response = await coreApi.getAccounts(requestParams);
+	if (response.data) accounts.data = response.data;
+	if (response.meta) accounts.meta = response.meta;
+
+	accounts.data.forEach(account => {
+		if ((isObject(account.delegate) && account.delegate.username)) {
+			account.isDelegate = true;
+		}
+	});
+
+	return accounts;
 };
 
 const getMultisignatureGroups = async address => {
 	const result = await coreApi.getMultisignatureGroups(parseAddress(address));
-	return isProperObject(result) && Array.isArray(result.data) ? result.data[0] : [];
+	return isObject(result) && Array.isArray(result.data) ? result.data[0] : [];
 };
 
 const getMultisignatureMemberships = async address => {
 	const result = await coreApi.getMultisignatureMemberships(parseAddress(address));
-	return isProperObject(result) && Array.isArray(result.data) ? result.data : [];
+	return isObject(result) && Array.isArray(result.data) ? result.data : [];
 };
 
 
@@ -94,4 +108,4 @@ module.exports = {
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
- };
+};

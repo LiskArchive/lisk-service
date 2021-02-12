@@ -52,23 +52,26 @@ const confirmSecondPublicKey = async secondPublicKey => {
 	return (account && account.secondPublicKey === secondPublicKey);
 };
 
+
 const resolveAccountsInfo = async accounts => {
-	accounts.map(async account => {
-		if (account.isDelegate) {
-			const delegateInfo = (await getDelegates({ address: account.address })).data[0];
-			account.delegate = delegateInfo;
-		}
-		account.unlocking = account.unlocking.map(item => {
-			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
-			item.height = {
-				start: item.unvoteHeight,
-				end: item.unvoteHeight + balanceUnlockWaitHeight,
-			};
-			return item;
-		});
-		return account;
-	});
+	await BluebirdPromise.map(
+		accounts, async account => {
+			if (account.isDelegate) {
+				const delegateInfo = (await getDelegates({ address: account.address })).data[0];
+				account.delegate = delegateInfo;
+			}
+			account.unlocking = account.unlocking.map(item => {
+				const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+					? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
+				item.height = {
+					start: item.unvoteHeight,
+					end: item.unvoteHeight + balanceUnlockWaitHeight,
+				};
+				return item;
+			});
+		},
+		{ concurrency: accounts.length },
+	);
 	return accounts;
 };
 

@@ -34,7 +34,7 @@ const getIncomingTxsCount = async address => {
         throw new Error('Could not retrieve incoming transaction count.');
     }
 
-    return result.meta.count;
+    return result.meta.total;
 };
 
 const getOutgoingTxsCount = async address => {
@@ -48,7 +48,7 @@ const getOutgoingTxsCount = async address => {
         throw new Error('Could not retrieve outgoing transaction count.');
     }
 
-    return result.meta.count;
+    return result.meta.total;
 };
 
 module.exports = {

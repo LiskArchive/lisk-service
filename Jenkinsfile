@@ -3,13 +3,11 @@
 Makefile = 'Makefile.jenkins'
 
 def waitForHttp() {
-	timeout(1) {
-		waitUntil {
-			script {
-				dir('./docker') {
-					def api_available = sh script: "make -f ${Makefile} ready", returnStatus: true
-					return (api_available == 0)
-				}
+	waitUntil {
+		script {
+			dir('./docker') {
+				def api_available = sh script: "make -f ${Makefile} ready", returnStatus: true
+				return (api_available == 0)
 			}
 		}
 	}
@@ -17,6 +15,9 @@ def waitForHttp() {
 
 pipeline {
 	agent { node { label 'lisk-service' } }
+	options {
+		timeout(time: 6, unit: 'MINUTES')
+	}
 	environment {
 		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
 		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test'
@@ -82,8 +83,9 @@ pipeline {
 
 		stage('Check API gateway status') {
 			steps {
-				waitForHttp()
-				// sleep(1)
+				timeout(time: 3, unit: 'MINUTES') {
+					waitForHttp()
+				}
 			}
 		}
 
