@@ -25,14 +25,6 @@ const moment = require('moment');
 const CoreService = require('../../shared/core');
 const txStatisticsService = require('../../shared/core/transactionStatistics');
 
-const getPendingTransactions = async params => {
-	const result = await CoreService.getPendingTransactions(params);
-	return {
-		data: result.data,
-		meta: result.meta,
-	};
-};
-
 const getTransactions = async (params) => {
 	const addressParam = [
 		'senderId',
@@ -56,12 +48,10 @@ const getTransactions = async (params) => {
 		};
 	}
 
-	const result = params.includePending
-		? await getPendingTransactions(params)
-		: await CoreService.getTransactions({
-			sort: 'timestamp:desc',
-			...params,
-		});
+	const result = await CoreService.getTransactions({
+		sort: 'timestamp:desc',
+		...params,
+	});
 
 	if (isEmptyObject(result) || isEmptyArray(result.data)) {
 		return { status: NOT_FOUND, data: { error: 'Not found.' } };
@@ -151,6 +141,14 @@ const getTransactionsStatistics = async ({
 
 const getTransactionsStatisticsDay = (params) => getTransactionsStatistics({ aggregateBy: 'day', ...params });
 const getTransactionsStatisticsMonth = (params) => getTransactionsStatistics({ aggregateBy: 'month', ...params });
+
+const getPendingTransactions = async params => {
+	const result = await CoreService.getPendingTransactions(params);
+	return {
+		data: result.data,
+		meta: result.meta,
+	};
+};
 
 module.exports = {
 	getTransactions,
