@@ -46,17 +46,11 @@ const getTransactions = async params => {
 		data: [],
 		meta: {},
 	};
-	let pendingTransactions = [];
-	if (params.includePending) {
-		pendingTransactions = (await getPendingTransactions(params)).data;
-		delete params.includePending;
-	}
 	const response = params.includePending
 		? await mergeTransactions(params)
 		: await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
-	transactions.data = pendingTransactions.concat(transactions.data);
 	return transactions;
 };
 

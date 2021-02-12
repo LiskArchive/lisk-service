@@ -205,7 +205,17 @@ const getTransactions = async params => {
 
 const getPendingTransactionsFromCore = async () => {
 	const response = await coreApi.getPendingTransactions();
-	const pendingTx = response.data.map(tx => normalizeTransaction(tx));
+	let pendingTx = response.data.map(tx => normalizeTransaction(tx));
+	pendingTx = await BluebirdPromise.map(
+		pendingTx,
+		async transaction => {
+			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			transaction.senderId = account && account.address ? account.address : undefined;
+			transaction.username = account && account.username ? account.username : undefined;
+			return transaction;
+		},
+		{ concurrency: pendingTx.length },
+	);
 	return pendingTx;
 };
 
@@ -222,16 +232,6 @@ const getPendingTransactions = async params => {
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 	if (pendingTransactionsList.length) {
-		pendingTransactionsList = await BluebirdPromise.map(
-			pendingTransactionsList,
-			async transaction => {
-				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
-				transaction.senderId = account && account.address ? account.address : undefined;
-				transaction.username = account && account.username ? account.username : undefined;
-				return transaction;
-			},
-			{ concurrency: pendingTransactionsList.length },
-		);
 		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
 		pendingTransactions.meta = {
 			count: pendingTransactions.data.length,
