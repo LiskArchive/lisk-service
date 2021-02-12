@@ -31,10 +31,10 @@ const { initializeQueue } = require('../../queue');
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
 
-const getBlocksIndex = () => mysqlIndex('blocksV5', blocksIndexSchema);
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
-const blocksCache = CacheRedis('blocksV5', config.endpoints.redis);
+const blocksCache = CacheRedis('blocks', config.endpoints.redis);
 
 let finalizedHeight;
 
@@ -67,7 +67,7 @@ const indexBlocks = async job => {
 	await indexVotes(blocks);
 };
 
-const indexBlocksQueue = initializeQueue('indexBlocksV5Queue', indexBlocks);
+const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
@@ -206,7 +206,7 @@ const getBlocks = async params => {
 		blocks.data = await getLastBlock();
 	}
 
-	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksV5Queue', { blocks: blocks.data });
+	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 	blocks.meta = {
 		count: blocks.data.length,
@@ -241,7 +241,7 @@ const buildIndex = async (from, to) => {
 			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
 		} while (!(blocks.length && blocks.every(block => !!block && !!block.height)));
 
-		await indexBlocksQueue.add('indexBlocksV5Queue', { blocks });
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
 
 		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
 
