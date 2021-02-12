@@ -17,6 +17,8 @@ const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const signals = require('../../../signals');
 
+const requestAll = require('../../../requestAll');
+
 const mysqlIdx = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 const transactionIdxSchema = require('./schema/transactions');
@@ -25,7 +27,7 @@ const { transactionTypes } = require('./mappings');
 const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
 const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema);
 
-const MAX_TX_LIMIT_PP = 100;
+const MAX_TRANSACTION_AMOUNT = '9223372036854775807';
 
 const _getTrxFromCore = async params => {
 	const blockIdx = await getBlockIdx();
@@ -59,7 +61,17 @@ const getTransactionByIds = ids => BluebirdPromise.map(
 	},
 	{ concurrency: 4 },
 );
-const getTransactionsByBlockId = blockId => _getTrxFromCore({ blockId, limit: MAX_TX_LIMIT_PP });
+
+const getTransactionsByBlockId = async blockId => {
+	const transactions = await requestAll(_getTrxFromCore, { blockId });
+	return {
+		data: transactions,
+		meta: {
+			offset: 0,
+			count: transactions.length,
+		},
+	};
+};
 
 const getTransactions = async params => {
 	const transactionIdx = await getTransactionIdx();
@@ -73,13 +85,25 @@ const getTransactions = async params => {
 	if (!params.offset) params.offset = 0;
 
 	if (params.fromTimestamp || params.toTimestamp) {
-		params.propBetween = {
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
 			property: 'unixTimestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
-		};
+		});
 		delete params.fromTimestamp;
 		delete params.toTimestamp;
+	}
+
+	if (params.minAmount || params.maxAmount) {
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
+			property: 'amount',
+			from: Number(params.minAmount) || 0,
+			to: Number(params.maxAmount) || MAX_TRANSACTION_AMOUNT,
+		});
+		delete params.minAmount;
+		delete params.maxAmount;
 	}
 
 	if (params.senderIdOrRecipientId) {
@@ -93,17 +117,17 @@ const getTransactions = async params => {
 	}
 
 	// TODO: Add search by message
-
 	const resultSet = await transactionIdx.find(params);
+	const total = await transactionIdx.count(params);
 
 	if (resultSet.length > 0) {
 		const trxIds = resultSet.map(row => row.id);
 		transactions.data = await getTransactionByIds(trxIds);
 	}
 
-	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
-	transactions.meta.offset = params.offset || 0;
+	transactions.meta.total = total;
+	transactions.meta.offset = params.offset;
 	return transactions;
 };
 

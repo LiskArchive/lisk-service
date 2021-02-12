@@ -5,29 +5,14 @@ compose := docker-compose \
 	-f docker-compose.yml \
 	-f lisk_service/docker-compose.core.yml \
 	-f lisk_service/docker-compose.gateway.yml \
-	-f lisk_service/docker-compose.template.yml \
-	-f lisk_service/docker-compose.tests.yml \
-	-f docker-compose.testnet.yml
+	-f lisk_service/docker-compose.gateway-ports.yml \
+	-f docker-compose.devnet.yml
 
 up:
 	(ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} $(compose) up --detach)
 
 down:
 	$(compose) down --volumes --remove-orphans
-
-print-config:
-	$(compose) config
-
-ready:
-	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/ready' >/dev/null
-
-test: test-functional
-
-test-functional:
-	$(compose) exec -T tests npm run test:functional
-
-test-integration:
-	$(compose) exec -T tests npm run test:integration:APIv1:SDKv2
 
 cli-%:
 	$(compose) exec $* /bin/sh
@@ -37,5 +22,8 @@ logs:
 
 logs-%:
 	$(compose) logs $*
+
+print-config:
+	$(compose) config
 
 mrproper: down

@@ -17,20 +17,25 @@ const coreApi = require('./coreApi');
 
 const { request } = require('./request');
 const { getBlocks } = require('./blocks');
-const { getTransactions } = require('./transactions');
+
+const {
+	getTransactions,
+	getTransactionsByBlockId,
+} = require('./transactions');
+
 const {
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 } = require('./accounts');
+
 const {
 	getDelegates,
 	getNextForgers,
 } = require('./delegates');
+
 const { getVotes } = require('./votes');
-
 const { getVoters } = require('./voters');
-
 const { getNetworkStatus } = require('./network');
 
 const events = require('./events');
@@ -81,6 +86,7 @@ module.exports = {
 	getNextForgers,
 	getNetworkStatus,
 	getTransactions,
+	getTransactionsByBlockId,
 	getPeers: coreApi.getPeers,
 	numOfActiveDelegates,
 	peerStates,

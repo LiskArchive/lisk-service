@@ -30,7 +30,7 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
-const { getStatus, getReady } = require('./shared/status');
+const { updateServiceStatus, getStatus, getReady } = require('./shared/status');
 const { genDocs } = require('./apis/http-version1/swagger/generateDocs');
 
 const mapper = require('./shared/customMapper');
@@ -132,6 +132,8 @@ broker.createService({
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
 	},
 });
+
+broker.waitForServices('core').then(() => updateServiceStatus());
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);

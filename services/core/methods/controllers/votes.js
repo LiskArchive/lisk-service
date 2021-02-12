@@ -30,12 +30,18 @@ const getVotes = async params => {
 
 	const response = await CoreService.getVotes(params);
 
-	if (isEmptyObject(response)) return {};
+	if (isEmptyObject(response)) {
+		response.data = [];
+		response.meta = {};
+	}
 
-	return {
-		data: response.data,
-		meta: response.meta,
-	};
+	if (response.data.length === 0) {
+		response.meta.limit = params.limit || 10;
+		response.meta.offset = params.offset || 0;
+		response.meta.address = params.address;
+	}
+
+	return response;
 };
 
 module.exports = {
