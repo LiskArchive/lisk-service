@@ -256,7 +256,7 @@ const buildIndex = async (from, to) => {
 };
 
 const init = async () => {
-	await getBlockIdx();
+	await getBlocksIndex();
 	try {
 		const genesisHeight = 1;
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
@@ -288,7 +288,7 @@ const init = async () => {
 	}
 };
 
-setTimeout(init, 5000);
+init();
 
 module.exports = {
 	getBlocks,
