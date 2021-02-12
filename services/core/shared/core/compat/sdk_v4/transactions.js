@@ -13,9 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
 const signals = require('../../../signals');
+const requestAll = require('../../../requestAll');
+
+const logger = Logger();
 
 const mysqlIdx = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
@@ -26,6 +30,7 @@ const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
 const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema);
 
 const MAX_TX_LIMIT_PP = 100;
+let pendingTransactionsList = [];
 
 const _getTrxFromCore = async params => {
 	const blockIdx = await getBlockIdx();
@@ -125,9 +130,33 @@ signals.get('indexTransactions').add(async blockId => {
 	transactionIdx.upsert(transactions.data);
 });
 
-const getPendingTransactions = async params => {
+const getPendingTransactionsFromCore = async params => {
 	const pendingTx = await coreApi.getPendingTransactions(params);
 	return pendingTx;
+};
+
+const loadAllPendingTransactions = async () => {
+	const limit = 100;
+	pendingTransactionsList = await requestAll(getPendingTransactionsFromCore, {}, limit);
+	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
+};
+
+const getPendingTransactions = async params => {
+	const pendingTransactions = {
+		data: [],
+		meta: {},
+	};
+	const offset = Number(params.offset) || 0;
+	const limit = Number(params.limit) || 10;
+	if (pendingTransactionsList.length) {
+		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
+		pendingTransactions.meta = {
+			count: pendingTransactions.data.length,
+			offset,
+			total: pendingTransactionsList.length,
+		};
+	}
+	return pendingTransactions;
 };
 
 const init = async () => {
@@ -141,4 +170,5 @@ module.exports = {
 	getTransactionsByBlockId,
 	getPendingTransactions,
 	init,
+	loadAllPendingTransactions,
 };

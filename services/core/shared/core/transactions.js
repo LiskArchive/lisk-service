@@ -13,33 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
-
-const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 
-const sdkVersion = coreApi.getSDKVersion();
-
-const logger = Logger();
-
-let pendingTransactionsList = [];
-
 const getPendingTransactions = async params => {
-	const pendingTransactions = {
+	const pendingtransactions = {
 		data: [],
 		meta: {},
 	};
-	const offset = Number(params.offset) || 0;
-	const limit = Number(params.limit) || 10;
-	if (pendingTransactionsList.length) {
-		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
-		pendingTransactions.meta = {
-			count: pendingTransactions.data.length,
-			offset,
-			total: pendingTransactionsList.length,
-		};
-	}
-	return pendingTransactions;
+
+	const response = await coreApi.getPendingTransactions(params);
+	if (response.data) pendingtransactions.data = response.data;
+	if (response.meta) pendingtransactions.meta = response.meta;
+
+	return pendingtransactions;
 };
 
 const getTransactions = async params => {
@@ -55,19 +41,9 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const loadAllPendingTransactions = async () => {
-	if (sdkVersion <= 4) {
-		const limit = 100;
-		pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
-	} else {
-		pendingTransactionsList = await coreApi.getPendingTransactions();
-	}
-	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
-};
+const initPendingTransactionsList = (() => coreApi.loadAllPendingTransactions())();
 
-const initPendingTransactionsList = (() => loadAllPendingTransactions())();
-
-const reload = () => loadAllPendingTransactions();
+const reload = () => coreApi.loadAllPendingTransactions();
 
 module.exports = {
 	getTransactions,

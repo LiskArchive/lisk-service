@@ -35,6 +35,7 @@ const {
 const {
     getTransactions,
     getPendingTransactions,
+    loadAllPendingTransactions,
 } = require('./transactions');
 
 const {
@@ -85,6 +86,7 @@ module.exports = {
 
     getTransactions,
     getPendingTransactions,
+    loadAllPendingTransactions,
 
     peerStates,
     getPeers,

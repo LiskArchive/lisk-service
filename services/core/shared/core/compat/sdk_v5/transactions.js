@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
+
+const logger = Logger();
 
 const coreApi = require('./coreApi');
 const {
@@ -29,6 +32,7 @@ const transactionsIndexSchema = require('./schema/transactions');
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
+let pendingTransactionsList = [];
 
 const resolveModuleAsset = (moduleAssetVal) => {
 	const [module, asset] = moduleAssetVal.split(':');
@@ -199,13 +203,37 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const getPendingTransactions = async () => {
+const getPendingTransactionsFromCore = async () => {
 	const pendingTx = await coreApi.getPendingTransactions();
 	return pendingTx;
+};
+
+const loadAllPendingTransactions = async () => {
+	pendingTransactionsList = await getPendingTransactionsFromCore();
+	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
+};
+
+const getPendingTransactions = async params => {
+	const pendingTransactions = {
+		data: [],
+		meta: {},
+	};
+	const offset = Number(params.offset) || 0;
+	const limit = Number(params.limit) || 10;
+	if (pendingTransactionsList.length) {
+		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
+		pendingTransactions.meta = {
+			count: pendingTransactions.data.length,
+			offset,
+			total: pendingTransactionsList.length,
+		};
+	}
+	return pendingTransactions;
 };
 
 module.exports = {
 	getTransactions,
 	indexTransactions,
 	getPendingTransactions,
+	loadAllPendingTransactions,
 };

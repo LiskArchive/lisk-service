@@ -95,6 +95,7 @@ module.exports = {
 	calculateWeightedAvg: nop,
 	updateFinalizedHeight,
 	getPendingTransactions,
+	loadAllPendingTransactions: nop,
 	events,
 	init: nop,
 };
