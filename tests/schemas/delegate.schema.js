@@ -24,7 +24,7 @@ const pomHeightSchema = {
 
 const delegateSchema = {
 	address: Joi.string().required(),
-	approval: Joi.string().required(),
+	approval: Joi.string().optional(),
 	delegateWeight: Joi.string().optional(),
 	missedBlocks: Joi.number().integer().min(0).optional(),
 	producedBlocks: Joi.number().integer().required(),

@@ -45,7 +45,7 @@ const multisignatureAccountMemberSchema = {
 	address: Joi.string().required(),
 	publicKey: Joi.string().required(),
 	secondPublicKey: Joi.string().optional(),
-	balance: Joi.number().required(),
+	balance: Joi.string().required(),
 	unconfirmedSignature: Joi.number().optional(),
 	isMandatory: Joi.boolean().optional(),
 };
@@ -83,7 +83,7 @@ const unlockingItemSchema = {
 
 const accountSchema = {
 	address: Joi.string().required(),
-	publicKey: Joi.string().required(),
+	publicKey: Joi.string().allow('').required(),
 	secondPublicKey: Joi.string().allow('').optional(),
 	balance: Joi.string().required(),
 	nonce: Joi.string().optional(),

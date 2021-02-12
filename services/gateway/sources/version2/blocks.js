@@ -21,9 +21,9 @@ module.exports = {
 	params: {
 		blockId: '=,string',
 		height: '=,string',
-		generatorAddress: 'address,string',
-		generatorPublicKey: 'publicKey,string',
-		generatorUsername: 'username,string',
+		address: 'generatorAddress,string',
+		publicKey: 'generatorPublicKey,string',
+		username: 'generatorUsername,string',
 		timestamp: '=,string',
 		offset: '=,number',
 		limit: '=,number',

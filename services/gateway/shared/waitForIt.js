@@ -13,20 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {
-	verbose: true,
-	testMatch: [
-		'<rootDir>/functional/template/*.test.js',
-	],
-	testEnvironment: 'node',
-	setupFilesAfterEnv: [
-		'jest-extended',
-		'<rootDir>/helpers/setupCustomMatchers.js',
-	],
-	watchPlugins: [
-		['jest-watch-toggle-config', { setting: 'verbose' }],
-		['jest-watch-toggle-config', { setting: 'bail' }],
-		['jest-watch-toggle-config', { setting: 'notify' }],
-		'jest-watch-typeahead/filename',
-	],
-};
+const { Logger } = require('lisk-service-framework');
+
+const logger = Logger();
+
+const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
+	let hInterval;
+	const checkIfReady = async function () {
+		try {
+			const result = await fn();
+			clearInterval(hInterval);
+			resolve(result);
+		} catch (err) {
+			logger.debug(`Waiting ${intervalMs}...`);
+		}
+	};
+	hInterval = setInterval(checkIfReady, intervalMs);
+	checkIfReady();
+});
+
+module.exports = waitForIt;
