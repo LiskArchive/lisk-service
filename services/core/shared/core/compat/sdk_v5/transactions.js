@@ -235,6 +235,10 @@ const getPendingTransactions = async params => {
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 
+	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
+		throw new Error('Nonce based sorting is only possible along with senderId');
+	}
+
 	if (params.username) {
 		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
@@ -258,6 +262,16 @@ const getPendingTransactions = async params => {
 		requestParams.to = Number(to);
 	}
 
+	const sortComparator = (sortParam) => {
+		const sortProp = sortParam.split(':')[0];
+		const sortOrder = sortParam.split(':')[1];
+
+		const comparator = (a, b) => (sortOrder === 'asc')
+				? Number(a[sortProp]).localeCompare(Number(b[sortProp]))
+				: Number(b[sortProp]).localeCompare(Number(a[sortProp]));
+		return comparator;
+	};
+
 	if (pendingTransactionsList.length) {
 		pendingTransactions.data = pendingTransactionsList.filter(transaction => (
 			(!requestParams.senderPublicKey
@@ -277,7 +291,10 @@ const getPendingTransactions = async params => {
 			&& (!requestParams.to
 				|| Number(transaction.amount) <= requestParams.to)
 		));
-		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
+		pendingTransactions.data = pendingTransactions.data
+			.sort(sortComparator(params.sort))
+			.slice(offset, offset + limit);
+
 		pendingTransactions.meta = {
 			count: pendingTransactions.data.length,
 			offset,
