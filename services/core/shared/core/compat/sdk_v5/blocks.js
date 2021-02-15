@@ -128,6 +128,15 @@ const isQueryFromIndex = params => {
 	return !isDirectQuery && !isLatestBlockFetch;
 };
 
+const indexNewBlocks = async blocks => {
+	const blocksDB = await getBlocksIndex();
+	if (blocks.data.length === 1) {
+		const [block] = blocks.data;
+		const resultSet = await blocksDB.find({ id: block.id });
+		if (!resultSet.length) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+	}
+};
+
 const getBlocks = async params => {
 	const blocksDB = await getBlocksIndex();
 	const blocks = {
@@ -199,7 +208,7 @@ const getBlocks = async params => {
 		blocks.data = await getLastBlock();
 	}
 
-	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+	indexNewBlocks(blocks);
 
 	blocks.meta = {
 		count: blocks.data.length,
