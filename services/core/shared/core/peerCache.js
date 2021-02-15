@@ -62,7 +62,8 @@ const refreshStatistics = async () => {
 	coreVerArr.forEach(elem => { if (elem) coreVerStats[elem] = (coreVerStats[elem] || 0) + 1; });
 
 	const networkVerArr = connected.map(elem => elem.networkVersion);
-	networkVerArr.forEach(elem => { if (elem) networkVerStats[elem] = (networkVerStats[elem] || 0) + 1; });
+	networkVerArr
+		.forEach(elem => { if (elem) networkVerStats[elem] = (networkVerStats[elem] || 0) + 1; });
 
 	const osArr = connected.map(elem => elem.os);
 	const mappedOs = osArr.map((elem) => {
