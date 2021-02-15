@@ -60,12 +60,17 @@ const getIndexedAccountInfo = async params => {
 	return account;
 };
 
-const getBase32Address = address => {
+const getHexAddressFromPublicKey = publicKey => {
+	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
+	return binaryAddress.toString('hex');
+};
+
+const getBase32AddressFromHex = address => {
 	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
 	return base32Address;
 };
 
-const getHexAddress = address => {
+const getHexAddressFromBase32 = address => {
 	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
 	return binaryAddress;
 };
@@ -100,7 +105,7 @@ const indexAccounts = async job => {
 const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
 
 const normalizeAccount = account => {
-	account.address = account.address.toString('hex');
+	account.address = getBase32AddressFromHex(account.address.toString('hex'));
 	account.isDelegate = !(account.dpos && Number(account.dpos.delegate.totalVotesReceived) === 0);
 	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
 	account.token.balance = Number(account.token.balance);
@@ -190,7 +195,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
 		publicKeysToIndex,
 		async publicKey => {
-			const address = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
+			const address = getHexAddressFromPublicKey(publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = publicKey;
 			return account;
@@ -209,6 +214,6 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountInfo,
-	getBase32Address,
-	getHexAddress,
+	getBase32AddressFromHex,
+	getHexAddressFromBase32,
 };
