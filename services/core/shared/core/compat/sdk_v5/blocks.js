@@ -213,8 +213,7 @@ const getBlocks = async params => {
 	blocks.meta = {
 		count: blocks.data.length,
 		offset: params.offset,
-		total: 0,
-		// TODO: Merge 'Fix transaction endpoint pagination and address param #340' for total/offset
+		total: await blocksDB.count(params),
 	};
 
 	return blocks;
