@@ -79,20 +79,12 @@ const resolveAccountsInfo = async accounts => {
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
-	const skimmedAccounts = await BluebirdPromise.map(
-		accounts,
-		async account => {
-			const skimmedAccount = {};
-			skimmedAccount.address = account.address;
-			skimmedAccount.publicKey = account.publicKey;
-			skimmedAccount.isDelegate = account.isDelegate;
-			skimmedAccount.username = account.dpos.delegate.username || null;
-			skimmedAccount.balance = account.token.balance;
-			return skimmedAccount;
-		},
-		{ concurrency: accounts.length },
-	);
-	await accountsDB.upsert(skimmedAccounts);
+	accounts.forEach(account => {
+		account.username = account.dpos.delegate.username || null;
+		account.balance = account.token.balance;
+		return account;
+	});
+	await accountsDB.upsert(accounts);
 };
 
 const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);

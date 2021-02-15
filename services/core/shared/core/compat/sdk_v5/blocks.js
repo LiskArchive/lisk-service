@@ -53,16 +53,8 @@ const indexBlocks = async job => {
 	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const publicKeysToIndex = [];
-	const skimmedBlocks = blocks.map(block => {
-		const skimmedBlock = {};
-		skimmedBlock.id = block.id;
-		skimmedBlock.height = block.height;
-		skimmedBlock.timestamp = block.timestamp;
-		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
-		publicKeysToIndex.push(block.generatorPublicKey);
-		return skimmedBlock;
-	});
-	await blocksDB.upsert(skimmedBlocks);
+	blocks.forEach(block => publicKeysToIndex.push(block.generatorPublicKey));
+	await blocksDB.upsert(blocks);
 	// await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(blocks);
 	await indexVotes(blocks);
