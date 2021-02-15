@@ -136,8 +136,6 @@ const getAccounts = async params => {
 
 	const accounts = await getAccountsFromCore(params);
 
-	if (!resultSet.length && accounts.data.length) indexAccountsQueue.add('indexAccountsQueue', { accounts: accounts.data });
-
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
