@@ -29,10 +29,7 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const balanceUnlockWaitHeightSelf = 260000;
 const balanceUnlockWaitHeightDefault = 2000;
 
-const parseAddress = address => {
-	if (typeof address !== 'string') return '';
-	return address.toUpperCase();
-};
+const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
 
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
