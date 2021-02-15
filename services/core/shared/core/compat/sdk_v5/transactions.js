@@ -267,8 +267,8 @@ const getPendingTransactions = async params => {
 		const sortOrder = sortParam.split(':')[1];
 
 		const comparator = (a, b) => (sortOrder === 'asc')
-				? Number(a[sortProp]).localeCompare(Number(b[sortProp]))
-				: Number(b[sortProp]).localeCompare(Number(a[sortProp]));
+			? Number(a[sortProp]) - Number(b[sortProp])
+			: Number(b[sortProp]) - Number(a[sortProp]);
 		return comparator;
 	};
 
