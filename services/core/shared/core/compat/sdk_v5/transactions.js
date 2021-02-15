@@ -55,18 +55,14 @@ const indexTransactions = async blocks => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-			const skimmedTransaction = {};
-			skimmedTransaction.id = tx.id;
-			skimmedTransaction.height = block.height;
-			skimmedTransaction.blockId = block.id;
-			skimmedTransaction.moduleAssetId = id;
-			skimmedTransaction.timestamp = block.timestamp;
-			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
-			skimmedTransaction.nonce = tx.nonce;
-			skimmedTransaction.amount = tx.asset.amount || null;
-			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+			tx.height = block.height;
+			tx.blockId = block.id;
+			tx.moduleAssetId = id;
+			tx.timestamp = block.timestamp;
+			tx.amount = tx.asset.amount || null;
+			tx.recipientId = tx.asset.recipientAddress || null;
 			publicKeysToIndex.push(tx.senderPublicKey);
-			return skimmedTransaction;
+			return tx;
 		});
 		return transactions;
 	});

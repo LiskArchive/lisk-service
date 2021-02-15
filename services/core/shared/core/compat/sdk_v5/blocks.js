@@ -60,7 +60,7 @@ const indexBlocks = async job => {
 	await indexVotes(blocks);
 };
 
-const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
+const indexBlocksQueuev5 = initializeQueue('indexBlocksQueuev5', indexBlocks);
 
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
@@ -199,7 +199,7 @@ const getBlocks = async params => {
 		blocks.data = await getLastBlock();
 	}
 
-	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+	if (blocks.data.length === 1) indexBlocksQueuev5.add('indexBlocksQueuev5', { blocks: blocks.data });
 
 	blocks.meta = {
 		count: blocks.data.length,
@@ -234,7 +234,7 @@ const buildIndex = async (from, to) => {
 			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
 		} while (!(blocks.length && blocks.every(block => !!block && !!block.height)));
 
-		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
+		await indexBlocksQueuev5.add('indexBlocksQueuev5', { blocks });
 
 		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
 
