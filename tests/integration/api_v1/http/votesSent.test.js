@@ -19,7 +19,7 @@ const { api } = require('../../../helpers/api');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v1`;
-// const endpoint = `${baseUrlV1}/votes_received`;
+// const endpoint = `${baseUrlV1}/votes_sent`;
 
 const {
 	goodRequestSchema,
@@ -29,26 +29,27 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	voterSchema,
+	voteSchema,
 	metaSchema,
-} = require('../../../schemas/voter.schema');
+} = require('../../../schemas/vote.schema');
 
 [
-	`${baseUrlV1}/votes_received`,
-	`${baseUrlV1}/voters`,
+	`${baseUrlV1}/votes_sent`,
+	`${baseUrlV1}/votes`,
 ].forEach(endpoint => {
-	describe('Votes Received (Voters) API', () => {
+	describe('Votes Sent (Votes) API', () => {
 		let refDelegate;
 		beforeAll(async () => {
 			[refDelegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
 		});
 
 		describe(`GET ${endpoint}`, () => {
-			it('Returns list of voters when requested for existing account by account ID', async () => {
+			it('Returns list of votes when requested for existing account by account ID', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}`);
 				expect(response).toMap(goodRequestSchema);
-				expect(response.data).toBeArrayOfSize(10);
-				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				response.data.forEach(vote => expect(vote).toMap(voteSchema));
 				expect(response.meta).toMap(metaSchema, {
 					address: refDelegate.address,
 					publicKey: refDelegate.publicKey,
@@ -56,12 +57,13 @@ const {
 				});
 			});
 
-			it('Returns list of voters when requested for existing account by username', async () => {
+			it('Returns list of votes when requested for existing account by username', async () => {
 				if (refDelegate.username) {
 					const response = await api.get(`${endpoint}?username=${refDelegate.username}`);
 					expect(response).toMap(goodRequestSchema);
-					expect(response.data).toBeArrayOfSize(10);
-					response.data.forEach(voter => expect(voter).toMap(voterSchema));
+					expect(response.data).toBeInstanceOf(Array);
+					expect(response.data.length).toBeGreaterThanOrEqual(1);
+					response.data.forEach(vote => expect(vote).toMap(voteSchema));
 					expect(response.meta).toMap(metaSchema, {
 						address: refDelegate.address,
 						publicKey: refDelegate.publicKey,
@@ -70,12 +72,13 @@ const {
 				}
 			});
 
-			it('Returns list of voters when requested for existing account by publickey', async () => {
+			it('Returns list of votes when requested for existing account by publickey', async () => {
 				if (refDelegate.publicKey) {
 					const response = await api.get(`${endpoint}?publickey=${refDelegate.publicKey}`);
 					expect(response).toMap(goodRequestSchema);
-					expect(response.data).toBeArrayOfSize(10);
-					response.data.forEach(voter => expect(voter).toMap(voterSchema));
+					expect(response.data).toBeInstanceOf(Array);
+					expect(response.data.length).toBeGreaterThanOrEqual(1);
+					response.data.forEach(vote => expect(vote).toMap(voteSchema));
 					expect(response.meta).toMap(metaSchema, {
 						address: refDelegate.address,
 						publicKey: refDelegate.publicKey,
@@ -84,12 +87,14 @@ const {
 				}
 			});
 
-			it('Returns list of voters when requested for existing account by secpubkey', async () => {
+			it('Returns list of votes when requested for existing account by secpubkey', async () => {
 				if (refDelegate.secondPublicKey) {
 					const response = await api.get(`${endpoint}?secpubkey=${refDelegate.secondPublicKey}`);
 					expect(response).toMap(goodRequestSchema);
-					expect(response.data).toBeArrayOfSize(10);
-					response.data.forEach(voter => expect(voter).toMap(voterSchema));
+					expect(response).toMap(goodRequestSchema);
+					expect(response.data).toBeInstanceOf(Array);
+					expect(response.data.length).toBeGreaterThanOrEqual(1);
+					response.data.forEach(vote => expect(vote).toMap(voteSchema));
 					expect(response.meta).toMap(metaSchema, {
 						address: refDelegate.address,
 						publicKey: refDelegate.publicKey,
@@ -98,11 +103,12 @@ const {
 				}
 			});
 
-			it('Returns list of voters when requested with offset', async () => {
+			it('Returns list of votes when requested with offset', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`);
 				expect(response).toMap(goodRequestSchema);
-				expect(response.data).toBeArrayOfSize(10);
-				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				response.data.forEach(vote => expect(vote).toMap(voteSchema));
 				expect(response.meta).toMap(metaSchema, {
 					address: refDelegate.address,
 					publicKey: refDelegate.publicKey,
@@ -110,11 +116,11 @@ const {
 				});
 			});
 
-			it('Returns list of voters when requested with limit', async () => {
+			it('Returns list of votes when requested with limit', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}&limit=1`);
 				expect(response).toMap(goodRequestSchema);
 				expect(response.data).toBeArrayOfSize(1);
-				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				response.data.forEach(vote => expect(vote).toMap(voteSchema));
 				expect(response.meta).toMap(metaSchema, {
 					address: refDelegate.address,
 					publicKey: refDelegate.publicKey,
@@ -122,11 +128,11 @@ const {
 				});
 			});
 
-			it('Returns list of voters when requested with offset & limit', async () => {
-				const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=5&limit=1`);
+			it('Returns list of votes when requested with offset & limit', async () => {
+				const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1&limit=1`);
 				expect(response).toMap(goodRequestSchema);
 				expect(response.data).toBeArrayOfSize(1);
-				response.data.forEach(voter => expect(voter).toMap(voterSchema));
+				response.data.forEach(vote => expect(vote).toMap(voteSchema));
 				expect(response.meta).toMap(metaSchema, {
 					address: refDelegate.address,
 					publicKey: refDelegate.publicKey,

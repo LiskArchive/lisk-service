@@ -19,7 +19,7 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
 const { initializeQueue } = require('../../queue');
-const { parseToJSONCompatObj } = require('../common');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');

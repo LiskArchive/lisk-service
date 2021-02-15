@@ -19,7 +19,7 @@ const transactionSchema = {
 	id: Joi.string().required(),
 	amount: Joi.string().required(),
 	fee: Joi.string().required(),
-	type: Joi.number().integer().min(0).max(13)
+	type: Joi.number().integer().min(0).max(15)
 		.required(),
 	height: Joi.number().integer().min(1).required(),
 	nonce: Joi.string().optional(),
