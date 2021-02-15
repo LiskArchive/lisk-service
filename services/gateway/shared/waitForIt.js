@@ -13,18 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {
-	primaryKey: 'height',
-	schema: {
-		id: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
-		generatorPublicKey: { type: 'string' },
-	},
-	indexes: {
-		height: { type: 'range' },
-		timestamp: { type: 'range' },
-		generatorPublicKey: { type: 'key' },
-	},
-	purge: {},
-};
+const { Logger } = require('lisk-service-framework');
+
+const logger = Logger();
+
+const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
+	let hInterval;
+	const checkIfReady = async function () {
+		try {
+			const result = await fn();
+			clearInterval(hInterval);
+			resolve(result);
+		} catch (err) {
+			logger.debug(`Waiting ${intervalMs}...`);
+		}
+	};
+	hInterval = setInterval(checkIfReady, intervalMs);
+	checkIfReady();
+});
+
+module.exports = waitForIt;

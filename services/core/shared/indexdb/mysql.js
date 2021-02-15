@@ -85,7 +85,7 @@ const cast = (val, type) => {
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetween', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -160,44 +160,43 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
-		if (params.propBetween) {
-			const { propBetween } = params;
-			delete params.propBetween;
-			query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(
+				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
+			);
 		}
 
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
-			delete params.sort;
 			query.orderBy(sortProp, sortOrder);
 		}
 
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
-			delete params.whereIn;
 			query.whereIn(property, values);
 		}
 
 		if (params.orWhere) {
 			const { orWhere } = params;
 			query.where(function () {
-				this.where(orWhere);
-			}).orWhere(queryParams);
+				this.where(queryParams).orWhere(orWhere);
+			});
+		} else {
+			query.where(queryParams);
 		}
 
 		if (params.orWhereIn) {
 			const { property, values } = params.orWhereIn;
-			delete params.orWhereIn;
 			query.orWhereIn(property, values);
 		}
 
 		if (params.search) {
 			const { property, pattern } = params.search;
-			delete params.search;
 			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		return query.andWhere(queryParams)
+		return query
 			.limit(limit)
 			.offset(offset);
 	};
@@ -216,40 +215,41 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.del();
 
 	const count = async (params) => {
-		const countQuery = knex.count('id as count').table(tableName);
+		const query = knex.count('id as count').table(tableName);
 		const queryParams = resolveQueryParams(params);
-
-		if (params.propBetween) {
-			const { propBetween } = params;
-			countQuery.whereBetween(propBetween.property, [propBetween.from, propBetween.to]);
-		}
 
 		if (params.orWhere) {
 			const { orWhere } = params;
-			countQuery.where(function () {
-				this.where(orWhere);
-			}).orWhere(queryParams);
+			query.where(function () {
+				this.where(queryParams).orWhere(orWhere);
+			});
+		} else {
+			query.where(queryParams);
+		}
+
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(
+				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
+			);
 		}
 
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
-			delete params.whereIn;
-			countQuery.whereIn(property, values);
+			query.whereIn(property, values);
 		}
 
 		if (params.orWhereIn) {
 			const { property, values } = params.orWhereIn;
-			delete params.orWhereIn;
-			countQuery.orWhereIn(property, values);
+			query.orWhereIn(property, values);
 		}
 
 		if (params.search) {
 			const { property, pattern } = params.search;
-			delete params.search;
-			countQuery.where(`${property}`, 'like', `%${pattern}%`);
+			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		const [totalCount] = await countQuery.andWhere(queryParams);
+		const [totalCount] = await query;
 		return totalCount.count;
 	};
 

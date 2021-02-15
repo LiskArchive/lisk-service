@@ -54,29 +54,6 @@ const getLastBlock = async () => {
     return { data: [block] };
 };
 
-const getBlocks = async params => {
-    const apiClient = await getApiClient();
-    let block;
-    let blocks;
-
-    if (params.id) {
-        block = await apiClient.block.get(params.id);
-    } else if (params.ids) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.ids });
-    } else if (params.height) {
-        block = await apiClient.block.getByHeight(params.height);
-    } else if (params.heightRange) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', params.heightRange);
-    } else if (params.limit === 1 && Object.getOwnPropertyNames(params).length === 1) {
-        block = await apiClient._channel.invoke('app:getLastBlock');
-        block = apiClient.block.decode(Buffer.from(block, 'hex'));
-    }
-
-    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
-    const result = blocks || [block];
-    return { data: result };
-};
-
 const getTransactions = async params => {
     const apiClient = await getApiClient();
     let transaction;
@@ -136,7 +113,6 @@ module.exports = {
     getBlockByHeight,
     getBlocksByHeightBetween,
     getLastBlock,
-    getBlocks,
     getAccounts,
     getNetworkStatus,
     getTransactions,

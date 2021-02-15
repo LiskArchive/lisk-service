@@ -14,6 +14,8 @@
  *
  */
 const parseToJSONCompatObj = obj => {
+    if (!obj) return obj;
+
     if (obj instanceof Buffer) return Buffer.from(obj).toString('hex');
     if (typeof obj === 'bigint') return String(obj);
     if (typeof obj === 'object' && Array.isArray(obj)) return obj.map(o => parseToJSONCompatObj(o));

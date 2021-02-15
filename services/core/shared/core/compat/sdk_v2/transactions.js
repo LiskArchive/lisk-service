@@ -25,6 +25,10 @@ const {
 const MAX_TX_LIMIT_PP = 100;
 
 const getTransactions = async params => {
+	const transactions = {
+		data: [],
+		meta: {},
+	};
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
 		if (await validateTimestamp(params[timestamp])) {
 			params[timestamp] = await getBlockchainTime(params[timestamp]);
@@ -33,7 +37,10 @@ const getTransactions = async params => {
 	}),
 	);
 
-	const transactions = await coreApi.getTransactions(params);
+	const response = await coreApi.getTransactions(params);
+	if (response.data) transactions.data = response.data;
+	if (response.meta) transactions.meta = response.meta;
+
 	if (Object.getOwnPropertyNames(transactions).length) {
 		transactions.data = await BluebirdPromise.map(
 			transactions.data,
@@ -44,6 +51,9 @@ const getTransactions = async params => {
 			{ concurrency: transactions.data.length },
 		);
 	}
+	transactions.meta.total = transactions.meta.count;
+	transactions.meta.count = transactions.data.length;
+	transactions.meta.offset = params.offset || 0;
 	return transactions;
 };
 
