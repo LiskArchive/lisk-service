@@ -36,7 +36,7 @@ const mergeTransactions = async (params) => {
 	const pendingTxs = await getPendingTransactions(params);
 	delete params.includePending;
 	const transactions = await coreApi.getTransactions(params);
-	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(params.limit || 10);
+	allTransactions.data = pendingTxs.data.concat(transactions.data);
 	// TODO: resolve meta
 	return allTransactions;
 };
