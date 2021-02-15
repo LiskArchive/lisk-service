@@ -15,12 +15,14 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const core = require('./compat');
+const coreApi = require('./compat');
 const requestAll = require('../requestAll');
 
 const { peerStates } = require('./compat');
 
 const logger = Logger();
+
+const sdkVersion = coreApi.getSDKVersion();
 
 const peerStore = {
 	peers: [],
@@ -42,6 +44,7 @@ const refreshStatistics = async () => {
 	const basicStats = {};
 	const heightStats = {};
 	const coreVerStats = {};
+	const networkVerStats = {};
 	const osStats = {};
 
 	const peers = await get();
@@ -58,6 +61,9 @@ const refreshStatistics = async () => {
 	const coreVerArr = connected.map(elem => elem.version);
 	coreVerArr.forEach(elem => { if (elem) coreVerStats[elem] = (coreVerStats[elem] || 0) + 1; });
 
+	const networkVerArr = connected.map(elem => elem.networkVersion);
+	networkVerArr.forEach(elem => { if (elem) networkVerStats[elem] = (networkVerStats[elem] || 0) + 1; });
+
 	const osArr = connected.map(elem => elem.os);
 	const mappedOs = osArr.map((elem) => {
 		if (typeof elem === 'string' && elem.match(/^linux(.*)/)) {
@@ -72,6 +78,7 @@ const refreshStatistics = async () => {
 		basic: basicStats,
 		height: heightStats,
 		coreVer: coreVerStats,
+		networkVersion: networkVerStats,
 		os: osStats,
 	};
 };
@@ -80,7 +87,11 @@ const getStatistics = () => peerStore.statistics;
 
 const reload = async () => {
 	logger.debug('Refreshing peer cache...');
-	peerStore.peers = await requestAll(core.getPeers, {});
+	if (sdkVersion <= 4) {
+		peerStore.peers = await requestAll(coreApi.getPeers, {});
+	} else {
+		peerStore.peers = (await coreApi.getPeers()).data;
+	}
 	peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
 	peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
 	peerStore.statistics = await refreshStatistics();
