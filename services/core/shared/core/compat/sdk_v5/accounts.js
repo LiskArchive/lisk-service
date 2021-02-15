@@ -79,7 +79,7 @@ const resolveAccountsInfo = async accounts => {
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
-	accounts.forEach(account => {
+	accounts.map(account => {
 		account.username = account.dpos.delegate.username || null;
 		account.balance = account.token.balance;
 		return account;

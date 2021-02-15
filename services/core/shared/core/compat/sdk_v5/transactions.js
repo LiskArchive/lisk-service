@@ -89,7 +89,7 @@ const validateParams = async params => {
 	if (params.fromTimestamp || params.toTimestamp) {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
-			property: 'unixTimestamp',
+			property: 'timestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		});
