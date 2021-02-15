@@ -22,6 +22,7 @@ const config = require('../../../../config');
 const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
+	getBase32Address,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
@@ -69,7 +70,7 @@ const normalizeBlocks = async blocks => {
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
-			block.generatorAddress = account && account.address ? account.address : undefined;
+			block.generatorAddress = account && account.address ? getBase32Address(account.address) : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
 
 			block.totalForged = Number(block.reward);
