@@ -65,7 +65,7 @@ const getBase32Address = address => {
 	return base32Address;
 };
 
-const getBinaryAddress = address => {
+const getHexAddress = address => {
 	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
 	return binaryAddress;
 };
@@ -210,5 +210,5 @@ module.exports = {
 	getPublicKeyByAddress,
 	getIndexedAccountInfo,
 	getBase32Address,
-	getBinaryAddress,
+	getHexAddress,
 };
