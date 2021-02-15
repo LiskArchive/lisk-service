@@ -251,6 +251,13 @@ const getPendingTransactions = async params => {
 		requestParams.senderPublicKey = account.publicKey;
 	}
 
+	if (params.amount && params.amount.includes(':')) {
+		const from = params.amount.split(':')[0];
+		const to = params.amount.split(':')[1];
+		requestParams.from = Number(from);
+		requestParams.to = Number(to);
+	}
+
 	if (pendingTransactionsList.length) {
 		pendingTransactions.data = pendingTransactionsList.filter(transaction => (
 			(!requestParams.senderPublicKey
@@ -265,6 +272,10 @@ const getPendingTransactions = async params => {
 				|| transaction.asset.data.includes(requestParams.data))
 			&& (!requestParams.data
 				|| transaction.asset.data.includes(requestParams.data))
+			&& (!requestParams.from
+				|| Number(transaction.amount) >= requestParams.from)
+			&& (!requestParams.to
+				|| Number(transaction.amount) <= requestParams.to)
 		));
 		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
 		pendingTransactions.meta = {
