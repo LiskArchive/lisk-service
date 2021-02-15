@@ -231,35 +231,40 @@ const getPendingTransactions = async params => {
 		data: [],
 		meta: {},
 	};
+	const requestParams = {};
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 
 	if (params.username) {
 		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
-		params.senderPublicKey = accountInfo.publicKey;
-		delete params.username;
+		requestParams.senderPublicKey = accountInfo.publicKey;
 	}
 
 	if (params.senderIdOrRecipientId) {
-		params.senderId = params.senderIdOrRecipientId;
-		params.recipientId = params.senderIdOrRecipientId;
-		delete params.senderIdOrRecipientId;
+		requestParams.senderId = params.senderIdOrRecipientId;
+		requestParams.recipientId = params.senderIdOrRecipientId;
 	}
 
 	if (params.senderId) {
 		const account = await getIndexedAccountInfo({ address: params.senderId });
-		params.senderPublicKey = account.publicKey;
-		delete params.senderId;
+		requestParams.senderPublicKey = account.publicKey;
 	}
 
 	if (pendingTransactionsList.length) {
 		pendingTransactions.data = pendingTransactionsList.filter(transaction => (
-			(!params.senderPublicKey || transaction.senderPublicKey === params.senderPublicKey)
-			&& (!params.recipientId || transaction.asset.recipientAddress === params.recipientId)
-			&& (!params.moduleAssetId || transaction.amoduleAssetId === params.moduleAssetId)
-			&& (!params.moduleAssetName || transaction.moduleAssetName === params.moduleAssetName)
-			&& (!params.data || transaction.asset.data.includes(params.data))
+			(!requestParams.senderPublicKey
+				|| transaction.senderPublicKey === requestParams.senderPublicKey)
+			&& (!requestParams.recipientId
+				|| transaction.asset.recipientAddress === requestParams.recipientId)
+			&& (!requestParams.moduleAssetId
+				|| transaction.amoduleAssetId === requestParams.moduleAssetId)
+			&& (!requestParams.moduleAssetName
+				|| transaction.moduleAssetName === requestParams.moduleAssetName)
+			&& (!requestParams.data
+				|| transaction.asset.data.includes(requestParams.data))
+			&& (!requestParams.data
+				|| transaction.asset.data.includes(requestParams.data))
 		));
 		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
 		pendingTransactions.meta = {
