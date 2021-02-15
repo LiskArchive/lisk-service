@@ -33,11 +33,19 @@ const mergeTransactions = async (params) => {
 		data: [],
 		meta: {},
 	};
+
+	const offset = params.offset || 0;
+	const limit = params.limit || 10;
+
 	const pendingTxs = await getPendingTransactions(params);
 	delete params.includePending;
 	const transactions = await coreApi.getTransactions(params);
-	allTransactions.data = pendingTxs.data.concat(transactions.data);
-	// TODO: resolve meta
+	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(offset, offset + limit);
+
+	allTransactions.meta.count = allTransactions.data.length;
+	allTransactions.meta.offset = offset;
+	allTransactions.meta.total = (transactions.meta.total + pendingTxs.meta.total);
+
 	return allTransactions;
 };
 

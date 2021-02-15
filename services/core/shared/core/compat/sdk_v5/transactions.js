@@ -256,10 +256,10 @@ const getPendingTransactions = async params => {
 	}
 
 	if (params.amount && params.amount.includes(':')) {
-		const from = params.amount.split(':')[0];
-		const to = params.amount.split(':')[1];
-		requestParams.from = Number(from);
-		requestParams.to = Number(to);
+		const minAmount = params.amount.split(':')[0];
+		const maxAmount = params.amount.split(':')[1];
+		requestParams.minAmount = Number(minAmount);
+		requestParams.maxAmount = Number(maxAmount);
 	}
 
 	const sortComparator = (sortParam) => {
@@ -273,7 +273,7 @@ const getPendingTransactions = async params => {
 	};
 
 	if (pendingTransactionsList.length) {
-		pendingTransactions.data = pendingTransactionsList.filter(transaction => (
+		const filteredPendingTxs = pendingTransactionsList.filter(transaction => (
 			(!requestParams.senderPublicKey
 				|| transaction.senderPublicKey === requestParams.senderPublicKey)
 			&& (!requestParams.recipientId
@@ -287,18 +287,18 @@ const getPendingTransactions = async params => {
 			&& (!requestParams.data
 				|| transaction.asset.data.includes(requestParams.data))
 			&& (!requestParams.from
-				|| Number(transaction.amount) >= requestParams.from)
+				|| Number(transaction.amount) >= requestParams.minAmount)
 			&& (!requestParams.to
-				|| Number(transaction.amount) <= requestParams.to)
+				|| Number(transaction.amount) <= requestParams.maxAmount)
 		));
-		pendingTransactions.data = pendingTransactions.data
+		pendingTransactions.data = filteredPendingTxs
 			.sort(sortComparator(params.sort))
 			.slice(offset, offset + limit);
 
 		pendingTransactions.meta = {
 			count: pendingTransactions.data.length,
 			offset,
-			total: pendingTransactionsList.length,
+			total: filteredPendingTxs.length,
 		};
 	}
 	return pendingTransactions;
