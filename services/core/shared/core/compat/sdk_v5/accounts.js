@@ -110,7 +110,7 @@ const normalizeAccount = account => {
 
 	if (account.dpos) account.dpos.sentVotes = account.dpos.sentVotes
 		.map(vote => {
-			vote.delegateAddress = vote.delegateAddress.toString('hex');
+			vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress.toString('hex'));
 			vote.amount = Number(vote.amount);
 			return vote;
 		});
@@ -123,7 +123,9 @@ const getAccountsFromCore = async (params) => {
 		data: [],
 		meta: {},
 	};
-	const response = await coreApi.getAccounts(params);
+	const response = params.address
+		? await coreApi.getAccountByAddress(params.address)
+		: await coreApi.getAccountsByAddresses(params.addresses);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
@@ -137,6 +139,7 @@ const getAccounts = async params => {
 	}
 	if (params.address && typeof params.address === 'string') {
 		if (!(await confirmAddress(params.address))) return {};
+		params.address = getHexAddressFromBase32(params.address);
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey) || !(await confirmPublicKey(params.publicKey))) {
@@ -144,7 +147,7 @@ const getAccounts = async params => {
 		}
 	}
 	const resultSet = await accountsDB.find(params);
-	if (resultSet.length) params.addresses = resultSet.map(row => row.address);
+	if (resultSet.length) params.addresses = resultSet.map(row => getHexAddressFromBase32(row.address));
 
 	const accounts = await getAccountsFromCore(params);
 
