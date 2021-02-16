@@ -59,15 +59,8 @@ const loadAllPendingTransactions = async () => {
     logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
 };
 
-const getPendingTransactions = async params => {
-    const pendingTransactions = {
-        data: [],
-        meta: {},
-    };
+const validateParams = async params => {
     const requestParams = {};
-    const offset = Number(params.offset) || 0;
-    const limit = Number(params.limit) || 10;
-
     if (params.sort && params.sort.includes('nonce') && !params.senderId) {
         throw new Error('Nonce based sorting is only possible along with senderId');
     }
@@ -94,7 +87,19 @@ const getPendingTransactions = async params => {
         requestParams.minAmount = Number(minAmount);
         requestParams.maxAmount = Number(maxAmount);
     }
+    return requestParams;
+};
 
+const getPendingTransactions = async params => {
+    const pendingTransactions = {
+        data: [],
+        meta: {},
+    };
+
+    const offset = Number(params.offset) || 0;
+    const limit = Number(params.limit) || 10;
+
+    const requestParams = await validateParams(params);
     const sortComparator = (sortParam) => {
         const sortProp = sortParam.split(':')[0];
         const sortOrder = sortParam.split(':')[1];
