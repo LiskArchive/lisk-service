@@ -13,29 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const block = require('./mappings/block');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'core.blocks',
-	params: {
-		blockId: '=,string',
-		height: '=,string',
-		address: 'generatorAddress,string',
-		publicKey: 'generatorPublicKey,string',
-		username: 'generatorUsername,string',
-		timestamp: '=,string',
-		offset: '=,number',
-		limit: '=,number',
-		sort: '=,string',
+	primaryKey: 'tempId',
+	schema: {
+		// TODO: Remove 'tempId' after composite PK support is added
+		tempId: { type: 'string' }, // ['id', 'receivedAddress']
+		id: { type: 'string' },
+		sentAddress: { type: 'string' },
+		receivedAddress: { type: 'string' },
+		amount: { type: 'bigInteger' },
+		timestamp: { type: 'integer' },
 	},
-	definition: {
-		data: ['data', block],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
+	indexes: {
+		id: { type: 'key' },
+		sentAddress: { type: 'key' },
+		receivedAddress: { type: 'stkeyring' },
+		amount: { type: 'range' },
+		timestamp: { type: 'range' },
 	},
+	purge: {},
 };

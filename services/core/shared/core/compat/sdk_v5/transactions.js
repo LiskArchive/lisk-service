@@ -16,9 +16,18 @@
 const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
-const { indexAccountsbyPublicKey, getPublicKeyByAddress, getIndexedAccountByPublicKey } = require('./accounts');
-const { getRegisteredModuleAssets, parseToJSONCompatObj } = require('../common');
-const { knex } = require('../../../database');
+const {
+	indexAccountsbyPublicKey,
+	getPublicKeyByAddress,
+	getIndexedAccountInfo,
+} = require('./accounts');
+const { getRegisteredModuleAssets } = require('../common');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const transactionsIndexSchema = require('./schema/transactions');
+
+const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 
@@ -40,30 +49,26 @@ const resolveModuleAsset = (moduleAssetVal) => {
 };
 
 const indexTransactions = async blocks => {
-	const transactionsDB = await knex('transactions');
+	const transactionsDB = await getTransactionsIndex();
 	const publicKeysToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-			const skimmedTransaction = {};
-			skimmedTransaction.id = tx.id;
-			skimmedTransaction.height = block.height;
-			skimmedTransaction.blockId = block.id;
-			skimmedTransaction.moduleAssetId = id;
-			skimmedTransaction.timestamp = block.timestamp;
-			skimmedTransaction.senderPublicKey = tx.senderPublicKey;
-			skimmedTransaction.nonce = tx.nonce;
-			skimmedTransaction.amount = tx.asset.amount || null;
-			skimmedTransaction.recipientId = tx.asset.recipientAddress || null;
+			tx.height = block.height;
+			tx.blockId = block.id;
+			tx.moduleAssetId = id;
+			tx.timestamp = block.timestamp;
+			tx.amount = tx.asset.amount || null;
+			tx.recipientId = tx.asset.recipientAddress || null;
 			publicKeysToIndex.push(tx.senderPublicKey);
-			return skimmedTransaction;
+			return tx;
 		});
 		return transactions;
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	if (allTransactions.length) await transactionsDB.writeBatch(allTransactions);
+	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };
 
@@ -80,7 +85,7 @@ const validateParams = async params => {
 	if (params.fromTimestamp || params.toTimestamp) {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
-			property: 'unixTimestamp',
+			property: 'timestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		});
@@ -98,7 +103,7 @@ const validateParams = async params => {
 };
 
 const getTransactions = async params => {
-	const transactionsDB = await knex('transactions');
+	const transactionsDB = await getTransactionsIndex();
 	const transactions = {
 		data: [],
 		meta: {},
@@ -120,7 +125,7 @@ const getTransactions = async params => {
 				transaction.unixTimestamp = indexedTxInfo.timestamp;
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
-				const [account] = await getIndexedAccountByPublicKey(transaction.senderPublicKey);
+				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
 				transaction.senderId = account && account.address ? account.address : undefined;
 				transaction.username = account && account.username ? account.username : undefined;
 				return transaction;

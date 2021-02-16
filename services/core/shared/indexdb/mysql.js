@@ -73,17 +73,19 @@ const createDbConnection = async (connEndpoint) => {
 };
 
 const cast = (val, type) => {
-	if (type === 'number') return Number(val);
-	if (type === 'integer') return Number(val);
-	if (type === 'string') return String(val);
-	if (type === 'boolean') return Boolean(val);
-	if (type === 'bigInteger') return BigInt(val);
+	if (val) {
+		if (type === 'number') return Number(val);
+		if (type === 'integer') return Number(val);
+		if (type === 'string') return String(val);
+		if (type === 'boolean') return Boolean(val);
+		if (type === 'bigInteger') return BigInt(val);
+	}
 	return val;
 };
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -158,15 +160,6 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
-		if (params.orWhere) {
-			const { orWhere } = params;
-			query.where(function () {
-				this.where(queryParams).orWhere(orWhere);
-			});
-		} else {
-			query.where(queryParams);
-		}
-
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -177,6 +170,30 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			query.orderBy(sortProp, sortOrder);
+		}
+
+		if (params.whereIn) {
+			const { property, values } = params.whereIn;
+			query.whereIn(property, values);
+		}
+
+		if (params.orWhere) {
+			const { orWhere } = params;
+			query.where(function () {
+				this.where(queryParams).orWhere(orWhere);
+			});
+		} else {
+			query.where(queryParams);
+		}
+
+		if (params.orWhereIn) {
+			const { property, values } = params.orWhereIn;
+			query.orWhereIn(property, values);
+		}
+
+		if (params.search) {
+			const { property, pattern } = params.search;
+			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
 		return query
@@ -215,6 +232,21 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			propBetweens.forEach(
 				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
 			);
+		}
+
+		if (params.whereIn) {
+			const { property, values } = params.whereIn;
+			query.whereIn(property, values);
+		}
+
+		if (params.orWhereIn) {
+			const { property, values } = params.orWhereIn;
+			query.orWhereIn(property, values);
+		}
+
+		if (params.search) {
+			const { property, pattern } = params.search;
+			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
 		const [totalCount] = await query;

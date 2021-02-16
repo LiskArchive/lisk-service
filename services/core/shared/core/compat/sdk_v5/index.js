@@ -63,6 +63,8 @@ const {
     getVoters,
 } = require('./voters');
 
+const nop = () => { };
+
 module.exports = {
     ...require('../sdk_v4'),
     ...require('./coreCache'),
@@ -97,4 +99,6 @@ module.exports = {
     getVotes,
 
     getVoters,
+
+    init: nop,
 };

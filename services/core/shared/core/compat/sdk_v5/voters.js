@@ -19,8 +19,12 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const coreApi = require('./coreApi');
 
 const { getIndexedAccountInfo } = require('./accounts');
-const { parseToJSONCompatObj } = require('../common');
-const { knex } = require('../../../database');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const votesIndexSchema = require('./schema/votes');
+
+const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
@@ -28,14 +32,16 @@ const voteTransactionAssetID = 1;
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
 const indexVotes = async blocks => {
-	const votesDB = await knex('votes');
+	const votesDB = await getVotesIndex();
 	const votesMultiArray = blocks.map(block => {
-		const votes = block.payload
+		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
 			.map(tx => {
 				const voteEntries = tx.asset.votes.map(vote => {
 					const voteEntry = {};
 
+					// TODO: Remove 'tempId' after composite PK support is added
+					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
 					voteEntry.id = tx.id;
 					voteEntry.sentAddress = extractAddressFromPublicKey(tx.senderPublicKey);
 					voteEntry.receivedAddress = vote.delegateAddress;
@@ -45,17 +51,19 @@ const indexVotes = async blocks => {
 				});
 				return voteEntries;
 			});
+		let votes = [];
+		votesArray.forEach(arr => votes = votes.concat(arr));
 		return votes;
 	});
 	let allVotes = [];
 	votesMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
-	if (allVotes.length) await votesDB.writeBatch(allVotes);
+	if (allVotes.length) await votesDB.upsert(allVotes);
 };
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
 
 const getVoters = async params => {
-	const votesDB = await knex('votes');
+	const votesDB = await getVotesIndex();
 	const votes = {
 		data: { votes: [] },
 		meta: {},
@@ -63,7 +71,7 @@ const getVoters = async params => {
 
 	if (params.address) params.receivedAddress = params.address;
 	if (params.username) {
-		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		const accountInfo = await getIndexedAccountInfo({ username: params.username });
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
 		params.receivedAddress = accountInfo.address;
 	}
@@ -95,7 +103,7 @@ const getVoters = async params => {
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
 		async vote => {
-			const [accountInfo] = await getIndexedAccountInfo({ address: vote.sentAddress });
+			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress });
 			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
 			const { amount, sentAddress, username } = vote;
 			return { amount, address: sentAddress, username };
@@ -103,7 +111,7 @@ const getVoters = async params => {
 		{ concurrency: votes.data.votes.length },
 	);
 
-	const [accountInfo] = await getIndexedAccountInfo({ address: params.receivedAddress });
+	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress });
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,

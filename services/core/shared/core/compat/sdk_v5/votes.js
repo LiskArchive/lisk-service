@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const { getAccounts, getIndexedAccountInfo } = require('./accounts');
-const { parseToJSONCompatObj } = require('../common');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
 
@@ -29,7 +29,7 @@ const getVotes = async params => {
 
 	if (params.address) params.sentAddress = params.address;
 	if (params.username) {
-		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		const accountInfo = await getIndexedAccountInfo({ username: params.username });
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
 		params.sentAddress = accountInfo.address;
 	}
@@ -47,7 +47,7 @@ const getVotes = async params => {
 	voter.data.votes = await BluebirdPromise.map(
 		voter.data.votes,
 		async vote => {
-			const [accountInfo] = await getIndexedAccountInfo({ address: vote.delegateAddress });
+			const accountInfo = await getIndexedAccountInfo({ address: vote.delegateAddress });
 			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
 			const { amount, delegateAddress, username } = vote;
 			return { amount, address: delegateAddress, username };
@@ -55,7 +55,7 @@ const getVotes = async params => {
 		{ concurrency: voter.data.votes.length },
 	);
 
-	const [accountInfo] = await getIndexedAccountInfo({ address: params.sentAddress });
+	const accountInfo = await getIndexedAccountInfo({ address: params.sentAddress });
 	voter.data.account = {
 		address: params.sentAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
