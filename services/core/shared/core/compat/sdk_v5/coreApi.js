@@ -79,7 +79,7 @@ const getAccountByAddress = async address => {
 const getAccountsByAddresses = async addresses => {
     const apiClient = await getApiClient();
     const encodedAccounts = await apiClient._channel.invoke('app:getAccounts', { address: addresses });
-    const accounts = accounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
+    const accounts = encodedAccounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
     return { data: accounts };
 };
 
