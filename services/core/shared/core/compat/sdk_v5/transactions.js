@@ -85,6 +85,9 @@ const normalizeTransaction = tx => {
 	tx = parseToJSONCompatObj(tx);
 	tx.moduleAssetId = id;
 	tx.moduleAssetName = name;
+	if (tx.asset.recipientAddress) {
+		tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
+	}
 	return tx;
 };
 
