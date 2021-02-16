@@ -68,7 +68,6 @@ const getForgingStats = async address => {
 
 const nop = () => { };
 const updateFinalizedHeight = () => null;
-const getPendingTransactions = () => ({ data: [], meta: {} });
 
 module.exports = {
 	...require('./coreCache'),
@@ -100,7 +99,8 @@ module.exports = {
 	calculateAvgFeePerByte: nop,
 	calculateWeightedAvg: nop,
 	updateFinalizedHeight,
-	getPendingTransactions,
+	getPendingTransactions: nop,
+	loadAllPendingTransactions: nop,
 	events,
 	init: nop,
 };
