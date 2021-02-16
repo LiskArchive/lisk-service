@@ -23,7 +23,11 @@ const { isProperObject } = ObjectUtilService;
 
 const getForgers = async params => {
 	const forgers = await coreApi.getForgers(params);
-	forgers.data = forgers.data.map(forger => getBase32AddressFromHex(forger.address));
+	forgers.data = forgers.data
+		.map(forger => ({
+			...forger,
+			address: getBase32AddressFromHex(forger.address),
+		}));
 	const forgerAddresses = forgers.data.map(forger => forger.address);
 	const forgerAccounts = await getAccounts({
 		addresses: forgerAddresses,

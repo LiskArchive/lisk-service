@@ -150,6 +150,7 @@ const getAccounts = async params => {
 			property: 'address',
 			values: params.addresses,
 		};
+		delete params.addresses;
 	}
 
 	const resultSet = await accountsDB.find(params);
