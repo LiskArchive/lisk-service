@@ -17,6 +17,7 @@ const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const {
+	indexAccountsbyAddress,
 	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountInfo,
@@ -51,6 +52,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 const indexTransactions = async blocks => {
 	const transactionsDB = await getTransactionsIndex();
 	const publicKeysToIndex = [];
+	const recipientAddressesToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
@@ -61,6 +63,7 @@ const indexTransactions = async blocks => {
 			tx.timestamp = block.timestamp;
 			tx.amount = tx.asset.amount || null;
 			tx.recipientId = tx.asset.recipientAddress || null;
+			if (tx.recipientId) recipientAddressesToIndex.push(tx.recipientId);
 			publicKeysToIndex.push(tx.senderPublicKey);
 			return tx;
 		});
@@ -69,6 +72,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
+	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(recipientAddressesToIndex);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };
 
