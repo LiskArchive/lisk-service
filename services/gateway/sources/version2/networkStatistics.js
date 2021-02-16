@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,35 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transaction = require('./mappings/transaction');
-
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions',
-	params: {
-		id: '=',
-		senderIdOrRecipientId: 'address',
-		senderId: 'sender',
-		moduleAssetId: '=',
-		moduleAssetName: '=',
-		recipientId: 'recipient',
-		offset: '=',
-		limit: '=',
-		amount: '=',
-		timestamp: '=',
-		blockId: 'block',
-		height: '=',
-		search: '=',
-		sort: '=',
-		data: '=',
-	},
+	method: 'core.peers.statistics',
+	params: {},
 	definition: {
-		data: ['data', transaction],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
+		data: {
+			basic: '=',
+			height: '=',
+			networkVersion: '=',
 		},
+		meta: {},
 		links: {},
 	},
 };

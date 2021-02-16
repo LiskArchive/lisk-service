@@ -239,6 +239,7 @@ const buildIndex = async (from, to) => {
 
 	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		/* eslint-disable no-await-in-loop */
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);

@@ -25,6 +25,7 @@ module.exports = {
 		senderPublicKey: { type: 'string' },
 		recipientId: { type: 'string' },
 		amount: { type: 'bigInteger' },
+		data: { type: 'string' },
 	},
 	indexes: {
 		height: { type: 'range' },
@@ -35,6 +36,7 @@ module.exports = {
 		senderPublicKey: { type: 'key' },
 		recipientId: { type: 'key' },
 		amount: { type: 'range' },
+		data: { type: 'key' },
 	},
 	purge: {},
 };

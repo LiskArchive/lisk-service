@@ -19,9 +19,9 @@ const coreApi = require('./coreApi');
 const {
 	indexAccountsbyAddress,
 	indexAccountsbyPublicKey,
-	getPublicKeyByAddress,
 	getIndexedAccountInfo,
 	getBase32AddressFromHex,
+	getAccountsBySearch,
 } = require('./accounts');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -92,6 +92,18 @@ const normalizeTransaction = tx => {
 };
 
 const validateParams = async params => {
+	if (params.timestamp && params.timestamp.includes(':')) [params.fromTimestamp, params.toTimestamp] = params.timestamp.split(':');
+	delete params.timestamp;
+
+	if (params.amount && params.amount.includes(':')) {
+		params.propBetween = {
+			property: 'amount',
+			from: params.amount.split(':')[0],
+			to: params.amount.split(':')[1],
+		};
+		delete params.amount;
+	}
+
 	if (params.fromTimestamp || params.toTimestamp) {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
@@ -102,13 +114,58 @@ const validateParams = async params => {
 		delete params.fromTimestamp;
 		delete params.toTimestamp;
 	}
+
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
-		return new Error('Nonce based sorting is only possible along with senderId');
+		throw new Error('Nonce based sorting is only possible along with senderId');
 	}
-	if (params.senderId) params.senderPublicKey = await getPublicKeyByAddress(params.senderId);
-	delete params.senderId;
+
+	if (params.username) {
+		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		params.senderPublicKey = accountInfo.publicKey;
+		delete params.username;
+	}
+
+	if (params.senderIdOrRecipientId) {
+		params.senderId = params.senderIdOrRecipientId;
+		params.orWhere = { recipientId: params.senderIdOrRecipientId };
+		delete params.senderIdOrRecipientId;
+	}
+
+	if (params.senderId) {
+		const account = await getIndexedAccountInfo({ address: params.senderId });
+		params.senderPublicKey = account.publicKey;
+		delete params.senderId;
+	}
+
+	if (params.search) {
+		const accounts = await getAccountsBySearch('username', params.search);
+		delete params.search;
+		const publicKeys = accounts.map(account => account.publicKey);
+		const addresses = await BluebirdPromise.map(
+			accounts,
+			async account => {
+				const accountInfo = await getIndexedAccountInfo({ address: account.address });
+				publicKeys.push(accountInfo.publicKey);
+				return account.address;
+			},
+			{ concurrency: accounts.length },
+		);
+		params.whereIn = { property: 'senderPublicKey', values: publicKeys };
+		params.orWhereIn = { property: 'recipientId', values: addresses };
+	}
+
+	if (params.data) {
+		params.search = {
+			property: 'data',
+			pattern: params.data,
+		};
+		delete params.data;
+	}
+
 	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
 	delete params.moduleAssetName;
+
 	return params;
 };
 
@@ -122,6 +179,7 @@ const getTransactions = async params => {
 	params = await validateParams(params);
 
 	const resultSet = await transactionsDB.find(params);
+	const total = await transactionsDB.count(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	if (params.ids || params.id) {
 		const response = await coreApi.getTransactions(params);
@@ -143,7 +201,7 @@ const getTransactions = async params => {
 			{ concurrency: transactions.data.length },
 		);
 	}
-	transactions.meta.total = transactions.meta.count;
+	transactions.meta.total = total;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset || 0;
 	return transactions;
