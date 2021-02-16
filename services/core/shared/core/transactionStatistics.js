@@ -20,22 +20,30 @@ const config = require('../../config');
 const requestAll = require('../requestAll');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
-const getDbInstance = require('../database/pouchdb');
+const mysql = require('../indexdb/mysql');
+
+const tableConfig = {
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string' },
+		date: { type: 'integer' },
+		numberOfTransactions: { type: 'integer' },
+	},
+	indexes: {
+		date: { type: 'range' },
+	},
+};
+
+const getDbInstance = () => mysql('transaction_statistics', tableConfig);
 
 const queueName = 'transactionStatisticsQueue';
 const queueOptions = config.queue[queueName];
 
 const getSelector = (params) => {
-	const result = {};
-
-	const selector = {};
-	if (params.dateFrom || params.dateTo) selector.date = {};
-	if (params.dateFrom) Object.assign(selector.date, { $gte: params.dateFrom.toISOString() });
-	if (params.dateTo) Object.assign(selector.date, { $lte: params.dateTo.toISOString() });
-	// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-	result.selector = selector;
-
-	return result;
+	const result = { property: 'date' };
+	if (params.dateFrom) result.from = params.dateFrom.unix();
+	if (params.dateTo) result.from = params.dateTo.unix();
+	return { propBetweens: [result] };
 };
 
 const getWithFallback = (acc, type, range) => {
@@ -95,16 +103,17 @@ const transformStatsObjectToList = statsObject => (
 );
 
 const insertToDb = async (statsList, date) => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
-	await db.deleteByProperty('date', date);
+	const [{ id }] = db.find({ date });
+	await db.deleteIds([id]);
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
 		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});
-	await db.writeBatch(statsList);
+	await db.upsert(statsList);
 
 	const count = statsList.reduce((acc, row) => acc + row.count, 0);
 	return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
@@ -140,7 +149,7 @@ const queueJob = async (job) => {
 const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOptions);
 
 const getStatsTimeline = async params => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
 	const result = await db.find(getSelector(params));
 
@@ -171,7 +180,7 @@ const getStatsTimeline = async params => {
 };
 
 const getDistributionByAmount = async params => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
 	const result = await db.find(getSelector(params));
 
@@ -192,7 +201,7 @@ const getDistributionByAmount = async params => {
 };
 
 const getDistributionByType = async params => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
 	const result = await db.find(getSelector(params));
 
@@ -213,11 +222,11 @@ const getDistributionByType = async params => {
 };
 
 const fetchTransactionsForPastNDays = async n => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 	[...Array(n)].forEach(async (_, i) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
-			.toISOString();
-		const shouldUpdate = i === 0 || !((await db.findOneByProperty('date', date)).length);
+			.unix();
+		const shouldUpdate = i === 0 || !((await db.find({ date })).length);
 		if (shouldUpdate) {
 			let attempt = 0;
 			const options = {
