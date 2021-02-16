@@ -101,7 +101,7 @@ const validateParams = async params => {
 	if (params.fromTimestamp || params.toTimestamp) {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
-			property: 'unixTimestamp',
+			property: 'timestamp',
 			from: Number(params.fromTimestamp) || 0,
 			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
 		});
@@ -173,6 +173,7 @@ const getTransactions = async params => {
 	params = await validateParams(params);
 
 	const resultSet = await transactionsDB.find(params);
+	const total = await transactionsDB.count(params);
 	if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	if (params.ids || params.id) {
 		const response = await coreApi.getTransactions(params);
@@ -194,7 +195,7 @@ const getTransactions = async params => {
 			{ concurrency: transactions.data.length },
 		);
 	}
-	transactions.meta.total = transactions.meta.count;
+	transactions.meta.total = total;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset || 0;
 	return transactions;
