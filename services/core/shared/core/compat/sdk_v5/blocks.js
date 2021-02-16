@@ -20,8 +20,9 @@ const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
 const {
-	// indexAccountsbyPublicKey,
+	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
+	getHexAddressFromBase32,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
@@ -53,17 +54,9 @@ const indexBlocks = async job => {
 	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const publicKeysToIndex = [];
-	const skimmedBlocks = blocks.map(block => {
-		const skimmedBlock = {};
-		skimmedBlock.id = block.id;
-		skimmedBlock.height = block.height;
-		skimmedBlock.timestamp = block.timestamp;
-		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
-		publicKeysToIndex.push(block.generatorPublicKey);
-		return skimmedBlock;
-	});
-	await blocksDB.upsert(skimmedBlocks);
-	// await indexAccountsbyPublicKey(publicKeysToIndex);
+	blocks.map(block => publicKeysToIndex.push(block.generatorPublicKey));
+	await blocksDB.upsert(blocks);
+	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(blocks);
 	await indexVotes(blocks);
 };
@@ -77,7 +70,8 @@ const normalizeBlocks = async blocks => {
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
-			block.generatorAddress = account && account.address ? account.address : undefined;
+			block.generatorAddress = account && account.address
+				? getHexAddressFromBase32(account.address) : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
 
 			block.totalForged = Number(block.reward);
@@ -136,6 +130,18 @@ const isQueryFromIndex = params => {
 	return !isDirectQuery && !isLatestBlockFetch;
 };
 
+const indexNewBlocks = async blocks => {
+	const blocksDB = await getBlocksIndex();
+	if (blocks.data.length === 1) {
+		const [block] = blocks.data;
+		const resultSet = await blocksDB.find({ id: block.id });
+		if (!resultSet.length) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+
+		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
+		if (block.height > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', block.height);
+	}
+};
+
 const getBlocks = async params => {
 	const blocksDB = await getBlocksIndex();
 	const blocks = {
@@ -147,6 +153,8 @@ const getBlocks = async params => {
 	if (!params.limit) params.limit = 10;
 	if (!params.offset) params.offset = 0;
 	if (!params.sort) params.sort = 'height:desc';
+
+	const originalParams = { ...params };
 
 	let accountInfo;
 	if (params.publicKey) accountInfo = { publicKey: params.publicKey };
@@ -207,13 +215,12 @@ const getBlocks = async params => {
 		blocks.data = await getLastBlock();
 	}
 
-	if (blocks.data.length === 1) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+	indexNewBlocks(blocks);
 
 	blocks.meta = {
 		count: blocks.data.length,
-		offset: params.offset,
-		total: 0,
-		// TODO: Merge 'Fix transaction endpoint pagination and address param #340' for total/offset
+		offset: originalParams.offset,
+		total: await blocksDB.count(originalParams),
 	};
 
 	return blocks;

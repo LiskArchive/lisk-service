@@ -13,34 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheLRU } = require('lisk-service-framework');
-
-const config = require('../../../../config');
 const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
-const cache = CacheLRU();
-const getCacheKey = (key, value) => `account:${key}:${value}`;
-
 const getCachedAccountBy = async (key, value) => {
 	const accountsDB = await getAccountsIndex();
-	const cacheKey = getCacheKey(key, value);
-	let account = await cache.get(cacheKey);
-	if (!account) {
-		const [result] = await accountsDB.find({ [key]: value });
-		if (result === undefined) {
-			const expireMiliseconds = config.ttl.affectedByNewBlocks;
-			await cache.set(cacheKey, null, expireMiliseconds);
-			return null;
-		}
-		const { address, username, publicKey } = result;
-		account = { address, username, publicKey };
-		Object.entries(account).forEach(async ([k, v]) => {
-			if (v) await cache.set(getCacheKey(k, v), account);
-		});
-	}
+	const [result] = await accountsDB.find({ [key]: value });
+	if (!result) return null;
+	const { address, username, publicKey } = result;
+	const account = { address, username, publicKey };
 	return account;
 };
 

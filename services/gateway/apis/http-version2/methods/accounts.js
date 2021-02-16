@@ -22,8 +22,8 @@ module.exports = {
 	rpcMethod: 'get.accounts',
 	tags: ['Accounts'],
 	params: {
-		address: { optional: true, type: 'string', min: 3, max: 41 }, // TODO: pattern: /^lsk([a-hjkm-z]|[2-9]){38}$/ },
-		publicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
+		address: { optional: true, type: 'string', min: 3, max: 41, pattern: /^lsk([a-hjkm-z]|[2-9]){38}$/ },
+		publickey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
 		username: { optional: true, type: 'string', min: 1, max: 20, pattern: /^[a-z0-9!@$&_.]{1,20}$/ },
 		isDelegate: { optional: true, type: 'boolean', min: 1, pattern: /^(true|false)$/ },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
