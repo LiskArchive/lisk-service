@@ -153,6 +153,8 @@ const getBlocks = async params => {
 	if (!params.offset) params.offset = 0;
 	if (!params.sort) params.sort = 'height:desc';
 
+	const originalParams = { ...params };
+
 	let accountInfo;
 	if (params.publicKey) accountInfo = { publicKey: params.publicKey };
 	if (params.address) accountInfo = await getIndexedAccountInfo({ address: params.address });
@@ -216,8 +218,8 @@ const getBlocks = async params => {
 
 	blocks.meta = {
 		count: blocks.data.length,
-		offset: params.offset,
-		total: await blocksDB.count(params),
+		offset: originalParams.offset,
+		total: await blocksDB.count(originalParams),
 	};
 
 	return blocks;

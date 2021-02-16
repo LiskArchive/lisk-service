@@ -123,9 +123,9 @@ const getAccountsFromCore = async (params) => {
 		data: [],
 		meta: {},
 	};
-	const response = params.address
-		? await coreApi.getAccountByAddress(params.address)
-		: await coreApi.getAccountsByAddresses(params.addresses);
+	const response = params.addresses
+		? await coreApi.getAccountsByAddresses(params.addresses)
+		: await coreApi.getAccountByAddress(params.address);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
