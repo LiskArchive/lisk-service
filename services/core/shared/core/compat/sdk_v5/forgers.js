@@ -34,9 +34,11 @@ const getForgers = async params => {
 		limit: forgerAddresses.length,
 	});
 	forgers.data = forgers.data.map(forger => {
-		const filteredAcc = forgerAccounts.data.filter(account => account.address === forger.address);
-		forger.username = filteredAcc[0].dpos.delegate.username;
-		forger.totalVotesReceived = Number(filteredAcc[0].dpos.delegate.totalVotesReceived);
+		const [filteredAcc] = forgerAccounts.data.filter(account => account.address === forger.address);
+		if (filteredAcc) {
+			forger.username = filteredAcc.dpos.delegate.username;
+			forger.totalVotesReceived = Number(filteredAcc.dpos.delegate.totalVotesReceived);
+		}
 		return forger;
 	});
 	return isProperObject(forgers) && Array.isArray(forgers.data) ? forgers : [];
