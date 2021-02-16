@@ -21,6 +21,7 @@ const {
 	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountInfo,
+	getBase32AddressFromHex,
 } = require('./accounts');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -62,8 +63,10 @@ const indexTransactions = async blocks => {
 			tx.moduleAssetId = id;
 			tx.timestamp = block.timestamp;
 			tx.amount = tx.asset.amount || null;
-			tx.recipientId = tx.asset.recipientAddress || null;
-			if (tx.recipientId) recipientAddressesToIndex.push(tx.recipientId);
+			if (tx.asset.recipientAddress) {
+				tx.recipientId = getBase32AddressFromHex(tx.asset.recipientAddress);
+				recipientAddressesToIndex.push(tx.asset.recipientAddress);
+			}
 			publicKeysToIndex.push(tx.senderPublicKey);
 			return tx;
 		});
