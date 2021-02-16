@@ -113,7 +113,8 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 
 	paramReport.invalid = validator.validate(
 		dropEmptyProps(inputParams),
-		looseSpecParams(specParams));
+		looseSpecParams(specParams),
+	);
 	if (paramReport.invalid === true) paramReport.invalid = [];
 
 	return paramReport;

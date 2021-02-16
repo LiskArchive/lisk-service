@@ -71,7 +71,7 @@ const getAccounts = async params => {
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
 	try {
-		const response = await getDataForAccounts({ sort: 'balance:asc', ...params });
+		const response = await getDataForAccounts({ sort: 'balance:desc', ...params });
 
 		return {
 			data: response.data,
