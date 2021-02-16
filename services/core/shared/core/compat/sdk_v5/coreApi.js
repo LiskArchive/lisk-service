@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const { getApiClient } = require('../common/wsRequest');
+
+const logger = Logger();
 
 const getNetworkStatus = async () => {
     const apiClient = await getApiClient();
@@ -72,8 +75,13 @@ const getTransactions = async params => {
 
 const getAccountByAddress = async address => {
     const apiClient = await getApiClient();
-    const account = await apiClient.account.get(address);
-    return { data: [account] };
+    try {
+        const account = await apiClient.account.get(address);
+        return { data: [account] };
+    } catch (err) {
+        logger.warn(`The following address is not present in the blockchain: ${address}. It might be not fully synced on the Lisk Core/SDK end.`);
+        throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
+    }
 };
 
 const getAccountsByAddresses = async addresses => {
