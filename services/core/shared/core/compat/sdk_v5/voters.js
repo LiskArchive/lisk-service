@@ -18,7 +18,7 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 
-const { getIndexedAccountInfo } = require('./accounts');
+const { getIndexedAccountInfo, getBase32AddressFromHex } = require('./accounts');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
@@ -43,8 +43,8 @@ const indexVotes = async blocks => {
 					// TODO: Remove 'tempId' after composite PK support is added
 					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
 					voteEntry.id = tx.id;
-					voteEntry.sentAddress = extractAddressFromPublicKey(tx.senderPublicKey);
-					voteEntry.receivedAddress = vote.delegateAddress;
+					voteEntry.sentAddress = getBase32AddressFromHex(extractAddressFromPublicKey(tx.senderPublicKey));
+					voteEntry.receivedAddress = getBase32AddressFromHex(vote.delegateAddress);
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
 					return voteEntry;
@@ -93,7 +93,7 @@ const getVoters = async params => {
 			voteMultiArray
 				.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => ({
 					...normalizeVote(v),
-					sentAddress: extractAddressFromPublicKey(v.senderPublicKey),
+					sentAddress: getBase32AddressFromHex(extractAddressFromPublicKey(v.senderPublicKey)),
 				}))));
 			votes.data.votes = allVotes;
 		}
