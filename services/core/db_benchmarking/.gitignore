@@ -1,8 +1,0 @@
-# Database storage
-db_data
-
-# Test data holder
-testdata_*
-
-# Node dependencies
-node_modules
