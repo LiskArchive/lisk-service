@@ -14,16 +14,17 @@
  *
  */
 const { Utils } = require('lisk-service-framework');
+const { getAccounts } = require('./accounts');
+
 const coreApi = require('./coreApi');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
-// TODO: Update coreApi.getAccount() to account.getAccounts()
 const getForgers = async params => {
 	const forgers = await coreApi.getForgers(params);
 	const forgerAddresses = forgers.data.map(forger => forger.address);
-	const forgerAccounts = await coreApi.getAccounts({ addresses: forgerAddresses });
+	const forgerAccounts = await getAccounts({ addresses: forgerAddresses });
 	forgers.data = forgers.data.map(forger => {
 		const filteredAcc = forgerAccounts.data
 			.filter(account => account.address.toString('hex') === forger.address);
