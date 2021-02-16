@@ -186,6 +186,7 @@ const getTransactions = async params => {
 				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
 				transaction.senderId = account && account.address ? account.address : undefined;
 				transaction.username = account && account.username ? account.username : undefined;
+				transaction.isPending = false;
 				return transaction;
 			},
 			{ concurrency: transactions.data.length },

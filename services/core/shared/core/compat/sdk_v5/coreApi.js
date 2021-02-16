@@ -99,6 +99,13 @@ const getForgers = async () => {
     return { data: forgers };
 };
 
+const getPendingTransactions = async () => {
+    const apiClient = await getApiClient();
+    let transactions = await apiClient._channel.invoke('app:getTransactionsFromPool', {});
+    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
+    return { data: transactions };
+};
+
 module.exports = {
     getBlockByID,
     getBlocksByIDs,
@@ -111,4 +118,5 @@ module.exports = {
     getTransactions,
     getPeers,
     getForgers,
+    getPendingTransactions,
 };
