@@ -25,7 +25,10 @@ const getForgers = async params => {
 	const forgers = await coreApi.getForgers(params);
 	forgers.data = forgers.data.map(forger => getBase32AddressFromHex(forger.address));
 	const forgerAddresses = forgers.data.map(forger => forger.address);
-	const forgerAccounts = await getAccounts({ addresses: forgerAddresses, limit: forgerAddresses.length });
+	const forgerAccounts = await getAccounts({
+		addresses: forgerAddresses,
+		limit: forgerAddresses.length,
+	});
 	forgers.data = forgers.data.map(forger => {
 		const filteredAcc = forgerAccounts.data.filter(account => account.address === forger.address);
 		forger.username = filteredAcc[0].dpos.delegate.username;
