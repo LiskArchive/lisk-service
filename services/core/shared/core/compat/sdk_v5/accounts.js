@@ -199,6 +199,18 @@ const getMultisignatureGroups = async account => {
 	return multisignatureAccount;
 };
 
+const indexAccountsbyAddress = async (addressesToIndex) => {
+	const accountsToIndex = await BluebirdPromise.map(
+		addressesToIndex,
+		async address => {
+			const account = (await getAccountsFromCore({ address })).data[0];
+			return account;
+		},
+		{ concurrency: addressesToIndex.length },
+	);
+	indexAccountsQueue.add('indexAccountsQueue', { accounts: accountsToIndex });
+};
+
 const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
 		publicKeysToIndex,
@@ -219,6 +231,7 @@ module.exports = {
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
+	indexAccountsbyAddress,
 	indexAccountsbyPublicKey,
 	getPublicKeyByAddress,
 	getIndexedAccountInfo,
