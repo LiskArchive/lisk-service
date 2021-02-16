@@ -198,7 +198,19 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const getTransactionsByBlockId = async blockId => {
+	const transactions = await getTransactions({ blockId });
+	return {
+		data: transactions,
+		meta: {
+			offset: 0,
+			count: transactions.length,
+		},
+	};
+};
+
 module.exports = {
 	getTransactions,
 	indexTransactions,
+	getTransactionsByBlockId,
 };
