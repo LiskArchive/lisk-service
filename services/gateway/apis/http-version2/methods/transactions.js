@@ -36,7 +36,7 @@ module.exports = {
 		data: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100 },
 		offset: { optional: true, type: 'number', min: 0 },
-		includePending: { optional: true, type: 'boolean', convert: true, default: false },
+		includePending: { optional: true, type: 'boolean', default: false },
 		sort: {
 			optional: true,
 			type: 'string',
