@@ -37,10 +37,6 @@ const {
     validateTimestamp,
 } = require('./time');
 
-const {
-    parseToJSONCompatObj,
-} = require('./utils');
-
 module.exports = {
     http,
 
@@ -59,6 +55,4 @@ module.exports = {
     getEpochUnixTime,
     getUnixTime,
     validateTimestamp,
-
-    parseToJSONCompatObj,
 };

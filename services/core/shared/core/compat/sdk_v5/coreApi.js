@@ -70,18 +70,17 @@ const getTransactions = async params => {
     return { data: result };
 };
 
-const getAccounts = async params => {
+const getAccountByAddress = async address => {
     const apiClient = await getApiClient();
-    let account;
-    let accounts;
-    if (params.address) {
-        account = await apiClient.account.get(params.address);
-    } else if (params.addresses) {
-        accounts = await apiClient._channel.invoke('app:getAccounts', { address: params.addresses });
-    }
-    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
-    const result = accounts || [account];
-    return { data: result };
+    const account = await apiClient.account.get(address);
+    return { data: [account] };
+};
+
+const getAccountsByAddresses = async addresses => {
+    const apiClient = await getApiClient();
+    const encodedAccounts = await apiClient._channel.invoke('app:getAccounts', { address: addresses });
+    const accounts = encodedAccounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
+    return { data: accounts };
 };
 
 const getPeers = async (state = 'connected') => {
@@ -113,7 +112,8 @@ module.exports = {
     getBlockByHeight,
     getBlocksByHeightBetween,
     getLastBlock,
-    getAccounts,
+    getAccountByAddress,
+    getAccountsByAddresses,
     getNetworkStatus,
     getTransactions,
     getPeers,

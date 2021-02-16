@@ -14,12 +14,12 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
+const { getAddressFromPublicKey, getBase32AddressFromAddress, getAddressFromBase32Address } = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
 const { initializeQueue } = require('../../queue');
-const { parseToJSONCompatObj } = require('../common');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
@@ -29,10 +29,7 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const balanceUnlockWaitHeightSelf = 260000;
 const balanceUnlockWaitHeightDefault = 2000;
 
-const parseAddress = address => {
-	if (typeof address !== 'string') return '';
-	return address.toUpperCase();
-};
+const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
 
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
@@ -66,6 +63,21 @@ const getAccountsBySearch = async (searchProp, searchString) => {
 	return account;
 };
 
+const getHexAddressFromPublicKey = publicKey => {
+	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
+	return binaryAddress.toString('hex');
+};
+
+const getBase32AddressFromHex = address => {
+	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
+	return base32Address;
+};
+
+const getHexAddressFromBase32 = address => {
+	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
+	return binaryAddress;
+};
+
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
 		account.dpos.unlocking = account.dpos.unlocking.map(item => {
@@ -85,26 +97,18 @@ const resolveAccountsInfo = async accounts => {
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
-	const skimmedAccounts = await BluebirdPromise.map(
-		accounts,
-		async account => {
-			const skimmedAccount = {};
-			skimmedAccount.address = account.address;
-			skimmedAccount.publicKey = account.publicKey;
-			skimmedAccount.isDelegate = account.isDelegate;
-			skimmedAccount.username = account.dpos.delegate.username || null;
-			skimmedAccount.balance = account.token.balance;
-			return skimmedAccount;
-		},
-		{ concurrency: accounts.length },
-	);
-	await accountsDB.upsert(skimmedAccounts);
+	accounts.map(account => {
+		account.username = account.dpos.delegate.username || null;
+		account.balance = account.token.balance;
+		return account;
+	});
+	await accountsDB.upsert(accounts);
 };
 
 const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
 
 const normalizeAccount = account => {
-	account.address = account.address.toString('hex');
+	account.address = getBase32AddressFromHex(account.address.toString('hex'));
 	account.isDelegate = !(account.dpos && Number(account.dpos.delegate.totalVotesReceived) === 0);
 	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
 	account.token.balance = Number(account.token.balance);
@@ -112,7 +116,7 @@ const normalizeAccount = account => {
 
 	if (account.dpos) account.dpos.sentVotes = account.dpos.sentVotes
 		.map(vote => {
-			vote.delegateAddress = vote.delegateAddress.toString('hex');
+			vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress.toString('hex'));
 			vote.amount = Number(vote.amount);
 			return vote;
 		});
@@ -125,7 +129,9 @@ const getAccountsFromCore = async (params) => {
 		data: [],
 		meta: {},
 	};
-	const response = await coreApi.getAccounts(params);
+	const response = params.addresses
+		? await coreApi.getAccountsByAddresses(params.addresses)
+		: await coreApi.getAccountByAddress(params.address);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
@@ -145,12 +151,19 @@ const getAccounts = async params => {
 			return {};
 		}
 	}
+	if (params.addresses) {
+		params.whereIn = {
+			property: 'address',
+			values: params.addresses,
+		};
+		delete params.addresses;
+	}
+
 	const resultSet = await accountsDB.find(params);
-	if (resultSet.length) params.addresses = resultSet.map(row => row.address);
+	if (resultSet.length) params.addresses = resultSet
+		.map(row => getHexAddressFromBase32(row.address));
 
 	const accounts = await getAccountsFromCore(params);
-
-	if (!resultSet.length && accounts.data.length) indexAccountsQueue.add('indexAccountsQueue', { accounts: accounts.data });
 
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
@@ -196,7 +209,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
 		publicKeysToIndex,
 		async publicKey => {
-			const address = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
+			const address = getHexAddressFromPublicKey(publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = publicKey;
 			return account;
@@ -215,4 +228,6 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
+	getBase32AddressFromHex,
+	getHexAddressFromBase32,
 };
