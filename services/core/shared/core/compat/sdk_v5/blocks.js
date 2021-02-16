@@ -77,6 +77,7 @@ const normalizeBlocks = async blocks => {
 			block.totalForged = Number(block.reward);
 			block.totalBurnt = 0;
 			block.totalFee = 0;
+			block.numberOfTransactions = block.payload.length;
 
 			block.payload.forEach(txn => {
 				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
@@ -303,4 +304,5 @@ module.exports = {
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
+	normalizeBlocks,
 };
