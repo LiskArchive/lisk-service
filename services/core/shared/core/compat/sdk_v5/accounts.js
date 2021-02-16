@@ -139,13 +139,19 @@ const getAccounts = async params => {
 	}
 	if (params.address && typeof params.address === 'string') {
 		if (!(await confirmAddress(params.address))) return {};
-		params.address = getHexAddressFromBase32(params.address);
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey) || !(await confirmPublicKey(params.publicKey))) {
 			return {};
 		}
 	}
+	if (params.addresses) {
+		params.whereIn = {
+			property: 'address',
+			values: params.addresses,
+		};
+	}
+
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet.map(row => getHexAddressFromBase32(row.address));
 
