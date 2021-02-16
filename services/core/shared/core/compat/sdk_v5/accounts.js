@@ -153,7 +153,8 @@ const getAccounts = async params => {
 	}
 
 	const resultSet = await accountsDB.find(params);
-	if (resultSet.length) params.addresses = resultSet.map(row => getHexAddressFromBase32(row.address));
+	if (resultSet.length) params.addresses = resultSet
+		.map(row => getHexAddressFromBase32(row.address));
 
 	const accounts = await getAccountsFromCore(params);
 

@@ -70,7 +70,8 @@ const normalizeBlocks = async blocks => {
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
-			block.generatorAddress = account && account.address ? getHexAddressFromBase32(account.address) : undefined;
+			block.generatorAddress = account && account.address
+				? getHexAddressFromBase32(account.address) : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
 
 			block.totalForged = Number(block.reward);
