@@ -43,7 +43,9 @@ const indexVotes = async blocks => {
 					// TODO: Remove 'tempId' after composite PK support is added
 					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
 					voteEntry.id = tx.id;
-					voteEntry.sentAddress = getBase32AddressFromHex(extractAddressFromPublicKey(tx.senderPublicKey));
+					voteEntry.sentAddress = getBase32AddressFromHex(
+						extractAddressFromPublicKey(tx.senderPublicKey),
+					);
 					voteEntry.receivedAddress = getBase32AddressFromHex(vote.delegateAddress);
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
