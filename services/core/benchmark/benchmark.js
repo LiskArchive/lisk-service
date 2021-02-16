@@ -1,7 +1,7 @@
 const fs = require('fs');
 const file = require('./fileUtils');
 
-const { redis, knex } = require('../shared/database');
+const { redis, knex } = require('../shared/indexdb/mysql');
 
 const migrationDir = './knex_migrations';
 const redisEndpoint = 'redis://localhost:6379/10';
