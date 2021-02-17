@@ -30,6 +30,10 @@ const register = async (events) => {
 		events.newBlock(newBlock);
 		// events.calculateFeeEstimate();
 	});
+
+	apiClient.subscribe('app:chain:validators:change', data => {
+		events.newRound(data);
+	});
 };
 
 module.exports = { register };
