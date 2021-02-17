@@ -209,9 +209,29 @@ const getTransactions = async params => {
 };
 
 const getTransactionsByBlockId = async blockId => {
-	const transactionsDB = await getTransactionsIndex();
-	const limit = await transactionsDB.count({ blockId }) || 100;
-	return getTransactions({ blockId, limit });
+	const [block] = (await coreApi.getBlockByID(blockId)).data;
+	const transactions = await BluebirdPromise.map(
+		block.payload,
+		async transaction => {
+			transaction.unixTimestamp = block.header.timestamp;
+			transaction.height = block.header.height;
+			transaction.blockId = block.header.id;
+			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			transaction.senderId = account && account.address ? account.address : undefined;
+			transaction.username = account && account.username ? account.username : undefined;
+			transaction.isPending = false;
+			return transaction;
+		},
+		{ concurrency: block.payload.length },
+	);
+	return {
+		data: transactions.map(tx => normalizeTransaction(tx)),
+		meta: {
+			offset: 0,
+			count: transactions.length,
+			total: transactions.length,
+		},
+	};
 };
 
 module.exports = {
