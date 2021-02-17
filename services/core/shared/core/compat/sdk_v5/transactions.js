@@ -208,7 +208,11 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const getTransactionsByBlockId = blockId => getTransactions({ blockId });
+const getTransactionsByBlockId = async blockId => {
+	const transactionsDB = await getTransactionsIndex();
+	const limit = await transactionsDB.count({ blockId }) || 100;
+	return getTransactions({ blockId, limit });
+};
 
 module.exports = {
 	getTransactions,
