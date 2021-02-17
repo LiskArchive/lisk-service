@@ -163,7 +163,7 @@ const getBlocks = async params => {
 	if (params.username) accountInfo = await getIndexedAccountInfo({ username: params.username });
 	if (accountInfo && accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
 
-	if (params.height && params.height.includes(':')) {
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
 		const [from, to] = params.height.split(':');
 		if (from > to) return new Error('From height cannot be greater than to height');
 		if (!params.propBetweens) params.propBetweens = [];
@@ -274,6 +274,9 @@ const init = async () => {
 		const blockIndexLowerRange = config.indexNumOfBlocks > 0
 			? currentHeight - config.indexNumOfBlocks : genesisHeight;
 		const blockIndexHigherRange = currentHeight;
+
+		// Index genesis block first
+		await getBlocks({ height: genesisHeight });
 
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
