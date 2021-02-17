@@ -19,27 +19,24 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const {
-	TransferTransaction,
-	DelegateTransaction,
-	MultisignatureTransaction,
-	VoteTransaction,
-	UnlockTransaction,
-	ProofOfMisbehaviorTransaction,
-} = require('@liskhq/lisk-transactions-v4');
-
 const util = require('util');
 
-const { getSDKVersion, getCoreVersion, mapToOriginal } = require('./compat');
+const {
+	getSDKVersion,
+	getCoreVersion,
+	mapToOriginal,
+	getTransactionInstanceByType,
+	calculateBlockSize,
+} = require('./compat');
+
 const { getBlocks, getLastBlock } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
-const config = require('../../config.js');
+const config = require('../../config');
 
 const sdkVersion = getSDKVersion();
 const logger = Logger();
 
-const cacheRedisBlockSizes = CacheRedis('blockSizes', config.endpoints.redis);
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 const cacheKeyFeeEstNormal = 'lastFeeEstimate';
 const cacheKeyFeeEstQuick = 'lastFeeEstimateQuick';
@@ -53,41 +50,6 @@ const executionStatus = {
 const calcAvgFeeByteModes = {
 	MEDIUM: 'med',
 	HIGH: 'high',
-};
-
-const getTransactionInstanceByType = transaction => {
-	const transactionMap = {
-		8: TransferTransaction,
-		10: DelegateTransaction,
-		12: MultisignatureTransaction,
-		13: VoteTransaction,
-		14: UnlockTransaction,
-		15: ProofOfMisbehaviorTransaction,
-	};
-
-	const TransactionClass = transactionMap[transaction.type];
-	const tx = new TransactionClass(transaction);
-	return tx;
-};
-
-const calculateBlockSize = async block => {
-	const cachedBlockSize = await cacheRedisBlockSizes.get(block.id);
-	if (cachedBlockSize) return cachedBlockSize;
-
-	let blockSize = 0;
-	if (block.numberOfTransactions === 0) return blockSize;
-
-	const payload = block.transactions.data;
-	const transactionSizes = payload.map(transaction => {
-		const tx = getTransactionInstanceByType(transaction);
-		const transactionSize = tx.getBytes().length;
-		return transactionSize;
-	});
-
-	blockSize = transactionSizes.reduce((a, b) => a + b, 0);
-	await cacheRedisBlockSizes.set(block.id, blockSize, 300); // Cache for 5 mins
-
-	return blockSize;
 };
 
 const calculateWeightedAvg = async blocks => {
