@@ -74,12 +74,13 @@ const normalizeBlocks = async blocks => {
 			block.generatorAddress = account && account.address
 				? getHexAddressFromBase32(account.address) : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
+			block.numberOfTransactions = block.payload.length;
+
 			block.size = await calculateBlockSize(block);
 
 			block.totalForged = Number(block.reward);
 			block.totalBurnt = 0;
 			block.totalFee = 0;
-			block.numberOfTransactions = block.payload.length;
 
 			block.payload.forEach(txn => {
 				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
