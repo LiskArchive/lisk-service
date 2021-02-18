@@ -1,7 +1,10 @@
 .PHONY: clean coldstart mrproper up
 all: up
 
+compose := docker-compose \
+	-f docker-compose.lisk.core.yml \
+
 lisk-core:
-	docker-compose docker-compose.lisk.core.yml up --detach
+	$(compose) up --detach
 
 mrproper: down
