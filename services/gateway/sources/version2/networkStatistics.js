@@ -13,27 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const account = require('./mappings/account');
-
 module.exports = {
 	type: 'moleculer',
-	method: 'core.accounts',
-	params: {
-		address: '=',
-		publicKey: '=',
-		username: '=',
-		isDelegate: '=,boolean',
-		limit: '=',
-		offset: '=',
-		sort: '=',
-	},
+	method: 'core.peers.statistics',
+	params: {},
 	definition: {
-		data: ['data', account],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
+		data: {
+			basic: '=',
+			height: '=',
+			networkVersion: '=',
 		},
+		meta: {},
 		links: {},
 	},
 };

@@ -34,6 +34,7 @@ module.exports = {
 		search: '=',
 		sort: '=',
 		data: '=',
+		includePending: '=,boolean',
 	},
 	definition: {
 		data: ['data', transaction],

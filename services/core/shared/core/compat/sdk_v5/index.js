@@ -34,6 +34,7 @@ const {
 
 const {
     getTransactions,
+    getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
@@ -63,6 +64,11 @@ const {
     getVoters,
 } = require('./voters');
 
+const {
+    getPendingTransactions,
+    loadAllPendingTransactions,
+} = require('./pendingTransactions');
+
 const nop = async () => { };
 
 module.exports = {
@@ -83,6 +89,10 @@ module.exports = {
     getNetworkStatus,
 
     getTransactions,
+    getTransactionsByBlockId,
+
+    getPendingTransactions,
+    loadAllPendingTransactions,
 
     peerStates,
     getPeers,

@@ -77,6 +77,7 @@ const normalizeBlocks = async blocks => {
 			block.totalForged = Number(block.reward);
 			block.totalBurnt = 0;
 			block.totalFee = 0;
+			block.numberOfTransactions = block.payload.length;
 
 			block.payload.forEach(txn => {
 				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
@@ -162,7 +163,7 @@ const getBlocks = async params => {
 	if (params.username) accountInfo = await getIndexedAccountInfo({ username: params.username });
 	if (accountInfo && accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
 
-	if (params.height && params.height.includes(':')) {
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
 		const [from, to] = params.height.split(':');
 		if (from > to) return new Error('From height cannot be greater than to height');
 		if (!params.propBetweens) params.propBetweens = [];
@@ -274,6 +275,9 @@ const init = async () => {
 			? currentHeight - config.indexNumOfBlocks : genesisHeight;
 		const blockIndexHigherRange = currentHeight;
 
+		// Index genesis block first
+		await getBlocks({ height: genesisHeight });
+
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
 		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
@@ -303,4 +307,5 @@ module.exports = {
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
+	normalizeBlocks,
 };

@@ -17,8 +17,10 @@ const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const {
+	indexAccountsbyAddress,
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
+	getBase32AddressFromHex,
 	getAccountsBySearch,
 } = require('./accounts');
 const { getRegisteredModuleAssets } = require('../common');
@@ -51,6 +53,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 const indexTransactions = async blocks => {
 	const transactionsDB = await getTransactionsIndex();
 	const publicKeysToIndex = [];
+	const recipientAddressesToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
@@ -60,7 +63,10 @@ const indexTransactions = async blocks => {
 			tx.moduleAssetId = id;
 			tx.timestamp = block.timestamp;
 			tx.amount = tx.asset.amount || null;
-			tx.recipientId = tx.asset.recipientAddress || null;
+			if (tx.asset.recipientAddress) {
+				tx.recipientId = getBase32AddressFromHex(tx.asset.recipientAddress);
+				recipientAddressesToIndex.push(tx.asset.recipientAddress);
+			}
 			publicKeysToIndex.push(tx.senderPublicKey);
 			return tx;
 		});
@@ -69,6 +75,7 @@ const indexTransactions = async blocks => {
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
 	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
+	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(recipientAddressesToIndex);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };
 
@@ -78,6 +85,9 @@ const normalizeTransaction = tx => {
 	tx = parseToJSONCompatObj(tx);
 	tx.moduleAssetId = id;
 	tx.moduleAssetName = name;
+	if (tx.asset.recipientAddress) {
+		tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
+	}
 	return tx;
 };
 
@@ -186,6 +196,7 @@ const getTransactions = async params => {
 				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
 				transaction.senderId = account && account.address ? account.address : undefined;
 				transaction.username = account && account.username ? account.username : undefined;
+				transaction.isPending = false;
 				return transaction;
 			},
 			{ concurrency: transactions.data.length },
@@ -197,7 +208,34 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const getTransactionsByBlockId = async blockId => {
+	const [block] = (await coreApi.getBlockByID(blockId)).data;
+	const transactions = await BluebirdPromise.map(
+		block.payload,
+		async transaction => {
+			transaction.unixTimestamp = block.header.timestamp;
+			transaction.height = block.header.height;
+			transaction.blockId = block.header.id;
+			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			transaction.senderId = account && account.address ? account.address : undefined;
+			transaction.username = account && account.username ? account.username : undefined;
+			transaction.isPending = false;
+			return transaction;
+		},
+		{ concurrency: block.payload.length },
+	);
+	return {
+		data: transactions.map(tx => normalizeTransaction(tx)),
+		meta: {
+			offset: 0,
+			count: transactions.length,
+			total: transactions.length,
+		},
+	};
+};
+
 module.exports = {
 	getTransactions,
 	indexTransactions,
+	getTransactionsByBlockId,
 };

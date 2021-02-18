@@ -29,6 +29,7 @@ const {
 	getPendingTransactions,
 	getTransactionById,
 	getTransactionsByBlockId,
+	loadAllPendingTransactions,
 } = require('./transactions');
 
 const {
@@ -61,6 +62,7 @@ module.exports = {
 	getDelegates,
 	getNextForgers,
 	getPendingTransactions,
+	loadAllPendingTransactions,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getVotes,
