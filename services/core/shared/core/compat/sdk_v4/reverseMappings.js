@@ -43,10 +43,7 @@ const mapTransaction = transaction => {
 };
 
 const responseMappers = {
-    transactions: response => {
-        response.data = response.data.map(mapTransaction);
-        return response;
-    },
+    transactions: response => response.map(mapTransaction),
 };
 
 const mapToOriginal = (response, type) => {

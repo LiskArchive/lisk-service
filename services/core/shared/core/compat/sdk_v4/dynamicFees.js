@@ -50,8 +50,7 @@ const calculateBlockSize = async block => {
 	let blockSize = 0;
 	if (block.numberOfTransactions === 0) return blockSize;
 
-	const payload = block.transactions.data;
-	const transactionSizes = payload.map(transaction => {
+	const transactionSizes = block.payload.map(transaction => {
 		const tx = getTransactionInstanceByType(transaction);
 		const transactionSize = tx.getBytes().length;
 		return transactionSize;

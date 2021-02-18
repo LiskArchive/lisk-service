@@ -33,6 +33,7 @@ const {
 const { getBlocks, getLastBlock } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
+const requestAll = require('../requestAll');
 const config = require('../../config');
 
 const sdkVersion = getSDKVersion();
@@ -103,8 +104,7 @@ const calculateAvgFeePerByte = (mode, transactionDetails) => {
 
 const calculateFeePerByte = async block => {
 	const feePerByte = {};
-	const payload = block.transactions.data;
-	const transactionDetails = payload.map(transaction => {
+	const transactionDetails = block.payload.map(transaction => {
 		const tx = getTransactionInstanceByType(transaction);
 		const transactionSize = tx.getBytes().length;
 		const { minFee } = tx;
@@ -204,8 +204,8 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		blockBatch.data = await BluebirdPromise.map(
 			blockBatch.data,
 			async block => {
-				const transactions = mapToOriginal(await getTransactions({ blockId: block.id }), 'transactions');
-				Object.assign(block, { transactions });
+				const transactions = mapToOriginal(await requestAll(getTransactions, { blockId: block.id }), 'transactions');
+				Object.assign(block, { payload: transactions });
 				return block;
 			},
 			{ concurrency: blockBatch.data.length },

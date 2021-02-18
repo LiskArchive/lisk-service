@@ -39,10 +39,10 @@ const {
 
 const {
 	getTransactionInstanceByType,
+	calculateBlockSize,
 } = require('../../shared/core/compat/sdk_v4');
 
 const {
-	calculateBlockSize,
 	calculateWeightedAvg,
 	calcAvgFeeByteModes,
 	calculateAvgFeePerByte,
@@ -201,7 +201,7 @@ describe('Fee estimation tests', () => {
 
 		it('Non-empty block', async () => {
 			const block = nonEmptyBlock;
-			block.transactions.data = block.transactions.data.map(transaction => {
+			block.transactions.data = block.payload.map(transaction => {
 				transaction.fee = BigInt(transaction.fee);
 				return transaction;
 			});
