@@ -34,6 +34,7 @@ const {
 
 const {
     getTransactions,
+    getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
@@ -88,6 +89,7 @@ module.exports = {
     getNetworkStatus,
 
     getTransactions,
+    getTransactionsByBlockId,
 
     getPendingTransactions,
     loadAllPendingTransactions,
