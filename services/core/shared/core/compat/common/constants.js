@@ -26,9 +26,15 @@ let constants;
 let readyStatus;
 let registeredLiskModuleAssets;
 
+const networkFeeConstants = {
+	minFeePerByte: undefined,
+	baseFeeByModuleAssetId: {},
+	baseFeeByModuleAssetName: {},
+};
+
 const setRegisteredmoduleAssets = moduleAssets => registeredLiskModuleAssets = moduleAssets;
 
-const resolvemoduleAssets = async (data) => {
+const resolvemoduleAssets = (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -47,6 +53,19 @@ const resolvemoduleAssets = async (data) => {
 	return result;
 };
 
+const resolveBaseFees = (networkConstants) => {
+	networkConstants.data.genesisConfig.baseFees.forEach(entry => {
+		const moduleAssetId = String(entry.moduleID).concat(':').concat(entry.assetID);
+		networkFeeConstants.baseFeeByModuleAssetId[moduleAssetId] = entry.baseFee;
+
+		const [moduleAsset] = networkConstants.data.moduleAssets.filter(entry => entry.id === moduleAssetId);
+		networkFeeConstants.baseFeeByModuleAssetName[moduleAsset.name] = entry.baseFee;
+	});
+	networkFeeConstants.minFeePerByte = networkConstants.data.genesisConfig.minFeePerByte;
+
+	return networkFeeConstants;
+};
+
 const getNetworkConstants = async () => {
 	try {
 		if (!constants) {
@@ -54,8 +73,10 @@ const getNetworkConstants = async () => {
 			if (Object.getOwnPropertyNames(result).length === 0) {
 				const apiClient = await getApiClient();
 				const info = await apiClient.node.getNodeInfo();
-				info.moduleAssets = await resolvemoduleAssets(info.registeredModules);
+				info.moduleAssets = resolvemoduleAssets(info.registeredModules);
 				result = { data: info };
+
+				resolveBaseFees(result);
 			}
 			if (!isProperObject(result)) return {};
 			constants = result;
@@ -78,6 +99,8 @@ const getReadyStatus = () => readyStatus;
 
 const getRegisteredModuleAssets = () => registeredLiskModuleAssets;
 
+const getNetworkFeeConstants = () => networkFeeConstants;
+
 module.exports = {
 	getNetworkConstants,
 	setCoreVersion,
@@ -87,4 +110,5 @@ module.exports = {
 	getRegisteredModuleAssets,
 	setRegisteredmoduleAssets,
 	resolvemoduleAssets,
+	getNetworkFeeConstants,
 };
