@@ -1,0 +1,15 @@
+version: "3"
+services:
+
+  lisk_core:
+    image: lisk/core:3.0.0-beta.4
+    networks:
+      - core_network
+    restart: always
+    ports:
+      - 8888:8888
+      - 8988:8988
+    entrypoint: /home/lisk/node_modules/.bin/lisk-core start --network=devnet --overwrite-config --api-ws --api-ws-port=8888 --enable-forger-plugin --enable-http-api-plugin --http-api-plugin-port=8988
+    # command: --network=devnet --overwrite-config --api-ws --api-ws-port=8888 --enable-forger-plugin --enable-http-api-plugin --http-api-plugin-port=8988
+networks:
+  core_network:
