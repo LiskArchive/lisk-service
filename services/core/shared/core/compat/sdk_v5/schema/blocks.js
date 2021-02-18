@@ -20,6 +20,7 @@ module.exports = {
 		height: { type: 'integer' },
 		timestamp: { type: 'integer' },
 		generatorPublicKey: { type: 'string' },
+		size: { type: 'integer' },
 	},
 	indexes: {
 		height: { type: 'range' },
