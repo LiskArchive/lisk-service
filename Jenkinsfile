@@ -120,15 +120,7 @@ services:
       - LISK_CONSOLE_LOG_LEVEL=debug
 EOF
 
-										rm -rf $WORKSPACE/$BRANCH_NAME-service/
-										cp -rf $WORKSPACE/lisk-service/docker/ $WORKSPACE/$BRANCH_NAME-service/
-
 										ENV_LISK_VERSION="$LISK_CORE_IMAGE_VERSION" lisk-core start --network=devnet --api-ws-port=8888 --enable-http-api-plugin --http-api-plugin-port=8988
-
-										cd -
-
-										cd $WORKSPACE/$BRANCH_NAME-service/
-										# TODO: use random port when the tests support it
 										cat <<EOF >docker-compose.override.yml
                 '''
                 dir('./docker') { sh "make -f ${Makefile} test-integration" }
