@@ -25,9 +25,9 @@ module.exports = {
 			minFeePerByte: '=',
 		},
 		meta: {
-			lastUpdate: '=,number',
-			lastBlockHeight: '=,number',
-			lastBlockId: '=,string',
+			lastUpdate: 'meta.updated,number',
+			lastBlockHeight: 'meta.blockHeight,number',
+			lastBlockId: 'meta.blockId,string',
 		},
 		links: {},
 	},
