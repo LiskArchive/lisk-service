@@ -101,31 +101,15 @@ pipeline {
             }
         }
 
-        stage('Run integration tests') {
-            steps {
-                dir('lisk') {
-                    checkout([$class: 'GitSCM',
-                    branches: [[name: "${params.LISK_CORE_VERSION}" ]],
-                    userRemoteConfigs: [[url: 'https://github.com/LiskHQ/lisk-core']]])
-                }
-                sh '''#!/bin/bash -xe
-                cat <<EOF >docker-compose.override.yml
-version: "3"
-services:
-
-  lisk:
-    ports:
-      - 8988:8988
-    environment:
-      - LISK_CONSOLE_LOG_LEVEL=debug
-EOF
-
-										ENV_LISK_VERSION="$LISK_CORE_IMAGE_VERSION" lisk-core start --network=devnet --api-ws-port=8888 --enable-http-api-plugin --http-api-plugin-port=8988
-										cat <<EOF >docker-compose.override.yml
-                '''
-                dir('./docker') { sh "make -f ${Makefile} test-integration" }
-            }
-        }
+		stage('Run integration tests') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./') { sh 'npm install -g lisk-core' }
+				}
+				sh 'lisk-core start --network=devnet --overwrite-config --api-ws --api-ws-port=8888 --enable-forger-plugin --enable-http-api-plugin --http-api-plugin-port=8988'
+				dir('./docker') { sh "make -f ${Makefile} test-integration" }
+			}
+		}
     }
     post {
         failure {
