@@ -109,12 +109,13 @@ pipeline {
                     userRemoteConfigs: [[url: 'https://github.com/LiskHQ/lisk-core']]])
                 }
                 sh '''#!/bin/bash -xe
+                cat <<EOF >docker-compose.override.yml
 version: "3"
 services:
 
   lisk:
     ports:
-      - 4000:4000
+      - 8988:8988
     environment:
       - LISK_CONSOLE_LOG_LEVEL=debug
 EOF
