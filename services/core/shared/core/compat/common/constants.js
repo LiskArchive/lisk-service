@@ -58,7 +58,7 @@ const resolveBaseFees = (networkConstants) => {
 		const moduleAssetId = String(entry.moduleID).concat(':').concat(entry.assetID);
 		networkFeeConstants.baseFeeByModuleAssetId[moduleAssetId] = entry.baseFee;
 
-		const [moduleAsset] = networkConstants.data.moduleAssets.filter(entry => entry.id === moduleAssetId);
+		const [moduleAsset] = networkConstants.data.moduleAssets.filter(o => o.id === moduleAssetId);
 		networkFeeConstants.baseFeeByModuleAssetName[moduleAsset.name] = entry.baseFee;
 	});
 	networkFeeConstants.minFeePerByte = networkConstants.data.genesisConfig.minFeePerByte;

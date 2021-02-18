@@ -292,11 +292,17 @@ const getEstimateFeeByte = async () => {
 
 	const cachedFeeEstPerByteNormal = await cacheRedisFees.get(cacheKeyFeeEstNormal);
 	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteNormal)}`);
-	if (validate(cachedFeeEstPerByteNormal, 15)) return { ...cachedFeeEstPerByteNormal, ...getNetworkFeeConstants() };
+	if (validate(cachedFeeEstPerByteNormal, 15)) return {
+		...cachedFeeEstPerByteNormal,
+		...getNetworkFeeConstants(),
+	};
 
 	const cachedFeeEstPerByteQuick = await cacheRedisFees.get(cacheKeyFeeEstQuick);
 	logger.debug(`Retrieved quick estimate: ${util.inspect(cachedFeeEstPerByteQuick)}`);
-	if (validate(cachedFeeEstPerByteQuick, 5)) return { ...cachedFeeEstPerByteQuick, ...getNetworkFeeConstants() };
+	if (validate(cachedFeeEstPerByteQuick, 5)) return {
+		...cachedFeeEstPerByteQuick,
+		...getNetworkFeeConstants(),
+	};
 
 	return {
 		data: { error: 'The estimates are currently under processing. Please retry in 30 seconds.' },
