@@ -24,6 +24,7 @@ const {
 	getIndexedAccountInfo,
 	getHexAddressFromBase32,
 } = require('./accounts');
+const { calculateBlockSize } = require('./dynamicFees');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
 const { getApiClient } = require('../common');
@@ -73,6 +74,7 @@ const normalizeBlocks = async blocks => {
 			block.generatorAddress = account && account.address
 				? getHexAddressFromBase32(account.address) : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
+			block.size = await calculateBlockSize(block);
 
 			block.totalForged = Number(block.reward);
 			block.totalBurnt = 0;
