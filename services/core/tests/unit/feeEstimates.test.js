@@ -39,6 +39,9 @@ const {
 
 const {
 	getTransactionInstanceByType,
+} = require('../../shared/core/compat/sdk_v4');
+
+const {
 	calculateBlockSize,
 	calculateWeightedAvg,
 	calcAvgFeeByteModes,
