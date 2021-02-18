@@ -110,7 +110,7 @@ pipeline {
 										set +e
 										while [ $ready -ne 0 ]; do
 										  curl --fail --verbose http://127.0.0.1:8988/api/node/info
-										  ready=\$?
+										  ready=${?}
 										  sleep 10
 										  let retries++
 										  if [ $retries = 6 ]; then
