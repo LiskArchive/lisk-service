@@ -147,8 +147,7 @@ describe('Fee estimation tests', () => {
 	describe('calulateAvgFeePerByte for Transactions', () => {
 		let transactionDetails;
 		beforeAll(async () => {
-			const payload = nonEmptyBlock.transactions.data;
-			transactionDetails = payload.map(transaction => {
+			transactionDetails = nonEmptyBlock.payload.map(transaction => {
 				const tx = getTransactionInstanceByType(transaction);
 				const transactionSize = tx.getBytes().length;
 				const { minFee } = tx;
@@ -201,7 +200,7 @@ describe('Fee estimation tests', () => {
 
 		it('Non-empty block', async () => {
 			const block = nonEmptyBlock;
-			block.transactions.data = block.payload.map(transaction => {
+			block.payload = block.payload.map(transaction => {
 				transaction.fee = BigInt(transaction.fee);
 				return transaction;
 			});
