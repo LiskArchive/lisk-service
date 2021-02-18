@@ -101,30 +101,30 @@ pipeline {
 			steps {
 				// dir('./docker') { sh 'make -f Makefile.core.jenkins lisk-core' }
                 nvm(getNodejsVersion()) {
-					dir('./') { 
+					dir('./docker') { 
                         sh ''' 
                         npm install -g lisk-core
                         lisk-core start --network=devnet --overwrite-config --api-ws --api-ws-port=8888 --enable-forger-plugin --enable-http-api-plugin --http-api-plugin-port=8988 > /dev/null 2>&1 &
-                        '''
-                        timeout(time: 3, unit: 'MINUTES') {
-                            waitUntil {
-                                script {
-                                    dir('./docker') {
-                                        def api_available = sh script: "curl --silent --fail 'http://127.0.0.1:8988/api/node/info' >/dev/null", returnStatus: true
-                                        return (api_available == 0)
-                                    }
-                                }
-                            }
-                        }
-                
+                        ready=1
+										retries=0
+										set +e
+										while [ $ready -ne 0 ]; do
+										  curl --fail --verbose http://127.0.0.1:8988/api/node/info
+										  ready=$?
+										  sleep 10
+										  let retries++
+										  if [ $retries = 6 ]; then
+										    break
+										  fi
+										done
+										set -e
+										if [ $retries -ge 6 ]; then
+										  exit 1
+										fi
+                        make -f ${Makefile} test-integration
+                        '''                
                     }
 				}
-				dir('./docker') { 
-                    sh ''' 
-                    curl --silent --fail 'http://127.0.0.1:8988/api/node/info' >/dev/null
-                    make -f ${Makefile} test-integration
-                    ''' 
-                }
 			}
 		}
     }
