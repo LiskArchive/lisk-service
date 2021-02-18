@@ -105,8 +105,18 @@ pipeline {
                         sh ''' 
                         npm install -g lisk-core
                         lisk-core start --network=devnet --overwrite-config --api-ws --api-ws-port=8888 --enable-forger-plugin --enable-http-api-plugin --http-api-plugin-port=8988 > /dev/null 2>&1 &
-                        curl --silent --fail 'http://127.0.0.1:8988/api/node/info' >/dev/null
                         '''
+                        timeout(time: 3, unit: 'MINUTES') {
+                            waitUntil {
+                                script {
+                                    dir('./docker') {
+                                        def api_available = sh script: "curl --silent --fail 'http://127.0.0.1:8988/api/node/info' >/dev/null", returnStatus: true
+                                        return (api_available == 0)
+                                    }
+                                }
+                            }
+                        }
+                
                     }
 				}
 				dir('./docker') { 
