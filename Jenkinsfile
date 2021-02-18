@@ -102,7 +102,7 @@ pipeline {
 				// dir('./docker') { sh 'make -f Makefile.core.jenkins lisk-core' }
                 nvm(getNodejsVersion()) {
 					dir('./docker') { 
-                        sh ''' 
+                        sh """
                         npm install -g lisk-core
                         lisk-core start --network=devnet --overwrite-config --api-ws --api-ws-port=8888 --enable-forger-plugin --enable-http-api-plugin --http-api-plugin-port=8988 > /dev/null 2>&1 &
                         ready=1
@@ -122,7 +122,7 @@ pipeline {
 										  exit 1
 										fi
                         make -f ${Makefile} test-integration
-                        '''                
+                        """              
                     }
 				}
 			}
