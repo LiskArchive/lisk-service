@@ -26,7 +26,7 @@ const register = async (events) => {
 	apiClient.subscribe('app:block:new', data => {
 		const block = apiClient.block.decode(data.block);
 		events.newBlock({ id: block.header.id.toString('hex') });
-		// events.calculateFeeEstimate();
+		events.calculateFeeEstimate();
 	});
 };
 
