@@ -18,10 +18,6 @@ pipeline {
     options {
         timeout(time: 6, unit: 'MINUTES')
     }
-    parameters {
-        string(name: 'LISK_CORE_VERSION', defaultValue: 'v3.0.0-beta.4', description: 'Use lisk-core branch.', )
-        string(name: 'LISK_CORE_IMAGE_VERSION', defaultValue: '3.0.0-beta.4', description: 'Use lisk-core docker image.', )
-    }
     environment {
         ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
         ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test'
@@ -112,7 +108,12 @@ pipeline {
                         '''
                     }
 				}
-				dir('./docker') { sh "make -f ${Makefile} test-integration" }
+				dir('./docker') { 
+                    sh ''' 
+                    curl --silent --fail 'http://127.0.0.1:8988/api/node/info' >/dev/null
+                    make -f ${Makefile} test-integration
+                    ''' 
+                }
 			}
 		}
     }
