@@ -121,8 +121,8 @@ pipeline {
 										if [ $retries -ge 6 ]; then
 										  exit 1
 										fi
-                        make -f Makefile.jenkins test-integration
-                        '''                
+                        '''
+                        sh "make -f ${Makefile} test-integration"           
                     }
 				}
 			}
