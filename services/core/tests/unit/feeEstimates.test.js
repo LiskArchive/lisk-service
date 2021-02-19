@@ -38,18 +38,15 @@ const {
 } = require('../constants/transactions');
 
 const {
+	calcAvgFeeByteModes,
 	getTransactionInstanceByType,
 	calculateBlockSize,
-} = require('../../shared/core/compat/sdk_v4');
-
-const {
 	calculateWeightedAvg,
-	calcAvgFeeByteModes,
 	calculateAvgFeePerByte,
 	calculateFeePerByte,
 	EMAcalc,
 	getEstimateFeeByteForBlock,
-} = require('../../shared/core/dynamicFees');
+} = require('../../shared/core/compat/sdk_v4/dynamicFees');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');

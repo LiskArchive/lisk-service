@@ -227,6 +227,7 @@ module.exports = {
 	getEstimateFeeByteForBatch,
 
 	// For unit tests
+	calcAvgFeeByteModes,
 	getTransactionInstanceByType,
 	calculateBlockSize,
 	calculateWeightedAvg,
