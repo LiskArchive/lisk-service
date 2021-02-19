@@ -17,16 +17,16 @@ const BluebirdPromise = require('bluebird');
 const { CacheRedis } = require('lisk-service-framework');
 
 const mysqlIndex = require('../../../indexdb/mysql');
+
 const { getApiClient } = require('../common');
-const blocksIndexSchema = require('./schema/blocks');
-
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
-
 const { calcAvgFeeByteModes, EMAcalc } = require('../common/dynamicFees');
 const { getBlocks } = require('./blocks');
 const { getTransactions } = require('./transactions');
 
 const config = require('../../../../config');
+const blocksIndexSchema = require('./schema/blocks');
+
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 
@@ -200,13 +200,10 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	return feeEstPerByte;
 };
 
-const nop = () => { };
-
 module.exports = {
 	getEstimateFeeByteForBatch,
 
 	// For unit tests
-	getTransactionInstanceByType: nop,
 	calcAvgFeeByteModes,
 	calculateBlockSize,
 	calculateWeightedAvg,
