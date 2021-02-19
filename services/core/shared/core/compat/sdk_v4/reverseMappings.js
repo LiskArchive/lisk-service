@@ -47,10 +47,8 @@ const responseMappers = {
 };
 
 const mapToOriginal = (response, type) => {
-    if (response.data) {
-        const mapper = responseMappers[type];
-        if (mapper) response = mapper(response);
-    }
+    const mapper = responseMappers[type];
+    if (mapper) response = mapper(response);
     return response;
 };
 

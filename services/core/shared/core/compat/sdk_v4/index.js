@@ -45,8 +45,7 @@ const events = require('./events');
 const { getNetworkStatus } = require('./network');
 
 const {
-	getTransactionInstanceByType,
-	calculateBlockSize,
+	getEstimateFeeByteForBatch,
 } = require('./dynamicFees');
 
 const init = () => {
@@ -74,7 +73,6 @@ module.exports = {
 	getVoters,
 	events,
 	getNetworkStatus,
-	getTransactionInstanceByType,
-	calculateBlockSize,
+	getEstimateFeeByteForBatch,
 	init,
 };
