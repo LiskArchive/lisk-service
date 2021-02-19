@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
@@ -21,6 +22,8 @@ const requestAll = require('../requestAll');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
+
+const logger = Logger();
 
 const tableConfig = {
 	primaryKey: 'id',
@@ -105,8 +108,14 @@ const transformStatsObjectToList = statsObject => (
 const insertToDb = async (statsList, date) => {
 	const db = await getDbInstance();
 
-	const [{ id }] = db.find({ date });
-	await db.deleteIds([id]);
+	try {
+		const [{ id }] = db.find({ date });
+		await db.deleteIds([id]);
+		logger.debug(`Removed the following date from the database: ${date}`);
+	} catch (err) {
+		logger.debug(`The database does not contain the entry with the following date: ${date}`);
+	}
+
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
 		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
