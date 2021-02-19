@@ -7,4 +7,7 @@ compose := docker-compose \
 lisk-core:
 	$(compose) up --detach
 
+ready:
+	$(compose) exec -T tests curl --silent --fail 'http://localhost:8988/api/node/info' >/dev/null
+
 mrproper: down

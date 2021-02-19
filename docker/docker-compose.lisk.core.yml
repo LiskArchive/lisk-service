@@ -1,18 +1,20 @@
 version: '3'
-
 services:
   lisk:
-    image: lisk/core:3.0.0-beta.4 
+    image: lisk/core:3.0.0-beta.4
     ports:
       - 8988:8988
       - 8888:8888
     networks:
       - lisk
     restart: always
-    command: ['--network=devnet', '--overwrite-config', '--api-ws', '--api-ws-port=8888', '--enable-forger-plugin', '--enable-http-api-plugin', '--http-api-plugin-port=8988']
+    command: ['--network=devnet', '--overwrite-config', '--api-ws', '--api-ws-port=8888', '--enable-forger-plugin', '--enable-http-api-plugin', '--http-api-plugin-port=8988', '--http-api-plugin-whitelist=172.16.0.0/12']
     environment:
       - LISK_API_PUBLIC=true
-
 networks:
   lisk:
+networks:
+  lisk:
+volumes:
+  lisk-data:
 

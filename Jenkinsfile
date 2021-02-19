@@ -100,6 +100,16 @@ pipeline {
 		stage('Run integration tests') {
 			steps {
 				dir('./docker') { sh 'make -f Makefile.core.jenkins lisk-core' }
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitUntil {
+                        script {
+                            dir('./docker') {
+                            def api_available = sh script: "make -f Makefile.core.jenkins ready", returnStatus: true
+                            return (api_available == 0)
+                            }
+                        }
+                    }   
+                }
                 dir('./docker') { sh "make -f ${Makefile} test-integration" }    
 			}
 		}
