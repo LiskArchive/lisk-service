@@ -46,7 +46,7 @@ xdescribe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block lists', () => {
-		it.only('no params -> ok', async () => {
+		it('no params -> ok', async () => {
 			const response = await getBlocks({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
