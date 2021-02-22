@@ -19,8 +19,8 @@ pipeline {
         timeout(time: 6, unit: 'MINUTES')
     }
     environment {
-        ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
-        ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test'
+        ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
+        ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test,rpc-v2'
     }
     stages {
         stage ('Build deps') {
