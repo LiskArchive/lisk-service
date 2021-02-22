@@ -27,6 +27,7 @@ module.exports = {
 		amount: { type: 'bigInteger' },
 		data: { type: 'string' },
 		size: { type: 'integer' },
+		fee: { type: 'bigInteger' },
 		minFee: { type: 'bigInteger' },
 	},
 	indexes: {
