@@ -120,7 +120,7 @@ pipeline {
 										  exit 1
 										fi
                     ''' }
-                dir('./docker') { sh "make -f ${Makefile} test-integration" }    
+                dir('./docker') { sh "make -f Makefile.core.jenkins test-integration" }    
 			}
 		}
     }
