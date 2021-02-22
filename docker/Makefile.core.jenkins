@@ -8,6 +8,6 @@ lisk-core:
 	$(compose) up --detach
 
 ready:
-	curl --silent --fail 'http://localhost:5001/api/v2/blocks' >/dev/null
+	curl --silent --fail 'http://localhost:9901/api/v2/blocks' >/dev/null
 
 mrproper: down
