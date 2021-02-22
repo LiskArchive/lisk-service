@@ -18,32 +18,23 @@ const { CacheRedis } = require('lisk-service-framework');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
-const { getApiClient } = require('../common');
 const { calcAvgFeeByteModes, EMAcalc } = require('../common/dynamicFees');
 const { getBlocks } = require('./blocks');
-const { getTransactions } = require('./transactions');
 
 const config = require('../../../../config');
 const blocksIndexSchema = require('./schema/blocks');
+const transactionsIndexSchema = require('./schema/transactions');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 
 const calculateBlockSize = async block => {
-	const apiClient = await getApiClient();
 	const blocksDB = await getBlocksIndex();
 
 	const [blockInfo] = await blocksDB.find({ id: block.id });
-	if (blockInfo) return blockInfo.size;
-
-	let blockSize = 0;
-	if (block.numberOfTransactions === 0) return blockSize;
-
-	const transactionSizes = block.payload.map(tx => apiClient.transaction.encode(tx).length);
-	blockSize = transactionSizes.reduce((a, b) => a + b, 0);
-
-	return blockSize;
+	return blockInfo.size;
 };
 
 const calculateWeightedAvg = async blocks => {
@@ -95,19 +86,24 @@ const calculateAvgFeePerByte = (mode, transactionDetails) => {
 };
 
 const calculateFeePerByte = async block => {
-	const apiClient = await getApiClient();
+	const transactionDB = await getTransactionsIndex();
 
 	const feePerByte = {};
-	const transactionDetails = block.payload.map(tx => {
-		const transactionSize = apiClient.transaction.encode(tx).length;
-		const minFee = Number(apiClient.transaction.computeMinFee(tx));
-		const feePriority = (Number(tx.fee) - Number(minFee)) / transactionSize;
-		return {
-			id: tx.id,
-			size: transactionSize,
-			feePriority,
-		};
-	});
+	const transactionDetails = await BluebirdPromise.map(
+		block.payload,
+		async tx => {
+			const [txInfo] = await transactionDB.find({ id: tx.id });
+			const transactionSize = txInfo.size;
+			const minFee = txInfo.minFee;
+			const feePriority = (Number(tx.fee) - Number(minFee)) / transactionSize;
+			return {
+				id: tx.id,
+				size: transactionSize,
+				feePriority,
+			};
+		},
+		{ concurrency: block.payload.length },
+	);
 	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
 
 	const blockSize = await calculateBlockSize(block);
@@ -146,6 +142,8 @@ const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) =>
 };
 
 const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
+	const transactionsDB = await getTransactionsIndex();
+
 	// Check if the starting height is permitted by config or adjust acc.
 	fromHeight = config.feeEstimates.defaultStartBlockHeight > fromHeight
 		? config.feeEstimates.defaultStartBlockHeight : fromHeight;
@@ -169,18 +167,14 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
-			async i => (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i })).data[0],
-			{ concurrency: finalEMABatchSize },
-		);
-
-		blockBatch.data = await BluebirdPromise.map(
-			blockBatch.data,
-			async block => {
-				const transactions = await getTransactions({ blockId: block.id });
-				Object.assign(block, { transactions });
+			async i => {
+				const { data: [block] } = (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i }));
+				block.payload = block.numberOfTransactions
+					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions })
+					: [];
 				return block;
 			},
-			{ concurrency: blockBatch.data.length },
+			{ concurrency: finalEMABatchSize },
 		);
 
 		Object.assign(prevFeeEstPerByte,
