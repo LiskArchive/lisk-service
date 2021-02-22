@@ -100,29 +100,20 @@ pipeline {
 		stage('Run integration tests') {
 			steps {
                 dir('./') { sh 'make build' }
-				dir('./docker') { 
-                    sh ''' 
-                    make -f Makefile.core.jenkins lisk-core
-                    ready=1
-										retries=0
-										set +e
-										while [ $ready -ne 0 ]; do
-										  curl --fail --verbose http://127.0.0.1:9901/api/v2/blocks
-										  ready=$?
-										  sleep 10
-										  let retries++
-										  if [ $retries = 6 ]; then
-										    break
-										  fi
-										done
-										set -e
-										if [ $retries -ge 6 ]; then
-										  exit 1
-										fi
-                    ''' }
+				dir('./docker') { sh 'make -f Makefile.core.jenkins lisk-core' }
+                timeout(time: 3, unit: 'MINUTES') {
+                    waitUntil {
+                        script {
+                            dir('./docker') {
+                                    def api_available = sh script: "make -f Makefile.core.jenkins ready", returnStatus: true
+                                    return (api_available == 0)
+                            }
+                        }               
+                    }
+                }
                 nvm(getNodejsVersion()) {
                 dir('./tests') { sh "npm run test:integration:APIv2:SDKv5" }
-                }  
+                }
 			}
 		}
     }
