@@ -23,6 +23,8 @@ const endpoint = `${baseUrlV1}/blocks`;
 
 const {
 	goodRequestSchema,
+	badRequestSchema,
+	wrongInputParamSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -47,7 +49,7 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('known block by block ID -> ok', async () => {
+		xit('known block by block ID -> ok', async () => {
 			const response = await api.get(`${endpoint}?blockId=${refBlock.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
@@ -74,7 +76,7 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('known block by publickey -> ok', async () => {
+		xit('known block by publickey -> ok', async () => {
 			const response = await api.get(`${endpoint}?generatorPublicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
@@ -92,6 +94,21 @@ describe('Blocks API', () => {
 				expect(block.generatorUsername).toEqual(refDelegate.summary.username);
 			});
 			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('limit=0 -> 400', async () => {
+			const response = await api.get(`${endpoint}?limit=0`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('non-existent height -> 500', async () => {
+			const response = await api.get(`${endpoint}?height=2000000000`, 500);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('invalid query parameter -> 400', async () => {
+			const response = await api.get(`${endpoint}?block=12602944501676077162`, 400);
+			expect(response).toMap(wrongInputParamSchema);
 		});
 	});
 });
