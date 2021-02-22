@@ -111,6 +111,7 @@ pipeline {
                         }               
                     }
                 }
+                sleep(time: 10, unit: "SECONDS")
                 nvm(getNodejsVersion()) {
                 dir('./tests') { sh "npm run test:integration:APIv2:SDKv5" }
                 }
