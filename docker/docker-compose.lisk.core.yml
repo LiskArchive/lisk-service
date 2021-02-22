@@ -4,11 +4,11 @@ services:
     image: lisk/core:3.0.0-beta.4
     ports:
       - 4000:4000
-      - 5000:5000
+      - 5001:5001
     networks:
       - lisk
     restart: always
-    command: ['--network=devnet', '--overwrite-config', '--api-ws', '--api-ws-port=5000', '--enable-forger-plugin', '--enable-http-api-plugin', '--http-api-plugin-port=4000', '--http-api-plugin-whitelist=172.16.0.0/12']
+    command: ['--network=devnet', '--overwrite-config', '--api-ws', '--api-ws-port=5001', '--enable-forger-plugin', '--enable-http-api-plugin', '--http-api-plugin-port=4000', '--http-api-plugin-whitelist=172.16.0.0/12']
     environment:
       - LISK_API_PUBLIC=true
 networks:
