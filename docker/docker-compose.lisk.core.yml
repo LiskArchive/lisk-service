@@ -3,8 +3,8 @@ services:
   lisk:
     image: lisk/core:3.0.0-beta.4
     ports:
-      - 4000:4000
-      - 5001:5001
+      - 4000
+      - 5001
     networks:
       - lisk
     restart: always
@@ -27,8 +27,8 @@ services:
       - ./lisk_service/env/common.env
       - ./lisk_service/env/core.env
     environment:
-      - LISK_CORE_HTTP=http://host.docker.internal:4000
-      - LISK_CORE_WS=ws://host.docker.internal:5001
+      - LISK_CORE_HTTP=http://lisk:4000
+      - LISK_CORE_WS=ws://lisk:5001
     
   redis_core:
     image: redis:5-alpine

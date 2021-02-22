@@ -103,7 +103,6 @@ pipeline {
 				dir('./docker') { 
                     sh ''' 
                     make -f Makefile.core.jenkins lisk-core
-                    make -f Makefile.deployment.devnet up
                     ready=1
 										retries=0
 										set +e
