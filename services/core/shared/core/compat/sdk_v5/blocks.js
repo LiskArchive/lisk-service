@@ -24,7 +24,6 @@ const {
 	getIndexedAccountInfo,
 	getHexAddressFromBase32,
 } = require('./accounts');
-const { calculateBlockSize } = require('./dynamicFees');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
 const { getApiClient } = require('../common');
@@ -76,15 +75,18 @@ const normalizeBlocks = async blocks => {
 			block.generatorUsername = account && account.username ? account.username : undefined;
 			block.numberOfTransactions = block.payload.length;
 
-			block.size = await calculateBlockSize(block);
-
+			block.size = 0;
 			block.totalForged = Number(block.reward);
 			block.totalBurnt = 0;
 			block.totalFee = 0;
 
 			block.payload.forEach(txn => {
-				const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
+				txn.size = apiClient.transaction.encode(txn).length;
+				txn.minFee = apiClient.transaction.computeMinFee(txn);
 
+				block.size += txn.size;
+
+				const txnMinFee = Number(txn.minFee);
 				block.totalForged += Number(txn.fee);
 				block.totalBurnt += txnMinFee;
 				block.totalFee += Number(txn.fee) - txnMinFee;
