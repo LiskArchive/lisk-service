@@ -160,7 +160,9 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
 			async i => {
-				const { data: [block] } = (await getBlocks({ height: prevFeeEstPerByte.blockHeight + 1 - i }));
+				const { data: [block] } = await getBlocks({
+					height: prevFeeEstPerByte.blockHeight + 1 - i,
+				});
 				block.payload = block.numberOfTransactions
 					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions })
 					: [];
