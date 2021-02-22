@@ -3,6 +3,8 @@ all: up
 
 compose := docker-compose \
 	-f docker-compose.lisk.core.yml \
+	-f docker-compose.yml \
+	-f lisk_service/docker-compose.gateway-ports.yml \
 
 lisk-core:
 	$(compose) up --detach
