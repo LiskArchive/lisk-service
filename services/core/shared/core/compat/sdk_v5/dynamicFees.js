@@ -34,7 +34,9 @@ const calculateBlockSize = async block => {
 	const blocksDB = await getBlocksIndex();
 
 	const [blockInfo] = await blocksDB.find({ id: block.id });
-	return blockInfo.size;
+	if (blockInfo) return blockInfo.size;
+
+	throw new Error('Requested block information is not yet indexed. Retry after a while.');
 };
 
 const calculateWeightedAvg = async blocks => {
