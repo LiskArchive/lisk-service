@@ -120,7 +120,9 @@ pipeline {
 										  exit 1
 										fi
                     ''' }
-                dir('./docker') { sh "make -f Makefile.core.jenkins test-integration" }    
+                nvm(getNodejsVersion()) {
+                dir('./tests') { sh "npm run test:integration:APIv2:SDKv5" }
+                }  
 			}
 		}
     }
