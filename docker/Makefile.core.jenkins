@@ -8,6 +8,6 @@ lisk-core:
 	$(compose) up --detach
 
 ready:
-	curl --silent --fail 'http://localhost:8988/api/node/info' >/dev/null
+	curl --silent --fail 'http://localhost:4000/api/node/info' >/dev/null
 
 mrproper: down

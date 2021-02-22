@@ -99,7 +99,12 @@ pipeline {
 
 		stage('Run integration tests') {
 			steps {
-				dir('./docker') { sh 'make -f Makefile.core.jenkins lisk-core' }
+                dir('./') { sh 'make build' }
+				dir('./docker') { 
+                    sh ''' 
+                    make -f Makefile.core.jenkins lisk-core
+                    make -f Makefile.deployment.devnet up
+                    ''' }
                 timeout(time: 3, unit: 'MINUTES') {
                     waitUntil {
                         script {
