@@ -100,6 +100,7 @@ pipeline {
 		stage('Run integration tests') {
 			steps {
 				// dir('./docker') { sh 'make -f Makefile.core.jenkins lisk-core' }
+                dir('./') { sh 'make build' }
                 nvm(getNodejsVersion()) {
 					dir('./docker') { 
                         sh ''' 
