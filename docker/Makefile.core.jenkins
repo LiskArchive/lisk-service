@@ -12,7 +12,4 @@ lisk-core:
 ready:
 	curl --silent --fail 'http://localhost:9901/api/v2/blocks' >/dev/null
 
-test-integration:
-	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
-
 mrproper: down

@@ -18,7 +18,7 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV1 = `${baseUrl}/api/v1`;
+const baseUrlV1 = `${baseUrl}/api/v2`;
 const endpoint = `${baseUrlV1}/blocks`;
 
 const {
@@ -38,7 +38,7 @@ describe('Blocks API', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		[refBlock] = (await api.get(`${endpoint}?limit=1`)).data;
-		[refDelegate] = (await api.get(`${baseUrlV1}/delegates?limit=1`)).data;
+		[refDelegate] = (await api.get(`${baseUrlV1}/accounts?isDelegate=true&limit=1`)).data;
 	});
 
 	describe('GET /blocks', () => {
@@ -87,7 +87,7 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('known block by username -> ok', async () => {
+		xit('known block by username -> ok', async () => {
 			const response = await api.get(`${endpoint}?address=${refDelegate.username}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
