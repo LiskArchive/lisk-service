@@ -45,7 +45,7 @@ const queueOptions = config.queue[queueName];
 const getSelector = (params) => {
 	const result = { property: 'date' };
 	if (params.dateFrom) result.from = params.dateFrom.unix();
-	if (params.dateTo) result.from = params.dateTo.unix();
+	if (params.dateTo) result.to = params.dateTo.unix();
 	return { propBetweens: [result] };
 };
 

@@ -79,7 +79,7 @@ const getAccountByAddress = async address => {
         const account = await apiClient.account.get(address);
         return { data: [account] };
     } catch (err) {
-        logger.warn(`The following address is not present in the blockchain: ${address}. It might be not fully synced on the Lisk Core/SDK end.`);
+        logger.warn(`Unable to currently fetch account information for address: ${address}. Network synchronization process might still be in progress for the Lisk Core node.`);
         throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
     }
 };
