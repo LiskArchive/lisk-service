@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const { getApiClient } = require('../common/wsRequest');
+
+const logger = Logger();
 
 const getNetworkStatus = async () => {
     const apiClient = await getApiClient();
@@ -72,8 +75,13 @@ const getTransactions = async params => {
 
 const getAccountByAddress = async address => {
     const apiClient = await getApiClient();
-    const account = await apiClient.account.get(address);
-    return { data: [account] };
+    try {
+        const account = await apiClient.account.get(address);
+        return { data: [account] };
+    } catch (err) {
+        logger.warn(`Unable to currently fetch account information for address: ${address}. Network synchronization process might still be in progress for the Lisk Core node.`);
+        throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
+    }
 };
 
 const getAccountsByAddresses = async addresses => {
