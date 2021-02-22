@@ -20,9 +20,6 @@ cli-%:
 logs:
 	$(compose) logs
 
-logs-core:
-	docker logs -f docker_core_1
-
 logs-%:
 	$(compose) logs $*
 
