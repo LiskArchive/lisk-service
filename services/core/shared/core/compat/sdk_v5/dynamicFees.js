@@ -86,22 +86,14 @@ const calculateAvgFeePerByte = (mode, transactionDetails) => {
 };
 
 const calculateFeePerByte = async block => {
-	const transactionDB = await getTransactionsIndex();
-
 	const feePerByte = {};
 	const transactionDetails = await BluebirdPromise.map(
 		block.payload,
-		async tx => {
-			const [txInfo] = await transactionDB.find({ id: tx.id });
-			const transactionSize = txInfo.size;
-			const minFee = txInfo.minFee;
-			const feePriority = (Number(tx.fee) - Number(minFee)) / transactionSize;
-			return {
-				id: tx.id,
-				size: transactionSize,
-				feePriority,
-			};
-		},
+		async tx => ({
+			id: tx.id,
+			size: tx.size,
+			feePriority: Number(tx.fee - tx.minFee) / tx.size,
+		}),
 		{ concurrency: block.payload.length },
 	);
 	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
