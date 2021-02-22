@@ -25,14 +25,10 @@ const register = async (events) => {
 	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
 	apiClient.subscribe('app:block:new', async data => {
-		try {
-			const incomingBlock = apiClient.block.decode(Buffer.from(data.block, 'hex'));
-			const [newBlock] = await normalizeBlocks([incomingBlock]);
-			events.newBlock(newBlock);
-			events.calculateFeeEstimate();
-		} catch (err) {
-			logger.error(err.message);
-		}
+		const incomingBlock = apiClient.block.decode(Buffer.from(data.block, 'hex'));
+		const [newBlock] = await normalizeBlocks([incomingBlock]);
+		events.newBlock(newBlock);
+		events.calculateFeeEstimate();
 	});
 
 	apiClient.subscribe('app:chain:validators:change', data => {
