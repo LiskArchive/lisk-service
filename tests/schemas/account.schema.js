@@ -98,7 +98,65 @@ const accountSchema = {
 	unlocking: Joi.array().items(unlockingItemSchema).optional(),
 };
 
+const summary = {
+	address: Joi.string().required(),
+	balance: Joi.string().required(),
+	username: Joi.string().allow('').optional(),
+	publicKey: Joi.string().required(),
+	isDelegate: Joi.boolean().required(),
+	isMultisignature: Joi.boolean().required(),
+};
+
+const sentVotes = {
+	amount: Joi.number().required(),
+	delegateAddress: Joi.string().required(),
+};
+
+const token = {
+	balance: Joi.string().required(),
+};
+
+const sequence = {
+	nonce: Joi.string().required(),
+};
+
+const dpos = {
+	approval: Joi.number().min(0).optional(),
+	missedBlocks: Joi.number().integer().min(0).optional(),
+	producedBlocks: Joi.number().integer().min(0).optional(),
+	rank: Joi.number().integer().min(1).optional(),
+	rewards: Joi.string().optional(),
+	username: Joi.string().allow('').optional(),
+	isBanned: Joi.boolean().optional(),
+	status: Joi.string().valid(...validDelegateStatuses).optional(),
+	pomHeights: Joi.array().items(pomHeightSchema).optional(),
+	lastForgedHeight: Joi.number().integer().min(0).optional(),
+	consecutiveMissedBlocks: Joi.number().integer().optional(),
+	delegate: Joi.object().required(),
+	unlocking: Joi.array().items(unlockingItemSchema).optional(),
+	sentVotes: Joi.array().items(sentVotes).optional(),
+};
+
+const keys = {
+	numberOfSignatures: Joi.number().optional(),
+	mandatoryKeys: Joi.array().optional(),
+	optionalKeys: Joi.array().optional(),
+	members: Joi.array().optional(),
+	memberships: Joi.array().optional(),
+};
+
+const accountSchemaVersion5 = {
+	summary: Joi.object(summary).required(),
+	token: Joi.object(token).required(),
+	sequence: Joi.object(sequence).required(),
+	dpos: Joi.object(dpos).optional(),
+	keys: Joi.object(keys).optional(),
+	knowledge: Joi.object(knowledgeSchema).optional(),
+};
+
 module.exports = {
 	accountSchema: Joi.object(accountSchema).required(),
 	delegateSchema: Joi.object(delegateSchema).required(),
+	accountSchemaVersion5: Joi.object(accountSchemaVersion5).required(),
+	dpos: Joi.object(dpos).required(),
 };
