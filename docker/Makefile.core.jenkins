@@ -7,8 +7,8 @@ compose := docker-compose \
 	-f lisk_service/docker-compose.gateway-ports.yml \
 	-f lisk_service/docker-compose.tests.yml \
 
-lisk-core:
-	$(compose) up --detach
+up:
+	(ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} $(compose) up --detach)
 
 ready:
 	curl --silent --fail 'http://localhost:9901/api/v2/blocks' >/dev/null

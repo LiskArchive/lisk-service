@@ -100,13 +100,12 @@ pipeline {
 		stage('Run integration tests') {
 			steps {
                 dir('./') { sh '''
-                make build-core
-                make build-gateway
+                make build
                 make build-tests
                 ''' }
 				dir('./docker') { 
 					sh '''
-					make -f Makefile.core.jenkins lisk-core
+					make -f Makefile.core.jenkins up
 					ready=1
 										retries=0
 										set +e
