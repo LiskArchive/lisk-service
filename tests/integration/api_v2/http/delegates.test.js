@@ -104,4 +104,39 @@ describe('Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
+	// Fix delegate search by status
+	xdescribe('GET /accounts?isDelegate=true&status', () => {
+		it('filter active delegates -> ok', async () => {
+			const response = await api.get(`${endpoint}?status=active`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(10);
+			response.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('filter standby delegates -> ok', async () => {
+			const response = await api.get(`${endpoint}?status=standby`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(10);
+			response.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('filter delegates by combination -> ok', async () => {
+			const response = await api.get(`${endpoint}?status=active,standby&offset=95`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(10);
+			response.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
 });
