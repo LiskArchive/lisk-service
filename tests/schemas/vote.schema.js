@@ -45,7 +45,7 @@ const votes = {
 };
 
 const voteSchemaVersion5 = {
-	account: Joi.object(account).optional(),
+	account: Joi.object(account).required(),
 	votes: Joi.array().items(votes).optional(),
 };
 
