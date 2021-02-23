@@ -5,11 +5,15 @@ compose := docker-compose \
 	-f docker-compose.lisk.core.yml \
 	-f docker-compose.yml \
 	-f lisk_service/docker-compose.gateway-ports.yml \
+	-f lisk_service/docker-compose.tests.yml \
 
 lisk-core:
 	$(compose) up --detach
 
 ready:
 	curl --silent --fail 'http://localhost:9901/api/v2/blocks' >/dev/null
+
+test-integration:
+	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
 
 mrproper: down

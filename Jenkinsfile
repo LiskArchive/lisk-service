@@ -99,7 +99,10 @@ pipeline {
 
 		stage('Run integration tests') {
 			steps {
-                dir('./') { sh 'make build' }
+                dir('./') { sh '''
+                make build
+                make build-tests
+                ''' }
 				dir('./docker') { 
 					sh '''
 					make -f Makefile.core.jenkins lisk-core
@@ -119,11 +122,9 @@ pipeline {
 										if [ $retries -ge 6 ]; then
 										  exit 1
 										fi
+                    make -f Makefile.core.jenkins test-integration
 				''' 
 				}
-                nvm(getNodejsVersion()) {
-                dir('./tests') { sh "npm run test:integration:APIv2:SDKv5" }
-                }
 			}
 		}
     }
