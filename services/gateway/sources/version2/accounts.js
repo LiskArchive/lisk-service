@@ -20,7 +20,7 @@ module.exports = {
 	method: 'core.accounts',
 	params: {
 		address: '=',
-		publicKey: '=',
+		publicKey: 'publickey',
 		username: '=',
 		isDelegate: '=,boolean',
 		limit: '=',
