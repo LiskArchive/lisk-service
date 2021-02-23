@@ -40,6 +40,33 @@ const transactionSchema = {
 	ready: Joi.boolean().optional(),
 };
 
+const sender = {
+	address: Joi.string().required(),
+	publicKey: Joi.string().required(),
+	username: Joi.string().optional(),
+};
+
+const block = {
+	id: Joi.string().required(),
+	height: Joi.number().required(),
+	timestamp: Joi.number().required(),
+};
+
+const transactionSchemaVersion5 = {
+	id: Joi.string().required(),
+	moduleAssetId: Joi.string().required(),
+	moduleAssetName: Joi.string().required(),
+	fee: Joi.string().required(),
+	height: Joi.number().integer().min(1).required(),
+	nonce: Joi.string().optional(),
+	signatures: Joi.array().items(Joi.string().optional()).required(),
+	asset: Joi.object().required(),
+	sender: Joi.object(sender).optional(),
+	block: Joi.object(block).optional(),
+	isPending: Joi.boolean().required(),
+};
+
 module.exports = {
 	transactionSchema: Joi.object(transactionSchema),
+	transactionSchemaVersion5: Joi.object(transactionSchemaVersion5),
 };
