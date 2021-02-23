@@ -106,7 +106,6 @@ pipeline {
 				dir('./docker') { 
 					sh '''
 					make -f Makefile.core.jenkins lisk-core
-                    sleep 40
 					ready=1
 										retries=0
 										set +e
