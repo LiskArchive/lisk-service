@@ -132,7 +132,7 @@ const dpos = {
 	pomHeights: Joi.array().items(pomHeightSchema).optional(),
 	lastForgedHeight: Joi.number().integer().min(0).optional(),
 	consecutiveMissedBlocks: Joi.number().integer().optional(),
-	delegate: Joi.object().required(),
+	delegate: Joi.object().required(), // TODO delegate schema for version 5
 	unlocking: Joi.array().items(unlockingItemSchema).optional(),
 	sentVotes: Joi.array().items(sentVotes).optional(),
 };
