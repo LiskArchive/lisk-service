@@ -49,7 +49,7 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('known block by block ID -> ok', async () => {
+		it('known block by block ID -> ok', async () => {
 			const response = await api.get(`${endpoint}?blockId=${refBlock.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
@@ -76,7 +76,7 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('known block by publickey -> ok', async () => {
+		it('known block by publickey -> ok', async () => {
 			const response = await api.get(`${endpoint}?generatorPublicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {

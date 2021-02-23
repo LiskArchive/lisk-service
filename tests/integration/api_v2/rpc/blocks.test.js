@@ -86,7 +86,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block details by block ID', () => {
-		xit('known block by block ID -> ok', async () => {
+		it('known block by block ID -> ok', async () => {
 			const response = await getBlocks({ blockId: refBlock.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -141,7 +141,7 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block lists by account public key', () => {
-		xit('known block by publickey -> ok', async () => {
+		it('known block by publickey -> ok', async () => {
 			const response = await getBlocks({ generatorPublicKey: refDelegate.summary.publicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
