@@ -29,8 +29,8 @@ const {
 } = require('../../../schemas/account.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV1 = `${baseUrl}/api/v2`;
-const endpoint = `${baseUrlV1}/accounts`;
+const baseUrlV2 = `${baseUrl}/api/v2`;
+const endpoint = `${baseUrlV2}/accounts`;
 
 describe('Delegates API', () => {
 	let refDelegate;

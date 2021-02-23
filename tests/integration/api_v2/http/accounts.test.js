@@ -30,14 +30,14 @@ const {
 } = require('../../../schemas/account.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV1 = `${baseUrl}/api/v2`;
-const endpoint = `${baseUrlV1}/accounts`;
-const accountEndpoint = `${baseUrlV1}/account`;
+const baseUrlV2 = `${baseUrl}/api/v2`;
+const endpoint = `${baseUrlV2}/accounts`;
+const accountEndpoint = `${baseUrlV2}/account`;
 
 describe('Accounts API', () => {
 	let delegate;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV1}/accounts?isDelegate=true&limit=1`);
+		const response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
 		[delegate] = response.data;
 	});
 

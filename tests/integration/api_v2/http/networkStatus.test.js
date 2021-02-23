@@ -25,8 +25,8 @@ const {
 } = require('../../../schemas/networkStatus.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV1 = `${baseUrl}/api/v2`;
-const endpoint = `${baseUrlV1}/network/status`;
+const baseUrlV2 = `${baseUrl}/api/v2`;
+const endpoint = `${baseUrlV2}/network/status`;
 
 describe('Network Status API', () => {
 	describe(`GET ${endpoint}`, () => {

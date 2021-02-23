@@ -18,8 +18,8 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV1 = `${baseUrl}/api/v2`;
-const endpoint = `${baseUrlV1}/blocks`;
+const baseUrlV2 = `${baseUrl}/api/v2`;
+const endpoint = `${baseUrlV2}/blocks`;
 
 const {
 	goodRequestSchema,
@@ -37,7 +37,7 @@ describe('Blocks API', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		[refBlock] = (await api.get(`${endpoint}?limit=1`)).data;
-		[refDelegate] = (await api.get(`${baseUrlV1}/accounts?isDelegate=true&limit=1`)).data;
+		[refDelegate] = (await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`)).data;
 	});
 
 	describe('GET /blocks', () => {

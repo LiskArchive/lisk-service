@@ -30,8 +30,8 @@ const {
 } = require('../../../schemas/transaction.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV1 = `${baseUrl}/api/v2`;
-const endpoint = `${baseUrlV1}/transactions`;
+const baseUrlV2 = `${baseUrl}/api/v2`;
+const endpoint = `${baseUrlV2}/transactions`;
 
 xdescribe('Transactions API', () => {
 	let refTransaction;
@@ -39,7 +39,7 @@ xdescribe('Transactions API', () => {
 	beforeAll(async () => {
 		const response1 = await api.get(`${endpoint}?limit=1`);
 		[refTransaction] = response1.data;
-		const response2 = await api.get(`${baseUrlV1}/accounts?isDelegate=true&limit=1`);
+		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
 		[refDelegate] = response2.data;
 	});
 
