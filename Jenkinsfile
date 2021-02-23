@@ -137,6 +137,7 @@ pipeline {
         }
         cleanup {
             dir('./docker') { sh "make -f ${Makefile} mrproper" }
+            dir('./docker') { sh "make -f Makefile.core.jenkins mrproper" }
         }
     }
 }
