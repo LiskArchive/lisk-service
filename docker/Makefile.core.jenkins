@@ -10,6 +10,9 @@ compose := docker-compose \
 up:
 	(ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} $(compose) up --detach)
 
+down:
+	$(compose) down --volumes --remove-orphans
+
 ready:
 	curl --silent --fail 'http://localhost:9901/api/v2/blocks' >/dev/null
 
