@@ -17,8 +17,8 @@ import Joi from 'joi';
 
 const forgerSchema = {
 	address: Joi.string().required(),
-	username: Joi.string().required(),
-	totalVotesReceived: Joi.string().required(),
+	username: Joi.string().optional(), // in CI, all accounts are not indexed
+	totalVotesReceived: Joi.string().optional(), // in CI, all accounts are not indexed
 	minActiveHeight: Joi.number().integer().required(),
 	isConsensusParticipant: Joi.boolean().required(),
 	nextForgingTime: Joi.number().integer().required(),

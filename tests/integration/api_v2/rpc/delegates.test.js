@@ -48,7 +48,7 @@ describe('Method get.delegates', () => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
 			});
-			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
+			expect(result.meta).toMap(metaSchema);
 		});
 
 		// TODO Implement support for search in accounts
