@@ -105,7 +105,6 @@ pipeline {
                 ''' }
 				dir('./docker') { 
 					sh '''
-                    make -f Makefile.core.jenkins down
 					make -f Makefile.core.jenkins up
 					ready=1
 										retries=0
