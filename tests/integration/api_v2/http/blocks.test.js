@@ -91,7 +91,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchemaVersion5);
-				expect(block.generatorUsername).toEqual(refDelegate.summary.username);
+				// expect(block.generatorUsername).toEqual(refDelegate.summary.username);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});

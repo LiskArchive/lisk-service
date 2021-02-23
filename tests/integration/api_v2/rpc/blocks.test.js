@@ -158,8 +158,8 @@ describe('Method get.blocks', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			result.data.forEach((blockData) => {
-				expect(blockData)
-					.toMap(blockSchemaVersion5, { generatorUsername: refDelegate.summary.username });
+				expect(blockData).toMap(blockSchemaVersion5);
+				// expect(block.generatorUsername).toEqual(refDelegate.summary.username);
 			});
 		});
 	});
@@ -175,16 +175,6 @@ describe('Method get.blocks', () => {
 			result.data.forEach((blockItem) => {
 				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
 				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
-			});
-		});
-	});
-
-	describe('retireve block lists by username', () => {
-		it('retrieve block by username -> ok', async () => {
-			const { result } = await getBlocks({ generatorUsername: refDelegate.summary.username });
-			result.data.forEach((blockData) => {
-				expect(blockData)
-					.toMap(blockSchemaVersion5, { generatorUsername: refDelegate.summary.username });
 			});
 		});
 	});
