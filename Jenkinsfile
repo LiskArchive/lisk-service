@@ -100,7 +100,8 @@ pipeline {
 		stage('Run integration tests') {
 			steps {
                 dir('./') { sh '''
-                make build
+                make build-core
+                make build-gateway
                 make build-tests
                 ''' }
 				dir('./docker') { 
