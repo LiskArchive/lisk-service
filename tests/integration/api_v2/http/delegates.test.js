@@ -18,7 +18,6 @@ const { api } = require('../../../helpers/api');
 
 const {
 	badRequestSchema,
-	notFoundSchema,
 	wrongInputParamSchema,
 	goodRequestSchema,
 	metaSchema,
@@ -45,8 +44,8 @@ describe('Delegates API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
 			response.data.forEach(account => {
-				expect(account).toMap(accountSchemaVersion5)
-				expect(account.dpos).toMap(dpos)
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -80,9 +79,9 @@ describe('Delegates API', () => {
 			const response = await api.get(`${endpoint}?isDelegate=true&publickey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
-			response.data.map(account => {
+			response.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
-				expect(account.dpos).toMap(dpos)
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -98,9 +97,9 @@ describe('Delegates API', () => {
 			const response = await api.get(`${endpoint}?isDelegate=true&username=${refDelegate.summary.username}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
-			response.data.map(account => {
+			response.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
-				expect(account.dpos).toMap(dpos)
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});

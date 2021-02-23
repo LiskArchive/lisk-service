@@ -18,9 +18,6 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
-	emptyResponseSchema,
-	emptyResultEnvelopeSchema,
-	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
@@ -48,8 +45,8 @@ describe('Method get.delegates', () => {
 			expect(result).toMap(resultEnvelopeSchema);
 			// expect(result.data).toBeArrayOfSize(10);
 			result.data.forEach(account => {
-				expect(account).toMap(accountSchemaVersion5)
-				expect(account.dpos).toMap(dpos)
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
 		});
@@ -62,9 +59,9 @@ describe('Method get.delegates', () => {
 			expect(result).toMap(resultEnvelopeSchema);
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			result.data.forEach(delegate => {
-				expect(delegate).toMap(delegateSchema);
-				expect(delegate.username).toContain('genesis_1');
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.username).toContain('genesis_1');
 			});
 			expect(result.meta).toMap(metaSchema, { offset: 0 });
 		});
@@ -78,8 +75,8 @@ describe('Method get.delegates', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(limit);
 			result.data.forEach(account => {
-				expect(account).toMap(accountSchemaVersion5)
-				expect(account.dpos).toMap(dpos)
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(result.meta).toMap(metaSchema, { count: limit, offset: 0 });
 		});
@@ -87,14 +84,16 @@ describe('Method get.delegates', () => {
 
 	describe('returns delegates based on address', () => {
 		it('returns known delegate by address', async () => {
-			const response = await getDelegates({ isDelegate: true, address: refDelegate.summary.address });
+			const response = await getDelegates({
+				isDelegate: true, address: refDelegate.summary.address,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
 			expect(result.data).toBeArrayOfSize(1);
 			result.data.forEach(account => {
-				expect(account).toMap(accountSchemaVersion5)
-				expect(account.dpos).toMap(dpos)
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(result.meta).toMap(metaSchema, { count: 1, offset: 0 });
 		});
@@ -102,14 +101,16 @@ describe('Method get.delegates', () => {
 
 	describe('returns delegates based on username', () => {
 		it('returns known delegate by username', async () => {
-			const response = await getDelegates({ isDelegate: true, username: refDelegate.summary.username });
+			const response = await getDelegates({
+				isDelegate: true, username: refDelegate.summary.username,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
 			expect(result.data).toBeArrayOfSize(1);
 			result.data.forEach(account => {
-				expect(account).toMap(accountSchemaVersion5)
-				expect(account.dpos).toMap(dpos)
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(result.meta).toMap(metaSchema, { count: 1, offset: 0 });
 		});
@@ -117,14 +118,16 @@ describe('Method get.delegates', () => {
 
 	describe('returns delegates based on public key', () => {
 		it('returns known delegate by public key', async () => {
-			const response = await getDelegates({ isDelegate: true, publickey: refDelegate.summary.publicKey });
+			const response = await getDelegates({
+				isDelegate: true, publickey: refDelegate.summary.publicKey,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
 			expect(result.data).toBeArrayOfSize(1);
 			result.data.forEach(account => {
-				expect(account).toMap(accountSchemaVersion5)
-				expect(account.dpos).toMap(dpos)
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
 			});
 			expect(result.meta).toMap(metaSchema, { count: 1, offset: 0 });
 		});
