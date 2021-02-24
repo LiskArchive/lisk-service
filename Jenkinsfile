@@ -103,7 +103,6 @@ pipeline {
 					sh '''
                     make -f Makefile.core.jenkins down
 					make -f Makefile.core.jenkins up
-					make -f Makefile.core.jenkins create-transaction
 					ready=1
 										retries=0
 										set +e

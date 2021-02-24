@@ -19,7 +19,4 @@ ready:
 test-integration:
 	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
 
-create-transaction:
-	$(compose) exec -T lisk npm run test:stress
-
 mrproper: down
