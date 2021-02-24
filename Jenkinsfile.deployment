@@ -39,13 +39,13 @@ pipeline {
 			when { branch 'development' }
 			environment {
 				ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test'
-				ENABLE_WS_API='rpc,rpc-v1,rpc-test,blockchain'
+				ENABLE_WS_API='rpc,rpc-v1,rpc-test,blockchain,rpc-v2'
 			}
 			steps {
 				ansiColor('xterm') {
 					dir('docker') {
-						sh 'make -f Makefile.deployment.betanet mrproper'
-						sh 'make -f Makefile.deployment.betanet up'
+						sh 'make -f Makefile.deployment.betanet5 mrproper'
+						sh 'make -f Makefile.deployment.betanet5 up'
 					}
 				}
 			}
