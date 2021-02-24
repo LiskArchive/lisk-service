@@ -33,7 +33,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
 const endpoint = `${baseUrlV2}/transactions`;
 
-xdescribe('Transactions API', () => {
+describe('Transactions API', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {

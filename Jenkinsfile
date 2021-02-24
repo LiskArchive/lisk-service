@@ -16,7 +16,7 @@ def waitForHttp() {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
-		timeout(time: 6, unit: 'MINUTES')
+		timeout(time: 8, unit: 'MINUTES')
 	}
 	environment {
 		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
@@ -103,6 +103,7 @@ pipeline {
 					sh '''
                     make -f Makefile.core.jenkins down
 					make -f Makefile.core.jenkins up
+					make -f Makefile.core.jenkins create-transaction
 					ready=1
 										retries=0
 										set +e
