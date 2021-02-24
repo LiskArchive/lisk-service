@@ -34,7 +34,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 
 [
 	'get.votes_received',
-	// 'get.voters', TODO : Added support for api/v2/votes
 ].forEach(methodName => {
 	const getVoters = async params => request(wsRpcUrl, methodName, params);
 

@@ -33,7 +33,6 @@ const {
 
 [
 	`${baseUrlV2}/votes_received`,
-	// `${baseUrlV1}/voters`, TODO : Added support for api/v2/votes
 ].forEach(endpoint => {
 	describe('Votes Received (Voters) API', () => {
 		let refDelegate;

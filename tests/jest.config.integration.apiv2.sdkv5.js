@@ -16,8 +16,6 @@
 module.exports = {
 	verbose: true,
 	testMatch: [
-		// '<rootDir>/api/compare_http_rpc/*.test.js',
-		// '<rootDir>/api/compare_staging_mainnet/*.test.js',
 		'<rootDir>/integration/api_v2/http/*.test.js',
 		'<rootDir>/integration/api_v2/rpc/*.test.js',
 	],
