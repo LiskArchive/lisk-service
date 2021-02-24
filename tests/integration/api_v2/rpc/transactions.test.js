@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -88,7 +88,8 @@ xdescribe('Method get.transactions', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			// expect(result.data).toBeArrayOfSize(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction)
 				.toMap(transactionSchemaVersion5, { moduleAssetId: refTransaction.moduleAssetId }));
@@ -102,7 +103,8 @@ xdescribe('Method get.transactions', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			// expect(result.data).toBeArrayOfSize(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction)
 				.toMap(transactionSchemaVersion5, { moduleAssetName: refTransaction.moduleAssetName }));
@@ -130,7 +132,8 @@ xdescribe('Method get.transactions', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data).toBeArrayOfSize(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(result.meta).toMap(metaSchema);
@@ -150,7 +153,8 @@ xdescribe('Method get.transactions', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			// expect(result.data).toBeArrayOfSize(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction)
 				.toMap(transactionSchemaVersion5, { recipient: refDelegate.summary.address }));
@@ -171,7 +175,8 @@ xdescribe('Method get.transactions', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			// expect(result.data).toBeArrayOfSize(10);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(result.meta).toMap(metaSchema);

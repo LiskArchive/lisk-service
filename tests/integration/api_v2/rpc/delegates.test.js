@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -43,7 +43,9 @@ describe('Method get.delegates', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
-			// expect(result.data).toBeArrayOfSize(10);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
@@ -140,7 +142,9 @@ describe('Method get.delegates', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
-			expect(result.data).toBeArrayOfSize(10);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
@@ -153,7 +157,9 @@ describe('Method get.delegates', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
-			expect(result.data).toBeArrayOfSize(10);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
@@ -166,7 +172,9 @@ describe('Method get.delegates', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
-			expect(result.data).toBeArrayOfSize(10);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);

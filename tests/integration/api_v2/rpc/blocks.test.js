@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -50,7 +50,9 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			// expect(result.data.length).toEqual(10);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
 			expect(result.meta).toMap(metaSchema);
 		});
@@ -59,7 +61,9 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			// expect(result.data.length).toEqual(100);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(100);
 			result.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
 			expect(result.meta).toMap(metaSchema);
 		});

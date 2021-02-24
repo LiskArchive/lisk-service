@@ -1,7 +1,7 @@
 /* eslint-disable quote-props */
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -81,26 +81,27 @@ const {
 				expect(response.data).toMap(voterSchemaVersion5);
 				expect(response.meta).toMap(metaSchema);
 			});
-		});
 
-		it('Returns BAD_REQUEST (400) when requested with limit = 0', async () => {
-			const response = await api.get(`${endpoint}?limit=0`, 400);
-			expect(response).toMap(badRequestSchema);
-		});
 
-		it('Returns NOT_FOUND (404) when requested with wrong address', async () => {
-			const response = await api.get(`${endpoint}?address=999999999L`, 404);
-			expect(response).toMap(notFoundSchema);
-		});
+			it('Returns BAD_REQUEST (400) when requested with limit = 0', async () => {
+				const response = await api.get(`${endpoint}?limit=0`, 400);
+				expect(response).toMap(badRequestSchema);
+			});
 
-		it('Returns BAD_REQUEST (400) when requested with unsupported param', async () => {
-			const response = await api.get(`${endpoint}?unsupported_param=999999999L`, 400);
-			expect(response).toMap(wrongInputParamSchema);
-		});
+			it('Returns NOT_FOUND (404) when requested with wrong address', async () => {
+				const response = await api.get(`${endpoint}?address=999999999L`, 404);
+				expect(response).toMap(notFoundSchema);
+			});
 
-		it('Returns BAD_REQUEST (400) when requested without required params', async () => {
-			const response = await api.get(`${endpoint}`, 400);
-			expect(response).toMap(badRequestSchema);
+			it('Returns BAD_REQUEST (400) when requested with unsupported param', async () => {
+				const response = await api.get(`${endpoint}?unsupported_param=999999999L`, 400);
+				expect(response).toMap(wrongInputParamSchema);
+			});
+
+			it('Returns BAD_REQUEST (400) when requested without required params', async () => {
+				const response = await api.get(`${endpoint}`, 400);
+				expect(response).toMap(badRequestSchema);
+			});
 		});
 	});
 });

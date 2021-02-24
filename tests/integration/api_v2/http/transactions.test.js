@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -47,7 +47,9 @@ xdescribe('Transactions API', () => {
 		it('returns list of transactions', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -55,7 +57,9 @@ xdescribe('Transactions API', () => {
 		it('returns transactions with known moduleAssetId', async () => {
 			const response = await api.get(`${endpoint}?moduleAssetId=${refTransaction.moduleAssetId}`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(transaction => expect(transaction)
 				.toMap(transactionSchemaVersion5, { moduleAssetId: refTransaction.moduleAssetId }));
 			expect(response.meta).toMap(metaSchema);
@@ -64,7 +68,9 @@ xdescribe('Transactions API', () => {
 		it('returns transactions with known moduleAssetName', async () => {
 			const response = await api.get(`${endpoint}?moduleAssetName=${refTransaction.moduleAssetName}`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(transaction => expect(transaction)
 				.toMap(transactionSchemaVersion5, { moduleAssetName: refTransaction.moduleAssetName }));
 			expect(response.meta).toMap(metaSchema);
@@ -78,7 +84,9 @@ xdescribe('Transactions API', () => {
 		it('empty moduleAssetId ->  ok', async () => {
 			const response = await api.get(`${endpoint}?moduleAssetId=`);
 			expect(response).toMap(goodRequestSchema);
-			// expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -124,7 +132,9 @@ xdescribe('Transactions API', () => {
 		it('empty block param -> ok', async () => {
 			const response = await api.get(`${endpoint}?block=`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -149,7 +159,9 @@ xdescribe('Transactions API', () => {
 		it('empty height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});

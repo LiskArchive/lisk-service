@@ -1,7 +1,7 @@
 /* eslint-disable quote-props */
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -45,7 +45,9 @@ describe('Accounts API', () => {
 		it('allows to retrieve list of accounts (no params)', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
-			// expect(response.data.length).toEqual(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -93,7 +95,9 @@ describe('Accounts API', () => {
 			const url = `${endpoint}?publickey=`;
 			const response = await api.get(url);
 			expect(response).toMap(goodRequestSchema);
-			// expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -128,7 +132,9 @@ describe('Accounts API', () => {
 			const url = `${endpoint}?publickey=`;
 			const response = await api.get(url);
 			expect(response).toMap(goodRequestSchema);
-			// expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
 		});
 	});
@@ -168,7 +174,9 @@ describe('Accounts API', () => {
 		it('returns 100 accounts sorted by balance descending when limit set to 100', async () => {
 			const response = await api.get(`${endpoint}?sort=balance:desc&limit=100`);
 			expect(response).toMap(goodRequestSchema);
-			// expect(response.data).toBeArrayOfSize(100);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -181,7 +189,9 @@ describe('Accounts API', () => {
 		it('returns a list when given empty limit', async () => {
 			const response = await api.get(`${endpoint}?sort=balance:desc&limit=`);
 			expect(response).toMap(goodRequestSchema);
-			// expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
 			expect(response.meta).toMap(metaSchema);
 		});

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -104,7 +104,8 @@ describe('Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
-	// Fix delegate search by status
+
+	// TODO Fix delegate search by status
 	xdescribe('GET /accounts?isDelegate=true&status', () => {
 		it('filter active delegates -> ok', async () => {
 			const response = await api.get(`${endpoint}?status=active`);
