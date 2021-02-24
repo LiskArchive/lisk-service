@@ -3,9 +3,11 @@ all: up
 
 compose := docker-compose \
 	-f docker-compose.yml \
-	-f lisk-core/docker-compose.core.yml \
+	-f lisk_service/docker-compose.core.yml \
+	-f lisk_service/docker-compose.gateway.yml \
 	-f lisk_service/docker-compose.gateway-ports.yml \
 	-f lisk_service/docker-compose.tests.yml \
+	-f lisk-core/docker-compose.core.yml
 
 up:
 	(ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} $(compose) up --detach)
@@ -18,5 +20,8 @@ ready:
 
 test-integration:
 	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
+
+config:
+	$(compose) config
 
 mrproper: down

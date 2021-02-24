@@ -1,79 +1,25 @@
 version: '3'
 services:
-  lisk:
+  lisk-core:
     image: lisk/core:3.0.0-beta.4
     ports:
       - 4000
       - 5001
     networks:
-      - lisk
+      - local_lisk_core
     restart: always
     command: ['--network=devnet', '--api-ws', '--api-ws-port=5001', '--enable-forger-plugin', '--enable-http-api-plugin', '--http-api-plugin-port=4000', '--http-api-plugin-whitelist=172.16.0.0/12']
     environment:
       - LISK_API_PUBLIC=true
 
   core:
-    image: lisk/service_core
-    depends_on:
-      - redis_common
-      - redis_core
-      - mysql_core
     networks:
-      - services_network
-      - core_network
-      - lisk
-    restart: always
-    env_file:
-      - ./lisk_service/env/common.env
-      - ./lisk_service/env/core.env
+      - local_lisk_core
     environment:
-      - LISK_CORE_HTTP=http://lisk:4000
-      - LISK_CORE_WS=ws://lisk:5001
-    
-  redis_core:
-    image: redis:5-alpine
-    volumes:
-      - ./redis/redis.persistent.conf:/etc/redis/redis.conf:ro
-    networks:
-      - core_network
-    restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
-
-  mysql_core:
-    image: mysql:5.7
-    volumes:
-      - mysql-data:/var/lib/mysql
-    restart: always
-    networks:
-      - core_network
-    env_file:
-      - ./lisk_service/env/core.env
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
-      timeout: 20s
-      retries: 10
-
-  gateway:
-    image: lisk/service_gateway
-    networks:
-      - services_network
-    restart: always
-    env_file:
-      - ./lisk_service/env/common.env
-      - ./lisk_service/env/gateway.env
-    environment:
-      - ENABLE_HTTP_API=${ENABLE_HTTP_API}
-      - ENABLE_WS_API=${ENABLE_WS_API}
-    healthcheck:
-      test: curl --fail http://gateway:9901/api/v1/transactions
-
-volumes:
-  mysql-data:
+      - LISK_CORE_HTTP=http://lisk-core:4000
+      - LISK_CORE_WS=ws://lisk-core:5001
 
 networks:
-  core_network:
-  lisk:
+  local_lisk_core:
 
 

@@ -45,7 +45,7 @@ const blockSchemaVersion5 = {
 	generatorPublicKey: Joi.string().required(),
 	generatorUsername: Joi.string().optional(),
 	transactionRoot: Joi.string().required(),
-	// previousBlockId: Joi.string().required(),
+	previousBlockId: Joi.string().required(),
 	numberOfTransactions: Joi.number().integer().min(0).required(),
 	signature: Joi.string().required(),
 	totalFee: Joi.string().required(),
