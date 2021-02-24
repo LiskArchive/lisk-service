@@ -68,7 +68,7 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid address -> 400', async () => {
+		it('unknown address -> 400', async () => {
 			const url = `${endpoint}?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`;
 			const expectedStatus = 400;
 			const response = await api.get(url, expectedStatus);
