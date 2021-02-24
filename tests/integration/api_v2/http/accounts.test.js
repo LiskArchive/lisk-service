@@ -68,8 +68,15 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('unknown address -> 400', async () => {
+		it('invalid address -> 400', async () => {
 			const url = `${endpoint}?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`;
+			const expectedStatus = 400;
+			const response = await api.get(url, expectedStatus);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('binary address -> 400', async () => {
+			const url = `${endpoint}?address=76d8a63965fb31052fb245243382e35c2ea372d8`;
 			const expectedStatus = 400;
 			const response = await api.get(url, expectedStatus);
 			expect(response).toMap(badRequestSchema);
