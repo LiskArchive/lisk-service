@@ -36,6 +36,29 @@ const blockSchema = {
 	isFinal: Joi.boolean().optional(),
 };
 
+const blockSchemaVersion5 = {
+	id: Joi.string().required(),
+	height: Joi.number().integer().min(1).required(),
+	version: Joi.number().required(),
+	timestamp: Joi.number().integer().min(1).required(),
+	generatorAddress: Joi.string().optional(),
+	generatorPublicKey: Joi.string().required(),
+	generatorUsername: Joi.string().optional(),
+	transactionRoot: Joi.string().required(),
+	previousBlockId: Joi.string().required(),
+	numberOfTransactions: Joi.number().integer().min(0).required(),
+	signature: Joi.string().required(),
+	totalFee: Joi.string().required(),
+	reward: Joi.string().required(),
+	totalForged: Joi.string().required(),
+	totalBurnt: Joi.string().required(),
+	isFinal: Joi.boolean().optional(),
+	maxHeightPreviouslyForged: Joi.number().required(),
+	maxHeightPrevoted: Joi.number().required(),
+	seedReveal: Joi.string().required(),
+};
+
 module.exports = {
 	blockSchema: Joi.object(blockSchema),
+	blockSchemaVersion5: Joi.object(blockSchemaVersion5),
 };

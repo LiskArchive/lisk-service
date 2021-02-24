@@ -155,50 +155,56 @@ const getBlocks = async params => {
 		meta: {},
 	};
 
-	if (params.blockId) params.id = params.blockId;
-	if (!params.limit) params.limit = 10;
-	if (!params.offset) params.offset = 0;
-	if (!params.sort) params.sort = 'height:desc';
+	const requestParams = { ...params };
 
-	const originalParams = { ...params };
+	if (requestParams.blockId) requestParams.id = requestParams.blockId;
+	if (!requestParams.limit) requestParams.limit = 10;
+	if (!requestParams.offset) requestParams.offset = 0;
+	if (!requestParams.sort) requestParams.sort = 'height:desc';
 
 	let accountInfo;
-	if (params.publicKey) accountInfo = { publicKey: params.publicKey };
-	if (params.address) accountInfo = await getIndexedAccountInfo({ address: params.address });
-	if (params.username) accountInfo = await getIndexedAccountInfo({ username: params.username });
-	if (accountInfo && accountInfo.publicKey) params.generatorPublicKey = accountInfo.publicKey;
+	if (requestParams.publicKey) accountInfo = { publicKey: requestParams.publicKey };
+	if (requestParams.address) accountInfo = await getIndexedAccountInfo({
+		address: requestParams.address,
+	});
+	if (requestParams.username) accountInfo = await getIndexedAccountInfo({
+		username: requestParams.username,
+	});
+	if (accountInfo && accountInfo.publicKey) {
+		requestParams.generatorPublicKey = accountInfo.publicKey;
+	}
 
-	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-		const [from, to] = params.height.split(':');
+	if (requestParams.height && typeof requestParams.height === 'string' && requestParams.height.includes(':')) {
+		const [from, to] = requestParams.height.split(':');
 		if (from > to) return new Error('From height cannot be greater than to height');
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
+		if (!requestParams.propBetweens) requestParams.propBetweens = [];
+		requestParams.propBetweens.push({
 			property: 'height',
 			from,
 			to,
 		});
-		delete params.height;
+		delete requestParams.height;
 	}
 
-	if (params.timestamp && params.timestamp.includes(':')) {
-		const [from, to] = params.timestamp.split(':');
+	if (requestParams.timestamp && requestParams.timestamp.includes(':')) {
+		const [from, to] = requestParams.timestamp.split(':');
 		if (from > to) return new Error('From timestamp cannot be greater than to timestamp');
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
+		if (!requestParams.propBetweens) requestParams.propBetweens = [];
+		requestParams.propBetweens.push({
 			property: 'timestamp',
 			from,
 			to,
 		});
-		delete params.timestamp;
+		delete requestParams.timestamp;
 	}
 
-	delete params.blockId;
-	delete params.publicKey;
-	delete params.address;
-	delete params.username;
+	delete requestParams.blockId;
+	delete requestParams.publicKey;
+	delete requestParams.address;
+	delete requestParams.username;
 
-	if (isQueryFromIndex(params)) {
-		const resultSet = await blocksDB.find(params);
+	if (isQueryFromIndex(requestParams)) {
+		const resultSet = await blocksDB.find(requestParams);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
 
@@ -225,8 +231,8 @@ const getBlocks = async params => {
 
 	blocks.meta = {
 		count: blocks.data.length,
-		offset: originalParams.offset,
-		total: await blocksDB.count(originalParams),
+		offset: requestParams.offset,
+		total: await blocksDB.count(requestParams),
 	};
 
 	return blocks;

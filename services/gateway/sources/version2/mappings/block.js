@@ -27,7 +27,7 @@ module.exports = {
 	signature: '=,string',
 	blockSignature: '=,string',
 	confirmations: '=,number',
-	previousBlockId: '=,string',
+	previousBlockId: 'previousBlockID,string',
 	numberOfTransactions: '=,number',
 	totalAmount: '=,string',
 	totalForged: '=,string',

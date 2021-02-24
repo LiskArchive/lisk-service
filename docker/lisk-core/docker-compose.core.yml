@@ -1,0 +1,25 @@
+version: '3'
+services:
+  lisk-core:
+    image: lisk/core:3.0.0-beta.4
+    ports:
+      - 4000
+      - 5001
+    networks:
+      - local_lisk_core
+    restart: always
+    command: ['--network=devnet', '--api-ws', '--api-ws-port=5001', '--enable-forger-plugin', '--enable-http-api-plugin', '--http-api-plugin-port=4000', '--http-api-plugin-whitelist=172.16.0.0/12']
+    environment:
+      - LISK_API_PUBLIC=true
+
+  core:
+    networks:
+      - local_lisk_core
+    environment:
+      - LISK_CORE_HTTP=http://lisk-core:4000
+      - LISK_CORE_WS=ws://lisk-core:5001
+
+networks:
+  local_lisk_core:
+
+
