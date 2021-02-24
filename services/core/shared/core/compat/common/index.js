@@ -28,6 +28,7 @@ const {
     getRegisteredModuleAssets,
     setRegisteredmoduleAssets,
     resolvemoduleAssets,
+    getNetworkFeeConstants,
 } = require('./constants');
 
 const {
@@ -50,6 +51,7 @@ module.exports = {
     getRegisteredModuleAssets,
     setRegisteredmoduleAssets,
     resolvemoduleAssets,
+    getNetworkFeeConstants,
 
     getBlockchainTime,
     getEpochUnixTime,

@@ -44,6 +44,10 @@ const { getVoters } = require('./voters');
 const events = require('./events');
 const { getNetworkStatus } = require('./network');
 
+const {
+	getEstimateFeeByteForBatch,
+} = require('./dynamicFees');
+
 const init = () => {
 	require('./blocks').init();
 	require('./transactions').init();
@@ -69,5 +73,6 @@ module.exports = {
 	getVoters,
 	events,
 	getNetworkStatus,
+	getEstimateFeeByteForBatch,
 	init,
 };

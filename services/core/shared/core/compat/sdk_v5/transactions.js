@@ -63,6 +63,7 @@ const indexTransactions = async blocks => {
 			tx.moduleAssetId = id;
 			tx.timestamp = block.timestamp;
 			tx.amount = tx.asset.amount || null;
+			tx.data = tx.asset.data || null;
 			if (tx.asset.recipientAddress) {
 				tx.recipientId = getBase32AddressFromHex(tx.asset.recipientAddress);
 				recipientAddressesToIndex.push(tx.asset.recipientAddress);

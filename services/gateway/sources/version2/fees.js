@@ -14,18 +14,21 @@
  *
  */
 module.exports = {
-	primaryKey: 'height',
-	schema: {
-		id: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
-		generatorPublicKey: { type: 'string' },
-		size: { type: 'integer' },
+	type: 'moleculer',
+	method: 'core.fee.estimates',
+	params: {},
+	definition: {
+		data: {
+			feeEstimatePerByte: '=',
+			baseFeeById: '=',
+			baseFeeByName: '=',
+			minFeePerByte: '=',
+		},
+		meta: {
+			lastUpdate: 'meta.updated,number',
+			lastBlockHeight: 'meta.blockHeight,number',
+			lastBlockId: 'meta.blockId,string',
+		},
+		links: {},
 	},
-	indexes: {
-		height: { type: 'range' },
-		timestamp: { type: 'range' },
-		generatorPublicKey: { type: 'key' },
-	},
-	purge: {},
 };

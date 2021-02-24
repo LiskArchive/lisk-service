@@ -18,9 +18,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 3522022706490461700,
@@ -40,9 +38,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 1553636388630852400,
@@ -62,9 +58,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 6660761462405314000,
@@ -84,9 +78,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 3625163255644568000,
@@ -106,9 +98,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 9115354928962489000,
@@ -128,9 +118,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 6551694213258568000,
@@ -150,9 +138,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 9178134604815809000,
@@ -172,9 +158,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 5405124087297309000,
@@ -194,9 +178,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 4872278234570100000,
@@ -216,9 +198,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 9049353691120043000,
@@ -238,9 +218,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 8093586074095411000,
@@ -260,9 +238,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 8552160952241163000,
@@ -282,9 +258,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 9065014862334025000,
@@ -304,9 +278,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 450437472479652300,
@@ -326,9 +298,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 7785175531960422000,
@@ -348,9 +318,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 7933629590231803000,
@@ -370,9 +338,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 8788679359129970000,
@@ -392,9 +358,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 9255097796120676000,
@@ -414,9 +378,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		},
 		{
 			"id": 2482776076796751000,
@@ -436,9 +398,7 @@
 			"totalFee": "0",
 			"reward": "200000000",
 			"totalForged": "200000000",
-			"transactions": {
-				"data": []
-			}
+			"payload": []
 		}
 	]
 }

@@ -38,15 +38,15 @@ const {
 } = require('../constants/transactions');
 
 const {
+	calcAvgFeeByteModes,
 	getTransactionInstanceByType,
 	calculateBlockSize,
 	calculateWeightedAvg,
-	calcAvgFeeByteModes,
 	calculateAvgFeePerByte,
 	calculateFeePerByte,
 	EMAcalc,
 	getEstimateFeeByteForBlock,
-} = require('../../shared/core/dynamicFees');
+} = require('../../shared/core/compat/sdk_v4/dynamicFees');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
@@ -144,8 +144,7 @@ describe('Fee estimation tests', () => {
 	describe('calulateAvgFeePerByte for Transactions', () => {
 		let transactionDetails;
 		beforeAll(async () => {
-			const payload = nonEmptyBlock.transactions.data;
-			transactionDetails = payload.map(transaction => {
+			transactionDetails = nonEmptyBlock.payload.map(transaction => {
 				const tx = getTransactionInstanceByType(transaction);
 				const transactionSize = tx.getBytes().length;
 				const { minFee } = tx;
@@ -198,7 +197,7 @@ describe('Fee estimation tests', () => {
 
 		it('Non-empty block', async () => {
 			const block = nonEmptyBlock;
-			block.transactions.data = block.transactions.data.map(transaction => {
+			block.payload = block.payload.map(transaction => {
 				transaction.fee = BigInt(transaction.fee);
 				return transaction;
 			});

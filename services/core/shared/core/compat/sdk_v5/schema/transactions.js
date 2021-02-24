@@ -26,6 +26,9 @@ module.exports = {
 		recipientId: { type: 'string' },
 		amount: { type: 'bigInteger' },
 		data: { type: 'string' },
+		size: { type: 'integer' },
+		fee: { type: 'bigInteger' },
+		minFee: { type: 'bigInteger' },
 	},
 	indexes: {
 		height: { type: 'range' },

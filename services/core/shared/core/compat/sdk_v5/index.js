@@ -57,6 +57,10 @@ const {
 } = require('./delegates');
 
 const {
+    getEstimateFeeByteForBatch,
+} = require('./dynamicFees');
+
+const {
     getVotes,
 } = require('./votes');
 
@@ -105,6 +109,8 @@ module.exports = {
     getCachedAccountByUsername,
 
     getDelegates,
+
+    getEstimateFeeByteForBatch,
 
     getVotes,
 
