@@ -21,7 +21,7 @@ pipeline {
 	environment {
 		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
 		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test,rpc-v2'
-    }
+	}
 	stages {
 		stage ('Build deps') {
 			steps {
@@ -97,7 +97,7 @@ pipeline {
 			}
 		}
 
-        stage('Run integration tests') {
+		stage('Run integration tests') {
 			steps {
 				dir('./docker') {
 					sh '''
