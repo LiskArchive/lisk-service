@@ -13,27 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const account = require('./mappings/account');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'core.accounts',
-	params: {
-		address: '=',
-		publicKey: 'publickey',
-		username: '=',
-		isDelegate: '=,boolean',
-		limit: '=',
-		offset: '=',
-		sort: '=',
-	},
-	definition: {
-		data: ['data', account],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	verbose: true,
+	testMatch: [
+		'<rootDir>/integration/api_v2/http/*.test.js',
+		'<rootDir>/integration/api_v2/rpc/*.test.js',
+	],
+	testEnvironment: 'node',
+	testTimeout: 20000,
+	setupFilesAfterEnv: [
+		'jest-extended',
+		'<rootDir>/helpers/setupCustomMatchers.js',
+	],
+	watchPlugins: [
+		['jest-watch-toggle-config', { setting: 'verbose' }],
+		['jest-watch-toggle-config', { setting: 'bail' }],
+		['jest-watch-toggle-config', { setting: 'notify' }],
+		'jest-watch-typeahead/filename',
+	],
 };
