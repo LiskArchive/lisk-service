@@ -14,25 +14,31 @@
  *
  */
 const { getAccounts } = require('./accounts');
+const mysqlIndex = require('../../../indexdb/mysql');
+const blocksIndexSchema = require('./schema/blocks');
+
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const getDelegates = async (params) => {
+    const blocksDB = await getBlocksIndex();
     const delegates = {
         data: [],
         meta: {},
     };
-
     const punishmentHeight = 780000;
     const response = await getAccounts({ isDelegate: true, limit: params.limit });
     if (response.data) delegates.data = response.data;
     if (response.meta) delegates.meta = response.meta;
 
-    delegates.data.map(delegate => {
+    delegates.data.map(async delegate => {
         delegate.account = {};
         delegate.account = {
             address: delegate.address,
             publicKey: delegate.publicKey,
         };
-
+        const blocks = await blocksDB.find({ generatorPublicKey: delegate.publicKey });
+        delegate.rewards = blocks.reduce((acc, curr) => acc + curr.reward, 0);
+        delegate.producedBlocks = blocks.length;
         const adder = (acc, curr) => Number(acc) + Number(curr.amount);
         const totalVotes = delegate.dpos.sentVotes.reduce(adder, 0);
         const selfVotes = delegate.dpos.sentVotes
