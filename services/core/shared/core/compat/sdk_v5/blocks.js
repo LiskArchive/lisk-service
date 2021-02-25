@@ -286,16 +286,12 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 	if (indexedBlockCount < toHeight) {
 		const missingBlocksQueryStatement = `
 		SELECT
-			(SELECT COALESCE(MAX(height)+1, 1)
-			FROM blocks
-			WHERE height < b1.height) AS 'from',
-				b1.height - 1 AS 'to'
+			(SELECT COALESCE(MAX(height)+1, 1) FROM blocks WHERE height < b1.height) AS 'from',
+			(b1.height - 1) AS 'to'
 		FROM blocks b1
-		WHERE b1.height > ${fromHeight} AND b1.height < ${toHeight}
-			AND NOT EXISTS
-				(SELECT 1
-				FROM blocks b2
-				WHERE b2.height = b1.height - 1)
+		WHERE b1.height != 1
+			AND b1.height BETWEEN ${fromHeight} AND ${toHeight}
+			AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
 		`;
 
 		const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
