@@ -291,7 +291,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 			WHERE height < b1.height) AS 'from',
 				b1.height - 1 AS 'to'
 		FROM blocks b1
-		WHERE b1.height != 1
+		WHERE b1.height > ${fromHeight} AND b1.height < ${toHeight}
 			AND NOT EXISTS
 				(SELECT 1
 				FROM blocks b2
