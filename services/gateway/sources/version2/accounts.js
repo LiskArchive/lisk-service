@@ -24,6 +24,7 @@ module.exports = {
 		username: '=',
 		isDelegate: '=,boolean',
 		status: '=',
+		search: '=',
 		limit: '=',
 		offset: '=',
 		sort: '=',
