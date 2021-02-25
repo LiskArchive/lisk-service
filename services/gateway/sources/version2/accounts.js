@@ -23,6 +23,7 @@ module.exports = {
 		publicKey: 'publickey',
 		username: '=',
 		isDelegate: '=,boolean',
+		status: '=',
 		limit: '=',
 		offset: '=',
 		sort: '=',
