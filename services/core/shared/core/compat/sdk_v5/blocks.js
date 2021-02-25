@@ -276,6 +276,38 @@ const buildIndex = async (from, to) => {
 	logger.info(`Finished building block index (${from}-${to})`);
 };
 
+const indexMissingBlocks = async currentHeight => {
+	const blocksDB = await getBlocksIndex();
+	const propBetweens = [{
+		property: 'height',
+		from: 1,
+		to: currentHeight,
+	}];
+	const indexedBlockCount = await blocksDB.count({ propBetweens });
+	if (indexedBlockCount < currentHeight) {
+		const missingBlocksRangeRawQuery = `
+		SELECT
+			(SELECT COALESCE(MAX(height)+1, 1)
+			FROM blocks
+			WHERE height < b1.height) AS 'from',
+				b1.height - 1 AS 'to'
+		FROM blocks b1
+		WHERE b1.height != 1
+			AND NOT EXISTS
+				(SELECT 1
+				FROM blocks b2
+				WHERE b2.height = b1.height - 1)
+		`;
+
+		const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksRangeRawQuery);
+		console.log(missingBlocksRanges);
+		for (let i = 0; i < missingBlocksRanges.length; i++) {
+			const { from, to } = missingBlocksRanges[i];
+			await buildIndex(from, to);
+		}
+	}
+};
+
 const init = async () => {
 	await getBlocksIndex();
 	try {
@@ -306,6 +338,8 @@ const init = async () => {
 			// For when the index is partially built
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
+
+		await indexMissingBlocks(currentHeight);
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);

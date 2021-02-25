@@ -253,11 +253,18 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return totalCount.count;
 	};
 
+	const rawQuery = async (rawQuery) => {
+		const result = await knex.raw(rawQuery);
+		const [resultSet,] = result;
+		return resultSet;
+	};
+
 	return {
 		upsert,
 		find,
 		deleteIds,
 		count,
+		rawQuery,
 	};
 };
 
