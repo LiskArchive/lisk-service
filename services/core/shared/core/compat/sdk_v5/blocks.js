@@ -241,7 +241,7 @@ const getBlocks = async params => {
 const buildIndex = async (from, to) => {
 	logger.info('Building index of blocks');
 
-	if (from >= to) {
+	if (from > to) {
 		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
 		return;
 	}
