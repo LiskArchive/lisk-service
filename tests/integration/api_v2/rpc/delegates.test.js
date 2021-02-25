@@ -148,11 +148,11 @@ describe('Method get.delegates', () => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
 			});
-			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
+			expect(result.meta).toMap(metaSchema);
 		});
 
 		xit('returns standby delegates by status', async () => {
-			const response = await getDelegates({ status: 'standby' });
+			const response = await getDelegates({ isDelegate: true, status: 'standby' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
@@ -163,11 +163,11 @@ describe('Method get.delegates', () => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
 			});
-			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
+			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('returns both active and standby delegates by status', async () => {
-			const response = await getDelegates({ status: 'active,standby', offset: 95 });
+			const response = await getDelegates({ isDelegate: true, status: 'active,standby', offset: 95 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
@@ -178,7 +178,7 @@ describe('Method get.delegates', () => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
 			});
-			expect(result.meta).toMap(metaSchema, { count: 10, offset: 95 });
+			expect(result.meta).toMap(metaSchema);
 		});
 	});
 });

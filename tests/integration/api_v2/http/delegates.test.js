@@ -107,7 +107,7 @@ describe('Delegates API', () => {
 
 	describe('GET /accounts?isDelegate=true&status', () => {
 		it('filter active delegates -> ok', async () => {
-			const response = await api.get(`${endpoint}?status=active`);
+			const response = await api.get(`${endpoint}?isDelegate=true&status=active`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -120,9 +120,11 @@ describe('Delegates API', () => {
 		});
 
 		xit('filter standby delegates -> ok', async () => {
-			const response = await api.get(`${endpoint}?status=standby`);
+			const response = await api.get(`${endpoint}?isDelegate=true&status=standby`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(10);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
@@ -131,7 +133,7 @@ describe('Delegates API', () => {
 		});
 
 		it('filter delegates by combination -> ok', async () => {
-			const response = await api.get(`${endpoint}?status=active,standby&offset=95`);
+			const response = await api.get(`${endpoint}?isDelegate=true&status=active,standby&offset=95`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
