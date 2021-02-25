@@ -55,8 +55,7 @@ describe('Delegates API', () => {
 			expect(response).toMap(wrongInputParamSchema);
 		});
 
-		// TODO Implement support for search in accounts
-		xit('search delegates -> ok', async () => {
+		it('search delegates -> ok', async () => {
 			const response = await api.get(`${endpoint}?isDelegate=true&search=genesis`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

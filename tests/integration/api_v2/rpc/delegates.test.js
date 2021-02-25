@@ -53,9 +53,8 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO Implement support for search in accounts
-		xit('returns delegates matching search param', async () => {
-			const response = await getDelegates({ search: 'genesis_1' });
+		it('returns delegates matching search param', async () => {
+			const response = await getDelegates({ isDelegate: true, search: 'genesis_1' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
