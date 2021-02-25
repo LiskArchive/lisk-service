@@ -135,8 +135,7 @@ describe('Method get.delegates', () => {
 		});
 	});
 
-	// Fix delegate search by status
-	xdescribe('returns delegates based on status', () => {
+	describe('returns delegates based on status', () => {
 		it('returns active delegates by status', async () => {
 			const response = await getDelegates({ isDelegate: true, status: 'active' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -152,7 +151,7 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
 		});
 
-		it('returns standby delegates by status', async () => {
+		xit('returns standby delegates by status', async () => {
 			const response = await getDelegates({ status: 'standby' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
