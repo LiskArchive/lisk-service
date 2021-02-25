@@ -54,7 +54,7 @@ describe('Method get.delegates', () => {
 		});
 
 		it('returns delegates matching search param', async () => {
-			const response = await getDelegates({ isDelegate: true, search: 'genesis_1' });
+			const response = await getDelegates({ isDelegate: true, search: 'genesis' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
@@ -62,7 +62,7 @@ describe('Method get.delegates', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			result.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
-				expect(account.username).toContain('genesis_1');
+				expect(account.summary.username).toContain('genesis');
 			});
 			expect(result.meta).toMap(metaSchema, { offset: 0 });
 		});

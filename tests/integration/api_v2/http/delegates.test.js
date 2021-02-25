@@ -62,7 +62,7 @@ describe('Delegates API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			response.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
-				expect(account.username).toContain('genesis');
+				expect(account.summary.username).toContain('genesis');
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
