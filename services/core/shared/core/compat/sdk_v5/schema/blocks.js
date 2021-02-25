@@ -21,6 +21,7 @@ module.exports = {
 		timestamp: { type: 'integer' },
 		generatorPublicKey: { type: 'string' },
 		size: { type: 'integer' },
+		reward: { type: 'bigInteger' },
 	},
 	indexes: {
 		height: { type: 'range' },
