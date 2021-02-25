@@ -167,7 +167,7 @@ describe('Method get.delegates', () => {
 		});
 
 		it('returns both active and standby delegates by status', async () => {
-			const response = await getDelegates({ isDelegate: true, status: 'active,standby', offset: 95 });
+			const response = await getDelegates({ isDelegate: true, status: 'active,standby' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);

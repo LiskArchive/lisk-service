@@ -133,7 +133,7 @@ describe('Delegates API', () => {
 		});
 
 		it('filter delegates by combination -> ok', async () => {
-			const response = await api.get(`${endpoint}?isDelegate=true&status=active,standby&offset=95`);
+			const response = await api.get(`${endpoint}?isDelegate=true&status=active,standby`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
