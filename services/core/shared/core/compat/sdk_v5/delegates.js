@@ -36,9 +36,13 @@ const getDelegates = async (params) => {
             address: delegate.address,
             publicKey: delegate.publicKey,
         };
-        const blocks = await blocksDB.find({ generatorPublicKey: delegate.publicKey });
-        delegate.rewards = blocks.reduce((acc, curr) => acc + curr.reward, 0);
-        delegate.producedBlocks = blocks.length;
+        const [{ rewards }] = await blocksDB.find({
+            generatorPublicKey: delegate.publicKey, aggregate: 'reward as rewards',
+        });
+        delegate.rewards = rewards;
+        delegate.producedBlocks = await blocksDB.count({
+            generatorPublicKey: delegate.publicKey,
+        });
         const adder = (acc, curr) => Number(acc) + Number(curr.amount);
         const totalVotes = delegate.dpos.sentVotes.reduce(adder, 0);
         const selfVotes = delegate.dpos.sentVotes

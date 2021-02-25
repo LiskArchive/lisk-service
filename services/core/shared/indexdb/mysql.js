@@ -85,7 +85,7 @@ const cast = (val, type) => {
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -194,6 +194,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.search) {
 			const { property, pattern } = params.search;
 			query.where(`${property}`, 'like', `%${pattern}%`);
+		}
+
+		if (params.aggregate) {
+			query.where(queryParams).sum(params.aggregate);
 		}
 
 		return query
