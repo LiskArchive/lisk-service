@@ -253,9 +253,9 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return totalCount.count;
 	};
 
-	const rawQuery = async (rawQuery) => {
-		const result = await knex.raw(rawQuery);
-		const [resultSet,] = result;
+	const rawQuery = async (queryStatement) => {
+		const result = await knex.raw(queryStatement);
+		const [resultSet] = result;
 		return resultSet;
 	};
 

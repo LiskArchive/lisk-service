@@ -256,7 +256,6 @@ const buildIndex = async (from, to) => {
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 
-		/* eslint-disable no-await-in-loop */
 		let blocks;
 		do {
 			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
@@ -285,7 +284,7 @@ const indexMissingBlocks = async currentHeight => {
 	}];
 	const indexedBlockCount = await blocksDB.count({ propBetweens });
 	if (indexedBlockCount < currentHeight) {
-		const missingBlocksRangeRawQuery = `
+		const missingBlocksQueryStatement = `
 		SELECT
 			(SELECT COALESCE(MAX(height)+1, 1)
 			FROM blocks
@@ -299,10 +298,11 @@ const indexMissingBlocks = async currentHeight => {
 				WHERE b2.height = b1.height - 1)
 		`;
 
-		const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksRangeRawQuery);
-		console.log(missingBlocksRanges);
+		const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
 		for (let i = 0; i < missingBlocksRanges.length; i++) {
 			const { from, to } = missingBlocksRanges[i];
+
+			// eslint-disable-next-line no-await-in-loop
 			await buildIndex(from, to);
 		}
 	}
