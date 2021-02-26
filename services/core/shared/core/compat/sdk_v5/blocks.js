@@ -73,6 +73,7 @@ const normalizeBlocks = async blocks => {
 			block.generatorAddress = account && account.address
 				? getHexAddressFromBase32(account.address) : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
+			block.isFinal = block.height <= getFinalizedHeight();
 			block.numberOfTransactions = block.payload.length;
 
 			block.size = 0;
