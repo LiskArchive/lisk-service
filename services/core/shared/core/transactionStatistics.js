@@ -18,7 +18,6 @@ const moment = require('moment');
 const BigNumber = require('big-number');
 
 const config = require('../../config');
-const requestAll = require('../requestAll');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
@@ -28,9 +27,12 @@ const logger = Logger();
 const tableConfig = {
 	primaryKey: 'id',
 	schema: {
-		id: { type: 'string' },
+		amount_range: { type: 'string' },
+		count: { type: 'integer' },
 		date: { type: 'integer' },
-		numberOfTransactions: { type: 'integer' },
+		id: { type: 'string' },
+		type: { type: 'integer' },
+		volume: { type: 'bigInteger' },
 	},
 	indexes: {
 		date: { type: 'range' },
@@ -131,13 +133,13 @@ const insertToDb = async (statsList, date) => {
 const fetchTransactions = async (date, offset = 0) => {
 	const limit = 100;
 	const params = {
-		fromTimestamp: moment(date).unix(),
-		toTimestamp: moment(date).add(1, 'day').unix(),
+		fromTimestamp: moment.unix(date).unix(),
+		toTimestamp: moment.unix(date).add(1, 'day').unix(),
 		limit,
 		offset,
 	};
-	const transactions = await requestAll(getTransactions, params, 20000);
-	return transactions;
+	const transactions = await getTransactions(params);
+	return transactions.data;
 };
 
 const queueJob = async (job) => {
@@ -164,7 +166,7 @@ const getStatsTimeline = async params => {
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
-		const currFormattedDate = moment(entry.date).format(params.dateFormat);
+		const currFormattedDate = moment.unix(entry.date).format(params.dateFormat);
 		if (!unorderedfinalResult[currFormattedDate]) {
 			unorderedfinalResult[currFormattedDate] = {
 				date: currFormattedDate,
@@ -243,6 +245,8 @@ const fetchTransactionsForPastNDays = async n => {
 				attempt: attempt += 1,
 			};
 			transactionStatisticsQueue.add(queueName, { date, options });
+			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
+			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 		}
 	});
 };
