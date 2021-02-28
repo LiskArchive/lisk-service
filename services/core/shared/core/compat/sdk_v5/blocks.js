@@ -167,13 +167,13 @@ const indexNewBlocks = async blocks => {
 				// where: { height: `<= ${finalizedBlockHeight}` },
 			});
 
-			if (blockInfo && !blockInfo.isFinal) {
-				// TODO: Fork handling
+			if (blockInfo && blockInfo.id !== block.id) {
+				// Fork detected
+
 				// Remove all blocks at height greater than the incoming block, if fork detected
 				// (Risky affair, need signal based impl. for new incoming blocks)
 			}
 		}
-
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
 		if (block.height > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', block.height);
 	}
