@@ -150,7 +150,7 @@ const indexNewBlocks = async blocks => {
 	const blocksDB = await getBlocksIndex();
 	if (blocks.data.length === 1) {
 		const [block] = blocks.data;
-		const [blockInfo] = await blocksDB.find({ id: block.id });
+		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || !blockInfo.isFinal) {
 			// Index if doesn't exist, or update if it isn't set to final
 			indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
