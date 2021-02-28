@@ -171,6 +171,8 @@ const indexNewBlocks = async blocks => {
 				// 	limit: 1000,
 				// });
 				// await blocksDB.deleteIds(blocksToRemove.map(b => b.id));
+
+				// TODO: Remove the forked transactions / votes
 			}
 		}
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
