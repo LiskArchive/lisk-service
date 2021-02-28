@@ -42,13 +42,13 @@ let finalizedHeight;
 
 const setFinalizedHeight = (height) => finalizedHeight = height;
 
+const getFinalizedHeight = () => finalizedHeight;
+
 const updateFinalizedHeight = async () => {
 	const result = await coreApi.getNetworkStatus();
 	setFinalizedHeight(result.data.finalizedHeight);
 	return result;
 };
-
-const getFinalizedHeight = () => finalizedHeight;
 
 const indexBlocks = async job => {
 	const { blocks } = job.data;
@@ -61,7 +61,16 @@ const indexBlocks = async job => {
 	await indexVotes(blocks);
 };
 
+const updateBlockIndex = async job => {
+	const { blocks } = job.data;
+	const blocksDB = await getBlocksIndex();
+	await blocksDB.upsert(blocks);
+	// const { setValues, where } = job.data;
+	// await blocksDB.upsert(setValues, where);
+};
+
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
+const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
 
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
@@ -145,6 +154,24 @@ const indexNewBlocks = async blocks => {
 		if (!blockInfo || !blockInfo.isFinal) {
 			// Index if doesn't exist, or update if it isn't set to final
 			indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+
+			// TODO: Improve 'upsert' implementation to support direct property updates
+			// Update block finality status
+			const finalizedBlockHeight = getFinalizedHeight();
+			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 });
+			updateBlockIndexQueue.add('updateBlockIndexQueue', {
+				blocks: nonFinalBlocks
+					.filter(b => b.height <= finalizedBlockHeight)
+					.map(b => ({ ...b, isFinal: true })),
+				setValues: { isFinal: true },
+				where: { height: `<= ${finalizedBlockHeight}` },
+			});
+
+			if (blockInfo && !blockInfo.isFinal) {
+				// TODO: Fork handling
+				// Remove all blocks at height greater than the incoming block, if fork detected
+				// (Risky affair, need signal based impl. for new incoming blocks)
+			}
 		}
 
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
