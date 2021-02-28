@@ -163,8 +163,8 @@ const indexNewBlocks = async blocks => {
 				blocks: nonFinalBlocks
 					.filter(b => b.height <= finalizedBlockHeight)
 					.map(b => ({ ...b, isFinal: true })),
-				setValues: { isFinal: true },
-				where: { height: `<= ${finalizedBlockHeight}` },
+				// setValues: { isFinal: true },
+				// where: { height: `<= ${finalizedBlockHeight}` },
 			});
 
 			if (blockInfo && !blockInfo.isFinal) {
