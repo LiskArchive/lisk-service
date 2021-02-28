@@ -65,8 +65,6 @@ const updateBlockIndex = async job => {
 	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
 	await blocksDB.upsert(blocks);
-	// const { setValues, where } = job.data;
-	// await blocksDB.upsert(setValues, where);
 };
 
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
@@ -155,7 +153,6 @@ const indexNewBlocks = async blocks => {
 			// Index if doesn't exist, or update if it isn't set to final
 			indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
-			// TODO: Improve 'upsert' implementation to support direct property updates
 			// Update block finality status
 			const finalizedBlockHeight = getFinalizedHeight();
 			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 });
@@ -163,15 +160,17 @@ const indexNewBlocks = async blocks => {
 				blocks: nonFinalBlocks
 					.filter(b => b.height <= finalizedBlockHeight)
 					.map(b => ({ ...b, isFinal: true })),
-				// setValues: { isFinal: true },
-				// where: { height: `<= ${finalizedBlockHeight}` },
 			});
 
 			if (blockInfo && blockInfo.id !== block.id) {
 				// Fork detected
 
-				// Remove all blocks at height greater than the incoming block, if fork detected
-				// (Risky affair, need signal based impl. for new incoming blocks)
+				// TODO: Support non-equality in where clause
+				// const blocksToRemove = await blocksDB.find({
+				// 	where: { height: `> ${block.height}` },
+				// 	limit: 1000,
+				// });
+				// await blocksDB.deleteIds(blocksToRemove.map(b => b.id));
 			}
 		}
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
