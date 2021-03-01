@@ -32,7 +32,7 @@ const tableConfig = {
 		count: { type: 'integer' },
 		date: { type: 'integer' },
 		id: { type: 'string' },
-		type: { type: 'integer' },
+		type: { type: 'string' },
 		volume: { type: 'bigInteger' },
 	},
 	indexes: {
@@ -73,7 +73,7 @@ const getRange = tx => {
 
 const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	const transaction = {
-		type: 0,
+		type: 'any',
 		amount: String(1e8),
 		fee: String(1e7),
 	};
@@ -100,7 +100,7 @@ const transformStatsObjectToList = statsObject => (
 	Object.entries(statsObject).reduce((acc, [type, rangeObject]) => ([
 		...acc,
 		...Object.entries(rangeObject).map(([range, { count, volume }]) => ({
-			type: Number(type),
+			type,
 			volume: Math.ceil(volume),
 			count,
 			range,
@@ -194,7 +194,7 @@ const getStatsTimeline = async params => {
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance();
 
-	const result = await db.find(getSelector(params));
+	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -215,7 +215,7 @@ const getDistributionByAmount = async params => {
 const getDistributionByType = async params => {
 	const db = await getDbInstance();
 
-	const result = await db.find(getSelector(params));
+	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
