@@ -347,6 +347,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 		}
 	}
 
+	// eslint-disable-next-line consistent-return
 	waitForIt(async () => {
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 		const numBlocksIndexed = await blocksDB.count();
