@@ -165,12 +165,16 @@ const indexNewBlocks = async blocks => {
 			if (blockInfo && blockInfo.id !== block.id) {
 				// Fork detected
 
-				// TODO: Support non-equality in where clause
-				// const blocksToRemove = await blocksDB.find({
-				// 	where: { height: `> ${block.height}` },
-				// 	limit: 1000,
-				// });
-				// await blocksDB.deleteIds(blocksToRemove.map(b => b.id));
+				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+				const blocksToRemove = await blocksDB.find({
+					propBetweens: [{
+						property: 'height',
+						from: block.height + 1,
+						to: highestIndexedBlock.height,
+					}],
+					limit: 1000,
+				});
+				await blocksDB.deleteIds(blocksToRemove.map(b => b.id));
 
 				// TODO: Remove the forked transactions / votes
 			}
