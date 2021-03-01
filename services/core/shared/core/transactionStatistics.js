@@ -175,18 +175,14 @@ const getStatsTimeline = async params => {
 				volume: 0,
 			};
 		}
-		// 	GROUP BY to_char(timestamp, $<dateFormat>)
 
 		const statForDate = unorderedfinalResult[currFormattedDate];
 		statForDate.transactionCount += entry.count;
 		statForDate.volume += entry.volume;
-		// SELECT to_char(timestamp, $<dateFormat>) AS date, sum(count) AS "transactionCount",
-		// SUM(volume) AS volume FROM transaction_statistics
 	});
 
 	const orderedFinalResult = Object.values(unorderedfinalResult)
 		.sort((a, b) => a.date.localeCompare(b.date)).reverse();
-	// 	ORDER BY to_char(timestamp, $<dateFormat>) DESC`, transformParamsForDb(params));
 
 	return orderedFinalResult;
 };
@@ -200,14 +196,11 @@ const getDistributionByAmount = async params => {
 	result.forEach(entry => {
 		if (!unorderedfinalResult[entry.amount_range]) unorderedfinalResult[entry.amount_range] = 0;
 		unorderedfinalResult[entry.amount_range] += entry.count;
-		// SELECT amount_range, sum(count) AS count FROM transaction_statistics
-		// 	GROUP BY amount_range
 	});
 
 	const orderedFinalResult = {};
 	Object.keys(unorderedfinalResult).sort().reverse()
 		.forEach(amountRange => orderedFinalResult[amountRange] = unorderedfinalResult[amountRange]);
-	// 	ORDER BY amount_range DESC`, transformParamsForDb(params));
 
 	return orderedFinalResult;
 };
@@ -221,14 +214,11 @@ const getDistributionByType = async params => {
 	result.forEach(entry => {
 		if (!unorderedfinalResult[entry.type]) unorderedfinalResult[entry.type] = 0;
 		unorderedfinalResult[entry.type] += entry.count;
-		// SELECT type, sum(count) AS count FROM transaction_statistics
-		// 	GROUP BY type
 	});
 
 	const orderedFinalResult = {};
 	Object.keys(unorderedfinalResult).sort((a, b) => Number(a) - Number(b))
 		.forEach(type => orderedFinalResult[type] = unorderedfinalResult[type]);
-	// 	ORDER BY type ASC`, transformParamsForDb(params));
 
 	return orderedFinalResult;
 };
