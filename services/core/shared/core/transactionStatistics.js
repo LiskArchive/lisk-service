@@ -251,11 +251,11 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 
 const init = async historyLengthDays => {
 	signals.get('blockIndexReady').add(() => {
-		fetchTransactionsForPastNDays(historyLengthDays, true);
+		fetchTransactionsForPastNDays(historyLengthDays);
 	});
 };
 
-const updateTodayStats = async () => fetchTransactionsForPastNDays(1);
+const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);
 
 module.exports = {
 	getStatsTimeline,
