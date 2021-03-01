@@ -112,9 +112,6 @@ const getDelegates = async params => {
 		data: [],
 		meta: {},
 	};
-	if (params.sort && params.sort.includes('balance')) {
-		return new Error('Balance based sorting is only supported for non-delegates accounts');
-	}
 	const allDelegates = await getAllDelegates();
 
 	const offset = Number(params.offset) || 0;
