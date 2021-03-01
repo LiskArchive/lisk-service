@@ -197,7 +197,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 
 		if (params.aggregate) {
-			query.where(queryParams).sum(params.aggregate);
+			query.where(queryParams).sum(`${params.aggregate} as total`);
 		}
 
 		return query
