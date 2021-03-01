@@ -234,8 +234,9 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
-				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
-			);
+				propBetween => query
+					.where(propBetween.property, '>=', propBetween.from)
+					.where(propBetween.property, '<=', propBetween.to));
 		}
 
 		if (params.whereIn) {
