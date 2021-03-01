@@ -87,7 +87,7 @@ const removeTransactionsByBlockIDs = async blockIDs => {
 		whereIn: {
 			property: 'blockId',
 			values: blockIDs,
-		}
+		},
 	});
 	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
 	await transactionsDB.deleteIds(forkedTransactionIDs);
