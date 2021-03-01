@@ -30,7 +30,7 @@ const {
     resolvemoduleAssets,
     getNetworkFeeConstants,
     setIsSyncFullBlockchain,
-	getIsSyncFullBlockchain,
+    getIsSyncFullBlockchain,
 } = require('./constants');
 
 const {
@@ -55,7 +55,7 @@ module.exports = {
     resolvemoduleAssets,
     getNetworkFeeConstants,
     setIsSyncFullBlockchain,
-	getIsSyncFullBlockchain,
+    getIsSyncFullBlockchain,
 
     getBlockchainTime,
     getEpochUnixTime,
