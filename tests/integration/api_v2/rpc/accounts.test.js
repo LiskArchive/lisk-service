@@ -140,4 +140,48 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('Retrieve accounts based on status', () => {
+		it('returns delegate accounts when status is active', async () => {
+			const response = await getAccounts({ status: 'active' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns delegate accounts based on muliple status', async () => {
+			const response = await getAccounts({ status: 'active,standby' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns delegate accounts when status is non-eligible', async () => {
+			const response = await getAccounts({ status: 'non-eligible' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
 });

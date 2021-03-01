@@ -208,6 +208,16 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('returns delegate accounts based on multiple statuses', async () => {
+			const response = await api.get(`${endpoint}?status=active,standby`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
+			expect(response.meta).toMap(metaSchema);
+		});
+
 		it('returns non-delegate accounts when status is non-eligible', async () => {
 			const response = await api.get(`${endpoint}?status=non-eligible`);
 			expect(response).toMap(goodRequestSchema);
