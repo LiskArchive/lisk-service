@@ -111,6 +111,8 @@ const getTransactionsStatistics = async ({
 		dateFormat,
 		dateTo,
 		dateFrom,
+		limit,
+		offset,
 	};
 
 	const timelineRaw = await txStatisticsService.getStatsTimeline(params);
