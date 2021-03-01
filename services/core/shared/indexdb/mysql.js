@@ -201,7 +201,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			.offset(offset);
 	};
 
-	const find = (params, columns) => new Promise((resolve, reject) => {
+	const find = (params = {}, columns) => new Promise((resolve, reject) => {
 		queryBuilder(params, columns).then(response => {
 			resolve(response);
 		}).catch(err => {
@@ -214,7 +214,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.whereIn(primaryKey, ids)
 		.del();
 
-	const count = async (params) => {
+	const count = async (params = {}) => {
 		const query = knex.count('id as count').table(tableName);
 		const queryParams = resolveQueryParams(params);
 
