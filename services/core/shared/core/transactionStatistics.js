@@ -21,6 +21,7 @@ const config = require('../../config');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
+const signals = require('../signals');
 
 const logger = Logger();
 
@@ -232,13 +233,15 @@ const getDistributionByType = async params => {
 	return orderedFinalResult;
 };
 
-const fetchTransactionsForPastNDays = async n => {
+const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const db = await getDbInstance();
 	[...Array(n)].forEach(async (_, i) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
+
 		const shouldUpdate = i === 0 || !((await db.find({ date })).length);
-		if (shouldUpdate) {
+
+		if (shouldUpdate || forceReload) {
 			let attempt = 0;
 			const options = {
 				delay: (attempt ** 2) * 60 * 60 * 1000,
@@ -251,7 +254,11 @@ const fetchTransactionsForPastNDays = async n => {
 	});
 };
 
-const init = async historyLengthDays => fetchTransactionsForPastNDays(historyLengthDays);
+const init = async historyLengthDays => {
+	signals.get('blockIndexReady').add(() => {
+		fetchTransactionsForPastNDays(historyLengthDays, true);
+	});
+};
 
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1);
 
