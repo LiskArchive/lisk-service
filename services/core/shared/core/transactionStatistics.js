@@ -49,7 +49,12 @@ const getSelector = (params) => {
 	const result = { property: 'date' };
 	if (params.dateFrom) result.from = params.dateFrom.unix();
 	if (params.dateTo) result.to = params.dateTo.unix();
-	return { propBetweens: [result] };
+	return {
+		propBetweens: [result],
+		limit: params.limit,
+		offset: params.offset,
+		sort: 'date:desc',
+	};
 };
 
 const getWithFallback = (acc, type, range) => {
