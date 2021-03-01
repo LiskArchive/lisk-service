@@ -185,7 +185,9 @@ const indexNewBlocks = async blocks => {
 			}
 		}
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
-		if (block.height > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', block.height);
+		if ((blockInfo && blockInfo.id !== block.id) || block.height > highestIndexedHeight) {
+			await blocksCache.set('highestIndexedHeight', block.height);
+		}
 	}
 };
 
