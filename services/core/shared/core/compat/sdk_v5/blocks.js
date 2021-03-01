@@ -172,7 +172,7 @@ const indexNewBlocks = async blocks => {
 						from: block.height + 1,
 						to: highestIndexedBlock.height,
 					}],
-					limit: 1000,
+					limit: highestIndexedBlock.height - block.height,
 				});
 				await blocksDB.deleteIds(blocksToRemove.map(b => b.id));
 
