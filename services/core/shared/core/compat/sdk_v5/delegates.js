@@ -16,6 +16,7 @@
 const { getAccounts } = require('./accounts');
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
+const { getIsSyncFullBlockchain } = require('../common');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
@@ -36,13 +37,15 @@ const getDelegates = async (params) => {
             address: delegate.address,
             publicKey: delegate.publicKey,
         };
-        const [{ rewards }] = await blocksDB.find({
-            generatorPublicKey: delegate.publicKey, aggregate: 'reward as rewards',
-        });
-        delegate.rewards = rewards;
-        delegate.producedBlocks = await blocksDB.count({
-            generatorPublicKey: delegate.publicKey,
-        });
+        if (getIsSyncFullBlockchain()) {
+            const [{ rewards }] = await blocksDB.find({
+                generatorPublicKey: delegate.publicKey, aggregate: 'reward as rewards',
+            });
+            delegate.rewards = rewards;
+            delegate.producedBlocks = await blocksDB.count({
+                generatorPublicKey: delegate.publicKey,
+            });
+        }
         const adder = (acc, curr) => Number(acc) + Number(curr.amount);
         const totalVotes = delegate.dpos.sentVotes.reduce(adder, 0);
         const selfVotes = delegate.dpos.sentVotes

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -22,8 +22,11 @@ const getAccounts = async params => {
 		data: [],
 		meta: {},
 	};
-
-	const response = await coreApi.getAccounts(params);
+	const { status, ...remainingParams } = params;
+	let response = await coreApi.getAccounts(remainingParams);
+	if (status && ['active', 'banned', 'punished', 'standby'].some(item => status.includes(item))) {
+		response = await getDelegates(params);
+	}
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 

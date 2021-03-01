@@ -26,7 +26,7 @@ const {
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
-const { getApiClient } = require('../common');
+const { getApiClient, setIsSyncFullBlockchain } = require('../common');
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
@@ -284,6 +284,7 @@ const init = async () => {
 
 		const blockIndexLowerRange = config.indexNumOfBlocks > 0
 			? currentHeight - config.indexNumOfBlocks : genesisHeight;
+		if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 		const blockIndexHigherRange = currentHeight;
 
 		// Index genesis block first

@@ -139,9 +139,6 @@ const getAccountsFromCore = async (params) => {
 
 const getAccounts = async params => {
 	const accountsDB = await getAccountsIndex();
-	if (params.status) {
-		return new Error('Filter by status is only supported for delegates accounts');
-	}
 	if (params.sort && params.sort.includes('rank')) {
 		return new Error('Rank based sorting is only supported along delegates accounts');
 	}

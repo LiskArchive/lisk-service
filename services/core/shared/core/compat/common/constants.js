@@ -25,6 +25,7 @@ let coreVersion = '1.0.0-alpha.0';
 let constants;
 let readyStatus;
 let registeredLiskModuleAssets;
+let isSyncFullBlockchain = false;
 
 const networkFeeConstants = {
 	minFeePerByte: undefined,
@@ -101,6 +102,10 @@ const getRegisteredModuleAssets = () => registeredLiskModuleAssets;
 
 const getNetworkFeeConstants = () => networkFeeConstants;
 
+const setIsSyncFullBlockchain = isSync => isSyncFullBlockchain = isSync;
+
+const getIsSyncFullBlockchain = () => isSyncFullBlockchain;
+
 module.exports = {
 	getNetworkConstants,
 	setCoreVersion,
@@ -111,4 +116,6 @@ module.exports = {
 	setRegisteredmoduleAssets,
 	resolvemoduleAssets,
 	getNetworkFeeConstants,
+	setIsSyncFullBlockchain,
+	getIsSyncFullBlockchain,
 };
