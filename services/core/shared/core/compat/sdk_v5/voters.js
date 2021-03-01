@@ -62,6 +62,17 @@ const indexVotes = async blocks => {
 	if (allVotes.length) await votesDB.upsert(allVotes);
 };
 
+const removeVotesByTransactionIDs = async transactionIDs => {
+	const votesDB = await getVotesIndex();
+	const forkedVotes = await votesDB.find({
+		whereIn: {
+			property: 'id',
+			values: transactionIDs,
+		},
+	});
+	await votesDB.deleteIds(forkedVotes.map(v => v.tempId));
+};
+
 const normalizeVote = vote => parseToJSONCompatObj(vote);
 
 const getVoters = async params => {
@@ -129,4 +140,5 @@ const getVoters = async params => {
 module.exports = {
 	getVoters,
 	indexVotes,
+	removeVotesByTransactionIDs,
 };

@@ -178,12 +178,7 @@ const indexNewBlocks = async blocks => {
 					limit: highestIndexedBlock.height - block.height,
 				});
 				const blockIDsToRemove = blocksToRemove.map(b => b.id);
-				await blocksDB.deleteIds({
-					whereIn: {
-						property: 'id',
-						values: blockIDsToRemove,
-					}
-				});
+				await blocksDB.deleteIds(blockIDsToRemove);
 
 				// Remove transactions in the forked blocks
 				await removeTransactionsByBlockIDs(blockIDsToRemove);

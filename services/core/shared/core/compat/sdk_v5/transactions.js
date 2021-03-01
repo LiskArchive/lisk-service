@@ -23,6 +23,7 @@ const {
 	getBase32AddressFromHex,
 	getAccountsBySearch,
 } = require('./accounts');
+const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
@@ -82,13 +83,15 @@ const indexTransactions = async blocks => {
 
 const removeTransactionsByBlockIDs = async blockIDs => {
 	const transactionsDB = await getTransactionsIndex();
-	const forkedTransactions = await transactionsDB.find({ blockId: blockIDs });
-	await transactionsDB.deleteIds({
+	const forkedTransactions = await transactionsDB.find({
 		whereIn: {
 			property: 'blockId',
-			values: forkedTransactions.map(t => t.id),
+			values: blockIDs,
 		}
 	});
+	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
+	await transactionsDB.deleteIds(forkedTransactionIDs);
+	await removeVotesByTransactionIDs(forkedTransactionIDs);
 };
 
 const normalizeTransaction = tx => {
