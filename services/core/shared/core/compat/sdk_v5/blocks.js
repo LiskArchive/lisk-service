@@ -29,11 +29,12 @@ const {
 	indexTransactions,
 	removeTransactionsByBlockIDs,
 } = require('./transactions');
-const { getApiClient } = require('../common');
+const { getApiClient, getIndexReadyStatus, setIndexReadyStatus } = require('../common');
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
+const waitForIt = require('../../../waitForIt');
 const blocksIndexSchema = require('./schema/blocks');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
@@ -345,6 +346,17 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 			await buildIndex(from, to);
 		}
 	}
+
+	waitForIt(async () => {
+		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+		const numBlocksIndexed = await blocksDB.count();
+		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+
+		if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
+			setIndexReadyStatus(true);
+			return getIndexReadyStatus();
+		}
+	}, 5000);
 };
 
 const init = async () => {
