@@ -80,6 +80,17 @@ const indexTransactions = async blocks => {
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };
 
+const removeTransactionsByBlockIDs = async blockIDs => {
+	const transactionsDB = await getTransactionsIndex();
+	const forkedTransactions = await transactionsDB.find({ blockId: blockIDs });
+	await transactionsDB.deleteIds({
+		whereIn: {
+			property: 'blockId',
+			values: forkedTransactions.map(t => t.id),
+		}
+	});
+};
+
 const normalizeTransaction = tx => {
 	const [{ id, name }] = availableLiskModuleAssets
 		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
@@ -238,5 +249,6 @@ const getTransactionsByBlockId = async blockId => {
 module.exports = {
 	getTransactions,
 	indexTransactions,
+	removeTransactionsByBlockIDs,
 	getTransactionsByBlockId,
 };

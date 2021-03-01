@@ -25,7 +25,10 @@ const {
 	getHexAddressFromBase32,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
-const { indexTransactions } = require('./transactions');
+const {
+	indexTransactions,
+	removeTransactionsByBlockIDs,
+} = require('./transactions');
 const { getApiClient } = require('../common');
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -174,9 +177,16 @@ const indexNewBlocks = async blocks => {
 					}],
 					limit: highestIndexedBlock.height - block.height,
 				});
-				await blocksDB.deleteIds(blocksToRemove.map(b => b.id));
+				const blockIDsToRemove = blocksToRemove.map(b => b.id);
+				await blocksDB.deleteIds({
+					whereIn: {
+						property: 'id',
+						values: blockIDsToRemove,
+					}
+				});
 
-				// TODO: Remove the forked transactions / votes
+				// Remove transactions in the forked blocks
+				await removeTransactionsByBlockIDs(blockIDsToRemove);
 			}
 		}
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
