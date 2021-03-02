@@ -138,6 +138,7 @@ const buildIndex = async (from, to) => {
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished building block index (${from}-${to})`);
+	signals.get('blockIndexReady').dispatch(true);
 };
 
 const init = async () => {
