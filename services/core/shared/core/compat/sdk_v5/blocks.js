@@ -22,7 +22,6 @@ const config = require('../../../../config');
 const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
-	getHexAddressFromBase32,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const {
