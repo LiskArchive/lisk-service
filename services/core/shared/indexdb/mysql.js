@@ -195,8 +195,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		if (params.limit) query.limit(params.limit);
-		if (params.offset) query.offset(params.offset);
+		if (params.limit) query.limit(Number(params.limit));
+		if (params.offset) query.offset(Number(params.offset));
 
 		return query;
 	};
