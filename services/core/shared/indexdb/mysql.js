@@ -155,8 +155,6 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	};
 
 	const queryBuilder = (params, columns) => {
-		const limit = Number(params.limit) || 10;
-		const offset = Number(params.offset) || 0;
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
@@ -197,9 +195,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		return query
-			.limit(limit)
-			.offset(offset);
+		if (params.limit) query.limit(params.limit);
+		if (params.offset) query.offset(params.offset);
+
+		return query;
 	};
 
 	const find = (params, columns) => new Promise((resolve, reject) => {
