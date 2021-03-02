@@ -22,11 +22,16 @@ module.exports = {
 		generatorPublicKey: { type: 'string' },
 		size: { type: 'integer' },
 		reward: { type: 'bigInteger' },
+		isFinal: { type: 'boolean' },
 	},
 	indexes: {
+		id: { type: 'key' },
 		height: { type: 'range' },
 		timestamp: { type: 'range' },
 		generatorPublicKey: { type: 'key' },
+		size: { type: 'range' },
+		isFinal: { type: 'key' },
+		reward: { type: 'range' },
 	},
 	purge: {},
 };

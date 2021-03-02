@@ -22,17 +22,25 @@ const config = require('../../../../config');
 const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
-	getHexAddressFromBase32,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
-const { indexTransactions } = require('./transactions');
-const { getApiClient, setIsSyncFullBlockchain } = require('../common');
+const {
+	indexTransactions,
+	removeTransactionsByBlockIDs,
+} = require('./transactions');
+const {
+	getApiClient,
+	getIndexReadyStatus,
+	setIndexReadyStatus,
+	setIsSyncFullBlockchain,
+} = require('../common');
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const signals = require('../../../signals');
 
 const mysqlIndex = require('../../../indexdb/mysql');
+const waitForIt = require('../../../waitForIt');
 const blocksIndexSchema = require('./schema/blocks');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
@@ -44,13 +52,13 @@ let finalizedHeight;
 
 const setFinalizedHeight = (height) => finalizedHeight = height;
 
+const getFinalizedHeight = () => finalizedHeight;
+
 const updateFinalizedHeight = async () => {
 	const result = await coreApi.getNetworkStatus();
 	setFinalizedHeight(result.data.finalizedHeight);
 	return result;
 };
-
-const getFinalizedHeight = () => finalizedHeight;
 
 const indexBlocks = async job => {
 	const { blocks } = job.data;
@@ -63,7 +71,14 @@ const indexBlocks = async job => {
 	await indexVotes(blocks);
 };
 
+const updateBlockIndex = async job => {
+	const { blocks } = job.data;
+	const blocksDB = await getBlocksIndex();
+	await blocksDB.upsert(blocks);
+};
+
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
+const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
 
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
@@ -72,9 +87,9 @@ const normalizeBlocks = async blocks => {
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
-			block.generatorAddress = account && account.address
-				? getHexAddressFromBase32(account.address) : undefined;
+			block.generatorAddress = account && account.address ? account.address : undefined;
 			block.generatorUsername = account && account.username ? account.username : undefined;
+			block.isFinal = block.height <= getFinalizedHeight();
 			block.numberOfTransactions = block.payload.length;
 
 			block.size = 0;
@@ -142,11 +157,43 @@ const indexNewBlocks = async blocks => {
 	const blocksDB = await getBlocksIndex();
 	if (blocks.data.length === 1) {
 		const [block] = blocks.data;
-		const resultSet = await blocksDB.find({ id: block.id });
-		if (!resultSet.length) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+		const [blockInfo] = await blocksDB.find({ height: block.height });
+		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
+			// Index if doesn't exist, or update if it isn't set to final
+			indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
+			// Update block finality status
+			const finalizedBlockHeight = getFinalizedHeight();
+			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 });
+			updateBlockIndexQueue.add('updateBlockIndexQueue', {
+				blocks: nonFinalBlocks
+					.filter(b => b.height <= finalizedBlockHeight)
+					.map(b => ({ ...b, isFinal: true })),
+			});
+
+			if (blockInfo && blockInfo.id !== block.id) {
+				// Fork detected
+
+				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+				const blocksToRemove = await blocksDB.find({
+					propBetweens: [{
+						property: 'height',
+						from: block.height + 1,
+						to: highestIndexedBlock.height,
+					}],
+					limit: highestIndexedBlock.height - block.height,
+				});
+				const blockIDsToRemove = blocksToRemove.map(b => b.id);
+				await blocksDB.deleteIds(blockIDsToRemove);
+
+				// Remove transactions in the forked blocks
+				await removeTransactionsByBlockIDs(blockIDsToRemove);
+			}
+		}
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
-		if (block.height > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', block.height);
+		if ((blockInfo && blockInfo.id !== block.id) || block.height > highestIndexedHeight) {
+			await blocksCache.set('highestIndexedHeight', block.height);
+		}
 	}
 };
 
@@ -243,7 +290,7 @@ const getBlocks = async params => {
 const buildIndex = async (from, to) => {
 	logger.info('Building index of blocks');
 
-	if (from >= to) {
+	if (from > to) {
 		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
 		return;
 	}
@@ -258,7 +305,6 @@ const buildIndex = async (from, to) => {
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
 		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
 
-		/* eslint-disable no-await-in-loop */
 		let blocks;
 		do {
 			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
@@ -276,6 +322,47 @@ const buildIndex = async (from, to) => {
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished building block index (${from}-${to})`);
+};
+
+const indexMissingBlocks = async (fromHeight, toHeight) => {
+	const blocksDB = await getBlocksIndex();
+	const propBetweens = [{
+		property: 'height',
+		from: fromHeight,
+		to: toHeight,
+	}];
+	const indexedBlockCount = await blocksDB.count({ propBetweens });
+	if (indexedBlockCount < toHeight) {
+		const missingBlocksQueryStatement = `
+			SELECT
+				(SELECT COALESCE(MAX(b0.height)+1, 1) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+				(b1.height - 1) AS 'to'
+			FROM blocks b1
+			WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
+				AND b1.height != 1
+				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
+		`;
+
+		const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
+		for (let i = 0; i < missingBlocksRanges.length; i++) {
+			const { from, to } = missingBlocksRanges[i];
+
+			// eslint-disable-next-line no-await-in-loop
+			await buildIndex(from, to);
+		}
+	}
+
+	// eslint-disable-next-line consistent-return
+	waitForIt(async () => {
+		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+		const numBlocksIndexed = await blocksDB.count();
+		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+
+		if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
+			setIndexReadyStatus(true);
+			return getIndexReadyStatus();
+		}
+	}, 5000);
 };
 
 const init = async () => {
@@ -310,6 +397,7 @@ const init = async () => {
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 
+		await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
 		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');

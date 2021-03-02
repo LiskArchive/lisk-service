@@ -205,7 +205,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return query;
 	};
 
-	const find = (params, columns) => new Promise((resolve, reject) => {
+	const find = (params = {}, columns) => new Promise((resolve, reject) => {
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
@@ -221,7 +221,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.whereIn(primaryKey, ids)
 		.del();
 
-	const count = async (params) => {
+	const count = async (params = {}) => {
 		const query = knex.count('id as count').table(tableName);
 		const queryParams = resolveQueryParams(params);
 
@@ -261,11 +261,17 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return totalCount.count;
 	};
 
+	const rawQuery = async queryStatement => {
+		const [resultSet] = await knex.raw(queryStatement);
+		return resultSet;
+	};
+
 	return {
 		upsert,
 		find,
 		deleteIds,
 		count,
+		rawQuery,
 	};
 };
 

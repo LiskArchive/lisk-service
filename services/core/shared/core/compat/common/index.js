@@ -31,6 +31,8 @@ const {
     getNetworkFeeConstants,
     setIsSyncFullBlockchain,
     getIsSyncFullBlockchain,
+    setIndexReadyStatus,
+    getIndexReadyStatus,
 } = require('./constants');
 
 const {
@@ -56,6 +58,8 @@ module.exports = {
     getNetworkFeeConstants,
     setIsSyncFullBlockchain,
     getIsSyncFullBlockchain,
+    setIndexReadyStatus,
+    getIndexReadyStatus,
 
     getBlockchainTime,
     getEpochUnixTime,

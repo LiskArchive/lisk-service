@@ -26,6 +26,7 @@ let constants;
 let readyStatus;
 let registeredLiskModuleAssets;
 let isSyncFullBlockchain = false;
+let isIndexReady = false;
 
 const networkFeeConstants = {
 	minFeePerByte: undefined,
@@ -105,6 +106,9 @@ const getNetworkFeeConstants = () => networkFeeConstants;
 const setIsSyncFullBlockchain = isSync => isSyncFullBlockchain = isSync;
 
 const getIsSyncFullBlockchain = () => isSyncFullBlockchain;
+const setIndexReadyStatus = isReady => isIndexReady = isReady;
+
+const getIndexReadyStatus = () => isIndexReady;
 
 module.exports = {
 	getNetworkConstants,
@@ -118,4 +122,6 @@ module.exports = {
 	getNetworkFeeConstants,
 	setIsSyncFullBlockchain,
 	getIsSyncFullBlockchain,
+	setIndexReadyStatus,
+	getIndexReadyStatus,
 };

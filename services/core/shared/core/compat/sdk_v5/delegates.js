@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 const { getAccounts } = require('./accounts');
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
-const { getIsSyncFullBlockchain } = require('../common');
+const { getIsSyncFullBlockchain, getIndexReadyStatus } = require('../common');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
@@ -39,7 +39,7 @@ const getDelegates = async (params) => {
                 address: delegate.address,
                 publicKey: delegate.publicKey,
             };
-            if (getIsSyncFullBlockchain()) {
+            if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
                 const [{ total }] = await blocksDB.find({
                     generatorPublicKey: delegate.publicKey, aggregate: 'reward',
                 });
