@@ -147,7 +147,6 @@ const getAccounts = async params => {
 			property: 'username',
 			pattern: params.search,
 		};
-		delete params.search;
 	}
 	if (params.id) {
 		params.address = params.id;
