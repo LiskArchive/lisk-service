@@ -111,7 +111,6 @@ const getTransactionsStatistics = async ({
 		dateFormat,
 		dateTo,
 		dateFrom,
-		limit: 10000, // Supress the default value coming from MySQL layer
 	};
 
 	const timelineRaw = await txStatisticsService.getStatsTimeline(params);

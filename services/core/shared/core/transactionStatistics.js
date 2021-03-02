@@ -51,8 +51,6 @@ const getSelector = (params) => {
 	if (params.dateTo) result.to = params.dateTo.unix();
 	return {
 		propBetweens: [result],
-		limit: params.limit,
-		offset: params.offset,
 		sort: 'date:desc',
 	};
 };
