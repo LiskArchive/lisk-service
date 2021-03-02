@@ -25,6 +25,7 @@ let coreVersion = '1.0.0-alpha.0';
 let constants;
 let readyStatus;
 let registeredLiskModuleAssets;
+let isIndexReady = false;
 
 const networkFeeConstants = {
 	minFeePerByte: undefined,
@@ -101,6 +102,10 @@ const getRegisteredModuleAssets = () => registeredLiskModuleAssets;
 
 const getNetworkFeeConstants = () => networkFeeConstants;
 
+const setIndexReadyStatus = isReady => isIndexReady = isReady;
+
+const getIndexReadyStatus = () => isIndexReady;
+
 module.exports = {
 	getNetworkConstants,
 	setCoreVersion,
@@ -111,4 +116,6 @@ module.exports = {
 	setRegisteredmoduleAssets,
 	resolvemoduleAssets,
 	getNetworkFeeConstants,
+	setIndexReadyStatus,
+	getIndexReadyStatus,
 };

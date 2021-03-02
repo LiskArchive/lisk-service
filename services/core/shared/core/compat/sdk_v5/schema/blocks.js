@@ -21,11 +21,15 @@ module.exports = {
 		timestamp: { type: 'integer' },
 		generatorPublicKey: { type: 'string' },
 		size: { type: 'integer' },
+		isFinal: { type: 'boolean' },
 	},
 	indexes: {
+		id: { type: 'key' },
 		height: { type: 'range' },
 		timestamp: { type: 'range' },
 		generatorPublicKey: { type: 'key' },
+		size: { type: 'range' },
+		isFinal: { type: 'key' },
 	},
 	purge: {},
 };
