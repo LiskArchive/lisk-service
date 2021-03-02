@@ -106,6 +106,8 @@ describe('Transaction statistics API', () => {
 					expect(response).toMap(goodRequestSchema);
 					expect(response.data).toMap(transactionStatisticsSchema);
 					expect(response.data.timeline).toBeInstanceOf(Array);
+					expect(response.data.timeline.length).toBeGreaterThanOrEqual(1);
+					expect(response.data.timeline.length).toBeLessThanOrEqual(limit);
 					response.data.timeline.forEach((timelineItem, i) => {
 						const date = moment(startOfUnitUtc).subtract(i + offset, aggregateBy);
 						expect(timelineItem).toMap(timelineItemSchema, {
