@@ -25,8 +25,8 @@ const svcStatus = {
 	lisk_blocks: false,
 	lisk_transactions: false,
 	lisk_accounts: false,
-	lisk_delegates: false,
-	lisk_peers: false,
+	// lisk_delegates: false,
+	// lisk_peers: false,
 };
 
 const getBuildTimestamp = () => {
@@ -46,7 +46,7 @@ const getBuildTimestamp = () => {
 const buildTimestamp = getBuildTimestamp();
 
 const getNetworkId = (url) => new Promise((resolve, reject) => {
-	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+	requestLib(`http://127.0.0.1:${config.port}/api/v2${url}`)
 		.then((response) => {
 			if (response) return resolve(response.data.nethash);
 			return resolve(false);
@@ -58,7 +58,7 @@ const getNetworkId = (url) => new Promise((resolve, reject) => {
 });
 
 const getNetworkNodeVersion = (url) => new Promise((resolve, reject) => {
-	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+	requestLib(`http://127.0.0.1:${config.port}/api/v2${url}`)
 		.then((response) => {
 			if (response) {
 				const { coreVer } = response.data.data;
@@ -86,7 +86,7 @@ const getStatus = async () => ({
 });
 
 const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
-	requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
+	requestLib(`http://127.0.0.1:${config.port}/api/v2${url}`)
 		.then((response) => {
 			try {
 				if (!response) resolve(false);
@@ -117,8 +117,8 @@ const getReady = () => {
 		lisk_blocks,
 		lisk_transactions,
 		lisk_accounts,
-		lisk_delegates,
-		lisk_peers,
+		// lisk_delegates,
+		// lisk_peers,
 	} = svcStatus;
 
 	return {
@@ -126,8 +126,8 @@ const getReady = () => {
 			lisk_blocks,
 			lisk_transactions,
 			lisk_accounts,
-			lisk_delegates,
-			lisk_peers,
+			// lisk_delegates,
+			// lisk_peers,
 		},
 	};
 };
@@ -143,12 +143,14 @@ const checkApiMapBoolean = (url, prop) => new Promise((resolve, reject) => {
 	});
 });
 
+// TODO: Readiness should be reported based on microservice calls
+//       instead of HTTP
 const init = () => {
 	waitForIt(() => checkApiMapBoolean('/blocks', 'lisk_blocks'), 1500);
 	waitForIt(() => checkApiMapBoolean('/transactions', 'lisk_transactions'), 1500);
 	waitForIt(() => checkApiMapBoolean('/accounts', 'lisk_accounts'), 1500);
-	waitForIt(() => checkApiMapBoolean('/delegates', 'lisk_delegates'), 1500);
-	waitForIt(() => checkApiMapBoolean('/peers', 'lisk_peers'), 1500);
+	// waitForIt(() => checkApiMapBoolean('/delegates', 'lisk_delegates'), 1500);
+	// waitForIt(() => checkApiMapBoolean('/peers', 'lisk_peers'), 1500);
 };
 
 module.exports = {

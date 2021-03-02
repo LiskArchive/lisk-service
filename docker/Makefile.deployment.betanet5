@@ -1,0 +1,29 @@
+.PHONY: clean coldstart mrproper up
+all: up
+
+compose := docker-compose \
+	-f docker-compose.yml \
+	-f lisk_service/docker-compose.core.yml \
+	-f lisk_service/docker-compose.gateway.yml \
+	-f lisk_service/docker-compose.gateway-ports.yml \
+	-f docker-compose.betanet5.yml
+
+up:
+	(ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} $(compose) up --detach)
+
+down:
+	$(compose) down --volumes --remove-orphans
+
+cli-%:
+	$(compose) exec $* /bin/sh
+
+logs:
+	$(compose) logs
+
+logs-%:
+	$(compose) logs $*
+
+print-config:
+	$(compose) config
+
+mrproper: down

@@ -30,6 +30,8 @@ const { getApiClient, setIsSyncFullBlockchain } = require('../common');
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
+const signals = require('../../../signals');
+
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
 
@@ -307,6 +309,8 @@ const init = async () => {
 			// For when the index is partially built
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
+
+		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);

@@ -198,6 +198,11 @@ const getTransactions = async params => {
 				transaction.senderId = account && account.address ? account.address : undefined;
 				transaction.username = account && account.username ? account.username : undefined;
 				transaction.isPending = false;
+
+				// The two lines below are needed for transaction statistics
+				if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
+				if (transaction.asset.amount) transaction.amount = transaction.asset.amount;
+
 				return transaction;
 			},
 			{ concurrency: transactions.data.length },

@@ -51,6 +51,9 @@ nodeStatus.waitForNode().then(async () => {
 
 	app.run().then(() => {
 		logger.info(`Service started ${packageJson.name}`);
+
+		const coreApi = require('./shared/core');
+		coreApi.init();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);
