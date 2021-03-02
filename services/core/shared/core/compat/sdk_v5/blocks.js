@@ -28,7 +28,12 @@ const {
 	indexTransactions,
 	removeTransactionsByBlockIDs,
 } = require('./transactions');
-const { getApiClient, getIndexReadyStatus, setIndexReadyStatus } = require('../common');
+const {
+	getApiClient,
+	getIndexReadyStatus,
+	setIndexReadyStatus,
+	setIsSyncFullBlockchain,
+} = require('../common');
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
@@ -368,6 +373,7 @@ const init = async () => {
 
 		const blockIndexLowerRange = config.indexNumOfBlocks > 0
 			? currentHeight - config.indexNumOfBlocks : genesisHeight;
+		if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 		const blockIndexHigherRange = currentHeight;
 
 		// Index genesis block first
@@ -391,7 +397,7 @@ const init = async () => {
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 
-		await indexMissingBlocks(genesisHeight, currentHeight);
+		await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
 		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');

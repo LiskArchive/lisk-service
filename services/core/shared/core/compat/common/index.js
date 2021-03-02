@@ -29,6 +29,8 @@ const {
     setRegisteredmoduleAssets,
     resolvemoduleAssets,
     getNetworkFeeConstants,
+    setIsSyncFullBlockchain,
+    getIsSyncFullBlockchain,
     setIndexReadyStatus,
     getIndexReadyStatus,
 } = require('./constants');
@@ -54,6 +56,8 @@ module.exports = {
     setRegisteredmoduleAssets,
     resolvemoduleAssets,
     getNetworkFeeConstants,
+    setIsSyncFullBlockchain,
+    getIsSyncFullBlockchain,
     setIndexReadyStatus,
     getIndexReadyStatus,
 

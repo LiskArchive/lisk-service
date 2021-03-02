@@ -13,39 +13,56 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const { getAccounts } = require('./accounts');
+const mysqlIndex = require('../../../indexdb/mysql');
+const blocksIndexSchema = require('./schema/blocks');
+const { getIsSyncFullBlockchain, getIndexReadyStatus } = require('../common');
+
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const getDelegates = async (params) => {
+    const blocksDB = await getBlocksIndex();
     const delegates = {
         data: [],
         meta: {},
     };
-
     const punishmentHeight = 780000;
     const response = await getAccounts({ isDelegate: true, limit: params.limit });
     if (response.data) delegates.data = response.data;
     if (response.meta) delegates.meta = response.meta;
 
-    delegates.data.map(delegate => {
-        delegate.account = {};
-        delegate.account = {
-            address: delegate.address,
-            publicKey: delegate.publicKey,
-        };
+    await BluebirdPromise.map(
+        delegates.data, async delegate => {
+            delegate.account = {};
+            delegate.account = {
+                address: delegate.address,
+                publicKey: delegate.publicKey,
+            };
+            if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
+                const [{ total }] = await blocksDB.find({
+                    generatorPublicKey: delegate.publicKey, aggregate: 'reward',
+                });
+                delegate.rewards = total;
+                delegate.producedBlocks = await blocksDB.count({
+                    generatorPublicKey: delegate.publicKey,
+                });
+            }
+            const adder = (acc, curr) => Number(acc) + Number(curr.amount);
+            const totalVotes = delegate.dpos.sentVotes.reduce(adder, 0);
+            const selfVotes = delegate.dpos.sentVotes
+                .filter(vote => vote.delegateAddress === delegate.address).reduce(adder, 0);
 
-        const adder = (acc, curr) => Number(acc) + Number(curr.amount);
-        const totalVotes = delegate.dpos.sentVotes.reduce(adder, 0);
-        const selfVotes = delegate.dpos.sentVotes
-            .filter(vote => vote.delegateAddress === delegate.address).reduce(adder, 0);
-
-        delegate.delegateWeight = Math.min(10 * selfVotes, totalVotes);
-        delegate.username = delegate.dpos.delegate.username;
-        delegate.balance = delegate.token.balance;
-        delegate.pomHeights = delegate.dpos.delegate.pomHeights
-            .sort((a, b) => b - a).slice(0, 5)
-            .map(height => ({ start: height, end: height + punishmentHeight }));
-        return delegate;
-    });
+            delegate.delegateWeight = Math.min(10 * selfVotes, totalVotes);
+            delegate.username = delegate.dpos.delegate.username;
+            delegate.balance = delegate.token.balance;
+            delegate.pomHeights = delegate.dpos.delegate.pomHeights
+                .sort((a, b) => b - a).slice(0, 5)
+                .map(height => ({ start: height, end: height + punishmentHeight }));
+            return delegate;
+        },
+        { concurrency: delegates.data.length },
+    );
 
     return delegates;
 };

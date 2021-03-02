@@ -21,6 +21,7 @@ module.exports = {
 		timestamp: { type: 'integer' },
 		generatorPublicKey: { type: 'string' },
 		size: { type: 'integer' },
+		reward: { type: 'bigInteger' },
 		isFinal: { type: 'boolean' },
 	},
 	indexes: {
@@ -30,6 +31,7 @@ module.exports = {
 		generatorPublicKey: { type: 'key' },
 		size: { type: 'range' },
 		isFinal: { type: 'key' },
+		reward: { type: 'range' },
 	},
 	purge: {},
 };

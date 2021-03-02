@@ -25,6 +25,7 @@ let coreVersion = '1.0.0-alpha.0';
 let constants;
 let readyStatus;
 let registeredLiskModuleAssets;
+let isSyncFullBlockchain = false;
 let isIndexReady = false;
 
 const networkFeeConstants = {
@@ -102,6 +103,9 @@ const getRegisteredModuleAssets = () => registeredLiskModuleAssets;
 
 const getNetworkFeeConstants = () => networkFeeConstants;
 
+const setIsSyncFullBlockchain = isSync => isSyncFullBlockchain = isSync;
+
+const getIsSyncFullBlockchain = () => isSyncFullBlockchain;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;
 
 const getIndexReadyStatus = () => isIndexReady;
@@ -116,6 +120,8 @@ module.exports = {
 	setRegisteredmoduleAssets,
 	resolvemoduleAssets,
 	getNetworkFeeConstants,
+	setIsSyncFullBlockchain,
+	getIsSyncFullBlockchain,
 	setIndexReadyStatus,
 	getIndexReadyStatus,
 };

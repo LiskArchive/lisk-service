@@ -139,6 +139,15 @@ const getAccountsFromCore = async (params) => {
 
 const getAccounts = async params => {
 	const accountsDB = await getAccountsIndex();
+	if (params.sort && params.sort.includes('rank')) {
+		return new Error('Rank based sorting is only supported along delegates accounts');
+	}
+	if (params.search) {
+		params.search = {
+			property: 'username',
+			pattern: params.search,
+		};
+	}
 	if (params.id) {
 		params.address = params.id;
 		delete params.id;

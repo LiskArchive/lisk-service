@@ -53,9 +53,8 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO Implement support for search in accounts
-		xit('returns delegates matching search param', async () => {
-			const response = await getDelegates({ search: 'genesis_1' });
+		it('returns delegates matching search param', async () => {
+			const response = await getDelegates({ isDelegate: true, search: 'genesis' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
@@ -63,7 +62,7 @@ describe('Method get.delegates', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			result.data.forEach(account => {
 				expect(account).toMap(accountSchemaVersion5);
-				expect(account.username).toContain('genesis_1');
+				expect(account.summary.username).toContain('genesis');
 			});
 			expect(result.meta).toMap(metaSchema, { offset: 0 });
 		});
@@ -135,8 +134,7 @@ describe('Method get.delegates', () => {
 		});
 	});
 
-	// Fix delegate search by status
-	xdescribe('returns delegates based on status', () => {
+	describe('returns delegates based on status', () => {
 		it('returns active delegates by status', async () => {
 			const response = await getDelegates({ isDelegate: true, status: 'active' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -149,11 +147,11 @@ describe('Method get.delegates', () => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
 			});
-			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
+			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns standby delegates by status', async () => {
-			const response = await getDelegates({ status: 'standby' });
+		xit('returns standby delegates by status', async () => {
+			const response = await getDelegates({ isDelegate: true, status: 'standby' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
@@ -164,11 +162,11 @@ describe('Method get.delegates', () => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
 			});
-			expect(result.meta).toMap(metaSchema, { count: 10, offset: 0 });
+			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('returns both active and standby delegates by status', async () => {
-			const response = await getDelegates({ status: 'active,standby', offset: 95 });
+			const response = await getDelegates({ isDelegate: true, status: 'active,standby' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
@@ -179,7 +177,7 @@ describe('Method get.delegates', () => {
 				expect(account).toMap(accountSchemaVersion5);
 				expect(account.dpos).toMap(dpos);
 			});
-			expect(result.meta).toMap(metaSchema, { count: 10, offset: 95 });
+			expect(result.meta).toMap(metaSchema);
 		});
 	});
 });

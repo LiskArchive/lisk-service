@@ -108,6 +108,7 @@ pipeline {
 						set +e
 						while [ $ready -ne 0 ]; do
 							curl --fail --verbose http://127.0.0.1:9901/api/v2/blocks
+							curl --fail --verbose http://127.0.0.1:9901/api/v2/accounts
 							ready=$?
 							sleep 10
 							let retries++
