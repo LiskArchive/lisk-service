@@ -41,10 +41,8 @@ const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.
 		logger.debug(`${queueName} Job error`, err);
 	});
 	queue.on('failed', (job, err) => {
-		logger.debug(`${queueName} Job failed`, err);
-		const { data } = job;
-		queue.add(queueName, data, data.options);
-		job.remove();
+		logger.warn(`${queueName} Job failed`, err.message);
+		logger.warn(`${queueName} Job failed`, err.stack);
 	});
 
 	setInterval(async () => {

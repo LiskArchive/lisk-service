@@ -32,6 +32,8 @@ const { getApiClient, getIndexReadyStatus, setIndexReadyStatus } = require('../c
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
+const signals = require('../../../signals');
+
 const mysqlIndex = require('../../../indexdb/mysql');
 const waitForIt = require('../../../waitForIt');
 const blocksIndexSchema = require('./schema/blocks');
@@ -390,6 +392,7 @@ const init = async () => {
 		}
 
 		await indexMissingBlocks(genesisHeight, currentHeight);
+		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
