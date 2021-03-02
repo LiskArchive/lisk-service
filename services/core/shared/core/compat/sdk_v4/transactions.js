@@ -21,6 +21,8 @@ const requestAll = require('../../../requestAll');
 
 const logger = Logger();
 
+const requestAll = require('../../../requestAll');
+
 const mysqlIdx = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 const transactionIdxSchema = require('./schema/transactions');
