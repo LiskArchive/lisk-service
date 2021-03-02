@@ -28,7 +28,7 @@ const logger = Logger();
 const getDataForAccounts = async params => {
 	const accounts = params.isDelegate
 		? await CoreService.getDelegates({ sort: 'rank:asc', ...params })
-		: await CoreService.getAccounts({ sort: 'balance:desc', ...params });
+		: await CoreService.getAccounts({ limit: 10, offset: 0, sort: 'balance:desc', ...params });
 
 	const response = {};
 	response.data = [];
