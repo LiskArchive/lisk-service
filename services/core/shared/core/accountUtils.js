@@ -33,7 +33,8 @@ const isStringType = value => typeof value === 'string';
 
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
 
-const validateAddress = address => isStringType(address) && address.match(/^[0-9]{1,20}[L|l]$/g);
+const validateAddress = address => isStringType(address)
+    && address.match(/^\b(?:[0-9]{1,20}[L|l])|(?:(?:lsk|LSK)(?:[a-hjkm-zA-HJKM-Z]|[2-9]){38})\b$/g);
 
 const validatePublicKey = publicKey => isStringType(publicKey) && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g);
 

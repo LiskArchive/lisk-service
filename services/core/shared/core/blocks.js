@@ -78,9 +78,9 @@ const getBlocks = async (params = {}) => {
 
 	let total;
 	if (params.generatorPublicKey) {
-		delete blocks.meta.total;
+		total = blocks.meta.total || undefined;
 	} else if (params.blockId || params.height) {
-		total = blocks.length;
+		total = blocks.data.length;
 	} else {
 		total = (getLastBlock()).height;
 	}

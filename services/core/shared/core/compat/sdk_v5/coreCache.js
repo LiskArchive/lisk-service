@@ -13,45 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils, CacheLRU } = require('lisk-service-framework');
+const mysqlIndex = require('../../../indexdb/mysql');
+const accountsIndexSchema = require('./schema/accounts');
 
-const { isEmptyArray } = Utils.Data;
-const { getAccounts } = require('./coreApi');
-
-const config = require('../../../../config');
-
-const cache = CacheLRU();
-const getCacheKey = (key, value) => `account:${key}:${value}`;
-
-const normalizeAccount = account => {
-	account.address = account.address.toString('hex');
-	account.token.balance = Number(account.token.balance);
-	account.sequence.nonce = Number(account.sequence.nonce);
-	account.dpos.sentVotes = account.dpos.sentVotes.map(vote => {
-		vote.delegateAddress = vote.delegateAddress.toString('hex');
-		vote.amount = Number(vote.amount);
-		return vote;
-	});
-
-	return account;
-};
+const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const getCachedAccountBy = async (key, value) => {
-	const cacheKey = getCacheKey(key, value);
-	let account = await cache.get(cacheKey);
-	if (!account) {
-		const result = await getAccounts({ [key]: value });
-		if (!Array.isArray(result.data) || isEmptyArray(result.data)) {
-			const expireMiliseconds = config.ttl.affectedByNewBlocks;
-			await cache.set(cacheKey, null, expireMiliseconds);
-			return null;
-		}
-		const { address, dpos: { delegate: { username } } } = normalizeAccount(result.data[0]);
-		account = { address, username };
-		Object.entries(account).forEach(async ([k, v]) => {
-			if (v) await cache.set(getCacheKey(k, v), account);
-		});
-	}
+	const accountsDB = await getAccountsIndex();
+	const [result] = await accountsDB.find({ [key]: value });
+	if (!result) return null;
+	const { address, username, publicKey } = result;
+	const account = { address, username, publicKey };
 	return account;
 };
 

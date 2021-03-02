@@ -40,6 +40,8 @@ const { getNetworkStatus } = require('./network');
 
 const events = require('./events');
 
+const signals = require('../../../signals');
+
 const numOfActiveDelegates = 101;
 
 const peerStates = {
@@ -66,9 +68,12 @@ const getForgingStats = async address => {
 	}
 };
 
+const init = () => {
+	signals.get('blockIndexReady').dispatch(true);
+};
+
 const nop = () => { };
 const updateFinalizedHeight = () => null;
-const getPendingTransactions = () => ({ data: [], meta: {} });
 
 module.exports = {
 	...require('./coreCache'),
@@ -100,7 +105,8 @@ module.exports = {
 	calculateAvgFeePerByte: nop,
 	calculateWeightedAvg: nop,
 	updateFinalizedHeight,
-	getPendingTransactions,
+	getPendingTransactions: nop,
+	loadAllPendingTransactions: nop,
 	events,
-	init: nop,
+	init,
 };

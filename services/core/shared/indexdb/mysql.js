@@ -73,17 +73,19 @@ const createDbConnection = async (connEndpoint) => {
 };
 
 const cast = (val, type) => {
-	if (type === 'number') return Number(val);
-	if (type === 'integer') return Number(val);
-	if (type === 'string') return String(val);
-	if (type === 'boolean') return Boolean(val);
-	if (type === 'bigInteger') return BigInt(val);
+	if (val) {
+		if (type === 'number') return Number(val);
+		if (type === 'integer') return Number(val);
+		if (type === 'string') return String(val);
+		if (type === 'boolean') return Boolean(val);
+		if (type === 'bigInteger') return BigInt(val);
+	}
 	return val;
 };
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -153,10 +155,26 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	};
 
 	const queryBuilder = (params, columns) => {
-		const limit = Number(params.limit) || 10;
-		const offset = Number(params.offset) || 0;
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
+
+		if (params.propBetweens) {
+			const { propBetweens } = params;
+			propBetweens.forEach(
+				propBetween => query
+					.where(propBetween.property, '>=', propBetween.from)
+					.where(propBetween.property, '<=', propBetween.to));
+		}
+
+		if (params.sort) {
+			const [sortProp, sortOrder] = params.sort.split(':');
+			query.orderBy(sortProp, sortOrder);
+		}
+
+		if (params.whereIn) {
+			const { property, values } = params.whereIn;
+			query.whereIn(property, values);
+		}
 
 		if (params.orWhere) {
 			const { orWhere } = params;
@@ -167,25 +185,27 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(queryParams);
 		}
 
-		if (params.propBetweens) {
-			const { propBetweens } = params;
-			propBetweens.forEach(
-				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
-			);
+		if (params.orWhereIn) {
+			const { property, values } = params.orWhereIn;
+			query.orWhereIn(property, values);
 		}
 
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			query.orderBy(sortProp, sortOrder);
+		if (params.search) {
+			const { property, pattern } = params.search;
+			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		return query
-			.limit(limit)
-			.offset(offset);
+		if (params.limit) query.limit(Number(params.limit));
+		if (params.offset) query.offset(Number(params.offset));
+
+		return query;
 	};
 
 	const find = (params, columns) => new Promise((resolve, reject) => {
-		queryBuilder(params, columns).then(response => {
+		const query = queryBuilder(params, columns);
+		const debugSql = query.toSQL().toNative();
+		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
+		query.then(response => {
 			resolve(response);
 		}).catch(err => {
 			logger.error(err.message);
@@ -213,8 +233,24 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
-				propBetween => query.whereBetween(propBetween.property, [propBetween.from, propBetween.to]),
-			);
+				propBetween => query
+					.where(propBetween.property, '>=', propBetween.from)
+					.where(propBetween.property, '<=', propBetween.to));
+		}
+
+		if (params.whereIn) {
+			const { property, values } = params.whereIn;
+			query.whereIn(property, values);
+		}
+
+		if (params.orWhereIn) {
+			const { property, values } = params.orWhereIn;
+			query.orWhereIn(property, values);
+		}
+
+		if (params.search) {
+			const { property, pattern } = params.search;
+			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
 		const [totalCount] = await query;

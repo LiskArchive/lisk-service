@@ -24,6 +24,9 @@ const getEstimateFeeByte = async () => {
 	result.feeEstimatePerByte.low = response.low;
 	result.feeEstimatePerByte.medium = response.med;
 	result.feeEstimatePerByte.high = response.high;
+	result.baseFeeById = response.baseFeeByModuleAssetId;
+	result.baseFeeByName = response.baseFeeByModuleAssetName;
+	result.minFeePerByte = response.minFeePerByte;
 
 	const meta = {};
 	meta.updated = response.updated;

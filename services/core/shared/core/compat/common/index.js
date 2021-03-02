@@ -16,14 +16,19 @@
 const http = require('./httpRequest');
 
 const {
+    getApiClient,
+} = require('./wsRequest');
+
+const {
     getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
     getReadyStatus,
     setReadyStatus,
-    getRegisteredModules,
-    setRegisteredmodules,
+    getRegisteredModuleAssets,
+    setRegisteredmoduleAssets,
     resolvemoduleAssets,
+    getNetworkFeeConstants,
 } = require('./constants');
 
 const {
@@ -36,14 +41,17 @@ const {
 module.exports = {
     http,
 
+    getApiClient,
+
     getNetworkConstants,
     setCoreVersion,
     getCoreVersion,
     getReadyStatus,
     setReadyStatus,
-    getRegisteredModules,
-    setRegisteredmodules,
+    getRegisteredModuleAssets,
+    setRegisteredmoduleAssets,
     resolvemoduleAssets,
+    getNetworkFeeConstants,
 
     getBlockchainTime,
     getEpochUnixTime,

@@ -24,11 +24,17 @@ const { isProperObject } = ObjectUtilService;
 let coreVersion = '1.0.0-alpha.0';
 let constants;
 let readyStatus;
-let registeredLiskModules;
+let registeredLiskModuleAssets;
 
-const setRegisteredmodules = modules => registeredLiskModules = modules;
+const networkFeeConstants = {
+	minFeePerByte: undefined,
+	baseFeeByModuleAssetId: {},
+	baseFeeByModuleAssetName: {},
+};
 
-const resolvemoduleAssets = async (data) => {
+const setRegisteredmoduleAssets = moduleAssets => registeredLiskModuleAssets = moduleAssets;
+
+const resolvemoduleAssets = (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -47,6 +53,19 @@ const resolvemoduleAssets = async (data) => {
 	return result;
 };
 
+const resolveBaseFees = (networkConstants) => {
+	networkConstants.data.genesisConfig.baseFees.forEach(entry => {
+		const moduleAssetId = String(entry.moduleID).concat(':').concat(entry.assetID);
+		networkFeeConstants.baseFeeByModuleAssetId[moduleAssetId] = entry.baseFee;
+
+		const [moduleAsset] = networkConstants.data.moduleAssets.filter(o => o.id === moduleAssetId);
+		networkFeeConstants.baseFeeByModuleAssetName[moduleAsset.name] = entry.baseFee;
+	});
+	networkFeeConstants.minFeePerByte = networkConstants.data.genesisConfig.minFeePerByte;
+
+	return networkFeeConstants;
+};
+
 const getNetworkConstants = async () => {
 	try {
 		if (!constants) {
@@ -54,8 +73,10 @@ const getNetworkConstants = async () => {
 			if (Object.getOwnPropertyNames(result).length === 0) {
 				const apiClient = await getApiClient();
 				const info = await apiClient.node.getNodeInfo();
-				info.moduleAssets = await resolvemoduleAssets(info.registeredModules);
+				info.moduleAssets = resolvemoduleAssets(info.registeredModules);
 				result = { data: info };
+
+				resolveBaseFees(result);
 			}
 			if (!isProperObject(result)) return {};
 			constants = result;
@@ -76,7 +97,9 @@ const setReadyStatus = status => readyStatus = status;
 
 const getReadyStatus = () => readyStatus;
 
-const getRegisteredModules = () => registeredLiskModules;
+const getRegisteredModuleAssets = () => registeredLiskModuleAssets;
+
+const getNetworkFeeConstants = () => networkFeeConstants;
 
 module.exports = {
 	getNetworkConstants,
@@ -84,7 +107,8 @@ module.exports = {
 	getCoreVersion,
 	setReadyStatus,
 	getReadyStatus,
-	getRegisteredModules,
-	setRegisteredmodules,
+	getRegisteredModuleAssets,
+	setRegisteredmoduleAssets,
 	resolvemoduleAssets,
+	getNetworkFeeConstants,
 };

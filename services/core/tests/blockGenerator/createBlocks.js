@@ -33,12 +33,12 @@ const blockMocker = (blockData, batchSize) => mocker()
 			}
 
 			if (block.numberOfTransactions === 0) {
-				block.transactions = { data: [] };
+				block.payload = [];
 			} else {
-				block.transactions = { data: txMocker(block.numberOfTransactions) };
-				let transactionIndex = block.transactions.data.length - 1;
+				block.payload = txMocker(block.numberOfTransactions);
+				let transactionIndex = block.payload.length - 1;
 				do {
-					const transaction = block.transactions.data[transactionIndex];
+					const transaction = block.payload[transactionIndex];
 
 					let txPayloadLength;
 					if (transaction.type === 8) txPayloadLength = 130;
@@ -49,7 +49,7 @@ const blockMocker = (blockData, batchSize) => mocker()
 					else if (transaction.type === 15) txPayloadLength = 652;
 
 					if (blockPayloadLength + txPayloadLength > 15 * 2 ** 10) {
-						block.transactions.data.splice(transactionIndex, 1);
+						block.payload.splice(transactionIndex, 1);
 					} else {
 						blockPayloadLength += txPayloadLength;
 
@@ -70,7 +70,7 @@ const blockMocker = (blockData, batchSize) => mocker()
 				} while (--transactionIndex >= 0);
 			}
 
-			block.numberOfTransactions = block.transactions.data.length;
+			block.numberOfTransactions = block.payload.length;
 			block.totalAmount = String(blockTotalAmount);
 			block.totalFee = String(blockTotalFee);
 			block.totalForged = String(Number(block.totalFee) + Number(block.reward));

@@ -25,6 +25,7 @@ const {
     getAccounts,
     getMultisignatureGroups,
     getMultisignatureMemberships,
+    validateAddress,
 } = require('./accounts');
 
 const {
@@ -33,6 +34,7 @@ const {
 
 const {
     getTransactions,
+    getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
@@ -43,10 +45,39 @@ const {
     getPeers,
 } = require('./peers');
 
+const {
+    getCachedAccountByAddress,
+    getCachedAccountByPublicKey,
+    getCachedAccountBySecondPublicKey,
+    getCachedAccountByUsername,
+} = require('./coreCache');
+
+const {
+    getDelegates,
+} = require('./delegates');
+
+const {
+    getEstimateFeeByteForBatch,
+} = require('./dynamicFees');
+
+const {
+    getVotes,
+} = require('./votes');
+
+const {
+    getVoters,
+} = require('./voters');
+
+const {
+    getPendingTransactions,
+    loadAllPendingTransactions,
+} = require('./pendingTransactions');
+
 const nop = async () => { };
 
 module.exports = {
     ...require('../sdk_v4'),
+    ...require('./coreCache'),
 
     events,
 
@@ -57,17 +88,33 @@ module.exports = {
     getAccounts,
     getMultisignatureGroups,
     getMultisignatureMemberships,
+    validateAddress,
 
     getNetworkStatus,
 
     getTransactions,
+    getTransactionsByBlockId,
+
+    getPendingTransactions,
+    loadAllPendingTransactions,
 
     peerStates,
     getPeers,
 
     getForgers,
 
-    getDelegates: nop,
+    getCachedAccountByAddress,
+    getCachedAccountByPublicKey,
+    getCachedAccountBySecondPublicKey,
+    getCachedAccountByUsername,
+
+    getDelegates,
+
+    getEstimateFeeByteForBatch,
+
+    getVotes,
+
+    getVoters,
 
     init: nop,
 };

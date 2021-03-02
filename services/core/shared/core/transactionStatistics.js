@@ -13,29 +13,46 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
 const config = require('../../config');
-const requestAll = require('../requestAll');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
-const getDbInstance = require('../database/pouchdb');
+const mysql = require('../indexdb/mysql');
+const signals = require('../signals');
+
+const logger = Logger();
+
+const tableConfig = {
+	primaryKey: 'id',
+	schema: {
+		amount_range: { type: 'string' },
+		count: { type: 'integer' },
+		date: { type: 'integer' },
+		id: { type: 'string' },
+		type: { type: 'string' },
+		volume: { type: 'bigInteger' },
+	},
+	indexes: {
+		date: { type: 'range' },
+	},
+};
+
+const getDbInstance = () => mysql('transaction_statistics', tableConfig);
 
 const queueName = 'transactionStatisticsQueue';
 const queueOptions = config.queue[queueName];
 
 const getSelector = (params) => {
-	const result = {};
-
-	const selector = {};
-	if (params.dateFrom || params.dateTo) selector.date = {};
-	if (params.dateFrom) Object.assign(selector.date, { $gte: params.dateFrom.toISOString() });
-	if (params.dateTo) Object.assign(selector.date, { $lte: params.dateTo.toISOString() });
-	// 	WHERE $<dateFrom> <= timestamp AND timestamp <= $<dateTo>
-	result.selector = selector;
-
-	return result;
+	const result = { property: 'date' };
+	if (params.dateFrom) result.from = params.dateFrom.unix();
+	if (params.dateTo) result.to = params.dateTo.unix();
+	return {
+		propBetweens: [result],
+		sort: 'date:desc',
+	};
 };
 
 const getWithFallback = (acc, type, range) => {
@@ -59,7 +76,7 @@ const getRange = tx => {
 
 const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	const transaction = {
-		type: 0,
+		type: 'any',
 		amount: String(1e8),
 		fee: String(1e7),
 	};
@@ -86,7 +103,7 @@ const transformStatsObjectToList = statsObject => (
 	Object.entries(statsObject).reduce((acc, [type, rangeObject]) => ([
 		...acc,
 		...Object.entries(rangeObject).map(([range, { count, volume }]) => ({
-			type: Number(type),
+			type,
 			volume: Math.ceil(volume),
 			count,
 			range,
@@ -95,16 +112,23 @@ const transformStatsObjectToList = statsObject => (
 );
 
 const insertToDb = async (statsList, date) => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
-	await db.deleteByProperty('date', date);
+	try {
+		const [{ id }] = db.find({ date });
+		await db.deleteIds([id]);
+		logger.debug(`Removed the following date from the database: ${date}`);
+	} catch (err) {
+		logger.debug(`The database does not contain the entry with the following date: ${date}`);
+	}
+
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
 		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});
-	await db.writeBatch(statsList);
+	await db.upsert(statsList);
 
 	const count = statsList.reduce((acc, row) => acc + row.count, 0);
 	return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
@@ -113,13 +137,13 @@ const insertToDb = async (statsList, date) => {
 const fetchTransactions = async (date, offset = 0) => {
 	const limit = 100;
 	const params = {
-		fromTimestamp: moment(date).unix(),
-		toTimestamp: moment(date).add(1, 'day').unix(),
+		fromTimestamp: moment.unix(date).unix(),
+		toTimestamp: moment.unix(date).add(1, 'day').unix(),
 		limit,
 		offset,
 	};
-	const transactions = await requestAll(getTransactions, params, 20000);
-	return transactions;
+	const transactions = await getTransactions(params);
+	return transactions.data;
 };
 
 const queueJob = async (job) => {
@@ -140,13 +164,13 @@ const queueJob = async (job) => {
 const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOptions);
 
 const getStatsTimeline = async params => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
 	const result = await db.find(getSelector(params));
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
-		const currFormattedDate = moment(entry.date).format(params.dateFormat);
+		const currFormattedDate = moment.unix(entry.date).format(params.dateFormat);
 		if (!unorderedfinalResult[currFormattedDate]) {
 			unorderedfinalResult[currFormattedDate] = {
 				date: currFormattedDate,
@@ -154,84 +178,82 @@ const getStatsTimeline = async params => {
 				volume: 0,
 			};
 		}
-		// 	GROUP BY to_char(timestamp, $<dateFormat>)
 
 		const statForDate = unorderedfinalResult[currFormattedDate];
 		statForDate.transactionCount += entry.count;
 		statForDate.volume += entry.volume;
-		// SELECT to_char(timestamp, $<dateFormat>) AS date, sum(count) AS "transactionCount",
-		// SUM(volume) AS volume FROM transaction_statistics
 	});
 
 	const orderedFinalResult = Object.values(unorderedfinalResult)
 		.sort((a, b) => a.date.localeCompare(b.date)).reverse();
-	// 	ORDER BY to_char(timestamp, $<dateFormat>) DESC`, transformParamsForDb(params));
 
 	return orderedFinalResult;
 };
 
 const getDistributionByAmount = async params => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
-	const result = await db.find(getSelector(params));
+	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
 		if (!unorderedfinalResult[entry.amount_range]) unorderedfinalResult[entry.amount_range] = 0;
 		unorderedfinalResult[entry.amount_range] += entry.count;
-		// SELECT amount_range, sum(count) AS count FROM transaction_statistics
-		// 	GROUP BY amount_range
 	});
 
 	const orderedFinalResult = {};
 	Object.keys(unorderedfinalResult).sort().reverse()
 		.forEach(amountRange => orderedFinalResult[amountRange] = unorderedfinalResult[amountRange]);
-	// 	ORDER BY amount_range DESC`, transformParamsForDb(params));
 
 	return orderedFinalResult;
 };
 
 const getDistributionByType = async params => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+	const db = await getDbInstance();
 
-	const result = await db.find(getSelector(params));
+	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
 		if (!unorderedfinalResult[entry.type]) unorderedfinalResult[entry.type] = 0;
 		unorderedfinalResult[entry.type] += entry.count;
-		// SELECT type, sum(count) AS count FROM transaction_statistics
-		// 	GROUP BY type
 	});
 
 	const orderedFinalResult = {};
 	Object.keys(unorderedfinalResult).sort((a, b) => Number(a) - Number(b))
 		.forEach(type => orderedFinalResult[type] = unorderedfinalResult[type]);
-	// 	ORDER BY type ASC`, transformParamsForDb(params));
 
 	return orderedFinalResult;
 };
 
-const fetchTransactionsForPastNDays = async n => {
-	const db = await getDbInstance(config.db.collections.transaction_statistics.name);
+const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
+	const db = await getDbInstance();
 	[...Array(n)].forEach(async (_, i) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
-			.toISOString();
-		const shouldUpdate = i === 0 || !((await db.findOneByProperty('date', date)).length);
-		if (shouldUpdate) {
+			.unix();
+
+		const shouldUpdate = i === 0 || !((await db.find({ date })).length);
+
+		if (shouldUpdate || forceReload) {
 			let attempt = 0;
 			const options = {
 				delay: (attempt ** 2) * 60 * 60 * 1000,
 				attempt: attempt += 1,
 			};
 			transactionStatisticsQueue.add(queueName, { date, options });
+			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
+			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 		}
 	});
 };
 
-const init = async historyLengthDays => fetchTransactionsForPastNDays(historyLengthDays);
+const init = async historyLengthDays => {
+	signals.get('blockIndexReady').add(() => {
+		fetchTransactionsForPastNDays(historyLengthDays);
+	});
+};
 
-const updateTodayStats = async () => fetchTransactionsForPastNDays(1);
+const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);
 
 module.exports = {
 	getStatsTimeline,

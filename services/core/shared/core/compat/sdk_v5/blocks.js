@@ -14,16 +14,31 @@
  *
  */
 const { CacheRedis, Logger } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
+const {
+	indexAccountsbyPublicKey,
+	getIndexedAccountInfo,
+	getHexAddressFromBase32,
+} = require('./accounts');
+const { indexVotes } = require('./voters');
 const { indexTransactions } = require('./transactions');
-const { getApiClient } = require('../common/wsRequest');
-const { knex } = require('../../../database');
+const { getApiClient } = require('../common');
+const { initializeQueue } = require('../../queue');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
+
+const signals = require('../../../signals');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+const blocksIndexSchema = require('./schema/blocks');
+
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
-const blocksCache = CacheRedis('blocks_SDKv5', config.endpoints.redis);
+const blocksCache = CacheRedis('blocks', config.endpoints.redis);
 
 let finalizedHeight;
 
@@ -37,78 +52,190 @@ const updateFinalizedHeight = async () => {
 
 const getFinalizedHeight = () => finalizedHeight;
 
-const indexBlocks = async originalBlocks => {
-	const blocksDB = await knex('blocks');
-	const blocks = originalBlocks.map(block => {
-		const skimmedBlock = {};
-		skimmedBlock.id = block.id;
-		skimmedBlock.height = block.height;
-		skimmedBlock.unixTimestamp = block.timestamp;
-		skimmedBlock.generatorPublicKey = block.generatorPublicKey;
-
-		// TODO: Check accounts and update the below params. Better to use 3NF instead.
-		skimmedBlock.generatorAddress = block.generatorAddress || null;
-		skimmedBlock.generatorUsername = block.generatorUsername || null;
-		return skimmedBlock;
-	});
-	await blocksDB.writeBatch(blocks);
-	await indexTransactions(originalBlocks);
+const indexBlocks = async job => {
+	const { blocks } = job.data;
+	const blocksDB = await getBlocksIndex();
+	const publicKeysToIndex = [];
+	blocks.map(block => publicKeysToIndex.push(block.generatorPublicKey));
+	await blocksDB.upsert(blocks);
+	await indexAccountsbyPublicKey(publicKeysToIndex);
+	await indexTransactions(blocks);
+	await indexVotes(blocks);
 };
 
-const normalizeBlock = block => {
-	block.id = block.id.toString('hex');
-	block.signature = block.signature.toString('hex');
-	block.previousBlockID = block.previousBlockID.toString('hex');
-	block.transactionRoot = block.transactionRoot.toString('hex');
-	block.generatorPublicKey = block.generatorPublicKey.toString('hex');
-	block.reward = Number(block.reward);
-	block.asset.seedReveal = block.asset.seedReveal.toString('hex');
+const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 
-	return block;
+const normalizeBlocks = async blocks => {
+	const apiClient = await getApiClient();
+
+	const normalizedBlocks = BluebirdPromise.map(
+		blocks.map(block => ({ ...block.header, payload: block.payload })),
+		async block => {
+			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
+			block.generatorAddress = account && account.address
+				? getHexAddressFromBase32(account.address) : undefined;
+			block.generatorUsername = account && account.username ? account.username : undefined;
+			block.numberOfTransactions = block.payload.length;
+
+			block.size = 0;
+			block.totalForged = Number(block.reward);
+			block.totalBurnt = 0;
+			block.totalFee = 0;
+
+			block.payload.forEach(txn => {
+				txn.size = apiClient.transaction.encode(txn).length;
+				txn.minFee = apiClient.transaction.computeMinFee(txn);
+
+				block.size += txn.size;
+
+				const txnMinFee = Number(txn.minFee);
+				block.totalForged += Number(txn.fee);
+				block.totalBurnt += txnMinFee;
+				block.totalFee += Number(txn.fee) - txnMinFee;
+			});
+
+			return parseToJSONCompatObj(block);
+		},
+		{ concurrency: blocks.length },
+	);
+
+	return normalizedBlocks;
+};
+
+const getBlockByID = async id => {
+	const response = await coreApi.getBlockByID(id);
+	return normalizeBlocks(response.data);
+};
+
+const getBlocksByIDs = async ids => {
+	const response = await coreApi.getBlocksByIDs(ids);
+	return normalizeBlocks(response.data);
+};
+
+const getBlockByHeight = async height => {
+	const response = await coreApi.getBlockByHeight(height);
+	return normalizeBlocks(response.data);
+};
+
+const getBlocksByHeightBetween = async (from, to) => {
+	const response = await coreApi.getBlocksByHeightBetween(from, to);
+	return normalizeBlocks(response.data);
+};
+
+const getLastBlock = async () => {
+	const response = await coreApi.getLastBlock();
+	return normalizeBlocks(response.data);
+};
+
+const isQueryFromIndex = params => {
+	const paramProps = Object.getOwnPropertyNames(params);
+
+	const isDirectQuery = ['id', 'height', 'heightBetween'].some(prop => paramProps.includes(prop));
+
+	const sortOrder = params.sort ? params.sort.split(':')[1] : undefined;
+	const isLatestBlockFetch = (paramProps.length === 3 && params.limit === 1 && params.offset === 0 && sortOrder === 'desc');
+
+	return !isDirectQuery && !isLatestBlockFetch;
+};
+
+const indexNewBlocks = async blocks => {
+	const blocksDB = await getBlocksIndex();
+	if (blocks.data.length === 1) {
+		const [block] = blocks.data;
+		const resultSet = await blocksDB.find({ id: block.id });
+		if (!resultSet.length) indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+
+		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
+		if (block.height > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', block.height);
+	}
 };
 
 const getBlocks = async params => {
-	const apiClient = await getApiClient();
-	const blocksDB = await knex('blocks');
+	const blocksDB = await getBlocksIndex();
 	const blocks = {
 		data: [],
 		meta: {},
 	};
 
-	const { blockId } = params;
-	delete params.blockId;
-	if (blockId) params.id = blockId;
+	const requestParams = { ...params };
 
-	// TODO: Remove the check when fully implemented. Currently added for cold start bootstrapping.
-	if (!params.heightRange
-		&& !(Object.getOwnPropertyNames(params).length === 1 && params.limit === 1)) {
-		const resultSet = await blocksDB.find(params);
+	if (requestParams.blockId) requestParams.id = requestParams.blockId;
+	if (!requestParams.limit) requestParams.limit = 10;
+	if (!requestParams.offset) requestParams.offset = 0;
+	if (!requestParams.sort) requestParams.sort = 'height:desc';
+
+	let accountInfo;
+	if (requestParams.publicKey) accountInfo = { publicKey: requestParams.publicKey };
+	if (requestParams.address) accountInfo = await getIndexedAccountInfo({
+		address: requestParams.address,
+	});
+	if (requestParams.username) accountInfo = await getIndexedAccountInfo({
+		username: requestParams.username,
+	});
+	if (accountInfo && accountInfo.publicKey) {
+		requestParams.generatorPublicKey = accountInfo.publicKey;
+	}
+
+	if (requestParams.height && typeof requestParams.height === 'string' && requestParams.height.includes(':')) {
+		const [from, to] = requestParams.height.split(':');
+		if (from > to) return new Error('From height cannot be greater than to height');
+		if (!requestParams.propBetweens) requestParams.propBetweens = [];
+		requestParams.propBetweens.push({
+			property: 'height',
+			from,
+			to,
+		});
+		delete requestParams.height;
+	}
+
+	if (requestParams.timestamp && requestParams.timestamp.includes(':')) {
+		const [from, to] = requestParams.timestamp.split(':');
+		if (from > to) return new Error('From timestamp cannot be greater than to timestamp');
+		if (!requestParams.propBetweens) requestParams.propBetweens = [];
+		requestParams.propBetweens.push({
+			property: 'timestamp',
+			from,
+			to,
+		});
+		delete requestParams.timestamp;
+	}
+
+	delete requestParams.blockId;
+	delete requestParams.publicKey;
+	delete requestParams.address;
+	delete requestParams.username;
+
+	if (isQueryFromIndex(requestParams)) {
+		const resultSet = await blocksDB.find(requestParams);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
 
-	const response = await coreApi.getBlocks(params);
-	if (response.data) blocks.data = response.data.map(block => Object
-		.assign(normalizeBlock(block.header), { payload: block.payload }));
-	if (response.meta) blocks.meta = response.meta; // TODO: Build meta manually
+	if (params.id) {
+		blocks.data = await getBlockByID(params.id);
+	} else if (params.ids) {
+		blocks.data = await getBlocksByIDs(params.ids);
+	} else if (params.height) {
+		blocks.data = await getBlockByHeight(params.height);
+	} else if (params.heightBetween) {
+		const { from, to } = params.heightBetween;
+		blocks.data = await getBlocksByHeightBetween(from, to);
+		if (params.sort) {
+			const [sortProp, sortOrder] = params.sort.split(':');
+			blocks.data = blocks.data.sort(
+				(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
+			);
+		}
+	} else {
+		blocks.data = await getLastBlock();
+	}
 
-	indexBlocks(blocks.data);
+	indexNewBlocks(blocks);
 
-	blocks.data.map(block => {
-		block.unixTimestamp = block.timestamp;
-		block.totalForged = Number(block.reward);
-		block.totalBurnt = 0;
-		block.totalFee = 0;
-
-		block.payload.forEach(txn => {
-			const txnMinFee = Number(apiClient.transaction.computeMinFee(txn));
-
-			block.totalForged += Number(txn.fee);
-			block.totalBurnt += txnMinFee;
-			block.totalFee += Number(txn.fee) - txnMinFee;
-		});
-		delete block.payload;
-		return block;
-	});
+	blocks.meta = {
+		count: blocks.data.length,
+		offset: requestParams.offset,
+		total: await blocksDB.count(requestParams),
+	};
 
 	return blocks;
 };
@@ -124,43 +251,65 @@ const buildIndex = async (from, to) => {
 	const MAX_BLOCKS_LIMIT_PP = 100;
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
-	Array(numOfPages).fill().forEach(async (_, pageNum) => {
-		const offset = from + (MAX_BLOCKS_LIMIT_PP * pageNum);
-		logger.info(`Attempting to cache blocks ${offset}-${offset + MAX_BLOCKS_LIMIT_PP}`);
-		// TODO: Revert to standard notation, once getBlocks is fully implemented
-		// const blocks = await getBlocks({
-		// 	limit: MAX_BLOCKS_LIMIT_PP,
-		// 	offset: offset - 1,
-		// 	sort: 'height:asc',
-		// });
-		// TODO: Add check when below call fails similar to SDKv4
-		const blocks = await getBlocks({
-			heightRange: { from: offset, to: offset + MAX_BLOCKS_LIMIT_PP },
-		});
-		const topHeightFromBatch = (blocks.data.pop()).height;
-		await blocksCache.set('lastIndexedHeight', topHeightFromBatch);
-	});
+	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
+	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		/* eslint-disable no-await-in-loop */
+		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+
+		/* eslint-disable no-await-in-loop */
+		let blocks;
+		do {
+			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
+		} while (!(blocks.length && blocks.every(block => !!block && !!block.height)));
+
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
+
+		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
+
+		const topHeightFromBatch = (sortedBlocks.pop()).height;
+		const bottomHeightFromBatch = (sortedBlocks.shift()).height;
+		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
+		if (bottomHeightFromBatch < lowestIndexedHeight || lowestIndexedHeight === 0) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
+		if (topHeightFromBatch > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', topHeightFromBatch);
+		/* eslint-enable no-await-in-loop */
+	}
 	logger.info(`Finished building block index (${from}-${to})`);
 };
 
 const init = async () => {
+	await getBlocksIndex();
 	try {
+		const genesisHeight = 1;
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
-		let blockIndexLowerRange = config.indexNumOfBlocks > 0
-			? currentHeight - config.indexNumOfBlocks : 1;
-		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
+		const blockIndexLowerRange = config.indexNumOfBlocks > 0
+			? currentHeight - config.indexNumOfBlocks : genesisHeight;
+		const blockIndexHigherRange = currentHeight;
 
-		if (Number(lastNumOfBlocks) === Number(config.indexNumOfBlocks)) {
-			// Everything seems allright, continue at height where stopped last time
-			blockIndexLowerRange = await blocksCache.get('lastIndexedHeight');
-		} else {
+		// Index genesis block first
+		await getBlocks({ height: genesisHeight });
+
+		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
+
+		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
+		if (lastNumOfBlocks !== config.indexNumOfBlocks) {
 			logger.info('Configuration has been updated, re-index eveything');
 			await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
-			await blocksCache.set('lastIndexedHeight', blockIndexLowerRange);
+			await blocksCache.set('lowestIndexedHeight', 0);
+			await blocksCache.set('highestIndexedHeight', currentHeight);
 		}
 
-		await buildIndex(blockIndexLowerRange, currentHeight);
+		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+
+		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
+		if (blockIndexLowerRange < lowestIndexedHeight) {
+			// For when the index is partially built
+			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
+		}
+
+		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
@@ -173,4 +322,5 @@ module.exports = {
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
+	normalizeBlocks,
 };

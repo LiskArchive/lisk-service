@@ -33,7 +33,25 @@ const metaSchema = {
 	username: Joi.string().optional(),
 };
 
+const account = {
+	address: Joi.string().required(),
+	username: Joi.string().optional(),
+	votesUsed: Joi.number().required(),
+};
+
+const votes = {
+	address: Joi.string().required(),
+	username: Joi.string().optional(),
+	amount: Joi.string().required(),
+};
+
+const voterSchemaVersion5 = {
+	account: Joi.object(account).optional(),
+	votes: Joi.array().items(votes).optional(),
+};
+
 module.exports = {
 	voterSchema: Joi.object(voterSchema).required(),
+	voterSchemaVersion5: Joi.object(voterSchemaVersion5).required(),
 	metaSchema: Joi.object(metaSchema).required(),
 };

@@ -26,7 +26,9 @@ const { parseToJSONCompatObj } = require('../../shared/jsonTools');
 const logger = Logger();
 
 const getDataForAccounts = async params => {
-	const accounts = await CoreService.getAccounts(params);
+	const accounts = params.isDelegate
+		? await CoreService.getDelegates(params)
+		: await CoreService.getAccounts(params);
 
 	const response = {};
 	response.data = [];
@@ -69,7 +71,7 @@ const getAccounts = async params => {
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
 	try {
-		const response = await getDataForAccounts({ sort: 'balance:asc', ...params });
+		const response = await getDataForAccounts({ sort: 'balance:desc', ...params });
 
 		return {
 			data: response.data,

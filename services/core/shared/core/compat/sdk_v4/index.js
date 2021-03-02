@@ -29,6 +29,7 @@ const {
 	getPendingTransactions,
 	getTransactionById,
 	getTransactionsByBlockId,
+	loadAllPendingTransactions,
 } = require('./transactions');
 
 const {
@@ -42,6 +43,10 @@ const { getVotes } = require('./votes');
 const { getVoters } = require('./voters');
 const events = require('./events');
 const { getNetworkStatus } = require('./network');
+
+const {
+	getEstimateFeeByteForBatch,
+} = require('./dynamicFees');
 
 const init = () => {
 	require('./blocks').init();
@@ -61,11 +66,13 @@ module.exports = {
 	getDelegates,
 	getNextForgers,
 	getPendingTransactions,
+	loadAllPendingTransactions,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getVotes,
 	getVoters,
 	events,
 	getNetworkStatus,
+	getEstimateFeeByteForBatch,
 	init,
 };

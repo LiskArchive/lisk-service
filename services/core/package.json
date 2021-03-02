@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "@liskhq/lisk-api-client": "^5.0.1",
+    "@liskhq/lisk-cryptography": "^3.0.0",
     "@liskhq/lisk-transactions-v4": "npm:@liskhq/lisk-transactions@^4.0.0",
     "@liskhq/lisk-transactions-v5": "npm:@liskhq/lisk-transactions@^5.0.1",
     "async": "^3.2.0",
@@ -50,10 +51,6 @@
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
     "mysql": "^2.18.1",
-    "pouchdb": "^7.2.2",
-    "pouchdb-adapter-memory": "^7.2.2",
-    "pouchdb-find": "^7.2.2",
-    "pouchdb-upsert": "^2.2.0",
     "semver": "^7.3.2",
     "signals": "^1.0.0",
     "split": "^1.0.1",

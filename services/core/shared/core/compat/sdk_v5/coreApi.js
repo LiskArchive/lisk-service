@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger } = require('lisk-service-framework');
 const { getApiClient } = require('../common/wsRequest');
+
+const logger = Logger();
 
 const getNetworkStatus = async () => {
     const apiClient = await getApiClient();
@@ -21,27 +24,37 @@ const getNetworkStatus = async () => {
     return { data: result };
 };
 
-const getBlocks = async params => {
+const getBlockByID = async id => {
     const apiClient = await getApiClient();
-    let block;
-    let blocks;
+    const block = await apiClient.block.get(id);
+    return { data: [block] };
+};
 
-    if (params.id) {
-        block = await apiClient.block.get(params.id);
-    } else if (params.ids) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids: params.ids });
-    } else if (params.height) {
-        block = await apiClient.block.getByHeight(params.height);
-    } else if (params.heightRange) {
-        blocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', params.heightRange);
-    } else if (params.limit === 1 && Object.getOwnPropertyNames(params).length === 1) {
-        block = await apiClient._channel.invoke('app:getLastBlock');
-        block = apiClient.block.decode(block);
-    }
+const getBlocksByIDs = async ids => {
+    const apiClient = await getApiClient();
+    const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids });
+    const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
+    return { data: blocks };
+};
 
-    if (blocks) blocks = blocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
-    const result = blocks || [block];
-    return { data: result };
+const getBlockByHeight = async height => {
+    const apiClient = await getApiClient();
+    const block = await apiClient.block.getByHeight(height);
+    return { data: [block] };
+};
+
+const getBlocksByHeightBetween = async (from, to) => {
+    const apiClient = await getApiClient();
+    const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', { from, to });
+    const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
+    return { data: blocks };
+};
+
+const getLastBlock = async () => {
+    const apiClient = await getApiClient();
+    const encodedBlock = await apiClient._channel.invoke('app:getLastBlock');
+    const block = apiClient.block.decode(Buffer.from(encodedBlock, 'hex'));
+    return { data: [block] };
 };
 
 const getTransactions = async params => {
@@ -60,18 +73,22 @@ const getTransactions = async params => {
     return { data: result };
 };
 
-const getAccounts = async params => {
+const getAccountByAddress = async address => {
     const apiClient = await getApiClient();
-    let account;
-    let accounts;
-    if (params.address) {
-        account = await apiClient.account.get(params.address);
-    } else if (params.addresses) {
-        accounts = await apiClient._channel.invoke('app:getAccounts', { address: params.addresses });
+    try {
+        const account = await apiClient.account.get(address);
+        return { data: [account] };
+    } catch (err) {
+        logger.warn(`Unable to currently fetch account information for address: ${address}. Network synchronization process might still be in progress for the Lisk Core node.`);
+        throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
     }
-    if (accounts) accounts = accounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
-    const result = accounts || [account];
-    return { data: result };
+};
+
+const getAccountsByAddresses = async addresses => {
+    const apiClient = await getApiClient();
+    const encodedAccounts = await apiClient._channel.invoke('app:getAccounts', { address: addresses });
+    const accounts = encodedAccounts.map(acc => apiClient.account.decode(Buffer.from(acc, 'hex')));
+    return { data: accounts };
 };
 
 const getPeers = async (state = 'connected') => {
@@ -90,11 +107,24 @@ const getForgers = async () => {
     return { data: forgers };
 };
 
+const getPendingTransactions = async () => {
+    const apiClient = await getApiClient();
+    let transactions = await apiClient._channel.invoke('app:getTransactionsFromPool', {});
+    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
+    return { data: transactions };
+};
+
 module.exports = {
-    getBlocks,
-    getAccounts,
+    getBlockByID,
+    getBlocksByIDs,
+    getBlockByHeight,
+    getBlocksByHeightBetween,
+    getLastBlock,
+    getAccountByAddress,
+    getAccountsByAddresses,
     getNetworkStatus,
     getTransactions,
     getPeers,
     getForgers,
+    getPendingTransactions,
 };

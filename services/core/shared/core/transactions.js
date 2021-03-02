@@ -13,54 +13,58 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
-
-const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 
-const logger = Logger();
+const getPendingTransactions = async params => {
+	const pendingtransactions = {
+		data: [],
+		meta: {},
+	};
 
-let pendingTransactionsList = [];
+	const response = await coreApi.getPendingTransactions(params);
+	if (response.data) pendingtransactions.data = response.data;
+	if (response.meta) pendingtransactions.meta = response.meta;
+
+	return pendingtransactions;
+};
+
+const mergeTransactions = async (params) => {
+	const allTransactions = {
+		data: [],
+		meta: {},
+	};
+
+	const offset = params.offset || 0;
+	const limit = params.limit || 10;
+
+	const pendingTxs = await getPendingTransactions(params);
+	delete params.includePending;
+	const transactions = await coreApi.getTransactions(params);
+	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(offset, offset + limit);
+
+	allTransactions.meta.count = allTransactions.data.length;
+	allTransactions.meta.offset = offset;
+	allTransactions.meta.total = (transactions.meta.total + pendingTxs.meta.total);
+
+	return allTransactions;
+};
 
 const getTransactions = async params => {
 	const transactions = {
 		data: [],
 		meta: {},
 	};
-
-	const response = await coreApi.getTransactions(params);
+	const response = params.includePending
+		? await mergeTransactions(params)
+		: await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
 	return transactions;
 };
 
-const getPendingTransactions = async params => {
-	const pendingTransactions = {
-		data: [],
-		meta: {},
-	};
-	const offset = Number(params.offset) || 0;
-	const limit = Number(params.limit) || 10;
-	if (pendingTransactionsList.length) {
-		pendingTransactions.data = pendingTransactionsList.slice(offset, offset + limit);
-		pendingTransactions.meta = {
-			count: pendingTransactions.data.length,
-			offset,
-			total: pendingTransactionsList.length,
-		};
-	}
-	return pendingTransactions;
-};
+const initPendingTransactionsList = (() => coreApi.loadAllPendingTransactions())();
 
-const loadAllPendingTransactions = async () => {
-	const limit = 100;
-	pendingTransactionsList = await requestAll(coreApi.getPendingTransactions, {}, limit);
-	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
-};
-
-const initPendingTransactionsList = (() => loadAllPendingTransactions())();
-
-const reload = () => loadAllPendingTransactions();
+const reload = () => coreApi.loadAllPendingTransactions();
 
 module.exports = {
 	getTransactions,
