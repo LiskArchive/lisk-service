@@ -37,14 +37,16 @@ const getDelegates = async params => {
 			publicKey: delegate.publicKey,
 		};
 
-		const adder = (acc, curr) => Number(acc) + Number(curr.amount);
-		const totalVotes = delegate.votes.reduce(adder, 0);
-		const selfVotes = delegate.votes
-			.filter(vote => vote.delegateAddress === delegate.address).reduce(adder, 0);
+		const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
+		const totalVotes = delegate.votes.reduce(adder, 0n);
+		const selfVote = delegate.votes.find(vote => vote.delegateAddress === delegate.address);
+		const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : 0n;
+		const cap = selfVoteAmount * 10n;
 
-		delegate.delegateWeight = Math.min(10 * selfVotes, totalVotes);
+		delegate.totalVotesReceived = totalVotes - selfVoteAmount;
+		const voteWeight = BigInt(totalVotes) > cap ? cap : delegate.totalVotesReceived;
+		delegate.delegateWeight = voteWeight;
 		delegate.vote = delegate.delegateWeight;
-		delegate.totalVotesReceived = totalVotes - selfVotes;
 		delegate.isBanned = delegate.delegate.isBanned;
 		delegate.pomHeights = delegate.delegate.pomHeights
 			.sort((a, b) => a - b).reverse().slice(0, 5)
