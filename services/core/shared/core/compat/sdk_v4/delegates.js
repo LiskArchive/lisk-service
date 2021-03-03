@@ -38,10 +38,10 @@ const getDelegates = async params => {
 		};
 
 		const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
-		const totalVotes = delegate.votes.reduce(adder, 0n);
+		const totalVotes = delegate.votes.reduce(adder, BigInt(0));
 		const selfVote = delegate.votes.find(vote => vote.delegateAddress === delegate.address);
-		const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : 0n;
-		const cap = selfVoteAmount * 10n;
+		const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
+		const cap = selfVoteAmount * BigInt(10);
 
 		delegate.totalVotesReceived = totalVotes - selfVoteAmount;
 		const voteWeight = BigInt(totalVotes) > cap ? cap : delegate.totalVotesReceived;
