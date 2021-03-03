@@ -17,7 +17,7 @@ const transaction = require('./mappings/transaction');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions.send',
+	method: 'core.transactions.post',
 	params: {},
 	definition: {
 		data: ['data', transaction],
