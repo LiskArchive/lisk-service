@@ -150,10 +150,16 @@ const getPendingTransactions = async params => {
 	};
 };
 
+const postTransactions = async () => {
+	// TODO: Place holder to post the transaction creation request
+	return;
+};
+
 module.exports = {
 	getTransactions,
 	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,
 	getPendingTransactions,
+	postTransactions,
 };

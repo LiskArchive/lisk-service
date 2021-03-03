@@ -20,6 +20,7 @@ const {
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,
 	getPendingTransactions,
+	postTransactions,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -70,6 +71,11 @@ module.exports = [
 	{
 		name: 'transactions.pending',
 		controller: getPendingTransactions,
+		params: {},
+	},
+	{
+		name: 'transactions.post',
+		controller: postTransactions,
 		params: {},
 	},
 ];
