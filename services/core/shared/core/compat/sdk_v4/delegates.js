@@ -49,7 +49,7 @@ const getDelegates = async params => {
 		delegate.vote = delegate.delegateWeight;
 		delegate.isBanned = delegate.delegate.isBanned;
 		delegate.pomHeights = delegate.delegate.pomHeights
-			.sort((a, b) => a - b).reverse().slice(0, 5)
+			.sort((a, b) => b - a).slice(0, 5)
 			.map(height => ({ start: height, end: height + punishmentHeight }));
 		delegate.lastForgedHeight = delegate.delegate.lastForgedHeight;
 		delegate.consecutiveMissedBlocks = delegate.delegate.consecutiveMissedBlocks;
