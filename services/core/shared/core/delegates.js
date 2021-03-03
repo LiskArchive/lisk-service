@@ -23,6 +23,7 @@ const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
 const requestAll = require('../requestAll');
 const coreApi = require('./compat');
 const { getLastBlock } = require('./blocks');
+const { parseToJSONCompatObj } = require('../jsonTools');
 
 const logger = Logger();
 const sdkVersion = coreApi.getSDKVersion();
@@ -40,8 +41,8 @@ let nextForgers = [];
 let delegateList = [];
 
 const delegateComparator = (a, b) => {
-	const diff = b.delegateWeight - a.delegateWeight;
-	if (diff !== 0) return diff;
+	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
+	if (diff !== 0) return Number(diff);
 	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
 };
 
@@ -172,7 +173,7 @@ const getDelegates = async params => {
 	delegates.meta.offset = params.offset || 0;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
 
-	return delegates;
+	return parseToJSONCompatObj(delegates);
 };
 
 const loadAllDelegates = async () => {
@@ -187,8 +188,8 @@ const loadAllDelegates = async () => {
 		async delegate => {
 			delegate.address = delegate.account.address;
 			delegate.publicKey = delegate.account.publicKey;
-			await cacheRedisDelegates.set(delegate.address, delegate);
-			await cacheRedisDelegates.set(delegate.username, delegate);
+			await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
+			await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
 			return delegate;
 		},
 		{ concurrency: delegateList.length },
@@ -214,7 +215,7 @@ const getNextForgers = async params => {
 	forgers.meta.offset = offset;
 	forgers.meta.total = nextForgers.length;
 
-	return forgers;
+	return parseToJSONCompatObj(forgers);
 };
 
 const loadAllNextForgers = async () => {
