@@ -31,30 +31,28 @@ const getDelegates = async params => {
 	if (response.data) delegates.data = response.data;
 	if (response.meta) delegates.meta = response.meta;
 
-	delegates.data.map((delegate, index) => {
+	delegates.data.map((delegate) => {
 		delegate.account = {
 			address: delegate.address,
 			publicKey: delegate.publicKey,
 		};
 
-		const adder = (acc, curr) => Number(acc) + Number(curr.amount);
-		const totalVotes = delegate.votes.reduce(adder, 0);
-		const selfVotes = delegate.votes
-			.filter(vote => vote.delegateAddress === delegate.address).reduce(adder, 0);
+		const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
+		const totalVotes = delegate.votes.reduce(adder, BigInt(0));
+		const selfVote = delegate.votes.find(vote => vote.delegateAddress === delegate.address);
+		const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
+		const cap = selfVoteAmount * BigInt(10);
 
-		delegate.delegateWeight = Math.min(10 * selfVotes, totalVotes);
+		delegate.totalVotesReceived = BigInt(delegate.totalVotesReceived);
+		const voteWeight = BigInt(totalVotes) > cap ? cap : delegate.totalVotesReceived;
+		delegate.delegateWeight = voteWeight;
 		delegate.vote = delegate.delegateWeight;
-		delegate.totalVotesReceived = totalVotes - selfVotes;
 		delegate.isBanned = delegate.delegate.isBanned;
 		delegate.pomHeights = delegate.delegate.pomHeights
-			.sort((a, b) => a - b).reverse().slice(0, 5)
+			.sort((a, b) => b - a).slice(0, 5)
 			.map(height => ({ start: height, end: height + punishmentHeight }));
 		delegate.lastForgedHeight = delegate.delegate.lastForgedHeight;
 		delegate.consecutiveMissedBlocks = delegate.delegate.consecutiveMissedBlocks;
-
-		// Required for proper indexing in PouchDB
-		// Rank appropriately recalculated in the abstraction layer based on delegateWeight/address
-		delegate.rank = params.offset + index + 1;
 
 		return delegate;
 	});
