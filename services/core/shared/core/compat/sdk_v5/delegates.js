@@ -55,7 +55,7 @@ const getDelegates = async (params) => {
             const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
             const cap = selfVoteAmount * BigInt(10);
 
-            delegate.totalVotesReceived = totalVotes - selfVoteAmount;
+            delegate.totalVotesReceived = BigInt(delegate.dpos.delegate.totalVotesReceived);
             const voteWeight = BigInt(totalVotes) > cap ? cap : delegate.totalVotesReceived;
 
             delegate.delegateWeight = voteWeight;
