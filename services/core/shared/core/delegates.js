@@ -243,8 +243,6 @@ const resolveNextForgers = async () => {
 const reloadNextForgersCache = async () => {
 	await loadAllNextForgers();
 	await resolveNextForgers();
-	await computeDelegateRank();
-	await computeDelegateStatus();
 };
 
 const reload = async () => {
