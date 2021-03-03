@@ -66,8 +66,14 @@ LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
 ## Lisk Service Core
 
 # Local Redis cache for Lisk microservice
-# Note it is a different DB that SERVICE_BROKER uses
+# Note: SERVICE_BROKER uses a different DB
 SERVICE_CORE_REDIS=redis://localhost:6379/1
+
+# MySQL install
+MYSQL_ROOT_PASSWORD=password
+MYSQL_DATABASE=lisk
+MYSQL_USER=lisk
+MYSQL_PASSWORD=password
 ```
 
 ### External services
