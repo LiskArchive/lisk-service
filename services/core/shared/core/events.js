@@ -18,16 +18,16 @@ const core = require('./compat');
 const signals = require('../signals');
 const { reloadNextForgersCache, getNextForgers } = require('./delegates');
 const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
-const { performLastBlockUpdate } = require('./blocks');
+const { performLastBlockUpdate, getLastBlock } = require('./blocks');
 
 const config = require('../../config.js');
 
 const logger = Logger();
 
 const events = {
-	newBlock: async data => {
-		signals.get('newBlock').dispatch(data);
-		performLastBlockUpdate();
+	newBlock: async () => {
+		await performLastBlockUpdate();
+		signals.get('newBlock').dispatch(getLastBlock());
 	},
 	newRound: async () => {
 		await reloadNextForgersCache();
