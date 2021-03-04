@@ -107,6 +107,7 @@ module.exports = {
 	updateFinalizedHeight,
 	getPendingTransactions: nop,
 	loadAllPendingTransactions: nop,
+	postTransactions: nop,
 	events,
 	init,
 };
