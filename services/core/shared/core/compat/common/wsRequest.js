@@ -26,6 +26,8 @@ const getApiClient = async () => {
         }
         return clientCache;
     } catch (err) {
+        if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node');
+
         return {
             data: { error: 'Action not supported' },
             status: 'METHOD_NOT_ALLOWED',

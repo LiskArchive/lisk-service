@@ -70,6 +70,11 @@ const postTransactions = async (params) => {
 			transactionId: response.transactionId,
 		};
 	} catch (err) {
+		if (err.message.includes('ECONNREFUSED')) return {
+			data: { error: 'Unable to reach a network node' },
+			status: 'INTERNAL_SERVER_ERROR',
+		};
+
 		return {
 			data: { error: `Transaction payload was rejected by the network node: ${err.message}` },
 			status: 'BAD_REQUEST',
