@@ -27,6 +27,7 @@ const {
 	reloadAllPendingTransactions,
 	getTransactionById,
 	getTransactionsByBlockId,
+	postTransactions,
 } = require('./transactions');
 
 const {
@@ -133,6 +134,7 @@ module.exports = {
 	getTransactions,
 	getTransactionById,
 	getTransactionsByBlockId,
+	postTransactions,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,

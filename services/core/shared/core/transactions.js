@@ -66,6 +66,10 @@ const initPendingTransactionsList = (() => coreApi.loadAllPendingTransactions())
 
 const reload = () => coreApi.loadAllPendingTransactions();
 
+const postTransactions = async (params) => {
+	console.log(params);
+};
+
 module.exports = {
 	getTransactions,
 	getPendingTransactions,
@@ -73,4 +77,5 @@ module.exports = {
 	reloadAllPendingTransactions: reload,
 	getTransactionById: coreApi.getTransactionById,
 	getTransactionsByBlockId: coreApi.getTransactionsByBlockId,
+	postTransactions,
 };
