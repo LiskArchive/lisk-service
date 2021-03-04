@@ -63,8 +63,22 @@ const getTransactions = async params => {
 };
 
 const postTransactions = async (params) => {
-	const response = await coreApi.postTransactions(params);
-	return response;
+	try {
+		const response = await coreApi.postTransactions(params);
+		if (response.transactionId)
+			return { message: 'Transaction payload was successfully passed to the network node' };
+	} catch (err) {
+		return {
+			data: { error: 'Transaction payload was rejected by the network node' },
+			status: 'BAD_REQUEST',
+		};
+	}
+
+	// TODO: Figure out the logic to send the response
+	return {
+		data: { error: 'Unable to reach a network node' },
+		status: 'INTERNAL_SERVER_ERROR',
+	};
 };
 
 const initPendingTransactionsList = (() => coreApi.loadAllPendingTransactions())();

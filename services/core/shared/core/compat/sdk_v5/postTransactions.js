@@ -18,7 +18,6 @@ const coreApi = require('./coreApi');
 const postTransactions = async (params) => {
 	const signedTxBinary = params.transaction;
 	const response = await coreApi.postTransaction(signedTxBinary);
-
 	return response;
 };
 

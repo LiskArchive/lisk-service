@@ -19,5 +19,7 @@ module.exports = {
 	params: {
 		transaction: '=,string',
 	},
-	definition: {},
+	definition: {
+		message: '=',
+	},
 };
