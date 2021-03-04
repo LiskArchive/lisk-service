@@ -62,13 +62,14 @@ const getTransactions = async params => {
 	return transactions;
 };
 
+const postTransactions = async (params) => {
+	const response = await coreApi.postTransactions(params);
+	return response;
+};
+
 const initPendingTransactionsList = (() => coreApi.loadAllPendingTransactions())();
 
 const reload = () => coreApi.loadAllPendingTransactions();
-
-const postTransactions = async (params) => {
-	console.log(params);
-};
 
 module.exports = {
 	getTransactions,
