@@ -138,6 +138,10 @@ const getAccountsFromCore = async (params) => {
 };
 
 const getAccounts = async params => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
 	const accountsDB = await getAccountsIndex();
 	if (params.sort && params.sort.includes('rank')) {
 		return new Error('Rank based sorting is only supported along delegates accounts');
@@ -171,9 +175,10 @@ const getAccounts = async params => {
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
-
-	const accounts = await getAccountsFromCore(params);
-
+	if (params.address || (params.addresses && params.addresses.length)) {
+		const response = await getAccountsFromCore(params);
+		if (response.data) accounts.data = response.data;
+	}
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
