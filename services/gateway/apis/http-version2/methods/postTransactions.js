@@ -22,7 +22,7 @@ module.exports = {
 	rpcMethod: 'post.transactions',
 	tags: ['Transactions'],
 	params: {
-		transaction: { optional: false, type: 'string', min: 1 },
+		transaction: { optional: false, type: 'string', min: 1, pattern: /^\b[0-9a-fA-F]+\b$/ },
 	},
 	source: transactionsSource,
 };
