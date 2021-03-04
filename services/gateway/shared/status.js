@@ -46,11 +46,16 @@ const getBuildTimestamp = () => {
 const buildTimestamp = getBuildTimestamp();
 
 const getStatus = async broker => {
+	let version;
 	const networkstatus = await broker.call('core.network.status');
 	const networkStatistics = await broker.call('core.peers.statistics');
-	const { coreVer } = networkStatistics.data;
-	const versionCount = Object.values(coreVer);
-	const networkNodeVersion = Object.keys(coreVer)[
+	if (Object.getOwnPropertyNames(networkStatistics.data.coreVer).length) {
+		version = networkStatistics.data.coreVer;
+	} else {
+		version = networkStatistics.data.networkVersion;
+	}
+	const versionCount = Object.values(version);
+	const networkNodeVersion = Object.keys(version)[
 		versionCount.indexOf(Math.max(...versionCount))
 	];
 	return {
