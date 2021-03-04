@@ -19,6 +19,7 @@ const {
 	LoggerConfig,
 	Libs,
 } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
 
 const { MoleculerError } = require('moleculer').Errors;
 
@@ -30,7 +31,7 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
-const { updateServiceStatus, getStatus, getReady } = require('./shared/status');
+const { updateServiceStatus, getStatus } = require('./shared/status');
 const { genDocs } = require('./apis/http-version1/swagger/generateDocs');
 
 const mapper = require('./shared/customMapper');
@@ -71,12 +72,24 @@ broker.createService({
 		spec() { return genDocs(); },
 		status() { return getStatus(); },
 		async ready() {
-			const services = await getReady();
+			// const services = await getReady();
+			const coreMethods = { lisk_accounts: 'core.accounts', lisk_blocks: 'core.blocks' };
+			const keys = Object.keys(coreMethods);
+			const services = await BluebirdPromise.map(
+				keys,
+				async key => {
+					const service = {};
+					const response = await this.broker.call(coreMethods[key]);
+					service[key] = !!response.data.length;
+					return service;
+				},
+				{ concurrency: keys.length },
+			);
 			// isReady: returns true if any one of service is unavailable
-			const isReady = Object.keys(services.services).some(value => !services.services[value]);
+			const isReady = services.some(value => !value);
 			if (isReady === true) {
 				return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
-			} return Promise.resolve(services);
+			} return Promise.resolve({ services: Object.assign({}, ...services) });
 		},
 	},
 	settings: {
