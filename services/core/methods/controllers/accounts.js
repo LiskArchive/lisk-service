@@ -30,10 +30,11 @@ const getDataForAccounts = async params => {
 		? await CoreService.getDelegates({ sort: 'rank:asc', ...params })
 		: await CoreService.getAccounts({ limit: 10, offset: 0, sort: 'balance:desc', ...params });
 
-	const response = {};
-	response.data = [];
-	response.meta = {};
-	response.links = {};
+	const response = {
+		data: [],
+		meta: {},
+		links: {},
+	};
 
 	const accountDataCopy = parseToJSONCompatObj(accounts.data);
 
@@ -56,6 +57,7 @@ const getDataForAccounts = async params => {
 
 		response.data = accountDataCopy;
 		response.meta.count = accountDataCopy.length;
+		response.meta.total = accounts.meta.total;
 		response.meta.offset = parseInt(params.offset || 0, 10);
 	}
 

@@ -92,7 +92,7 @@ broker.createService({
 		cors: {
 			// Configure the Access-Control-Allow-Origin CORS header
 			origin: '*',
-			// Configures the Access-Control-Allow-Methods CORS header.
+			// Configure the Access-Control-Allow-Methods CORS header
 			methods: ['GET', 'POST'],
 		},
 
