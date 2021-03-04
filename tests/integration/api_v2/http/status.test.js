@@ -17,26 +17,23 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const {
-    badRequestSchema,
-} = require('../../../schemas/httpGenerics.schema');
-
-const {
     statusSchema,
+    readySchema,
 } = require('../../../schemas/status.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const endpoint = `${baseUrl}/api/status`;
+const endpoint = `${baseUrl}/api`;
 
 describe('Status reporting', () => {
     describe(`GET ${endpoint}`, () => {
         it('Report status -> 200 OK', async () => {
-            const response = await api.get(endpoint);
+            const response = await api.get(`${endpoint}/status`);
             expect(response).toMap(statusSchema);
         });
 
-        it('params not supported -> 400 BAD REQUEST', async () => {
-            const response = await api.get(`${endpoint}?someparam='not_supported'`, 400);
-            expect(response).toMap(badRequestSchema);
+        it('Report readiness -> 200 OK', async () => {
+            const response = await api.get(`${endpoint}/ready`);
+            expect(response).toMap(readySchema);
         });
     });
 });
