@@ -17,7 +17,7 @@ module.exports = {
 	type: 'moleculer',
 	method: 'core.transactions.post',
 	params: {
-		transaction: '=',
+		transaction: '=,string',
 	},
 	definition: {},
 };

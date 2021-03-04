@@ -22,7 +22,13 @@ module.exports = {
 	httpMethod: 'POST',
 	rpcMethod: 'post.transactions',
 	tags: ['Transactions'],
-	params: {},
+	params: {
+		transaction: { optional: false, type: 'string', min: 1 },
+	},
+	paramsRequired: true,
+	validParamPairings: [
+		['transaction'],
+	],
 	source: transactionsSource,
 	envelope,
 };
