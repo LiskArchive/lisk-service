@@ -25,8 +25,7 @@ const {
 } = require('../../../schemas/status.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV2 = `${baseUrl}/api`;
-const endpoint = `${baseUrlV2}/status`;
+const endpoint = `${baseUrl}/api/status`;
 
 describe('Status reporting', () => {
     describe(`GET ${endpoint}`, () => {
