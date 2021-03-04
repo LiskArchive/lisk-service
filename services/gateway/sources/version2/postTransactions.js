@@ -13,21 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transaction = require('./mappings/transaction');
-
 module.exports = {
 	type: 'moleculer',
 	method: 'core.transactions.post',
 	params: {
 		transaction: '=',
 	},
-	definition: {
-		data: ['data', transaction],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	definition: {},
 };
