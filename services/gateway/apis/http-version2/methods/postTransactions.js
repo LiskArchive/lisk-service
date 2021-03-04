@@ -14,7 +14,6 @@
  *
  */
 const transactionsSource = require('../../../sources/version2/postTransactions');
-const envelope = require('../../../sources/version2/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
@@ -26,5 +25,4 @@ module.exports = {
 		transaction: { optional: false, type: 'string', min: 1 },
 	},
 	source: transactionsSource,
-	envelope,
 };
