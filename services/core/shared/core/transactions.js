@@ -65,8 +65,7 @@ const getTransactions = async params => {
 const postTransactions = async (params) => {
 	try {
 		const response = await coreApi.postTransactions(params);
-		if (response.transactionId)
-			return { message: 'Transaction payload was successfully passed to the network node' };
+		if (response.transactionId) return { message: 'Transaction payload was successfully passed to the network node' };
 	} catch (err) {
 		return {
 			data: { error: 'Transaction payload was rejected by the network node' },
