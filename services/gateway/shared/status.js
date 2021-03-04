@@ -14,6 +14,7 @@
  *
  */
 const { HTTP, Logger } = require('lisk-service-framework');
+const packageJson = require('../package.json');
 
 const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
@@ -42,6 +43,25 @@ const getBuildTimestamp = () => {
 	return timestamp;
 };
 
+const buildTimestamp = getBuildTimestamp();
+
+const getStatus = async broker => {
+	const networkstatus = await broker.call('core.network.status');
+	const networkStatistics = await broker.call('core.peers.statistics');
+	const { coreVer } = networkStatistics.data;
+	const versionCount = Object.values(coreVer);
+	const networkNodeVersion = Object.keys(coreVer)[
+		versionCount.indexOf(Math.max(...versionCount))
+	];
+	return {
+		build: buildTimestamp,
+		description: 'Lisk Service Gateway',
+		name: packageJson.name,
+		version: packageJson.version,
+		networkId: networkstatus.data.constants.nethash,
+		networkNodeVersion,
+	};
+};
 
 const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
 	requestLib(`http://127.0.0.1:${config.port}/api/v2${url}`)
@@ -114,5 +134,5 @@ const init = () => {
 module.exports = {
 	updateServiceStatus: init,
 	getReady,
-	getBuildTimestamp,
+	getStatus,
 };
