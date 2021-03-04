@@ -14,7 +14,6 @@
  *
  */
 const { HTTP, Logger } = require('lisk-service-framework');
-const packageJson = require('../package.json');
 
 const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;
@@ -43,47 +42,6 @@ const getBuildTimestamp = () => {
 	return timestamp;
 };
 
-const buildTimestamp = getBuildTimestamp();
-
-const getNetworkId = (url) => new Promise((resolve, reject) => {
-	requestLib(`http://127.0.0.1:${config.port}/api/v2${url}`)
-		.then((response) => {
-			if (response) return resolve(response.data.nethash);
-			return resolve(false);
-		})
-		.catch((err) => {
-			logger.error(err.stack);
-			reject(err);
-		});
-});
-
-const getNetworkNodeVersion = (url) => new Promise((resolve, reject) => {
-	requestLib(`http://127.0.0.1:${config.port}/api/v2${url}`)
-		.then((response) => {
-			if (response) {
-				const { coreVer } = response.data.data;
-				const versionCount = Object.values(coreVer);
-				const networkNodeVersion = Object.keys(coreVer)[
-					versionCount.indexOf(Math.max(...versionCount))
-				];
-				return resolve(networkNodeVersion);
-			}
-			return resolve(false);
-		})
-		.catch((err) => {
-			logger.error(err.stack);
-			reject(err);
-		});
-});
-
-const getStatus = async () => ({
-	build: buildTimestamp,
-	description: 'Lisk Service Gateway',
-	name: packageJson.name,
-	version: packageJson.version,
-	networkId: await getNetworkId('/network/status'),
-	networkNodeVersion: await getNetworkNodeVersion('/network/statistics'),
-});
 
 const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
 	requestLib(`http://127.0.0.1:${config.port}/api/v2${url}`)
@@ -156,5 +114,5 @@ const init = () => {
 module.exports = {
 	updateServiceStatus: init,
 	getReady,
-	getStatus,
+	getBuildTimestamp,
 };

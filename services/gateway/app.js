@@ -31,7 +31,7 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
-const { updateServiceStatus, getStatus } = require('./shared/status');
+const { updateServiceStatus, getBuildTimestamp } = require('./shared/status');
 const { genDocs } = require('./apis/http-version1/swagger/generateDocs');
 
 const mapper = require('./shared/customMapper');
@@ -70,7 +70,24 @@ broker.createService({
 	name: 'gateway',
 	actions: {
 		spec() { return genDocs(); },
-		status() { return getStatus(); },
+		async status() {
+			const buildTimestamp = getBuildTimestamp();
+			const networkstatus = await this.broker.call('core.network.status');
+			const networkStatistics = await this.broker.call('core.peers.statistics');
+			const { coreVer } = networkStatistics.data;
+			const versionCount = Object.values(coreVer);
+			const networkNodeVersion = Object.keys(coreVer)[
+				versionCount.indexOf(Math.max(...versionCount))
+			];
+			return {
+				build: buildTimestamp,
+				description: 'Lisk Service Gateway',
+				name: packageJson.name,
+				version: packageJson.version,
+				networkId: networkstatus.data.constants.nethash,
+				networkNodeVersion,
+			};
+		},
 		async ready() {
 			// const services = await getReady();
 			const coreMethods = { lisk_accounts: 'core.accounts', lisk_blocks: 'core.blocks' };
