@@ -116,7 +116,7 @@ const getPendingTransactions = async () => {
 
 const postTransaction = async transaction => {
     const apiClient = await getApiClient();
-    const response = await apiClient.transaction.send(apiClient.transaction.decode(Buffer.from(transaction, 'hex')));
+    const response = await apiClient._channel.invoke('app:postTransaction', { transaction });
     return response;
 };
 
