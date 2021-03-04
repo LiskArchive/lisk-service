@@ -76,6 +76,8 @@ module.exports = [
 	{
 		name: 'transactions.post',
 		controller: postTransactions,
-		params: {},
+		params: {
+			transaction: { type: 'string', optional: false },
+		},
 	},
 ];
