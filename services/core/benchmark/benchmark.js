@@ -113,10 +113,10 @@ const benchmark = async (args) => {
             fs.writeFile(`./${resultsDir}/result_${batchSize}.json`, JSON.stringify(results, null, 4), (err) => {
                 if (err) {
                     console.error(err);
-                    reject(err);
+                    return reject(err);
                 }
                 console.log(`Test results saved to: './${resultsDir}/result_${batchSize}.json'`);
-                resolve();
+                return resolve();
             });
         });
     }
