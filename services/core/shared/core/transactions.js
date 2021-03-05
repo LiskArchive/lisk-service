@@ -62,7 +62,7 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-const postTransactions = async (params) => {
+const postTransactions = async params => {
 	try {
 		const response = await coreApi.postTransactions(params);
 		return {
