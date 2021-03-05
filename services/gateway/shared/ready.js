@@ -34,8 +34,8 @@ const getReady = async broker => {
             return service;
         },
     );
-    const isReady = services.some(value => !value);
-    if (isReady === true) {
+    const isNotReady = services.some(value => !value);
+    if (isNotReady === true) {
         return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
     } return Promise.resolve({ services: Object.assign({}, ...services) });
 };
