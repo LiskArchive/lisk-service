@@ -4,10 +4,10 @@ const writeJson = (path, obj) => new Promise((resolve, reject) => {
 	fs.writeFile(path, JSON.stringify(obj, null, 4), (err) => {
 		if (err) {
 			console.error(err);
-			reject(err);
+			return reject(err);
 		}
 		console.log(`File has been created: ${path}`);
-		resolve();
+		return resolve();
 	});
 });
 
@@ -15,9 +15,9 @@ const readJson = (path) => new Promise((resolve, reject) => {
 	fs.readFile(path, (err, data) => {
 		if (err) {
 			console.error(err);
-			reject(err);
+			return reject(err);
 		}
-		resolve(JSON.parse(data));
+		return resolve(JSON.parse(data));
 	});
 });
 
