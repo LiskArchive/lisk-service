@@ -43,9 +43,9 @@ describe('Blocks API', () => {
 
 	describe('GET /blocks', () => {
 		it('returns list of blocks when called with no params', async () => {
-			const response = await api.get(`${endpoint}?limit=1`);
+			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data.length).toEqual(1);
+			expect(response.data.length).toEqual(10);
 			response.data.forEach(block => expect(block).toMap(blockSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -97,8 +97,7 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Fails the CI pipeline
-		xit('block list by unknown account ID fails with 404', async () => {
+		it('block list by unknown account ID fails with 404', async () => {
 			const response = await api.get(`${endpoint}?address=122233344455667L`, 404);
 			expect(response).toMap(notFoundSchema);
 		});
