@@ -168,4 +168,21 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('is able to retrieve block lists by timestamp', () => {
+		it('Blocks with from...to timestamp -> ok', async () => {
+			const [fromBlock] = (await api.get(`${endpoint}?height=${refBlock.height - 1}`)).data;
+			const from = fromBlock.timestamp;
+			const to = refBlock.timestamp;
+			const response = await api.get(`${endpoint}?from=${from}&to=${to}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data.length).toEqual(2);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchema);
+				expect(block.timestamp).toBeGreaterThanOrEqual(from);
+				expect(block.timestamp).toBeLessThanOrEqual(to);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
 });
