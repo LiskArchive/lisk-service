@@ -195,8 +195,9 @@ describe('Method get.blocks', () => {
 
 	describe('is able to retireve block lists by timestamp', () => {
 		it('Blocks with from...to timestamp -> ok', async () => {
-			const from = 1497855770;
-			const to = 1497855780;
+			const [fromBlock] = (await getBlocks({ height: refBlock.height - 1 })).result.data;
+			const from = fromBlock.timestamp;
+			const to = refBlock.timestamp;
 			const response = await getBlocks({ from, to });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
