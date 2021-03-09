@@ -27,7 +27,7 @@ const getBlocks = async params => {
 		params.height = `${params.height}`;
 	}
 	if (params.username) {
-		const {username, ...remParams} = params;
+		const { username, ...remParams } = params;
 		params = remParams;
 
 		params.address = await Core.getAddressByUsername(username);
@@ -35,7 +35,7 @@ const getBlocks = async params => {
 	}
 
 	if (params.address) {
-		const {address, ...remParams} = params;
+		const { address, ...remParams } = params;
 		params = remParams;
 
 		params.generatorPublicKey = await Core.getPublicKeyByAny(address);

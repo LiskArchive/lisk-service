@@ -27,16 +27,26 @@ const getVotes = async params => {
 		meta: {},
 	};
 
-	const { address, username, publicKey, ...remParams } = params;
-	params = remParams;
+	if (params.address) {
+		const { address, ...remParams } = params;
+		params = remParams;
 
-	if (address) params.sentAddress = address;
-	if (username) {
+		params.sentAddress = address;
+	}
+	if (params.username) {
+		const { username, ...remParams } = params;
+		params = remParams;
+
 		const accountInfo = await getIndexedAccountInfo({ username });
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
 		params.sentAddress = accountInfo.address;
 	}
-	if (params.publicKey) params.sentAddress = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
+	if (params.publicKey) {
+		const { publicKey, ...remParams } = params;
+		params = remParams;
+
+		params.sentAddress = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
+	}
 
 	const response = await getAccounts({ id: params.sentAddress });
 	if (response.data) response.data
