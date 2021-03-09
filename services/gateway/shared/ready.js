@@ -22,8 +22,8 @@ const getReady = async broker => {
         lisk_accounts: 'core.accounts',
         lisk_blocks: 'core.blocks',
         lisk_transactions: 'core.transactions',
-        // lisk_delegates: 'core.delegates',
-        // lisk_peers: 'core.peers',
+        lisk_delegates: 'core.delegates',
+        lisk_peers: 'core.peers',
     };
     const services = await BluebirdPromise.map(
         Object.getOwnPropertyNames(coreMethods),
