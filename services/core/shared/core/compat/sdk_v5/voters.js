@@ -86,7 +86,7 @@ const getVoters = async params => {
 		const { address, ...remParams } = params;
 		params = remParams;
 
-		params.sentAddress = address;
+		params.receivedAddress = address;
 	}
 	if (params.username) {
 		const { username, ...remParams } = params;
