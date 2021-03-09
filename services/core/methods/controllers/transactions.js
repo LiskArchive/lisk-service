@@ -150,10 +150,13 @@ const getPendingTransactions = async params => {
 	};
 };
 
+const postTransactions = async (params) => CoreService.postTransactions(params);
+
 module.exports = {
 	getTransactions,
 	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,
 	getPendingTransactions,
+	postTransactions,
 };
