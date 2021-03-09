@@ -72,52 +72,56 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 			});
 
 			it(`returns stats for previous ${aggregateBy} if called with ?limit=1&offset=1`, async () => {
-				const limit = 1;
-				const offset = 1;
-				const startOfYesterday = moment(startOfUnitUtc).subtract(1, aggregateBy);
+				if (aggregateBy === 'day') {
+					const limit = 1;
+					const offset = 1;
+					const startOfYesterday = moment(startOfUnitUtc).subtract(1, aggregateBy);
 
-				const response = await requestTransactionStatistics(aggregateBy, { limit, offset });
-				expect(response).toMap(jsonRpcEnvelopeSchema);
-				const { result } = response;
-				expect(result).toMap(goodRequestSchema);
-				expect(result.data).toMap(transactionStatisticsSchema);
-				expect(result.data.timeline).toHaveLength(1);
-				result.data.timeline.forEach(timelineItem => expect(timelineItem)
-					.toMap(timelineItemSchema, {
-						date: startOfYesterday.format(dateFormat),
-						timestamp: startOfYesterday.unix(),
-					}));
-				expect(result.meta).toMap(metaSchema, {
-					limit,
-					offset,
-					dateFormat,
-					dateFrom: startOfYesterday.format(dateFormat),
-					dateTo: startOfYesterday.format(dateFormat),
-				});
+					const response = await requestTransactionStatistics(aggregateBy, { limit, offset });
+					expect(response).toMap(jsonRpcEnvelopeSchema);
+					const { result } = response;
+					expect(result).toMap(goodRequestSchema);
+					expect(result.data).toMap(transactionStatisticsSchema);
+					expect(result.data.timeline).toHaveLength(1);
+					result.data.timeline.forEach(timelineItem => expect(timelineItem)
+						.toMap(timelineItemSchema, {
+							date: startOfYesterday.format(dateFormat),
+							timestamp: startOfYesterday.unix(),
+						}));
+					expect(result.meta).toMap(metaSchema, {
+						limit,
+						offset,
+						dateFormat,
+						dateFrom: startOfYesterday.format(dateFormat),
+						dateTo: startOfYesterday.format(dateFormat),
+					});
+				}
 			});
 
 			it(`returns stats for previous ${aggregateBy} and the ${aggregateBy} before if called with ?limit=2&offset=1`, async () => {
-				const limit = 2;
-				const offset = 1;
+				if (aggregateBy === 'day') {
+					const limit = 2;
+					const offset = 1;
 
-				const response = await requestTransactionStatistics(aggregateBy, { limit, offset });
-				expect(response).toMap(jsonRpcEnvelopeSchema);
-				const { result } = response;
-				expect(result).toMap(goodRequestSchema);
-				expect(result.data).toMap(transactionStatisticsSchema);
-				expect(result.data.timeline).toHaveLength(2);
-				result.data.timeline.forEach((timelineItem, i) => {
-					const date = moment(startOfUnitUtc).subtract(i + offset, aggregateBy);
-					expect(timelineItem).toMap(timelineItemSchema, {
-						date: date.format(dateFormat),
-						timestamp: date.unix(),
+					const response = await requestTransactionStatistics(aggregateBy, { limit, offset });
+					expect(response).toMap(jsonRpcEnvelopeSchema);
+					const { result } = response;
+					expect(result).toMap(goodRequestSchema);
+					expect(result.data).toMap(transactionStatisticsSchema);
+					expect(result.data.timeline).toHaveLength(2);
+					result.data.timeline.forEach((timelineItem, i) => {
+						const date = moment(startOfUnitUtc).subtract(i + offset, aggregateBy);
+						expect(timelineItem).toMap(timelineItemSchema, {
+							date: date.format(dateFormat),
+							timestamp: date.unix(),
+						});
 					});
-				});
-				expect(result.meta).toMap(metaSchema, {
-					limit,
-					offset,
-					dateFormat,
-				});
+					expect(result.meta).toMap(metaSchema, {
+						limit,
+						offset,
+						dateFormat,
+					});
+				}
 			});
 
 			it('returns invalid param error (-32602) if called with ?limit=101 or higher', async () => {
