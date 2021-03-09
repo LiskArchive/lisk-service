@@ -39,7 +39,7 @@ const getBlocks = async params => {
 		params = remParams;
 
 		params.generatorPublicKey = await Core.getPublicKeyByAny(address);
-		if (!params.address) return { status: NOT_FOUND, data: { error: `Account ID ${address} not found.` } };
+		if (!params.generatorPublicKey) return { status: NOT_FOUND, data: { error: `Account ID ${address} not found.` } };
 	}
 
 	const response = await Core.getBlocks(params);
