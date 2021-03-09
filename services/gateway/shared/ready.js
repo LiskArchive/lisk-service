@@ -25,20 +25,20 @@ const getReady = async broker => {
         lisk_delegates: 'core.delegates',
         lisk_peers: 'core.peers',
     };
-    const services = await BluebirdPromise.map(
-        Object.getOwnPropertyNames(coreMethods),
-        async key => {
-            const service = {};
-            const response = await broker.call(coreMethods[key]);
-            service[key] = !!response.data;
-            return service;
-        },
-    );
-    const isNotReady = services.some(value => !value);
-    if (isNotReady === true) {
-        return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
+    try {
+        const services = await BluebirdPromise.map(
+            Object.getOwnPropertyNames(coreMethods),
+            async key => {
+                const service = {};
+                const response = await broker.call(coreMethods[key]);
+                service[key] = !!response.data;
+                return service;
+            },
+        );
+        return Promise.resolve({ services: Object.assign({}, ...services) });
+    } catch (_) {
+        return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
     }
-    return Promise.resolve({ services: Object.assign({}, ...services) });
 };
 
 
