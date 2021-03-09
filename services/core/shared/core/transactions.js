@@ -34,8 +34,8 @@ const mergeTransactions = async (params) => {
 		meta: {},
 	};
 
-	const offset = params.offset || 0;
-	const limit = params.limit || 10;
+	const { offset, limit, ...remParams } = params;
+	params = remParams;
 
 	const pendingTxs = await getPendingTransactions(params);
 	const transactions = await coreApi.getTransactions(params);
