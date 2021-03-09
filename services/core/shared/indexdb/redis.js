@@ -24,7 +24,7 @@ const getDbInstance = async (
     collectionName,
     customIndexes = [],
     endpoint = config.endpoints.redis,
-    ) => {
+) => {
     const db = new redis(endpoint);
     const collection = config.db.collections[collectionName] || { indexes: [] };
     const { indexes } = collection;
@@ -54,11 +54,8 @@ const getDbInstance = async (
     });
 
     const find = async (params) => {
-        const offset = params.offset || 0;
-        const limit = params.limit || 10;
-
-        delete params.offset;
-        delete params.limit;
+        const { offset, limit, ...remParams } = params;
+        params = remParams;
 
         // TODO: Remove after PouchDB specific code is removed from the shared layer
         if (params.selector) params = params.selector;

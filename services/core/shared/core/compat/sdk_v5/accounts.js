@@ -149,8 +149,9 @@ const getAccounts = async params => {
 		};
 	}
 	if (params.id) {
-		params.address = params.id;
-		delete params.id;
+		const { id, ...remParams } = params;
+		params = remParams;
+		params.address = id;
 	}
 	if (params.address && typeof params.address === 'string') {
 		if (!(await confirmAddress(params.address))) return {};
@@ -161,11 +162,12 @@ const getAccounts = async params => {
 		}
 	}
 	if (params.addresses) {
+		const { addresses, ...remParams } = params;
+		params = remParams;
 		params.whereIn = {
 			property: 'address',
-			values: params.addresses,
+			values: addresses,
 		};
-		delete params.addresses;
 	}
 
 	const resultSet = await accountsDB.find(params);
