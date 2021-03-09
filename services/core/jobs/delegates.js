@@ -14,9 +14,14 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-
 const core = require('../shared/core');
-// const delegateCache = require('../shared/core/delegateCache');
+
+const setTimeoutPromise = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const sleepAndExec = async (fn, delay = 1000) => {
+	await setTimeoutPromise(delay);
+	return fn();
+};
 
 module.exports = [
 	{
@@ -26,7 +31,7 @@ module.exports = [
 		updateOnInit: true,
 		init: async () => {
 			logger.debug('Scheduling initial list update...');
-			await core.reloadDelegateCache();
+			await sleepAndExec(core.reloadDelegateCache);
 			await core.reloadNextForgersCache();
 		},
 		controller: () => {

@@ -114,6 +114,12 @@ const getPendingTransactions = async () => {
     return { data: transactions };
 };
 
+const postTransaction = async transaction => {
+    const apiClient = await getApiClient();
+    const response = await apiClient._channel.invoke('app:postTransaction', { transaction });
+    return response;
+};
+
 module.exports = {
     getBlockByID,
     getBlocksByIDs,
@@ -127,4 +133,5 @@ module.exports = {
     getPeers,
     getForgers,
     getPendingTransactions,
+    postTransaction,
 };
