@@ -28,8 +28,8 @@ const services = {
     lisk_accounts: Joi.boolean().required(),
     lisk_blocks: Joi.boolean().required(),
     lisk_transactions: Joi.boolean().required(),
-    lisk_peers: Joi.string().required(),
-    lisk_delegates: Joi.string().required(),
+    lisk_peers: Joi.boolean().required(),
+    lisk_delegates: Joi.boolean().required(),
 };
 
 const readySchema = {
