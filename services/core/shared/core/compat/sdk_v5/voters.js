@@ -142,7 +142,7 @@ const getVoters = async params => {
 
 	votes.meta.total = resultSet.length;
 	votes.meta.count = votes.data.votes.length;
-	votes.meta.offset = params.offset || 0;
+	votes.meta.offset = params.offset;
 	return votes;
 };
 

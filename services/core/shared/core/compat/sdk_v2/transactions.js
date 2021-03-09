@@ -53,7 +53,7 @@ const getTransactions = async params => {
 	}
 	transactions.meta.total = transactions.meta.count;
 	transactions.meta.count = transactions.data.length;
-	transactions.meta.offset = params.offset || 0;
+	transactions.meta.offset = params.offset;
 	return transactions;
 };
 

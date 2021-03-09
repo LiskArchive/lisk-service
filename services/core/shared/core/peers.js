@@ -79,7 +79,7 @@ const getPeers = async params => {
 
     const meta = {
         count: dataWithLocation.length,
-        offset: params.offset || 0,
+        offset: params.offset,
         total: peers.length,
     };
 

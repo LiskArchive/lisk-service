@@ -73,7 +73,7 @@ const getVotes = async params => {
 
 	voter.meta.total = voter.data.votes.length;
 	voter.meta.count = voter.data.votes.length;
-	voter.meta.offset = params.offset || 0;
+	voter.meta.offset = params.offset;
 	return voter;
 };
 

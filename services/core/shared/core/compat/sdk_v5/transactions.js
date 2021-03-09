@@ -245,7 +245,7 @@ const getTransactions = async params => {
 	}
 	transactions.meta.total = total;
 	transactions.meta.count = transactions.data.length;
-	transactions.meta.offset = params.offset || 0;
+	transactions.meta.offset = params.offset;
 	return transactions;
 };
 

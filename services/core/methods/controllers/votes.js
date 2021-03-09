@@ -36,8 +36,8 @@ const getVotes = async params => {
 	}
 
 	if (response.data.length === 0) {
-		response.meta.limit = params.limit || 10;
-		response.meta.offset = params.offset || 0;
+		response.meta.limit = params.limit;
+		response.meta.offset = params.offset;
 		response.meta.address = params.address;
 	}
 
