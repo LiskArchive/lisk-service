@@ -107,27 +107,34 @@ const normalizeTransaction = tx => {
 };
 
 const validateParams = async params => {
-	if (params.timestamp && params.timestamp.includes(':')) [params.fromTimestamp, params.toTimestamp] = params.timestamp.split(':');
-	delete params.timestamp;
+	if (params.timestamp && params.timestamp.includes(':')) {
+		const { timestamp, ...remParams } = params;
+		params = remParams;
+
+		[params.fromTimestamp, params.toTimestamp] = timestamp.split(':');
+	}
 
 	if (params.amount && params.amount.includes(':')) {
+		const { amount, ...remParams } = params;
+		params = remParams;
+
 		params.propBetween = {
 			property: 'amount',
-			from: params.amount.split(':')[0],
-			to: params.amount.split(':')[1],
+			from: amount.split(':')[0],
+			to: amount.split(':')[1],
 		};
-		delete params.amount;
 	}
 
 	if (params.fromTimestamp || params.toTimestamp) {
+		const { fromTimestamp, toTimestamp, ...remParams } = params;
+		params = remParams;
+
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'timestamp',
-			from: Number(params.fromTimestamp) || 0,
-			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
+			from: Number(fromTimestamp) || 0,
+			to: Number(toTimestamp) || Math.floor(Date.now() / 1000),
 		});
-		delete params.fromTimestamp;
-		delete params.toTimestamp;
 	}
 
 	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
@@ -135,27 +142,35 @@ const validateParams = async params => {
 	}
 
 	if (params.username) {
-		const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
-		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		const { username, ...remParams } = params;
+		params = remParams;
+
+		const [accountInfo] = await getIndexedAccountInfo({ username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
 		params.senderPublicKey = accountInfo.publicKey;
-		delete params.username;
 	}
 
 	if (params.senderIdOrRecipientId) {
-		params.senderId = params.senderIdOrRecipientId;
-		params.orWhere = { recipientId: params.senderIdOrRecipientId };
-		delete params.senderIdOrRecipientId;
+		const { senderIdOrRecipientId, ...remParams } = params;
+		params = remParams;
+
+		params.senderId = senderIdOrRecipientId;
+		params.orWhere = { recipientId: senderIdOrRecipientId };
 	}
 
 	if (params.senderId) {
-		const account = await getIndexedAccountInfo({ address: params.senderId });
+		const { senderId, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ address: senderId });
 		params.senderPublicKey = account.publicKey;
-		delete params.senderId;
 	}
 
 	if (params.search) {
-		const accounts = await getAccountsBySearch('username', params.search);
-		delete params.search;
+		const { search, ...remParams } = params;
+		params = remParams;
+
+		const accounts = await getAccountsBySearch('username', search);
 		const publicKeys = accounts.map(account => account.publicKey);
 		const addresses = await BluebirdPromise.map(
 			accounts,
@@ -171,15 +186,21 @@ const validateParams = async params => {
 	}
 
 	if (params.data) {
+		const { data, ...remParams } = params;
+		params = remParams;
+
 		params.search = {
 			property: 'data',
-			pattern: params.data,
+			pattern: data,
 		};
-		delete params.data;
 	}
 
-	if (params.moduleAssetName) params.moduleAssetId = resolveModuleAsset(params.moduleAssetName);
-	delete params.moduleAssetName;
+	if (params.moduleAssetName) {
+		const { moduleAssetName, ...remParams } = params;
+		params = remParams;
+
+		params.moduleAssetId = resolveModuleAsset(moduleAssetName);
+	}
 
 	return params;
 };
