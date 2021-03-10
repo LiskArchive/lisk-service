@@ -20,10 +20,10 @@ module.exports = {
     version: '2.0',
     swaggerApiPath: '/forgers',
     rpcMethod: 'get.forgers',
-	params: {
-		limit: { optional: true, min: 1, max: 103, type: 'number' },
-		offset: { optional: true, min: 0, type: 'number' },
-	},
+    params: {
+        limit: { optional: true, min: 1, max: 103, type: 'number', default: 103 },
+        offset: { optional: true, min: 0, type: 'number', default: 0 },
+    },
     tags: ['Forgers'],
     source: forgersSource,
     envelope,

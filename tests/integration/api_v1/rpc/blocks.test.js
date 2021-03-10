@@ -45,7 +45,7 @@ describe('Method get.blocks', () => {
 		[refDelegate] = (await request(wsRpcUrl, 'get.delegates', { limit: 1 })).result.data;
 	});
 
-	describe('is able to retireve block lists', () => {
+	describe('is able to retrieve block lists', () => {
 		it('no params -> ok', async () => {
 			const response = await getBlocks({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -85,7 +85,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('is able to retireve block details by block ID', () => {
+	describe('is able to retrieve block details by block ID', () => {
 		it('known block by block ID -> ok', async () => {
 			const response = await getBlocks({ id: refBlock.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -100,8 +100,7 @@ describe('Method get.blocks', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		// TODO
-		xit('too short block id -> -32602', async () => {
+		it('too short block id -> -32602', async () => {
 			const response = await getBlocks({ id: '' }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -121,7 +120,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('is able to retireve block details by height', () => {
+	describe('is able to retrieve block details by height', () => {
 		it('known block by height -> ok', async () => {
 			const response = await getBlocks({ height: refBlock.height });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -142,8 +141,7 @@ describe('Method get.blocks', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		// TODO
-		xit('empty height -> -32602 ', async () => {
+		it('empty height -> -32602 ', async () => {
 			const response = await getBlocks({ limit: '' }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -151,7 +149,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('is able to retireve block lists by account address', () => {
+	describe('is able to retrieve block lists by account address', () => {
 		it('block list by known account ID', async () => {
 			const response = await getBlocks({ address: refDelegate.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -161,8 +159,7 @@ describe('Method get.blocks', () => {
 			});
 		});
 
-		// TODO: Fails the CI pipeline
-		xit('block list by invalid account ID returns empty list', async () => {
+		it('block list by invalid account ID returns empty list', async () => {
 			const response = await getBlocks({ address: '122233344455667L' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -170,7 +167,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('is able to retireve block lists by account public key', () => {
+	describe('is able to retrieve block lists by account public key', () => {
 		it('known block by publickey -> ok', async () => {
 			const response = await getBlocks({ address: refDelegate.publicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -182,7 +179,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('is able to retireve block lists by account username', () => {
+	describe('is able to retrieve block lists by account username', () => {
 		it('known block by username -> ok', async () => {
 			const response = await getBlocks({ address: refDelegate.username });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -193,10 +190,11 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('is able to retireve block lists by timestamp', () => {
+	describe('is able to retrieve block lists by timestamp', () => {
 		it('Blocks with from...to timestamp -> ok', async () => {
-			const from = 1497855770;
-			const to = 1497855780;
+			const [fromBlock] = (await getBlocks({ height: refBlock.height - 1 })).result.data;
+			const from = fromBlock.timestamp;
+			const to = refBlock.timestamp;
 			const response = await getBlocks({ from, to });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -209,7 +207,7 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('retireve block lists by username', () => {
+	describe('retrieve block lists by username', () => {
 		it('retrieve block by username -> ok', async () => {
 			const { result } = await getBlocks({ username: 'cc001' });
 			result.data.forEach((blockData) => {

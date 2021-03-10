@@ -58,7 +58,7 @@ const getDataForAccounts = async params => {
 		response.data = accountDataCopy;
 		response.meta.count = accountDataCopy.length;
 		response.meta.total = accounts.meta.total;
-		response.meta.offset = parseInt(params.offset || 0, 10);
+		response.meta.offset = parseInt(params.offset, 10);
 	}
 
 	return response;

@@ -170,7 +170,7 @@ const getDelegates = async params => {
 		.slice(offset, offset + limit);
 
 	delegates.meta.count = delegates.data.length;
-	delegates.meta.offset = params.offset || 0;
+	delegates.meta.offset = params.offset;
 	delegates.meta.total = await getTotalNumberOfDelegates(params);
 
 	return parseToJSONCompatObj(delegates);
@@ -206,8 +206,7 @@ const getNextForgers = async params => {
 		meta: {},
 	};
 
-	const offset = params.offset || 0;
-	const limit = params.limit || 10;
+	const { offset, limit } = params;
 
 	forgers.data = nextForgers.slice(offset, offset + limit);
 

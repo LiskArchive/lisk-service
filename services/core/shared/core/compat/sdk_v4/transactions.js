@@ -88,31 +88,35 @@ const getTransactions = async params => {
 	if (!params.offset) params.offset = 0;
 
 	if (params.fromTimestamp || params.toTimestamp) {
+		const { fromTimestamp, toTimestamp, ...remParams } = params;
+		params = remParams;
+
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'unixTimestamp',
-			from: Number(params.fromTimestamp) || 0,
-			to: Number(params.toTimestamp) || Math.floor(Date.now() / 1000),
+			from: Number(fromTimestamp) || 0,
+			to: Number(toTimestamp) || Math.floor(Date.now() / 1000),
 		});
-		delete params.fromTimestamp;
-		delete params.toTimestamp;
 	}
 
 	if (params.minAmount || params.maxAmount) {
+		const { minAmount, maxAmount, ...remParams } = params;
+		params = remParams;
+
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'amount',
-			from: Number(params.minAmount) || 0,
-			to: Number(params.maxAmount) || MAX_TRANSACTION_AMOUNT,
+			from: Number(minAmount) || 0,
+			to: Number(maxAmount) || MAX_TRANSACTION_AMOUNT,
 		});
-		delete params.minAmount;
-		delete params.maxAmount;
 	}
 
 	if (params.senderIdOrRecipientId) {
-		params.senderId = params.senderIdOrRecipientId;
-		params.orWhere = { recipientId: params.senderIdOrRecipientId };
-		delete params.senderIdOrRecipientId;
+		const { senderIdOrRecipientId, ...remParams } = params;
+		params = remParams;
+
+		params.senderId = senderIdOrRecipientId;
+		params.orWhere = { recipientId: senderIdOrRecipientId };
 	}
 
 	if (params.type) {

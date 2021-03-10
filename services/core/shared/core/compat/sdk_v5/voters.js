@@ -82,17 +82,26 @@ const getVoters = async params => {
 		meta: {},
 	};
 
-	if (params.address) params.receivedAddress = params.address;
+	if (params.address) {
+		const { address, ...remParams } = params;
+		params = remParams;
+
+		params.receivedAddress = address;
+	}
 	if (params.username) {
-		const accountInfo = await getIndexedAccountInfo({ username: params.username });
-		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+		const { username, ...remParams } = params;
+		params = remParams;
+
+		const accountInfo = await getIndexedAccountInfo({ username });
+		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
 		params.receivedAddress = accountInfo.address;
 	}
-	if (params.publicKey) params.receivedAddress = extractAddressFromPublicKey(params.publicKey);
+	if (params.publicKey) {
+		const { publicKey, ...remParams } = params;
+		params = remParams;
 
-	delete params.address;
-	delete params.username;
-	delete params.publicKey;
+		params.receivedAddress = extractAddressFromPublicKey(publicKey);
+	}
 
 	const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
 	if (resultSet.length) {
@@ -133,7 +142,7 @@ const getVoters = async params => {
 
 	votes.meta.total = resultSet.length;
 	votes.meta.count = votes.data.votes.length;
-	votes.meta.offset = params.offset || 0;
+	votes.meta.offset = params.offset;
 	return votes;
 };
 
