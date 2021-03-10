@@ -15,13 +15,11 @@ module.exports = {
             req.$startTime = process.hrtime();
             req.$service = this;
             req.$next = next;
-
             res.$service = this;
             res.locals = res.locals || {};
 
             let requestID = req.headers['x-request-id'];
             if (req.headers['x-correlation-id']) requestID = req.headers['x-correlation-id'];
-
             const options = { requestID };
             if (this.settings.rootCallOptions) {
                 if (_.isPlainObject(this.settings.rootCallOptions)) {
@@ -49,6 +47,7 @@ module.exports = {
                 this.sendError(req, res, err);
             }
         },
+
         logResponse(req, res, data) {
             if (req.$route && !req.$route.logging) return;
 
@@ -67,6 +66,7 @@ module.exports = {
                 }
             }
         },
+
         async callAction(route, actionName, req, res, params) {
             const ctx = req.$ctx;
 
@@ -78,7 +78,6 @@ module.exports = {
                         if (this.settings.logRequestParams && this.settings.logRequestParams in this.logger) this.logger[this.settings.logRequestParams]('   Params:', params);
                     }
                 }
-
                 // Pass the `req` & `res` vars to ctx.params.
                 if (req.$alias && req.$alias.passReqResToParams) {
                     params.$req = req;
@@ -95,17 +94,16 @@ module.exports = {
 
                 // Send back the response
                 this.sendResponse(req, res, data, req.$endpoint.action);
-
                 if (route.logging) this.logResponse(req, res, data);
 
                 return true;
             } catch (err) {
                 /* istanbul ignore next */
                 if (!err) return; // Cancelling promise chain, no error
-
                 throw err;
             }
         },
+
         logRequest(req) {
             if (req.$route && !req.$route.logging) return;
             if (this.settings.enableHTTPRequest) {
