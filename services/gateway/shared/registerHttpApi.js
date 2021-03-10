@@ -183,7 +183,7 @@ const registerApi = (apiName, config) => {
 				return;
 			}
 
-			const params = transformRequest(routeAlias, dropEmptyProps(req.$params));
+			const params = transformRequest(routeAlias, dropEmptyProps(paramReport.valid));
 			req.$params = params;
 		},
 

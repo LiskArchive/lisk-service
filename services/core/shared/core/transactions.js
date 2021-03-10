@@ -34,11 +34,10 @@ const mergeTransactions = async (params) => {
 		meta: {},
 	};
 
-	const offset = params.offset || 0;
-	const limit = params.limit || 10;
+	const { offset, limit, ...remParams } = params;
+	params = remParams;
 
 	const pendingTxs = await getPendingTransactions(params);
-	delete params.includePending;
 	const transactions = await coreApi.getTransactions(params);
 	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(offset, offset + limit);
 
@@ -54,7 +53,11 @@ const getTransactions = async params => {
 		data: [],
 		meta: {},
 	};
-	const response = params.includePending
+
+	const { includePending, ...remParams } = params;
+	params = remParams;
+
+	const response = includePending
 		? await mergeTransactions(params)
 		: await coreApi.getTransactions(params);
 	if (response.data) transactions.data = response.data;

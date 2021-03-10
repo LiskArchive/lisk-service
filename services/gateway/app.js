@@ -20,8 +20,6 @@ const {
 	Libs,
 } = require('lisk-service-framework');
 
-const { MoleculerError } = require('moleculer').Errors;
-
 const SocketIOService = require('./shared/moleculer-io');
 
 const ApiService = Libs['moleculer-web'];
@@ -31,7 +29,8 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
-const { updateServiceStatus, getStatus, getReady } = require('./shared/status');
+const { getStatus } = require('./shared/status');
+const { getReady } = require('./shared/ready');
 const { genDocs } = require('./apis/http-version1/swagger/generateDocs');
 
 const mapper = require('./shared/customMapper');
@@ -70,15 +69,8 @@ broker.createService({
 	name: 'gateway',
 	actions: {
 		spec() { return genDocs(); },
-		status() { return getStatus(); },
-		async ready() {
-			const services = await getReady();
-			// isReady: returns true if any one of service is unavailable
-			const isReady = Object.keys(services.services).some(value => !services.services[value]);
-			if (isReady === true) {
-				return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
-			} return Promise.resolve(services);
-		},
+		status() { return getStatus(this.broker); },
+		ready() { return getReady(this.broker); },
 	},
 	settings: {
 		host,
@@ -140,7 +132,7 @@ broker.createService({
 	},
 });
 
-broker.waitForServices('core').then(() => updateServiceStatus());
+broker.waitForServices('core');
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);
