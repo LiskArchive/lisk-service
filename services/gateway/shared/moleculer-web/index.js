@@ -18,8 +18,9 @@ const bodyParser = require('body-parser');
 const serveStatic = require('serve-static');
 const isReadableStream = require('isstream').isReadable;
 
+const util = require('util');
+
 const { MoleculerError, MoleculerServerError, ServiceNotFoundError } = require('moleculer').Errors;
-const pkg = require('../../package.json');
 const { ServiceUnavailableError, NotFoundError, ForbiddenError, RateLimitExceeded, ERR_ORIGIN_NOT_ALLOWED } = require('./errors');
 
 const Alias = require('./alias');
@@ -65,7 +66,7 @@ module.exports = {
         routes: [],
 
         // Log each request (default to "info" level)
-        logRequest: 'debug',
+        logRequest: 'info',
 
         // Log the request ctx.params (default to "debug" level)
         logRequestParams: 'debug',
@@ -80,7 +81,7 @@ module.exports = {
         log4XXResponses: false,
 
         // Log 2XX response
-        log2XXResponses: 'debug',
+        log2XXResponses: 'info',
 
         // Use HTTP2 server (experimental)
         http2: false,
@@ -93,18 +94,6 @@ module.exports = {
 
         // CallOption for the root action `api.rest`
         rootCallOptions: null,
-    },
-
-    // Service's metadata
-    metadata: {
-        $category: 'gateway',
-        $description: 'Official API Gateway service',
-        $official: true,
-        $package: {
-            name: pkg.name,
-            version: pkg.version,
-            repo: pkg.repository ? pkg.repository.url : null,
-        },
     },
 
     actions: {
@@ -329,7 +318,7 @@ module.exports = {
             } catch (err) {
                 // don't log client side errors only it's configured
                 if (this.settings.log4XXResponses || (err && !_.inRange(err.code, 400, 500))) {
-                    this.logger.error('   Request error!', err.name, ':', err.message, '\n', err.stack, '\nData:', err.data);
+                    this.logger.error('   Request error!', err.name, ':', err.message, '\n', err.stack, '\nData:', util.inspect(err.data));
                 }
                 this.sendError(req, res, err);
             }
