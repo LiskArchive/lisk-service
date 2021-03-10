@@ -31,7 +31,7 @@ const {
 	metaSchema,
 } = require('../../../schemas/transactionStatistics.schema');
 
-const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const requestTransactionStatistics = async (mode, params) => request(wsRpcUrl, `get.transactions.statistics.${mode}`, params);
 
 describe('get.transactions.statistics.{aggregateBy}', () => {
