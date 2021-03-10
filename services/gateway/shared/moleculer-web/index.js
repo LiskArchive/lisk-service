@@ -65,7 +65,7 @@ module.exports = {
         routes: [],
 
         // Log each request (default to "info" level)
-        logRequest: 'info',
+        logRequest: 'debug',
 
         // Log the request ctx.params (default to "debug" level)
         logRequestParams: 'debug',
