@@ -17,14 +17,15 @@ const {
 	Microservice,
 	Logger,
 	LoggerConfig,
-	Libs,
+	// Libs,
 } = require('lisk-service-framework');
 
 const { MoleculerError } = require('moleculer').Errors;
 
 const SocketIOService = require('./shared/moleculer-io');
 
-const ApiService = Libs['moleculer-web'];
+// const ApiService = Libs['moleculer-web'];
+const ApiService = require('./shared/moleculer-web');
 
 const config = require('./config');
 const routes = require('./routes');
