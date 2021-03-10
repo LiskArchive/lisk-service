@@ -79,6 +79,9 @@ module.exports = {
         // If set to true, it will log 4xx client errors, as well
         log4XXResponses: false,
 
+        // Log 2XX response
+        log2XXResponses: 'debug',
+
         // Use HTTP2 server (experimental)
         http2: false,
 
@@ -902,7 +905,7 @@ module.exports = {
                 else time = kleur.grey(`[+${Number(duration).toFixed(3)} ms]`);
             }
 
-            if (this.settings.logResponse && this.settings.logResponse in this.logger) this.logger[this.settings.logResponse](`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(req.originalUrl)} ${time}`);
+            if (this.settings.log2XXResponses && this.settings.log2XXResponses in this.logger) this.logger[this.settings.log2XXResponses](`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(req.originalUrl)} ${time}`);
 
             /* istanbul ignore next */
             if (this.settings.logResponseData && this.settings.logResponseData in this.logger) {
