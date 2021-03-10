@@ -60,9 +60,11 @@ module.exports = {
                 else time = kleur.grey(`[+${Number(duration).toFixed(3)} ms]`);
             }
 
-            if (this.settings.log2XXResponses && this.settings.log2XXResponses in this.logger) this.logger[this.settings.log2XXResponses](`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(req.originalUrl)} ${time}`);
-            if (this.settings.logResponseData && this.settings.logResponseData in this.logger) {
-                this.logger[this.settings.logResponseData]('  Data:', data);
+            if (this.settings.enable2XXResponses) {
+                if (this.settings.log2XXResponses && this.settings.log2XXResponses in this.logger) this.logger[this.settings.log2XXResponses](`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(req.originalUrl)} ${time}`);
+                if (this.settings.logResponseData && this.settings.logResponseData in this.logger) {
+                    this.logger[this.settings.logResponseData]('  Data:', data);
+                }
             }
         },
         async callAction(route, actionName, req, res, params) {
@@ -71,8 +73,10 @@ module.exports = {
             try {
                 // Logging params
                 if (route.logging) {
-                    if (this.settings.logRequest && this.settings.logRequest in this.logger) this.logger[this.settings.logRequest](`   Call '${actionName}' action`);
-                    if (this.settings.logRequestParams && this.settings.logRequestParams in this.logger) this.logger[this.settings.logRequestParams]('   Params:', params);
+                    if (this.settings.enableHTTPRequest) {
+                        if (this.settings.logRequest && this.settings.logRequest in this.logger) this.logger[this.settings.logRequest](`   Call '${actionName}' action`);
+                        if (this.settings.logRequestParams && this.settings.logRequestParams in this.logger) this.logger[this.settings.logRequestParams]('   Params:', params);
+                    }
                 }
 
                 // Pass the `req` & `res` vars to ctx.params.
@@ -104,7 +108,9 @@ module.exports = {
         },
         logRequest(req) {
             if (req.$route && !req.$route.logging) return;
-            if (this.settings.logRequest && this.settings.logRequest in this.logger) this.logger[this.settings.logRequest](`=> ${req.method} ${req.url}`);
+            if (this.settings.enableHTTPRequest) {
+                if (this.settings.logRequest && this.settings.logRequest in this.logger) this.logger[this.settings.logRequest](`=> ${req.method} ${req.url}`);
+            }
         },
     },
 
