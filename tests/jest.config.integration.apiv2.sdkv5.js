@@ -18,6 +18,7 @@ module.exports = {
 	testMatch: [
 		'<rootDir>/integration/api_v2/http/*.test.js',
 		'<rootDir>/integration/api_v2/rpc/*.test.js',
+		'<rootDir>/integration/gateway/*.test.js',
 	],
 	testEnvironment: 'node',
 	testTimeout: 20000,

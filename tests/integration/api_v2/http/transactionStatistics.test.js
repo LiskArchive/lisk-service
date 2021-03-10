@@ -76,50 +76,54 @@ describe('Transaction statistics API', () => {
 				});
 
 				it(`returns stats for previous ${aggregateBy} if called with ?limit=1&offset=1`, async () => {
-					const limit = 1;
-					const offset = 1;
-					const startOfYesterday = moment(startOfUnitUtc).subtract(1, aggregateBy);
+					if (aggregateBy === 'day') {
+						const limit = 1;
+						const offset = 1;
+						const startOfYesterday = moment(startOfUnitUtc).subtract(1, aggregateBy);
 
-					const response = await api.get(`${endpoint}?limit=${limit}&offset=${offset}`);
-					expect(response).toMap(goodRequestSchema);
-					expect(response.data).toMap(transactionStatisticsSchema);
-					expect(response.data.timeline).toHaveLength(1);
-					response.data.timeline.forEach(timelineItem => expect(timelineItem)
-						.toMap(timelineItemSchema, {
-							date: startOfYesterday.format(dateFormat),
-							timestamp: startOfYesterday.unix(),
-						}));
-					expect(response.meta).toMap(metaSchema, {
-						limit,
-						offset,
-						dateFormat,
-						dateFrom: startOfYesterday.format(dateFormat),
-						dateTo: startOfYesterday.format(dateFormat),
-					});
+						const response = await api.get(`${endpoint}?limit=${limit}&offset=${offset}`);
+						expect(response).toMap(goodRequestSchema);
+						expect(response.data).toMap(transactionStatisticsSchema);
+						expect(response.data.timeline).toHaveLength(1);
+						response.data.timeline.forEach(timelineItem => expect(timelineItem)
+							.toMap(timelineItemSchema, {
+								date: startOfYesterday.format(dateFormat),
+								timestamp: startOfYesterday.unix(),
+							}));
+						expect(response.meta).toMap(metaSchema, {
+							limit,
+							offset,
+							dateFormat,
+							dateFrom: startOfYesterday.format(dateFormat),
+							dateTo: startOfYesterday.format(dateFormat),
+						});
+					}
 				});
 
 				it(`returns stats for previous ${aggregateBy} and the ${aggregateBy} before if called with ?limit=2&offset=1`, async () => {
-					const limit = 2;
-					const offset = 1;
+					if (aggregateBy === 'day') {
+						const limit = 2;
+						const offset = 1;
 
-					const response = await api.get(`${endpoint}?limit=${limit}&offset=${offset}`);
-					expect(response).toMap(goodRequestSchema);
-					expect(response.data).toMap(transactionStatisticsSchema);
-					expect(response.data.timeline).toBeInstanceOf(Array);
-					expect(response.data.timeline.length).toBeGreaterThanOrEqual(1);
-					expect(response.data.timeline.length).toBeLessThanOrEqual(limit);
-					response.data.timeline.forEach((timelineItem, i) => {
-						const date = moment(startOfUnitUtc).subtract(i + offset, aggregateBy);
-						expect(timelineItem).toMap(timelineItemSchema, {
-							date: date.format(dateFormat),
-							timestamp: date.unix(),
+						const response = await api.get(`${endpoint}?limit=${limit}&offset=${offset}`);
+						expect(response).toMap(goodRequestSchema);
+						expect(response.data).toMap(transactionStatisticsSchema);
+						expect(response.data.timeline).toBeInstanceOf(Array);
+						expect(response.data.timeline.length).toBeGreaterThanOrEqual(1);
+						expect(response.data.timeline.length).toBeLessThanOrEqual(limit);
+						response.data.timeline.forEach((timelineItem, i) => {
+							const date = moment(startOfUnitUtc).subtract(i + offset, aggregateBy);
+							expect(timelineItem).toMap(timelineItemSchema, {
+								date: date.format(dateFormat),
+								timestamp: date.unix(),
+							});
 						});
-					});
-					expect(response.meta).toMap(metaSchema, {
-						limit,
-						offset,
-						dateFormat,
-					});
+						expect(response.meta).toMap(metaSchema, {
+							limit,
+							offset,
+							dateFormat,
+						});
+					}
 				});
 
 				it('returns error 400 if called with ?limit=101 or higher', async () => {
@@ -128,7 +132,7 @@ describe('Transaction statistics API', () => {
 				});
 
 				// TODO implement this case in the API
-				it.todo('returns error 404 if called with ?offset=365 or higher as only last year is guarantied');
+				it.todo('returns error 404 if called with ?offset=365 or higher as only last year is guaranteed');
 			});
 		});
 
