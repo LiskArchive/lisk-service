@@ -44,8 +44,10 @@ const parseParams = (p) => {
 	}, {});
 
 	const validParamsList = Object.keys(p.swaggerParams).filter(o => typeof p.swaggerParams[o] !== 'undefined');
-	const validParams = validParamsList.reduce((acc, val) => {
-		acc[val] = p.inputParams[val];
+	const validParams = validParamsList.reduce((acc, param) => {
+		const defaultVal = p.swaggerParams[param];
+		const inputVal = p.swaggerParams[param];
+		acc[param] = Number.isNaN(Number(inputVal)) && !Number.isNaN(Number(defaultVal)) ? defaultVal : inputVal;
 		return acc;
 	}, {});
 
@@ -79,8 +81,15 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 
 	const parseAllParams = (routeParams, requestParams) => Object.keys(routeParams)
 		.reduce((acc, cur) => {
+			const paramDatatype = routeParams[cur].type;
 			if (routeParams[cur].default !== undefined) acc[cur] = routeParams[cur].default;
-			if (requestParams[cur] !== undefined) acc[cur] = requestParams[cur];
+			if (requestParams[cur] !== undefined) {
+				if (paramDatatype === 'number') {
+					acc[cur] = requestParams[cur] === '' ? acc[cur] : requestParams[cur];
+				} else {
+					acc[cur] = requestParams[cur];
+				}
+			}
 			return acc;
 		}, {});
 
