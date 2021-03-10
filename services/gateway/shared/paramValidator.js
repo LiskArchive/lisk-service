@@ -47,7 +47,8 @@ const parseParams = (p) => {
 	const validParams = validParamsList.reduce((acc, param) => {
 		const defaultVal = p.swaggerParams[param];
 		const inputVal = p.swaggerParams[param];
-		acc[param] = Number.isNaN(Number(inputVal)) && !Number.isNaN(Number(defaultVal)) ? defaultVal : inputVal;
+		acc[param] = Number.isNaN(Number(inputVal)) && !Number.isNaN(Number(defaultVal))
+			? defaultVal : inputVal;
 		return acc;
 	}, {});
 

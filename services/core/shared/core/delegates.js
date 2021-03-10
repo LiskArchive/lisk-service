@@ -206,8 +206,7 @@ const getNextForgers = async params => {
 		meta: {},
 	};
 
-	const offset = params.offset;
-	const limit = params.limit;
+	const { offset, limit } = params;
 
 	forgers.data = nextForgers.slice(offset, offset + limit);
 
