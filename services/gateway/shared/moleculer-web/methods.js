@@ -42,7 +42,7 @@ module.exports = {
                 }
             } catch (err) {
                 if (this.settings.log4XXResponses || (err && !_.inRange(err.code, 400, 500))) {
-                    this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: ${util.inspect(err.data)}`);
+                    this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: \nRequest params: ${util.inspect(req.$params)} \nRequest body: ${util.inspect(req.body)}`);
                 }
                 this.sendError(req, res, err);
             }
