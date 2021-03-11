@@ -23,6 +23,7 @@ const {
 const SocketIOService = require('./shared/moleculer-io');
 
 const ApiService = Libs['moleculer-web'];
+const { methods } = require('./shared/moleculer-web/methods');
 
 const config = require('./config');
 const routes = require('./routes');
@@ -94,6 +95,10 @@ broker.createService({
 
 		logRequestParams: 'debug',
 		logResponseData: 'debug',
+		logRequest: 'debug',
+		enableHTTPRequest: false,
+		log2XXResponses: 'debug',
+		enable2XXResponses: false,
 		httpServerTimeout: 30 * 1000, // ms
 		optimizeOrder: true,
 		routes,
@@ -115,6 +120,7 @@ broker.createService({
 			namespaces,
 		},
 	},
+	methods,
 	events: {
 		'block.change': (payload) => sendSocketIoEvent('update.block', payload),
 		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
