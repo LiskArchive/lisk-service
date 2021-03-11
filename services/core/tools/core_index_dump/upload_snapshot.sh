@@ -11,7 +11,7 @@ if [ -z $GZIP_CMD ]; then echo 'ERROR: The command gzip is not installed in the 
 NETWORK=$1
 VERSION=$($JQ_CMD -r .version ./../../package.json)
 
-if [ -z $NETWORK ]; then echo 'ERROR: Network is not defined (mainnet/testnet/betanet)'; exit 1; fi
+if [ -z $NETWORK ]; then echo 'Usage: upload_snapshot.sh <mainnet/testnet/betanet>'; exit 1; fi
 
 DUMP_FILE_PREFIX=index_snapshot
 

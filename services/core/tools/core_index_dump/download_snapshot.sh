@@ -3,7 +3,7 @@
 NETWORK=$1
 VERSION=$(jq -r .version ./../../package.json)
 
-if [ -z $NETWORK ]; then echo 'ERROR: Network is not defined (mainnet/testnet/betanet)'; exit 1; fi
+if [ -z $NETWORK ]; then echo 'Usage: download_snapshot.sh <mainnet/testnet/betanet>'; exit 1; fi
 
 echo "Looking for a snapshot for the version ${VERSION}-${NETWORK}"
 
