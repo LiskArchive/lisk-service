@@ -42,7 +42,7 @@ module.exports = {
                 }
             } catch (err) {
                 if (this.settings.log4XXResponses || (err && !_.inRange(err.code, 400, 500))) {
-                    this.logger.error('   Request error!', err.name, ':', err.message, '\n', err.stack, '\nData:', util.inspect(err.data));
+                    this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: ${util.inspect(err.data)}`);
                 }
                 this.sendError(req, res, err);
             }
@@ -60,7 +60,9 @@ module.exports = {
             }
 
             if (this.settings.enable2XXResponses) {
-                if (this.settings.log2XXResponses && this.settings.log2XXResponses in this.logger) this.logger[this.settings.log2XXResponses](`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(req.originalUrl)} ${time}`);
+                if (this.settings.log2XXResponses && this.settings.log2XXResponses in this.logger) {
+                    this.logger[this.settings.log2XXResponses](`<= ${this.coloringStatusCode(res.statusCode)} ${req.method} ${kleur.bold(req.originalUrl)} ${time}`);
+                }
                 if (this.settings.logResponseData && this.settings.logResponseData in this.logger) {
                     this.logger[this.settings.logResponseData]('  Data:', data);
                 }
@@ -74,8 +76,12 @@ module.exports = {
                 // Logging params
                 if (route.logging) {
                     if (this.settings.enableHTTPRequest) {
-                        if (this.settings.logRequest && this.settings.logRequest in this.logger) this.logger[this.settings.logRequest](`   Call '${actionName}' action`);
-                        if (this.settings.logRequestParams && this.settings.logRequestParams in this.logger) this.logger[this.settings.logRequestParams]('   Params:', params);
+                        if (this.settings.logRequest && this.settings.logRequest in this.logger) {
+                            this.logger[this.settings.logRequest](`   Call '${actionName}' action`);
+                        }
+                        if (this.settings.logRequestParams && this.settings.logRequestParams in this.logger) {
+                            this.logger[this.settings.logRequestParams]('   Params:', params);
+                        }
                     }
                 }
                 // Pass the `req` & `res` vars to ctx.params.
