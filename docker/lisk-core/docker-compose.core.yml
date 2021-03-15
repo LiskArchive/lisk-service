@@ -21,5 +21,3 @@ services:
 
 networks:
   local_lisk_core:
-
-
