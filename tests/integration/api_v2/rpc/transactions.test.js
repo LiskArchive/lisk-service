@@ -31,7 +31,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const requestTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-xdescribe('Method get.transactions', () => {
+describe('Method get.transactions', () => {
 	let refDelegate;
 	let refTransaction;
 	beforeAll(async () => {
