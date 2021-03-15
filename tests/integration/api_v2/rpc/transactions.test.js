@@ -32,12 +32,8 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const requestTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
 describe('Method get.transactions', () => {
-	let refDelegate;
 	let refTransaction;
 	beforeAll(async () => {
-		const response1 = await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 });
-		[refDelegate] = response1.result.data;
-
 		const response2 = await requestTransactions({ limit: 1 });
 		[refTransaction] = response2.result.data;
 	});
@@ -149,7 +145,9 @@ describe('Method get.transactions', () => {
 
 	describe('is able to retrieve list of transactions using recipient attributes', () => {
 		it('known recipient address -> ok', async () => {
-			const response = await requestTransactions({ recipient: refTransaction.asset.recipientAddress });
+			const response = await requestTransactions({
+				recipient: refTransaction.asset.recipientAddress,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
