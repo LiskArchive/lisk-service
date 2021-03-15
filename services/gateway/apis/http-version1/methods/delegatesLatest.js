@@ -22,8 +22,8 @@ module.exports = {
 	swaggerApiPath: '/delegates/latest_registrations',
 	tags: ['Delegates'],
 	params: {
-		limit: { optional: true, min: 1, max: 101, type: 'number' },
-		offset: { optional: true, min: 0, type: 'number' },
+		limit: { optional: true, min: 1, max: 101, type: 'number', default: 10 },
+		offset: { optional: true, min: 0, type: 'number', default: 0 },
 	},
 	get schema() {
 		const delegateSchema = {};

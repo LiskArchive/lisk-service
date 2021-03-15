@@ -34,8 +34,8 @@ module.exports = {
 		to: { optional: true, type: 'string', min: 1 },
 		block: { optional: true, type: 'string', min: 1 },
 		height: { optional: true, type: 'string', min: 1 },
-		limit: { optional: true, type: 'number', min: 1, max: 100 },
-		offset: { optional: true, type: 'number', min: 0 },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
 			optional: true,
 			type: 'string',
