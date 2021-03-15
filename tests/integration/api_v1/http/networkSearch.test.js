@@ -54,7 +54,9 @@ describe('GET /search', () => {
 		const q = refDelegate.username.slice(0, -1);
 		const response = await api.get(`${endpoint}?q=${q}`);
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toBeArrayOfSize(1);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
 		response.data.forEach(delegate => expect(delegate)
 			.toMap(searchItemSchema, { description: refDelegate.username, type: 'address' }));
 		expect(response.meta).toMap(metaSchema);

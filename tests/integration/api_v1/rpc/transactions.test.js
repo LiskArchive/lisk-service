@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import moment from 'moment';
-
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
@@ -193,8 +191,10 @@ describe('Method get.transactions', () => {
 
 	describe('is able to retrieve list of transactions using timestamps', () => {
 		it('from to -> ok', async () => {
-			const from = moment(refTransaction.timestamp).subtract(1, 'day').unix() * 10 ** 3;
-			const toTimestamp = refTransaction.timestamp;
+			const transactions = (await requestTransactions({})).result.data;
+			const numberOfTransactions = transactions.length;
+			const from = transactions[0].timestamp;
+			const toTimestamp = transactions[numberOfTransactions - 1].timestamp + 100;
 			const response = await requestTransactions({ from: String(from), to: String(toTimestamp) });
 
 			expect(response).toMap(jsonRpcEnvelopeSchema);

@@ -105,7 +105,8 @@ describe('Votes Compatibility API', () => {
 			const response = await api.get(`${accountEndpoint}/${refDelegate.address}/votes`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toEqual(10);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(account => expect(account).toMap(voteSchema));
 			expect(response.meta).toMap(voteMetaSchema);
 		});

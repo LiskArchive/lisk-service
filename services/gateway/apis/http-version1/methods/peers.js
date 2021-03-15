@@ -31,8 +31,8 @@ module.exports = {
 		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
 		height: { optional: true, type: 'number', integer: true },
 		broadhash: { optional: true, type: 'string' },
-		limit: { optional: true, min: 1, type: 'number', integer: true },
-		offset: { optional: true, min: 0, type: 'number', integer: true },
+		limit: { optional: true, min: 1, type: 'number', integer: true, default: 10 },
+		offset: { optional: true, min: 0, type: 'number', integer: true, default: 0 },
 		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'version:asc', 'version:desc'], default: 'height:desc' },
 	},
 	get schema() {

@@ -96,7 +96,8 @@ describe('Peers API', () => {
 			const response = await api.get(`${endpoint}?limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data).toBeArrayOfSize(100);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(peer => expect(peer).toMap(peerSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
