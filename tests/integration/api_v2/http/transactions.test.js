@@ -37,8 +37,15 @@ xdescribe('Transactions API', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
-		const response1 = await api.get(`${endpoint}?limit=1`);
-		[refTransaction] = response1.data;
+		let offset = -1;
+		do {
+			offset++;
+
+			// eslint-disable-next-line no-await-in-loop
+			const response1 = await api.get(`${endpoint}?limit=1&offset=${offset}`);
+			[refTransaction] = response1.data;
+		} while (!refTransaction.asset.recipientAddress);
+
 		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
 		[refDelegate] = response2.data;
 	});

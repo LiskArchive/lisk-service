@@ -31,13 +31,9 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const requestTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
 
-xdescribe('Method get.transactions', () => {
-	let refDelegate;
+describe('Method get.transactions', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response1 = await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 });
-		[refDelegate] = response1.result.data;
-
 		const response2 = await requestTransactions({ limit: 1 });
 		[refTransaction] = response2.result.data;
 	});
@@ -149,7 +145,9 @@ xdescribe('Method get.transactions', () => {
 
 	describe('is able to retrieve list of transactions using recipient attributes', () => {
 		it('known recipient address -> ok', async () => {
-			const response = await requestTransactions({ recipient: refDelegate.summary.address });
+			const response = await requestTransactions({
+				recipient: refTransaction.asset.recipientAddress,
+			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -157,7 +155,7 @@ xdescribe('Method get.transactions', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5, { recipient: refDelegate.summary.address }));
+				.toMap(transactionSchemaVersion5, { recipient: refTransaction.asset.recipientAddress }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
