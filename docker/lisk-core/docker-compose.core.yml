@@ -3,7 +3,7 @@ services:
   lisk-core:
     image: lisk/core:3.0.0-beta.4
     volumes:
-      - snapshots:/tmp/snapshots
+      - ./snapshots/:/tmp/snapshots
     ports:
       - 4000
       - 5001
