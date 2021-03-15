@@ -267,7 +267,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list within timestamps', () => {
 		it('transactions within set timestamps are returned', async () => {
-			const transactions = (await api.get(`${endpoint}`)).data;
+			const transactions = (await api.get(endpoint)).data;
 			const numberOfTransactions = transactions.length;
 			const from = transactions[0].timestamp;
 			const toTimestamp = transactions[numberOfTransactions - 1].timestamp + 100;
