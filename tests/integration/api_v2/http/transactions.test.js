@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+import { expect } from 'chai';
 import moment from 'moment';
 
 const config = require('../../../config');
@@ -208,17 +209,19 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by public key', () => {
 		it('existing sender public key -> ok', async () => {
-			const response = await api.get(`${endpoint}?sender=publickey:${refDelegate.summary.publicKey}`);
+			const response = await api.get(`${endpoint}?sender=publickey:${refTransaction.sender.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5, { senderPublicKey: refDelegate.summary.publicKey }));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.publicKey).toEqual(refTransaction.sender.publicKey);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('invalid sender query -> 404', async () => {
-			const response = await api.get(`${endpoint}?sender=${refDelegate.summary.publicKey}`, 404);
+			const response = await api.get(`${endpoint}?sender=${refTransaction.sender.publicKey}`, 404);
 			expect(response).toMap(notFoundSchema);
 		});
 
