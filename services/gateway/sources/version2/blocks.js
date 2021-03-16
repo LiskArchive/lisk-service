@@ -22,7 +22,7 @@ module.exports = {
 		blockId: '=,string',
 		height: '=,string',
 		address: 'generatorAddress,string',
-		publicKey: 'generatorPublicKey,string',
+		generatorPublicKey: '=,string',
 		username: 'generatorUsername,string',
 		timestamp: '=,string',
 		offset: '=,number',

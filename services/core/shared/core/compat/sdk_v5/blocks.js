@@ -204,56 +204,67 @@ const getBlocks = async params => {
 		meta: {},
 	};
 
-	const requestParams = { ...params };
-
-	if (requestParams.blockId) requestParams.id = requestParams.blockId;
-	if (!requestParams.limit) requestParams.limit = 10;
-	if (!requestParams.offset) requestParams.offset = 0;
-	if (!requestParams.sort) requestParams.sort = 'height:desc';
-
-	let accountInfo;
-	if (requestParams.publicKey) accountInfo = { publicKey: requestParams.publicKey };
-	if (requestParams.address) accountInfo = await getIndexedAccountInfo({
-		address: requestParams.address,
-	});
-	if (requestParams.username) accountInfo = await getIndexedAccountInfo({
-		username: requestParams.username,
-	});
-	if (accountInfo && accountInfo.publicKey) {
-		requestParams.generatorPublicKey = accountInfo.publicKey;
+	if (params.blockId) {
+		const { blockId, ...remParams } = params;
+		params = remParams;
+		params.id = blockId;
 	}
 
-	if (requestParams.height && typeof requestParams.height === 'string' && requestParams.height.includes(':')) {
-		const [from, to] = requestParams.height.split(':');
+	let accountInfo;
+	if (params.publicKey) {
+		const { publicKey, ...remParams } = params;
+		params = remParams;
+		accountInfo = { publicKey };
+	}
+
+	if (params.address) {
+		const { address, ...remParams } = params;
+		params = remParams;
+		accountInfo = await getIndexedAccountInfo({
+			address,
+		});
+	}
+	if (params.username) {
+		const { username, ...remParams } = params;
+		params = remParams;
+		accountInfo = await getIndexedAccountInfo({
+			username,
+		});
+	}
+
+	if (accountInfo && accountInfo.publicKey) {
+		params.generatorPublicKey = accountInfo.publicKey;
+	}
+
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
+		const { height, ...remParams } = params;
+		params = remParams;
+		const [from, to] = height.split(':');
 		if (from > to) return new Error('From height cannot be greater than to height');
-		if (!requestParams.propBetweens) requestParams.propBetweens = [];
-		requestParams.propBetweens.push({
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
 			property: 'height',
 			from,
 			to,
 		});
-		delete requestParams.height;
 	}
 
-	if (requestParams.timestamp && requestParams.timestamp.includes(':')) {
-		const [from, to] = requestParams.timestamp.split(':');
+	if (params.timestamp && params.timestamp.includes(':')) {
+		const { timestamp, ...remParams } = params;
+		params = remParams;
+		const [from, to] = timestamp.split(':');
 		if (from > to) return new Error('From timestamp cannot be greater than to timestamp');
-		if (!requestParams.propBetweens) requestParams.propBetweens = [];
-		requestParams.propBetweens.push({
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
 			property: 'timestamp',
 			from,
 			to,
 		});
-		delete requestParams.timestamp;
 	}
 
-	delete requestParams.blockId;
-	delete requestParams.publicKey;
-	delete requestParams.address;
-	delete requestParams.username;
-
-	if (isQueryFromIndex(requestParams)) {
-		const resultSet = await blocksDB.find(requestParams);
+	const requestParams = { ...params };
+	if (isQueryFromIndex(params)) {
+		const resultSet = await blocksDB.find(params);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
 
