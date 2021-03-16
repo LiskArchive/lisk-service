@@ -53,7 +53,10 @@ describe('Blocks API', () => {
 			const response = await api.get(`${endpoint}?blockId=${refBlock.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.id).toEqual(refBlock.id);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -62,7 +65,10 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
 			expect(response.data[0].height).toEqual(1);
-			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.height).toEqual(1);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
