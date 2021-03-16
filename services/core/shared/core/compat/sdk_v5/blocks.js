@@ -215,16 +215,12 @@ const getBlocks = async params => {
 	if (params.address) {
 		const { address, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({
-			address,
-		});
+		accountInfo = await getIndexedAccountInfo({ address });
 	}
 	if (params.username) {
 		const { username, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({
-			username,
-		});
+		accountInfo = await getIndexedAccountInfo({ username });
 	}
 
 	if (accountInfo && accountInfo.publicKey) {
