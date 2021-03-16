@@ -253,7 +253,7 @@ const getBlocks = async params => {
 		});
 	}
 
-	const requestParams = { ...params };
+	const total = await blocksDB.count(params);
 	if (isQueryFromIndex(params)) {
 		const resultSet = await blocksDB.find(params);
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
@@ -282,8 +282,8 @@ const getBlocks = async params => {
 
 	blocks.meta = {
 		count: blocks.data.length,
-		offset: requestParams.offset,
-		total: await blocksDB.count(requestParams),
+		offset: params.offset,
+		total,
 	};
 
 	return blocks;
