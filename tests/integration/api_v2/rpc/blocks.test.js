@@ -41,7 +41,7 @@ describe('Method get.blocks', () => {
 	let refBlock;
 	let refDelegate;
 	beforeAll(async () => {
-		[refBlock] = (await getBlocks({ limit: 1 })).result.data;
+		[refBlock] = (await getBlocks({ limit: 1, offset: 2 })).result.data;
 		[refDelegate] = (await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 })).result.data;
 	});
 

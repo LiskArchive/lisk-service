@@ -36,7 +36,7 @@ describe('Blocks API', () => {
 	let refBlock;
 	let refDelegate;
 	beforeAll(async () => {
-		[refBlock] = (await api.get(`${endpoint}?limit=1`)).data;
+		[refBlock] = (await api.get(`${endpoint}?limit=1&offset=2`)).data;
 		[refDelegate] = (await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`)).data;
 	});
 
