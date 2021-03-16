@@ -211,11 +211,6 @@ const getBlocks = async params => {
 	}
 
 	let accountInfo;
-	if (params.publicKey) {
-		const { publicKey, ...remParams } = params;
-		params = remParams;
-		accountInfo = { publicKey };
-	}
 
 	if (params.address) {
 		const { address, ...remParams } = params;
