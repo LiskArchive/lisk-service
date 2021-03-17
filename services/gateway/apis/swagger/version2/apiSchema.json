@@ -264,7 +264,10 @@
 			"description": "Source of the news among different data providers (Poloniex, Bittrex, etc.)",
 			"required": true,
 			"type": "string",
-			"enum": ["poloniex", "bittrex"]
+			"enum": [
+				"poloniex",
+				"bittrex"
+			]
 		},
 		"status": {
 			"name": "status",
@@ -272,35 +275,68 @@
 			"description": "Delegate account status",
 			"type": "string",
 			"minLength": 1
+		},
+		"isDelegate": {
+			"name": "isDelegate",
+			"in": "query",
+			"description": "Filter delegate accounts",
+			"type": "string",
+			"minLength": 1
 		}
 	},
 	"definitions": {
 		"Account": {
 			"type": "object",
-			"required": ["address"],
+			"required": [
+				"address"
+			],
 			"properties": {
-				"address": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+				"summary": {
+					"type": "object",
+					"properties": {
+						"address": {
+							"type": "string",
+							"format": "address",
+							"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+							"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+						},
+						"balance": {
+							"type": "string",
+							"example": "4448642000"
+						},
+						"publicKey": {
+							"type": "string",
+							"format": "publicKey",
+							"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+							"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+						},
+						"isDelegate": {
+							"type": "boolean",
+							"example": "false"
+						},
+						"isMultisignature": {
+							"type": "boolean",
+							"example": "false"
+						}
+					}
 				},
-				"publicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+				"token": {
+					"type": "object",
+					"properties": {
+						"balance": {
+							"type": "string",
+							"example": "4448642000"
+						}
+					}
 				},
-				"balance": {
-					"type": "string",
-					"example": "4448642000"
-				},
-				"nonce": {
-					"type": "string",
-					"example": "0"
-				},
-				"delegate": {
-					"$ref": "#/definitions/DelegateSub"
+				"sequence": {
+					"type": "object",
+					"properties": {
+						"nonce": {
+							"type": "string",
+							"example": "1"
+						}
+					}
 				},
 				"knowledge": {
 					"type": "object",
@@ -315,13 +351,19 @@
 						}
 					}
 				},
-				"multisignatureAccount": {
+				"keys": {
 					"type": "object",
 					"properties": {
 						"numberOfReqSignatures": {
 							"type": "integer",
 							"format": "int32",
 							"example": "1"
+						},
+						"mandatoryKeys": {
+							"type": "array"
+						},
+						"optionalKeys": {
+							"type": "array"
 						},
 						"members": {
 							"type": "array",
@@ -330,68 +372,50 @@
 								"properties": {
 									"address": {
 										"type": "string",
-										"example": "4935562234363081651L"
+										"format": "address",
+										"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+										"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
 									},
 									"publicKey": {
 										"type": "string",
-										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b"
-									},
-									"balance": {
-										"type": "integer",
-										"format": "int64",
-										"example": "4448642000"
+										"format": "publicKey",
+										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+										"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
 									},
 									"isMandatory": {
 										"type": "boolean",
-										"example": "true"
+										"example": "false"
+									}
+								}
+							}
+						},
+						"memberships": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"address": {
+										"type": "string",
+										"format": "address",
+										"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+										"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+									},
+									"publicKey": {
+										"type": "string",
+										"format": "publicKey",
+										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+										"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
 									}
 								}
 							}
 						}
 					}
 				},
-				"multisignatureMemberships": {
-					"type": "array",
-					"items": {
-						"type": "object",
-						"properties": {
-							"address": {
-								"type": "string",
-								"format": "address",
-								"example": "4935562234363081651L",
-								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
-							},
-							"balance": {
-								"type": "string",
-								"example": "4448642000"
-							},
-							"lifetime": {
-								"type": "integer",
-								"example": 48
-							},
-							"min": {
-								"type": "integer",
-								"example": 2
-							},
-							"publicKey": {
-								"type": "string",
-								"format": "publicKey",
-								"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
-							}
-						}
-					}
-				},
-				"transactionCount": {
+				"dpos": {
 					"type": "object",
 					"properties": {
-						"incoming": {
-							"type": "string",
-							"example": "216"
-						},
-						"outgoing": {
-							"type": "string",
-							"example": "1581"
+						"delegate": {
+							"$ref": "#/definitions/DelegateSub"
 						}
 					}
 				}
@@ -399,7 +423,10 @@
 		},
 		"AccountBasic": {
 			"type": "object",
-			"required": ["address", "publicKey"],
+			"required": [
+				"address",
+				"publicKey"
+			],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -544,7 +571,11 @@
 		},
 		"Delegate": {
 			"type": "object",
-			"required": ["address", "publicKey", "username"],
+			"required": [
+				"address",
+				"publicKey",
+				"username"
+			],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -621,23 +652,14 @@
 		},
 		"DelegateSub": {
 			"type": "object",
-			"required": ["username"],
+			"required": [
+				"username"
+			],
 			"properties": {
-				"missedBlocks": {
-					"type": "integer",
-					"example": 157,
-					"minimum": 1,
-					"description": ""
-				},
 				"producedBlocks": {
 					"type": "integer",
 					"example": 55222,
 					"minimum": 1,
-					"description": ""
-				},
-				"productivity": {
-					"type": "string",
-					"example": "99.72",
 					"description": ""
 				},
 				"rank": {
@@ -656,11 +678,6 @@
 					"example": "genesis_84",
 					"description": ""
 				},
-				"vote": {
-					"type": "string",
-					"example": "4630668157412954",
-					"description": ""
-				},
 				"isBanned": {
 					"type": "boolean",
 					"example": "false"
@@ -672,6 +689,64 @@
 				"consecutiveMissedBlocks": {
 					"type": "integer",
 					"example": 0
+				},
+				"status": {
+					"type": "string",
+					"example": "active",
+					"description": ""
+				},
+				"sentVotes": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"delegateAddress": {
+								"type": "string",
+								"format": "address",
+								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+							},
+							"amount": {
+								"type": "string",
+								"example": "150000000",
+								"description": "Amount of Lisk to be transferred in this transaction.\n"
+							}
+						}
+					}
+				},
+				"unlocking": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"delegateAddress": {
+								"type": "string",
+								"format": "address",
+								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+							},
+							"amount": {
+								"type": "string",
+								"example": "150000000",
+								"description": "Amount of Lisk to be transferred in this transaction.\n"
+							},
+							"unvoteHeight": {
+								"type": "object",
+								"properties": {
+									"start": {
+										"type": "string",
+										"example": "10",
+										"description": ""
+									},
+									"end": {
+										"type": "string",
+										"example": "1000",
+										"description": ""
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		},
@@ -838,7 +913,10 @@
 		},
 		"Peer": {
 			"type": "object",
-			"required": ["wsPort", "state"],
+			"required": [
+				"wsPort",
+				"state"
+			],
 			"properties": {
 				"ip": {
 					"type": "string",
@@ -966,7 +1044,11 @@
 		},
 		"NetworkStatus": {
 			"type": "object",
-			"required": ["broadhash", "nethash", "height"],
+			"required": [
+				"broadhash",
+				"nethash",
+				"height"
+			],
 			"properties": {
 				"height": {
 					"type": "integer",
@@ -1056,7 +1138,11 @@
 		},
 		"AccountsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1075,7 +1161,11 @@
 		},
 		"FeeEstimateEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1135,7 +1225,11 @@
 		},
 		"BlocksWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1154,7 +1248,11 @@
 		},
 		"DelegatesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1173,7 +1271,11 @@
 		},
 		"PeersWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1192,7 +1294,11 @@
 		},
 		"TransactionsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1211,7 +1317,11 @@
 		},
 		"TransactionsExportWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1230,7 +1340,11 @@
 		},
 		"TransactionsStatisticsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"$ref": "#/definitions/TransactionsStatistics"
@@ -1246,7 +1360,11 @@
 		"TransactionsStatistics": {
 			"type": "object",
 			"description": "Transactions statistics",
-			"required": ["timeline", "distributionByType", "distributionByAmount"],
+			"required": [
+				"timeline",
+				"distributionByType",
+				"distributionByAmount"
+			],
 			"properties": {
 				"timeline": {
 					"type": "array",
@@ -1294,7 +1412,11 @@
 		},
 		"VotesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of votes",
@@ -1313,7 +1435,12 @@
 		},
 		"Vote": {
 			"type": "object",
-			"required": ["address", "publicKey", "balance", "username"],
+			"required": [
+				"address",
+				"publicKey",
+				"balance",
+				"username"
+			],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -1342,7 +1469,10 @@
 		},
 		"Pagination": {
 			"type": "object",
-			"required": ["count", "offset"],
+			"required": [
+				"count",
+				"offset"
+			],
 			"properties": {
 				"count": {
 					"type": "integer",
@@ -1366,7 +1496,10 @@
 		},
 		"meta": {
 			"type": "object",
-			"required": ["count", "offset"],
+			"required": [
+				"count",
+				"offset"
+			],
 			"properties": {
 				"count": {
 					"type": "integer",
@@ -1408,7 +1541,11 @@
 		},
 		"NetworkStatistics": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1487,7 +1624,11 @@
 		},
 		"NewsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1514,7 +1655,10 @@
 		},
 		"News": {
 			"type": "object",
-			"required": ["content", "source"],
+			"required": [
+				"content",
+				"source"
+			],
 			"properties": {
 				"content": {
 					"type": "string",
@@ -1549,7 +1693,11 @@
 		},
 		"MarketPriceWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1597,7 +1745,11 @@
 		},
 		"MarketOrdersWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1635,7 +1787,10 @@
 		},
 		"MarketOrder": {
 			"type": "object",
-			"required": ["amount", "price"],
+			"required": [
+				"amount",
+				"price"
+			],
 			"properties": {
 				"amount": {
 					"type": "string",
@@ -1661,7 +1816,11 @@
 		},
 		"MarketCandlesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1789,7 +1948,11 @@
 		},
 		"MarketStatisticsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1944,7 +2107,11 @@
 		},
 		"FeatureNotImplemented": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object"
@@ -1974,8 +2141,7 @@
 			"contact": {
 				"email": "admin@lisk.io"
 			},
-			"description":
-			"# Lisk Service API Documentation\n\nThe Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media. \n\nThe main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller components. The overall strategy is to provide one component for one specific purpose. \n\nAs a purely backend project it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.\n\nThe API can be accessed by the `https://service.lisk.io`.\nIt is also possible to access the Testnet network by `https://testnet-service.lisk.io`\n\nThe Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.\n\n## Endpoint Logic\n\nThe logic of the endpoints are as follows:\n- the structure is always based on `/<root_entity>/<object>/<properties>`\n\n## Responses\n\nAll responses are returned in the JSON format - `application/json`.\n\nEach API request has the following structure:\n\n```\n{\n  \"data\": {}, // Contains the requested data\n  \"meta\": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`\n  \"links\": {} // Contains links to connected API calls from here, e.g. pagination links\n}\n```\n\n## The `account_id` Parameter\n\nUsers that want to retrieve account data can rely on its unique properties, namely the Account ID (ex. 1234567L), the public key or a registered delegate name.\n\n## The Date Format\n\nis different to the original Lisk Core API, as all timestamps used by the Lisk Service are now in the UNIX timestamp format. The blockchain dates are always expressed as integers, and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.\n",
+			"description": "# Lisk Service API Documentation\n\nThe Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media. \n\nThe main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller components. The overall strategy is to provide one component for one specific purpose. \n\nAs a purely backend project it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.\n\nThe API can be accessed by the `https://service.lisk.io`.\nIt is also possible to access the Testnet network by `https://testnet-service.lisk.io`\n\nThe Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.\n\n## Endpoint Logic\n\nThe logic of the endpoints are as follows:\n- the structure is always based on `/<root_entity>/<object>/<properties>`\n\n## Responses\n\nAll responses are returned in the JSON format - `application/json`.\n\nEach API request has the following structure:\n\n```\n{\n  \"data\": {}, // Contains the requested data\n  \"meta\": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`\n  \"links\": {} // Contains links to connected API calls from here, e.g. pagination links\n}\n```\n\n## The `account_id` Parameter\n\nUsers that want to retrieve account data can rely on its unique properties, namely the Account ID (ex. 1234567L), the public key or a registered delegate name.\n\n## The Date Format\n\nis different to the original Lisk Core API, as all timestamps used by the Lisk Service are now in the UNIX timestamp format. The blockchain dates are always expressed as integers, and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.\n",
 			"license": {
 				"name": "GPL v3.0",
 				"url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
@@ -2004,7 +2170,10 @@
 				"description": "Lisk Network utils"
 			}
 		],
-		"schemes": ["http", "https"],
+		"schemes": [
+			"http",
+			"https"
+		],
 		"paths": {}
 	}
 }
