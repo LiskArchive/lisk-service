@@ -15,6 +15,7 @@
  */
 const blocksSource = require('../../../sources/version2/blocks');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response } = require('../../swagger/utils');
 
 module.exports = {
 	version: '2.0',
@@ -36,6 +37,26 @@ module.exports = {
 			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'height:desc',
 		},
+	},
+	get schema() {
+		const blockSchema = {};
+		blockSchema[this.swaggerApiPath] = { get: {} };
+		blockSchema[this.swaggerApiPath].get.tags = this.tags;
+		blockSchema[this.swaggerApiPath].get.summary = 'Requests blocks data';
+		blockSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
+		blockSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of blocks',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/BlocksWithEnvelope',
+					},
+				},
+			},
+		};
+		Object.assign(blockSchema[this.swaggerApiPath].get.responses, response);
+		return blockSchema;
 	},
 	source: blocksSource,
 	envelope,

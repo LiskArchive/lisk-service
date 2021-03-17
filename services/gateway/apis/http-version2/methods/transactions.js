@@ -15,6 +15,7 @@
  */
 const transactionsSource = require('../../../sources/version2/transactions');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response } = require('../../swagger/utils');
 
 module.exports = {
 	version: '2.0',
@@ -45,6 +46,26 @@ module.exports = {
 			enum: ['amount:asc', 'amount:desc', 'timestamp:asc', 'timestamp:desc', 'nonce:asc', 'nonce:desc'],
 			default: 'timestamp:desc',
 		},
+	},
+	get schema() {
+		const transactionSchema = {};
+		transactionSchema[this.swaggerApiPath] = { get: {} };
+		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transactions data';
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of transactions with details',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/TransactionsWithEnvelope',
+					},
+				},
+			},
+		};
+		Object.assign(transactionSchema[this.swaggerApiPath].get.responses, response);
+		return transactionSchema;
 	},
 	source: transactionsSource,
 	envelope,

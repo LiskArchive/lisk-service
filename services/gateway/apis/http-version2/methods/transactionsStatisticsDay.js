@@ -15,6 +15,7 @@
  */
 const transactionsStatisticsDaySource = require('../../../sources/version2/transactionsStatisticsDay');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response } = require('../../swagger/utils');
 
 module.exports = {
 	version: '2.0',
@@ -24,6 +25,26 @@ module.exports = {
 	params: {
 		offset: { optional: true, type: 'number', default: 0, min: 0 },
 		limit: { optional: true, type: 'number', default: 10, min: 1, max: 100 },
+	},
+	get schema() {
+		const transactionSchema = {};
+		transactionSchema[this.swaggerApiPath] = { get: {} };
+		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transaction statistics day';
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of transactions statistics aggregated per day',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
+					},
+				},
+			},
+		};
+		Object.assign(transactionSchema[this.swaggerApiPath].get.responses, response);
+		return transactionSchema;
 	},
 	source: transactionsStatisticsDaySource,
 	envelope,

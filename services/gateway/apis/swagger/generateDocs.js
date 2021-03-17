@@ -18,7 +18,7 @@ const path = require('path');
 
 const { parameters, definitions, responses } = require('./version1/apiSchema');
 
-const genDocs = async () => {
+const genDocs = async (apiName) => {
 	const apiJson = {
 		swagger: '2.0',
 		info: {
@@ -66,7 +66,7 @@ const genDocs = async () => {
 		paths: {},
 	};
 
-	const services = Utils.requireAllJs(path.resolve(__dirname, '../http-version1/methods'));
+	const services = Utils.requireAllJs(path.resolve(__dirname, `../${apiName}/methods`));
 	const methods = Object.keys(services).reduce((acc, key) => {
 		const method = services[key];
 		return { ...acc, [key]: method.schema };
