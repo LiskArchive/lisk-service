@@ -150,8 +150,8 @@ const isQueryFromIndex = params => {
 	const sortOrder = params.sort ? params.sort.split(':')[1] : undefined;
 	const isLatestBlockFetch = (paramProps.length === 1 && params.limit === 1)
 		|| (paramProps.length === 2
-			&& ((params.limit == 1 && params.offset == 0)
-				|| (sortOrder === 'desc' && (params.limit == 1 || params.offset == 0))
+			&& ((params.limit === 1 && params.offset === 0)
+				|| (sortOrder === 'desc' && (params.limit === 1 || params.offset === 0))
 			))
 		|| (paramProps.length === 3 && params.limit === 1 && params.offset === 0 && sortOrder === 'desc');
 
