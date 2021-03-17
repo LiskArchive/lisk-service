@@ -781,69 +781,6 @@
 				}
 			}
 		},
-		"TransactionExport": {
-			"type": "object",
-			"required": [
-				"amount",
-				"blockId",
-				"date",
-				"fee",
-				"senderId",
-				"senderPublicKey",
-				"transactionId"
-			],
-			"properties": {
-				"amount": {
-					"type": "string",
-					"example": "150000000",
-					"description": "Amount of Lisk to be transferred in this transaction.\n"
-				},
-				"blockId": {
-					"type": "string",
-					"format": "id",
-					"minLength": 1,
-					"maxLength": 20,
-					"example": "6258354802676165798",
-					"description": "The Id of the block that this transaction is included in.\n"
-				},
-				"date": {
-					"type": "string",
-					"example": "2020-02-18T21:00:23.000Z",
-					"description": "Time when the transaction was created in ISO format.\n"
-				},
-				"fee": {
-					"type": "string",
-					"example": "0.1",
-					"description": "Transaction fee associated with this transaction in LSK.\n"
-				},
-				"recipientId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Recipients' account.\n"
-				},
-				"senderId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Senders' account.\n"
-				},
-				"senderPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The public key of the Senders' account.\n"
-				},
-				"transactionId": {
-					"type": "string",
-					"format": "id",
-					"example": "222675625422353767",
-					"minLength": 1,
-					"maxLength": 20,
-					"description": "Unique identifier of the transaction.\nDerived from the transaction signature.\n"
-				}
-			}
-		},
 		"Peer": {
 			"type": "object",
 			"required": [
@@ -1273,29 +1210,6 @@
 				}
 			}
 		},
-		"TransactionsExportWithEnvelope": {
-			"type": "object",
-			"required": [
-				"data",
-				"meta",
-				"links"
-			],
-			"properties": {
-				"data": {
-					"description": "List of blocks",
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/TransactionExport"
-					}
-				},
-				"meta": {
-					"type": "object"
-				},
-				"links": {
-					"type": "object"
-				}
-			}
-		},
 		"TransactionsStatisticsWithEnvelope": {
 			"type": "object",
 			"required": [
@@ -1494,6 +1408,25 @@
 					"format": "username",
 					"example": "liskhq",
 					"description": "Username of the delegate the queried account voted for."
+				}
+			}
+		},
+		"PostTransactionsWithEnvelope": {
+			"type":"object",
+			"required": [
+				"message",
+				"transactionId",
+				"links"
+			],
+			"properties": {
+				"message": {
+					"type": "string",
+					"example": "Transaction payload was successfully passed to the network node"
+				},
+				"transactionId": {
+					"type": "string",
+					"example": "123456789",
+					"description": "Transaction Id"
 				}
 			}
 		},
