@@ -36,20 +36,16 @@ module.exports = {
 		numberOfSignatures: '=,number',
 		mandatoryKeys: '=',
 		optionalKeys: '=',
-		members: [
-			{
-				address: '=,string',
-				publicKey: '=,string',
-				isMandatory: '=,boolean',
-			},
-		],
-		memberships: [
-			{
-				address: '=,string',
-				publicKey: '=,string',
-				username: '=,string',
-			},
-		],
+		members: ['multisignatureGroups.members', {
+			address: '=,string',
+			publicKey: '=,string',
+			isMandatory: '=,boolean',
+		}],
+		memberships: ['multisignatureMemberships', {
+			address: '=,string',
+			publicKey: '=,string',
+			isMandatory: '=,boolean',
+		}],
 	},
 	dpos: {
 		delegate: {
