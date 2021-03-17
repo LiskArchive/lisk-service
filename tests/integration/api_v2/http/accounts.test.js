@@ -34,7 +34,7 @@ const baseUrlV2 = `${baseUrl}/api/v2`;
 const endpoint = `${baseUrlV2}/accounts`;
 const accountEndpoint = `${baseUrlV2}/account`;
 
-xdescribe('Accounts API', () => {
+describe('Accounts API', () => {
 	let delegate;
 	beforeAll(async () => {
 		const response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
