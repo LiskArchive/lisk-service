@@ -31,7 +31,7 @@ const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
 const { getReady } = require('./shared/ready');
-const { genDocs } = require('./apis/http-version1/swagger/generateDocs');
+const { genDocs } = require('./apis/swagger/generateDocs');
 
 const mapper = require('./shared/customMapper');
 const delegateResponse = require('./apis/socketio-blockchain-updates/mappers/socketDelegate');

@@ -15,7 +15,7 @@
  */
 const votersSource = require('../../../sources/version1/voters');
 const envelope = require('../../../sources/version1/mappings/stdEnvelope');
-const { transformParams, response } = require('../../http-version1/swagger/utils');
+const { transformParams, response } = require('../../swagger/utils');
 
 module.exports = {
 	version: '2.0',

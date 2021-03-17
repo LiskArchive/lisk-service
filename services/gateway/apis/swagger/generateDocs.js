@@ -16,7 +16,7 @@
 const { Utils } = require('lisk-service-framework');
 const path = require('path');
 
-const { parameters, definitions, responses } = require('./apiSchema');
+const { parameters, definitions, responses } = require('./version1/apiSchema');
 
 const genDocs = async () => {
 	const apiJson = {
@@ -66,7 +66,7 @@ const genDocs = async () => {
 		paths: {},
 	};
 
-	const services = Utils.requireAllJs(path.resolve(__dirname, '../methods'));
+	const services = Utils.requireAllJs(path.resolve(__dirname, '../http-version1/methods'));
 	const methods = Object.keys(services).reduce((acc, key) => {
 		const method = services[key];
 		return { ...acc, [key]: method.schema };
