@@ -32,7 +32,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
 
-describe('Method get.accounts', () => {
+xdescribe('Method get.accounts', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		const response = await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 });
