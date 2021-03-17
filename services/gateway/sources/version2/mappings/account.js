@@ -65,9 +65,9 @@ module.exports = {
 			missedBlocks: '=,number',
 			producedBlocks: 'producedBlocks,number',
 			productivity: '=,string',
-			rank: '=,number',
-			status: '=,string',
-			rewards: '=,string',
+			rank: 'rank,number',
+			status: 'status,string',
+			rewards: 'rewards,string',
 		},
 		sentVotes: ['sentVotes', {
 			delegateAddress: '=,number',
