@@ -98,6 +98,15 @@
 			"minimum": 0,
 			"default": 0
 		},
+		"generatorAddress": {
+			"name": "address",
+			"in": "query",
+			"description": "Lisk account address",
+			"type": "string",
+			"format": "address",
+			"minLength": 1,
+			"maxLength": 22
+		},
 		"address": {
 			"name": "address",
 			"in": "query",
@@ -108,6 +117,14 @@
 			"maxLength": 22
 		},
 		"publickey": {
+			"name": "publickey",
+			"in": "query",
+			"description": "Public key to query",
+			"type": "string",
+			"format": "publicKey",
+			"minLength": 1
+		},
+		"generatorPublicKey": {
 			"name": "publickey",
 			"in": "query",
 			"description": "Public key to query",
@@ -132,8 +149,26 @@
 			"minLength": 1,
 			"maxLength": 20
 		},
+		"generatorUsername": {
+			"name": "username",
+			"in": "query",
+			"description": "Delegate username to query",
+			"type": "string",
+			"format": "username",
+			"minLength": 1,
+			"maxLength": 20
+		},
 		"block": {
 			"name": "block",
+			"in": "query",
+			"description": "Block id to query",
+			"type": "string",
+			"format": "id",
+			"minLength": 1,
+			"maxLength": 20
+		},
+		"blockId": {
+			"name": "blockId",
 			"in": "query",
 			"description": "Block id to query",
 			"type": "string",
@@ -235,6 +270,13 @@
 			"in": "query",
 			"description": "Starting UNIX timestamp",
 			"type": "integer",
+			"minimum": 0
+		},
+		"timestamp": {
+			"name": "timestamp",
+			"in": "query",
+			"description": "Range fromTimestamp:toTimestamp",
+			"type": "string",
 			"minimum": 0
 		},
 		"to": {
@@ -473,8 +515,8 @@
 					"type": "string",
 					"format": "id",
 					"minLength": 1,
-					"maxLength": 20,
-					"example": "6258354802676165798",
+					"maxLength": 64,
+					"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
 					"description": "Unique identifier of the block.\nDerived from the block signature.\n"
 				},
 				"height": {
@@ -494,12 +536,6 @@
 					"example": 85944650,
 					"description": "UNIX Timestamp"
 				},
-				"payloadLength": {
-					"type": "integer",
-					"example": 117,
-					"minimum": 0,
-					"description": "Bytesize of the payload hash."
-				},
 				"generatorAddress": {
 					"type": "string",
 					"example": "7749538982696555450L",
@@ -515,22 +551,17 @@
 					"example": "genesis_13",
 					"description": "Delegate registered name."
 				},
-				"payloadHash": {
+				"transactionRoot": {
 					"type": "string",
 					"format": "hex",
-					"example": "4e4d91be041e09a2e54bb7dd38f1f2a02ee7432ec9f169ba63cd1f193a733dd2",
+					"example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
 					"description": "Hash of the payload of the block.\nThe payload of a block is comprised of the transactions contained in the block.\nFor each type of transaction a different maximum size exists for the payload.\n"
 				},
-				"blockSignature": {
+				"signature": {
 					"type": "string",
 					"format": "signature",
 					"example": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
 					"description": "Derived from a SHA-256 hash of the block header,\nthat is signed by the private key of the delegate who forged the block.\n"
-				},
-				"confirmations": {
-					"type": "integer",
-					"example": 200,
-					"description": "Number of times that this Block has been confirmed by the network.\nBy forging a new block on a chain, all former blocks in the chain get confirmed by the forging delegate.\n"
 				},
 				"previousBlockId": {
 					"type": "string",
@@ -547,6 +578,11 @@
 					"type": "string",
 					"example": "150000000",
 					"description": "The total amount of Lisk transferred."
+				},
+				"totalBurnt": {
+					"type": "string",
+					"example": "0",
+					"description": "Total amount of LSK that have been burnt in this Block"
 				},
 				"totalFee": {
 					"type": "string",
@@ -566,7 +602,20 @@
 				"isFinal": {
 					"type": "boolean",
 					"example": "true"
+				},
+				"maxHeightPreviouslyForged": {
+					"type": "integer",
+					"example": 559421
+				},
+				"maxHeightPrevoted": {
+					"type": "integer",
+					"example": 559434
+				},
+				"seedReveal": {
+					"type": "string",
+					"example": "602f24d8b0e99d7d700430447df38dc9"
 				}
+
 			}
 		},
 		"Delegate": {
