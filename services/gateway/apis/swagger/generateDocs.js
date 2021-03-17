@@ -18,7 +18,7 @@ const path = require('path');
 
 const { parameters, definitions, responses } = require('./version1/apiSchema');
 
-const genDocs = async (apiName) => {
+const createApiDocs = async (apiName) => {
 	const apiJson = {
 		swagger: '2.0',
 		info: {
@@ -80,6 +80,17 @@ const genDocs = async (apiName) => {
 	apiJson.responses = responses;
 	return apiJson;
 };
+
+const genDocs = (ctx) => {
+	let swaggerDoc;
+	if (ctx.endpoint.baseUrl === '/api/v1') {
+		swaggerDoc = createApiDocs('http-version1');
+	} if (ctx.endpoint.baseUrl === '/api/v2') {
+		swaggerDoc = createApiDocs('http-version2');
+	}
+	return swaggerDoc;
+};
+
 module.exports = {
 	genDocs,
 };

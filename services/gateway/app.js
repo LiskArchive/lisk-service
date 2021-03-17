@@ -68,15 +68,7 @@ broker.createService({
 	mixins: [ApiService, SocketIOService],
 	name: 'gateway',
 	actions: {
-		spec(ctx) {
-			let swaggerDoc;
-			if (ctx.endpoint.baseUrl === '/api/v1') {
-				swaggerDoc = genDocs('http-version1');
-			} if (ctx.endpoint.baseUrl === '/api/v2') {
-				swaggerDoc = genDocs('http-version2');
-			}
-			return swaggerDoc;
-		},
+		spec(ctx) { return genDocs(ctx); },
 		status() { return getStatus(this.broker); },
 		ready() { return getReady(this.broker); },
 	},
