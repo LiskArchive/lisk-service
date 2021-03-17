@@ -1981,7 +1981,7 @@
 				"url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
 			}
 		},
-		"basePath": "/api/v1",
+		"basePath": "/api/v2",
 		"tags": [
 			{
 				"name": "Accounts",
@@ -1990,10 +1990,6 @@
 			{
 				"name": "Blocks",
 				"description": "Lisk Network block API calls"
-			},
-			{
-				"name": "Delegates",
-				"description": "Lisk Network delegate API calls"
 			},
 			{
 				"name": "Peers",

@@ -16,56 +16,10 @@
 const { Utils } = require('lisk-service-framework');
 const path = require('path');
 
-const { parameters, definitions, responses } = require('./version1/apiSchema');
+const apiJsonVersion1 = require('./version1/apiSchema');
+const apiJsonVersion2 = require('./version2/apiSchema');
 
-const createApiDocs = async (apiName) => {
-	const apiJson = {
-		swagger: '2.0',
-		info: {
-			title: 'Lisk Service API',
-			version: '1.0',
-			contact: {
-				email: 'admin@lisk.io',
-			},
-			description:
-				"# Lisk Service API Documentation\n\nThe Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media. \n\nThe main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller components. The overall strategy is to provide one component for one specific purpose. \n\nAs a purely backend project it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.\n\nThe API can be accessed by the `https://service.lisk.io`.\nIt is also possible to access the Testnet network by `https://testnet-service.lisk.io`\n\nThe Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.\n\n## Endpoint Logic\n\nThe logic of the endpoints are as follows:\n- the structure is always based on `/<root_entity>/<object>/<properties>`\n\n## Responses\n\nAll responses are returned in the JSON format - `application/json`.\n\nEach API request has the following structure:\n\n```\n{\n  \"data\": {}, // Contains the requested data\n  \"meta\": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`\n  \"links\": {} // Contains links to connected API calls from here, e.g. pagination links\n}\n```\n\n## The `account_id` Parameter\n\nUsers that want to retrieve account data can rely on its unique properties, namely the Account ID (ex. 1234567L), the public key or a registered delegate name.\n\n## The Date Format\n\nis different to the original Lisk Core API, as all timestamps used by the Lisk Service are now in the UNIX timestamp format. The blockchain dates are always expressed as integers, and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.\n",
-			license: {
-				name: 'GPL v3.0',
-				url: 'https://www.gnu.org/licenses/gpl-3.0.en.html',
-			},
-		},
-		// host: localhost:9901
-		basePath: '/api/v1',
-		tags: [
-			{
-				name: 'Accounts',
-				description: 'Lisk Network account API calls',
-			},
-			{
-				name: 'Blocks',
-				description: 'Lisk Network block API calls',
-			},
-			{
-				name: 'Delegates',
-				description: 'Lisk Network delegate API calls',
-			},
-			{
-				name: 'Peers',
-				description: 'Lisk Network peer API calls',
-			},
-			{
-				name: 'Transactions',
-				description: 'Lisk Network transaction API calls',
-			},
-			{
-				name: 'Network',
-				description: 'Lisk Network utils',
-			},
-		],
-		schemes: ['http', 'https'],
-		paths: {},
-	};
-
+const createApiDocs = async (apiName, apiJson) => {
 	const services = Utils.requireAllJs(path.resolve(__dirname, `../${apiName}/methods`));
 	const methods = Object.keys(services).reduce((acc, key) => {
 		const method = services[key];
@@ -75,18 +29,23 @@ const createApiDocs = async (apiName) => {
 	apiSchemas.forEach((key) => {
 		Object.assign(apiJson.paths, methods[key]);
 	});
-	apiJson.parameters = parameters;
-	apiJson.definitions = definitions;
-	apiJson.responses = responses;
 	return apiJson;
 };
 
 const genDocs = (ctx) => {
 	let swaggerDoc;
 	if (ctx.endpoint.baseUrl === '/api/v1') {
-		swaggerDoc = createApiDocs('http-version1');
+		const { apiJson } = apiJsonVersion1;
+		apiJson.parameters = apiJsonVersion1.parameters;
+		apiJson.definitions = apiJsonVersion1.definitions;
+		apiJson.responses = apiJsonVersion1.responses;
+		swaggerDoc = createApiDocs('http-version1', apiJson);
 	} else if (ctx.endpoint.baseUrl === '/api/v2') {
-		swaggerDoc = createApiDocs('http-version2');
+		const { apiJson } = apiJsonVersion2;
+		apiJson.parameters = apiJsonVersion2.parameters;
+		apiJson.definitions = apiJsonVersion2.definitions;
+		apiJson.responses = apiJsonVersion2.responses;
+		swaggerDoc = createApiDocs('http-version2', apiJson);
 	}
 	return swaggerDoc;
 };
