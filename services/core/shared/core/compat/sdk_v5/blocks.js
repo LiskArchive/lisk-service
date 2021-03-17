@@ -160,12 +160,12 @@ const indexNewBlocks = async blocks => {
 		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
-			indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+			await indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 			// Update block finality status
 			const finalizedBlockHeight = getFinalizedHeight();
 			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 });
-			updateBlockIndexQueue.add('updateBlockIndexQueue', {
+			await updateBlockIndexQueue.add('updateBlockIndexQueue', {
 				blocks: nonFinalBlocks
 					.filter(b => b.height <= finalizedBlockHeight)
 					.map(b => ({ ...b, isFinal: true })),
