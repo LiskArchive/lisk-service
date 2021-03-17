@@ -55,8 +55,8 @@ module.exports = {
 		delegate: {
 			username: '=,string',
 			pomHeights: ['pomHeights', {
-				start: '=,string',
-				end: '=,string',
+				start: '=,number',
+				end: '=,number',
 			}],
 			consecutiveMissedBlocks: '=,number',
 			lastForgedHeight: '=,number',
@@ -65,11 +65,18 @@ module.exports = {
 			missedBlocks: '=,number',
 			producedBlocks: 'producedBlocks,number',
 			productivity: '=,string',
-			rank: 'rank,number',
-			status: 'status,string',
-			rewards: 'rewards,string',
+			rank: '=,number',
+			status: '=,string',
+			rewards: '=,string',
 		},
-		sentVotes: '=',
-		unlocking: '=',
+		sentVotes: ['sentVotes', {
+			delegateAddress: '=,number',
+			amount: '=,number',
+		}],
+		unlocking: ['unlocking', {
+			delegateAddress: '=,number',
+			amount: '=,number',
+			unvoteHeight: '=,number',
+		}],
 	},
 };
