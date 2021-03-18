@@ -236,14 +236,6 @@
 			"type": "string",
 			"minLength": 1
 		},
-		"type": {
-			"name": "type",
-			"in": "query",
-			"description": "Transaction type (0-12)",
-			"type": "integer",
-			"minimum": 0,
-			"maximum": 12
-		},
 		"transactionData": {
 			"name": "data",
 			"in": "query",
@@ -251,24 +243,24 @@
 			"type": "string",
 			"minLength": 1
 		},
-		"min": {
-			"name": "min",
+		"moduleAssetId": {
+			"name": "moduleAssetId",
 			"in": "query",
-			"description": "Minimum transaction amount in Beddows",
-			"type": "integer",
-			"minimum": 0
+			"description": "Combination of module:asset Id",
+			"type": "string",
+			"minLength": 1
 		},
-		"max": {
-			"name": "max",
+		"moduleAssetName": {
+			"name": "moduleAssetName",
 			"in": "query",
-			"description": "Maximum transaction amount in Beddows",
-			"type": "integer",
-			"minimum": 0
+			"description": "Combination of module:asset Name",
+			"type": "string",
+			"minLength": 1
 		},
-		"from": {
-			"name": "from",
+		"amount": {
+			"name": "amount",
 			"in": "query",
-			"description": "Starting UNIX timestamp",
+			"description": "Amount range of from:to amount",
 			"type": "integer",
 			"minimum": 0
 		},
@@ -331,6 +323,21 @@
 			"description": "Binary payload",
 			"type": "string",
 			"minLength": 1
+		},
+		"data":{
+			"name": "data",
+			"in": "query",
+			"description": "Query by asset data",
+			"type": "string",
+			"minLength": 1
+		},
+		"includePending":{
+			"name": "includePending",
+			"in": "query",
+			"description": "Retrieve pending transactions",
+			"type": "boolean",
+			"minLength": 1,
+			"default": false 
 		}
 	},
 	"definitions": {
@@ -595,12 +602,11 @@
 					"type": "string",
 					"example": "602f24d8b0e99d7d700430447df38dc9"
 				}
-
 			}
 		},
 		"forgers": {
 			"type": "object",
-			"properties":{
+			"properties": {
 				"username": {
 					"type": "string",
 					"example": "genesis_84",
@@ -741,80 +747,82 @@
 			"type": "object",
 			"required": [
 				"id",
-				"type",
-				"amount",
+				"moduleAssetId",
+				"moduleAssetName",
 				"fee",
-				"senderPublicKey",
-				"recipientId",
-				"timestamp",
-				"asset",
-				"signature"
+				"nonce",
+				"block",
+				"sender",
+				"signatures"
 			],
 			"properties": {
 				"id": {
 					"type": "string",
 					"format": "id",
-					"example": "222675625422353767",
+					"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
 					"minLength": 1,
-					"maxLength": 20,
+					"maxLength": 64,
 					"description": "Unique identifier of the transaction.\nDerived from the transaction signature.\n"
 				},
-				"amount": {
+				"moduleAssetId": {
 					"type": "string",
-					"example": "150000000",
-					"description": "Amount of Lisk to be transferred in this transaction.\n"
+					"example": "2:0",
+					"description": "Combination of transaction module:asset Id.\n"
+				},
+				"moduleAssetName": {
+					"type": "string",
+					"example": "token:transfer",
+					"description": "Combination of transaction module:asset Name.\n"
 				},
 				"fee": {
 					"type": "string",
 					"example": "1000000",
 					"description": "Transaction fee associated with this transaction.\n"
 				},
-				"type": {
-					"type": "integer",
-					"minimum": 0,
-					"maximum": 7,
-					"description": "Describes the Transaction type.\n"
-				},
-				"height": {
-					"type": "integer",
-					"minimum": 1,
-					"example": 8350681,
-					"description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
-				},
 				"nonce": {
 					"type": "string",
 					"example": "0"
 				},
-				"blockId": {
-					"type": "string",
-					"format": "id",
-					"minLength": 1,
-					"maxLength": 20,
-					"example": "6258354802676165798",
-					"description": "The Id of the block, included in this transaction.\n"
+				"block": {
+					"type": "object",
+					"properties": {
+						"id": {
+							"type": "string",
+							"format": "id",
+							"minLength": 1,
+							"maxLength": 64,
+							"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+							"description": "Unique identifier of the block.\nDerived from the block signature.\n"
+						},
+						"height": {
+							"type": "integer",
+							"minimum": 1,
+							"example": 8350681,
+							"description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
+						},
+						"timestamp": {
+							"type": "integer",
+							"example": 1613323667,
+							"description": "UNIX Timestamp"
+						}
+					}
 				},
-				"timestamp": {
-					"type": "integer",
-					"example": 28227090,
-					"description": "Time when the transaction was created.\nUNIX Timestamp.\n"
-				},
-				"senderId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Senders' account.\n"
-				},
-				"senderPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The public key of the Senders' account.\n"
-				},
-				"recipientId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Recipients' account.\n"
+				"sender": {
+					"type": "object",
+					"properties": {
+						"publicKey": {
+							"type": "string",
+							"format": "publicKey",
+							"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+							"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+						},
+						"address": {
+							"type": "string",
+							"format": "address",
+							"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+							"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+						}
+					}
 				},
 				"signatures": {
 					"type": "array",
@@ -825,13 +833,25 @@
 						"description": "If the transaction is a multisignature transaction, all signatures of the members of the corresponding multisignature group will be listed here."
 					}
 				},
-				"confirmations": {
-					"type": "integer",
-					"minimum": 0,
-					"description": "Number of times that this transaction has been confirmed by the network.\nBy forging a new block on a chain, all former blocks and their contained transactions in the chain get confirmed by the forging delegate.\n"
-				},
 				"asset": {
-					"type": "object"
+					"type": "object",
+					"properties": {
+						"amount": {
+							"type": "string",
+							"example": "100003490",
+							"description": "Amount of Lisk to be transferred in this transaction.\n"
+						},
+						"recipientAddress": {
+							"type": "string",
+							"format": "address",
+							"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+							"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+						},
+						"data": {
+							"type": "string",
+							"example": "test"
+						}
+					}
 				}
 			}
 		},
@@ -1466,7 +1486,7 @@
 			}
 		},
 		"message": {
-			"type":"string",
+			"type": "string",
 			"example": "Transaction payload was successfully passed to the network node"
 		},
 		"transactionId": {
@@ -2072,7 +2092,7 @@
 		"swagger": "2.0",
 		"info": {
 			"title": "Lisk Service API",
-			"version": "1.0",
+			"version": "2.0",
 			"contact": {
 				"email": "admin@lisk.io"
 			},
