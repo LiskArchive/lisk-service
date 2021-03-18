@@ -25,7 +25,7 @@ module.exports = {
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
 		networkSchema[this.swaggerApiPath].get.summary = 'Requests network status';
-		networkSchema[this.swaggerApiPath].get.description = 'Returns network status';
+		networkSchema[this.swaggerApiPath].get.description = 'Returns network status\n RPC=> get.network.status';
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'network status info',

@@ -43,7 +43,7 @@ module.exports = {
 		blockSchema[this.swaggerApiPath] = { get: {} };
 		blockSchema[this.swaggerApiPath].get.tags = this.tags;
 		blockSchema[this.swaggerApiPath].get.summary = 'Requests blocks data';
-		blockSchema[this.swaggerApiPath].get.description = 'Returns block data';
+		blockSchema[this.swaggerApiPath].get.description = 'Returns block data\n RPC=> get.blocks';
 		blockSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
 		blockSchema[this.swaggerApiPath].get.responses = {
 			200: {

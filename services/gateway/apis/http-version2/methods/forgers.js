@@ -31,7 +31,7 @@ module.exports = {
 		forgerSchema[this.swaggerApiPath] = { get: {} };
 		forgerSchema[this.swaggerApiPath].get.tags = this.tags;
 		forgerSchema[this.swaggerApiPath].get.summary = 'Requests next forgers list';
-		forgerSchema[this.swaggerApiPath].get.description = 'Returns forgers list';
+		forgerSchema[this.swaggerApiPath].get.description = 'Returns forgers list \n RPC=> get.forgers';
 		forgerSchema[this.swaggerApiPath].get.parameters = transformParams('forgers', this.params);
 		forgerSchema[this.swaggerApiPath].get.responses = {
 			200: {

@@ -30,7 +30,7 @@ module.exports = {
 		transactionSchema[this.swaggerApiPath] = { post: {} };
 		transactionSchema[this.swaggerApiPath].post.tags = this.tags;
 		transactionSchema[this.swaggerApiPath].post.summary = 'Post transactions';
-		transactionSchema[this.swaggerApiPath].post.description = 'Post transactions and return transactionID';
+		transactionSchema[this.swaggerApiPath].post.description = 'Post transactions and return transactionID\n RPC=> post.transactions';
 		transactionSchema[this.swaggerApiPath].post.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].post.responses = {
 			200: {

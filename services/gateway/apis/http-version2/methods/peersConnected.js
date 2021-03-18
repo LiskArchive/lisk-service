@@ -25,7 +25,7 @@ module.exports = {
 		peerSchema[this.swaggerApiPath] = { get: {} };
 		peerSchema[this.swaggerApiPath].get.tags = this.tags;
 		peerSchema[this.swaggerApiPath].get.summary = 'Requests connected peers data';
-		peerSchema[this.swaggerApiPath].get.description = 'Returns connected peers data';
+		peerSchema[this.swaggerApiPath].get.description = 'Returns connected peers data\n RPC=> get.peers.connected';
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of connected peers',
