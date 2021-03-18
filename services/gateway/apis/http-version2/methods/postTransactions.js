@@ -35,9 +35,14 @@ module.exports = {
 			200: {
 				description: 'Broadcast transaction',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/PostTransactionsWithEnvelope',
+					type: 'object',
+					properties: {
+						message: {
+							$ref: '#/definitions/message',
+						},
+						transacitionId: {
+							$ref: '#/definitions/transactionId',
+						},
 					},
 				},
 			},

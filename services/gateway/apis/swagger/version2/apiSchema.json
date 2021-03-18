@@ -1418,24 +1418,14 @@
 				}
 			}
 		},
-		"PostTransactionsWithEnvelope": {
-			"type":"object",
-			"required": [
-				"message",
-				"transactionId",
-				"links"
-			],
-			"properties": {
-				"message": {
-					"type": "string",
-					"example": "Transaction payload was successfully passed to the network node"
-				},
-				"transactionId": {
-					"type": "string",
-					"example": "123456789",
-					"description": "Transaction Id"
-				}
-			}
+		"message": {
+			"type":"string",
+			"example": "Transaction payload was successfully passed to the network node"
+		},
+		"transactionId": {
+			"type": "string",
+			"example": "123456789",
+			"description": "Transaction Id"
 		},
 		"NetworkStatistics": {
 			"type": "object",
