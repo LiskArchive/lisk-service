@@ -584,7 +584,7 @@
 				"totalVotesReceived": {
 					"type": "string",
 					"example": "109000000000",
-					"description": "Total votes recieved"
+					"description": "Total votes received"
 				},
 				"address": {
 					"type": "string",
@@ -650,7 +650,7 @@
 				"totalVotesReceived": {
 					"type": "string",
 					"example": "109000000000",
-					"description": "Total votes recieved"
+					"description": "Total votes received"
 				},
 				"status": {
 					"type": "string",
@@ -1373,7 +1373,7 @@
 				}
 			}
 		},
-		"VotesRecievedWithEnvelope": {
+		"VotesReceivedWithEnvelope": {
 			"type": "object",
 			"required": [
 				"data",

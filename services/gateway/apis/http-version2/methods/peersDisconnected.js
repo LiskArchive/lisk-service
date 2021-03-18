@@ -25,6 +25,7 @@ module.exports = {
 		peerSchema[this.swaggerApiPath] = { get: {} };
 		peerSchema[this.swaggerApiPath].get.tags = this.tags;
 		peerSchema[this.swaggerApiPath].get.summary = 'Requests disconnected peers data';
+		peerSchema[this.swaggerApiPath].get.description = 'Returns disconnected peers data';
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of disconnected peers',

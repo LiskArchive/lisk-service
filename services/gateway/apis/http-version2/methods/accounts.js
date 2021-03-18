@@ -50,6 +50,7 @@ module.exports = {
 			this.params,
 		);
 		accountSchema[this.swaggerApiPath].get.summary = 'Requests account data';
+		accountSchema[this.swaggerApiPath].get.description = 'Returns account data';
 		accountSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of accounts with details',
