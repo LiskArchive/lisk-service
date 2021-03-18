@@ -324,6 +324,13 @@
 			"description": "Filter delegate accounts",
 			"type": "string",
 			"minLength": 1
+		},
+		"transaction": {
+			"name": "transaction",
+			"in": "query",
+			"description": "Binary payload",
+			"type": "string",
+			"minLength": 1
 		}
 	},
 	"definitions": {

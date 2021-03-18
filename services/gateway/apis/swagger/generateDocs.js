@@ -25,6 +25,7 @@ const createApiDocs = async (apiName, apiJson) => {
 		const method = services[key];
 		return { ...acc, [key]: method.schema };
 	}, {});
+	if (methods.postTransactions) methods.transactions['/transactions'].post = methods.postTransactions['/transactions'].post;
 	const apiSchemas = Object.keys(methods);
 	apiSchemas.forEach((key) => {
 		Object.assign(apiJson.paths, methods[key]);
