@@ -29,10 +29,7 @@ module.exports = {
 			200: {
 				description: 'network status info',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/NetworkStatus',
-					},
+					$ref: '#/definitions/NetworkStatus',
 				},
 			},
 			404: {
