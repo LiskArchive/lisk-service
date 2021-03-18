@@ -43,7 +43,7 @@ const {
 
 const {
     getTransactionsSchemas,
-} = require('transactionsSchemas');
+} = require('./transactionsSchemas');
 
 const {
     getForgers,
