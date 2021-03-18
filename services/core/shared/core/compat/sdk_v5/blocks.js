@@ -77,7 +77,7 @@ const updateBlockIndex = async job => {
 	await blocksDB.upsert(blocks);
 };
 
-const blc7 = initializeQueue('blc7', indexBlocks);
+const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
 
 const normalizeBlocks = async blocks => {
@@ -160,7 +160,7 @@ const indexNewBlocks = async blocks => {
 		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
-			blc7.add('blc7', { blocks: blocks.data });
+			indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 			// Update block finality status
 			const finalizedBlockHeight = getFinalizedHeight();
@@ -312,7 +312,7 @@ const buildIndex = async (from, to) => {
 			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
 		} while (!(blocks.length && blocks.every(block => !!block && !!block.height)));
 
-		await blc7.add('blc7', { blocks });
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
 
 		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
 
