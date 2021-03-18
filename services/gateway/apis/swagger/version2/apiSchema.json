@@ -902,9 +902,8 @@
 		"NetworkStatus": {
 			"type": "object",
 			"required": [
-				"finalizedHeight",
-				"networkIdentifier",
-				"height"
+				"data",
+				"meta"
 			],
 			"properties": {
 				"data": {
@@ -1374,7 +1373,7 @@
 				}
 			}
 		},
-		"VotesWithEnvelope": {
+		"VotesRecievedWithEnvelope": {
 			"type": "object",
 			"required": [
 				"data",
@@ -1384,13 +1383,83 @@
 			"properties": {
 				"data": {
 					"description": "List of votes",
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/Vote"
+					"type": "object",
+					"properties": {
+						"account": {
+							"type": "object",
+							"properties": {
+								"address": {
+									"type": "string",
+									"format": "address",
+									"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+									"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+								},
+								"username": {
+									"type": "string",
+									"example": "genesis_84",
+									"description": ""
+								}
+							}
+						},
+						"votes": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Vote"
+							}
+						}
 					}
 				},
 				"meta": {
-					"$ref": "#/definitions/meta"
+					"$ref": "#/definitions/Pagination"
+				},
+				"links": {
+					"type": "object"
+				}
+			}
+		},
+		"VotesSentWithEnvelope": {
+			"type": "object",
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
+			"properties": {
+				"data": {
+					"description": "List of votes",
+					"type": "object",
+					"properties": {
+						"account": {
+							"type": "object",
+							"properties": {
+								"address": {
+									"type": "string",
+									"format": "address",
+									"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+									"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+								},
+								"username": {
+									"type": "string",
+									"example": "genesis_84",
+									"description": ""
+								},
+								"votesUsed": {
+									"type": "integer",
+									"example": 10,
+									"description": ""
+								}
+							}
+						},
+						"votes": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Vote"
+							}
+						}
+					}
+				},
+				"meta": {
+					"$ref": "#/definitions/Pagination"
 				},
 				"links": {
 					"type": "object"
@@ -1401,8 +1470,7 @@
 			"type": "object",
 			"required": [
 				"address",
-				"publicKey",
-				"balance",
+				"amount",
 				"username"
 			],
 			"properties": {
@@ -1412,16 +1480,9 @@
 					"example": "4935562234363081651L",
 					"description": "Lisk Address of the delegate the queried account voted for."
 				},
-				"publicKey": {
+				"amount": {
 					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "Public key of the delegate the queried account voted for."
-				},
-				"balance": {
-					"type": "string",
-					"example": 1081560729258,
-					"description": "Balance of the delegate the queried account voted for."
+					"example": 1081560729258
 				},
 				"username": {
 					"type": "string",

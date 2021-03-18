@@ -46,10 +46,7 @@ module.exports = {
 			200: {
 				description: 'array of votes',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/VotesWithEnvelope',
-					},
+					$ref: '#/definitions/VotesRecievedWithEnvelope',
 				},
 			},
 		};
