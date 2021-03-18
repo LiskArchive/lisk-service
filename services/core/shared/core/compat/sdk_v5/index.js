@@ -42,6 +42,10 @@ const {
 } = require('./postTransactions');
 
 const {
+    getTransactionsSchemas,
+} = require('transactionsSchemas');
+
+const {
     getForgers,
 } = require('./forgers');
 const {
@@ -100,6 +104,8 @@ module.exports = {
     getTransactionsByBlockId,
 
     postTransactions,
+
+    getTransactionsSchemas,
 
     getPendingTransactions,
     loadAllPendingTransactions,

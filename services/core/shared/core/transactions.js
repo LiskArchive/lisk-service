@@ -85,6 +85,19 @@ const postTransactions = async params => {
 	}
 };
 
+const getTransactionsSchemas = async params => {
+	const transactionsSchemas = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await coreApi.getTransactionsSchemas(params);
+	if (response.data) transactionsSchemas.data = response.data;
+	if (response.meta) transactionsSchemas.meta = response.meta;
+
+	return transactionsSchemas;
+};
+
 const initPendingTransactionsList = (() => coreApi.loadAllPendingTransactions())();
 
 const reload = () => coreApi.loadAllPendingTransactions();
@@ -97,4 +110,5 @@ module.exports = {
 	getTransactionById: coreApi.getTransactionById,
 	getTransactionsByBlockId: coreApi.getTransactionsByBlockId,
 	postTransactions,
+	getTransactionsSchemas,
 };

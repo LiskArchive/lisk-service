@@ -28,6 +28,7 @@ const {
 	getTransactionById,
 	getTransactionsByBlockId,
 	postTransactions,
+	getTransactionsSchemas,
 } = require('./transactions');
 
 const {
@@ -135,6 +136,7 @@ module.exports = {
 	getTransactionById,
 	getTransactionsByBlockId,
 	postTransactions,
+	getTransactionsSchemas,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getIncomingTxsCount,
