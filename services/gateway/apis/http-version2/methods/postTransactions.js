@@ -14,7 +14,7 @@
  *
  */
 const transactionsSource = require('../../../sources/version2/postTransactions');
-const { transformParams, response } = require('../../swagger/utils');
+const { transformParams } = require('../../swagger/utils');
 
 module.exports = {
 	version: '2.0',
@@ -39,8 +39,21 @@ module.exports = {
 					$ref: '#/definitions/postTransactionWithEnvelope',
 				},
 			},
+			400: {
+				description: 'Bad request',
+				schema: {
+					$ref: '#/definitions/badRequestEnvelope',
+				},
+			},
+			500: {
+				description: 'Internal server error',
+				schema: {
+					$ref: '#/definitions/serverErrorEnvelope',
+				},
+			},
+
+
 		};
-		Object.assign(transactionSchema[this.swaggerApiPath].post.responses, response);
 		return transactionSchema;
 	},
 	source: transactionsSource,

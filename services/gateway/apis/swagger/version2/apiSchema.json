@@ -2140,6 +2140,32 @@
 					"type": "object"
 				}
 			}
+		},
+		"badRequestEnvelope": {
+			"type": "object",
+			"properties": {
+				"error": {
+					"type": "boolean",
+					"example": true
+				},
+				"message": {
+					"type": "string",
+					"example": "Transaction payload was rejected by the network node"
+				}
+			}
+		},
+		"serverErrorEnvelope": {
+			"type": "object",
+			"properties": {
+				"error": {
+					"type": "boolean",
+					"example": true
+				},
+				"message": {
+					"type": "string",
+					"example": "Unable to reach a network node"
+				}
+			}
 		}
 	},
 	"responses": {
