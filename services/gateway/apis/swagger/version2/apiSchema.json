@@ -293,20 +293,20 @@
 			"type": "string",
 			"minLength": 1
 		},
-		"data":{
+		"data": {
 			"name": "data",
 			"in": "query",
 			"description": "Query by asset data",
 			"type": "string",
 			"minLength": 1
 		},
-		"includePending":{
+		"includePending": {
 			"name": "includePending",
 			"in": "query",
 			"description": "Retrieve pending transactions",
 			"type": "boolean",
 			"minLength": 1,
-			"default": false 
+			"default": false
 		}
 	},
 	"definitions": {
@@ -902,8 +902,8 @@
 		"NetworkStatus": {
 			"type": "object",
 			"required": [
-				"broadhash",
-				"nethash",
+				"finalizedHeight",
+				"networkIdentifier",
 				"height"
 			],
 			"properties": {
@@ -913,36 +913,110 @@
 					"minimum": 1,
 					"description": "Current block height of the node.\nRepresents the current number of blocks in the chain on the node.\n"
 				},
-				"networkHeight": {
+				"finalizedHeight": {
 					"type": "integer",
-					"example": 123,
-					"description": "Current block height of the network.\nRepresents the current number of blocks in the chain on the network.\n"
+					"example": 1234,
+					"description": "Finalized block height of the network."
 				},
-				"epoch": {
+				"networkVersion": {
 					"type": "string",
-					"format": "date-time",
-					"example": "2016-05-24T17:00:00.000Z",
-					"description": "Timestamp of first block on the network."
+					"format": "networkVersion",
+					"example": "2.0",
+					"description": "Network version"
+				},
+				"networkIdentifier": {
+					"type": "string",
+					"format": "networkIdentifier",
+					"example": "01e47ba4e3e57981642150f4b45f64c2160c10bac9434339888210a4fa5df097",
+					"description": "Network identifier"
+				},
+				"currentReward": {
+					"type": "string",
+					"format": "currentReward",
+					"example": "500000000",
+					"description": "Current reward"
 				},
 				"milestone": {
-					"type": "string",
-					"example": "500000000",
-					"description": "The Reward each forger will get for forging a block at the current slot.\nAfter a certain amount of slots, the reward will be reduced.\n"
+					"type": "array",
+					"items": {
+						"example": [
+							"500000000",
+							"400000000",
+							"300000000",
+							"200000000",
+							"100000000"
+						]
+					}
 				},
-				"nethash": {
-					"type": "string",
-					"example": "ed14889723f24ecc54871d058d98ce91ff2f973192075c0155ba2b7b70ad2511",
-					"description": "Describes the network.\nFor example, the nethash describes the Mainnet or the Testnet, that the node is connecting to.\n"
+				"rewards": {
+					"type": "object",
+					"properties": {
+						"milestones": {
+							"type": "array",
+							"items": {
+								"example": [
+									"500000000",
+									"400000000",
+									"300000000",
+									"200000000",
+									"100000000"
+								]
+							}
+						},
+						"offset": {
+							"type": "integer",
+							"example": 2160
+						},
+						"distance": {
+							"type": "integer",
+							"example": 3000000
+						}
+					}
 				},
-				"supply": {
-					"type": "string",
-					"example": "10575384500000000",
-					"description": "Total supply of LSK in the network."
+				"registeredModules": {
+					"type": "array",
+					"items": {
+						"example": [
+							"token",
+							"sequence",
+							"keys",
+							"dpos",
+							"legacyAccount"
+						]
+					},
+					"description": "Array of registered modules"
 				},
-				"reward": {
+				"moduleAssets": {
+					"type": "array",
+					"items": {
+						"properties": {
+							"id": {
+								"type": "string",
+								"example": "2:0"
+							},
+							"name": {
+								"type": "string",
+								"example": "token:transfer"
+							}
+						}
+					},
+					"description": "Array of modules assets"
+				},
+				"blockTime": {
+					"type": "integer",
+					"example": "10"
+				},
+				"communityIdentifier": {
 					"type": "string",
-					"example": "500000000",
-					"description": "The reward a delegate will get for forging a block.\nDependant on the slot height.\n"
+					"example": "Lisk"
+				},
+				"minRemainingBalance": {
+					"type": "string",
+					"example": "500000000"
+				},
+				"maxPayloadLength": {
+					"type": "integer",
+					"example": "15000"
 				}
 			}
 		},
