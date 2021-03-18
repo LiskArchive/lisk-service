@@ -7,34 +7,10 @@
 			"type": "string",
 			"format": "ip"
 		},
-		"httpPort": {
-			"name": "httpPort",
+		"networkVersion": {
+			"name": "networkVersion",
 			"in": "query",
-			"description": "Http port of the node or delegate",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 1,
-			"maximum": 65535
-		},
-		"wsPort": {
-			"name": "wsPort",
-			"in": "query",
-			"description": "Web socket port for the node or delegate",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 1,
-			"maximum": 65535
-		},
-		"os": {
-			"name": "os",
-			"in": "query",
-			"description": "OS of the node",
-			"type": "string"
-		},
-		"version": {
-			"name": "version",
-			"in": "query",
-			"description": "Lisk version of the node",
+			"description": "Network version",
 			"type": "string",
 			"format": "version"
 		},
@@ -270,13 +246,6 @@
 			"description": "Range fromTimestamp:toTimestamp",
 			"type": "string",
 			"minimum": 0
-		},
-		"to": {
-			"name": "to",
-			"in": "query",
-			"description": "Ending UNIX timestamp",
-			"type": "integer",
-			"minimum": 1
 		},
 		"storeName": {
 			"name": "storeName",
@@ -868,32 +837,23 @@
 					"format": "ip",
 					"description": "IPv4 address of the peer node."
 				},
-				"httpPort": {
+				"port": {
 					"type": "integer",
-					"example": 8000,
-					"format": "int32",
-					"minimum": 1,
-					"maximum": 65535,
-					"description": "The port the peer node uses for HTTP requests, e.g. API calls."
+					"example": "4000",
+					"format": "port",
+					"description": "Port of the peer node."
 				},
-				"wsPort": {
-					"type": "integer",
-					"example": 8001,
-					"format": "int32",
-					"minimum": 1,
-					"maximum": 65535,
-					"description": "The port the peer node uses for Websocket Connections, e.g. P2P broadcasts."
-				},
-				"os": {
+				"networkVersion": {
 					"type": "string",
-					"example": "debian",
-					"description": "The Operating System that the peer node runs on."
+					"example": "2.0",
+					"format": "networkVersion",
+					"description": "Network version of Lisk Core that the peer node runs on."
 				},
-				"version": {
+				"networkIdentifier": {
 					"type": "string",
-					"example": "v0.8.0",
-					"format": "version",
-					"description": "The version of Lisk Core that the peer node runs on."
+					"example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
+					"format": "networkVersion",
+					"description": "Network identifier"
 				},
 				"state": {
 					"type": "integer",
@@ -909,18 +869,6 @@
 					"example": 8350681,
 					"description": "Network height on the peer node.\nRepresents the current number of blocks in the chain on the peer node.\n"
 				},
-				"broadhash": {
-					"type": "string",
-					"example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-					"format": "hex",
-					"description": "Broadhash on the peer node.\nBroadhash is established as an aggregated rolling hash of the past five blocks present in the database.\n"
-				},
-				"nonce": {
-					"type": "string",
-					"example": "sYHEDBKcScaAAAYg",
-					"minLength": 1,
-					"description": "Unique Identifier for the peer.\nRandom string.\n"
-				},
 				"location": {
 					"$ref": "#/definitions/Location"
 				}
@@ -929,11 +877,6 @@
 		"Location": {
 			"type": "object",
 			"properties": {
-				"city": {
-					"type": "string",
-					"example": "Berlin",
-					"description": "Name of the city."
-				},
 				"countryCode": {
 					"type": "string",
 					"example": "DE",
@@ -953,36 +896,6 @@
 					"type": "string",
 					"example": "210.239.23.62",
 					"description": "Node's IP address."
-				},
-				"latitude": {
-					"type": "string",
-					"example": "52.5073",
-					"description": "Geolocation data (latitude)."
-				},
-				"longitude": {
-					"type": "string",
-					"example": "13.3643",
-					"description": "Geolocation data (longitude)."
-				},
-				"regionCode": {
-					"type": "string",
-					"example": "BE",
-					"description": "Code of the region."
-				},
-				"regionName": {
-					"type": "string",
-					"example": "Land Berlin",
-					"description": "Name of the region."
-				},
-				"timeZone": {
-					"type": "string",
-					"example": "Europe/Berlin",
-					"description": "Node's time zone."
-				},
-				"zipCode": {
-					"type": "string",
-					"example": "10785",
-					"description": "Zip/Postal code."
 				}
 			}
 		},
