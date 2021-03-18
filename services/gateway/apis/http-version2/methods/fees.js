@@ -31,9 +31,7 @@ module.exports = {
 			200: {
 				description: 'fee estimate per byte',
 				schema: {
-					items: {
-						$ref: '#/definitions/FeeEstimateEnvelope',
-					},
+					$ref: '#/definitions/FeeEstimateEnvelope',
 				},
 			},
 			404: {

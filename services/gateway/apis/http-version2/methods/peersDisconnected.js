@@ -30,10 +30,7 @@ module.exports = {
 			200: {
 				description: 'array of disconnected peers',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/PeersWithEnvelope',
-					},
+					$ref: '#/definitions/PeersWithEnvelope',
 				},
 			},
 			400: {

@@ -49,10 +49,7 @@ module.exports = {
 			200: {
 				description: 'array of blocks',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/BlocksWithEnvelope',
-					},
+					$ref: '#/definitions/BlocksWithEnvelope',
 				},
 			},
 		};

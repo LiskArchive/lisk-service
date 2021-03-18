@@ -31,10 +31,7 @@ module.exports = {
 			200: {
 				description: 'network statistics info',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/NetworkStatistics',
-					},
+					$ref: '#/definitions/NetworkStatistics',
 				},
 			},
 			404: {

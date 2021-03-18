@@ -57,10 +57,7 @@ module.exports = {
 			200: {
 				description: 'array of transactions with details',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/TransactionsWithEnvelope',
-					},
+					$ref: '#/definitions/TransactionsWithEnvelope',
 				},
 			},
 		};

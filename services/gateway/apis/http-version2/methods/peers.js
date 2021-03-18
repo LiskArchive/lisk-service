@@ -42,10 +42,7 @@ module.exports = {
 			200: {
 				description: 'array of peers with details',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/PeersWithEnvelope',
-					},
+					$ref: '#/definitions/PeersWithEnvelope',
 				},
 			},
 		};

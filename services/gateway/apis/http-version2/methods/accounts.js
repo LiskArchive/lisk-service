@@ -55,10 +55,7 @@ module.exports = {
 			200: {
 				description: 'array of accounts with details',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/AccountsWithEnvelope',
-					},
+					$ref: '#/definitions/AccountsWithEnvelope',
 				},
 			},
 		};

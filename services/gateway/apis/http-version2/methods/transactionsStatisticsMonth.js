@@ -37,10 +37,7 @@ module.exports = {
 			200: {
 				description: 'array of transactions statistics aggregated per month',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
-					},
+					$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
 				},
 			},
 		};
