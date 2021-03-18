@@ -25,8 +25,8 @@ module.exports = {
 		const networkSchema = {};
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
-		networkSchema[this.swaggerApiPath].get.summary = 'Requests network statistics\n RPC=> get.network.statistics';
-		networkSchema[this.swaggerApiPath].get.description = 'Returns network statistics data';
+		networkSchema[this.swaggerApiPath].get.summary = 'Requests network statistics';
+		networkSchema[this.swaggerApiPath].get.description = 'Returns network statistics data\n RPC=> get.network.statistics';
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'network statistics info',
