@@ -26,7 +26,7 @@ module.exports = {
 		feeEstimatePerByteSchema[this.swaggerApiPath] = { get: {} };
 		feeEstimatePerByteSchema[this.swaggerApiPath].get.tags = this.tags;
 		feeEstimatePerByteSchema[this.swaggerApiPath].get.summary = 'Requests fee estimates';
-		feeEstimatePerByteSchema[this.swaggerApiPath].get.description = 'Returns fee estimates\n RPC=> get.fees';
+		feeEstimatePerByteSchema[this.swaggerApiPath].get.description = `Returns fee estimates\n RPC=> ${this.rpcMethod}`;
 		feeEstimatePerByteSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'fee estimate per byte',

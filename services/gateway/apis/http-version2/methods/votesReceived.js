@@ -41,7 +41,7 @@ module.exports = {
 		votersSchema[this.swaggerApiPath] = { get: {} };
 		votersSchema[this.swaggerApiPath].get.tags = this.tags;
 		votersSchema[this.swaggerApiPath].get.summary = 'Requests votes received data';
-		votersSchema[this.swaggerApiPath].get.description = 'Returns votes received data\n RPC=> get.votes_received';
+		votersSchema[this.swaggerApiPath].get.description = `Returns votes received data\n RPC=> ${this.rpcMethod}`;
 		votersSchema[this.swaggerApiPath].get.parameters = transformParams('voters', this.params);
 		votersSchema[this.swaggerApiPath].get.responses = {
 			200: {

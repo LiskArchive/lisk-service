@@ -31,7 +31,7 @@ module.exports = {
 		transactionSchema[this.swaggerApiPath] = { get: {} };
 		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
 		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transaction statistics month';
-		transactionSchema[this.swaggerApiPath].get.description = 'Returns transaction statistics month\n RPC=> get.transactions.statistics.month';
+		transactionSchema[this.swaggerApiPath].get.description = `Returns transaction statistics month\n RPC=> ${this.rpcMethod}`;
 		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].get.responses = {
 			200: {

@@ -36,7 +36,7 @@ module.exports = {
 		peerSchema[this.swaggerApiPath] = { get: {} };
 		peerSchema[this.swaggerApiPath].get.tags = this.tags;
 		peerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
-		peerSchema[this.swaggerApiPath].get.description = 'Returns peers data\n RPC=> get.peers';
+		peerSchema[this.swaggerApiPath].get.description = `Returns peers data\n RPC=> ${this.rpcMethod}`;
 		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {

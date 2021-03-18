@@ -26,7 +26,7 @@ module.exports = {
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
 		networkSchema[this.swaggerApiPath].get.summary = 'Requests network statistics';
-		networkSchema[this.swaggerApiPath].get.description = 'Returns network statistics data\n RPC=> get.network.statistics';
+		networkSchema[this.swaggerApiPath].get.description = `Returns network statistics data\n RPC=> ${this.rpcMethod}`;
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'network statistics info',
