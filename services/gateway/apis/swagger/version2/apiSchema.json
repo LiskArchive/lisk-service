@@ -1564,14 +1564,19 @@
 				}
 			}
 		},
-		"message": {
-			"type": "string",
-			"example": "Transaction payload was successfully passed to the network node"
-		},
-		"transactionId": {
-			"type": "string",
-			"example": "123456789",
-			"description": "Transaction Id"
+		"postTransactionWithEnvelope": {
+			"type": "object",
+			"properties": {
+				"message": {
+					"type": "string",
+					"example": "Transaction payload was successfully passed to the network node"
+				},
+				"transactionId": {
+					"type": "string",
+					"example": "123456789",
+					"description": "Transaction Id"
+				}
+			}
 		},
 		"NetworkStatistics": {
 			"type": "object",
