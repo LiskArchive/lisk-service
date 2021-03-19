@@ -19,6 +19,7 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
+	notFoundSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -67,6 +68,11 @@ describe('Transactions Schemas API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('inexistent moduleAssetId -> 404', async () => {
+			const response = await api.get(`${endpoint}?moduleAssetId=-124:999`, 404);
+			expect(response).toMap(notFoundSchema);
+		});
+
 		it('invalid moduleAssetId -> 400', async () => {
 			const response = await api.get(`${endpoint}?moduleAssetId=-124`, 400);
 			expect(response).toMap(badRequestSchema);
@@ -81,8 +87,13 @@ describe('Transactions Schemas API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('inexistent moduleAssetName -> 404', async () => {
+			const response = await api.get(`${endpoint}?moduleAssetName=inexistent:name`, 404);
+			expect(response).toMap(notFoundSchema);
+		});
+
 		it('invalid moduleAssetName -> 400', async () => {
-			const response = await api.get(`${endpoint}?moduleAssetId=invalid:name`, 400);
+			const response = await api.get(`${endpoint}?moduleAssetName=invalid_name`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
