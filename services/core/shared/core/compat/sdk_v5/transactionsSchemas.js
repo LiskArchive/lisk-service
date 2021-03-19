@@ -15,7 +15,7 @@
  */
 const coreApi = require('./coreApi');
 
-const tempMethod = params => ({ ...params });
+let allTransactionSchemas;
 
 const getTransactionsSchemas = async params => {
 	const transactionsSchemas = {
@@ -23,11 +23,31 @@ const getTransactionsSchemas = async params => {
 		meta: {},
 	};
 
-	tempMethod(params); // TODO: Remove
+	if (!allTransactionSchemas) {
+		const response = await coreApi.getTransactionsSchemas();
 
-	const response = await coreApi.getTransactionsSchemas();
-	if (response.data) transactionsSchemas.data = response.data;
-	if (response.meta) transactionsSchemas.meta = response.meta;
+		allTransactionSchemas = response.transactionsAssets.map(txAsset => {
+			const formattedTxAsset = {};
+			formattedTxAsset.moduleAssetId = String(txAsset.moduleID).concat(':').concat(txAsset.assetID);
+			formattedTxAsset.moduleAssetName = String(txAsset.moduleName).concat(':').concat(txAsset.assetName);
+			formattedTxAsset.schema = txAsset.schema;
+			return formattedTxAsset;
+		});
+	}
+
+	const { moduleAssetId, moduleAssetName } = params;
+
+	if (moduleAssetId || moduleAssetName) {
+		transactionsSchemas.data = allTransactionSchemas.filter(txSchema => txSchema.moduleAssetId === moduleAssetId || txSchema.moduleAssetName === moduleAssetName);
+	} else {
+		transactionsSchemas.data = allTransactionSchemas;
+	}
+
+	transactionsSchemas.meta = {
+		count: transactionsSchemas.data.length,
+		offset: 0,
+		total: allTransactionSchemas.length,
+	};
 
 	return transactionsSchemas;
 };
