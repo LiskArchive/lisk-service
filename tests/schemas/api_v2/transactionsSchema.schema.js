@@ -15,10 +15,18 @@
  */
 import Joi from 'joi';
 
+const transactionAssetSchema = {
+	$id: Joi.string().required(),
+	title: Joi.string().optional(),
+	type: Joi.string().required(),
+	required: Joi.array().required(),
+	properties: Joi.object().required(),
+};
+
 const transactionsSchemasSchema = {
 	moduleAssetId: Joi.string().required(),
 	moduleAssetName: Joi.string().required(),
-	schema: Joi.object().required(),
+	schema: Joi.object(transactionAssetSchema).required(),
 };
 
 module.exports = {
