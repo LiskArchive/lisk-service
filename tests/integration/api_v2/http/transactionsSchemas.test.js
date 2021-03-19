@@ -19,7 +19,6 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	notFoundSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
@@ -96,5 +95,4 @@ describe('Transactions Schemas API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
-
 });
