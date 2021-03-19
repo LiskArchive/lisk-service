@@ -120,11 +120,7 @@ const postTransaction = async transaction => {
     return response;
 };
 
-const getTransactionsSchemas = async () => {
-    const apiClient = await getApiClient();
-    const allSchemas = await apiClient.getSchemas();
-    return allSchemas;
-};
+const getTransactionsSchemas = async () => (await getApiClient()).schemas;
 
 module.exports = {
     getBlockByID,
