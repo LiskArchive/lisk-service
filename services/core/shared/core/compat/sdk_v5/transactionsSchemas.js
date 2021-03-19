@@ -38,7 +38,10 @@ const getTransactionsSchemas = async params => {
 	const { moduleAssetId, moduleAssetName } = params;
 
 	if (moduleAssetId || moduleAssetName) {
-		transactionsSchemas.data = allTransactionSchemas.filter(txSchema => txSchema.moduleAssetId === moduleAssetId || txSchema.moduleAssetName === moduleAssetName);
+		transactionsSchemas.data = allTransactionSchemas.filter(
+			txSchema => txSchema.moduleAssetId === moduleAssetId
+				|| txSchema.moduleAssetName === moduleAssetName,
+		);
 	} else {
 		transactionsSchemas.data = allTransactionSchemas;
 	}
