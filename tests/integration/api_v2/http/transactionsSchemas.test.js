@@ -105,5 +105,10 @@ describe('Transactions Schemas API', () => {
 			response.data.forEach(schema => expect(schema).toMap(transactionsSchemasSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		it('invalid param -> 400', async () => {
+			const response = await api.get(`${endpoint}?invalid_param=invalid_param`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
 	});
 });

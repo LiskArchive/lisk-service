@@ -116,5 +116,10 @@ describe('Method get.transactions.schemas', () => {
 			result.data.forEach(schema => expect(schema).toMap(transactionsSchemasSchema));
 			expect(result.meta).toMap(metaSchema);
 		});
+
+		it('returns invalid response for invalid param', async () => {
+			const response = await requestTransactionsSchemas({ invalid_param: 'invalid_param' });
+			expect(response).toMap(invalidParamsSchema);
+		});
 	});
 });
