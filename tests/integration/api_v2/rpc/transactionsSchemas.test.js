@@ -70,7 +70,6 @@ describe('Method get.transactions.schemas', () => {
 		it('returns invalid response for invalid moduleAssetId', async () => {
 			const response = await requestTransactionsSchemas({ moduleAssetId: '-124' });
 			expect(response).toMap(invalidParamsSchema);
-
 		});
 
 		it('empty moduleAssetId ->  ok', async () => {
@@ -105,7 +104,6 @@ describe('Method get.transactions.schemas', () => {
 		it('returns invalid response for invalid moduleAssetName', async () => {
 			const response = await requestTransactionsSchemas({ moduleAssetName: 'invalid_name' });
 			expect(response).toMap(invalidParamsSchema);
-
 		});
 
 		it('empty moduleAssetName ->  ok', async () => {
