@@ -70,6 +70,10 @@ module.exports = {
 			rewards: 'rewards,string',
 		},
 		sentVotes: '=',
-		unlocking: '=',
+		unlocking: ['unlocking', {
+			delegateAddress: '=,string',
+			amount: '=,string',
+			unvoteHeight: '=,number',
+		}],
 	},
 };
