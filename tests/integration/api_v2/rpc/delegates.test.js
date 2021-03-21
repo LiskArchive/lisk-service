@@ -120,7 +120,7 @@ describe('Method get.delegates', () => {
 	describe('returns delegates based on public key', () => {
 		it('returns known delegate by public key', async () => {
 			const response = await getDelegates({
-				isDelegate: true, publickey: refDelegate.summary.publicKey,
+				isDelegate: true, publicKey: refDelegate.summary.publicKey,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
