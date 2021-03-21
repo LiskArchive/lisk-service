@@ -27,7 +27,7 @@ const {
 const {
 	accountSchemaVersion5,
 	dpos,
-} = require('../../../schemas/account.schema');
+} = require('../../../schemas/api_v2/account.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
