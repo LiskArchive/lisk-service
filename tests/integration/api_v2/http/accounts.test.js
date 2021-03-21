@@ -92,7 +92,7 @@ describe('Accounts API', () => {
 		});
 
 		it('empty address returns a default list', async () => {
-			const url = `${endpoint}?publickey=`;
+			const url = `${endpoint}?publicKey=`;
 			const response = await api.get(url);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -111,8 +111,8 @@ describe('Accounts API', () => {
 	});
 
 	describe('Retrieve account list by public key', () => {
-		it('known address by publickey', async () => {
-			const url = `${endpoint}?publickey=${delegate.summary.publicKey}`;
+		it('known address by publicKey', async () => {
+			const url = `${endpoint}?publicKey=${delegate.summary.publicKey}`;
 			const expectedStatus = 200;
 			const response = await api.get(url, expectedStatus);
 			expect(response.data.length).toEqual(1);
@@ -122,14 +122,14 @@ describe('Accounts API', () => {
 		});
 
 		it('invalid publicKey -> 400', async () => {
-			const url = `${endpoint}?publickey=invalid_pk`;
+			const url = `${endpoint}?publicKey=invalid_pk`;
 			const expectedStatus = 400;
 			const response = await api.get(url, expectedStatus);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('empty public key parameter returns a default list', async () => {
-			const url = `${endpoint}?publickey=`;
+			const url = `${endpoint}?publicKey=`;
 			const response = await api.get(url);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
