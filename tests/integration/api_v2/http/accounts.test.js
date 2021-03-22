@@ -27,7 +27,7 @@ const {
 const {
 	accountSchemaVersion5,
 	dpos,
-} = require('../../../schemas/account.schema');
+} = require('../../../schemas/api_v2/account.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
