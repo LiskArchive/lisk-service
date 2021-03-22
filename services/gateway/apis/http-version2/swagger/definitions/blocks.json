@@ -67,7 +67,7 @@
             "previousBlockId": {
                 "type": "string",
                 "format": "id",
-                "example": "15918760246746894806",
+                "example": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
                 "description": "The id of the previous block of the chain."
             },
             "numberOfTransactions": {

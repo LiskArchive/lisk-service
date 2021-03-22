@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
 
@@ -61,32 +60,26 @@ const response = {
 	},
 };
 
-const requireAllJson = async apiName => {
+const requireAllJson = apiName => {
 	const data = {
 		definitions: {},
 	};
 	const dir = path.resolve(__dirname, `../apis/${apiName}/swagger`);
-	const result = await fs.readdirSync(dir);
-	await BluebirdPromise.map(
-		result,
-		async fileName => {
-			if (fileName === 'definitions') {
-				const definitions = await fs.readdirSync(`${dir}/definitions`);
-				await BluebirdPromise.map(
-					definitions,
-					async definition => {
-						/* eslint-disable-next-line import/no-dynamic-require */
-						const content = require(`${dir}/definitions/${definition}`);
-						Object.assign(data.definitions, content);
-					},
-				);
-			} else {
+	const result = fs.readdirSync(dir);
+	result.forEach(fileName => {
+		if (fileName === 'definitions') {
+			const definitions = fs.readdirSync(`${dir}/definitions`);
+			definitions.forEach(definition => {
 				/* eslint-disable-next-line import/no-dynamic-require */
-				const content = require(`${dir}/${fileName}`);
-				Object.assign(data, content);
-			}
-		},
-	);
+				const content = require(`${dir}/definitions/${definition}`);
+				Object.assign(data.definitions, content);
+			});
+		} else {
+			/* eslint-disable-next-line import/no-dynamic-require */
+			const content = require(`${dir}/${fileName}`);
+			Object.assign(data, content);
+		}
+	});
 	return data;
 };
 

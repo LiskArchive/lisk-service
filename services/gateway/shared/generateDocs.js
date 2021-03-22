@@ -31,14 +31,14 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 	return apiJsonPaths;
 };
 
-const genDocs = async ctx => {
+const genDocs = ctx => {
 	let httpVersion;
 	if (ctx.endpoint.baseUrl === '/api/v1') {
 		httpVersion = 'http-version1';
 	} else if (ctx.endpoint.baseUrl === '/api/v2') {
 		httpVersion = 'http-version2';
 	}
-	const { apiJson, parameters, definitions, responses } = await requireAllJson(httpVersion);
+	const { apiJson, parameters, definitions, responses } = requireAllJson(httpVersion);
 
 	return {
 		...apiJson,
