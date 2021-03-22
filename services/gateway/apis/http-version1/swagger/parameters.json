@@ -274,7 +274,11 @@
             "in": "query",
             "description": "Delegate account status",
             "type": "string",
-            "minLength": 1
+            "minLength": 1,
+            "enum": [
+                "active",
+                "standby"
+            ]
         }
     }
 }
