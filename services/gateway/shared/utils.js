@@ -61,7 +61,7 @@ const response = {
 	},
 };
 
-const requireAllJson = async (apiName) => {
+const requireAllJson = async apiName => {
 	const data = {
 		definitions: {},
 	};
