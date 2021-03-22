@@ -1,306 +1,57 @@
 {
-	"parameters": {
-		"ip": {
-			"name": "ip",
-			"in": "query",
-			"description": "IP of the node or delegate",
-			"type": "string",
-			"format": "ip"
-		},
-		"httpPort": {
-			"name": "httpPort",
-			"in": "query",
-			"description": "Http port of the node or delegate",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 1,
-			"maximum": 65535
-		},
-		"wsPort": {
-			"name": "wsPort",
-			"in": "query",
-			"description": "Web socket port for the node or delegate",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 1,
-			"maximum": 65535
-		},
-		"os": {
-			"name": "os",
-			"in": "query",
-			"description": "OS of the node",
-			"type": "string"
-		},
-		"version": {
-			"name": "version",
-			"in": "query",
-			"description": "Lisk version of the node",
-			"type": "string",
-			"format": "version"
-		},
-		"state": {
-			"name": "state",
-			"in": "query",
-			"description": "Current state of the network",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 0,
-			"maximum": 2
-		},
-		"height": {
-			"name": "height",
-			"in": "query",
-			"description": "Current height of the network",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 1
-		},
-		"broadhash": {
-			"name": "broadhash",
-			"in": "query",
-			"description": "Broadhash of the network",
-			"type": "string",
-			"format": "hex"
-		},
-		"searchQuery": {
-			"in": "query",
-			"name": "q",
-			"required": true,
-			"description": "Search query",
-			"type": "string"
-		},
-		"limit": {
-			"in": "query",
-			"name": "limit",
-			"description": "Limit applied to results",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 1,
-			"maximum": 100,
-			"default": 10
-		},
-		"limit101": {
-			"in": "query",
-			"name": "limit",
-			"description": "Limit applied to results",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 1,
-			"maximum": 101,
-			"default": 10
-		},
-		"offset": {
-			"name": "offset",
-			"in": "query",
-			"description": "Offset value for results",
-			"type": "integer",
-			"format": "int32",
-			"minimum": 0,
-			"default": 0
-		},
-		"address": {
-			"name": "address",
-			"in": "query",
-			"description": "Lisk account address",
-			"type": "string",
-			"format": "address",
-			"minLength": 1,
-			"maxLength": 22
-		},
-		"publickey": {
-			"name": "publickey",
-			"in": "query",
-			"description": "Public key to query",
-			"type": "string",
-			"format": "publicKey",
-			"minLength": 1
-		},
-		"secpubkey": {
-			"name": "secpubkey",
-			"in": "query",
-			"description": "Second public key to query",
-			"type": "string",
-			"format": "publicKey",
-			"minLength": 1
-		},
-		"username": {
-			"name": "username",
-			"in": "query",
-			"description": "Delegate username to query",
-			"type": "string",
-			"format": "username",
-			"minLength": 1,
-			"maxLength": 20
-		},
-		"block": {
-			"name": "block",
-			"in": "query",
-			"description": "Block id to query",
-			"type": "string",
-			"format": "id",
-			"minLength": 1,
-			"maxLength": 20
-		},
-		"blockIdPath": {
-			"name": "block_id",
-			"in": "path",
-			"required": true,
-			"description": "Block id to query",
-			"type": "string",
-			"format": "id",
-			"minLength": 1,
-			"maxLength": 20
-		},
-		"id": {
-			"name": "id",
-			"in": "query",
-			"description": "Transaction id to query",
-			"type": "string",
-			"format": "id",
-			"minLength": 1,
-			"maxLength": 20,
-			"pattern": "^\\d*$"
-		},
-		"transactionIdPath": {
-			"name": "transaction_id",
-			"in": "path",
-			"required": true,
-			"description": "Transaction id to query",
-			"type": "string",
-			"format": "id",
-			"minLength": 1,
-			"maxLength": 20,
-			"pattern": "^\\d*$"
-		},
-		"accountAddressPublicKeyUsernameQuery": {
-			"name": "address",
-			"in": "query",
-			"description": "Lisk address, public key or account name",
-			"type": "string",
-			"minLength": 1
-		},
-		"accountAddressPublicKeyUsernamePath": {
-			"name": "account_id",
-			"in": "path",
-			"required": true,
-			"description": "Lisk address, public key or account name",
-			"type": "string",
-			"minLength": 1
-		},
-		"recipient": {
-			"name": "recipient",
-			"in": "query",
-			"description": "Lisk address, public key or account name (recipientId)",
-			"type": "string",
-			"minLength": 1
-		},
-		"sender": {
-			"name": "sender",
-			"in": "query",
-			"description": "Lisk address, public key or account name (senderId)",
-			"type": "string",
-			"minLength": 1
-		},
-		"type": {
-			"name": "type",
-			"in": "query",
-			"description": "Transaction type (0-12)",
-			"type": "integer",
-			"minimum": 0,
-			"maximum": 12
-		},
-		"transactionData": {
-			"name": "data",
-			"in": "query",
-			"description": "Search in transaction data field. Exact match, but can use % as wildcard e.g. data=test%",
-			"type": "string",
-			"minLength": 1
-		},
-		"min": {
-			"name": "min",
-			"in": "query",
-			"description": "Minimum transaction amount in Beddows",
-			"type": "integer",
-			"minimum": 0
-		},
-		"max": {
-			"name": "max",
-			"in": "query",
-			"description": "Maximum transaction amount in Beddows",
-			"type": "integer",
-			"minimum": 0
-		},
-		"from": {
-			"name": "from",
-			"in": "query",
-			"description": "Starting UNIX timestamp",
-			"type": "integer",
-			"minimum": 0
-		},
-		"to": {
-			"name": "to",
-			"in": "query",
-			"description": "Ending UNIX timestamp",
-			"type": "integer",
-			"minimum": 1
-		},
-		"storeName": {
-			"name": "storeName",
-			"in": "path",
-			"description": "Name of the store container",
-			"required": true,
-			"type": "string"
-		},
-		"storeId": {
-			"name": "storeId",
-			"in": "path",
-			"description": "Id of the object in the container",
-			"required": true,
-			"type": "string"
-		},
-		"marketDataProvider": {
-			"name": "provider",
-			"in": "path",
-			"description": "Source of the news among different data providers (Poloniex, Bittrex, etc.)",
-			"required": true,
-			"type": "string",
-			"enum": ["poloniex", "bittrex"]
-		},
-		"status": {
-			"name": "status",
-			"in": "query",
-			"description": "Delegate account status",
-			"type": "string",
-			"minLength": 1
-		}
-	},
 	"definitions": {
 		"Account": {
 			"type": "object",
-			"required": ["address"],
+			"required": [
+				"address"
+			],
 			"properties": {
-				"address": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+				"summary": {
+					"type": "object",
+					"properties": {
+						"address": {
+							"type": "string",
+							"format": "address",
+							"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+							"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+						},
+						"balance": {
+							"type": "string",
+							"example": "4448642000"
+						},
+						"publicKey": {
+							"type": "string",
+							"format": "publicKey",
+							"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+							"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+						},
+						"isDelegate": {
+							"type": "boolean",
+							"example": "false"
+						},
+						"isMultisignature": {
+							"type": "boolean",
+							"example": "false"
+						}
+					}
 				},
-				"publicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+				"token": {
+					"type": "object",
+					"properties": {
+						"balance": {
+							"type": "string",
+							"example": "4448642000"
+						}
+					}
 				},
-				"balance": {
-					"type": "string",
-					"example": "4448642000"
-				},
-				"nonce": {
-					"type": "string",
-					"example": "0"
-				},
-				"delegate": {
-					"$ref": "#/definitions/DelegateSub"
+				"sequence": {
+					"type": "object",
+					"properties": {
+						"nonce": {
+							"type": "string",
+							"example": "1"
+						}
+					}
 				},
 				"knowledge": {
 					"type": "object",
@@ -315,13 +66,27 @@
 						}
 					}
 				},
-				"multisignatureAccount": {
+				"keys": {
 					"type": "object",
 					"properties": {
 						"numberOfReqSignatures": {
 							"type": "integer",
 							"format": "int32",
 							"example": "1"
+						},
+						"mandatoryKeys": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"example": "689b9a40aa11cbc8327d5eeebed9a1052940730f9c34cffb33ae591131141349"
+							}
+						},
+						"optionalKeys": {
+							"type": "array",
+							"items": {
+								"type": "string",
+								"example": "478842a844914f18a1c620a6494bf9931d0a862e96212bf5fc6f3ca18658febe"
+							}
 						},
 						"members": {
 							"type": "array",
@@ -330,102 +95,52 @@
 								"properties": {
 									"address": {
 										"type": "string",
-										"example": "4935562234363081651L"
+										"format": "address",
+										"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+										"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
 									},
 									"publicKey": {
 										"type": "string",
-										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b"
-									},
-									"balance": {
-										"type": "integer",
-										"format": "int64",
-										"example": "4448642000"
+										"format": "publicKey",
+										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+										"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
 									},
 									"isMandatory": {
 										"type": "boolean",
-										"example": "true"
+										"example": "false"
+									}
+								}
+							}
+						},
+						"memberships": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"address": {
+										"type": "string",
+										"format": "address",
+										"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+										"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+									},
+									"publicKey": {
+										"type": "string",
+										"format": "publicKey",
+										"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+										"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
 									}
 								}
 							}
 						}
 					}
 				},
-				"multisignatureMemberships": {
-					"type": "array",
-					"items": {
-						"type": "object",
-						"properties": {
-							"address": {
-								"type": "string",
-								"format": "address",
-								"example": "4935562234363081651L",
-								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
-							},
-							"balance": {
-								"type": "string",
-								"example": "4448642000"
-							},
-							"lifetime": {
-								"type": "integer",
-								"example": 48
-							},
-							"min": {
-								"type": "integer",
-								"example": 2
-							},
-							"publicKey": {
-								"type": "string",
-								"format": "publicKey",
-								"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-								"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
-							}
-						}
-					}
-				},
-				"transactionCount": {
+				"dpos": {
 					"type": "object",
 					"properties": {
-						"incoming": {
-							"type": "string",
-							"example": "216"
-						},
-						"outgoing": {
-							"type": "string",
-							"example": "1581"
+						"delegate": {
+							"$ref": "#/definitions/Delegate"
 						}
 					}
-				}
-			}
-		},
-		"AccountBasic": {
-			"type": "object",
-			"required": ["address", "publicKey"],
-			"properties": {
-				"address": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
-				},
-				"publicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
-				},
-				"secondPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "The second public key is derived from the second private key of an account, if the owner activated a second passphrase for her/his account.\n"
-				},
-				"balance": {
-					"type": "string",
-					"example": "4448642000"
-				},
-				"unconfirmedSignature": {
-					"type": "number",
-					"example": 0
 				}
 			}
 		},
@@ -446,8 +161,8 @@
 					"type": "string",
 					"format": "id",
 					"minLength": 1,
-					"maxLength": 20,
-					"example": "6258354802676165798",
+					"maxLength": 64,
+					"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
 					"description": "Unique identifier of the block.\nDerived from the block signature.\n"
 				},
 				"height": {
@@ -467,12 +182,6 @@
 					"example": 85944650,
 					"description": "UNIX Timestamp"
 				},
-				"payloadLength": {
-					"type": "integer",
-					"example": 117,
-					"minimum": 0,
-					"description": "Bytesize of the payload hash."
-				},
 				"generatorAddress": {
 					"type": "string",
 					"example": "7749538982696555450L",
@@ -488,22 +197,17 @@
 					"example": "genesis_13",
 					"description": "Delegate registered name."
 				},
-				"payloadHash": {
+				"transactionRoot": {
 					"type": "string",
 					"format": "hex",
-					"example": "4e4d91be041e09a2e54bb7dd38f1f2a02ee7432ec9f169ba63cd1f193a733dd2",
+					"example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
 					"description": "Hash of the payload of the block.\nThe payload of a block is comprised of the transactions contained in the block.\nFor each type of transaction a different maximum size exists for the payload.\n"
 				},
-				"blockSignature": {
+				"signature": {
 					"type": "string",
 					"format": "signature",
 					"example": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
 					"description": "Derived from a SHA-256 hash of the block header,\nthat is signed by the private key of the delegate who forged the block.\n"
-				},
-				"confirmations": {
-					"type": "integer",
-					"example": 200,
-					"description": "Number of times that this Block has been confirmed by the network.\nBy forging a new block on a chain, all former blocks in the chain get confirmed by the forging delegate.\n"
 				},
 				"previousBlockId": {
 					"type": "string",
@@ -520,6 +224,11 @@
 					"type": "string",
 					"example": "150000000",
 					"description": "The total amount of Lisk transferred."
+				},
+				"totalBurnt": {
+					"type": "string",
+					"example": "0",
+					"description": "Total amount of LSK that have been burnt in this Block"
 				},
 				"totalFee": {
 					"type": "string",
@@ -539,45 +248,66 @@
 				"isFinal": {
 					"type": "boolean",
 					"example": "true"
+				},
+				"maxHeightPreviouslyForged": {
+					"type": "integer",
+					"example": 559421
+				},
+				"maxHeightPrevoted": {
+					"type": "integer",
+					"example": 559434
+				},
+				"seedReveal": {
+					"type": "string",
+					"example": "602f24d8b0e99d7d700430447df38dc9"
+				}
+			}
+		},
+		"forgers": {
+			"type": "object",
+			"properties": {
+				"username": {
+					"type": "string",
+					"example": "genesis_84",
+					"description": ""
+				},
+				"totalVotesReceived": {
+					"type": "string",
+					"example": "109000000000",
+					"description": "Total votes received"
+				},
+				"address": {
+					"type": "string",
+					"format": "address",
+					"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+					"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+				},
+				"minActiveHeight": {
+					"type": "integer",
+					"example": 1
+				},
+				"isConsensusParticipant": {
+					"type": "boolean",
+					"example": true
+				},
+				"nextForgingTime": {
+					"type": "integer",
+					"example": 1616058987,
+					"description": "UNIX Timestamp"
 				}
 			}
 		},
 		"Delegate": {
 			"type": "object",
-			"required": ["address", "publicKey", "username"],
+			"required": [
+				"username"
+			],
 			"properties": {
-				"address": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the delegate who forged the block."
-				},
-				"delegateWeight": {
-					"type": "string",
-					"example": "1155000000000"
-				},
-				"missedBlocks": {
-					"type": "integer",
-					"example": 157,
-					"minimum": 1,
-					"description": ""
-				},
 				"producedBlocks": {
 					"type": "integer",
 					"example": 55222,
 					"minimum": 1,
 					"description": ""
-				},
-				"productivity": {
-					"type": "string",
-					"example": "99.72",
-					"description": ""
-				},
-				"publicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "6122ac1fd71b437014ddbc4ec01e07879f5af1853536efaa0233bc12907c684b",
-					"description": "Public key of the delegate who forged the block."
 				},
 				"rank": {
 					"type": "integer",
@@ -595,83 +325,80 @@
 					"example": "genesis_84",
 					"description": ""
 				},
-				"vote": {
+				"isBanned": {
+					"type": "boolean",
+					"example": "false"
+				},
+				"lastForgedHeight": {
+					"type": "integer",
+					"example": 0
+				},
+				"consecutiveMissedBlocks": {
+					"type": "integer",
+					"example": 0
+				},
+				"totalVotesReceived": {
 					"type": "string",
-					"example": "4630668157412954",
-					"description": ""
+					"example": "109000000000",
+					"description": "Total votes received"
 				},
 				"status": {
 					"type": "string",
 					"example": "active",
-					"description": "Status of delegates"
-				},
-				"isBanned": {
-					"type": "boolean",
-					"example": "false"
-				},
-				"lastForgedHeight": {
-					"type": "integer",
-					"example": 0
-				},
-				"consecutiveMissedBlocks": {
-					"type": "integer",
-					"example": 0
-				}
-			}
-		},
-		"DelegateSub": {
-			"type": "object",
-			"required": ["username"],
-			"properties": {
-				"missedBlocks": {
-					"type": "integer",
-					"example": 157,
-					"minimum": 1,
 					"description": ""
 				},
-				"producedBlocks": {
-					"type": "integer",
-					"example": 55222,
-					"minimum": 1,
-					"description": ""
+				"sentVotes": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"delegateAddress": {
+								"type": "string",
+								"format": "address",
+								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+							},
+							"amount": {
+								"type": "string",
+								"example": "150000000",
+								"description": "Amount of Lisk to be transferred in this transaction.\n"
+							}
+						}
+					}
 				},
-				"productivity": {
-					"type": "string",
-					"example": "99.72",
-					"description": ""
-				},
-				"rank": {
-					"type": "integer",
-					"example": 93,
-					"minimum": 1,
-					"description": ""
-				},
-				"rewards": {
-					"type": "string",
-					"example": "109000000000",
-					"description": "Amount of rewards in LSK collected during forging"
-				},
-				"username": {
-					"type": "string",
-					"example": "genesis_84",
-					"description": ""
-				},
-				"vote": {
-					"type": "string",
-					"example": "4630668157412954",
-					"description": ""
-				},
-				"isBanned": {
-					"type": "boolean",
-					"example": "false"
-				},
-				"lastForgedHeight": {
-					"type": "integer",
-					"example": 0
-				},
-				"consecutiveMissedBlocks": {
-					"type": "integer",
-					"example": 0
+				"unlocking": {
+					"type": "array",
+					"items": {
+						"type": "object",
+						"properties": {
+							"delegateAddress": {
+								"type": "string",
+								"format": "address",
+								"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+								"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+							},
+							"amount": {
+								"type": "string",
+								"example": "150000000",
+								"description": "Amount of Lisk to be transferred in this transaction.\n"
+							},
+							"unvoteHeight": {
+								"type": "object",
+								"properties": {
+									"start": {
+										"type": "string",
+										"example": "10",
+										"description": ""
+									},
+									"end": {
+										"type": "string",
+										"example": "1000",
+										"description": ""
+									}
+								}
+							}
+						}
+					}
 				}
 			}
 		},
@@ -679,80 +406,82 @@
 			"type": "object",
 			"required": [
 				"id",
-				"type",
-				"amount",
+				"moduleAssetId",
+				"moduleAssetName",
 				"fee",
-				"senderPublicKey",
-				"recipientId",
-				"timestamp",
-				"asset",
-				"signature"
+				"nonce",
+				"block",
+				"sender",
+				"signatures"
 			],
 			"properties": {
 				"id": {
 					"type": "string",
 					"format": "id",
-					"example": "222675625422353767",
+					"example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
 					"minLength": 1,
-					"maxLength": 20,
+					"maxLength": 64,
 					"description": "Unique identifier of the transaction.\nDerived from the transaction signature.\n"
 				},
-				"amount": {
+				"moduleAssetId": {
 					"type": "string",
-					"example": "150000000",
-					"description": "Amount of Lisk to be transferred in this transaction.\n"
+					"example": "2:0",
+					"description": "Combination of transaction module:asset Id.\n"
+				},
+				"moduleAssetName": {
+					"type": "string",
+					"example": "token:transfer",
+					"description": "Combination of transaction module:asset Name.\n"
 				},
 				"fee": {
 					"type": "string",
 					"example": "1000000",
 					"description": "Transaction fee associated with this transaction.\n"
 				},
-				"type": {
-					"type": "integer",
-					"minimum": 0,
-					"maximum": 7,
-					"description": "Describes the Transaction type.\n"
-				},
-				"height": {
-					"type": "integer",
-					"minimum": 1,
-					"example": 8350681,
-					"description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
-				},
 				"nonce": {
 					"type": "string",
 					"example": "0"
 				},
-				"blockId": {
-					"type": "string",
-					"format": "id",
-					"minLength": 1,
-					"maxLength": 20,
-					"example": "6258354802676165798",
-					"description": "The Id of the block, included in this transaction.\n"
+				"block": {
+					"type": "object",
+					"properties": {
+						"id": {
+							"type": "string",
+							"format": "id",
+							"minLength": 1,
+							"maxLength": 64,
+							"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+							"description": "Unique identifier of the block.\nDerived from the block signature.\n"
+						},
+						"height": {
+							"type": "integer",
+							"minimum": 1,
+							"example": 8350681,
+							"description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
+						},
+						"timestamp": {
+							"type": "integer",
+							"example": 1613323667,
+							"description": "UNIX Timestamp"
+						}
+					}
 				},
-				"timestamp": {
-					"type": "integer",
-					"example": 28227090,
-					"description": "Time when the transaction was created.\nUNIX Timestamp.\n"
-				},
-				"senderId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Senders' account.\n"
-				},
-				"senderPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The public key of the Senders' account.\n"
-				},
-				"recipientId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Recipients' account.\n"
+				"sender": {
+					"type": "object",
+					"properties": {
+						"publicKey": {
+							"type": "string",
+							"format": "publicKey",
+							"example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+							"description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+						},
+						"address": {
+							"type": "string",
+							"format": "address",
+							"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+							"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+						}
+					}
 				},
 				"signatures": {
 					"type": "array",
@@ -763,82 +492,34 @@
 						"description": "If the transaction is a multisignature transaction, all signatures of the members of the corresponding multisignature group will be listed here."
 					}
 				},
-				"confirmations": {
-					"type": "integer",
-					"minimum": 0,
-					"description": "Number of times that this transaction has been confirmed by the network.\nBy forging a new block on a chain, all former blocks and their contained transactions in the chain get confirmed by the forging delegate.\n"
-				},
 				"asset": {
-					"type": "object"
-				}
-			}
-		},
-		"TransactionExport": {
-			"type": "object",
-			"required": [
-				"amount",
-				"blockId",
-				"date",
-				"fee",
-				"senderId",
-				"senderPublicKey",
-				"transactionId"
-			],
-			"properties": {
-				"amount": {
-					"type": "string",
-					"example": "150000000",
-					"description": "Amount of Lisk to be transferred in this transaction.\n"
-				},
-				"blockId": {
-					"type": "string",
-					"format": "id",
-					"minLength": 1,
-					"maxLength": 20,
-					"example": "6258354802676165798",
-					"description": "The Id of the block that this transaction is included in.\n"
-				},
-				"date": {
-					"type": "string",
-					"example": "2020-02-18T21:00:23.000Z",
-					"description": "Time when the transaction was created in ISO format.\n"
-				},
-				"fee": {
-					"type": "string",
-					"example": "0.1",
-					"description": "Transaction fee associated with this transaction in LSK.\n"
-				},
-				"recipientId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Recipients' account.\n"
-				},
-				"senderId": {
-					"type": "string",
-					"format": "address",
-					"example": "4935562234363081651L",
-					"description": "Lisk Address of the Senders' account.\n"
-				},
-				"senderPublicKey": {
-					"type": "string",
-					"format": "publicKey",
-					"example": "2ca9a7143fc721fdc540fef893b27e8d648d2288efa61e56264edf01a2c23079",
-					"description": "The public key of the Senders' account.\n"
-				},
-				"transactionId": {
-					"type": "string",
-					"format": "id",
-					"example": "222675625422353767",
-					"minLength": 1,
-					"maxLength": 20,
-					"description": "Unique identifier of the transaction.\nDerived from the transaction signature.\n"
+					"type": "object",
+					"properties": {
+						"amount": {
+							"type": "string",
+							"example": "100003490",
+							"description": "Amount of Lisk to be transferred in this transaction.\n"
+						},
+						"recipientAddress": {
+							"type": "string",
+							"format": "address",
+							"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+							"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+						},
+						"data": {
+							"type": "string",
+							"example": "test"
+						}
+					}
 				}
 			}
 		},
 		"Peer": {
 			"type": "object",
-			"required": ["wsPort", "state"],
+			"required": [
+				"wsPort",
+				"state"
+			],
 			"properties": {
 				"ip": {
 					"type": "string",
@@ -846,32 +527,23 @@
 					"format": "ip",
 					"description": "IPv4 address of the peer node."
 				},
-				"httpPort": {
+				"port": {
 					"type": "integer",
-					"example": 8000,
-					"format": "int32",
-					"minimum": 1,
-					"maximum": 65535,
-					"description": "The port the peer node uses for HTTP requests, e.g. API calls."
+					"example": "4000",
+					"format": "port",
+					"description": "Port of the peer node."
 				},
-				"wsPort": {
-					"type": "integer",
-					"example": 8001,
-					"format": "int32",
-					"minimum": 1,
-					"maximum": 65535,
-					"description": "The port the peer node uses for Websocket Connections, e.g. P2P broadcasts."
-				},
-				"os": {
+				"networkVersion": {
 					"type": "string",
-					"example": "debian",
-					"description": "The Operating System that the peer node runs on."
+					"example": "2.0",
+					"format": "networkVersion",
+					"description": "Network version of Lisk Core that the peer node runs on."
 				},
-				"version": {
+				"networkIdentifier": {
 					"type": "string",
-					"example": "v0.8.0",
-					"format": "version",
-					"description": "The version of Lisk Core that the peer node runs on."
+					"example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
+					"format": "networkVersion",
+					"description": "Network identifier"
 				},
 				"state": {
 					"type": "integer",
@@ -887,18 +559,6 @@
 					"example": 8350681,
 					"description": "Network height on the peer node.\nRepresents the current number of blocks in the chain on the peer node.\n"
 				},
-				"broadhash": {
-					"type": "string",
-					"example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-					"format": "hex",
-					"description": "Broadhash on the peer node.\nBroadhash is established as an aggregated rolling hash of the past five blocks present in the database.\n"
-				},
-				"nonce": {
-					"type": "string",
-					"example": "sYHEDBKcScaAAAYg",
-					"minLength": 1,
-					"description": "Unique Identifier for the peer.\nRandom string.\n"
-				},
 				"location": {
 					"$ref": "#/definitions/Location"
 				}
@@ -907,11 +567,6 @@
 		"Location": {
 			"type": "object",
 			"properties": {
-				"city": {
-					"type": "string",
-					"example": "Berlin",
-					"description": "Name of the city."
-				},
 				"countryCode": {
 					"type": "string",
 					"example": "DE",
@@ -931,79 +586,157 @@
 					"type": "string",
 					"example": "210.239.23.62",
 					"description": "Node's IP address."
-				},
-				"latitude": {
-					"type": "string",
-					"example": "52.5073",
-					"description": "Geolocation data (latitude)."
-				},
-				"longitude": {
-					"type": "string",
-					"example": "13.3643",
-					"description": "Geolocation data (longitude)."
-				},
-				"regionCode": {
-					"type": "string",
-					"example": "BE",
-					"description": "Code of the region."
-				},
-				"regionName": {
-					"type": "string",
-					"example": "Land Berlin",
-					"description": "Name of the region."
-				},
-				"timeZone": {
-					"type": "string",
-					"example": "Europe/Berlin",
-					"description": "Node's time zone."
-				},
-				"zipCode": {
-					"type": "string",
-					"example": "10785",
-					"description": "Zip/Postal code."
 				}
 			}
 		},
 		"NetworkStatus": {
 			"type": "object",
-			"required": ["broadhash", "nethash", "height"],
+			"required": [
+				"data",
+				"meta"
+			],
 			"properties": {
-				"height": {
-					"type": "integer",
-					"example": 123,
-					"minimum": 1,
-					"description": "Current block height of the node.\nRepresents the current number of blocks in the chain on the node.\n"
+				"data": {
+					"type": "object",
+					"description": "Number of items returned in the request.",
+					"properties": {
+						"height": {
+							"type": "integer",
+							"example": 123,
+							"minimum": 1,
+							"description": "Current block height of the node.\nRepresents the current number of blocks in the chain on the node.\n"
+						},
+						"finalizedHeight": {
+							"type": "integer",
+							"example": 1234,
+							"description": "Finalized block height of the network."
+						},
+						"networkVersion": {
+							"type": "string",
+							"format": "networkVersion",
+							"example": "2.0",
+							"description": "Network version"
+						},
+						"networkIdentifier": {
+							"type": "string",
+							"format": "networkIdentifier",
+							"example": "01e47ba4e3e57981642150f4b45f64c2160c10bac9434339888210a4fa5df097",
+							"description": "Network identifier"
+						},
+						"currentReward": {
+							"type": "string",
+							"format": "currentReward",
+							"example": "500000000",
+							"description": "Current reward"
+						},
+						"milestone": {
+							"type": "array",
+							"items": {
+								"example": [
+									"500000000",
+									"400000000",
+									"300000000",
+									"200000000",
+									"100000000"
+								]
+							}
+						},
+						"rewards": {
+							"type": "object",
+							"properties": {
+								"milestones": {
+									"type": "array",
+									"items": {
+										"example": [
+											"500000000",
+											"400000000",
+											"300000000",
+											"200000000",
+											"100000000"
+										]
+									}
+								},
+								"offset": {
+									"type": "integer",
+									"example": 2160
+								},
+								"distance": {
+									"type": "integer",
+									"example": 3000000
+								}
+							}
+						},
+						"registeredModules": {
+							"type": "array",
+							"items": {
+								"example": [
+									"token",
+									"sequence",
+									"keys",
+									"dpos",
+									"legacyAccount"
+								]
+							},
+							"description": "Array of registered modules"
+						},
+						"moduleAssets": {
+							"type": "array",
+							"items": {
+								"properties": {
+									"id": {
+										"type": "string",
+										"example": "2:0"
+									},
+									"name": {
+										"type": "string",
+										"example": "token:transfer"
+									}
+								}
+							},
+							"description": "Array of modules assets"
+						},
+						"blockTime": {
+							"type": "integer",
+							"example": "10"
+						},
+						"communityIdentifier": {
+							"type": "string",
+							"example": "Lisk"
+						},
+						"minRemainingBalance": {
+							"type": "string",
+							"example": "500000000"
+						},
+						"maxPayloadLength": {
+							"type": "integer",
+							"example": "15000"
+						}
+					}
 				},
-				"networkHeight": {
-					"type": "integer",
-					"example": 123,
-					"description": "Current block height of the network.\nRepresents the current number of blocks in the chain on the network.\n"
-				},
-				"epoch": {
-					"type": "string",
-					"format": "date-time",
-					"example": "2016-05-24T17:00:00.000Z",
-					"description": "Timestamp of first block on the network."
-				},
-				"milestone": {
-					"type": "string",
-					"example": "500000000",
-					"description": "The Reward each forger will get for forging a block at the current slot.\nAfter a certain amount of slots, the reward will be reduced.\n"
-				},
-				"nethash": {
-					"type": "string",
-					"example": "ed14889723f24ecc54871d058d98ce91ff2f973192075c0155ba2b7b70ad2511",
-					"description": "Describes the network.\nFor example, the nethash describes the Mainnet or the Testnet, that the node is connecting to.\n"
-				},
-				"supply": {
-					"type": "string",
-					"example": "10575384500000000",
-					"description": "Total supply of LSK in the network."
-				},
-				"reward": {
-					"type": "string",
-					"example": "500000000",
-					"description": "The reward a delegate will get for forging a block.\nDependant on the slot height.\n"
+				"meta": {
+					"type": "object",
+					"required": [
+						"lastUpdate",
+						"lastBlockHeight",
+						"lastBlockId"
+					],
+					"properties": {
+						"lastUpdate": {
+							"type": "string",
+							"example": "1616008148",
+							"description": "timestamp"
+						},
+						"lastBlockHeight": {
+							"type": "integer",
+							"example": 25,
+							"description": "Height of a block"
+						},
+						"blockId": {
+							"type": "string",
+							"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+							"description": "Id of a block"
+						}
+					}
 				}
 			}
 		},
@@ -1056,7 +789,11 @@
 		},
 		"AccountsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1075,7 +812,11 @@
 		},
 		"FeeEstimateEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1101,29 +842,54 @@
 									"example": 2000
 								}
 							}
+						},
+						"baseFeeById": {
+							"type": "object",
+							"properties": {
+								"5:0": {
+									"type": "string",
+									"description": "base fees by Id",
+									"example": 1000000000
+								}
+							}
+						},
+						"baseFeeByName": {
+							"type": "object",
+							"properties": {
+								"5:0": {
+									"type": "string",
+									"description": "base fees by Name",
+									"example": 1000000000
+								}
+							}
+						},
+						"minFeePerByte": {
+							"type": "integer",
+							"example": 1000000000
 						}
 					}
 				},
 				"meta": {
 					"type": "object",
 					"required": [
-						"updated",
-						"blockHeight"
+						"lastUpdate",
+						"lastBlockHeight",
+						"lastBlockId"
 					],
 					"properties": {
-						"updated": {
+						"lastUpdate": {
 							"type": "string",
-							"example": "2020-03-10T09:54:05",
+							"example": "1616008148",
 							"description": "timestamp"
 						},
-						"blockHeight": {
+						"lastBlockHeight": {
 							"type": "integer",
 							"example": 25,
 							"description": "Height of a block"
 						},
 						"blockId": {
 							"type": "string",
-							"example": "641597059875918152",
+							"example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
 							"description": "Id of a block"
 						}
 					}
@@ -1135,7 +901,11 @@
 		},
 		"BlocksWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1154,7 +924,11 @@
 		},
 		"DelegatesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1173,7 +947,11 @@
 		},
 		"PeersWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1192,7 +970,11 @@
 		},
 		"TransactionsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of blocks",
@@ -1209,28 +991,13 @@
 				}
 			}
 		},
-		"TransactionsExportWithEnvelope": {
-			"type": "object",
-			"required": ["data", "meta", "links"],
-			"properties": {
-				"data": {
-					"description": "List of blocks",
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/TransactionExport"
-					}
-				},
-				"meta": {
-					"type": "object"
-				},
-				"links": {
-					"type": "object"
-				}
-			}
-		},
 		"TransactionsStatisticsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"$ref": "#/definitions/TransactionsStatistics"
@@ -1246,7 +1013,11 @@
 		"TransactionsStatistics": {
 			"type": "object",
 			"description": "Transactions statistics",
-			"required": ["timeline", "distributionByType", "distributionByAmount"],
+			"required": [
+				"timeline",
+				"distributionByType",
+				"distributionByAmount"
+			],
 			"properties": {
 				"timeline": {
 					"type": "array",
@@ -1292,19 +1063,93 @@
 				}
 			}
 		},
-		"VotesWithEnvelope": {
+		"VotesReceivedWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of votes",
-					"type": "array",
-					"items": {
-						"$ref": "#/definitions/Vote"
+					"type": "object",
+					"properties": {
+						"account": {
+							"type": "object",
+							"properties": {
+								"address": {
+									"type": "string",
+									"format": "address",
+									"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+									"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+								},
+								"username": {
+									"type": "string",
+									"example": "genesis_84",
+									"description": ""
+								}
+							}
+						},
+						"votes": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Vote"
+							}
+						}
 					}
 				},
 				"meta": {
-					"$ref": "#/definitions/meta"
+					"$ref": "#/definitions/Pagination"
+				},
+				"links": {
+					"type": "object"
+				}
+			}
+		},
+		"VotesSentWithEnvelope": {
+			"type": "object",
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
+			"properties": {
+				"data": {
+					"description": "List of votes",
+					"type": "object",
+					"properties": {
+						"account": {
+							"type": "object",
+							"properties": {
+								"address": {
+									"type": "string",
+									"format": "address",
+									"example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+									"description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+								},
+								"username": {
+									"type": "string",
+									"example": "genesis_84",
+									"description": ""
+								},
+								"votesUsed": {
+									"type": "integer",
+									"example": 10,
+									"description": ""
+								}
+							}
+						},
+						"votes": {
+							"type": "array",
+							"items": {
+								"$ref": "#/definitions/Vote"
+							}
+						}
+					}
+				},
+				"meta": {
+					"$ref": "#/definitions/Pagination"
 				},
 				"links": {
 					"type": "object"
@@ -1313,7 +1158,11 @@
 		},
 		"Vote": {
 			"type": "object",
-			"required": ["address", "publicKey", "balance", "username"],
+			"required": [
+				"address",
+				"amount",
+				"username"
+			],
 			"properties": {
 				"address": {
 					"type": "string",
@@ -1321,16 +1170,9 @@
 					"example": "4935562234363081651L",
 					"description": "Lisk Address of the delegate the queried account voted for."
 				},
-				"publicKey": {
+				"amount": {
 					"type": "string",
-					"format": "publicKey",
-					"example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-					"description": "Public key of the delegate the queried account voted for."
-				},
-				"balance": {
-					"type": "string",
-					"example": 1081560729258,
-					"description": "Balance of the delegate the queried account voted for."
+					"example": 1081560729258
 				},
 				"username": {
 					"type": "string",
@@ -1342,7 +1184,10 @@
 		},
 		"Pagination": {
 			"type": "object",
-			"required": ["count", "offset"],
+			"required": [
+				"count",
+				"offset"
+			],
 			"properties": {
 				"count": {
 					"type": "integer",
@@ -1366,7 +1211,10 @@
 		},
 		"meta": {
 			"type": "object",
-			"required": ["count", "offset"],
+			"required": [
+				"count",
+				"offset"
+			],
 			"properties": {
 				"count": {
 					"type": "integer",
@@ -1406,9 +1254,27 @@
 				}
 			}
 		},
+		"postTransactionWithEnvelope": {
+			"type": "object",
+			"properties": {
+				"message": {
+					"type": "string",
+					"example": "Transaction payload was successfully passed to the network node"
+				},
+				"transactionId": {
+					"type": "string",
+					"example": "123456789",
+					"description": "Transaction Id"
+				}
+			}
+		},
 		"NetworkStatistics": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1445,31 +1311,17 @@
 								}
 							}
 						},
-						"coreVer": {
+						"networkVersion": {
 							"type": "object",
 							"description": "Number of nodes on the given Lisk Core versions.",
 							"properties": {
-								"1.4.0": {
+								"2.0": {
 									"type": "integer",
 									"example": 12
 								},
-								"1.5.0": {
+								"2.1": {
 									"type": "integer",
 									"example": 41
-								}
-							}
-						},
-						"os": {
-							"type": "object",
-							"description": "Number of nodes using a given operating system.",
-							"properties": {
-								"linux3.10": {
-									"type": "integer",
-									"example": 33
-								},
-								"linux4.4": {
-									"type": "integer",
-									"example": 71
 								}
 							}
 						}
@@ -1487,7 +1339,11 @@
 		},
 		"NewsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1514,7 +1370,10 @@
 		},
 		"News": {
 			"type": "object",
-			"required": ["content", "source"],
+			"required": [
+				"content",
+				"source"
+			],
 			"properties": {
 				"content": {
 					"type": "string",
@@ -1549,7 +1408,11 @@
 		},
 		"MarketPriceWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1597,7 +1460,11 @@
 		},
 		"MarketOrdersWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1635,7 +1502,10 @@
 		},
 		"MarketOrder": {
 			"type": "object",
-			"required": ["amount", "price"],
+			"required": [
+				"amount",
+				"price"
+			],
 			"properties": {
 				"amount": {
 					"type": "string",
@@ -1661,7 +1531,11 @@
 		},
 		"MarketCandlesWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"description": "List of news from the NewsFeed",
@@ -1789,7 +1663,11 @@
 		},
 		"MarketStatisticsWithEnvelope": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object",
@@ -1944,7 +1822,11 @@
 		},
 		"FeatureNotImplemented": {
 			"type": "object",
-			"required": ["data", "meta", "links"],
+			"required": [
+				"data",
+				"meta",
+				"links"
+			],
 			"properties": {
 				"data": {
 					"type": "object"
@@ -1956,59 +1838,32 @@
 					"type": "object"
 				}
 			}
-		}
-	},
-	"responses": {
-		"badParameter": {
-			"description": "Bad input parameter"
 		},
-		"notFound": {
-			"description": "Not found"
-		}
-	},
-	"apiJson": {
-		"swagger": "2.0",
-		"info": {
-			"title": "Lisk Service API",
-			"version": "1.0",
-			"contact": {
-				"email": "admin@lisk.io"
-			},
-			"description":
-			"# Lisk Service API Documentation\n\nThe Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media. \n\nThe main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller components. The overall strategy is to provide one component for one specific purpose. \n\nAs a purely backend project it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.\n\nThe API can be accessed by the `https://service.lisk.io`.\nIt is also possible to access the Testnet network by `https://testnet-service.lisk.io`\n\nThe Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.\n\n## Endpoint Logic\n\nThe logic of the endpoints are as follows:\n- the structure is always based on `/<root_entity>/<object>/<properties>`\n\n## Responses\n\nAll responses are returned in the JSON format - `application/json`.\n\nEach API request has the following structure:\n\n```\n{\n  \"data\": {}, // Contains the requested data\n  \"meta\": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`\n  \"links\": {} // Contains links to connected API calls from here, e.g. pagination links\n}\n```\n\n## The `account_id` Parameter\n\nUsers that want to retrieve account data can rely on its unique properties, namely the Account ID (ex. 1234567L), the public key or a registered delegate name.\n\n## The Date Format\n\nis different to the original Lisk Core API, as all timestamps used by the Lisk Service are now in the UNIX timestamp format. The blockchain dates are always expressed as integers, and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.\n",
-			"license": {
-				"name": "GPL v3.0",
-				"url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
+		"badRequestEnvelope": {
+			"type": "object",
+			"properties": {
+				"error": {
+					"type": "boolean",
+					"example": true
+				},
+				"message": {
+					"type": "string",
+					"example": "Transaction payload was rejected by the network node"
+				}
 			}
 		},
-		"basePath": "/api/v1",
-		"tags": [
-			{
-				"name": "Accounts",
-				"description": "Lisk Network account API calls"
-			},
-			{
-				"name": "Blocks",
-				"description": "Lisk Network block API calls"
-			},
-			{
-				"name": "Delegates",
-				"description": "Lisk Network delegate API calls"
-			},
-			{
-				"name": "Peers",
-				"description": "Lisk Network peer API calls"
-			},
-			{
-				"name": "Transactions",
-				"description": "Lisk Network transaction API calls"
-			},
-			{
-				"name": "Network",
-				"description": "Lisk Network utils"
+		"serverErrorEnvelope": {
+			"type": "object",
+			"properties": {
+				"error": {
+					"type": "boolean",
+					"example": true
+				},
+				"message": {
+					"type": "string",
+					"example": "Unable to reach a network node"
+				}
 			}
-		],
-		"schemes": ["http", "https"],
-		"paths": {}
+		}
 	}
 }

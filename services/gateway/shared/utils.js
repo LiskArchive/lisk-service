@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
+const fs = require('fs');
 
 const transformParams = (type, params) => {
 	const data = [];
@@ -58,7 +60,22 @@ const response = {
 	},
 };
 
+const requireAllJson = async (apiName) => {
+	const data = {};
+	const dir = path.resolve(__dirname, `../apis/${apiName}/swagger`);
+	const result = await fs.readdirSync(dir);
+	if (result.length) {
+		result.forEach(file => {
+			/* eslint-disable-next-line import/no-dynamic-require */
+			const content = require(`${dir}/${file}`);
+			Object.assign(data, content);
+		});
+	}
+	return data;
+};
+
 module.exports = {
 	transformParams,
 	response,
+	requireAllJson,
 };

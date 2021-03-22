@@ -1,0 +1,280 @@
+{
+    "parameters": {
+        "ip": {
+            "name": "ip",
+            "in": "query",
+            "description": "IP of the node or delegate",
+            "type": "string",
+            "format": "ip"
+        },
+        "httpPort": {
+            "name": "httpPort",
+            "in": "query",
+            "description": "Http port of the node or delegate",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535
+        },
+        "wsPort": {
+            "name": "wsPort",
+            "in": "query",
+            "description": "Web socket port for the node or delegate",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 65535
+        },
+        "os": {
+            "name": "os",
+            "in": "query",
+            "description": "OS of the node",
+            "type": "string"
+        },
+        "version": {
+            "name": "version",
+            "in": "query",
+            "description": "Lisk version of the node",
+            "type": "string",
+            "format": "version"
+        },
+        "state": {
+            "name": "state",
+            "in": "query",
+            "description": "Current state of the network",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "maximum": 2
+        },
+        "height": {
+            "name": "height",
+            "in": "query",
+            "description": "Current height of the network",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1
+        },
+        "broadhash": {
+            "name": "broadhash",
+            "in": "query",
+            "description": "Broadhash of the network",
+            "type": "string",
+            "format": "hex"
+        },
+        "searchQuery": {
+            "in": "query",
+            "name": "q",
+            "required": true,
+            "description": "Search query",
+            "type": "string"
+        },
+        "limit": {
+            "in": "query",
+            "name": "limit",
+            "description": "Limit applied to results",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 10
+        },
+        "limit101": {
+            "in": "query",
+            "name": "limit",
+            "description": "Limit applied to results",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 1,
+            "maximum": 101,
+            "default": 10
+        },
+        "offset": {
+            "name": "offset",
+            "in": "query",
+            "description": "Offset value for results",
+            "type": "integer",
+            "format": "int32",
+            "minimum": 0,
+            "default": 0
+        },
+        "address": {
+            "name": "address",
+            "in": "query",
+            "description": "Lisk account address",
+            "type": "string",
+            "format": "address",
+            "minLength": 1,
+            "maxLength": 22
+        },
+        "publickey": {
+            "name": "publickey",
+            "in": "query",
+            "description": "Public key to query",
+            "type": "string",
+            "format": "publicKey",
+            "minLength": 1
+        },
+        "secpubkey": {
+            "name": "secpubkey",
+            "in": "query",
+            "description": "Second public key to query",
+            "type": "string",
+            "format": "publicKey",
+            "minLength": 1
+        },
+        "username": {
+            "name": "username",
+            "in": "query",
+            "description": "Delegate username to query",
+            "type": "string",
+            "format": "username",
+            "minLength": 1,
+            "maxLength": 20
+        },
+        "block": {
+            "name": "block",
+            "in": "query",
+            "description": "Block id to query",
+            "type": "string",
+            "format": "id",
+            "minLength": 1,
+            "maxLength": 20
+        },
+        "blockIdPath": {
+            "name": "block_id",
+            "in": "path",
+            "required": true,
+            "description": "Block id to query",
+            "type": "string",
+            "format": "id",
+            "minLength": 1,
+            "maxLength": 20
+        },
+        "id": {
+            "name": "id",
+            "in": "query",
+            "description": "Transaction id to query",
+            "type": "string",
+            "format": "id",
+            "minLength": 1,
+            "maxLength": 20,
+            "pattern": "^\\d*$"
+        },
+        "transactionIdPath": {
+            "name": "transaction_id",
+            "in": "path",
+            "required": true,
+            "description": "Transaction id to query",
+            "type": "string",
+            "format": "id",
+            "minLength": 1,
+            "maxLength": 20,
+            "pattern": "^\\d*$"
+        },
+        "accountAddressPublicKeyUsernameQuery": {
+            "name": "address",
+            "in": "query",
+            "description": "Lisk address, public key or account name",
+            "type": "string",
+            "minLength": 1
+        },
+        "accountAddressPublicKeyUsernamePath": {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "description": "Lisk address, public key or account name",
+            "type": "string",
+            "minLength": 1
+        },
+        "recipient": {
+            "name": "recipient",
+            "in": "query",
+            "description": "Lisk address, public key or account name (recipientId)",
+            "type": "string",
+            "minLength": 1
+        },
+        "sender": {
+            "name": "sender",
+            "in": "query",
+            "description": "Lisk address, public key or account name (senderId)",
+            "type": "string",
+            "minLength": 1
+        },
+        "type": {
+            "name": "type",
+            "in": "query",
+            "description": "Transaction type (0-12)",
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 12
+        },
+        "transactionData": {
+            "name": "data",
+            "in": "query",
+            "description": "Search in transaction data field. Exact match, but can use % as wildcard e.g. data=test%",
+            "type": "string",
+            "minLength": 1
+        },
+        "min": {
+            "name": "min",
+            "in": "query",
+            "description": "Minimum transaction amount in Beddows",
+            "type": "integer",
+            "minimum": 0
+        },
+        "max": {
+            "name": "max",
+            "in": "query",
+            "description": "Maximum transaction amount in Beddows",
+            "type": "integer",
+            "minimum": 0
+        },
+        "from": {
+            "name": "from",
+            "in": "query",
+            "description": "Starting UNIX timestamp",
+            "type": "integer",
+            "minimum": 0
+        },
+        "to": {
+            "name": "to",
+            "in": "query",
+            "description": "Ending UNIX timestamp",
+            "type": "integer",
+            "minimum": 1
+        },
+        "storeName": {
+            "name": "storeName",
+            "in": "path",
+            "description": "Name of the store container",
+            "required": true,
+            "type": "string"
+        },
+        "storeId": {
+            "name": "storeId",
+            "in": "path",
+            "description": "Id of the object in the container",
+            "required": true,
+            "type": "string"
+        },
+        "marketDataProvider": {
+            "name": "provider",
+            "in": "path",
+            "description": "Source of the news among different data providers (Poloniex, Bittrex, etc.)",
+            "required": true,
+            "type": "string",
+            "enum": [
+                "poloniex",
+                "bittrex"
+            ]
+        },
+        "status": {
+            "name": "status",
+            "in": "query",
+            "description": "Delegate account status",
+            "type": "string",
+            "minLength": 1
+        }
+    }
+}

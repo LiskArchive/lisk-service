@@ -14,7 +14,7 @@
  *
  */
 const transactionsSource = require('../../../sources/version2/postTransactions');
-const { transformParams } = require('../../swagger/utils');
+const { transformParams } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',

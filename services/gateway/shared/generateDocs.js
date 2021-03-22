@@ -15,12 +15,10 @@
  */
 const { Utils } = require('lisk-service-framework');
 const path = require('path');
-
-const apiJsonVersion1 = require('./version1/apiSchema');
-const apiJsonVersion2 = require('./version2/apiSchema');
+const { requireAllJson } = require('./utils');
 
 const createApiDocs = async (apiName, apiJson) => {
-	const services = Utils.requireAllJs(path.resolve(__dirname, `../${apiName}/methods`));
+	const services = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
 	const methods = Object.keys(services).reduce((acc, key) => {
 		const method = services[key];
 		return { ...acc, [key]: method.schema };
@@ -33,20 +31,22 @@ const createApiDocs = async (apiName, apiJson) => {
 	return apiJson;
 };
 
-const genDocs = (ctx) => {
+const genDocs = async ctx => {
 	let swaggerDoc;
 	if (ctx.endpoint.baseUrl === '/api/v1') {
+		const apiJsonVersion1 = await requireAllJson('http-version1');
 		const { apiJson } = apiJsonVersion1;
 		apiJson.parameters = apiJsonVersion1.parameters;
 		apiJson.definitions = apiJsonVersion1.definitions;
 		apiJson.responses = apiJsonVersion1.responses;
-		swaggerDoc = createApiDocs('http-version1', apiJson);
+		swaggerDoc = await createApiDocs('http-version1', apiJson);
 	} else if (ctx.endpoint.baseUrl === '/api/v2') {
+		const apiJsonVersion2 = await requireAllJson('http-version2');
 		const { apiJson } = apiJsonVersion2;
 		apiJson.parameters = apiJsonVersion2.parameters;
 		apiJson.definitions = apiJsonVersion2.definitions;
 		apiJson.responses = apiJsonVersion2.responses;
-		swaggerDoc = createApiDocs('http-version2', apiJson);
+		swaggerDoc = await createApiDocs('http-version2', apiJson);
 	}
 	return swaggerDoc;
 };
