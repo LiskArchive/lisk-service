@@ -101,7 +101,7 @@ xdescribe('Transactions API', () => {
 
 	describe('Retrieve a transaction by transaction ID', () => {
 		it('returns requested transaction with known transaction id', async () => {
-			const response = await api.get(`${endpoint}?id=${refTransaction.id}`);
+			const response = await api.get(`${endpoint}?transactionId=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
 			response.data.forEach(transaction => expect(transaction)
@@ -110,12 +110,12 @@ xdescribe('Transactions API', () => {
 		});
 
 		it('long transaction id -> 500', async () => {
-			const response = await api.get(`${endpoint}?id=412875216073141752800000`, 500);
+			const response = await api.get(`${endpoint}?transactionId=412875216073141752800000`, 500);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('invalid transaction id -> 500', async () => {
-			const response = await api.get(`${endpoint}?id=41287`, 500);
+			const response = await api.get(`${endpoint}?transactionId=41287`, 500);
 			expect(response).toMap(notFoundSchema);
 		});
 	});
@@ -176,7 +176,7 @@ xdescribe('Transactions API', () => {
 
 	describe('Retrieve transaction list by address', () => {
 		it('known address -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${refTransaction.asset.recipientAddress}`);
+			const response = await api.get(`${endpoint}?recipientAddress=${refTransaction.asset.recipientAddress}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -185,13 +185,13 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid address -> 404', async () => {
-			const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid address -> 400', async () => {
+			const response = await api.get(`${endpoint}?senderAddress=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('known sender address -> ok', async () => {
-			const response = await api.get(`${endpoint}?sender=${refTransaction.sender.address}`);
+			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -200,15 +200,15 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid sender address -> 404', async () => {
-			const response = await api.get(`${endpoint}?sender=000002345`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid sender address -> 400', async () => {
+			const response = await api.get(`${endpoint}?senderAddress=000002345`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
-	describe('Retrieve transaction list by public key', () => {
+	describe('Retrieve transaction list by sender public key', () => {
 		it('existing sender public key -> ok', async () => {
-			const response = await api.get(`${endpoint}?sender=publickey:${refDelegate.summary.publicKey}`);
+			const response = await api.get(`${endpoint}?senderPublicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -217,13 +217,8 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid sender query -> 404', async () => {
-			const response = await api.get(`${endpoint}?sender=${refDelegate.summary.publicKey}`, 404);
-			expect(response).toMap(notFoundSchema);
-		});
-
 		it('existing recipient public key -> ok', async () => {
-			const response = await api.get(`${endpoint}?recipient=publickey:${refDelegate.summary.publicKey}`);
+			const response = await api.get(`${endpoint}?recipientPublicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -231,16 +226,11 @@ xdescribe('Transactions API', () => {
 				.toMap(transactionSchemaVersion5, { recipientPublicKey: refDelegate.summary.publicKey }));
 			expect(response.meta).toMap(metaSchema);
 		});
-
-		it('invalid recipient query -> 404', async () => {
-			const response = await api.get(`${endpoint}?recipient=${refDelegate.summary.publicKey}`, 404);
-			expect(response).toMap(notFoundSchema);
-		});
 	});
 
 	describe('Retrieve transaction list by username', () => {
 		it('existing sender username -> ok', async () => {
-			const response = await api.get(`${endpoint}?sender=username:${refDelegate.summary.username}`);
+			const response = await api.get(`${endpoint}?senderUsername=${refDelegate.summary.username}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -250,7 +240,7 @@ xdescribe('Transactions API', () => {
 		});
 
 		it('existing recipient username -> ok', async () => {
-			const response = await api.get(`${endpoint}?recipient=username:${refDelegate.summary.username}`);
+			const response = await api.get(`${endpoint}?recipientUsername=${refDelegate.summary.username}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
