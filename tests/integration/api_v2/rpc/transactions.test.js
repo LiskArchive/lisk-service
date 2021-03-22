@@ -21,6 +21,7 @@ const {
 	emptyResultEnvelopeSchema,
 	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
+	invalidParamsSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
@@ -40,7 +41,7 @@ describe('Method get.transactions', () => {
 
 	describe('is able to retrieve transaction using transaction ID', () => {
 		it('known transaction id -> ok', async () => {
-			const response = await requestTransactions({ id: refTransaction.id });
+			const response = await requestTransactions({ transactionId: refTransaction.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeArrayOfSize(1);
@@ -51,7 +52,7 @@ describe('Method get.transactions', () => {
 		});
 
 		it('empty transaction id -> empty response', async () => {
-			const response = await requestTransactions({ id: '' });
+			const response = await requestTransactions({ transactionId: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
@@ -124,7 +125,7 @@ describe('Method get.transactions', () => {
 
 	describe('is able to retrieve list of transactions using sender attributes', () => {
 		it('known sender address -> ok', async () => {
-			const response = await requestTransactions({ sender: refTransaction.sender.address });
+			const response = await requestTransactions({ senderAddress: refTransaction.sender.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -136,17 +137,16 @@ describe('Method get.transactions', () => {
 		});
 
 		it('invalid sender address -> empty response', async () => {
-			const response = await requestTransactions({ sender: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			const response = await requestTransactions({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
+			console.log(response);
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
 	describe('is able to retrieve list of transactions using recipient attributes', () => {
 		it('known recipient address -> ok', async () => {
 			const response = await requestTransactions({
-				recipient: refTransaction.asset.recipientAddress,
+				recipientAddress: refTransaction.asset.recipientAddress,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -154,37 +154,14 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5, { recipient: refTransaction.asset.recipientAddress }));
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('invalid recipient address -> empty response', async () => {
-			const response = await requestTransactions({ recipient: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
-		});
-	});
-
-	describe('is able to retrieve list of transactions by address', () => {
-		it('known address -> ok', async () => {
-			const response = await requestTransactions({ address: refTransaction.sender.address });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
+			console.log(result.data);
 			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid address -> empty response', async () => {
-			const response = await requestTransactions({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+		it('invalid recipient address -> empty response', async () => {
+			const response = await requestTransactions({ recipientAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 
