@@ -157,12 +157,6 @@ const validateParams = async params => {
 		params.senderPublicKey = account.publicKey;
 	}
 
-	if (params.recipientAddress) {
-		const { recipientAddress, ...remParams } = params;
-		params = remParams;
-		params.recipientId = recipientAddress;
-	}
-
 	if (params.recipientPublicKey) {
 		const { recipientPublicKey, ...remParams } = params;
 		params = remParams;
