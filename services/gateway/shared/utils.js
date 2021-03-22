@@ -74,8 +74,11 @@ const requireAllJson = async (apiName) => {
 	return data;
 };
 
+const getSwaggerDescription = params => `${params.description}\n RPC => ${params.rpcMethod}`;
+
 module.exports = {
 	transformParams,
 	response,
 	requireAllJson,
+	getSwaggerDescription,
 };

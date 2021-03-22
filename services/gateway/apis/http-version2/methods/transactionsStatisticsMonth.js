@@ -15,7 +15,7 @@
  */
 const transactionsStatisticsMonthSource = require('../../../sources/version2/transactionsStatisticsMonth');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
-const { transformParams, response } = require('../../../shared/utils');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -31,7 +31,10 @@ module.exports = {
 		transactionSchema[this.swaggerApiPath] = { get: {} };
 		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
 		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transaction statistics month';
-		transactionSchema[this.swaggerApiPath].get.description = `Returns transaction statistics month\n RPC=> ${this.rpcMethod}`;
+		transactionSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns transaction statistics aggregated per month',
+		});
 		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].get.responses = {
 			200: {

@@ -15,7 +15,7 @@
  */
 const peersSource = require('../../../sources/version2/peers');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
-const { transformParams, response } = require('../../../shared/utils');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -36,7 +36,10 @@ module.exports = {
 		peerSchema[this.swaggerApiPath] = { get: {} };
 		peerSchema[this.swaggerApiPath].get.tags = this.tags;
 		peerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
-		peerSchema[this.swaggerApiPath].get.description = `Returns peers data\n RPC=> ${this.rpcMethod}`;
+		peerSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns peers data',
+		});
 		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {

@@ -14,7 +14,7 @@
  *
  */
 const transactionsSource = require('../../../sources/version2/postTransactions');
-const { transformParams } = require('../../../shared/utils');
+const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -30,7 +30,10 @@ module.exports = {
 		transactionSchema[this.swaggerApiPath] = { post: {} };
 		transactionSchema[this.swaggerApiPath].post.tags = this.tags;
 		transactionSchema[this.swaggerApiPath].post.summary = 'Post transactions';
-		transactionSchema[this.swaggerApiPath].post.description = `Post transactions and return transactionID\n RPC=> ${this.rpcMethod}`;
+		transactionSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Post transactions and return transactionId',
+		});
 		transactionSchema[this.swaggerApiPath].post.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].post.responses = {
 			200: {

@@ -15,7 +15,7 @@
  */
 const accountsSource = require('../../../sources/version2/accounts');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
-const { transformParams, response } = require('../../../shared/utils');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -50,7 +50,10 @@ module.exports = {
 			this.params,
 		);
 		accountSchema[this.swaggerApiPath].get.summary = 'Requests account data';
-		accountSchema[this.swaggerApiPath].get.description = `Returns account data\n RPC=> ${this.rpcMethod}`;
+		accountSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns account data',
+		});
 		accountSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of accounts with details',
