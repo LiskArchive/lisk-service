@@ -241,6 +241,20 @@ const getTransactions = async params => {
 				transaction.username = account && account.username ? account.username : undefined;
 				transaction.isPending = false;
 
+				// for recipient info
+				if (transaction.asset.recipientAddress) {
+					const recipientInfo = await getIndexedAccountInfo({
+						address: transaction.asset.recipientAddress,
+					});
+					transaction.asset.recipient = {};
+					transaction.asset.recipient = {
+						address: recipientInfo.address,
+						publicKey: recipientInfo.publicKey,
+						username: recipientInfo.username,
+					};
+					delete transaction.asset.recipientAddress;
+				}
+
 				// The two lines below are needed for transaction statistics
 				if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
 				if (transaction.asset.amount) transaction.amount = transaction.asset.amount;
