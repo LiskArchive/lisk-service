@@ -137,33 +137,46 @@ const validateParams = async params => {
 		});
 	}
 
-	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
-		throw new Error('Nonce based sorting is only possible along with senderId');
+	if (params.nonce && !params.senderAddress) {
+		throw new Error('Nonce based retrieval is only possible along with senderId');
 	}
 
-	if (params.username) {
-		const { username, ...remParams } = params;
+	if (params.senderAddress) {
+		const { senderAddress, ...remParams } = params;
 		params = remParams;
 
-		const [accountInfo] = await getIndexedAccountInfo({ username });
-		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
-		params.senderPublicKey = accountInfo.publicKey;
-	}
-
-	if (params.senderIdOrRecipientId) {
-		const { senderIdOrRecipientId, ...remParams } = params;
-		params = remParams;
-
-		params.senderId = senderIdOrRecipientId;
-		params.orWhere = { recipientId: senderIdOrRecipientId };
-	}
-
-	if (params.senderId) {
-		const { senderId, ...remParams } = params;
-		params = remParams;
-
-		const account = await getIndexedAccountInfo({ address: senderId });
+		const account = await getIndexedAccountInfo({ address: senderAddress });
 		params.senderPublicKey = account.publicKey;
+	}
+
+	if (params.senderUsername) {
+		const { senderUsername, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ username: senderUsername });
+		params.senderPublicKey = account.publicKey;
+	}
+
+	if (params.recipientAddress) {
+		const { recipientAddress, ...remParams } = params;
+		params = remParams;
+		params.recipientId = recipientAddress;
+	}
+
+	if (params.recipientPublicKey) {
+		const { recipientPublicKey, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey });
+		params.recipientId = account.address;
+	}
+
+	if (params.recipientUsername) {
+		const { recipientUsername, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ username: recipientUsername });
+		params.recipientId = account.address;
 	}
 
 	if (params.search) {
