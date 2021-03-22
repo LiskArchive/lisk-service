@@ -39,7 +39,7 @@
             },
             "generatorAddress": {
                 "type": "string",
-                "example": "7749538982696555450L",
+                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
                 "description": "Delegate address."
             },
             "generatorPublicKey": {

@@ -10,7 +10,7 @@
                 "type": "string",
                 "format": "address",
                 "example": "4935562234363081651L",
-                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt consists of multiple numbers followed by a capital 'L' at the end.\n"
+                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
             },
             "publicKey": {
                 "type": "string",
