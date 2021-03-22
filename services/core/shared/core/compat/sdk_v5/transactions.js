@@ -117,12 +117,12 @@ const validateParams = async params => {
 	if (params.amount && params.amount.includes(':')) {
 		const { amount, ...remParams } = params;
 		params = remParams;
-
-		params.propBetween = {
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
 			property: 'amount',
 			from: amount.split(':')[0],
 			to: amount.split(':')[1],
-		};
+		});
 	}
 
 	if (params.fromTimestamp || params.toTimestamp) {
