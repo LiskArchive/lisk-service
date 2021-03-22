@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
 
@@ -61,16 +62,31 @@ const response = {
 };
 
 const requireAllJson = async (apiName) => {
-	const data = {};
+	const data = {
+		definitions: {},
+	};
 	const dir = path.resolve(__dirname, `../apis/${apiName}/swagger`);
 	const result = await fs.readdirSync(dir);
-	if (result.length) {
-		result.forEach(file => {
-			/* eslint-disable-next-line import/no-dynamic-require */
-			const content = require(`${dir}/${file}`);
-			Object.assign(data, content);
-		});
-	}
+	await BluebirdPromise.map(
+		result,
+		async fileName => {
+			if (fileName === 'definitions') {
+				const definitions = await fs.readdirSync(`${dir}/definitions`);
+				await BluebirdPromise.map(
+					definitions,
+					async definition => {
+						/* eslint-disable-next-line import/no-dynamic-require */
+						const content = require(`${dir}/definitions/${definition}`);
+						Object.assign(data.definitions, content);
+					},
+				);
+			} else {
+				/* eslint-disable-next-line import/no-dynamic-require */
+				const content = require(`${dir}/${fileName}`);
+				Object.assign(data, content);
+			}
+		},
+	);
 	return data;
 };
 
