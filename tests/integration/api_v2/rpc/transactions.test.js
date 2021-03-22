@@ -138,7 +138,6 @@ describe('Method get.transactions', () => {
 
 		it('invalid sender address -> empty response', async () => {
 			const response = await requestTransactions({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			console.log(response);
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
@@ -154,7 +153,6 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			console.log(result.data);
 			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
 			expect(result.meta).toMap(metaSchema);
 		});
