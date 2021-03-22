@@ -19,11 +19,11 @@ module.exports = {
 	type: 'moleculer',
 	method: 'core.transactions',
 	params: {
-		transactionId: '=',
+		id: 'transactionId,string',
 		senderAddress: '=',
 		senderPublicKey: '=',
 		senderUsername: '=',
-		recipientAddress: '=',
+		recipientId: 'recipientAddress,string',
 		recipientPublicKey: '=',
 		recipientUsername: '=',
 		moduleAssetId: '=',
