@@ -103,6 +103,10 @@ const normalizeTransaction = tx => {
 	if (tx.asset.recipientAddress) {
 		tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
 	}
+	if (tx.asset.votes && tx.asset.votes.length) {
+		tx.asset.votes
+			.map(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
+	}
 	return tx;
 };
 
@@ -138,7 +142,7 @@ const validateParams = async params => {
 	}
 
 	if (params.nonce && !params.senderAddress) {
-		throw new Error('Nonce based retrieval is only possible along with senderId');
+		throw new Error('Nonce based retrieval is only possible along with senderAddress');
 	}
 
 	if (params.senderAddress) {
@@ -241,7 +245,7 @@ const getTransactions = async params => {
 				transaction.username = account && account.username ? account.username : undefined;
 				transaction.isPending = false;
 
-				// for recipient info
+				// For recipient info
 				if (transaction.asset.recipientAddress) {
 					const { recipientAddress, ...asset } = transaction.asset;
 					const recipientInfo = await getIndexedAccountInfo({
