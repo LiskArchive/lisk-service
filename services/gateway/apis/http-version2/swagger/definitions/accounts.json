@@ -228,7 +228,7 @@
                             "example": "150000000",
                             "description": "Amount of Lisk to be transferred in this transaction.\n"
                         },
-                        "unvoteHeight": {
+                        "height": {
                             "type": "object",
                             "properties": {
                                 "start": {
