@@ -32,5 +32,28 @@
                 "description": "UNIX Timestamp"
             }
         }
+    },
+    "ForgersWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of forgers",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/forgers"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
     }
 }

@@ -8,7 +8,7 @@
         ],
         "properties": {
             "data": {
-                "description": "List of blocks",
+                "description": "List of delegates",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/Delegate"

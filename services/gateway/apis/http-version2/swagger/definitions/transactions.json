@@ -120,7 +120,7 @@
         ],
         "properties": {
             "data": {
-                "description": "List of blocks",
+                "description": "List of transactions",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/Transaction"

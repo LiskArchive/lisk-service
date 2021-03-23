@@ -42,7 +42,7 @@ module.exports = {
 				schema: {
 					type: 'array',
 					items: {
-						$ref: '#/definitions/forgers',
+						$ref: '#/definitions/ForgersWithEnvelope',
 					},
 				},
 			},

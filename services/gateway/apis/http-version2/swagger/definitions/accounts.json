@@ -257,7 +257,7 @@
         ],
         "properties": {
             "data": {
-                "description": "List of blocks",
+                "description": "List of accounts",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/Account"

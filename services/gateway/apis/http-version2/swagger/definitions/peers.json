@@ -58,7 +58,7 @@
         ],
         "properties": {
             "data": {
-                "description": "List of blocks",
+                "description": "List of peers",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/Peer"
