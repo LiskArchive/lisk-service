@@ -22,10 +22,12 @@ const peerStates = {
 
 const getPeers = async () => {
 	const connectedPeers = await coreApi.getPeers(peerStates.CONNECTED);
-	connectedPeers.data.forEach(peer => {
+	connectedPeers.data.forEach(orgPeer => {
+		const { ipAddress, options: { height }, ...peer } = orgPeer;
+
 		peer.state = peerStates.CONNECTED;
-		peer.height = peer.options.height;
-		peer.ip = peer.ipAddress;
+		peer.height = height;
+		peer.ip = ipAddress;
 		return peer;
 	});
 
