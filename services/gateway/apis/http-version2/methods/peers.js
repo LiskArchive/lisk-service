@@ -22,7 +22,7 @@ module.exports = {
 	rpcMethod: 'get.peers',
 	tags: ['Peers'],
 	params: {
-		ip: { optional: true, type: 'string' },
+		ip: { optional: true, type: 'string', pattern: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/ },
 		networkVersion: { optional: true, type: 'string' },
 		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
 		height: { optional: true, type: 'number', integer: true },
