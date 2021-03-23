@@ -243,16 +243,17 @@ const getTransactions = async params => {
 
 				// for recipient info
 				if (transaction.asset.recipientAddress) {
+					const { recipientAddress, ...asset } = transaction.asset;
 					const recipientInfo = await getIndexedAccountInfo({
-						address: transaction.asset.recipientAddress,
+						address: recipientAddress,
 					});
+					transaction.asset = asset;
 					transaction.asset.recipient = {};
 					transaction.asset.recipient = {
 						address: recipientInfo.address,
-						publicKey: recipientInfo.publicKey,
-						username: recipientInfo.username,
+						publicKey: recipientInfo.publicKey || undefined,
+						username: recipientInfo.username || undefined,
 					};
-					delete transaction.asset.recipientAddress;
 				}
 
 				// The two lines below are needed for transaction statistics
