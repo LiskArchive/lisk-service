@@ -63,6 +63,7 @@ const response = {
 const requireAllJson = apiName => {
 	const data = {
 		definitions: {},
+		parameters: {},
 	};
 	const dir = path.resolve(__dirname, `../apis/${apiName}/swagger`);
 	const result = fs.readdirSync(dir);
@@ -73,6 +74,13 @@ const requireAllJson = apiName => {
 				/* eslint-disable-next-line import/no-dynamic-require */
 				const content = require(`${dir}/definitions/${definition}`);
 				Object.assign(data.definitions, content);
+			});
+		} else if (fileName === 'parameters') {
+			const parameters = fs.readdirSync(`${dir}/parameters`);
+			parameters.forEach(parameter => {
+				/* eslint-disable-next-line import/no-dynamic-require */
+				const content = require(`${dir}/parameters/${parameter}`);
+				Object.assign(data.parameters, content);
 			});
 		} else {
 			/* eslint-disable-next-line import/no-dynamic-require */
