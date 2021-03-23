@@ -16,6 +16,7 @@
 const { Utils } = require('lisk-service-framework');
 const path = require('path');
 const { requireAllJson } = require('./utils');
+const config = require('../config');
 
 const createApiDocs = (apiName, apiJsonPaths) => {
 	const services = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
@@ -34,9 +35,9 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 const genDocs = ctx => {
 	let httpVersion;
 	if (ctx.endpoint.baseUrl === '/api/v1') {
-		httpVersion = 'http-version1';
+		httpVersion = config.api.versions.apiVersion1;
 	} else if (ctx.endpoint.baseUrl === '/api/v2') {
-		httpVersion = 'http-version2';
+		httpVersion = config.api.versions.apiVersion2;
 	}
 	const { apiJson, parameters, definitions, responses } = requireAllJson(httpVersion);
 

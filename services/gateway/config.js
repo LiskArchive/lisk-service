@@ -58,4 +58,12 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 config.api.http = process.env.ENABLE_HTTP_API || 'http-version1,http-version1-compat,http-status,http-version2';
 config.api.ws = process.env.ENABLE_WS_API || 'rpc,rpc-v1,blockchain,rpc-v2';
 
+/**
+ * API versions
+ */
+config.api.versions = {
+	apiVersion1: 'http-version1',
+	apiVersion2: 'http-version2',
+};
+
 module.exports = config;
