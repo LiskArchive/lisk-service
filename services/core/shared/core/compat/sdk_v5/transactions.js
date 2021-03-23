@@ -105,7 +105,7 @@ const normalizeTransaction = tx => {
 	}
 	if (tx.asset.votes && tx.asset.votes.length) {
 		tx.asset.votes
-			.map(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
+			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
 	}
 	return tx;
 };
@@ -254,9 +254,9 @@ const getTransactions = async params => {
 					transaction.asset = asset;
 					transaction.asset.recipient = {};
 					transaction.asset.recipient = {
-						address: recipientInfo.address || undefined,
-						publicKey: recipientInfo.publicKey || undefined,
-						username: recipientInfo.username || undefined,
+						address: recipientInfo && recipientInfo.address ? recipientInfo.address : undefined,
+						publicKey: recipientInfo && recipientInfo.address ? recipientInfo.publicKey : undefined,
+						username: recipientInfo && recipientInfo.address ? recipientInfo.username : undefined,
 					};
 				}
 
