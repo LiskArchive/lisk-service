@@ -254,7 +254,7 @@ const getTransactions = async params => {
 					transaction.asset = asset;
 					transaction.asset.recipient = {};
 					transaction.asset.recipient = {
-						address: recipientInfo.address,
+						address: recipientInfo.address || undefined,
 						publicKey: recipientInfo.publicKey || undefined,
 						username: recipientInfo.username || undefined,
 					};
