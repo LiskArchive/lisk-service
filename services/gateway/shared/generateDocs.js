@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
+const {
+	Utils,
+} = require('lisk-service-framework');
 const path = require('path');
 const { requireAllJson } = require('./utils');
 const config = require('../config');
@@ -33,14 +35,11 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 };
 
 const genDocs = ctx => {
-	let httpVersion;
-	if (ctx.endpoint.baseUrl === '/api/v1') {
-		httpVersion = config.api.versions.apiVersion1;
-	} else if (ctx.endpoint.baseUrl === '/api/v2') {
-		httpVersion = config.api.versions.apiVersion2;
-	}
+	if (!config.api.versions[ctx.endpoint.baseUrl]) return {
+		info: { description: `This route offers no specs for ${ctx.endpoint.baseUrl}` },
+	};
+	const httpVersion = config.api.versions[ctx.endpoint.baseUrl];
 	const { apiJson, parameters, definitions, responses } = requireAllJson(httpVersion);
-
 	return {
 		...apiJson,
 		parameters,
