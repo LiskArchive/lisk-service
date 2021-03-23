@@ -137,13 +137,13 @@
                 "type": "object",
                 "properties": {
                     "delegate": {
-                        "$ref": "#/definitions/Delegate"
+                        "$ref": "#/definitions/delegate"
                     }
                 }
             }
         }
     },
-    "Delegate": {
+    "delegate": {
         "type": "object",
         "required": [
             "username"
