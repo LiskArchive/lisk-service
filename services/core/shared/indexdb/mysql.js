@@ -146,7 +146,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 			return knex.transaction(async trx => {
 				// TODO: Consider replacing promise all to Bluebird
-				const inserts = await Promise.all(rows.map(row => trx(tableName).insert(row).onConflict('id').merge()
+				const inserts = await Promise.all(rows.map(row => trx(tableName)
+					.insert(row)
+					.onConflict(tableConfig.primaryKey)
+					.merge()
 					.transacting(trx)));
 				logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 				return inserts;
@@ -222,7 +225,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		.del();
 
 	const count = async (params = {}) => {
-		const query = knex.count('id as count').table(tableName);
+		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
 		if (params.orWhere) {
