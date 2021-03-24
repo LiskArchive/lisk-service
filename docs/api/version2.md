@@ -18,12 +18,8 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 - [1. Lisk Service HTTP API Documentation](#1-lisk-service-http-api-documentation)
 	- [1.1. Table of Contents](#11-table-of-contents)
 	- [1.2. Endpoint Logic](#12-endpoint-logic)
-	- [1.3. Responses](#13-responses)
+	- [1.3. Response format](#13-response-format)
 	- [1.4. The Date Format](#14-the-date-format)
-	- [1.5. Access paths and compatibility](#15-access-paths-and-compatibility)
-	- [1.6. Endpoint Logic](#16-endpoint-logic)
-	- [1.7. Responses](#17-responses)
-	- [1.8. Date Format](#18-date-format)
 - [2. Lisk Blockchain-related Endpoints](#2-lisk-blockchain-related-endpoints)
 	- [2.1. Accounts](#21-accounts)
 		- [2.1.1. Accounts & Delegates](#211-accounts--delegates)
@@ -49,7 +45,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 The logic of the endpoints are as follows:
 - the structure is always based on `/<root_entity>/<object>/<properties>`
 
-## Responses
+## Response format
 
 All responses are returned in the JSON format - `application/json`.
 
@@ -66,43 +62,6 @@ Each API request has the following structure:
 ## The Date Format
 
 is different to the original Lisk Core API, as all timestamps used by the Lisk Service are now in the UNIX timestamp format. The blockchain dates are always expressed as integers, and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
-
-
-
-## Access paths and compatibility
-
-The WebSocket API can be accessed by the `wss://service.lisk.io/rpc-v1`.
-
-You can also access the testnet network by `wss://testnet-service.lisk.io/rpc-v1`.
-
-The Lisk Service WebSocket API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard. The specification below contains numerous examples how to use the API in practice.
-
-## Endpoint Logic
-
-The logic of the endpoints comes as follows: the method naming is always based on the following pattern: `<action>.<entity>`, where the action is equivalent to HTTP standard (GET, POST, PUT, etc.) and `entity` is a part of the application logic, ex. `accounts`, `transactions` and so on.
-
-## Responses
-
-All responses are returned in the JSON format - application/json.
-
-Each API request has the following structure:
-
-```
-{
-    "jsonrpc": "2.0",    // standard JSON-RPC envelope
-    "result": {
-        "data": {}, // Contains the requested data
-        "meta": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`
-    },
-    "id": 1    // Number of response in chain
-}
-```
-
-## Date Format
-
-In the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
-
-
 
 # Lisk Blockchain-related Endpoints
 
