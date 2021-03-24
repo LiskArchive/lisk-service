@@ -120,6 +120,8 @@ const postTransaction = async transaction => {
     return response;
 };
 
+const getTransactionsSchemas = async () => (await getApiClient()).schemas;
+
 module.exports = {
     getBlockByID,
     getBlocksByIDs,
@@ -134,4 +136,5 @@ module.exports = {
     getForgers,
     getPendingTransactions,
     postTransaction,
+    getTransactionsSchemas,
 };

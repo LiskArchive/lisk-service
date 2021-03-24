@@ -21,6 +21,7 @@ const {
 	getTransactionsStatisticsMonth,
 	getPendingTransactions,
 	postTransactions,
+	getTransactionsSchemas,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -78,6 +79,14 @@ module.exports = [
 		controller: postTransactions,
 		params: {
 			transaction: { type: 'string', optional: false },
+		},
+	},
+	{
+		name: 'transactions.schemas',
+		controller: getTransactionsSchemas,
+		params: {
+			moduleAssetId: { type: 'string', optional: true },
+			moduleAssetName: { type: 'string', optional: true },
 		},
 	},
 ];
