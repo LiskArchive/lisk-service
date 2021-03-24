@@ -111,6 +111,120 @@
             }
         }
     },
+    "TransactionSchemas": {
+        "type": "object",
+        "required": [
+            "moduleAssetId",
+            "moduleAssetName",
+            "schema",
+            "propeties"
+        ],
+        "properties": {
+            "moduleAssetId": {
+                "type": "string",
+                "example": "2:0",
+                "description": "Combination of transaction module:asset Id.\n"
+            },
+            "moduleAssetName": {
+                "type": "string",
+                "example": "token:transfer",
+                "description": "Combination of transaction module:asset Name.\n"
+            },
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "example": "lisk/transfer-asset",
+                        "description": "Unique identifier of the transaction schema\n"
+                    },
+                    "title": {
+                        "type": "string",
+                        "minimum": 1,
+                        "example": "Transfer transaction asset",
+                        "description": "Title of schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "example": [
+                                "amount",
+                                "recipientAddress",
+                                "data"
+                            ]
+                        }
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "recipientAddress": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    }
+                                }
+                            },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 64
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
     "TransactionsWithEnvelope": {
         "type": "object",
         "required": [
@@ -220,6 +334,29 @@
             }
         }
     },
+    "TransactionsSchemaWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of transaction schemas",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/TransactionSchemas"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
+    },
     "badRequestEnvelope": {
         "type": "object",
         "properties": {
@@ -243,6 +380,19 @@
             "message": {
                 "type": "string",
                 "example": "Unable to reach a network node"
+            }
+        }
+    },
+    "notFoundEnvelope": {
+        "type": "object",
+        "properties": {
+            "error": {
+                "type": "boolean",
+                "example": true
+            },
+            "message": {
+                "type": "string",
+                "example": "Schema corresponding moduleAssetId: '3:1' not found."
             }
         }
     }
