@@ -160,9 +160,12 @@ sort | Array of strings | `[“balance:asc”, “balance:desc”, “rank:asc�
       ],
       "unlocking": [
         {
-          "delegateAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-          "amount": "string number",
-          "unvoteHeight": 30
+          "delegateAddress": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+          "amount": "150000000",
+          "height": {
+            "start": "10",
+            "end": "2010"
+          }
         }
       ]
     }
