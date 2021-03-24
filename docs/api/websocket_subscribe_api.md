@@ -30,7 +30,7 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 
 <!-- /TOC -->
 
-## Access paths and compatibility
+## <a id='12-access-paths-and-compatibility'>Access paths and compatibility</a>
 
 The blockchain update API can be accessed by the following path `https://service.lisk.io/blockchain`.
 
@@ -40,11 +40,11 @@ You might also be interested in accessing the `testnet` network by using the `ht
 
 The specification below contains numerous examples how to use the API in practice.
 
-## Endpoint Logic
+## <a id='13-endpoint-logic'>Endpoint Logic</a>
 
 The logic of the endpoints comes as follows: the method naming is always based on the following pattern: `<action>.<entity>`, where the `action` is equivalent to method type performed on server (ie. update) and `entity` is a part of the application logic, ex. `accounts`, `transactions`.
 
-## Responses
+## <a id='14-responses'>Responses</a>
 
 All responses are returned in the JSON format - application/json.
 
@@ -61,13 +61,13 @@ Each API request has the following structure:
 }
 ```
 
-## Date Format
+## <a id='15-date-format'>Date Format</a>
 
 On the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
 
-## Example of a client implementation
+## <a id='16-example-of-a-client-implementation'>Example of a client implementation</a>
 
-### Node.js
+### <a id='161-nodejs'>Node.js</a>
 
 ```javascript
 const io = require('socket.io-client');
@@ -77,11 +77,11 @@ connection.on('update.block', (block) => { (...) });
 
 # Blockchain updates (`/blockchain`)
 
-## `update.block`
+## <a id='21-updateblock'>`update.block`</a>
 
 Updates about a newly forged block with its all data.
 
-### Response
+### <a id='211-response'>Response</a>
 
 ```jsonc
 {
@@ -116,11 +116,11 @@ Updates about a newly forged block with its all data.
 }
 ```
 
-## `update.round`
+## <a id='22-updateround'>`update.round`</a>
 
 Updates about the forging delegates for the next round.
 
-### Response
+### <a id='221-response'>Response</a>
 
 ```jsonc
 {
@@ -142,11 +142,11 @@ Updates about the forging delegates for the next round.
 }
 ```
 
-## `update.forgers`
+## <a id='23-updateforgers'>`update.forgers`</a>
 
 Updates the current forgers' list, so the current forger is on the first position.
 
-### Response
+### <a id='231-response'>Response</a>
 
 ```jsonc
 {
@@ -168,11 +168,11 @@ Updates the current forgers' list, so the current forger is on the first positio
 }
 ```
 
-## `update.transactions.confirmed`
+## <a id='24-updatetransactionsconfirmed'>`update.transactions.confirmed`</a>
 
 Updates about transactions from the last block.
 
-### Response
+### <a id='241-response'>Response</a>
 
 ```jsonc
 {
