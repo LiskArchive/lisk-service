@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
+
+const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const coreApi = require('./coreApi');
 const {
@@ -150,6 +153,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ address: senderAddress });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderAddress} not found.` } };
 		params.senderPublicKey = account.publicKey;
 	}
 
@@ -158,6 +162,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ username: senderUsername });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderUsername} not found.` } };
 		params.senderPublicKey = account.publicKey;
 	}
 
@@ -166,6 +171,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientPublicKey} not found.` } };
 		params.recipientId = account.address;
 	}
 
@@ -174,6 +180,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ username: recipientUsername });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientUsername} not found.` } };
 		params.recipientId = account.address;
 	}
 
