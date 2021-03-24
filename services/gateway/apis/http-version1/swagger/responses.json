@@ -1,0 +1,10 @@
+{
+    "responses": {
+        "badParameter": {
+            "description": "Bad input parameter"
+        },
+        "notFound": {
+            "description": "Not found"
+        }
+    }
+}

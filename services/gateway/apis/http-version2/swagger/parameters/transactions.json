@@ -1,0 +1,78 @@
+{
+    "id": {
+        "name": "id",
+        "in": "query",
+        "description": "Transaction id to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 20,
+        "pattern": "^\\d*$"
+    },
+    "moduleAssetId": {
+        "name": "moduleAssetId",
+        "in": "query",
+        "description": "Combination of module:asset Id",
+        "type": "string",
+        "minLength": 1
+    },
+    "moduleAssetName": {
+        "name": "moduleAssetName",
+        "in": "query",
+        "description": "Combination of module:asset Name",
+        "type": "string",
+        "minLength": 1
+    },
+    "recipient": {
+        "name": "recipient",
+        "in": "query",
+        "description": "Lisk address, public key or account name (recipientId)",
+        "type": "string",
+        "minLength": 1
+    },
+    "sender": {
+        "name": "sender",
+        "in": "query",
+        "description": "Lisk address, public key or account name (senderId)",
+        "type": "string",
+        "minLength": 1
+    },
+    "amount": {
+        "name": "amount",
+        "in": "query",
+        "description": "Amount range of from:to amount",
+        "type": "integer",
+        "minimum": 0
+    },
+    "transaction": {
+        "name": "transaction",
+        "in": "query",
+        "description": "Binary payload",
+        "type": "string",
+        "minLength": 1
+    },
+    "data": {
+        "name": "data",
+        "in": "query",
+        "description": "Query by asset data",
+        "type": "string",
+        "minLength": 1
+    },
+    "includePending": {
+        "name": "includePending",
+        "in": "query",
+        "description": "Retrieve pending transactions",
+        "type": "boolean",
+        "minLength": 1,
+        "default": false
+    },
+    "block": {
+        "name": "block",
+        "in": "query",
+        "description": "Block id to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 20
+    }
+}

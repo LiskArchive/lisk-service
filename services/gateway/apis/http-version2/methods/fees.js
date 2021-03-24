@@ -15,6 +15,7 @@
  */
 const feeEstimatesSource = require('../../../sources/version2/fees');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -26,13 +27,15 @@ module.exports = {
 		feeEstimatePerByteSchema[this.swaggerApiPath] = { get: {} };
 		feeEstimatePerByteSchema[this.swaggerApiPath].get.tags = this.tags;
 		feeEstimatePerByteSchema[this.swaggerApiPath].get.summary = 'Requests fee estimates';
+		feeEstimatePerByteSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns fee estimates',
+		});
 		feeEstimatePerByteSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'fee estimate per byte',
 				schema: {
-					items: {
-						$ref: '#/definitions/FeeEstimateEnvelope',
-					},
+					$ref: '#/definitions/FeeEstimateEnvelope',
 				},
 			},
 			404: {
