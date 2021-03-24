@@ -73,17 +73,11 @@ const transactionCountSchema = {
 
 const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema;
 
-<<<<<<< HEAD
-const unlockingItemSchema = {
-	amount: Joi.string().required(),
-	unvoteHeight: Joi.number().required(),
-=======
 const unlockingHeightSchema = pomHeightSchema;
 
 const unlockingItemSchema = {
 	amount: Joi.string().required(),
 	height: Joi.object(unlockingHeightSchema).required(),
->>>>>>> development
 	delegateAddress: Joi.string().required(),
 };
 
