@@ -15,25 +15,21 @@
  */
 const coreApi = require('./coreApi');
 
-let allTransactionSchemas;
-
 const getTransactionsSchemas = async params => {
 	const transactionsSchemas = {
 		data: [],
 		meta: {},
 	};
 
-	if (!allTransactionSchemas) {
-		const response = await coreApi.getTransactionsSchemas();
+	const response = await coreApi.getTransactionsSchemas();
 
-		allTransactionSchemas = response.transactionsAssets.map(txAsset => {
-			const formattedTxAsset = {};
-			formattedTxAsset.moduleAssetId = String(txAsset.moduleID).concat(':').concat(txAsset.assetID);
-			formattedTxAsset.moduleAssetName = String(txAsset.moduleName).concat(':').concat(txAsset.assetName);
-			formattedTxAsset.schema = txAsset.schema;
-			return formattedTxAsset;
-		});
-	}
+	const allTransactionSchemas = response.transactionsAssets.map(txAsset => {
+		const formattedTxAsset = {};
+		formattedTxAsset.moduleAssetId = String(txAsset.moduleID).concat(':').concat(txAsset.assetID);
+		formattedTxAsset.moduleAssetName = String(txAsset.moduleName).concat(':').concat(txAsset.assetName);
+		formattedTxAsset.schema = txAsset.schema;
+		return formattedTxAsset;
+	});
 
 	const { moduleAssetId, moduleAssetName } = params;
 
