@@ -37,6 +37,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 		- [2.5.1. Network status](#251-network-status)
 		- [2.5.2. Network statistics](#252-network-statistics)
 		- [2.5.3. Dynamic fees](#253-dynamic-fees)
+		- [2.5.4. Transaction schema](#254-transaction-schema)
 
 <!-- /TOC -->
 
@@ -958,4 +959,65 @@ No params required.
 
 ```
 https://service.lisk.io/api/v2/fees`
+```
+
+### Transaction schema
+
+Retrieves network statistics such as number of peers, node versions, heights etc.
+
+#### Endpoints
+
+- `HTTP /api/v2/transactions/schemas`
+- `RPC get.transactions.schemas`
+
+#### Request parameters
+
+
+Parameter | Type | Validation | Default | Comment
+-- | -- | -- | -- | --
+moduleAssetId | String | `ModuleId:AssetId /[0-9]+:[0-9]+/` | *(empty)* | Transfer transaction: moduleID = 2,assetID = 0
+moduleAssetName | String | `ModuleName:AssetName /[a-z]+:[a-z]+/` | *(empty)* | Transfer transaction: moduleName = token, assetName = transfer
+
+#### Response example
+
+200 OK
+
+Make the version 2 API able to retrieve data by those criteria.
+
+```jsonc
+{
+  "data": [
+    {
+      "moduleAssetId": "2:0",
+      "moduleAssetName": "token:transfer",
+      "schema": {
+        ...
+      }
+    },
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 0,
+    "total": 10
+  },
+  "links": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+
+```
+
+404 Not Found
+```jsonc
+{
+  "error": true,
+  "message": "The entity <moduleAssetId/moduleAssetName> not found."
+}
+
 ```
