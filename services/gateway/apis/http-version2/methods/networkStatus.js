@@ -14,6 +14,7 @@
  *
  */
 const networkStatusSource = require('../../../sources/version2/networkStatus');
+const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -25,14 +26,15 @@ module.exports = {
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
 		networkSchema[this.swaggerApiPath].get.summary = 'Requests network status';
+		networkSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns network status',
+		});
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'network status info',
 				schema: {
-					type: 'array',
-					items: {
-						$ref: '#/definitions/NetworkStatus',
-					},
+					$ref: '#/definitions/NetworkStatus',
 				},
 			},
 			404: {

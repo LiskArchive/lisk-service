@@ -15,6 +15,7 @@
  */
 const accountsSource = require('../../../sources/version2/accounts');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -39,6 +40,30 @@ module.exports = {
 			type: 'string',
 			enum: ['balance:asc', 'balance:desc', 'rank:asc', 'rank:desc'],
 		},
+	},
+	get schema() {
+		const accountSchema = {};
+		accountSchema[this.swaggerApiPath] = { get: {} };
+		accountSchema[this.swaggerApiPath].get.tags = this.tags;
+		accountSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'accounts',
+			this.params,
+		);
+		accountSchema[this.swaggerApiPath].get.summary = 'Requests account data';
+		accountSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns account data',
+		});
+		accountSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of accounts with details',
+				schema: {
+					$ref: '#/definitions/AccountsWithEnvelope',
+				},
+			},
+		};
+		Object.assign(accountSchema[this.swaggerApiPath].get.responses, response);
+		return accountSchema;
 	},
 	source: accountsSource,
 	envelope,
