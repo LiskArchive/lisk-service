@@ -15,6 +15,7 @@
  */
 const transactionSchemaSource = require('../../../sources/version2/transactionsSchemas');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -30,6 +31,35 @@ module.exports = {
 		['moduleAssetId'],
 		['moduleAssetName'],
 	],
+	get schema() {
+		const transactionSchema = {};
+		transactionSchema[this.swaggerApiPath] = { get: {} };
+		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transactions schema';
+		transactionSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns transaction schemas',
+		});
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of transaction schemas',
+				schema: {
+					$ref: '#/definitions/TransactionsSchemaWithEnvelope',
+				},
+			},
+			404: {
+				description: 'Not found',
+				schema: {
+					$ref: '#/definitions/notFoundEnvelope',
+				},
+			},
+			400: {
+				description: 'Bad input parameter',
+			},
+		};
+		return transactionSchema;
+	},
 	source: transactionSchemaSource,
 	envelope,
 };
