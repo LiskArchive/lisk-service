@@ -89,7 +89,8 @@ module.exports = {
                     params.$req = req;
                     params.$res = res;
                 }
-
+                if (req.baseUrl) req.$endpoint.baseUrl = req.baseUrl;
+                
                 // Call the action
                 let data = await ctx.call(req.$endpoint, params, route.callOptions);
 

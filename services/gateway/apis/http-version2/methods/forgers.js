@@ -15,16 +15,41 @@
  */
 const forgersSource = require('../../../sources/version2/forgers');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
-    version: '2.0',
-    swaggerApiPath: '/forgers',
-    rpcMethod: 'get.forgers',
-    params: {
-        limit: { optional: true, min: 1, max: 103, type: 'number', default: 103 },
-        offset: { optional: true, min: 0, type: 'number', default: 0 },
-    },
-    tags: ['Forgers'],
-    source: forgersSource,
-    envelope,
+	version: '2.0',
+	swaggerApiPath: '/forgers',
+	rpcMethod: 'get.forgers',
+	params: {
+		limit: { optional: true, min: 1, max: 103, type: 'number', default: 103 },
+		offset: { optional: true, min: 0, type: 'number', default: 0 },
+	},
+	tags: ['Forgers'],
+	get schema() {
+		const forgerSchema = {};
+		forgerSchema[this.swaggerApiPath] = { get: {} };
+		forgerSchema[this.swaggerApiPath].get.tags = this.tags;
+		forgerSchema[this.swaggerApiPath].get.summary = 'Requests next forgers list';
+		forgerSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns forgers list',
+		});
+		forgerSchema[this.swaggerApiPath].get.parameters = transformParams('forgers', this.params);
+		forgerSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'list of next forgers',
+				schema: {
+					type: 'array',
+					items: {
+						$ref: '#/definitions/ForgersWithEnvelope',
+					},
+				},
+			},
+		};
+		Object.assign(forgerSchema[this.swaggerApiPath].get.responses, response);
+		return forgerSchema;
+	},
+	source: forgersSource,
+	envelope,
 };

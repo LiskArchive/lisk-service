@@ -1,0 +1,37 @@
+{
+    "blockId": {
+        "name": "blockId",
+        "in": "query",
+        "description": "Block id to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 20
+    },
+    "generatorPublicKey": {
+        "name": "publickey",
+        "in": "query",
+        "description": "Public key to query",
+        "type": "string",
+        "format": "publicKey",
+        "minLength": 1
+    },
+    "generatorUsername": {
+        "name": "username",
+        "in": "query",
+        "description": "Delegate username to query",
+        "type": "string",
+        "format": "username",
+        "minLength": 1,
+        "maxLength": 20
+    },
+    "generatorAddress": {
+        "name": "address",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "format": "address",
+        "minLength": 1,
+        "maxLength": 22
+    }
+}

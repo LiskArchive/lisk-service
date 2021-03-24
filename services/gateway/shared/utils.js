@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
+const fs = require('fs');
 
 const transformParams = (type, params) => {
 	const data = [];
@@ -58,7 +60,42 @@ const response = {
 	},
 };
 
+const requireAllJson = apiName => {
+	const data = {
+		definitions: {},
+		parameters: {},
+	};
+	const dir = path.resolve(__dirname, `../apis/${apiName}/swagger`);
+	const result = fs.readdirSync(dir);
+	result.forEach(fileName => {
+		if (fileName === 'definitions') {
+			const definitions = fs.readdirSync(`${dir}/definitions`);
+			definitions.forEach(definition => {
+				/* eslint-disable-next-line import/no-dynamic-require */
+				const content = require(`${dir}/definitions/${definition}`);
+				Object.assign(data.definitions, content);
+			});
+		} else if (fileName === 'parameters') {
+			const parameters = fs.readdirSync(`${dir}/parameters`);
+			parameters.forEach(parameter => {
+				/* eslint-disable-next-line import/no-dynamic-require */
+				const content = require(`${dir}/parameters/${parameter}`);
+				Object.assign(data.parameters, content);
+			});
+		} else {
+			/* eslint-disable-next-line import/no-dynamic-require */
+			const content = require(`${dir}/${fileName}`);
+			Object.assign(data, content);
+		}
+	});
+	return data;
+};
+
+const getSwaggerDescription = params => `${params.description}\n RPC => ${params.rpcMethod}`;
+
 module.exports = {
 	transformParams,
 	response,
+	requireAllJson,
+	getSwaggerDescription,
 };

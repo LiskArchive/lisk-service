@@ -15,6 +15,7 @@
  */
 const votesSource = require('../../../sources/version2/votes');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -35,5 +36,26 @@ module.exports = {
 		['username'],
 		['publickey'],
 	],
+	get schema() {
+		const votesSchema = {};
+		votesSchema[this.swaggerApiPath] = { get: {} };
+		votesSchema[this.swaggerApiPath].get.tags = this.tags;
+		votesSchema[this.swaggerApiPath].get.summary = 'Requests votes sent data';
+		votesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns votes sent data',
+		});
+		votesSchema[this.swaggerApiPath].get.parameters = transformParams('votes', this.params);
+		votesSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of votes sent',
+				schema: {
+					$ref: '#/definitions/VotesSentWithEnvelope',
+				},
+			},
+		};
+		Object.assign(votesSchema[this.swaggerApiPath].get.responses, response);
+		return votesSchema;
+	},
 	source: votesSource,
 };
