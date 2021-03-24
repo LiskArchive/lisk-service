@@ -108,6 +108,7 @@ module.exports = {
 	getPendingTransactions: nop,
 	loadAllPendingTransactions: nop,
 	postTransactions: nop,
+	getTransactionsSchemas: nop,
 	events,
 	init,
 };

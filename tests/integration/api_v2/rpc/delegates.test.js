@@ -25,7 +25,7 @@ const {
 const {
 	accountSchemaVersion5,
 	dpos,
-} = require('../../../schemas/account.schema');
+} = require('../../../schemas/api_v2/account.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getDelegates = async params => request(wsRpcUrl, 'get.accounts', params);
@@ -120,7 +120,7 @@ describe('Method get.delegates', () => {
 	describe('returns delegates based on public key', () => {
 		it('returns known delegate by public key', async () => {
 			const response = await getDelegates({
-				isDelegate: true, publickey: refDelegate.summary.publicKey,
+				isDelegate: true, publicKey: refDelegate.summary.publicKey,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

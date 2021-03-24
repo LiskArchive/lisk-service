@@ -29,5 +29,13 @@
         "description": "Filter delegate accounts",
         "type": "string",
         "minLength": 1
+    },
+    "publicKey": {
+        "name": "publicKey",
+        "in": "query",
+        "description": "Public key to query",
+        "type": "string",
+        "format": "publicKey",
+        "minLength": 1
     }
 }

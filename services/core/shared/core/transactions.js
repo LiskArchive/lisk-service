@@ -85,6 +85,29 @@ const postTransactions = async params => {
 	}
 };
 
+const getTransactionsSchemas = async params => {
+	const transactionsSchemas = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await coreApi.getTransactionsSchemas(params);
+	if (response.data) transactionsSchemas.data = response.data;
+	if (response.meta) transactionsSchemas.meta = response.meta;
+
+	if (!transactionsSchemas.data.length && (params.moduleAssetId || params.moduleAssetName)) {
+		const errorMessage = params.moduleAssetId
+			? `Schema corresponding moduleAssetId: '${params.moduleAssetId}' not found.`
+			: `Schema corresponding moduleAssetName: '${params.moduleAssetName}' not found.`;
+		return {
+			data: { error: errorMessage },
+			status: 'NOT_FOUND',
+		};
+	}
+
+	return transactionsSchemas;
+};
+
 const initPendingTransactionsList = (() => coreApi.loadAllPendingTransactions())();
 
 const reload = () => coreApi.loadAllPendingTransactions();
@@ -97,4 +120,5 @@ module.exports = {
 	getTransactionById: coreApi.getTransactionById,
 	getTransactionsByBlockId: coreApi.getTransactionsByBlockId,
 	postTransactions,
+	getTransactionsSchemas,
 };

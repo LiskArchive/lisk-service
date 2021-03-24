@@ -14,15 +14,7 @@
  *
  */
 module.exports = {
-	ip: '=,string',
-	port: '=,number',
-	networkVersion: '=,string',
-	state: '=,string',
-	height: '=,number',
-	networkIdentifier: '=,string',
-	location: {
-		countryCode: 'location.country_code,string',
-		latitude: 'location.latitude,string',
-		longitude: 'location.longitude,string',
-	},
+	moduleAssetId: '=,string',
+	moduleAssetName: '=,string',
+	schema: '=',
 };

@@ -13,16 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+import Joi from 'joi';
+
+const transactionAssetSchema = {
+	$id: Joi.string().required(),
+	title: Joi.string().optional(),
+	type: Joi.string().required(),
+	required: Joi.array().required(),
+	properties: Joi.object().required(),
+};
+
+const transactionsSchemasSchema = {
+	moduleAssetId: Joi.string().required(),
+	moduleAssetName: Joi.string().required(),
+	schema: Joi.object(transactionAssetSchema).required(),
+};
+
 module.exports = {
-	ip: '=,string',
-	port: '=,number',
-	networkVersion: '=,string',
-	state: '=,string',
-	height: '=,number',
-	networkIdentifier: '=,string',
-	location: {
-		countryCode: 'location.country_code,string',
-		latitude: 'location.latitude,string',
-		longitude: 'location.longitude,string',
-	},
+	transactionsSchemasSchema: Joi.object(transactionsSchemasSchema).required(),
 };

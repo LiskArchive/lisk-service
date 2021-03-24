@@ -13,16 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const transactionsSchema = require('./mappings/transactionsSchema');
+
 module.exports = {
-	ip: '=,string',
-	port: '=,number',
-	networkVersion: '=,string',
-	state: '=,string',
-	height: '=,number',
-	networkIdentifier: '=,string',
-	location: {
-		countryCode: 'location.country_code,string',
-		latitude: 'location.latitude,string',
-		longitude: 'location.longitude,string',
+	type: 'moleculer',
+	method: 'core.transactions.schemas',
+	params: {
+		moduleAssetId: '=',
+		moduleAssetName: '=',
+	},
+	definition: {
+		data: ['data', transactionsSchema],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
 	},
 };
