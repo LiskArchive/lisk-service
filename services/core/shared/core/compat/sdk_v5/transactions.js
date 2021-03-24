@@ -148,6 +148,12 @@ const validateParams = async params => {
 		throw new Error('Nonce based retrieval is only possible along with senderAddress');
 	}
 
+	if (params.senderId) {
+		const { senderId, ...remParams } = params;
+		params = remParams;
+		params.senderAddress = senderId;
+	}
+
 	if (params.senderAddress) {
 		const { senderAddress, ...remParams } = params;
 		params = remParams;
