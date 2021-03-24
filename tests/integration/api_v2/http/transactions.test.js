@@ -33,7 +33,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
 const endpoint = `${baseUrlV2}/transactions`;
 
-xdescribe('Transactions API', () => {
+describe('Transactions API', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
@@ -46,7 +46,7 @@ xdescribe('Transactions API', () => {
 			[refTransaction] = response1.data;
 		} while (!refTransaction.asset.recipientAddress);
 
-		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
+		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&search=test_delegate`);
 		[refDelegate] = response2.data;
 	});
 
@@ -212,8 +212,10 @@ xdescribe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5, { senderPublicKey: refDelegate.summary.publicKey }));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.publicKey).toEqual(refDelegate.summary.publicKey);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -227,8 +229,10 @@ xdescribe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5, { recipientPublicKey: refDelegate.summary.publicKey }));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.asset.recipientAddress).toEqual(refDelegate.summary.address);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
