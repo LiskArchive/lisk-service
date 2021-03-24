@@ -30,9 +30,7 @@ const getPeers = async params => {
 
     const state = params.state ? params.state.toString().toLowerCase() : undefined;
 
-    if (state === '2' || state === 'connected') peers = await peerCache.get('connected');
-    else if (state === '1' || state === 'disconnected') peers = await peerCache.get('disconnected');
-    else if (state === '0' || state === 'unknown') peers = []; // not supported anymore
+    if (['connected', 'disconnected'].includes(state)) peers = await peerCache.get(state);
     else peers = await peerCache.get();
 
     const intersect = (a, b) => {
