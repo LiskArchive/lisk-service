@@ -73,9 +73,9 @@ describe('Delegates API', () => {
 		});
 	});
 
-	describe('GET /accounts?isDelegate=true&publickey', () => {
+	describe('GET /accounts?isDelegate=true&publicKey', () => {
 		it('known delegate by public key -> ok', async () => {
-			const response = await api.get(`${endpoint}?isDelegate=true&publickey=${refDelegate.summary.publicKey}`);
+			const response = await api.get(`${endpoint}?isDelegate=true&publicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
 			response.data.forEach(account => {
@@ -85,8 +85,8 @@ describe('Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('wrong delegate publickey -> 400', async () => {
-			const response = await api.get(`${endpoint}?isDelegate=true&publickey=412875216073141752800000`, 400);
+		it('wrong delegate publicKey -> 400', async () => {
+			const response = await api.get(`${endpoint}?isDelegate=true&publicKey=412875216073141752800000`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
