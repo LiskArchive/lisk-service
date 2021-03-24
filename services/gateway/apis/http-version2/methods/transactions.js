@@ -26,6 +26,7 @@ module.exports = {
 		transactionId: { optional: true, type: 'string', min: 1, max: 64 },
 		moduleAssetId: { optional: true, type: 'string', min: 1, max: 3 },
 		moduleAssetName: { optional: true, type: 'string', min: 1 },
+		address: { optional: true, type: 'string', min: 38, max: 41, pattern: /^lsk([a-hjkm-z]|[2-9]){38}$/ },
 		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: /^lsk([a-hjkm-z]|[2-9]){38}$/ },
 		senderPublicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
 		senderUsername: { optional: true, type: 'string', min: 1, max: 20, pattern: /^[a-z0-9!@$&_.]{1,20}$/ },

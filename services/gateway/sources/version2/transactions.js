@@ -28,6 +28,7 @@ module.exports = {
 		recipientUsername: '=',
 		moduleAssetId: '=',
 		moduleAssetName: '=',
+		senderIdOrRecipientId: 'address',
 		nonce: '=',
 		offset: '=',
 		limit: '=',
