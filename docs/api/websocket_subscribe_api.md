@@ -179,11 +179,11 @@ Updates about transactions from the last block.
   "data": [
     {
       "id": "222675625422353767",
-      "operationId": "2:0",
-      "operationName": "token:transfer",
+      "moduleAssetId": "2:0",
+      "moduleAssetName": "token:transfer",
       "fee": "1000000",
       "nonce": "0",
-      "block": { // optional
+      "block": {  // optional
         "id": "6258354802676165798",
         "height": 8350681,
         "timestamp": 28227090,
@@ -195,7 +195,7 @@ Updates about transactions from the last block.
       },
       "signatures": [ "72c9b2...36c60a" ],
       "confirmations": 0,
-      "asset": {     // Depends on operation
+      "asset": {  // Depends on operation
         "amount": "150000000",
         "recipient": {
           "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
