@@ -25,7 +25,6 @@ const {
 
 const {
 	emptyResponseSchema,
-	emptyResultEnvelopeSchema,
 	peerSchema,
 } = require('../../../schemas/api_v2/peer.schema');
 
@@ -137,12 +136,12 @@ describe('Peers API', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid state -> bad request', async () => {
+		it('invalid state 1 -> invalid param', async () => {
 			const error = await requestPeers({ state: 'invalid' });
 			expect(error).toMap(invalidParamsSchema);
 		});
 
-		it('invalid state -> bad request', async () => {
+		it('invalid state 2 -> invalid param', async () => {
 			const error = await requestPeers({ state: 1 });
 			expect(error).toMap(invalidParamsSchema);
 		});
@@ -222,7 +221,7 @@ describe('Peers API', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('wrong sort -> invalid param', async () => {
+		it('invalid request param -> invalid param', async () => {
 			const response = await requestPeers({ invalidParam: 'invalid' });
 			expect(response).toMap(invalidParamsSchema);
 		});

@@ -129,12 +129,12 @@ describe('Peers API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid state -> bad request', async () => {
+		it('invalid state 1 -> bad request', async () => {
 			const response = await api.get(`${endpoint}?state=invalid`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('invalid state -> bad request error', async () => {
+		it('invalid state 2 -> bad request', async () => {
 			const response = await api.get(`${endpoint}?state=1`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
