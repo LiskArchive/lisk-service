@@ -63,7 +63,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 
 		it('Returns list of voters when requested for existing account by publickey', async () => {
 			if (refDelegate.summary.publicKey) {
-				const response = await getVoters({ publickey: refDelegate.summary.publicKey });
+				const response = await getVoters({ publicKey: refDelegate.summary.publicKey });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result.data).toMap(voterSchemaVersion5);

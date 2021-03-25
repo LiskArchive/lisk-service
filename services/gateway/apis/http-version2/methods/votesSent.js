@@ -26,15 +26,13 @@ module.exports = {
 	params: {
 		address: { optional: true, type: 'string', min: 3, max: 41 },
 		username: { optional: true, type: 'string', min: 3, max: 20 },
-		publickey: { optional: true, type: 'string', min: 64, max: 64 },
-		limit: { optional: true, min: 1, max: 100, type: 'number', default: 10 },
-		offset: { optional: true, min: 0, type: 'number', default: 0 },
+		publicKey: { optional: true, type: 'string', min: 64, max: 64 },
 	},
 	paramsRequired: true,
 	validParamPairings: [
 		['address'],
 		['username'],
-		['publickey'],
+		['publicKey'],
 	],
 	get schema() {
 		const votesSchema = {};
