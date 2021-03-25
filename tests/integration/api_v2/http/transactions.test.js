@@ -243,7 +243,7 @@ describe('Transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
-				expect(transaction.asset.recipientAddress).toEqual(refDelegate.summary.address);
+				expect(transaction.asset.recipient.address).toEqual(refDelegate.summary.address);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
