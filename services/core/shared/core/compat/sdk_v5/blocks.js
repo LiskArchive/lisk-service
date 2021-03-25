@@ -415,6 +415,7 @@ const init = async () => {
 init();
 
 module.exports = {
+	init,
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
