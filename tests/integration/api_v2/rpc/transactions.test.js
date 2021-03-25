@@ -163,6 +163,27 @@ describe('Method get.transactions', () => {
 		});
 	});
 
+	describe('is able to retrieve list of transactions by address', () => {
+		it('known address -> ok', async () => {
+			const response = await requestTransactions({ address: refTransaction.sender.address });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('invalid address -> empty response', async () => {
+			const response = await requestTransactions({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+	});
+
 	describe('is able to retrieve list of transactions using height', () => {
 		it('known height -> ok', async () => {
 			const response = await requestTransactions({ height: String(refTransaction.block.height) });

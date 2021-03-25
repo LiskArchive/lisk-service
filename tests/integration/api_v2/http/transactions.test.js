@@ -174,7 +174,7 @@ describe('Transactions API', () => {
 		});
 	});
 
-	describe('Retrieve transaction list by address', () => {
+	describe('Retrieve transaction list by sender/recipient address', () => {
 		it('known address -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipientAddress=${refTransaction.asset.recipientAddress}`);
 			expect(response).toMap(goodRequestSchema);
@@ -203,6 +203,23 @@ describe('Transactions API', () => {
 		it('invalid sender address -> 400', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=000002345`, 400);
 			expect(response).toMap(badRequestSchema);
+		});
+	});
+
+	describe('Retrieve transaction list by address', () => {
+		it('known address -> ok', async () => {
+			const response = await api.get(`${endpoint}?address=${refTransaction.asset.recipientAddress}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(transaction => expect(transaction)
+				.toMap(transactionSchemaVersion5));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid address -> 404', async () => {
+			const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 404);
+			expect(response).toMap(notFoundSchema);
 		});
 	});
 
