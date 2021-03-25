@@ -31,7 +31,7 @@ const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.
 		settings: options.settings,
 	});
 
-	queue.process(queueJob);
+	queue.process(queueName, queueJob);
 
 	queue.on('completed', (job, result) => {
 		logger.debug(`${queueName} Job completed`, result);
