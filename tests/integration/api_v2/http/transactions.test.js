@@ -219,7 +219,7 @@ describe('Transactions API', () => {
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect([transaction.sender.address, transaction.asset.recipient.address])
-					.toContain(refTransaction.asset.recipient.address)
+					.toContain(refTransaction.asset.recipient.address);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});

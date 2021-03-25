@@ -40,7 +40,7 @@ describe('Method get.transactions', () => {
 			offset++;
 
 			// eslint-disable-next-line no-await-in-loop
-			const response2 = await requestTransactions({ limit: 1 });
+			const response2 = await requestTransactions({ limit: 1, offset });
 			[refTransaction] = response2.result.data;
 		} while (!refTransaction.asset.recipient);
 	});
@@ -187,7 +187,7 @@ describe('Method get.transactions', () => {
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect([transaction.sender.address, transaction.asset.recipient.address])
-					.toContain(refTransaction.sender.address)
+					.toContain(refTransaction.sender.address);
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
