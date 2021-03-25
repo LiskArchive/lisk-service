@@ -35,8 +35,14 @@ const requestTransactions = async params => request(wsRpcUrl, 'get.transactions'
 describe('Method get.transactions', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response2 = await requestTransactions({ limit: 1 });
-		[refTransaction] = response2.result.data;
+		let offset = -1;
+		do {
+			offset++;
+
+			// eslint-disable-next-line no-await-in-loop
+			const response2 = await requestTransactions({ limit: 1 });
+			[refTransaction] = response2.result.data;
+		} while (!refTransaction.asset.recipient);
 	});
 
 	describe('is able to retrieve transaction using transaction ID', () => {
@@ -178,7 +184,11 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect([transaction.sender.address, transaction.asset.recipient.address])
+					.toContain(refTransaction.sender.address)
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
