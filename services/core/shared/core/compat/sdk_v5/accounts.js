@@ -230,7 +230,7 @@ const indexAccountsbyAddress = async (addressesToIndex) => {
 		},
 		{ concurrency: addressesToIndex.length },
 	);
-	await indexAccountsQueue.add('indexAccountsQueue', { accounts: accountsToIndex });
+	await indexAccountsQueue.add({ accounts: accountsToIndex });
 };
 
 const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
@@ -244,7 +244,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 		},
 		{ concurrency: publicKeysToIndex.length },
 	);
-	await indexAccountsQueue.add('indexAccountsQueue', { accounts: accountsToIndex });
+	await indexAccountsQueue.add({ accounts: accountsToIndex });
 };
 
 const getMultisignatureMemberships = async () => []; // TODO

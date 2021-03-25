@@ -97,7 +97,7 @@ const getBlocks = async (params) => {
 		}),
 		),
 	);
-	if (blocks.data.length === 1) await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
+	if (blocks.data.length === 1) await indexBlocksQueue.add({ blocks: blocks.data });
 
 	return blocks;
 };
@@ -127,7 +127,7 @@ const buildIndex = async (from, to) => {
 			});
 		} while (!(blocks.data.length && blocks.data.every(block => !!block && !!block.height)));
 
-		await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
+		await indexBlocksQueue.add({ blocks: blocks.data });
 
 		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
 		const topHeightFromBatch = (blocks.data.pop()).height;
