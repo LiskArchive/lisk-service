@@ -175,6 +175,7 @@ const getAccounts = async params => {
 	}
 
 	const resultSet = await accountsDB.find(params);
+	const total = await accountsDB.count(params);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
 	if (params.address || (params.addresses && params.addresses.length)) {
@@ -191,6 +192,10 @@ const getAccounts = async params => {
 		{ concurrency: accounts.data.length },
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
+
+	accounts.meta.total = total;
+	accounts.meta.count = accounts.data.length;
+	accounts.meta.offset = params.offset;
 	return accounts;
 };
 
