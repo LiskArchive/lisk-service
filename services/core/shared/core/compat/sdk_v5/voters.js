@@ -100,7 +100,7 @@ const getVoters = async params => {
 		const { publicKey, ...remParams } = params;
 		params = remParams;
 
-		params.receivedAddress = extractAddressFromPublicKey(publicKey);
+		params.receivedAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
 	}
 
 	const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
