@@ -44,7 +44,7 @@ describe('Transactions API', () => {
 			// eslint-disable-next-line no-await-in-loop
 			const response1 = await api.get(`${endpoint}?limit=1&offset=${offset}`);
 			[refTransaction] = response1.data;
-		} while (!refTransaction.asset.recipient.address);
+		} while (!refTransaction.asset.recipient);
 
 		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&search=test_delegate`);
 		[refDelegate] = response2.data;
