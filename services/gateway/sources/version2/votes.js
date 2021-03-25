@@ -21,9 +21,7 @@ module.exports = {
 	params: {
 		address: '=,string',
 		username: '=,string',
-		publicKey: 'publickey,string',
-		limit: '=,number',
-		offset: '=,number',
+		publicKey: '=,string',
 	},
 	definition: {
 		data: {
