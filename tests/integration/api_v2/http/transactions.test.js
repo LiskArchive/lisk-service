@@ -46,7 +46,7 @@ describe('Transactions API', () => {
 			[refTransaction] = response1.data;
 		} while (!refTransaction.asset.recipient);
 
-		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&search=test_delegate`);
+		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true`);
 		[refDelegate] = response2.data;
 	});
 
@@ -218,8 +218,12 @@ describe('Transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
-				expect([transaction.sender.address, transaction.asset.recipient.address])
-					.toContain(refTransaction.asset.recipient.address);
+				if (transaction.asset.recipient) {
+					expect([transaction.sender.address, transaction.asset.recipient.address])
+						.toContain(refTransaction.sender.address);
+				} else {
+					expect(transaction.sender.address).toMatch(refTransaction.sender.address);
+				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});

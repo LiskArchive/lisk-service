@@ -186,8 +186,12 @@ describe('Method get.transactions', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
-				expect([transaction.sender.address, transaction.asset.recipient.address])
-					.toContain(refTransaction.sender.address);
+				if (transaction.asset.recipient) {
+					expect([transaction.sender.address, transaction.asset.recipient.address])
+						.toContain(refTransaction.sender.address);
+				} else {
+					expect(transaction.sender.address).toMatch(refTransaction.sender.address);
+				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
