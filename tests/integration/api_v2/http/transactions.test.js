@@ -180,8 +180,10 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.asset.recipient.address).toEqual(refTransaction.asset.recipient.address);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -195,8 +197,10 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5, { senderId: refTransaction.senderId }));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.address).toEqual(refTransaction.sender.address);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 

@@ -132,7 +132,10 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.address).toEqual(refTransaction.sender.address);
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -145,7 +148,7 @@ describe('Method get.transactions', () => {
 	describe('is able to retrieve list of transactions using recipient attributes', () => {
 		it('known recipient address -> ok', async () => {
 			const response = await requestTransactions({
-				recipientAddress: refTransaction.asset.recipientAddress,
+				recipientAddress: refTransaction.asset.recipient.address,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -153,7 +156,10 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.asset.recipient.address).toEqual(refTransaction.asset.recipient.address);
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
