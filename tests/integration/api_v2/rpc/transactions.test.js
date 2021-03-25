@@ -176,11 +176,9 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid address -> empty response', async () => {
+		it('invalid address -> invalid params', async () => {
 			const response = await requestTransactions({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 

@@ -44,7 +44,7 @@ describe('Transactions API', () => {
 			// eslint-disable-next-line no-await-in-loop
 			const response1 = await api.get(`${endpoint}?limit=1&offset=${offset}`);
 			[refTransaction] = response1.data;
-		} while (!refTransaction.asset.recipientAddress);
+		} while (!refTransaction.asset.recipient.address);
 
 		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&search=test_delegate`);
 		[refDelegate] = response2.data;
@@ -176,7 +176,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by sender/recipient address', () => {
 		it('known address -> ok', async () => {
-			const response = await api.get(`${endpoint}?recipientAddress=${refTransaction.asset.recipientAddress}`);
+			const response = await api.get(`${endpoint}?recipientAddress=${refTransaction.asset.recipient.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -208,7 +208,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by address', () => {
 		it('known address -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${refTransaction.asset.recipientAddress}`);
+			const response = await api.get(`${endpoint}?address=${refTransaction.asset.recipient.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -217,9 +217,9 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('invalid address -> 404', async () => {
-			const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('invalid address -> 400', async () => {
+			const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
