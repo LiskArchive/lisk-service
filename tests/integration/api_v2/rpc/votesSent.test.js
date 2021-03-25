@@ -62,43 +62,12 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 
 		it('Returns list of votes when requested for existing account by publickey', async () => {
 			if (refDelegate.summary.publicKey) {
-				const response = await getVotes({ publickey: refDelegate.summary.publicKey });
+				const response = await getVotes({ publicKey: refDelegate.summary.publicKey });
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result.data).toMap(voteSchemaVersion5);
 				expect(result.meta).toMap(metaSchema);
 			}
-		});
-
-		it('Returns list of votes when requested with offset', async () => {
-			const response = await getVotes({ address: refDelegate.summary.address, offset: 1 });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toMap(voteSchemaVersion5);
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('Returns list of votes when requested with limit', async () => {
-			const response = await getVotes({ address: refDelegate.summary.address, limit: 1 });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toMap(voteSchemaVersion5);
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('Returns list of votes when requested with offset & limit', async () => {
-			const response = await getVotes({
-				address: refDelegate.summary.address, offset: 1, limit: 1,
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toMap(voteSchemaVersion5);
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('Returns INVALID_PARAMS (-32602) when requested with limit = 0', async () => {
-			const response = await getVotes({ address: refDelegate.summary.address, limit: 0 });
-			expect(response).toMap(invalidParamsSchema);
 		});
 
 		it('Returns empty response when requested with wrong address', async () => {
