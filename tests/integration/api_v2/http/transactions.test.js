@@ -212,7 +212,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by address', () => {
 		it('known address -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${refTransaction.asset.recipient.address}`);
+			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
