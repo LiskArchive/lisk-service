@@ -109,8 +109,8 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('long transaction id -> 500', async () => {
-			const response = await api.get(`${endpoint}?transactionId=412875216073141752800000`, 500);
+		it('long transaction id -> 400', async () => {
+			const response = await api.get(`${endpoint}?transactionId=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
