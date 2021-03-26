@@ -109,14 +109,14 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('long transaction id -> 500', async () => {
-			const response = await api.get(`${endpoint}?transactionId=412875216073141752800000`, 500);
+		it('long transaction id -> 400', async () => {
+			const response = await api.get(`${endpoint}?transactionId=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('invalid transaction id -> 500', async () => {
-			const response = await api.get(`${endpoint}?transactionId=41287`, 500);
-			expect(response).toMap(notFoundSchema);
+		it('invalid transaction id -> 404', async () => {
+			const response = await api.get(`${endpoint}?transactionId=41287`, 404);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
@@ -133,7 +133,7 @@ describe('Transactions API', () => {
 
 		it('invalid block -> 404', async () => {
 			const response = await api.get(`${endpoint}?block=1000000000000000000000000'`, 404);
-			expect(response).toMap(badRequestSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('empty block param -> ok', async () => {
@@ -160,7 +160,7 @@ describe('Transactions API', () => {
 
 		it('invalid height -> 404', async () => {
 			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 404);
-			expect(response).toMap(badRequestSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('empty height -> ok', async () => {
@@ -180,8 +180,10 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.asset.recipient.address).toEqual(refTransaction.asset.recipient.address);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -195,8 +197,10 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5, { senderId: refTransaction.senderId }));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.address).toEqual(refTransaction.sender.address);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -208,12 +212,19 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by address', () => {
 		it('known address -> ok', async () => {
-			const response = await api.get(`${endpoint}?address=${refTransaction.asset.recipient.address}`);
+			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(transaction => expect(transaction)
-				.toMap(transactionSchemaVersion5));
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				if (transaction.asset.recipient) {
+					expect([transaction.sender.address, transaction.asset.recipient.address])
+						.toContain(refTransaction.sender.address);
+				} else {
+					expect(transaction.sender.address).toMatch(refTransaction.sender.address);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 

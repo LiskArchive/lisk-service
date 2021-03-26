@@ -35,8 +35,14 @@ const requestTransactions = async params => request(wsRpcUrl, 'get.transactions'
 describe('Method get.transactions', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response2 = await requestTransactions({ limit: 1 });
-		[refTransaction] = response2.result.data;
+		let offset = -1;
+		do {
+			offset++;
+
+			// eslint-disable-next-line no-await-in-loop
+			const response2 = await requestTransactions({ limit: 1, offset });
+			[refTransaction] = response2.result.data;
+		} while (!refTransaction.asset.recipient);
 	});
 
 	describe('is able to retrieve transaction using transaction ID', () => {
@@ -115,7 +121,7 @@ describe('Method get.transactions', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('empty transaction moduleAsset -> invalid params', async () => {
+		it('empty transaction moduleAsset -> empty response', async () => {
 			const response = await requestTransactions({ moduleAssetId: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -132,11 +138,14 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.address).toEqual(refTransaction.sender.address);
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid sender address -> empty response', async () => {
+		it('invalid sender address -> invalid params', async () => {
 			const response = await requestTransactions({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});
@@ -145,7 +154,7 @@ describe('Method get.transactions', () => {
 	describe('is able to retrieve list of transactions using recipient attributes', () => {
 		it('known recipient address -> ok', async () => {
 			const response = await requestTransactions({
-				recipientAddress: refTransaction.asset.recipientAddress,
+				recipientAddress: refTransaction.asset.recipient.address,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -153,11 +162,14 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.asset.recipient.address).toEqual(refTransaction.asset.recipient.address);
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid recipient address -> empty response', async () => {
+		it('invalid recipient address -> invalid params', async () => {
 			const response = await requestTransactions({ recipientAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});
@@ -172,7 +184,15 @@ describe('Method get.transactions', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				if (transaction.asset.recipient) {
+					expect([transaction.sender.address, transaction.asset.recipient.address])
+						.toContain(refTransaction.sender.address);
+				} else {
+					expect(transaction.sender.address).toMatch(refTransaction.sender.address);
+				}
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
