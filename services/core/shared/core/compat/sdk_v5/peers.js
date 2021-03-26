@@ -22,7 +22,7 @@ const peerStates = {
 
 const getPeers = async () => {
 	const connectedPeers = await coreApi.getPeers(peerStates.CONNECTED);
-	connectedPeers.data.forEach(orgPeer => {
+	connectedPeers.data = connectedPeers.data.map(orgPeer => {
 		const { ipAddress, options: { height }, ...peer } = orgPeer;
 
 		peer.state = peerStates.CONNECTED;
