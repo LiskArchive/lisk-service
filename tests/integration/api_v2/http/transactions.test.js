@@ -114,8 +114,8 @@ describe('Transactions API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('invalid transaction id -> 500', async () => {
-			const response = await api.get(`${endpoint}?transactionId=41287`, 500);
+		it('invalid transaction id -> 404', async () => {
+			const response = await api.get(`${endpoint}?transactionId=41287`, 404);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
