@@ -121,7 +121,7 @@ describe('Method get.transactions', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('empty transaction moduleAsset -> invalid params', async () => {
+		it('empty transaction moduleAsset -> empty response', async () => {
 			const response = await requestTransactions({ moduleAssetId: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -145,7 +145,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid sender address -> empty response', async () => {
+		it('invalid sender address -> invalid params', async () => {
 			const response = await requestTransactions({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});
@@ -169,7 +169,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('invalid recipient address -> empty response', async () => {
+		it('invalid recipient address -> invalid params', async () => {
 			const response = await requestTransactions({ recipientAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});

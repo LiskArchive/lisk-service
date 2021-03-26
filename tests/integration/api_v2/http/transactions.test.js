@@ -116,7 +116,7 @@ describe('Transactions API', () => {
 
 		it('invalid transaction id -> 500', async () => {
 			const response = await api.get(`${endpoint}?transactionId=41287`, 500);
-			expect(response).toMap(notFoundSchema);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 
@@ -133,7 +133,7 @@ describe('Transactions API', () => {
 
 		it('invalid block -> 404', async () => {
 			const response = await api.get(`${endpoint}?block=1000000000000000000000000'`, 404);
-			expect(response).toMap(badRequestSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('empty block param -> ok', async () => {
@@ -160,7 +160,7 @@ describe('Transactions API', () => {
 
 		it('invalid height -> 404', async () => {
 			const response = await api.get(`${endpoint}?height=1000000000000000000000000'`, 404);
-			expect(response).toMap(badRequestSchema);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('empty height -> ok', async () => {
