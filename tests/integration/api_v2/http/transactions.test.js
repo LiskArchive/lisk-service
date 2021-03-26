@@ -46,7 +46,7 @@ describe('Transactions API', () => {
 			[refTransaction] = response1.data;
 		} while (!refTransaction.asset.recipient);
 
-		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true`);
+		const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&search=test_delegate`);
 		[refDelegate] = response2.data;
 	});
 
