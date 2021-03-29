@@ -16,6 +16,7 @@
 const events = require('./events');
 
 const {
+    init,
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
@@ -81,14 +82,13 @@ const {
     loadAllPendingTransactions,
 } = require('./pendingTransactions');
 
-const nop = async () => { };
-
 module.exports = {
     ...require('../sdk_v4'),
     ...require('./coreCache'),
 
     events,
 
+    init,
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
@@ -127,6 +127,4 @@ module.exports = {
     getVotes,
 
     getVoters,
-
-    init: nop,
 };
