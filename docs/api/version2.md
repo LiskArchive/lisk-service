@@ -11,35 +11,30 @@ It is also possible to access the Testnet network at `https://testnet-service.li
 
 The Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.
 
-## Table of Contents
+## Table of Contents 
 
-<!-- TOC depthto:3 orderedlist:true -->
-
-- [1. Lisk Service HTTP API Documentation](#1-lisk-service-http-api-documentation)
-	- [1.1. Table of Contents](#11-table-of-contents)
-	- [1.2. Endpoint Logic](#12-endpoint-logic)
-	- [1.3. Response format](#13-response-format)
-	- [1.4. The Date Format](#14-the-date-format)
-- [2. Lisk Blockchain-related Endpoints](#2-lisk-blockchain-related-endpoints)
-	- [2.1. Accounts](#21-accounts)
-		- [2.1.1. Accounts & Delegates](#211-accounts--delegates)
-		- [2.1.2. Sent votes](#212-sent-votes)
-		- [2.1.3. Received votes](#213-received-votes)
-	- [2.2. Blocks](#22-blocks)
-		- [2.2.1. Blocks](#221-blocks)
-		- [2.2.2. Round forgers](#222-round-forgers)
-	- [2.3. Peers](#23-peers)
-		- [2.3.1. Network peers](#231-network-peers)
-	- [2.4. Transactions](#24-transactions)
-		- [2.4.1. Transactions](#241-transactions)
-		- [2.4.2. Transaction statistics](#242-transaction-statistics)
-	- [2.5. Network](#25-network)
-		- [2.5.1. Network status](#251-network-status)
-		- [2.5.2. Network statistics](#252-network-statistics)
-		- [2.5.3. Dynamic fees](#253-dynamic-fees)
-		- [2.5.4. Transaction schema](#254-transaction-schema)
-
-<!-- /TOC -->
+- [Lisk Service HTTP API Documentation](#lisk-service-http-api-documentation)
+  - [Endpoint Logic](#endpoint-logic)
+  - [Response format](#response-format)
+  - [The Date Format](#the-date-format)
+- [Lisk Blockchain-related Endpoints](#lisk-blockchain-related-endpoints)
+  - [Accounts](#accounts)
+    - [Accounts & Delegates](#accounts--delegates)
+    - [Sent votes](#sent-votes)
+    - [Received votes](#received-votes)
+  - [Blocks](#blocks)
+    - [Blocks](#blocks-1)
+    - [Round forgers](#round-forgers)
+  - [Peers](#peers)
+    - [Network peers](#network-peers)
+  - [Transactions](#transactions)
+    - [Transactions](#transactions-1)
+    - [Transaction statistics](#transaction-statistics)
+  - [Network](#network)
+    - [Network status](#network-status)
+    - [Network statistics](#network-statistics)
+    - [Dynamic fees](#dynamic-fees)
+    - [Transaction schema](#transaction-schema)
 
 ## Endpoint Logic
 
@@ -83,14 +78,14 @@ _Supports pagination._
 
 Make the version 2 API able to retrieve data by those criteria.
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-address | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves new and old address system
-publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  
-username | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  
-limit | Number | `<1;100>` | 10 |  
-offset | Number | `<0;+Inf>` | 0 |  
-sort | Array of strings | `[“balance:asc”, “balance:desc”, “rank:asc”, “rank:desc”]` | `balance:desc` | Rank is dedicated to delegate accounts
+| Parameter | Type             | Validation                                                 | Default        | Comment                                |
+| --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
+| address   | String           | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/`    | *(empty)*      | Resolves new and old address system    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| username  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                 | *(empty)*      |
+| limit     | Number           | `<1;100>`                                                  | 10             |
+| offset    | Number           | `<0;+Inf>`                                                 | 0              |
+| sort      | Array of strings | `[“balance:asc”, “balance:desc”, “rank:asc”, “rank:desc”]` | `balance:desc` | Rank is dedicated to delegate accounts |
 
 #### Response example
 
@@ -216,13 +211,13 @@ _Supports pagination._
 #### Request parameters
 
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-address | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves only new address system
-publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  
-username | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  
-limit | Number | `<1;100>` | 10 |  
-offset | Number | `<0;+Inf>` | 0 |  
+| Parameter | Type   | Validation                                              | Default   | Comment                          |
+| --------- | ------ | ------------------------------------------------------- | --------- | -------------------------------- |
+| address   | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves only new address system |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
+| username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
+| limit     | Number | `<1;100>`                                               | 10        |
+| offset    | Number | `<0;+Inf>`                                              | 0         |
 
 #### Response example
 
@@ -288,13 +283,13 @@ https://service.lisk.io/api/v2/votes_sent?address=lsk24cd35u4jdq8szo3pnsqe5dsxwr
 
 #### Request parameters
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-address | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves only new address system
-publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  
-username | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  
-limit | Number | `<1;100>` | 10 |  
-offset | Number | `<0;+Inf>` | 0 |  
+| Parameter | Type   | Validation                                              | Default   | Comment                          |
+| --------- | ------ | ------------------------------------------------------- | --------- | -------------------------------- |
+| address   | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves only new address system |
+| publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
+| username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
+| limit     | Number | `<1;100>`                                               | 10        |
+| offset    | Number | `<0;+Inf>`                                              | 0         |
 
 #### Response example
 
@@ -368,17 +363,17 @@ _Supports pagination._
 
 Make the version 2 API able to retrieve data by those criteria.
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-blockId | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  
-height | String | `/[0-9]+/` and `/[0-9]+:[0-9]+/` | *(empty)* | Can be expressed as an interval ie. `1:20`
-generatorAddress | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$/` and `/^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves new and old address system
-generatorPublicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  
-generatorUsername | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  
-timestamp | String | `/^[0-9]+$/` and `/^[0-9]+:[0-9]+$/` | *(empty)* | Can be expressed as interval ie. `100000:200000`
-limit | Number | `<1;100>` | 10 |  
-offset | Number | `<0;+Inf>` | 0 |  
-sort | Array of Strings | `[“height:asc”, “height:desc”,“timestamp:asc”, “timestamp:desc”]` | height:desc |  
+| Parameter          | Type             | Validation                                                        | Default     | Comment                                          |
+| ------------------ | ---------------- | ----------------------------------------------------------------- | ----------- | ------------------------------------------------ |
+| blockId            | String           | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                  | *(empty)*   |
+| height             | String           | `/[0-9]+/` and `/[0-9]+:[0-9]+/`                                  | *(empty)*   | Can be expressed as an interval ie. `1:20`       |
+| generatorAddress   | String           | `/^lsk([a-hjkm-z]\|[2-9]){38}$/` and `/^[1-9]\d{0,19}[L\|l]$/`    | *(empty)*   | Resolves new and old address system              |
+| generatorPublicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                        | *(empty)*   |
+| generatorUsername  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                        | *(empty)*   |
+| timestamp          | String           | `/^[0-9]+$/` and `/^[0-9]+:[0-9]+$/`                              | *(empty)*   | Can be expressed as interval ie. `100000:200000` |
+| limit              | Number           | `<1;100>`                                                         | 10          |
+| offset             | Number           | `<0;+Inf>`                                                        | 0           |
+| sort               | Array of Strings | `[“height:asc”, “height:desc”,“timestamp:asc”, “timestamp:desc”]` | height:desc |
 
 #### Response example
 
@@ -454,10 +449,10 @@ _Supports pagination._
 
 #### Request parameters
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-limit | Number | <1;103> | 10 |  
-offset | Number | <0;+Inf> | 0 |  
+| Parameter | Type   | Validation | Default | Comment |
+| --------- | ------ | ---------- | ------- | ------- |
+| limit     | Number | <1;103>    | 10      |
+| offset    | Number | <0;+Inf>   | 0       |
 
 
 #### Response example
@@ -520,15 +515,15 @@ _Supports pagination._
 
 #### Request parameters
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-ip | String | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/` | *(empty)* |  
-networkVersion | String | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/ ` | *(empty)* |  
-state | Array of Strings | `[“connected”, “disconnected”, ”any”]` | connected |  
-height | Number |` <1;+Inf>` | *(empty)* |  
-limit | Number | `<1;100>` | 10 |  
-offset | Number | `<0;+Inf>` | 0 |  
-sort | String | `[“height:asc”, “height:desc”, “networkVersion:asc”, ”networkVersion:desc”]` | “height:desc” |  
+| Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
+| ip             | String           | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/`                                                                             | *(empty)*     |
+| networkVersion | String           | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/ ` | *(empty)*     |
+| state          | Array of Strings | `[“connected”, “disconnected”, ”any”]`                                                                                                                                          | connected     |
+| height         | Number           | ` <1;+Inf>`                                                                                                                                                                     | *(empty)*     |
+| limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
+| offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
+| sort           | String           | `[“height:asc”, “height:desc”, “networkVersion:asc”, ”networkVersion:desc”]`                                                                                                    | “height:desc” |
 
 #### Response example
 
@@ -599,25 +594,25 @@ _Supports pagination._
 
 #### Request parameters
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-transactionId | String | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/` | *(empty)* |  
-moduleAssetId | String | `ModuleId:AssetId/[0-9]+:[0-9]+/` | *(empty)* | Transfer transaction: moduleID = 2,assetID = 0
-moduleAssetName | String | `ModuleName:AssetName/[a-z]+:[a-z]+/` | *(empty)* | Transfer transaction: moduleName = token, assetName = transfer
-senderAddress | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* |  
-senderPublicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  
-senderUsername | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  
-recipientAddress | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* |  
-recipientPublicKey | String | `/^([A-Fa-f0-9]{2}){32}$/` | *(empty)* |  
-recipientUsername | String | `/^[a-z0-9!@$&_.]{1,20}$/` | *(empty)* |  
-data | String |   | *(empty)* | Wildcard search ie. “gene*” -> “genesis”
-amount | String |   | *(empty)* | Can be expressed as interval ie. `100000:200000`
-timestamp | String |   | *(empty)* | Can be expressed as interval ie. `100000:200000`
-includePending | Boolean |   | false |  
-nonce | String | `/^\d+$/` | *(empty)* | In conjunction with senderAddress
-limit | Number | `<1;100>` | 10 |  
-offset | Number | `<0;+Inf>` | 0 |  
-sort | String | `[“amount:asc”, “amount:desc”, “timestamp:asc”, “timestamp:desc”]` | timestamp:desc |  
+| Parameter          | Type    | Validation                                                         | Default        | Comment                                                        |
+| ------------------ | ------- | ------------------------------------------------------------------ | -------------- | -------------------------------------------------------------- |
+| transactionId      | String  | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                   | *(empty)*      |
+| moduleAssetId      | String  | `ModuleId:AssetId/[0-9]+:[0-9]+/`                                  | *(empty)*      | Transfer transaction: moduleID = 2,assetID = 0                 |
+| moduleAssetName    | String  | `ModuleName:AssetName/[a-z]+:[a-z]+/`                              | *(empty)*      | Transfer transaction: moduleName = token, assetName = transfer |
+| senderAddress      | String  | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/`            | *(empty)*      |
+| senderPublicKey    | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
+| senderUsername     | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
+| recipientAddress   | String  | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/`            | *(empty)*      |
+| recipientPublicKey | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
+| recipientUsername  | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
+| data               | String  |                                                                    | *(empty)*      | Wildcard search ie. “gene*” -> “genesis”                       |
+| amount             | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
+| timestamp          | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
+| includePending     | Boolean |                                                                    | false          |
+| nonce              | String  | `/^\d+$/`                                                          | *(empty)*      | In conjunction with senderAddress                              |
+| limit              | Number  | `<1;100>`                                                          | 10             |
+| offset             | Number  | `<0;+Inf>`                                                         | 0              |
+| sort               | String  | `[“amount:asc”, “amount:desc”, “timestamp:asc”, “timestamp:desc”]` | timestamp:desc |
 
 
 
@@ -720,11 +715,11 @@ _Supports pagination._
 #### Request parameters
 
 
-Parameter | Validation | Default | Comment
--- | -- | -- | --
-interval | `[“day”, “month”]` | (empty) | Required field
-limit | <1;100> | 10 |  
-offset | <0;+Inf> | 0 |  
+| Parameter | Validation         | Default | Comment        |
+| --------- | ------------------ | ------- | -------------- |
+| interval  | `[“day”, “month”]` | (empty) | Required field |
+| limit     | <1;100>            | 10      |
+| offset    | <0;+Inf>           | 0       |
 
 
 
@@ -976,10 +971,10 @@ Retrieves network statistics such as number of peers, node versions, heights etc
 #### Request parameters
 
 
-Parameter | Type | Validation | Default | Comment
--- | -- | -- | -- | --
-moduleAssetId | String | `ModuleId:AssetId /[0-9]+:[0-9]+/` | *(empty)* | Transfer transaction: moduleID = 2,assetID = 0
-moduleAssetName | String | `ModuleName:AssetName /[a-z]+:[a-z]+/` | *(empty)* | Transfer transaction: moduleName = token, assetName = transfer
+| Parameter       | Type   | Validation                             | Default   | Comment                                                        |
+| --------------- | ------ | -------------------------------------- | --------- | -------------------------------------------------------------- |
+| moduleAssetId   | String | `ModuleId:AssetId /[0-9]+:[0-9]+/`     | *(empty)* | Transfer transaction: moduleID = 2,assetID = 0                 |
+| moduleAssetName | String | `ModuleName:AssetName /[a-z]+:[a-z]+/` | *(empty)* | Transfer transaction: moduleName = token, assetName = transfer |
 
 #### Response example
 
