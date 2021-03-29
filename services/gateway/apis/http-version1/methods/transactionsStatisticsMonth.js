@@ -15,7 +15,7 @@
  */
 const transactionsStatisticsMonthSource = require('../../../sources/version1/transactionsStatisticsMonth');
 const envelope = require('../../../sources/version1/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',

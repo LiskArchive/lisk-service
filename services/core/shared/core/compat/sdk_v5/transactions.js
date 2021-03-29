@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
+
+const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const coreApi = require('./coreApi');
 const {
@@ -103,6 +106,10 @@ const normalizeTransaction = tx => {
 	if (tx.asset.recipientAddress) {
 		tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
 	}
+	if (tx.asset.votes && tx.asset.votes.length) {
+		tx.asset.votes
+			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
+	}
 	return tx;
 };
 
@@ -117,12 +124,12 @@ const validateParams = async params => {
 	if (params.amount && params.amount.includes(':')) {
 		const { amount, ...remParams } = params;
 		params = remParams;
-
-		params.propBetween = {
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
 			property: 'amount',
 			from: amount.split(':')[0],
 			to: amount.split(':')[1],
-		};
+		});
 	}
 
 	if (params.fromTimestamp || params.toTimestamp) {
@@ -137,17 +144,8 @@ const validateParams = async params => {
 		});
 	}
 
-	if (params.sort && params.sort.includes('nonce') && !params.senderId) {
-		throw new Error('Nonce based sorting is only possible along with senderId');
-	}
-
-	if (params.username) {
-		const { username, ...remParams } = params;
-		params = remParams;
-
-		const [accountInfo] = await getIndexedAccountInfo({ username });
-		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
-		params.senderPublicKey = accountInfo.publicKey;
+	if (params.nonce && !params.senderAddress) {
+		throw new Error('Nonce based retrieval is only possible along with senderAddress');
 	}
 
 	if (params.senderIdOrRecipientId) {
@@ -161,9 +159,43 @@ const validateParams = async params => {
 	if (params.senderId) {
 		const { senderId, ...remParams } = params;
 		params = remParams;
+		params.senderAddress = senderId;
+	}
 
-		const account = await getIndexedAccountInfo({ address: senderId });
+	if (params.senderAddress) {
+		const { senderAddress, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ address: senderAddress });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderAddress} not found.` } };
 		params.senderPublicKey = account.publicKey;
+	}
+
+	if (params.senderUsername) {
+		const { senderUsername, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ username: senderUsername });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderUsername} not found.` } };
+		params.senderPublicKey = account.publicKey;
+	}
+
+	if (params.recipientPublicKey) {
+		const { recipientPublicKey, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientPublicKey} not found.` } };
+		params.recipientId = account.address;
+	}
+
+	if (params.recipientUsername) {
+		const { recipientUsername, ...remParams } = params;
+		params = remParams;
+
+		const account = await getIndexedAccountInfo({ username: recipientUsername });
+		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientUsername} not found.` } };
+		params.recipientId = account.address;
 	}
 
 	if (params.search) {
@@ -233,6 +265,24 @@ const getTransactions = async params => {
 				transaction.senderId = account && account.address ? account.address : undefined;
 				transaction.username = account && account.username ? account.username : undefined;
 				transaction.isPending = false;
+
+				// For recipient info
+				if (transaction.asset.recipientAddress) {
+					const { recipientAddress, ...asset } = transaction.asset;
+					const recipientInfo = await getIndexedAccountInfo({
+						address: recipientAddress,
+					});
+					transaction.asset = asset;
+					transaction.asset.recipient = {};
+					transaction.asset.recipient = {
+						address: recipientInfo
+							&& (recipientInfo.address !== null) ? recipientInfo.address : undefined,
+						publicKey: recipientInfo
+							&& (recipientInfo.publicKey !== null) ? recipientInfo.publicKey : undefined,
+						username: recipientInfo
+							&& (recipientInfo.username !== null) ? recipientInfo.username : undefined,
+					};
+				}
 
 				// The two lines below are needed for transaction statistics
 				if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;

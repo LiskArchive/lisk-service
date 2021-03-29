@@ -57,7 +57,7 @@ const {
 
 			it('Returns list of voters when requested for existing account by publickey', async () => {
 				if (refDelegate.summary.publicKey) {
-					const response = await api.get(`${endpoint}?publickey=${refDelegate.summary.publicKey}`);
+					const response = await api.get(`${endpoint}?publicKey=${refDelegate.summary.publicKey}`);
 					expect(response.data).toMap(voterSchemaVersion5);
 					expect(response.meta).toMap(metaSchema);
 				}

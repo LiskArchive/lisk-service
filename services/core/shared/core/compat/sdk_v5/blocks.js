@@ -148,7 +148,12 @@ const isQueryFromIndex = params => {
 	const isDirectQuery = ['id', 'height', 'heightBetween'].some(prop => paramProps.includes(prop));
 
 	const sortOrder = params.sort ? params.sort.split(':')[1] : undefined;
-	const isLatestBlockFetch = (paramProps.length === 3 && params.limit === 1 && params.offset === 0 && sortOrder === 'desc');
+	const isLatestBlockFetch = (paramProps.length === 1 && params.limit === 1)
+		|| (paramProps.length === 2
+			&& ((params.limit === 1 && params.offset === 0)
+				|| (sortOrder === 'desc' && (params.limit === 1 || params.offset === 0))
+			))
+		|| (paramProps.length === 3 && params.limit === 1 && params.offset === 0 && sortOrder === 'desc');
 
 	return !isDirectQuery && !isLatestBlockFetch;
 };
@@ -160,12 +165,12 @@ const indexNewBlocks = async blocks => {
 		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
-			indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+			await indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 			// Update block finality status
 			const finalizedBlockHeight = getFinalizedHeight();
 			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 });
-			updateBlockIndexQueue.add('updateBlockIndexQueue', {
+			await updateBlockIndexQueue.add('updateBlockIndexQueue', {
 				blocks: nonFinalBlocks
 					.filter(b => b.height <= finalizedBlockHeight)
 					.map(b => ({ ...b, isFinal: true })),
@@ -410,6 +415,7 @@ const init = async () => {
 init();
 
 module.exports = {
+	init,
 	getBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,

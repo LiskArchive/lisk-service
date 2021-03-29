@@ -57,33 +57,10 @@ const {
 
 			it('Returns list of votes when requested for existing account by publickey', async () => {
 				if (refDelegate.summary.publicKey) {
-					const response = await api.get(`${endpoint}?publickey=${refDelegate.summary.publicKey}`);
+					const response = await api.get(`${endpoint}?publicKey=${refDelegate.summary.publicKey}`);
 					expect(response.data).toMap(voteSchemaVersion5);
 					expect(response.meta).toMap(metaSchema);
 				}
-			});
-
-			it('Returns list of votes when requested with offset', async () => {
-				const response = await api.get(`${endpoint}?address=${refDelegate.summary.address}&offset=1`);
-				expect(response.data).toMap(voteSchemaVersion5);
-				expect(response.meta).toMap(metaSchema);
-			});
-
-			it('Returns list of votes when requested with limit', async () => {
-				const response = await api.get(`${endpoint}?address=${refDelegate.summary.address}&limit=1`);
-				expect(response.data).toMap(voteSchemaVersion5);
-				expect(response.meta).toMap(metaSchema);
-			});
-
-			it('Returns list of votes when requested with offset & limit', async () => {
-				const response = await api.get(`${endpoint}?address=${refDelegate.summary.address}&offset=1&limit=1`);
-				expect(response.data).toMap(voteSchemaVersion5);
-				expect(response.meta).toMap(metaSchema);
-			});
-
-			it('Returns BAD_REQUEST (400) when requested with limit = 0', async () => {
-				const response = await api.get(`${endpoint}?limit=0`, 400);
-				expect(response).toMap(badRequestSchema);
 			});
 
 			it('Returns NOT_FOUND (404) when requested with wrong address', async () => {

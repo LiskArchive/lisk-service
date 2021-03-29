@@ -36,27 +36,23 @@ module.exports = {
 		numberOfSignatures: '=,number',
 		mandatoryKeys: '=',
 		optionalKeys: '=',
-		members: [
-			{
-				address: '=,string',
-				publicKey: '=,string',
-				isMandatory: '=,boolean',
-			},
-		],
-		memberships: [
-			{
-				address: '=,string',
-				publicKey: '=,string',
-				username: '=,string',
-			},
-		],
+		members: ['multisignatureGroups.members', {
+			address: '=,string',
+			publicKey: '=,string',
+			isMandatory: '=,boolean',
+		}],
+		memberships: ['multisignatureMemberships', {
+			address: '=,string',
+			publicKey: '=,string',
+			isMandatory: '=,boolean',
+		}],
 	},
 	dpos: {
 		delegate: {
 			username: '=,string',
 			pomHeights: ['pomHeights', {
-				start: '=,string',
-				end: '=,string',
+				start: '=,number',
+				end: '=,number',
 			}],
 			consecutiveMissedBlocks: '=,number',
 			lastForgedHeight: '=,number',
@@ -69,7 +65,17 @@ module.exports = {
 			status: 'status,string',
 			rewards: 'rewards,string',
 		},
-		sentVotes: '=',
-		unlocking: '=',
+		sentVotes: ['sentVotes', {
+			delegateAddress: '=,string',
+			amount: '=,string',
+		}],
+		unlocking: ['unlocking', {
+			delegateAddress: '=,string',
+			amount: '=,string',
+			height: {
+				start: '=,number',
+				end: '=,number',
+			},
+		}],
 	},
 };

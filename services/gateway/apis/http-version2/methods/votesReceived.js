@@ -15,6 +15,7 @@
  */
 const votersSource = require('../../../sources/version2/voters');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -25,7 +26,7 @@ module.exports = {
 	params: {
 		address: { optional: true, type: 'string', min: 3, max: 41 },
 		username: { optional: true, type: 'string', min: 3, max: 20 },
-		publickey: { optional: true, type: 'string', min: 64, max: 64 },
+		publicKey: { optional: true, type: 'string', min: 64, max: 64 },
 		limit: { optional: true, min: 1, max: 100, type: 'number', default: 10 },
 		offset: { optional: true, min: 0, type: 'number', default: 0 },
 	},
@@ -33,7 +34,28 @@ module.exports = {
 	validParamPairings: [
 		['address'],
 		['username'],
-		['publickey'],
+		['publicKey'],
 	],
+	get schema() {
+		const votersSchema = {};
+		votersSchema[this.swaggerApiPath] = { get: {} };
+		votersSchema[this.swaggerApiPath].get.tags = this.tags;
+		votersSchema[this.swaggerApiPath].get.summary = 'Requests votes received data';
+		votersSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns votes received data',
+		});
+		votersSchema[this.swaggerApiPath].get.parameters = transformParams('voters', this.params);
+		votersSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of votes received',
+				schema: {
+					$ref: '#/definitions/VotesReceivedWithEnvelope',
+				},
+			},
+		};
+		Object.assign(votersSchema[this.swaggerApiPath].get.responses, response);
+		return votersSchema;
+	},
 	source: votersSource,
 };

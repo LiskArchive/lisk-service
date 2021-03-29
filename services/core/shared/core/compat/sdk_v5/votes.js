@@ -16,10 +16,12 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const { getAccounts, getIndexedAccountInfo } = require('./accounts');
+const { getAccounts, getIndexedAccountInfo, getBase32AddressFromHex } = require('./accounts');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);
+
+const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
 const getVotes = async params => {
 	const voter = {
@@ -45,7 +47,7 @@ const getVotes = async params => {
 		const { publicKey, ...remParams } = params;
 		params = remParams;
 
-		params.sentAddress = (getAddressFromPublicKey(Buffer.from(publicKey, 'hex'))).toString('hex');
+		params.sentAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
 	}
 
 	const response = await getAccounts({ id: params.sentAddress });
@@ -72,8 +74,6 @@ const getVotes = async params => {
 	};
 
 	voter.meta.total = voter.data.votes.length;
-	voter.meta.count = voter.data.votes.length;
-	voter.meta.offset = params.offset;
 	return voter;
 };
 

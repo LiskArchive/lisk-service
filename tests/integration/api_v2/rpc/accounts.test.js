@@ -27,7 +27,7 @@ const {
 const {
 	accountSchemaVersion5,
 	dpos,
-} = require('../../../schemas/account.schema');
+} = require('../../../schemas/api_v2/account.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getAccounts = async params => request(wsRpcUrl, 'get.accounts', params);
@@ -84,7 +84,7 @@ describe('Method get.accounts', () => {
 
 	describe('is able to retrieve account based on public key', () => {
 		it('returns account details on known public key', async () => {
-			const response = await getAccounts({ publickey: refDelegate.summary.publicKey });
+			const response = await getAccounts({ publicKey: refDelegate.summary.publicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
@@ -98,7 +98,7 @@ describe('Method get.accounts', () => {
 		});
 
 		it('returns empty response on unknown public key', async () => {
-			const response = await getAccounts({ publickey: 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' });
+			const response = await getAccounts({ publicKey: 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);

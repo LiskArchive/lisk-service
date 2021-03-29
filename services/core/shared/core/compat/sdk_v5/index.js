@@ -16,6 +16,7 @@
 const events = require('./events');
 
 const {
+    init,
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
@@ -40,6 +41,10 @@ const {
 const {
     postTransactions,
 } = require('./postTransactions');
+
+const {
+    getTransactionsSchemas,
+} = require('./transactionsSchemas');
 
 const {
     getForgers,
@@ -77,14 +82,13 @@ const {
     loadAllPendingTransactions,
 } = require('./pendingTransactions');
 
-const nop = async () => { };
-
 module.exports = {
     ...require('../sdk_v4'),
     ...require('./coreCache'),
 
     events,
 
+    init,
     getBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
@@ -100,6 +104,8 @@ module.exports = {
     getTransactionsByBlockId,
 
     postTransactions,
+
+    getTransactionsSchemas,
 
     getPendingTransactions,
     loadAllPendingTransactions,
@@ -121,6 +127,4 @@ module.exports = {
     getVotes,
 
     getVoters,
-
-    init: nop,
 };

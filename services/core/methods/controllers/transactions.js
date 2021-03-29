@@ -47,27 +47,36 @@ const getTransactions = async (params) => {
 			data: { error: `Account ${params[addressParam[0]]} not found.` },
 		};
 	}
+	try {
+		const result = await CoreService.getTransactions({
+			sort: 'timestamp:desc',
+			...params,
+		});
 
-	const result = await CoreService.getTransactions({
-		sort: 'timestamp:desc',
-		...params,
-	});
+		if (isEmptyObject(result) || isEmptyArray(result.data)) {
+			return { status: NOT_FOUND, data: { error: 'Not found.' } };
+		}
 
-	if (isEmptyObject(result) || isEmptyArray(result.data)) {
-		return { status: NOT_FOUND, data: { error: 'Not found.' } };
+		const meta = {
+			count: result.data.length,
+			offset: result.meta.offset || 0,
+			total: result.meta.total || result.meta.count,
+		};
+
+		return {
+			data: result.data,
+			meta,
+			link: {},
+		};
+	} catch (err) {
+		if (err.message.includes('does not exist')) {
+			return {
+				status: NOT_FOUND,
+				data: { error: err.message },
+			};
+		}
+			throw err;
 	}
-
-	const meta = {
-		count: result.data.length,
-		offset: result.meta.offset || 0,
-		total: result.meta.total || result.meta.count,
-	};
-
-	return {
-		data: result.data,
-		meta,
-		link: {},
-	};
 };
 
 const getLastTransactions = async (params) => {
@@ -142,7 +151,7 @@ const getTransactionsStatistics = async ({
 const getTransactionsStatisticsDay = (params) => getTransactionsStatistics({ aggregateBy: 'day', ...params });
 const getTransactionsStatisticsMonth = (params) => getTransactionsStatistics({ aggregateBy: 'month', ...params });
 
-const getPendingTransactions = async params => {
+const getPendingTransactions = async (params) => {
 	const result = await CoreService.getPendingTransactions(params);
 	return {
 		data: result.data,
@@ -152,6 +161,8 @@ const getPendingTransactions = async params => {
 
 const postTransactions = async (params) => CoreService.postTransactions(params);
 
+const getTransactionsSchemas = async (params) => CoreService.getTransactionsSchemas(params);
+
 module.exports = {
 	getTransactions,
 	getLastTransactions,
@@ -159,4 +170,5 @@ module.exports = {
 	getTransactionsStatisticsMonth,
 	getPendingTransactions,
 	postTransactions,
+	getTransactionsSchemas,
 };

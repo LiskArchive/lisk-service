@@ -105,7 +105,8 @@ const indexAccounts = async job => {
 	await accountsDB.upsert(accounts);
 };
 
-const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
+const indexAccountsByAddressQueue = initializeQueue('indexAccountsByAddressQueue', indexAccounts);
+const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQueue', indexAccounts);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
@@ -191,6 +192,9 @@ const getAccounts = async params => {
 		{ concurrency: accounts.data.length },
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
+
+	accounts.meta.count = accounts.data.length;
+	accounts.meta.offset = params.offset;
 	return accounts;
 };
 
@@ -230,7 +234,7 @@ const indexAccountsbyAddress = async (addressesToIndex) => {
 		},
 		{ concurrency: addressesToIndex.length },
 	);
-	indexAccountsQueue.add('indexAccountsQueue', { accounts: accountsToIndex });
+	await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', { accounts: accountsToIndex });
 };
 
 const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
@@ -244,7 +248,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 		},
 		{ concurrency: publicKeysToIndex.length },
 	);
-	indexAccountsQueue.add('indexAccountsQueue', { accounts: accountsToIndex });
+	await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', { accounts: accountsToIndex });
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
