@@ -22,7 +22,7 @@ const config = require('../../../../config');
 const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
-	indexGenesisAccounts,
+	indexAccountsbyAddress,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const {
@@ -295,6 +295,13 @@ const getBlocks = async params => {
 	return blocks;
 };
 
+const indexGenesisBlock = async genesisHeight => {
+	const [genesisBlock] = await getBlockByHeight(genesisHeight);
+	const accountAddressesToIndex = genesisBlock.asset.accounts.map(account => account.address);
+	indexAccountsbyAddress(accountAddressesToIndex);
+	await indexTransactions([genesisBlock]);
+};
+
 const buildIndex = async (from, to) => {
 	logger.info('Building index of blocks');
 
@@ -384,11 +391,8 @@ const init = async () => {
 		if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 		const blockIndexHigherRange = currentHeight;
 
-		// Index genesis block first
-		await getBlocks({ height: genesisHeight });
-
-		// Index genesis accounts
-		await indexGenesisAccounts(genesisHeight);
+		// Index genesis block
+		await indexGenesisBlock(genesisHeight);
 
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 

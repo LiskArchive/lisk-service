@@ -251,15 +251,6 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 	await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', { accounts: accountsToIndex });
 };
 
-const indexGenesisAccounts = async genesisHeight => {
-	const genesisBlock = (await coreApi.getBlockByHeight(genesisHeight)).data[0];
-
-	const genesisAccountAddresses = genesisBlock.header.asset.accounts
-		.map(account => account.address.toString('hex'));
-
-	await indexAccountsbyAddress(genesisAccountAddresses);
-};
-
 const getMultisignatureMemberships = async () => []; // TODO
 
 module.exports = {
@@ -272,5 +263,4 @@ module.exports = {
 	getAccountsBySearch,
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
-	indexGenesisAccounts,
 };
