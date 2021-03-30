@@ -14,8 +14,8 @@ pipeline {
 			agent { node { label 'lisk-service-dev' } }
 			when { branch 'development' }
 			environment {
-				ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
-				ENABLE_WS_API='rpc,rpc-v1,rpc-test,blockchain,rpc-v2'
+				ENABLE_HTTP_API='http-version1,http-version1-compat,http-status'
+				ENABLE_WS_API='rpc,rpc-v1,blockchain'
 			}
 			steps {
 				ansiColor('xterm') {
@@ -38,8 +38,8 @@ pipeline {
 			agent { node { label 'lisk-service-dev-v4' } }
 			when { branch 'development' }
 			environment {
-				ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
-				ENABLE_WS_API='rpc,rpc-v1,rpc-test,blockchain,rpc-v2'
+				ENABLE_HTTP_API='http-status,http-version2'
+				ENABLE_WS_API='blockchain,rpc-v2'
 			}
 			steps {
 				ansiColor('xterm') {
