@@ -23,20 +23,19 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Account & delegate search](#account--delegate-search)
     - [Sent votes](#sent-votes)
     - [Received votes](#received-votes)
+    - [Round forgers](#round-forgers)
   - [Blocks](#blocks)
     - [Block search](#block-search)
-    - [Round forgers](#round-forgers)
-  - [Peers](#peers)
-    - [Network peers](#network-peers)
   - [Transactions](#transactions)
     - [Transaction search](#transaction-search)
     - [Transaction broadcast](#transaction-broadcast)
     - [Transaction statistics](#transaction-statistics)
     - [Transaction schema](#transaction-schema)
+    - [Dynamic fees](#dynamic-fees)
   - [Network](#network)
+    - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
-    - [Dynamic fees](#dynamic-fees)
 
 ## Endpoint Logic
 
@@ -346,6 +345,71 @@ Make the version 2 API able to retrieve data by those criteria.
 https://service.lisk.io/api/v2/votes_received?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
 
+
+### Round forgers
+
+Retrieves next forgers with details in the current round.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP `/api/v2/forgers`
+- RPC `get.forgers`
+
+#### Request parameters
+
+| Parameter | Type   | Validation | Default | Comment |
+| --------- | ------ | ---------- | ------- | ------- |
+| limit     | Number | <1;103>    | 10      |
+| offset    | Number | <0;+Inf>   | 0       |
+
+
+#### Response example
+
+200 OK
+
+Make the version 2 API able to retrieve data by those criteria.
+
+```jsonc
+{
+  "data": [
+    {
+      "username": "genesis_51",
+      "totalVotesReceived": "1006000000000",
+      "address": "c6d076ed541ca20869a1398a9d28c645ac8a8719",
+      "minActiveHeight": 27605,
+      "isConsensusParticipant": true,
+      "nextForgingTime": 1607521557
+    },
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 20,
+    "total": 103
+  },
+  "links": {}
+}
+
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+
+#### Examples
+
+Get 20 items, skip first 50
+
+```
+https://service.lisk.io/api/v2/forgers?limit=20&offset=50
+```
+
 ## Blocks
 
 ### Block search
@@ -434,157 +498,6 @@ Make the version 2 API able to retrieve data by those criteria.
 
 ```
 https://service.lisk.io/api/v2/blocks?blockId=1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e
-```
-
-### Round forgers
-
-Retrieves next forgers with details in the current round.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP `/api/v2/forgers`
-- RPC `get.forgers`
-
-#### Request parameters
-
-| Parameter | Type   | Validation | Default | Comment |
-| --------- | ------ | ---------- | ------- | ------- |
-| limit     | Number | <1;103>    | 10      |
-| offset    | Number | <0;+Inf>   | 0       |
-
-
-#### Response example
-
-200 OK
-
-Make the version 2 API able to retrieve data by those criteria.
-
-```jsonc
-{
-  "data": [
-    {
-      "username": "genesis_51",
-      "totalVotesReceived": "1006000000000",
-      "address": "c6d076ed541ca20869a1398a9d28c645ac8a8719",
-      "minActiveHeight": 27605,
-      "isConsensusParticipant": true,
-      "nextForgingTime": 1607521557
-    },
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 20,
-    "total": 103
-  },
-  "links": {}
-}
-
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-
-#### Examples
-
-Get 20 items, skip first 50
-
-```
-https://service.lisk.io/api/v2/forgers?limit=20&offset=50
-```
-
-## Peers
-
-### Network peers
-
-Retrieves network peers with details based on criteria.
-
-_Supports pagination._
-
-#### Endpoints
-
-- HTTP `/api/v2/peers`
-- RPC `get.peers`
-
-#### Request parameters
-
-| Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
-| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
-| ip             | String           | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/`                                                                             | *(empty)*     |
-| networkVersion | String           | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/ ` | *(empty)*     |
-| state          | Array of Strings | `[“connected”, “disconnected”, ”any”]`                                                                                                                                          | connected     |
-| height         | Number           | ` <1;+Inf>`                                                                                                                                                                     | *(empty)*     |
-| limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
-| offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
-| sort           | String           | `[“height:asc”, “height:desc”, “networkVersion:asc”, ”networkVersion:desc”]`                                                                                                    | “height:desc” |
-
-#### Response example
-
-200 OK
-```jsonc
-{
-    "data": [
-      {
-        "ip": "127.0.0.1",
-        "port": 4000,
-        "networkVersion": "2.0",
-        "state": ”connected”,
-        "height": 8350681,
-        "networkIdentifier": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
-        "location": {
-          "countryCode": "DE",
-          "countryName": "Germany",
-          "hostname": "host.210.239.23.62.rev.coltfrance.com",
-          "ip": "210.239.23.62",
-        }
-      }
-    ],
-    "meta": {
-      "count": 100,
-      "offset": 25,
-      "total": 43749
-    },
-    "links": {}
-}
-```
-
-400 Bad Request
-```
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-```
-
-404 Not Found
-```
-{
-  "error": true,
-  "message": "There are no peers reported."
-}
-```
-
-404 Not Found
-```
-{
-  "error": true,
-  "message": "Peer with ip <ip> was not found."
-}
-```
-
-#### Examples
-
-Get hosts with certain IP
-
-```
-https://service.lisk.io/api/v2/peers?ip=210.239.23.62
 ```
 
 ## Transactions
@@ -911,7 +824,151 @@ https://service.lisk.io/api/v2/transactions​/schemas?moduleAssetId=2:0`
 https://service.lisk.io/api/v2/transactions​/schemas?moduleAssetName=token:transfer`
 ```
 
+### Dynamic fees
+
+Requests transaction fee estimates per byte.
+
+#### Endpoints
+
+- HTTP `/api/v2/fees`
+- RPC `get.fees`
+
+
+#### Request parameters
+
+No params required.
+
+#### Response example
+
+200 OK
+
+
+```jsonc
+{
+  "data": {
+    "feeEstimatePerByte": {
+      "low": 0,
+      "medium": 1000,
+      "high": 2000
+    },
+    "baseFeeById": {
+      "2:0": "1000000000"
+    },
+    "baseFeeByName": {
+      "token:transfer": "1000000000"
+    },
+    "minFeePerByte": 1000,
+  },
+  "meta": {
+    "lastUpdate": 123456789,
+    "lastBlockHeight": 25,
+    “lastBlockId”: 1354568
+  },
+  "links": {}
+}
+```
+
+503 Service Unavailable
+```jsonc
+{
+  "error": true,
+  "message": "Service is not ready yet"
+}
+```
+
+#### Examples
+
+```
+https://service.lisk.io/api/v2/fees
+```
+
+
 ## Network
+
+### Network peers
+
+Retrieves network peers with details based on criteria.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP `/api/v2/peers`
+- RPC `get.peers`
+
+#### Request parameters
+
+| Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
+| ip             | String           | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/`                                                                             | *(empty)*     |
+| networkVersion | String           | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/ ` | *(empty)*     |
+| state          | Array of Strings | `[“connected”, “disconnected”, ”any”]`                                                                                                                                          | connected     |
+| height         | Number           | ` <1;+Inf>`                                                                                                                                                                     | *(empty)*     |
+| limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
+| offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
+| sort           | String           | `[“height:asc”, “height:desc”, “networkVersion:asc”, ”networkVersion:desc”]`                                                                                                    | “height:desc” |
+
+#### Response example
+
+200 OK
+```jsonc
+{
+    "data": [
+      {
+        "ip": "127.0.0.1",
+        "port": 4000,
+        "networkVersion": "2.0",
+        "state": ”connected”,
+        "height": 8350681,
+        "networkIdentifier": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
+        "location": {
+          "countryCode": "DE",
+          "countryName": "Germany",
+          "hostname": "host.210.239.23.62.rev.coltfrance.com",
+          "ip": "210.239.23.62",
+        }
+      }
+    ],
+    "meta": {
+      "count": 100,
+      "offset": 25,
+      "total": 43749
+    },
+    "links": {}
+}
+```
+
+400 Bad Request
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+404 Not Found
+```
+{
+  "error": true,
+  "message": "There are no peers reported."
+}
+```
+
+404 Not Found
+```
+{
+  "error": true,
+  "message": "Peer with ip <ip> was not found."
+}
+```
+
+#### Examples
+
+Get hosts with certain IP
+
+```
+https://service.lisk.io/api/v2/peers?ip=210.239.23.62
+```
 
 ### Network status
 
@@ -1027,62 +1084,4 @@ No params required.
 
 ```
 https://service.lisk.io/api/v2/network/statistics`
-```
-
-### Dynamic fees
-
-Requests transaction fee estimates per byte.
-
-#### Endpoints
-
-- HTTP `/api/v2/fees`
-- RPC `get.fees`
-
-
-#### Request parameters
-
-No params required.
-
-#### Response example
-
-200 OK
-
-
-```jsonc
-{
-  "data": {
-    "feeEstimatePerByte": {
-      "low": 0,
-      "medium": 1000,
-      "high": 2000
-    },
-    "baseFeeById": {
-      "2:0": "1000000000"
-    },
-    "baseFeeByName": {
-      "token:transfer": "1000000000"
-    },
-    "minFeePerByte": 1000,
-  },
-  "meta": {
-    "lastUpdate": 123456789,
-    "lastBlockHeight": 25,
-    “lastBlockId”: 1354568
-  },
-  "links": {}
-}
-```
-
-503 Service Unavailable
-```jsonc
-{
-  "error": true,
-  "message": "Service is not ready yet"
-}
-```
-
-#### Examples
-
-```
-https://service.lisk.io/api/v2/fees`
 ```
