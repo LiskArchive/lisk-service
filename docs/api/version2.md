@@ -202,8 +202,6 @@ https://service.lisk.io/api/v2/accounts?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrna
 
 Retrieves votes for a single account based on address, public key, or delegate name.
 
-_Supports pagination._
-
 #### Endpoints
 
 - `HTTP /api/v2/votes_sent`
@@ -665,7 +663,7 @@ Payload:
 ```jsonc
 {
   "error": true,
-  "message": "Unable to reach a network node"
+  "message": "Unable to reach the network node"
 }
 
 ```
@@ -741,13 +739,13 @@ _Supports pagination._
 
 #### Examples
 
-Get transaction statistics for past 7 days.
+Get transaction statistics for the past 7 days.
 
 ```
 https://service.lisk.io/api/v2/transactions​/statistics​/days&limit=7`
 ```
 
-Get transaction statistics for past 12 months.
+Get transaction statistics for the past 12 months.
 
 ```
 https://service.lisk.io/api/v2/transactions​/statistics​/months&limit=12`
@@ -954,7 +952,6 @@ _Supports pagination._
 }
 ```
 
-404 Not Found
 ```
 {
   "error": true,
