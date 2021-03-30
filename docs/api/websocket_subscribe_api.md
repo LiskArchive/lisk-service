@@ -6,32 +6,27 @@ The Subscribe API is sometimes called publish/subscribe or Event-Driven API. The
 
 Lisk Service leverages the two-way communication approach by utilizing the WebSocket library responsible for updating users about changes in the blockchain network and markets.
 
-## <a name='table-of-contents'></a>Table of Contents
+## Table of Contents
 
-<!-- vscode-markdown-toc -->
-* [Table of Contents](#table-of-contents)
-* [Access paths and compatibility](#access-paths-and-compatibility)
-* [Endpoint Logic](#endpoint-logic)
-* [Responses](#responses)
-* [Date Format](#date-format)
-* [Example of a client implementation](#example-of-a-client-implementation)
-    * [Node.js](#node.js)
-* [`update.block`](#`update.block`)
-    * [Response](#response)
-* [`update.round`](#`update.round`)
-    * [Response](#response-1)
-* [`update.forgers`](#`update.forgers`)
-    * [Response](#response-2)
-* [`update.transactions.confirmed`](#`update.transactions.confirmed`)
-    * [Response](#response-3)
+- [Lisk Service Subscribe API Documentation](#lisk-service-subscribe-api-documentation)
+  - [Table of Contents](#table-of-contents)
+  - [Access paths and compatibility](#access-paths-and-compatibility)
+  - [Endpoint Logic](#endpoint-logic)
+  - [Responses](#responses)
+  - [Date Format](#date-format)
+  - [Example of a client implementation](#example-of-a-client-implementation)
+    - [Node.js](#nodejs)
+- [Blockchain updates (`/blockchain`)](#blockchain-updates-blockchain)
+  - [`update.block`](#updateblock)
+    - [Response](#response)
+  - [`update.round`](#updateround)
+    - [Response](#response-1)
+  - [`update.forgers`](#updateforgers)
+    - [Response](#response-2)
+  - [`update.transactions.confirmed`](#updatetransactionsconfirmed)
+    - [Response](#response-3)
 
-<!-- vscode-markdown-toc-config
-	numbering=false
-	autoSave=true
-	/vscode-markdown-toc-config -->
-<!-- /vscode-markdown-toc -->
-
-## <a name='access-paths-and-compatibility'></a>Access paths and compatibility
+## Access paths and compatibility
 
 The blockchain update API can be accessed by the following path `https://service.lisk.io/blockchain`.
 
@@ -41,11 +36,11 @@ You might also be interested in accessing the `testnet` network by using the `ht
 
 The specification below contains numerous examples how to use the API in practice.
 
-## <a name='endpoint-logic'></a>Endpoint Logic
+## Endpoint Logic
 
 The logic of the endpoints comes as follows: the method naming is always based on the following pattern: `<action>.<entity>`, where the `action` is equivalent to method type performed on server (ie. update) and `entity` is a part of the application logic, ex. `accounts`, `transactions`.
 
-## <a name='responses'></a>Responses
+## Responses
 
 All responses are returned in the JSON format - application/json.
 
@@ -62,13 +57,13 @@ Each API request has the following structure:
 }
 ```
 
-## <a name='date-format'></a>Date Format
+## Date Format
 
 On the contrary to the original Lisk Core API, all timestamps used by the Lisk Service are in the UNIX timestamp format. The blockchain dates are always expressed as integers and the epoch date is equal to the number of seconds since 1970-01-01 00:00:00.
 
-## <a name='example-of-a-client-implementation'></a>Example of a client implementation
+## Example of a client implementation
 
-### <a name='node.js'></a>Node.js
+### Node.js
 
 ```javascript
 const io = require('socket.io-client');
@@ -78,111 +73,141 @@ connection.on('update.block', (block) => { (...) });
 
 # Blockchain updates (`/blockchain`)
 
-## <a name='`update.block`'></a>`update.block`
+## `update.block`
 
 Updates about a newly forged block with its all data.
 
-### <a name='response'></a>Response
+### Response
 
 ```jsonc
 {
-    id: "6286637019365913992",
-    version: 1,
-    timestamp: 146010410,
-    height: 12659996,
-    numberOfTransactions: 0,
-    totalAmount: "0",
-    totalFee: "0",
-    reward: "100000000",
-    payloadLength: 0,
-    payloadHash: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    generatorPublicKey: "bfd925085aeb9d2d21973363d6a3e8d394b25116e252b4db701e3dabe319b016",
-    blockSignature: "7e57deaf35bdf6ec804a402f04aaca6e70ecb1a928d28e98277219fa9caa5a770b0dea3ecf402cdfc35c7b8a84d1611a5b794d70bf3c29d51c28b8ded3b5920c",
-    confirmations: 1,
-    totalForged: "100000000",
-    generatorAddress: "3865707283477759335L",
-    previousBlockId: "9424602178629894603",
-    unixTimestamp: 1610119610
+  "data": [
+    {
+      "id": "6258354802676165798",
+      "height": 8344448,
+      "version": 0,
+      "timestamp": 85944650,
+      "generatorAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
+      "generatorPublicKey": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
+      "generatorUsername": "genesis_13",
+      "transactionRoot": "4e4d91be041e09a2e54bb7dd38f1f2a02ee7432ec9f169ba63cd1f193a733dd2",
+      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
+      "previousBlockId": "15918760246746894806",
+      "numberOfTransactions": 15,
+      "totalFee": "15000000",
+      "reward": "50000000",
+      "totalForged": "65000000",
+      "totalBurnt": "10000000",
+      "isFinal": true,
+      "maxHeightPreviouslyForged": 68636,
+      "maxHeightPrevoted": 68707,
+      "seedReveal": "4021e5048af4c9f64ff2e12780af21f4"
+    }
+  ],
+  "meta": {
+    "count": 100,
+    "offset": 25,
+    "total": 43749
+  },
 }
 ```
 
-## <a name='`update.round`'></a>`update.round`
+## `update.round`
 
 Updates about the forging delegates for the next round.
 
-### <a name='response-1'></a>Response
+### Response
 
 ```jsonc
 {
-    "data": [
-        {
-            "address": "1492771550241913308L",
-            "publicKey": "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
-            "username": "genesis_66"
-        }
-        ...
-    ],
-    "meta": {
-        "count": 25,
-        "timestamp": 1573059291
-    }
+  "data": [
+    {
+      "username": "genesis_51",
+      "totalVotesReceived": "1006000000000",
+      "address": "c6d076ed541ca20869a1398a9d28c645ac8a8719",
+      "minActiveHeight": 27605,
+      "isConsensusParticipant": true,
+      "nextForgingTime": 1607521557
+    },
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 20,
+    "total": 103
+  },
 }
 ```
 
-## <a name='`update.forgers`'></a>`update.forgers`
+## `update.forgers`
 
 Updates the current forgers' list, so the current forger is on the first position.
 
-### <a name='response-2'></a>Response
+### Response
 
 ```jsonc
 {
-    "data": [
-        {
-            "address": "1492771550241913308L",
-            "publicKey": "04c531ebe3b3c910abe89ad758636554396c92979e8c92dc04107404effac0fd",
-            "username": "genesis_66"
-        }
-        ...
-    ],
-    "meta": {
-        "count": 25,
-        "timestamp": 1573059291
-    }
+  "data": [
+    {
+      "username": "genesis_51",
+      "totalVotesReceived": "1006000000000",
+      "address": "c6d076ed541ca20869a1398a9d28c645ac8a8719",
+      "minActiveHeight": 27605,
+      "isConsensusParticipant": true,
+      "nextForgingTime": 1607521557
+    },
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 20,
+    "total": 103
+  },
 }
 ```
 
-## <a name='`update.transactions.confirmed`'></a>`update.transactions.confirmed`
+## `update.transactions.confirmed`
 
 Updates about transactions from the last block.
 
-### <a name='response-3'></a>Response
+### Response
 
 ```jsonc
 {
-    "data": [
-        {
-            "id": "12761961644475138241",
-            "amount": "100000000",
-            "fee": "10000000",
-            "type": 0,
-            "height": 26998,
-            "blockId": "3226008563694255110",
-            "timestamp": 1573059285,
-            "senderId": "16313739661670634666L",
-            "senderPublicKey": "c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f",
-            "recipientId": "16313739661670634666L",
-            "recipientPublicKey": "c094ebee7ec0c50ebee32918655e089f6e1a604b83bcaa760293c61e0f18ab6f",
-            "signature": "8b93bddbc51411f45dd2be352496f0b4a8dcc37bdf632eb311d292c7f2de75e5182c1ac554f54031313a5c7f9fcfa091dee7790aa40c2ee96091ba52710b600e",
-            "signatures": [],
-            "confirmations": 1,
-            "asset": {}
+  "data": [
+    {
+      "id": "222675625422353767",
+      "moduleAssetId": "2:0",
+      "moduleAssetName": "token:transfer",
+      "fee": "1000000",
+      "nonce": "0",
+      "block": {  // optional
+        "id": "6258354802676165798",
+        "height": 8350681,
+        "timestamp": 28227090,
+      },
+      "sender": {
+        "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
+        "publicKey": "2ca9a7...c23079",
+        "username": "genesis_51",
+      },
+      "signatures": [ "72c9b2...36c60a" ],
+      "confirmations": 0,
+      "asset": {  // Depends on operation
+        "amount": "150000000",
+        "recipient": {
+          "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
+          "publicKey": "2ca9a7...c23079",
+          "username": "genesis_49",
         },
-        ...
-    ],
-    "meta": {
-        "count": 4,
-        "timestamp": 1573059291
+        "data": "message"
+      },
+      "relays": 0,
+      "isPending": false
     }
+  ],
+  "meta": {
+    "count": 100,
+    "offset": 25,
+    "total": 43749
+  },
 }
 ```
