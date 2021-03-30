@@ -22,6 +22,7 @@ const config = require('../../../../config');
 const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
+	indexGenesisAccounts,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const {
@@ -375,7 +376,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 const init = async () => {
 	await getBlocksIndex();
 	try {
-		const genesisHeight = 1;
+		const genesisHeight = 0;
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
 		const blockIndexLowerRange = config.indexNumOfBlocks > 0
@@ -385,6 +386,9 @@ const init = async () => {
 
 		// Index genesis block first
 		await getBlocks({ height: genesisHeight });
+
+		// Index genesis accounts
+		await indexGenesisAccounts(genesisHeight);
 
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
