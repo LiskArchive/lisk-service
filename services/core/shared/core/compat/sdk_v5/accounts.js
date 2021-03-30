@@ -255,7 +255,7 @@ const indexGenesisAccounts = async genesisHeight => {
 	const genesisBlock = (await coreApi.getBlockByHeight(genesisHeight)).data[0];
 
 	const genesisAccountAddresses = genesisBlock.header.asset.accounts
-		.map(account => account = account.address.toString('hex'));
+		.map(account => account.address.toString('hex'));
 
 	await indexAccountsbyAddress(genesisAccountAddresses);
 };
