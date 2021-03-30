@@ -7,7 +7,8 @@ The main focus of this project is to provide data to Lisk blockchain users by se
 As a pure backend project, it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.
 
 The API can be accessed at `https://service.lisk.io`.
-It is also possible to access the Testnet network at `https://testnet-service.lisk.io`.
+
+It is also possible to access the `testnet` network at `https://testnet-service.lisk.io`.
 
 The Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.
 
@@ -31,11 +32,11 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Transactions](#transactions-1)
     - [Transaction broadcast](#transaction-broadcast)
     - [Transaction statistics](#transaction-statistics)
+    - [Transaction schema](#transaction-schema)
   - [Network](#network)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
     - [Dynamic fees](#dynamic-fees)
-    - [Transaction schema](#transaction-schema)
 
 ## Endpoint Logic
 
@@ -839,6 +840,77 @@ Get transaction statistics for past 12 months.
 https://service.lisk.io/api/v2/transactions​/statistics​/months&limit=12`
 ```
 
+### Transaction schema
+
+Retrieves transaction schema for certain transaction payloads.
+
+#### Endpoints
+
+- `HTTP /api/v2/transactions/schemas`
+- `RPC get.transactions.schemas`
+
+#### Request parameters
+
+
+| Parameter       | Type   | Validation                             | Default   | Comment                                                        |
+| --------------- | ------ | -------------------------------------- | --------- | -------------------------------------------------------------- |
+| moduleAssetId   | String | `ModuleId:AssetId /[0-9]+:[0-9]+/`     | *(empty)* | Transfer transaction: moduleID = 2,assetID = 0                 |
+| moduleAssetName | String | `ModuleName:AssetName /[a-z]+:[a-z]+/` | *(empty)* | Transfer transaction: moduleName = token, assetName = transfer |
+
+#### Response example
+
+200 OK
+
+Make the version 2 API able to retrieve data by those criteria.
+
+```jsonc
+{
+  "data": [
+    {
+      "moduleAssetId": "2:0",
+      "moduleAssetName": "token:transfer",
+      "schema": {
+        ...
+      }
+    },
+  ],
+  "meta": {
+    "count": 10,
+    "offset": 0,
+    "total": 10
+  },
+  "links": {}
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+
+```
+
+404 Not Found
+```jsonc
+{
+  "error": true,
+  "message": "The entity <moduleAssetId/moduleAssetName> not found."
+}
+
+```
+
+#### Examples
+
+Get transaction schema for the transfer transaction type.
+
+```
+https://service.lisk.io/api/v2/transactions​/schemas?moduleAssetId=2:0`
+
+https://service.lisk.io/api/v2/transactions​/schemas?moduleAssetName=token:transfer`
+```
+
 ## Network
 
 ### Network status
@@ -1013,65 +1085,4 @@ No params required.
 
 ```
 https://service.lisk.io/api/v2/fees`
-```
-
-### Transaction schema
-
-Retrieves transaction schema for certain transaction payloads.
-
-#### Endpoints
-
-- `HTTP /api/v2/transactions/schemas`
-- `RPC get.transactions.schemas`
-
-#### Request parameters
-
-
-| Parameter       | Type   | Validation                             | Default   | Comment                                                        |
-| --------------- | ------ | -------------------------------------- | --------- | -------------------------------------------------------------- |
-| moduleAssetId   | String | `ModuleId:AssetId /[0-9]+:[0-9]+/`     | *(empty)* | Transfer transaction: moduleID = 2,assetID = 0                 |
-| moduleAssetName | String | `ModuleName:AssetName /[a-z]+:[a-z]+/` | *(empty)* | Transfer transaction: moduleName = token, assetName = transfer |
-
-#### Response example
-
-200 OK
-
-Make the version 2 API able to retrieve data by those criteria.
-
-```jsonc
-{
-  "data": [
-    {
-      "moduleAssetId": "2:0",
-      "moduleAssetName": "token:transfer",
-      "schema": {
-        ...
-      }
-    },
-  ],
-  "meta": {
-    "count": 10,
-    "offset": 0,
-    "total": 10
-  },
-  "links": {}
-}
-```
-
-400 Bad Request
-```jsonc
-{
-  "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
-}
-
-```
-
-404 Not Found
-```jsonc
-{
-  "error": true,
-  "message": "The entity <moduleAssetId/moduleAssetName> not found."
-}
-
 ```
