@@ -20,16 +20,16 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
   - [The Date Format](#the-date-format)
 - [Lisk Blockchain-related Endpoints](#lisk-blockchain-related-endpoints)
   - [Accounts](#accounts)
-    - [Accounts & Delegates](#accounts--delegates)
+    - [Account & delegate search](#account--delegate-search)
     - [Sent votes](#sent-votes)
     - [Received votes](#received-votes)
   - [Blocks](#blocks)
-    - [Blocks](#blocks-1)
+    - [Block search](#block-search)
     - [Round forgers](#round-forgers)
   - [Peers](#peers)
     - [Network peers](#network-peers)
   - [Transactions](#transactions)
-    - [Transactions](#transactions-1)
+    - [Transaction search](#transaction-search)
     - [Transaction broadcast](#transaction-broadcast)
     - [Transaction statistics](#transaction-statistics)
     - [Transaction schema](#transaction-schema)
@@ -65,7 +65,7 @@ is different to the original Lisk Core API, as all timestamps used by the Lisk S
 
 ## Accounts
 
-### Accounts & Delegates
+### Account & delegate search
 
 Retrieves account details based on criteria defined by params.
 
@@ -348,7 +348,7 @@ https://service.lisk.io/api/v2/votes_received?address=lsk24cd35u4jdq8szo3pnsqe5d
 
 ## Blocks
 
-### Blocks
+### Block search
 
 Retrieves block details based on criteria defined by params.
 
@@ -589,7 +589,7 @@ https://service.lisk.io/api/v2/peers?ip=210.239.23.62
 
 ## Transactions
 
-### Transactions
+### Transaction search
 
 Retrieves network transactions by criteria defined by params.
 
