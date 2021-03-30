@@ -29,6 +29,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Network peers](#network-peers)
   - [Transactions](#transactions)
     - [Transactions](#transactions-1)
+    - [Transaction broadcast](#transaction-broadcast)
     - [Transaction statistics](#transaction-statistics)
   - [Network](#network)
     - [Network status](#network-status)
@@ -216,8 +217,6 @@ _Supports pagination._
 | address   | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves only new address system |
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
 | username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
-| limit     | Number | `<1;100>`                                               | 10        |
-| offset    | Number | `<0;+Inf>`                                              | 0         |
 
 #### Response example
 
@@ -433,7 +432,7 @@ Make the version 2 API able to retrieve data by those criteria.
 
 
 ```
-https://service.lisk.io/api/v2/votes_received?blockId=1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e
+https://service.lisk.io/api/v2/blocks?blockId=1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e
 ```
 
 ### Round forgers
@@ -567,7 +566,15 @@ _Supports pagination._
 ```
 {
   "error": true,
-  "message": "Account <account_id> not found."
+  "message": "There are no peers reported."
+}
+```
+
+404 Not Found
+```
+{
+  "error": true,
+  "message": "Peer with ip <ip> was not found."
 }
 ```
 
@@ -698,6 +705,55 @@ Get last 25 transactions for account `lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu`
 ```
 https://service.lisk.io/api/v2/transactions?senderAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 https://service.lisk.io/api/v2/transactions?recipientAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
+```
+
+### Transaction broadcast
+
+Retrieves network transactions by criteria defined by params.
+
+#### Endpoints
+
+- HTTP POST `/api/v2/transactions​`
+- RPC `post.transactions`
+
+
+#### Request parameters
+
+No params required.
+
+Payload:
+
+```jsonc
+{"transaction":"08021000180d2080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32270880c2d72f12144fd8cc4e27a3489b57ed986efe3d327d3de40d921a0a73656e6420746f6b656e3a4069242925e0e377906364fe6c2eed67f419dfc1a757f73e848ff2f1ff97477f90263487d20aedf538edffe2ce5b3e7601a8528e5cd63845272e9d79c294a6590a"}
+```
+
+#### Response example
+
+200 OK
+
+```jsonc
+{
+  "message": "Transaction payload was successfully passed to the network node"
+  "transactionId": "123456789"
+}
+```
+
+400 Bad Request
+```jsonc
+{
+  "error": true,
+  "message": "Transaction payload was rejected by the network node"
+}
+
+```
+
+500 Internal Server Error
+```jsonc
+{
+  "error": true,
+  "message": "Unable to reach a network node"
+}
+
 ```
 
 ### Transaction statistics
@@ -961,7 +1017,7 @@ https://service.lisk.io/api/v2/fees`
 
 ### Transaction schema
 
-Retrieves network statistics such as number of peers, node versions, heights etc.
+Retrieves transaction schema for certain transaction payloads.
 
 #### Endpoints
 
