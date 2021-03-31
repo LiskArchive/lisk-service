@@ -267,4 +267,5 @@ module.exports = {
 	getAccountsBySearch,
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
+	getHexAddressFromPublicKey,
 };
