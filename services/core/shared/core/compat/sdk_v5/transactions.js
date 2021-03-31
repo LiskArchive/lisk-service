@@ -25,6 +25,7 @@ const {
 	getIndexedAccountInfo,
 	getBase32AddressFromHex,
 	getAccountsBySearch,
+	getHexAddressFromBase32,
 } = require('./accounts');
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
@@ -262,7 +263,8 @@ const getTransactions = async params => {
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
 				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
-				transaction.senderId = account && account.address ? account.address : undefined;
+				transaction.senderId = account && account.address ? account.address
+					: getBase32AddressFromHex(getHexAddressFromBase32(transaction.senderPublicKey));
 				transaction.username = account && account.username ? account.username : undefined;
 				transaction.isPending = false;
 
