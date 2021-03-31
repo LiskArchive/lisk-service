@@ -20,6 +20,9 @@ const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const coreApi = require('./coreApi');
 const {
+	getHexAddressFromPublicKey,
+} = require('./accounts');
+const {
 	indexAccountsbyAddress,
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
@@ -308,7 +311,9 @@ const getTransactionsByBlockId = async blockId => {
 			transaction.height = block.header.height;
 			transaction.blockId = block.header.id;
 			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
-			transaction.senderId = account && account.address ? account.address : undefined;
+			transaction.senderId = account && account.address
+				? account.address
+				: getHexAddressFromPublicKey(transaction.senderPublicKey);
 			transaction.username = account && account.username ? account.username : undefined;
 			transaction.isPending = false;
 			return transaction;
