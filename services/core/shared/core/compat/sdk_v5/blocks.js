@@ -320,12 +320,15 @@ const buildIndex = async (from, to) => {
 		/* eslint-disable no-await-in-loop */
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
-		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+		const batchFromHeight = offset + 1;
+		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
+			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
+		logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
 
 		let blocks;
 		do {
-			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
-		} while (!(blocks.length && blocks.every(block => !!block && !!block.height)));
+			blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
+		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
 
 		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
 
@@ -371,14 +374,18 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 
 	// eslint-disable-next-line consistent-return
 	waitForIt(async () => {
-		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
-
-		if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
-			setIndexReadyStatus(true);
-			return getIndexReadyStatus();
-		}
+		const readyStatus = false;
+		do {
+			/* eslint-disable no-await-in-loop */
+			const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+			const numBlocksIndexed = await blocksDB.count();
+			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+			/* eslint-enable no-await-in-loop */
+			if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
+				setIndexReadyStatus(true);
+				return getIndexReadyStatus();
+			}
+		} while (readyStatus !== true);
 	}, 5000);
 };
 
