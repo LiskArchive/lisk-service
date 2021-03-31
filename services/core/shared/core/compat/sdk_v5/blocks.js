@@ -374,7 +374,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 
 	// eslint-disable-next-line consistent-return
 	waitForIt(async () => {
-		const readyStatus = false;
+		let indexReadyStatus = false;
 		do {
 			/* eslint-disable no-await-in-loop */
 			const currentHeight = (await coreApi.getNetworkStatus()).data.height;
@@ -382,10 +382,11 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 			/* eslint-enable no-await-in-loop */
 			if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
-				setIndexReadyStatus(true);
+				indexReadyStatus = true;
+				setIndexReadyStatus(indexReadyStatus);
 				return getIndexReadyStatus();
 			}
-		} while (readyStatus !== true);
+		} while (indexReadyStatus !== true);
 	}, 5000);
 };
 
