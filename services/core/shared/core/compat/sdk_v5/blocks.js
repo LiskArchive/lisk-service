@@ -374,19 +374,17 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 
 	// eslint-disable-next-line consistent-return
 	waitForIt(async () => {
-		let indexReadyStatus;
-		do {
-			/* eslint-disable no-await-in-loop */
-			const currentHeight = (await coreApi.getNetworkStatus()).data.height;
-			const numBlocksIndexed = await blocksDB.count();
-			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
-			/* eslint-enable no-await-in-loop */
-			if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
-				indexReadyStatus = true;
-				setIndexReadyStatus(indexReadyStatus);
-				return getIndexReadyStatus();
-			}
-		} while (indexReadyStatus !== true);
+		/* eslint-disable no-await-in-loop */
+		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+		const numBlocksIndexed = await blocksDB.count();
+		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+		/* eslint-enable no-await-in-loop */
+		if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
+			setIndexReadyStatus(true);
+			return getIndexReadyStatus();
+		}
+			setIndexReadyStatus(false);
+			throw new Error('Block indexing is still processing...');
 	}, 5000);
 };
 
