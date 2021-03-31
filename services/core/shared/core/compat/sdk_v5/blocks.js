@@ -374,7 +374,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 
 	// eslint-disable-next-line consistent-return
 	waitForIt(async () => {
-		let indexReadyStatus = false;
+		let indexReadyStatus;
 		do {
 			/* eslint-disable no-await-in-loop */
 			const currentHeight = (await coreApi.getNetworkStatus()).data.height;
