@@ -229,7 +229,11 @@ const indexAccountsbyAddress = async (addressesToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
 		addressesToIndex,
 		async address => {
+			const accountFromDB = await getIndexedAccountInfo({
+				address: getBase32AddressFromHex(address),
+			});
 			const account = (await getAccountsFromCore({ address })).data[0];
+			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
 		{ concurrency: addressesToIndex.length },

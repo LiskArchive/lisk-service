@@ -297,7 +297,9 @@ const getBlocks = async params => {
 
 const indexGenesisBlock = async genesisHeight => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
-	const accountAddressesToIndex = genesisBlock.asset.accounts.map(account => account.address);
+	const accountAddressesToIndex = genesisBlock.asset.accounts
+		.filter(account => account.address > 16) // To filter out reclaim accounts
+		.map(account => account.address);
 	indexAccountsbyAddress(accountAddressesToIndex);
 	await indexTransactions([genesisBlock]);
 };
@@ -384,15 +386,15 @@ const init = async () => {
 	await getBlocksIndex();
 	try {
 		const genesisHeight = 0;
+		// Index genesis block
+		await indexGenesisBlock(genesisHeight);
+
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
 		const blockIndexLowerRange = config.indexNumOfBlocks > 0
 			? currentHeight - config.indexNumOfBlocks : genesisHeight;
 		if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 		const blockIndexHigherRange = currentHeight;
-
-		// Index genesis block
-		await indexGenesisBlock(genesisHeight);
 
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
