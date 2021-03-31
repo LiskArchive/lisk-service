@@ -102,7 +102,7 @@ pipeline {
 				dir('./docker') {
 					sh '''
 						make -f Makefile.core.jenkins down
-						make -f Makefile.core.jenkins up
+						ENABLE_HTTP_API=http-version1,http-version1-compat,http-status,http-version2 ENABLE_WS_API=rpc,rpc-v1,blockchain,rpc-v2 make -f Makefile.core.jenkins up
 						ready=1
 						retries=0
 						set +e
