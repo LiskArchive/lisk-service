@@ -81,7 +81,7 @@ broker.createService({
 		cors: {
 			origin: '*',
 			methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
-			allowedHeaders: [],
+			allowedHeaders: ['Content-type', 'Access-Control-Request-Method', 'Access-Control-Max-Age'],
 			exposedHeaders: [],
 			credentials: false,
 			maxAge: 3600,
