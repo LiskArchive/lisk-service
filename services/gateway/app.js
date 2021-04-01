@@ -76,17 +76,15 @@ broker.createService({
 		host,
 		port,
 		path: '/api',
-		use: [
-			// compression(),
-			// cookieParser()
-		],
+		use: [],
 
-		// Global CORS settings for all routes
 		cors: {
-			// Configure the Access-Control-Allow-Origin CORS header
 			origin: '*',
-			// Configure the Access-Control-Allow-Methods CORS header
-			methods: ['GET', 'POST'],
+			methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+			allowedHeaders: [],
+			exposedHeaders: [],
+			credentials: false,
+			maxAge: 3600,
 		},
 
 		// Used server instance. If null, it will create a new HTTP(s)(2) server
