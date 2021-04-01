@@ -298,7 +298,7 @@ const getBlocks = async params => {
 const indexGenesisBlock = async genesisHeight => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
 	const accountAddressesToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address > 16) // To filter out reclaim accounts
+		.filter(account => account.address.length > 16) // To filter out reclaim accounts
 		.map(account => account.address);
 	indexAccountsbyAddress(accountAddressesToIndex);
 	await indexTransactions([genesisBlock]);
