@@ -134,7 +134,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 		try {
 			const chunkSize = 1000;
-			const ids = await knex.batchInsert(tableName, rows, chunkSize);
+			const ids = await knex.transaction(trx => knex.batchInsert(tableName, rows, chunkSize).transacting(trx));
 			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 			return ids;
 		} catch (error) {
