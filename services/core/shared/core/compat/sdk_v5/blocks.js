@@ -421,7 +421,7 @@ const init = async () => {
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 
-		await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+		await indexMissingBlocks(genesisHeight, currentHeight);
 		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');
