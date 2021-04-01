@@ -335,7 +335,8 @@ const buildIndex = async (from, to) => {
 		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
 
 		const topHeightFromBatch = (sortedBlocks.pop()).height;
-		const bottomHeightFromBatch = (sortedBlocks.shift()).height;
+		const bottomHeightFromBatch = sortedBlocks.length
+			? (sortedBlocks.shift()).height : topHeightFromBatch;
 		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
 		if (bottomHeightFromBatch < lowestIndexedHeight || lowestIndexedHeight === 0) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
 		if (topHeightFromBatch > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', topHeightFromBatch);
@@ -383,8 +384,8 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 			setIndexReadyStatus(true);
 			return getIndexReadyStatus();
 		}
-			setIndexReadyStatus(false);
-			throw new Error('Block indexing is still processing...');
+		setIndexReadyStatus(false);
+		throw new Error('Block indexing still in progress...');
 	}, 5000);
 };
 
