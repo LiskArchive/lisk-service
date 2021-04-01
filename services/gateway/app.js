@@ -82,7 +82,7 @@ broker.createService({
 			origin: '*',
 			methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
 			allowedHeaders: [
-				'Content-type',
+				'Content-Type',
 				'Access-Control-Request-Method',
 				'Access-Control-Request-Headers',
 				'Access-Control-Max-Age',
