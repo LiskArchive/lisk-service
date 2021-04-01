@@ -22,6 +22,7 @@ const config = require('../../../../config');
 const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
+	indexAccountsbyAddress,
 } = require('./accounts');
 const { indexVotes } = require('./voters');
 const {
@@ -294,6 +295,15 @@ const getBlocks = async params => {
 	return blocks;
 };
 
+const indexGenesisBlock = async genesisHeight => {
+	const [genesisBlock] = await getBlockByHeight(genesisHeight);
+	const accountAddressesToIndex = genesisBlock.asset.accounts
+		.filter(account => account.address > 16) // To filter out reclaim accounts
+		.map(account => account.address);
+	indexAccountsbyAddress(accountAddressesToIndex);
+	await indexTransactions([genesisBlock]);
+};
+
 const buildIndex = async (from, to) => {
 	logger.info('Building index of blocks');
 
@@ -310,19 +320,23 @@ const buildIndex = async (from, to) => {
 		/* eslint-disable no-await-in-loop */
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
 		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
-		logger.info(`Attempting to cache blocks ${offset + 1}-${offset + MAX_BLOCKS_LIMIT_PP}`);
+		const batchFromHeight = offset + 1;
+		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
+			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
+		logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
 
 		let blocks;
 		do {
-			blocks = await getBlocksByHeightBetween(offset + 1, offset + MAX_BLOCKS_LIMIT_PP);
-		} while (!(blocks.length && blocks.every(block => !!block && !!block.height)));
+			blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
+		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
 
 		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
 
 		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
 
 		const topHeightFromBatch = (sortedBlocks.pop()).height;
-		const bottomHeightFromBatch = (sortedBlocks.shift()).height;
+		const bottomHeightFromBatch = sortedBlocks.length
+			? (sortedBlocks.shift()).height : topHeightFromBatch;
 		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
 		if (bottomHeightFromBatch < lowestIndexedHeight || lowestIndexedHeight === 0) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
 		if (topHeightFromBatch > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', topHeightFromBatch);
@@ -361,30 +375,33 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 
 	// eslint-disable-next-line consistent-return
 	waitForIt(async () => {
+		/* eslint-disable no-await-in-loop */
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 		const numBlocksIndexed = await blocksDB.count();
 		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
-
+		/* eslint-enable no-await-in-loop */
 		if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
 			setIndexReadyStatus(true);
 			return getIndexReadyStatus();
 		}
+		setIndexReadyStatus(false);
+		throw new Error('Block indexing still in progress...');
 	}, 5000);
 };
 
 const init = async () => {
 	await getBlocksIndex();
 	try {
-		const genesisHeight = 1;
+		const genesisHeight = 0;
+		// Index genesis block
+		await indexGenesisBlock(genesisHeight);
+
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
 		const blockIndexLowerRange = config.indexNumOfBlocks > 0
 			? currentHeight - config.indexNumOfBlocks : genesisHeight;
 		if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 		const blockIndexHigherRange = currentHeight;
-
-		// Index genesis block first
-		await getBlocks({ height: genesisHeight });
 
 		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
@@ -411,8 +428,6 @@ const init = async () => {
 		logger.warn(err.message);
 	}
 };
-
-init();
 
 module.exports = {
 	init,
