@@ -48,6 +48,10 @@ const createDbConnection = async (connEndpoint) => {
 		version: '5.7',
 		connection: connEndpoint,
 		useNullAsDefault: true,
+		pool: {
+			max: 50,
+			min: 2,
+		},
 		log: {
 			warn(message) { logger.warn(message); },
 			error(message) { logger.error(message); },
@@ -134,7 +138,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 		try {
 			const chunkSize = 1000;
-			const ids = await knex.batchInsert(tableName, rows, chunkSize);
+			const ids = await knex
+				.transaction(trx => knex.batchInsert(tableName, rows, chunkSize).transacting(trx));
 			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 			return ids;
 		} catch (error) {
