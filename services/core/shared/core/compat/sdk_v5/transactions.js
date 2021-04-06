@@ -15,7 +15,6 @@
  */
 const { HTTP } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
-const { escape } = require('sqlstring');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 
@@ -69,7 +68,7 @@ const indexTransactions = async blocks => {
 			tx.moduleAssetId = id;
 			tx.timestamp = block.timestamp;
 			tx.amount = tx.asset.amount || null;
-			if (tx.asset.data) tx.data = escape(tx.asset.data);
+			tx.data = tx.asset.data || null;
 			if (tx.asset.recipientAddress) {
 				tx.recipientId = getBase32AddressFromHex(tx.asset.recipientAddress);
 				recipientAddressesToIndex.push(tx.asset.recipientAddress);
@@ -225,7 +224,7 @@ const validateParams = async params => {
 
 		params.search = {
 			property: 'data',
-			pattern: escape(data),
+			pattern: data,
 		};
 	}
 

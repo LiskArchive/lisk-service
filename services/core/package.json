@@ -55,7 +55,6 @@
     "signals": "^1.0.0",
     "split": "^1.0.1",
     "sqlite3": "^5.0.0",
-    "sqlstring": "^2.3.2",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.1"
   },

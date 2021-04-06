@@ -22,12 +22,14 @@ const connectionPool = {};
 const tablePool = {};
 
 const loadSchema = async (knex, tableName, tableConfig) => {
-	const { primaryKey, schema, indexes } = tableConfig;
+	const { primaryKey, charset, schema, indexes } = tableConfig;
 
 	if (await knex.schema.hasTable(tableName)) return knex;
 
 	await knex.schema
 		.createTable(tableName, table => {
+			if (charset) table.charset(charset);
+
 			Object.keys(schema).map(p => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
