@@ -93,7 +93,7 @@ const getAccountsByAddresses = async addresses => {
 
 const getUnregisteredAccount = async publicKey => {
     const apiClient = await getApiClient();
-    const unregisteredAccount = await apiClient._channel.invoke('app:getUnregisteredAccount', { publicKey });
+    const unregisteredAccount = await apiClient._channel.invoke('legacyAccount:getUnregisteredAccount', { publicKey });
     // TODO: Verify if decode is necessary
     return { data: unregisteredAccount };
 };
