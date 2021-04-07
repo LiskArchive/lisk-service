@@ -145,6 +145,11 @@ const keys = {
 	memberships: Joi.array().optional(),
 };
 
+const legacy = {
+	address: Joi.string().required(),
+	balance: Joi.string().required(),
+};
+
 const accountSchemaVersion5 = {
 	summary: Joi.object(summary).required(),
 	token: Joi.object(token).required(),
@@ -152,6 +157,7 @@ const accountSchemaVersion5 = {
 	dpos: Joi.object(dpos).optional(),
 	keys: Joi.object(keys).optional(),
 	knowledge: Joi.object(knowledgeSchema).optional(),
+	legacy: Joi.object(legacy).optional(),
 };
 
 module.exports = {
