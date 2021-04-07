@@ -255,8 +255,4 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	getHexAddressFromPublicKey,
-	getBase32AddressFromHex,
-	getHexAddressFromBase32,
-	getHexAddressFromPublicKey,
 };
