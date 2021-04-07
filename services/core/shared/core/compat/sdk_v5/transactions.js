@@ -19,16 +19,19 @@ const BluebirdPromise = require('bluebird');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const coreApi = require('./coreApi');
+
 const {
 	getHexAddressFromPublicKey,
-} = require('./accounts');
+	getBase32AddressFromHex,
+} = require('./accountUtils');
+
 const {
 	indexAccountsbyAddress,
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
-	getBase32AddressFromHex,
 	getAccountsBySearch,
 } = require('./accounts');
+
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');

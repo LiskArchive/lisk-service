@@ -14,7 +14,12 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getAddressFromPublicKey, getBase32AddressFromAddress, getAddressFromBase32Address } = require('@liskhq/lisk-cryptography');
+
+const {
+	getHexAddressFromPublicKey,
+	getBase32AddressFromHex,
+	getHexAddressFromBase32,
+} = require('./accountUtils');
 
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
@@ -61,21 +66,6 @@ const getAccountsBySearch = async (searchProp, searchString) => {
 	};
 	const account = await accountsDB.find(params);
 	return account;
-};
-
-const getHexAddressFromPublicKey = publicKey => {
-	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
-	return binaryAddress.toString('hex');
-};
-
-const getBase32AddressFromHex = address => {
-	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
-	return base32Address;
-};
-
-const getHexAddressFromBase32 = address => {
-	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
-	return binaryAddress;
 };
 
 const resolveAccountsInfo = async accounts => {
