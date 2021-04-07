@@ -78,5 +78,9 @@ module.exports = {
 			},
 		}],
 	},
-	legacy: '=',
+	legacy: {
+		// TODO: Verify field mappings with e2e setup
+		address: '=,string',
+		balance: '=,string',
+	},
 };
