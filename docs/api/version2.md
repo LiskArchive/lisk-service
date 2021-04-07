@@ -1,8 +1,8 @@
 # Lisk Service HTTP API Documentation
 
-The Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media. 
+The Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media.
 
-The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller components. The overall strategy is to provide one component for one specific purpose. 
+The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller components. The overall strategy is to provide one component for one specific purpose.
 
 As a pure backend project, it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.
 
@@ -12,7 +12,7 @@ It is also possible to access the `testnet` network at `https://testnet-service.
 
 The Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.
 
-## Table of Contents 
+## Table of Contents
 
 - [Lisk Service HTTP API Documentation](#lisk-service-http-api-documentation)
   - [Endpoint Logic](#endpoint-logic)
@@ -86,7 +86,7 @@ Make the version 2 API able to retrieve data by those criteria.
 | username  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                 | *(empty)*      |
 | limit     | Number           | `<1;100>`                                                  | 10             |
 | offset    | Number           | `<0;+Inf>`                                                 | 0              |
-| sort      | Array of strings | `[“balance:asc”, “balance:desc”, “rank:asc”, “rank:desc”]` | `balance:desc` | Rank is dedicated to delegate accounts |
+| sort      | Array of strings | `["balance:asc", "balance:desc", "rank:asc", "rank:desc"]` | `balance:desc` | Rank is dedicated to delegate accounts |
 
 #### Response example
 
@@ -121,7 +121,7 @@ Make the version 2 API able to retrieve data by those criteria.
         {
           "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
           "publicKey": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-          “isMandatory”: true,
+          "isMandatory": true,
         }
       ],
       "memberships": [
@@ -136,8 +136,8 @@ Make the version 2 API able to retrieve data by those criteria.
       "delegate": {
         "username": "liberspirita",
         "pomHeights": [
-          {start: 123, end: 456},
-          {start: 789, end: 1050}
+          { "start": 123, "end": 456 },
+          { "start": 789, "end": 1050 }
         ],
         "consecutiveMissedBlocks": 0,
         "lastForgedHeight": 68115,
@@ -163,7 +163,11 @@ Make the version 2 API able to retrieve data by those criteria.
             "end": "2010"
           }
         }
-      ]
+      ],
+      "legacy": {
+        "address": "1b2679fd2e30a9e2", // legacyAddress
+        "balance": "234500000" // Reclaimable balance
+      }
     }
   },
   "meta": {
@@ -435,7 +439,7 @@ Make the version 2 API able to retrieve data by those criteria.
 | timestamp          | String           | `/^[0-9]+$/` and `/^[0-9]+:[0-9]+$/`                              | *(empty)*   | Can be expressed as interval ie. `100000:200000` |
 | limit              | Number           | `<1;100>`                                                         | 10          |
 | offset             | Number           | `<0;+Inf>`                                                        | 0           |
-| sort               | Array of Strings | `[“height:asc”, “height:desc”,“timestamp:asc”, “timestamp:desc”]` | height:desc |
+| sort               | Array of Strings | `["height:asc", "height:desc","timestamp:asc", "timestamp:desc"]` | height:desc |
 
 #### Response example
 
@@ -524,14 +528,14 @@ _Supports pagination._
 | recipientAddress   | String  | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/`            | *(empty)*      |
 | recipientPublicKey | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
 | recipientUsername  | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
-| data               | String  |                                                                    | *(empty)*      | Wildcard search ie. “gene*” -> “genesis”                       |
+| data               | String  |                                                                    | *(empty)*      | Wildcard search ie. "gene*" -> "genesis"                       |
 | amount             | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
 | timestamp          | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
 | includePending     | Boolean |                                                                    | false          |
 | nonce              | String  | `/^\d+$/`                                                          | *(empty)*      | In conjunction with senderAddress                              |
 | limit              | Number  | `<1;100>`                                                          | 10             |
 | offset             | Number  | `<0;+Inf>`                                                         | 0              |
-| sort               | String  | `[“amount:asc”, “amount:desc”, “timestamp:asc”, “timestamp:desc”]` | timestamp:desc |
+| sort               | String  | `["amount:asc", "amount:desc", "timestamp:asc", "timestamp:desc"]` | timestamp:desc |
 
 
 
@@ -685,7 +689,7 @@ _Supports pagination._
 
 | Parameter | Validation         | Default | Comment        |
 | --------- | ------------------ | ------- | -------------- |
-| interval  | `[“day”, “month”]` | (empty) | Required field |
+| interval  | `["day", "month"]` | (empty) | Required field |
 | limit     | <1;100>            | 10      |
 | offset    | <0;+Inf>           | 0       |
 
@@ -860,7 +864,7 @@ No params required.
   "meta": {
     "lastUpdate": 123456789,
     "lastBlockHeight": 25,
-    “lastBlockId”: 1354568
+    "lastBlockId": 1354568
   },
   "links": {}
 }
@@ -900,11 +904,11 @@ _Supports pagination._
 | -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
 | ip             | String           | `/^(?:(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]\|2[0-4][0-9]\|[01]?[0-9][0-9]?)$/`                                                                             | *(empty)*     |
 | networkVersion | String           | `/^(0\|[1-9]\d*)\.(0\|[1-9]\d*)\.(0\|[1-9]\d*)(-(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0\|[1-9]\d*\|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/ ` | *(empty)*     |
-| state          | Array of Strings | `[“connected”, “disconnected”, ”any”]`                                                                                                                                          | connected     |
+| state          | Array of Strings | `["connected", "disconnected", "any"]`                                                                                                                                          | connected     |
 | height         | Number           | ` <1;+Inf>`                                                                                                                                                                     | *(empty)*     |
 | limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
 | offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
-| sort           | String           | `[“height:asc”, “height:desc”, “networkVersion:asc”, ”networkVersion:desc”]`                                                                                                    | “height:desc” |
+| sort           | String           | `["height:asc", "height:desc", "networkVersion:asc", "networkVersion:desc"]`                                                                                                    | "height:desc" |
 
 #### Response example
 
@@ -916,7 +920,7 @@ _Supports pagination._
         "ip": "127.0.0.1",
         "port": 4000,
         "networkVersion": "2.0",
-        "state": ”connected”,
+        "state": "connected",
         "height": 8350681,
         "networkIdentifier": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
         "location": {
@@ -996,7 +1000,7 @@ No params required.
     "networkIdentifier": "08ec0e01794b57e5ceaf5203be8c1bda51bcdd39bb6fc516adbe93223f85d630",
     "reward": "500000000",
     "supply": "10094237000000000",
-    "registeredModules": [“token”, “sequence”, “keys”, “dpos”, “legacyAccount”],
+    "registeredModules": ["token", "sequence", "keys", "dpos", "legacyAccount"],
     "operations": [
       { "id": "2:0", "name": "token:transfer" }
       ...
@@ -1008,7 +1012,7 @@ No params required.
   "meta": {
     "lastUpdate": 123456789,
     "lastBlockHeight": 25,
-    “lastBlockId”: 1354568
+    "lastBlockId": 1354568
   },
   "links": {}
 }
