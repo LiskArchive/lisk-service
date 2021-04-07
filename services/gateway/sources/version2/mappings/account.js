@@ -65,11 +65,11 @@ module.exports = {
 			status: 'status,string',
 			rewards: 'rewards,string',
 		},
-		sentVotes: ['dpos.sentVotes', {
+		sentVotes: ['sentVotes', {
 			delegateAddress: '=,string',
 			amount: '=,string',
 		}],
-		unlocking: ['dpos.unlocking', {
+		unlocking: ['unlocking', {
 			delegateAddress: '=,string',
 			amount: '=,string',
 			height: {

@@ -181,5 +181,64 @@ describe('Method get.blocks', () => {
 				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
 			});
 		});
+
+		it('Blocks with from... timestamp -> ok', async () => {
+			const from = 0;
+			const response = await getBlocks({ timestamp: `${from}:` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data[0]).toMap(blockSchemaVersion5);
+			result.data.forEach((blockItem) => {
+				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
+			});
+		});
+
+		it('Blocks with ...to timestamp -> ok', async () => {
+			const to = Math.floor(Date.now() / 1000);
+			const response = await getBlocks({ timestamp: `:${to}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data[0]).toMap(blockSchemaVersion5);
+			result.data.forEach((blockItem) => {
+				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
+			});
+		});
+	});
+
+	describe('is able to retireve block lists within height range', () => {
+		it('Blocks with min...max height -> ok', async () => {
+			const minHeight = 1;
+			const maxHeight = refBlock.height;
+			const response = await getBlocks({ height: `${minHeight}:${maxHeight}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data[0]).toMap(blockSchemaVersion5);
+			result.data.forEach((blockItem) => {
+				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
+				expect(blockItem.height).toBeLessThanOrEqual(maxHeight);
+			});
+		});
+
+		it('Blocks with min... height -> ok', async () => {
+			const minHeight = 0;
+			const response = await getBlocks({ height: `${minHeight}:` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data[0]).toMap(blockSchemaVersion5);
+			result.data.forEach((blockItem) => {
+				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
+			});
+		});
+
+		it('Blocks with ...max height -> ok', async () => {
+			const maxHeight = refBlock.height;
+			const response = await getBlocks({ height: `:${maxHeight}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data[0]).toMap(blockSchemaVersion5);
+			result.data.forEach((blockItem) => {
+				expect(blockItem.height).toBeLessThanOrEqual(maxHeight);
+			});
+		});
 	});
 });

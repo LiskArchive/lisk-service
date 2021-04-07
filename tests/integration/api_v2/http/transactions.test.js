@@ -298,5 +298,74 @@ describe('Transactions API', () => {
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		it('transactions with half bounded range: fromTimestamp', async () => {
+			const from = moment(refTransaction.block.timestamp).subtract(1, 'day').unix() * (10 ** 3);
+			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.timestamp).toBeGreaterThanOrEqual(from);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('transactions with half bounded range: toTimestamp', async () => {
+			const toTimestamp = refTransaction.block.timestamp;
+			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.timestamp).toBeLessThanOrEqual(toTimestamp);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Retrieve transaction list within amount range', () => {
+		it('transactions within set amount range are returned', async () => {
+			const minAmount = 0;
+			const maxAmount = BigInt(refTransaction.asset.amount);
+			const response = await api.get(`${endpoint}?amount=${minAmount}:${maxAmount}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
+				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('transactions with half bounded range: minAmount', async () => {
+			const minAmount = 0;
+			const response = await api.get(`${endpoint}?amount=${minAmount}:&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('transactions with half bounded range: maxAmount', async () => {
+			const maxAmount = BigInt(refTransaction.asset.amount);
+			const response = await api.get(`${endpoint}?amount=:${maxAmount}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
 	});
 });

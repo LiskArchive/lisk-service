@@ -241,5 +241,89 @@ describe('Method get.transactions', () => {
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
+
+		it('Half bounded range from -> ok', async () => {
+			const from = 0;
+			const response = await requestTransactions({ timestamp: `${from}:` });
+
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.timestamp).toBeGreaterThanOrEqual(from);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Half bounded range to -> ok', async () => {
+			const toTimestamp = refTransaction.block.timestamp;
+			const response = await requestTransactions({ timestamp: `:${toTimestamp}` });
+
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.timestamp).toBeLessThanOrEqual(toTimestamp);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('is able to retrieve list of transactions using amount range', () => {
+		it('min max amount -> ok', async () => {
+			const minAmount = 0;
+			const maxAmount = BigInt(refTransaction.asset.amount);
+			const response = await requestTransactions({ amount: `${minAmount}:${maxAmount}` });
+
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
+				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Half bounded range minAmount -> ok', async () => {
+			const minAmount = 0;
+			const response = await requestTransactions({ amount: `${minAmount}:` });
+
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Half bounded range maxAmount -> ok', async () => {
+			const maxAmount = BigInt(refTransaction.asset.amount);
+			const response = await requestTransactions({ amount: `:${maxAmount}` });
+
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
 	});
 });
