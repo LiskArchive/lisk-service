@@ -14,7 +14,11 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getAddressFromPublicKey, getBase32AddressFromAddress, getAddressFromBase32Address } = require('@liskhq/lisk-cryptography');
+const {
+	getAddressFromPublicKey,
+	getBase32AddressFromAddress,
+	getAddressFromBase32Address,
+} = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
@@ -78,6 +82,12 @@ const getHexAddressFromBase32 = address => {
 	return binaryAddress;
 };
 
+const getBase32AddressFromPublicKey = publicKey => {
+	const hexAddress = getHexAddressFromPublicKey(publicKey);
+	const base32Address = getBase32AddressFromHex(hexAddress);
+	return base32Address;
+};
+
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
 		account.dpos.unlocking = account.dpos.unlocking.map(item => {
@@ -138,6 +148,34 @@ const getAccountsFromCore = async (params) => {
 	return accounts;
 };
 
+const getLegacyAccountFromCore = async ({ publicKey }) => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+	const response = await coreApi.getLegacyAccountInfo(publicKey);
+	if (response) {
+		accounts.data = [{
+			summary: {
+				address: getBase32AddressFromPublicKey(publicKey),
+				publicKey,
+				// The account hasn't migrated/reclaimed yet
+				// So, has no outgoing transactions/registrations on the (legacy) blockchain
+				isDelegate: false,
+				isMultisignature: false,
+			},
+			token: { balance: 0n },
+			legacy: response,
+		}];
+
+		accounts.meta = {
+			count: accounts.data.length,
+			offset: 0,
+		};
+	}
+	return accounts;
+};
+
 const getAccounts = async params => {
 	const accounts = {
 		data: [],
@@ -162,7 +200,7 @@ const getAccounts = async params => {
 		if (!(await confirmAddress(params.address))) return {};
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
-		if (!validatePublicKey(params.publicKey) || !(await confirmPublicKey(params.publicKey))) {
+		if (!validatePublicKey(params.publicKey)) {
 			return {};
 		}
 	}
@@ -178,10 +216,16 @@ const getAccounts = async params => {
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
+
 	if (params.address || (params.addresses && params.addresses.length)) {
 		const response = await getAccountsFromCore(params);
 		if (response.data) accounts.data = response.data;
+	} else if (params.publicKey) {
+		// Check for legacy account
+		const response = await getLegacyAccountFromCore(params);
+		if (response.data) accounts.data = response.data;
 	}
+
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
@@ -258,6 +302,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 const getMultisignatureMemberships = async () => []; // TODO
 
 module.exports = {
+	confirmPublicKey,
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,

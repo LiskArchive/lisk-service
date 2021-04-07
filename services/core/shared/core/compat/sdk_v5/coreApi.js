@@ -91,11 +91,11 @@ const getAccountsByAddresses = async addresses => {
     return { data: accounts };
 };
 
-const getUnregisteredAccount = async publicKey => {
+const getLegacyAccountInfo = async publicKey => {
     const apiClient = await getApiClient();
-    const unregisteredAccount = await apiClient._channel.invoke('legacyAccount:getUnregisteredAccount', { publicKey });
+    const legacyAccountInfo = await apiClient._channel.invoke('legacyAccount:getUnregisteredAccount', { publicKey });
     // TODO: Verify if decode is necessary
-    return { data: unregisteredAccount };
+    return legacyAccountInfo;
 };
 
 const getPeers = async (state = 'connected') => {
@@ -137,7 +137,7 @@ module.exports = {
     getLastBlock,
     getAccountByAddress,
     getAccountsByAddresses,
-    getUnregisteredAccount,
+    getLegacyAccountInfo,
     getNetworkStatus,
     getTransactions,
     getPeers,
