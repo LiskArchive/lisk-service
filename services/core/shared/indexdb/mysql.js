@@ -14,6 +14,8 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
+
 const config = require('../../config');
 
 const logger = Logger();
@@ -152,12 +154,17 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				'\nRe-attempting to update/merge the conflicted transactions one at a time: ');
 
 			return knex.transaction(async trx => {
-				// TODO: Consider replacing promise all to Bluebird
-				const inserts = await Promise.all(rows.map(row => trx(tableName)
-					.insert(row)
-					.onConflict(tableConfig.primaryKey)
-					.merge()
-					.transacting(trx)));
+				const inserts = await BluebirdPromise.map(
+					rows,
+					async row => {
+						trx(tableName)
+							.insert(row)
+							.onConflict(tableConfig.primaryKey)
+							.merge()
+							.transacting(trx);
+					},
+					{ concurrency: rows.length },
+				);
 				logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 				return inserts;
 			});
