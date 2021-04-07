@@ -164,7 +164,7 @@ const getLegacyAccountFromCore = async ({ publicKey }) => {
 				isDelegate: false,
 				isMultisignature: false,
 			},
-			token: { balance: 0n },
+			token: { balance: BigInt('0') },
 			legacy: response,
 		}];
 
