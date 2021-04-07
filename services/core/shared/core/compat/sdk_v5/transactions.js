@@ -30,7 +30,6 @@ const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	getHexAddressFromPublicKey,
 } = require('./accounts');
 
 const { removeVotesByTransactionIDs } = require('./voters');
