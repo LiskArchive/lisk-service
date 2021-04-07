@@ -161,7 +161,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 						.onConflict(tableConfig.primaryKey)
 						.merge()
 						.transacting(trx),
-					{ concurrency: 50 },
+					{ concurrency: 25 },
 				);
 				logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 				return inserts;
