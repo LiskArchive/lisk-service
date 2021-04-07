@@ -59,7 +59,7 @@ const createDbConnection = async (connEndpoint) => {
 		log: {
 			warn(message) { logger.warn(message); },
 			error(message) { logger.error(message); },
-			deprecate(message) { logger.deprecate(message); },
+			deprecate(message) { logger.warn(message); },
 			debug(message) { logger.debug(message); },
 		},
 	});
@@ -156,14 +156,12 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			return knex.transaction(async trx => {
 				const inserts = await BluebirdPromise.map(
 					rows,
-					async row => {
-						trx(tableName)
-							.insert(row)
-							.onConflict(tableConfig.primaryKey)
-							.merge()
-							.transacting(trx);
-					},
-					{ concurrency: rows.length },
+					async row => trx(tableName)
+						.insert(row)
+						.onConflict(tableConfig.primaryKey)
+						.merge()
+						.transacting(trx),
+					{ concurrency: 50 },
 				);
 				logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 				return inserts;
