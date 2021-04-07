@@ -100,7 +100,7 @@ pipeline {
 		stage('Run integration tests') {
 			steps {
 				dir('./docker') {
-					sh '''
+					sh '''#!/bin/bash
 						make -f Makefile.core.jenkins down
 						make -f Makefile.core.jenkins up
 						ready=1
