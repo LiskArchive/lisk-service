@@ -80,7 +80,7 @@ module.exports = {
 	},
 	legacy: {
 		// TODO: Verify field mappings with e2e setup
-		address: '=,string',
-		balance: '=,string',
+		address: 'legacy.address,string',
+		balance: 'legacy.balance,string',
 	},
 };
