@@ -22,6 +22,7 @@ const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
 const signals = require('../signals');
+const requestAll = require('../requestAll');
 
 const logger = Logger();
 
@@ -142,8 +143,8 @@ const fetchTransactions = async (date, offset = 0) => {
 		limit,
 		offset,
 	};
-	const transactions = await getTransactions(params);
-	return transactions.data;
+	const transactions = await requestAll(getTransactions, params, 20000);
+	return transactions;
 };
 
 const queueJob = async (job) => {
