@@ -97,9 +97,11 @@ Make the version 2 API able to retrieve data by those criteria.
   "data": {
     "summary": {
       "address": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
+      "legacyAddress": "2841524825665420181L",
       "balance": "151146419900",
       "username": "liberspirita",
       "publicKey": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+      "isMigrated": true,
       "isDelegate": true,
       "isMultisignature": true,
     },
@@ -165,7 +167,7 @@ Make the version 2 API able to retrieve data by those criteria.
         }
       ],
       "legacy": {
-        "address": "1b2679fd2e30a9e2", // legacyAddress
+        "address": "2841524825665420181L", // legacyAddress
         "balance": "234500000" // Reclaimable balance
       }
     }
