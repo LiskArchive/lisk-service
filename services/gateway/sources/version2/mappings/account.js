@@ -19,6 +19,7 @@ module.exports = {
 		balance: 'token.balance,string',
 		username: 'dpos.delegate.username,string',
 		publicKey: '=,string',
+		isMigrated: '=,boolean',
 		isDelegate: '=,boolean',
 		isMultisignature: '=,boolean',
 	},

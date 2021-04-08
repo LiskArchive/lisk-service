@@ -161,6 +161,7 @@ const getLegacyAccountFromCore = async ({ publicKey }) => {
 				publicKey,
 				// The account hasn't migrated/reclaimed yet
 				// So, has no outgoing transactions/registrations on the (legacy) blockchain
+				isMigrated: false,
 				isDelegate: false,
 				isMultisignature: false,
 			},
