@@ -100,9 +100,11 @@ const accountSchema = {
 
 const summary = {
 	address: Joi.string().required(),
+	legacyAddress: Joi.string().optional(),
 	balance: Joi.string().required(),
 	username: Joi.string().allow('').optional(),
 	publicKey: Joi.string().required(),
+	isMigrated: Joi.boolean().optional(),
 	isDelegate: Joi.boolean().required(),
 	isMultisignature: Joi.boolean().required(),
 };
