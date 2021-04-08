@@ -16,6 +16,7 @@
 module.exports = {
 	summary: {
 		address: '=,string',
+		legacyAddress: '=,string',
 		balance: 'token.balance,string',
 		username: 'dpos.delegate.username,string',
 		publicKey: '=,string',
