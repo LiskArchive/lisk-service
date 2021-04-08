@@ -173,7 +173,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 				isMultisignature: false,
 				token: { balance: BigInt('0') },
 				legacy: accountInfo,
-			}
+			},
 		);
 	} else {
 		// Check if the account was already migrated
@@ -183,13 +183,13 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			senderPublicKey: publicKey,
 			moduleAssetId: reclaimTxModuleAssetId,
 		});
-		if (!!reclaimTx) {
+		if (reclaimTx) {
 			Object.assign(
 				legacyAccountInfo,
 				{
 					legacyAddress: getLegacyAddressFromPublicKey(publicKey),
 					isMigrated: true,
-				}
+				},
 			);
 		}
 	}
