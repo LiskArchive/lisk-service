@@ -22,6 +22,12 @@ const {
 
 const coreCache = require('./coreCache');
 
+const accountsIndexSchema = require('./schema/accounts');
+
+const mysqlIndex = require('../../../indexdb/mysql');
+
+const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
+
 const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
 
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
