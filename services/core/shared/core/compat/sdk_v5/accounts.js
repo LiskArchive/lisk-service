@@ -150,7 +150,7 @@ const getAccounts = async params => {
 	};
 	const accountsDB = await getAccountsIndex();
 	if (params.sort && params.sort.includes('rank')) {
-		return new Error('Rank based sorting is only supported along delegates accounts');
+		return new Error('Rank based sorting is supported only for delegates');
 	}
 	if (params.search) {
 		params.search = {
