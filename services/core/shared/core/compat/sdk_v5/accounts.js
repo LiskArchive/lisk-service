@@ -53,25 +53,6 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
-const balanceUnlockWaitHeightSelf = 260000;
-const balanceUnlockWaitHeightDefault = 2000;
-
-const resolveAccountsInfo = async accounts => {
-	accounts.map(async account => {
-		account.dpos.unlocking = account.dpos.unlocking.map(item => {
-			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
-			item.height = {
-				start: item.unvoteHeight,
-				end: item.unvoteHeight + balanceUnlockWaitHeight,
-			};
-			return item;
-		});
-		return account;
-	});
-	return accounts;
-};
-
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
@@ -130,6 +111,73 @@ const indexAccountsbyAddress = async (addressesToIndex) => {
 		{ concurrency: addressesToIndex.length },
 	);
 	await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', { accounts: accountsToIndex });
+};
+
+const resolveAccountsInfo = async accounts => {
+	const balanceUnlockWaitHeightSelf = 260000;
+	const balanceUnlockWaitHeightDefault = 2000;
+
+	accounts.map(async account => {
+		account.dpos.unlocking = account.dpos.unlocking.map(item => {
+			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
+			item.height = {
+				start: item.unvoteHeight,
+				end: item.unvoteHeight + balanceUnlockWaitHeight,
+			};
+			return item;
+		});
+		return account;
+	});
+	return accounts;
+};
+
+const resolveDelegateInfo = async accounts => {
+	const blocksDB = await getBlocksIndex();
+
+	const punishmentHeight = 780000;
+	accounts = await BluebirdPromise.map(
+		accounts,
+		async account => {
+			if (account.isDelegate) {
+				account.account = {
+					address: account.address,
+					publicKey: account.publicKey,
+				};
+
+				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
+					const [{ total }] = await blocksDB.find({
+						generatorPublicKey: account.publicKey, aggregate: 'reward',
+					});
+					account.rewards = total;
+					account.producedBlocks = await blocksDB.count({
+						generatorPublicKey: account.publicKey,
+					});
+				}
+
+				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
+				const totalVotes = account.dpos.sentVotes.reduce(adder, BigInt(0));
+				const selfVote = account.dpos.sentVotes
+					.find(vote => vote.delegateAddress === account.address);
+				const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
+				const cap = selfVoteAmount * BigInt(10);
+
+				account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
+				const voteWeight = BigInt(totalVotes) > cap ? cap : account.totalVotesReceived;
+
+				account.delegateWeight = voteWeight;
+				account.username = account.dpos.delegate.username;
+				account.balance = account.token.balance;
+				account.pomHeights = account.dpos.delegate.pomHeights
+					.sort((a, b) => b - a).slice(0, 5)
+					.map(height => ({ start: height, end: height + punishmentHeight }));
+			}
+			return account;
+		},
+		{ concurrency: accounts.length },
+	);
+
+	return accounts;
 };
 
 const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
@@ -242,6 +290,7 @@ const getAccounts = async params => {
 		{ concurrency: accounts.data.length },
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
+	accounts.data = await resolveDelegateInfo(accounts.data);
 
 	if (params.publicKey) {
 		// If available, update legacy account information
@@ -257,56 +306,7 @@ const getAccounts = async params => {
 	return accounts;
 };
 
-const getDelegates = async (params) => {
-	const blocksDB = await getBlocksIndex();
-	const delegates = {
-		data: [],
-		meta: {},
-	};
-	const punishmentHeight = 780000;
-	const response = await getAccounts({ isDelegate: true, limit: params.limit });
-	if (response.data) delegates.data = response.data;
-	if (response.meta) delegates.meta = response.meta;
-
-	await BluebirdPromise.map(
-		delegates.data, async delegate => {
-			delegate.account = {};
-			delegate.account = {
-				address: delegate.address,
-				publicKey: delegate.publicKey,
-			};
-			if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-				const [{ total }] = await blocksDB.find({
-					generatorPublicKey: delegate.publicKey, aggregate: 'reward',
-				});
-				delegate.rewards = total;
-				delegate.producedBlocks = await blocksDB.count({
-					generatorPublicKey: delegate.publicKey,
-				});
-			}
-			const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
-			const totalVotes = delegate.dpos.sentVotes.reduce(adder, BigInt(0));
-			const selfVote = delegate.dpos.sentVotes
-				.find(vote => vote.delegateAddress === delegate.address);
-			const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
-			const cap = selfVoteAmount * BigInt(10);
-
-			delegate.totalVotesReceived = BigInt(delegate.dpos.delegate.totalVotesReceived);
-			const voteWeight = BigInt(totalVotes) > cap ? cap : delegate.totalVotesReceived;
-
-			delegate.delegateWeight = voteWeight;
-			delegate.username = delegate.dpos.delegate.username;
-			delegate.balance = delegate.token.balance;
-			delegate.pomHeights = delegate.dpos.delegate.pomHeights
-				.sort((a, b) => b - a).slice(0, 5)
-				.map(height => ({ start: height, end: height + punishmentHeight }));
-			return delegate;
-		},
-		{ concurrency: delegates.data.length },
-	);
-
-	return delegates;
-};
+const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
