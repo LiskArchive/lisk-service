@@ -28,15 +28,28 @@ const {
 	getBase32AddressFromPublicKey,
 } = require('./accountsUtils');
 
-const { initializeQueue } = require('../../queue');
-const { parseToJSONCompatObj } = require('../../../jsonTools');
+const {
+	getIsSyncFullBlockchain,
+	getIndexReadyStatus,
+} = require('../common');
+
+const {
+	initializeQueue,
+} = require('../../queue');
+
+const {
+	parseToJSONCompatObj,
+} = require('../../../jsonTools');
 
 const coreApi = require('./coreApi');
 
 const mysqlIndex = require('../../../indexdb/mysql');
+
+const blocksIndexSchema = require('./schema/blocks');
 const accountsIndexSchema = require('./schema/accounts');
 const transactionsIndexSchema = require('./schema/transactions');
 
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
@@ -101,6 +114,36 @@ const getAccountsFromCore = async (params) => {
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
+};
+
+const indexAccountsbyAddress = async (addressesToIndex) => {
+	const accountsToIndex = await BluebirdPromise.map(
+		addressesToIndex,
+		async address => {
+			const accountFromDB = await getIndexedAccountInfo({
+				address: getBase32AddressFromHex(address),
+			});
+			const account = (await getAccountsFromCore({ address })).data[0];
+			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
+			return account;
+		},
+		{ concurrency: addressesToIndex.length },
+	);
+	await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', { accounts: accountsToIndex });
+};
+
+const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
+	const accountsToIndex = await BluebirdPromise.map(
+		publicKeysToIndex,
+		async publicKey => {
+			const address = getHexAddressFromPublicKey(publicKey);
+			const account = (await getAccountsFromCore({ address })).data[0];
+			account.publicKey = publicKey;
+			return account;
+		},
+		{ concurrency: publicKeysToIndex.length },
+	);
+	await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', { accounts: accountsToIndex });
 };
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
@@ -214,6 +257,57 @@ const getAccounts = async params => {
 	return accounts;
 };
 
+const getDelegates = async (params) => {
+	const blocksDB = await getBlocksIndex();
+	const delegates = {
+		data: [],
+		meta: {},
+	};
+	const punishmentHeight = 780000;
+	const response = await getAccounts({ isDelegate: true, limit: params.limit });
+	if (response.data) delegates.data = response.data;
+	if (response.meta) delegates.meta = response.meta;
+
+	await BluebirdPromise.map(
+		delegates.data, async delegate => {
+			delegate.account = {};
+			delegate.account = {
+				address: delegate.address,
+				publicKey: delegate.publicKey,
+			};
+			if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
+				const [{ total }] = await blocksDB.find({
+					generatorPublicKey: delegate.publicKey, aggregate: 'reward',
+				});
+				delegate.rewards = total;
+				delegate.producedBlocks = await blocksDB.count({
+					generatorPublicKey: delegate.publicKey,
+				});
+			}
+			const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
+			const totalVotes = delegate.dpos.sentVotes.reduce(adder, BigInt(0));
+			const selfVote = delegate.dpos.sentVotes
+				.find(vote => vote.delegateAddress === delegate.address);
+			const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
+			const cap = selfVoteAmount * BigInt(10);
+
+			delegate.totalVotesReceived = BigInt(delegate.dpos.delegate.totalVotesReceived);
+			const voteWeight = BigInt(totalVotes) > cap ? cap : delegate.totalVotesReceived;
+
+			delegate.delegateWeight = voteWeight;
+			delegate.username = delegate.dpos.delegate.username;
+			delegate.balance = delegate.token.balance;
+			delegate.pomHeights = delegate.dpos.delegate.pomHeights
+				.sort((a, b) => b - a).slice(0, 5)
+				.map(height => ({ start: height, end: height + punishmentHeight }));
+			return delegate;
+		},
+		{ concurrency: delegates.data.length },
+	);
+
+	return delegates;
+};
+
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
 	if (account.keys.numberOfSignatures) {
@@ -241,41 +335,12 @@ const getMultisignatureGroups = async account => {
 	return multisignatureAccount;
 };
 
-const indexAccountsbyAddress = async (addressesToIndex) => {
-	const accountsToIndex = await BluebirdPromise.map(
-		addressesToIndex,
-		async address => {
-			const accountFromDB = await getIndexedAccountInfo({
-				address: getBase32AddressFromHex(address),
-			});
-			const account = (await getAccountsFromCore({ address })).data[0];
-			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
-			return account;
-		},
-		{ concurrency: addressesToIndex.length },
-	);
-	await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', { accounts: accountsToIndex });
-};
-
-const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
-	const accountsToIndex = await BluebirdPromise.map(
-		publicKeysToIndex,
-		async publicKey => {
-			const address = getHexAddressFromPublicKey(publicKey);
-			const account = (await getAccountsFromCore({ address })).data[0];
-			account.publicKey = publicKey;
-			return account;
-		},
-		{ concurrency: publicKeysToIndex.length },
-	);
-	await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', { accounts: accountsToIndex });
-};
-
 const getMultisignatureMemberships = async () => []; // TODO
 
 module.exports = {
 	confirmPublicKey,
 	getAccounts,
+	getDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountsbyAddress,
