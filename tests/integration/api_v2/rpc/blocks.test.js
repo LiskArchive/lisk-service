@@ -14,6 +14,8 @@
  *
  */
 /* eslint-disable quotes, quote-props, comma-dangle */
+import moment from 'moment';
+
 const util = require('util');
 
 const config = require('../../../config');
@@ -170,8 +172,8 @@ describe('Method get.blocks', () => {
 
 	describe('is able to retireve block lists by timestamp', () => {
 		it('Blocks with from...to timestamp -> ok', async () => {
-			const from = 0;
-			const to = Math.floor(Date.now() / 1000);
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();;
+			const to = refBlock.timestamp;
 			const response = await getBlocks({ timestamp: `${from}:${to}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -186,7 +188,7 @@ describe('Method get.blocks', () => {
 		});
 
 		it('Blocks with from... timestamp -> ok', async () => {
-			const from = 0;
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();;
 			const response = await getBlocks({ timestamp: `${from}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -200,7 +202,7 @@ describe('Method get.blocks', () => {
 		});
 
 		it('Blocks with ...to timestamp -> ok', async () => {
-			const to = Math.floor(Date.now() / 1000);
+			const to = refBlock.timestamp;
 			const response = await getBlocks({ timestamp: `:${to}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -216,7 +218,7 @@ describe('Method get.blocks', () => {
 
 	describe('is able to retireve block lists within height range', () => {
 		it('Blocks with min...max height -> ok', async () => {
-			const minHeight = 1;
+			const minHeight = refBlock.height - 10;
 			const maxHeight = refBlock.height;
 			const response = await getBlocks({ height: `${minHeight}:${maxHeight}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -232,7 +234,7 @@ describe('Method get.blocks', () => {
 		});
 
 		it('Blocks with min... height -> ok', async () => {
-			const minHeight = 0;
+			const minHeight = refBlock.height - 10;
 			const response = await getBlocks({ height: `${minHeight}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

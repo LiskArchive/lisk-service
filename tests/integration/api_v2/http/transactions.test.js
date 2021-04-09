@@ -285,7 +285,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list within timestamps', () => {
 		it('transactions within set timestamps are returned', async () => {
-			const from = moment(refTransaction.block.timestamp).subtract(1, 'day').unix() * (10 ** 3);
+			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -301,7 +301,7 @@ describe('Transactions API', () => {
 		});
 
 		it('transactions with half bounded range: fromTimestamp', async () => {
-			const from = moment(refTransaction.block.timestamp).subtract(1, 'day').unix() * (10 ** 3);
+			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

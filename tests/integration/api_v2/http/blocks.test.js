@@ -116,7 +116,7 @@ describe('Blocks API', () => {
 
 	describe('Retrieve blocks list within timestamps', () => {
 		it('blocks within set timestamps are returned', async () => {
-			const from = moment(refBlock.timestamp).subtract(1, 'day').unix() * (10 ** 3);
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const toTimestamp = refBlock.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -132,7 +132,7 @@ describe('Blocks API', () => {
 		});
 
 		it('blocks with half bounded range: fromTimestamp', async () => {
-			const from = moment(refBlock.timestamp).subtract(1, 'day').unix() * (10 ** 3);
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -162,7 +162,7 @@ describe('Blocks API', () => {
 
 	describe('Retrieve blocks list within height range', () => {
 		it('blocks within set height are returned', async () => {
-			const minHeight = 1;
+			const minHeight = refBlock.height - 10;
 			const maxHeight = refBlock.height;
 			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -178,7 +178,7 @@ describe('Blocks API', () => {
 		});
 
 		it('blocks with half bounded range: minHeight', async () => {
-			const minHeight = 1;
+			const minHeight = refBlock.height - 10;
 			const response = await api.get(`${endpoint}?height=${minHeight}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
