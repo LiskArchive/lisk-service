@@ -291,6 +291,7 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect(transaction.block.timestamp).toBeGreaterThanOrEqual(from);
@@ -305,6 +306,7 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect(transaction.block.timestamp).toBeGreaterThanOrEqual(from);
@@ -318,6 +320,7 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect(transaction.block.timestamp).toBeLessThanOrEqual(toTimestamp);
@@ -334,6 +337,7 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
@@ -348,6 +352,7 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect(BigInt(transaction.asset.amount)).toBeGreaterThanOrEqual(minAmount);
@@ -361,6 +366,7 @@ describe('Transactions API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
 				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);

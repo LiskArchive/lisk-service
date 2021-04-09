@@ -233,6 +233,7 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
@@ -250,6 +251,7 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
@@ -266,6 +268,7 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
@@ -285,6 +288,7 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
@@ -302,6 +306,7 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);
@@ -318,6 +323,7 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => {
 				expect(transaction).toMap(transactionSchemaVersion5);

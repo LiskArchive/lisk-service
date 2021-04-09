@@ -175,8 +175,11 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ timestamp: `${from}:${to}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data[0]).toMap(blockSchemaVersion5);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((blockItem) => {
+				expect(blockItem).toMap(blockSchemaVersion5);
 				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
 				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
 			});
@@ -187,8 +190,11 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ timestamp: `${from}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data[0]).toMap(blockSchemaVersion5);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((blockItem) => {
+				expect(blockItem).toMap(blockSchemaVersion5);
 				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
 			});
 		});
@@ -198,8 +204,11 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ timestamp: `:${to}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data[0]).toMap(blockSchemaVersion5);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((blockItem) => {
+				expect(blockItem).toMap(blockSchemaVersion5);
 				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
 			});
 		});
@@ -212,8 +221,11 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ height: `${minHeight}:${maxHeight}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data[0]).toMap(blockSchemaVersion5);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((blockItem) => {
+				expect(blockItem).toMap(blockSchemaVersion5);
 				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
 				expect(blockItem.height).toBeLessThanOrEqual(maxHeight);
 			});
@@ -224,8 +236,11 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ height: `${minHeight}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data[0]).toMap(blockSchemaVersion5);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((blockItem) => {
+				expect(blockItem).toMap(blockSchemaVersion5);
 				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
 			});
 		});
@@ -235,8 +250,11 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ height: `:${maxHeight}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data[0]).toMap(blockSchemaVersion5);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((blockItem) => {
+				expect(blockItem).toMap(blockSchemaVersion5);
 				expect(blockItem.height).toBeLessThanOrEqual(maxHeight);
 			});
 		});
