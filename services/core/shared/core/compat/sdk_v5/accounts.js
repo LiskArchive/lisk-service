@@ -14,17 +14,24 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const {
-	getAddressFromPublicKey,
-	getBase32AddressFromAddress,
-	getAddressFromBase32Address,
-	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
-} = require('@liskhq/lisk-cryptography');
 
-const coreApi = require('./coreApi');
-const coreCache = require('./coreCache');
+const {
+	validatePublicKey,
+	confirmAddress,
+	confirmPublicKey,
+	getIndexedAccountInfo,
+	getAccountsBySearch,
+	getLegacyAddressFromPublicKey,
+	getHexAddressFromPublicKey,
+	getBase32AddressFromHex,
+	getHexAddressFromBase32,
+	getBase32AddressFromPublicKey,
+} = require('./accountsUtils');
+
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
+
+const coreApi = require('./coreApi');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
@@ -35,66 +42,6 @@ const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexS
 
 const balanceUnlockWaitHeightSelf = 260000;
 const balanceUnlockWaitHeightDefault = 2000;
-
-const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
-
-const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
-
-const confirmAddress = async address => {
-	if (!address || typeof address !== 'string') return false;
-	const account = await coreCache.getCachedAccountByAddress(address);
-	return (account && parseAddress(account.address) === parseAddress(address));
-};
-
-const confirmPublicKey = async publicKey => {
-	if (!publicKey || typeof publicKey !== 'string') return false;
-	const account = await coreCache.getCachedAccountByPublicKey(publicKey);
-	return (account && account.publicKey === publicKey);
-};
-
-const getIndexedAccountInfo = async params => {
-	const accountsDB = await getAccountsIndex();
-	const [account] = await accountsDB.find(params);
-	return account;
-};
-
-const getAccountsBySearch = async (searchProp, searchString) => {
-	const accountsDB = await getAccountsIndex();
-	const params = {
-		search: {
-			property: searchProp,
-			pattern: searchString,
-		},
-	};
-	const account = await accountsDB.find(params);
-	return account;
-};
-
-const getLegacyAddressFromPublicKey = publicKey => {
-	const legacyAddress = getLegacyFormatAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
-	return legacyAddress;
-};
-
-const getHexAddressFromPublicKey = publicKey => {
-	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
-	return binaryAddress.toString('hex');
-};
-
-const getBase32AddressFromHex = address => {
-	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
-	return base32Address;
-};
-
-const getHexAddressFromBase32 = address => {
-	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
-	return binaryAddress;
-};
-
-const getBase32AddressFromPublicKey = publicKey => {
-	const hexAddress = getHexAddressFromPublicKey(publicKey);
-	const base32Address = getBase32AddressFromHex(hexAddress);
-	return base32Address;
-};
 
 const resolveAccountsInfo = async accounts => {
 	accounts.map(async account => {
