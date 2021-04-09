@@ -14,6 +14,8 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+const BluebirdPromise = require('bluebird');
+
 const config = require('../../config');
 
 const logger = Logger();
@@ -22,12 +24,14 @@ const connectionPool = {};
 const tablePool = {};
 
 const loadSchema = async (knex, tableName, tableConfig) => {
-	const { primaryKey, schema, indexes } = tableConfig;
+	const { primaryKey, charset, schema, indexes } = tableConfig;
 
 	if (await knex.schema.hasTable(tableName)) return knex;
 
 	await knex.schema
 		.createTable(tableName, table => {
+			if (charset) table.charset(charset);
+
 			Object.keys(schema).map(p => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
@@ -48,10 +52,14 @@ const createDbConnection = async (connEndpoint) => {
 		version: '5.7',
 		connection: connEndpoint,
 		useNullAsDefault: true,
+		pool: {
+			max: 50,
+			min: 2,
+		},
 		log: {
 			warn(message) { logger.warn(message); },
 			error(message) { logger.error(message); },
-			deprecate(message) { logger.deprecate(message); },
+			deprecate(message) { logger.warn(message); },
 			debug(message) { logger.debug(message); },
 		},
 	});
@@ -146,12 +154,15 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				'\nRe-attempting to update/merge the conflicted transactions one at a time: ');
 
 			return knex.transaction(async trx => {
-				// TODO: Consider replacing promise all to Bluebird
-				const inserts = await Promise.all(rows.map(row => trx(tableName)
-					.insert(row)
-					.onConflict(tableConfig.primaryKey)
-					.merge()
-					.transacting(trx)));
+				const inserts = await BluebirdPromise.map(
+					rows,
+					async row => trx(tableName)
+						.insert(row)
+						.onConflict(tableConfig.primaryKey)
+						.merge()
+						.transacting(trx),
+					{ concurrency: 25 },
+				);
 				logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
 				return inserts;
 			});

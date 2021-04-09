@@ -25,9 +25,9 @@ const requestAll = async (fn, params, limit) => {
 		},
 	});
 	const { data } = firstRequest;
-	const maxAmount = !firstRequest.meta.count || firstRequest.meta.count > defaultMaxAmount
+	const maxAmount = !firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
 		? defaultMaxAmount
-		: firstRequest.meta.count;
+		: firstRequest.meta.total;
 
 	if (maxAmount > oneRequestLimit) {
 		const pages = [...Array(Math.ceil(maxAmount / oneRequestLimit)).keys()];
