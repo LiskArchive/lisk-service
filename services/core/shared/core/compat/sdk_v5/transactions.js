@@ -288,7 +288,7 @@ const getTransactions = async params => {
 
 				// The two lines below are needed for transaction statistics
 				if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
-				if (transaction.asset.amount) transaction.amount = transaction.asset.amount;
+				transaction.amount = transaction.asset.amount || 0;
 
 				return transaction;
 			},
