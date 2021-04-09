@@ -135,15 +135,13 @@ const insertToDb = async (statsList, date) => {
 	return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
 };
 
-const fetchTransactions = async (date, offset = 0) => {
-	const limit = 100;
+const fetchTransactions = async (date) => {
 	const params = {
 		fromTimestamp: moment.unix(date).unix(),
 		toTimestamp: moment.unix(date).add(1, 'day').unix(),
-		limit,
-		offset,
 	};
-	const transactions = await requestAll(getTransactions, params, 20000);
+	const maxCount = (await getTransactions({ ...params, limit: 1 })).meta.total;
+	const transactions = await requestAll(getTransactions, params, maxCount);
 	return transactions;
 };
 
