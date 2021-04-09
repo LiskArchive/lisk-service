@@ -172,7 +172,7 @@ describe('Method get.blocks', () => {
 
 	describe('is able to retireve block lists by timestamp', () => {
 		it('Blocks with from...to timestamp -> ok', async () => {
-			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();;
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const to = refBlock.timestamp;
 			const response = await getBlocks({ timestamp: `${from}:${to}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -188,7 +188,7 @@ describe('Method get.blocks', () => {
 		});
 
 		it('Blocks with from... timestamp -> ok', async () => {
-			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();;
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await getBlocks({ timestamp: `${from}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

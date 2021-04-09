@@ -227,7 +227,7 @@ describe('Method get.transactions', () => {
 
 	describe('is able to retrieve list of transactions using timestamps', () => {
 		it('from to -> ok', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();;
+			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const toTimestamp = refTransaction.block.timestamp;
 			const response = await requestTransactions({ timestamp: `${from}:${toTimestamp}` });
 
@@ -246,7 +246,7 @@ describe('Method get.transactions', () => {
 		});
 
 		it('Half bounded range from -> ok', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();;
+			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await requestTransactions({ timestamp: `${from}:` });
 
 			expect(response).toMap(jsonRpcEnvelopeSchema);
