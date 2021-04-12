@@ -111,12 +111,12 @@ pipeline {
 							readyTransactions=$?
 							sleep 10
 							let retries++
-							if [ $retries = 6 ]; then
-							break
+							if [ $retries = 10 ]; then
+								break
 							fi
 						done
 						set -e
-						if [ $retries -ge 6 ]; then
+						if [ $retries -ge 10 ]; then
 								exit 1
 						fi
 						make -f Makefile.core.jenkins test-integration
