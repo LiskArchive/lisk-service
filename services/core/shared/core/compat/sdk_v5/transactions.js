@@ -140,8 +140,8 @@ const validateParams = async params => {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'timestamp',
-			from: Number(fromTimestamp),
-			to: Number(toTimestamp),
+			from: fromTimestamp,
+			to: toTimestamp,
 		});
 	}
 
