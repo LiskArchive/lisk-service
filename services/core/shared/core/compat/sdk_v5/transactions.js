@@ -19,14 +19,19 @@ const BluebirdPromise = require('bluebird');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const coreApi = require('./coreApi');
+
+const {
+	getHexAddressFromPublicKey,
+	getBase32AddressFromHex,
+} = require('./accountUtils');
+
 const {
 	indexAccountsbyAddress,
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
-	getBase32AddressFromHex,
 	getAccountsBySearch,
-	getHexAddressFromPublicKey,
 } = require('./accounts');
+
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -310,7 +315,9 @@ const getTransactionsByBlockId = async blockId => {
 			transaction.height = block.header.height;
 			transaction.blockId = block.header.id;
 			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
-			transaction.senderId = account && account.address ? account.address : undefined;
+			transaction.senderId = account && account.address
+				? account.address
+				: getHexAddressFromPublicKey(transaction.senderPublicKey);
 			transaction.username = account && account.username ? account.username : undefined;
 			transaction.isPending = false;
 			return transaction;

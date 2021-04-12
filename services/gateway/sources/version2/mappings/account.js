@@ -16,9 +16,11 @@
 module.exports = {
 	summary: {
 		address: '=,string',
+		legacyAddress: '=,string',
 		balance: 'token.balance,string',
 		username: 'dpos.delegate.username,string',
 		publicKey: '=,string',
+		isMigrated: '=,boolean',
 		isDelegate: '=,boolean',
 		isMultisignature: '=,boolean',
 	},
@@ -77,5 +79,10 @@ module.exports = {
 				end: '=,number',
 			},
 		}],
+	},
+	legacy: {
+		// TODO: Verify field mappings with e2e setup
+		address: 'legacy.address,string',
+		balance: 'legacy.balance,string',
 	},
 };
