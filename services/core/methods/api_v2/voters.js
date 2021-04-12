@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -22,13 +22,11 @@ module.exports = [
 		name: 'voters',
 		controller: getVoters,
 		params: {
-			anyId: { type: 'any', optional: true },
-			address: { type: 'any', optional: true },
-			username: { type: 'any', optional: true },
-			publicKey: { type: 'any', optional: true },
-			secondPublicKey: { type: 'any', optional: true },
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
+			address: { optional: true, type: 'any' },
+			username: { optional: true, type: 'any' },
+			publicKey: { optional: true, type: 'any' },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
 		},
 	},
 ];
