@@ -15,6 +15,7 @@
  */
 module.exports = {
 	primaryKey: 'id',
+	charset: 'utf8mb4',
 	schema: {
 		id: { type: 'string' },
 		height: { type: 'integer' },
