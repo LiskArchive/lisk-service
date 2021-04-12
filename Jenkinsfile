@@ -103,6 +103,7 @@ pipeline {
 					sh '''#!/bin/bash -xe
 						make -f Makefile.core.jenkins down
 						make -f Makefile.core.jenkins up
+						sleep 30
 						readyTransactions=1
 						retries=0
 						set +e
@@ -117,7 +118,7 @@ pipeline {
 						done
 						set -e
 						if [ $retries -ge 10 ]; then
-								exit 1
+							exit 1
 						fi
 						make -f Makefile.core.jenkins test-integration
 					'''
