@@ -14,12 +14,12 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-
 const {
-	getHexAddressFromPublicKey,
-	getBase32AddressFromHex,
-	getHexAddressFromBase32,
-} = require('./accountUtils');
+	getAddressFromPublicKey,
+	getBase32AddressFromAddress,
+	getAddressFromBase32Address,
+	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
+} = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 const coreCache = require('./coreCache');
@@ -28,8 +28,10 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
+const transactionsIndexSchema = require('./schema/transactions');
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
+const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const balanceUnlockWaitHeightSelf = 260000;
 const balanceUnlockWaitHeightDefault = 2000;
@@ -66,6 +68,32 @@ const getAccountsBySearch = async (searchProp, searchString) => {
 	};
 	const account = await accountsDB.find(params);
 	return account;
+};
+
+const getLegacyAddressFromPublicKey = publicKey => {
+	const legacyAddress = getLegacyFormatAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
+	return legacyAddress;
+};
+
+const getHexAddressFromPublicKey = publicKey => {
+	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
+	return binaryAddress.toString('hex');
+};
+
+const getBase32AddressFromHex = address => {
+	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
+	return base32Address;
+};
+
+const getHexAddressFromBase32 = address => {
+	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
+	return binaryAddress;
+};
+
+const getBase32AddressFromPublicKey = publicKey => {
+	const hexAddress = getHexAddressFromPublicKey(publicKey);
+	const base32Address = getBase32AddressFromHex(hexAddress);
+	return base32Address;
 };
 
 const resolveAccountsInfo = async accounts => {
@@ -128,6 +156,46 @@ const getAccountsFromCore = async (params) => {
 	return accounts;
 };
 
+const getLegacyAccountInfo = async ({ publicKey }) => {
+	const legacyAccountInfo = {};
+	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
+	if (accountInfo) {
+		Object.assign(
+			legacyAccountInfo,
+			{
+				address: getBase32AddressFromPublicKey(publicKey),
+				legacyAddress: getLegacyAddressFromPublicKey(publicKey),
+				publicKey,
+				// The account hasn't migrated/reclaimed yet
+				// So, has no outgoing transactions/registrations on the (legacy) blockchain
+				isMigrated: false,
+				isDelegate: false,
+				isMultisignature: false,
+				token: { balance: BigInt('0') },
+				legacy: accountInfo,
+			},
+		);
+	} else {
+		// Check if the account was already migrated
+		const reclaimTxModuleAssetId = '1000:0';
+		const transactionsDB = await getTransactionsIndex();
+		const [reclaimTx] = await transactionsDB.find({
+			senderPublicKey: publicKey,
+			moduleAssetId: reclaimTxModuleAssetId,
+		});
+		if (reclaimTx) {
+			Object.assign(
+				legacyAccountInfo,
+				{
+					legacyAddress: getLegacyAddressFromPublicKey(publicKey),
+					isMigrated: true,
+				},
+			);
+		}
+	}
+	return legacyAccountInfo;
+};
+
 const getAccounts = async params => {
 	const accounts = {
 		data: [],
@@ -152,7 +220,7 @@ const getAccounts = async params => {
 		if (!(await confirmAddress(params.address))) return {};
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
-		if (!validatePublicKey(params.publicKey) || !(await confirmPublicKey(params.publicKey))) {
+		if (!validatePublicKey(params.publicKey)) {
 			return {};
 		}
 	}
@@ -168,10 +236,12 @@ const getAccounts = async params => {
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
+
 	if (params.address || (params.addresses && params.addresses.length)) {
 		const response = await getAccountsFromCore(params);
 		if (response.data) accounts.data = response.data;
 	}
+
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
@@ -183,8 +253,17 @@ const getAccounts = async params => {
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
 
+	if (params.publicKey) {
+		// If available, update legacy account information
+		const [account = {}] = accounts.data;
+		const legacyAccountInfo = await getLegacyAccountInfo(params);
+		Object.assign(account, legacyAccountInfo);
+		if (!accounts.data.length) accounts.data.push(account);
+	}
+
 	accounts.meta.count = accounts.data.length;
 	accounts.meta.offset = params.offset;
+
 	return accounts;
 };
 
@@ -248,6 +327,7 @@ const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 const getMultisignatureMemberships = async () => []; // TODO
 
 module.exports = {
+	confirmPublicKey,
 	getAccounts,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,

@@ -13,17 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Core = require('../../shared/core');
+const { getNetworkStatus } = require('./controllers/network');
 
-const getNetworkStatus = async () => {
-	const result = await Core.getNetworkStatus();
-	return {
-		data: result.data,
-		meta: {},
-	};
-};
-
-
-module.exports = {
-	getNetworkStatus,
-};
+module.exports = [
+	{
+		name: 'network.status',
+		controller: getNetworkStatus,
+		params: {},
+	},
+];
