@@ -164,9 +164,17 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
-				propBetween => query
-					.where(propBetween.property, '>=', propBetween.from)
-					.where(propBetween.property, '<=', propBetween.to));
+				propBetween => {
+					if (propBetween.from && Boolean(propBetween.from)) {
+						query
+							.where(propBetween.property, '>=', propBetween.from);
+					}
+					if (propBetween.to && Boolean(propBetween.to)) {
+						query
+							.where(propBetween.property, '<=', propBetween.to);
+					}
+				},
+			);
 		}
 
 		if (params.sort) {
@@ -240,9 +248,16 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
-				propBetween => query
-					.where(propBetween.property, '>=', propBetween.from)
-					.where(propBetween.property, '<=', propBetween.to));
+				propBetween => {
+					if (propBetween.from && Boolean(propBetween.from)) {
+						query
+							.where(propBetween.property, '>=', propBetween.from);
+					}
+					if (propBetween.to && Boolean(propBetween.to)) {
+						query
+							.where(propBetween.property, '<=', propBetween.to);
+					}
+				});
 		}
 
 		if (params.whereIn) {

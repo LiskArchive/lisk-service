@@ -38,8 +38,6 @@ const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexS
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 
-const MAX_TRANSACTION_AMOUNT = '9223372036854775807';
-
 const resolveModuleAsset = (moduleAssetVal) => {
 	const [module, asset] = moduleAssetVal.split(':');
 	let response;
@@ -130,8 +128,8 @@ const validateParams = async params => {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'amount',
-			from: amount.split(':')[0] || 0,
-			to: amount.split(':')[1] || MAX_TRANSACTION_AMOUNT,
+			from: amount.split(':')[0],
+			to: amount.split(':')[1],
 		});
 	}
 
@@ -142,8 +140,8 @@ const validateParams = async params => {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'timestamp',
-			from: Number(fromTimestamp) || 0,
-			to: Number(toTimestamp) || Math.floor(Date.now() / 1000),
+			from: Number(fromTimestamp),
+			to: Number(toTimestamp),
 		});
 	}
 
