@@ -16,7 +16,6 @@
 
 const {
 	getTransactions,
-	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,
 	getPendingTransactions,
