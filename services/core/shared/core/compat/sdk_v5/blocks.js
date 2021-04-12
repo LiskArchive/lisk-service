@@ -237,7 +237,7 @@ const getBlocks = async params => {
 		const { height, ...remParams } = params;
 		params = remParams;
 		const [from, to] = height.split(':');
-		if (from > to) return new Error('From height cannot be greater than to height');
+		if (from && to && from > to) return new Error('From height cannot be greater than to height');
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'height',
@@ -250,7 +250,7 @@ const getBlocks = async params => {
 		const { timestamp, ...remParams } = params;
 		params = remParams;
 		const [from, to] = timestamp.split(':');
-		if (from > to) return new Error('From timestamp cannot be greater than to timestamp');
+		if (from && to && from > to) return new Error('From timestamp cannot be greater than to timestamp');
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'timestamp',

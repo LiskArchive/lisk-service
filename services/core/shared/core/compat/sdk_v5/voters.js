@@ -18,8 +18,10 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const coreApi = require('./coreApi');
 
-const { getIndexedAccountInfo, getBase32AddressFromHex } = require('./accounts');
+const { getIndexedAccountInfo } = require('./accounts');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
+const { getBase32AddressFromHex } = require('./accountUtils');
+
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');

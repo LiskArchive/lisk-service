@@ -1,4 +1,3 @@
-
 /* eslint-disable */
 /*
  * moleculer
@@ -42,7 +41,8 @@ module.exports = {
                 }
             } catch (err) {
                 if (this.settings.log4XXResponses || (err && !_.inRange(err.code, 400, 500))) {
-                    this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: \nRequest params: ${util.inspect(req.$params)} \nRequest body: ${util.inspect(req.body)}`);
+                    const reqParams = Object.fromEntries(new Map(Object.entries(req.$params).filter(([_, v]) => v)));
+                    this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: \nRequest params: ${util.inspect(reqParams)} \nRequest body: ${util.inspect(req.body)}`);
                 }
                 this.sendError(req, res, err);
             }
@@ -90,7 +90,7 @@ module.exports = {
                     params.$res = res;
                 }
                 if (req.baseUrl) req.$endpoint.baseUrl = req.baseUrl;
-                
+
                 // Call the action
                 let data = await ctx.call(req.$endpoint, params, route.callOptions);
 

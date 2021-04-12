@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -16,7 +16,6 @@
 
 const {
 	getTransactions,
-	getLastTransactions,
 	getTransactionsStatisticsDay,
 	getTransactionsStatisticsMonth,
 	getPendingTransactions,
@@ -29,44 +28,43 @@ module.exports = [
 		name: 'transactions',
 		controller: getTransactions,
 		params: {
-			id: { type: 'any', optional: true },
-			type: { type: 'any', optional: true },
-			senderIdOrRecipientId: { type: 'any', optional: true },
-			senderId: { type: 'any', optional: true },
-			recipientId: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-			limit: { type: 'any', optional: true },
-			minAmount: { type: 'any', optional: true },
-			maxAmount: { type: 'any', optional: true },
-			fromTimestamp: { type: 'any', optional: true },
-			toTimestamp: { type: 'any', optional: true },
-			blockId: { type: 'any', optional: true },
-			height: { type: 'any', optional: true },
-			sort: { type: 'any', optional: true },
-		},
-	},
-	{
-		name: 'transactions.last',
-		controller: getLastTransactions,
-		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
+			transactionId: { optional: true, type: 'any' },
+			moduleAssetId: { optional: true, type: 'any' },
+			moduleAssetName: { optional: true, type: 'any' },
+			address: { optional: true, type: 'any' },
+			senderAddress: { optional: true, type: 'any' },
+			senderPublicKey: { optional: true, type: 'any' },
+			senderUsername: { optional: true, type: 'any' },
+			recipientAddress: { optional: true, type: 'any' },
+			recipientPublicKey: { optional: true, type: 'any' },
+			recipientUsername: { optional: true, type: 'any' },
+			amount: { optional: true, type: 'any' },
+			timestamp: { optional: true, type: 'any' },
+			nonce: { optional: true, type: 'any' },
+			block: { optional: true, type: 'any' },
+			height: { optional: true, type: 'any' },
+			search: { optional: true, type: 'any' },
+			data: { optional: true, type: 'any' },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
+			includePending: { optional: true, type: 'any' },
+			sort: { optional: true, type: 'any' },
 		},
 	},
 	{
 		name: 'transactions.statistics.day',
 		controller: getTransactionsStatisticsDay,
 		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
 		},
 	},
 	{
 		name: 'transactions.statistics.month',
 		controller: getTransactionsStatisticsMonth,
 		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
 		},
 	},
 	{
@@ -78,15 +76,15 @@ module.exports = [
 		name: 'transactions.post',
 		controller: postTransactions,
 		params: {
-			transaction: { type: 'string', optional: false },
+			transaction: { optional: true, type: 'any' },
 		},
 	},
 	{
 		name: 'transactions.schemas',
 		controller: getTransactionsSchemas,
 		params: {
-			moduleAssetId: { type: 'string', optional: true },
-			moduleAssetName: { type: 'string', optional: true },
+			moduleAssetId: { optional: true, type: 'any' },
+			moduleAssetName: { optional: true, type: 'any' },
 		},
 	},
 ];
