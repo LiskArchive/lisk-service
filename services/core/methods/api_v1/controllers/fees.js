@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../shared/core');
+const CoreService = require('../../../shared/core');
 
 const getEstimateFeeByte = async () => {
 	const response = await CoreService.getEstimateFeeByte();

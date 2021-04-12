@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const coreService = require('../../shared/core');
+const coreService = require('../../../shared/core');
 
 const getPeers = async params => {
 	const response = await coreService.getPeers(params);

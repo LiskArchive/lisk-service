@@ -100,9 +100,11 @@ const accountSchema = {
 
 const summary = {
 	address: Joi.string().required(),
+	legacyAddress: Joi.string().optional(),
 	balance: Joi.string().required(),
 	username: Joi.string().allow('').optional(),
 	publicKey: Joi.string().required(),
+	isMigrated: Joi.boolean().optional(),
 	isDelegate: Joi.boolean().required(),
 	isMultisignature: Joi.boolean().required(),
 };
@@ -145,6 +147,11 @@ const keys = {
 	memberships: Joi.array().optional(),
 };
 
+const legacy = {
+	address: Joi.string().required(),
+	balance: Joi.string().required(),
+};
+
 const accountSchemaVersion5 = {
 	summary: Joi.object(summary).required(),
 	token: Joi.object(token).required(),
@@ -152,6 +159,7 @@ const accountSchemaVersion5 = {
 	dpos: Joi.object(dpos).optional(),
 	keys: Joi.object(keys).optional(),
 	knowledge: Joi.object(knowledgeSchema).optional(),
+	legacy: Joi.object(legacy).optional(),
 };
 
 module.exports = {

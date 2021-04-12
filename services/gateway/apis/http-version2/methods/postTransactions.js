@@ -54,8 +54,6 @@ module.exports = {
 					$ref: '#/definitions/serverErrorEnvelope',
 				},
 			},
-
-
 		};
 		return transactionSchema;
 	},

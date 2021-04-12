@@ -24,6 +24,7 @@ const {
 
 const {
     getAccounts,
+    getDelegates,
     getMultisignatureGroups,
     getMultisignatureMemberships,
     validateAddress,
@@ -60,10 +61,6 @@ const {
     getCachedAccountBySecondPublicKey,
     getCachedAccountByUsername,
 } = require('./coreCache');
-
-const {
-    getDelegates,
-} = require('./delegates');
 
 const {
     getEstimateFeeByteForBatch,

@@ -237,7 +237,7 @@ const getBlocks = async params => {
 		const { height, ...remParams } = params;
 		params = remParams;
 		const [from, to] = height.split(':');
-		if (from > to) return new Error('From height cannot be greater than to height');
+		if (from && to && from > to) return new Error('From height cannot be greater than to height');
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'height',
@@ -250,7 +250,7 @@ const getBlocks = async params => {
 		const { timestamp, ...remParams } = params;
 		params = remParams;
 		const [from, to] = timestamp.split(':');
-		if (from > to) return new Error('From timestamp cannot be greater than to timestamp');
+		if (from && to && from > to) return new Error('From timestamp cannot be greater than to timestamp');
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'timestamp',
@@ -298,9 +298,9 @@ const getBlocks = async params => {
 const indexGenesisBlock = async genesisHeight => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
 	const accountAddressesToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address > 16) // To filter out reclaim accounts
+		.filter(account => account.address.length > 16) // To filter out reclaim accounts
 		.map(account => account.address);
-	indexAccountsbyAddress(accountAddressesToIndex);
+	await indexAccountsbyAddress(accountAddressesToIndex);
 	await indexTransactions([genesisBlock]);
 };
 
@@ -421,7 +421,7 @@ const init = async () => {
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 
-		await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+		await indexMissingBlocks(genesisHeight, currentHeight);
 		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');
