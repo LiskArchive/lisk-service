@@ -128,7 +128,7 @@ const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQ
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
-	account.isDelegate = !(account.dpos && Number(account.dpos.delegate.totalVotesReceived) === 0);
+	account.isDelegate = !(account.dpos && !account.dpos.delegate.username);
 	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
 	account.token.balance = Number(account.token.balance);
 	account.sequence.nonce = Number(account.sequence.nonce);
@@ -335,7 +335,4 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	getBase32AddressFromHex,
-	getHexAddressFromBase32,
-	getHexAddressFromPublicKey,
 };
