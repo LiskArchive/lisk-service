@@ -103,13 +103,15 @@ pipeline {
 					sh '''#!/bin/bash -xe
 						make -f Makefile.core.jenkins down
 						make -f Makefile.core.jenkins up
-						ready=1
+						readyBlocks=1
+						readyAccounts=1
 						retries=0
 						set +e
-						while [ $ready -ne 0 ]; do
+						while [ $readyBlocks -ne 0 || $readyAccounts -ne 0 ]; do
 							curl --fail --verbose http://127.0.0.1:9901/api/v2/blocks
+							readyBlocks=$?
 							curl --fail --verbose http://127.0.0.1:9901/api/v2/accounts
-							ready=$?
+							readyAccounts=$?
 							sleep 10
 							let retries++
 							if [ $retries = 6 ]; then
