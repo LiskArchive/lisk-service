@@ -13,12 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Utils } = require('lisk-service-framework');
 const Bluebird = require('bluebird');
 
 const CoreService = require('../../../shared/core');
 const { getAccountKnowledge } = require('../../../shared/knownAccounts');
 const { parseToJSONCompatObj } = require('../../../shared/jsonTools');
+
+const ObjectUtilService = Utils.Data;
+const { isEmptyObject } = ObjectUtilService;
 
 const logger = Logger();
 
@@ -84,7 +87,18 @@ const getTopAccounts = async params => {
 	return accounts;
 };
 
+const getNextForgers = async params => {
+	const nextForgers = await CoreService.getNextForgers(params);
+	if (isEmptyObject(nextForgers)) return {};
+
+	return {
+		data: nextForgers.data,
+		meta: nextForgers.meta,
+	};
+};
+
 module.exports = {
 	getAccounts,
 	getTopAccounts,
+	getNextForgers,
 };

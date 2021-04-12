@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -25,28 +25,24 @@ module.exports = [
 		name: 'peers',
 		controller: getPeers,
 		params: {
-			ip: { type: 'any', optional: true },
-			httpPort: { type: 'any', optional: true },
-			wsPort: { type: 'any', optional: true },
-			os: { type: 'any', optional: true },
-			version: { type: 'any', optional: true },
-			state: { type: 'any', optional: true },
-			height: { type: 'any', optional: true },
-			broadhash: { type: 'any', optional: true },
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-			sort: { type: 'any', optional: true },
+			ip: { optional: true, type: 'any' },
+			networkVersion: { optional: true, type: 'any' },
+			state: { optional: true, type: 'any' },
+			height: { optional: true, type: 'any' },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
+			sort: { optional: true, type: 'any' },
 		},
 	},
 	{
 		name: 'peers.connected',
 		controller: getConnectedPeers,
-		params: { },
+		params: {},
 	},
 	{
 		name: 'peers.disconnected',
 		controller: getDisconnectedPeers,
-		params: { },
+		params: {},
 	},
 	{
 		name: 'peers.statistics',

@@ -118,7 +118,7 @@ describe('Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('filter standby delegates -> ok', async () => {
+		it('filter standby delegates -> ok', async () => {
 			const response = await api.get(`${endpoint}?isDelegate=true&status=standby`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

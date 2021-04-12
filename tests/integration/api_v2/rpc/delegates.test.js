@@ -150,7 +150,7 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('returns standby delegates by status', async () => {
+		it('returns standby delegates by status', async () => {
 			const response = await getDelegates({ isDelegate: true, status: 'standby' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

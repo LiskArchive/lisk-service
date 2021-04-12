@@ -16,6 +16,7 @@
 const {
 	getAccounts,
 	getTopAccounts,
+	getNextForgers,
 } = require('./controllers/accounts');
 
 module.exports = [
@@ -23,19 +24,29 @@ module.exports = [
 		name: 'accounts',
 		controller: getAccounts,
 		params: {
-			anyId: { type: 'any', optional: true },
-			address: { type: 'any', optional: true },
-			publicKey: { type: 'any', optional: true },
-			secondPublicKey: { type: 'any', optional: true },
-			username: { type: 'any', optional: true },
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-			sort: { type: 'any', optional: true },
+			address: { optional: true, type: 'any' },
+			publicKey: { optional: true, type: 'any' },
+			username: { optional: true, type: 'any' },
+			isDelegate: { optional: true, type: 'any' },
+			status: { optional: true, type: 'any' },
+			search: { optional: true, type: 'any' },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
+			sort: { optional: true, type: 'any' },
+
 		},
 	},
 	{
 		name: 'accounts.top',
 		controller: getTopAccounts,
+		params: {
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
+		},
+	},
+	{
+		name: 'delegates.next_forgers',
+		controller: getNextForgers,
 		params: {
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },
