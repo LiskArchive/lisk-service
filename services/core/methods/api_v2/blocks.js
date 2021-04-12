@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -25,15 +25,20 @@ module.exports = [
 		name: 'blocks',
 		controller: getBlocks,
 		params: {
-			blockId: { type: 'any', optional: true },
-			height: { type: 'any', optional: true },
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-			sort: { type: 'any', optional: true },
-			address: { type: 'any', optional: true },
-			username: { type: 'any', optional: true },
-			fromTimestamp: { type: 'any', optional: true },
-			toTimestamp: { type: 'any', optional: true },
+			blockId: { optional: true, type: 'string', min: 1, max: 64, pattern: /^([1-9]|[A-Fa-f0-9]){1,64}$/ },
+			height: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
+			timestamp: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
+			generatorAddress: { optional: true, type: 'string', min: 38, max: 41, pattern: /^lsk([a-hjkm-z]|[2-9]){38}$/ },
+			generatorPublicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
+			generatorUsername: { optional: true, type: 'string', min: 1, max: 20, pattern: /^[a-z0-9!@$&_.]{1,20}$/ },
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+			offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+			sort: {
+				optional: true,
+				type: 'string',
+				enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
+				default: 'height:desc',
+			},
 		},
 	},
 	{
