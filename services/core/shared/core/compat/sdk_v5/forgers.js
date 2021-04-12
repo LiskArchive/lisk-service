@@ -14,7 +14,8 @@
  *
  */
 const { Utils } = require('lisk-service-framework');
-const { getAccounts, getBase32AddressFromHex } = require('./accounts');
+const { getAccounts } = require('./accounts');
+const { getBase32AddressFromHex } = require('./accountUtils');
 
 const coreApi = require('./coreApi');
 

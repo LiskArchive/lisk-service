@@ -17,8 +17,8 @@ const { HTTP } = require('lisk-service-framework');
 
 const httpStatus = HTTP.StatusCodes;
 
-const CoreService = require('../../shared/core');
-const packageJson = require('../../package.json');
+const CoreService = require('../../../shared/core');
+const packageJson = require('../../../package.json');
 
 const getStatus = async () => {
 	const response = {
