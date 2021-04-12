@@ -45,7 +45,8 @@ const app = Microservice({
 nodeStatus.waitForNode().then(async () => {
 	logger.info('Found a node, initiating Lisk Core...');
 
-	app.addMethods(path.join(__dirname, 'methods'));
+	app.addMethods(path.join(__dirname, 'methods', 'api_v1'));
+	app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
 	app.addEvents(path.join(__dirname, 'events'));
 	app.addJobs(path.join(__dirname, 'jobs'));
 

@@ -99,7 +99,12 @@ pipeline {
 
 		stage('Run integration tests') {
 			steps {
-				dir('./docker') { sh "make -f ${Makefile} test-integration" }
+				dir('./docker') { 
+					sh """ 
+						sleep 30
+						make -f ${Makefile} test-integration
+					""" 
+				}
 			}
 		}
 	}

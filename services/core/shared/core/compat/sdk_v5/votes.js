@@ -16,7 +16,8 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const { getAccounts, getIndexedAccountInfo, getBase32AddressFromHex } = require('./accounts');
+const { getAccounts, getIndexedAccountInfo } = require('./accounts');
+const { getBase32AddressFromHex } = require('./accountUtils');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const normalizeVote = vote => parseToJSONCompatObj(vote);

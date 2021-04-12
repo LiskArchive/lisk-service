@@ -59,7 +59,7 @@ const transactionSchemaVersion5 = {
 	fee: Joi.string().required(),
 	height: Joi.number().integer().min(1).required(),
 	nonce: Joi.string().optional(),
-	signatures: Joi.array().items(Joi.string().optional()).required(),
+	signatures: Joi.array().items(Joi.string().allow('').optional()).required(),
 	asset: Joi.object().required(),
 	sender: Joi.object(sender).optional(),
 	block: Joi.object(block).optional(),

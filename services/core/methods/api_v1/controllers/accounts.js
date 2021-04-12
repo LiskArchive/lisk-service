@@ -19,9 +19,9 @@ const Bluebird = require('bluebird');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyArray } = Utils.Data;
 
-const CoreService = require('../../shared/core');
-const { getAccountKnowledge } = require('../../shared/knownAccounts');
-const { parseToJSONCompatObj } = require('../../shared/jsonTools');
+const CoreService = require('../../../shared/core');
+const { getAccountKnowledge } = require('../../../shared/knownAccounts');
+const { parseToJSONCompatObj } = require('../../../shared/jsonTools');
 
 const logger = Logger();
 

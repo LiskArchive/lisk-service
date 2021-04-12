@@ -22,8 +22,8 @@ const { isEmptyArray, isEmptyObject } = Utils.Data;
 
 const moment = require('moment');
 
-const CoreService = require('../../shared/core');
-const txStatisticsService = require('../../shared/core/transactionStatistics');
+const CoreService = require('../../../shared/core');
+const txStatisticsService = require('../../../shared/core/transactionStatistics');
 
 const getTransactions = async (params) => {
 	const addressParam = [
@@ -75,7 +75,7 @@ const getTransactions = async (params) => {
 				data: { error: err.message },
 			};
 		}
-			throw err;
+		throw err;
 	}
 };
 

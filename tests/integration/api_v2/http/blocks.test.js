@@ -14,6 +14,8 @@
  *
  */
 /* eslint-disable quotes, quote-props, comma-dangle */
+import moment from 'moment';
+
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
@@ -109,6 +111,98 @@ describe('Blocks API', () => {
 		it('invalid query parameter -> 400', async () => {
 			const response = await api.get(`${endpoint}?block=12602944501676077162`, 400);
 			expect(response).toMap(wrongInputParamSchema);
+		});
+	});
+
+	describe('Retrieve blocks list within timestamps', () => {
+		it('blocks within set timestamps are returned', async () => {
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const toTimestamp = refBlock.timestamp;
+			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.timestamp).toBeGreaterThanOrEqual(from);
+				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('blocks with half bounded range: fromTimestamp', async () => {
+			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.timestamp).toBeGreaterThanOrEqual(from);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('blocks with half bounded range: toTimestamp', async () => {
+			const toTimestamp = refBlock.timestamp;
+			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Retrieve blocks list within height range', () => {
+		it('blocks within set height are returned', async () => {
+			const minHeight = refBlock.height - 10;
+			const maxHeight = refBlock.height;
+			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.height).toBeGreaterThanOrEqual(minHeight);
+				expect(block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('blocks with half bounded range: minHeight', async () => {
+			const minHeight = refBlock.height - 10;
+			const response = await api.get(`${endpoint}?height=${minHeight}:&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.height).toBeGreaterThanOrEqual(minHeight);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('blocks with half bounded range: maxHeight', async () => {
+			const maxHeight = refBlock.height;
+			const response = await api.get(`${endpoint}?height=:${maxHeight}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });
