@@ -107,7 +107,7 @@ pipeline {
 						readyAccounts=1
 						retries=0
 						set +e
-						while [ $readyBlocks -ne 0 || $readyAccounts -ne 0 ]; do
+						while [ "$readyBlocks" -ne 0 ] || [ "$readyAccounts" -ne 0 ]; do
 							curl --fail --verbose http://127.0.0.1:9901/api/v2/blocks
 							readyBlocks=$?
 							curl --fail --verbose http://127.0.0.1:9901/api/v2/accounts
