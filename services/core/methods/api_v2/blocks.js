@@ -17,7 +17,6 @@
 const {
 	getBlocks,
 	getLastBlocks,
-	getBestBlocks,
 } = require('./controllers/blocks');
 
 module.exports = [
@@ -31,8 +30,8 @@ module.exports = [
 			generatorAddress: { optional: true, type: 'string', min: 38, max: 41, pattern: /^lsk([a-hjkm-z]|[2-9]){38}$/ },
 			generatorPublicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
 			generatorUsername: { optional: true, type: 'string', min: 1, max: 20, pattern: /^[a-z0-9!@$&_.]{1,20}$/ },
-			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
-			offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, integer: true, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+			offset: { optional: true, type: 'number', min: 0, default: 0, integer: true, pattern: /^\b([0-9][0-9]*)\b$/ },
 			sort: {
 				optional: true,
 				type: 'string',
@@ -45,16 +44,8 @@ module.exports = [
 		name: 'blocks.last',
 		controller: getLastBlocks,
 		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-		},
-	},
-	{
-		name: 'blocks.best',
-		controller: getBestBlocks,
-		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, integer: true, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+			offset: { optional: true, type: 'number', min: 0, default: 0, integer: true, pattern: /^\b([0-9][0-9]*)\b$/ },
 		},
 	},
 ];

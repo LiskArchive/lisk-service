@@ -25,8 +25,8 @@ module.exports = [
 			address: { optional: true, type: 'string', min: 3, max: 41 },
 			username: { optional: true, type: 'string', min: 3, max: 20 },
 			publicKey: { optional: true, type: 'string', min: 64, max: 64 },
-			limit: { optional: true, min: 1, max: 100, type: 'number', default: 10 },
-			offset: { optional: true, min: 0, type: 'number', default: 0 },
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, integer: true, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+			offset: { optional: true, type: 'number', min: 0, default: 0, integer: true, pattern: /^\b([0-9][0-9]*)\b$/ },
 		},
 	},
 ];

@@ -33,8 +33,8 @@ module.exports = [
 				pattern: /^(?:\b(?:active|standby|banned|punished|non-eligible)\b|\b(?:active|standby|banned|punished|non-eligible|,){3,}\b){1}$/,
 			},
 			search: { optional: true, type: 'string', min: 1 },
-			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
-			offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, integer: true, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+			offset: { optional: true, type: 'number', min: 0, default: 0, integer: true, pattern: /^\b([0-9][0-9]*)\b$/ },
 			sort: {
 				optional: true,
 				type: 'string',
@@ -46,8 +46,8 @@ module.exports = [
 		name: 'accounts.top',
 		controller: getTopAccounts,
 		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, integer: true, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+			offset: { optional: true, type: 'number', min: 0, default: 0, integer: true, pattern: /^\b([0-9][0-9]*)\b$/ },
 		},
 	},
 ];
