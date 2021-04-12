@@ -99,38 +99,9 @@ pipeline {
 
 		stage('Run integration tests') {
 			steps {
-				dir('./docker') {
-					sh '''
-						make -f Makefile.core.jenkins down
-						make -f Makefile.core.jenkins up
-						ready=1
-						retries=0
-						set +e
-						while [ $ready -ne 0 ]; do
-							curl --fail --verbose http://127.0.0.1:9901/api/v2/blocks
-							curl --fail --verbose http://127.0.0.1:9901/api/v2/accounts
-							ready=$?
-							sleep 10
-							let retries++
-							if [ $retries = 6 ]; then
-							break
-							fi
-						done
-						set -e
-						if [ $retries -ge 6 ]; then
-								exit 1
-						fi
-						make -f Makefile.core.jenkins test-integration
-					'''
-				}
+				dir('./docker') { sh "make -f ${Makefile} test-integration" }
 			}
 		}
-
-		// stage('Run integration tests') {
-		// 	steps {
-		// 		dir('./docker') { sh "make -f ${Makefile} test-integration" }
-		// 	}
-		// }
 	}
 	post {
 		failure {

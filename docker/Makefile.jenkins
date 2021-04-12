@@ -7,7 +7,7 @@ compose := docker-compose \
 	-f lisk_service/docker-compose.gateway.yml \
 	-f lisk_service/docker-compose.template.yml \
 	-f lisk_service/docker-compose.tests.yml \
-	-f docker-compose.testnet.yml
+	-f lisk-core/docker-compose.core.yml
 
 up:
 	(ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} $(compose) up --detach)
@@ -27,7 +27,7 @@ test-functional:
 	$(compose) exec -T tests npm run test:functional
 
 test-integration:
-	$(compose) exec -T tests npm run test:integration:APIv1:SDKv2
+	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
 
 cli-%:
 	$(compose) exec $* /bin/sh

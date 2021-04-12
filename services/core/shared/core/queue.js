@@ -33,6 +33,11 @@ const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.
 
 	queue.process(queueName, queueJob);
 
+	queue.process((job, done) => {
+		job.progress();
+		done();
+	});
+
 	queue.on('completed', (job, result) => {
 		logger.debug(`${queueName} Job completed`, result);
 		job.remove();
