@@ -26,7 +26,7 @@ const {
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
-} = require('./accountsUtils');
+} = require('./accountUtils');
 
 const {
 	getIsSyncFullBlockchain,
