@@ -84,7 +84,18 @@ const getTopAccounts = async params => {
 	return accounts;
 };
 
+const getNextForgers = async params => {
+	const nextForgers = await CoreService.getNextForgers(params);
+	if (isEmptyObject(nextForgers)) return {};
+
+	return {
+		data: nextForgers.data,
+		meta: nextForgers.meta,
+	};
+};
+
 module.exports = {
 	getAccounts,
 	getTopAccounts,
+	getNextForgers
 };
