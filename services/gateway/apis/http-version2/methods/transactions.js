@@ -36,7 +36,7 @@ module.exports = {
 		amount: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
 		nonce: { optional: true, type: 'string', min: 1 },
-		block: { optional: true, type: 'string', min: 1 },
+		blockId: { optional: true, type: 'string', min: 1 },
 		height: { optional: true, type: 'string', min: 1 },
 		search: { optional: true, type: 'string' },
 		data: { optional: true, type: 'string' },
