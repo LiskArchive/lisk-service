@@ -22,11 +22,11 @@ module.exports = [
 		name: 'voters',
 		controller: getVoters,
 		params: {
-			address: { optional: true, type: 'string', min: 3, max: 41 },
-			username: { optional: true, type: 'string', min: 3, max: 20 },
-			publicKey: { optional: true, type: 'string', min: 64, max: 64 },
-			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, integer: true, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
-			offset: { optional: true, type: 'number', min: 0, default: 0, integer: true, pattern: /^\b([0-9][0-9]*)\b$/ },
+			address: { optional: true, type: 'any' },
+			username: { optional: true, type: 'any' },
+			publicKey: { optional: true, type: 'any' },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
 		},
 	},
 ];
