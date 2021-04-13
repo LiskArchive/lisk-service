@@ -296,7 +296,7 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const indexGenesisBlock = async genesisHeight => {
+const indexGenesisBlock = async () => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
 	const accountAddressesToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length > 16) // To filter out reclaim accounts
@@ -394,7 +394,7 @@ const init = async () => {
 	await getBlocksIndex();
 	try {
 		// Index genesis block
-		await indexGenesisBlock(genesisHeight);
+		await indexGenesisBlock();
 
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
