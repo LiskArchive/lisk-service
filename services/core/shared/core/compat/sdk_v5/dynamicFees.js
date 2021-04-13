@@ -36,7 +36,10 @@ const calculateBlockSize = async block => {
 	const [blockInfo] = await blocksDB.find({ id: block.id });
 	if (blockInfo) return blockInfo.size;
 
-	throw new Error('Requested block information is not yet indexed. Retry after a while.');
+	// If information is unavailable, compute on-the-fly
+	let blockSize = 0;
+	block.payload.forEach(txn => blockSize += apiClient.transaction.encode(txn).length);
+	return blockSize;
 };
 
 const calculateWeightedAvg = async blocks => {
