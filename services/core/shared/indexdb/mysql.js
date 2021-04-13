@@ -148,7 +148,6 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 			// Return '0' on successful inserts
 			return ids.length ? 0 : 1;
-
 		} catch (error) {
 			const errCode = error.code;
 			const errMessage = error.message.split(`${errCode}: `)[1] || error.message;
