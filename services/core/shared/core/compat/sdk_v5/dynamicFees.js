@@ -16,12 +16,13 @@
 const BluebirdPromise = require('bluebird');
 const { CacheRedis } = require('lisk-service-framework');
 
-const mysqlIndex = require('../../../indexdb/mysql');
-
-const { calcAvgFeeByteModes, EMAcalc } = require('../common/dynamicFees');
 const { getBlocks } = require('./blocks');
+const { getApiClient } = require('../common');
+const { calcAvgFeeByteModes, EMAcalc } = require('../common/dynamicFees');
 
+const mysqlIndex = require('../../../indexdb/mysql');
 const config = require('../../../../config');
+
 const blocksIndexSchema = require('./schema/blocks');
 const transactionsIndexSchema = require('./schema/transactions');
 
@@ -37,6 +38,7 @@ const calculateBlockSize = async block => {
 	if (blockInfo) return blockInfo.size;
 
 	// If information is unavailable, compute on-the-fly
+	const apiClient = await getApiClient();
 	let blockSize = 0;
 	block.payload.forEach(txn => blockSize += apiClient.transaction.encode(txn).length);
 	return blockSize;
