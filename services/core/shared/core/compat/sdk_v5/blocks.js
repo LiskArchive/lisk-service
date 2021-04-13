@@ -49,6 +49,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const logger = Logger();
 const blocksCache = CacheRedis('blocks', config.endpoints.redis);
 
+const genesisHeight = 0;
 let finalizedHeight;
 
 const setFinalizedHeight = (height) => finalizedHeight = height;
@@ -360,7 +361,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 				(b1.height - 1) AS 'to'
 			FROM blocks b1
 			WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
-				AND b1.height != 1
+				AND b1.height != ${genesisHeight}
 				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
 		`;
 
@@ -392,7 +393,6 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 const init = async () => {
 	await getBlocksIndex();
 	try {
-		const genesisHeight = 0;
 		// Index genesis block
 		await indexGenesisBlock(genesisHeight);
 
