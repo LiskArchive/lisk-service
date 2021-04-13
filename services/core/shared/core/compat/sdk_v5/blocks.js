@@ -358,7 +358,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 	if (indexedBlockCount < toHeight) {
 		const missingBlocksQueryStatement = `
 			SELECT
-				(SELECT COALESCE(MAX(b0.height)+1, 1) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+				(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
 				(b1.height - 1) AS 'to'
 			FROM blocks b1
 			WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
