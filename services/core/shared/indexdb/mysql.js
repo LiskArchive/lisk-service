@@ -145,7 +145,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			const ids = await knex
 				.transaction(trx => knex.batchInsert(tableName, rows, chunkSize).transacting(trx));
 			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-			return ids;
+
+			// Return '0' on successful inserts
+			return ids.length ? 0 : 1;
+
 		} catch (error) {
 			const errCode = error.code;
 			const errMessage = error.message.split(`${errCode}: `)[1] || error.message;
@@ -153,19 +156,23 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			logger.debug('Encountered error with batch insert:', errCause,
 				'\nRe-attempting to update/merge the conflicted transactions one at a time: ');
 
-			return knex.transaction(async trx => {
-				const inserts = await BluebirdPromise.map(
-					rows,
-					async row => trx(tableName)
-						.insert(row)
-						.onConflict(tableConfig.primaryKey)
-						.merge()
-						.transacting(trx),
-					{ concurrency: 25 },
-				);
-				logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-				return inserts;
-			});
+			const inserts = await BluebirdPromise.map(
+				rows,
+				async row => {
+					const [result] = await knex.transaction(
+						trx => trx(tableName)
+							.insert(row)
+							.onConflict(tableConfig.primaryKey)
+							.merge()
+							.transacting(trx),
+					);
+					return result;
+				},
+				{ concurrency: 25 },
+			);
+
+			// Return '0' on successful inserts
+			return inserts.reduce((a, b) => a + b, 0);
 		}
 	};
 
