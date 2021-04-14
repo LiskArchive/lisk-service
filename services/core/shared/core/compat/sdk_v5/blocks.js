@@ -15,6 +15,7 @@
  */
 const { CacheRedis, Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
+const util = require('util');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
@@ -368,7 +369,9 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
 		`;
 
+		logger.debug('propBetweens', util.inspect(propBetweens));
 		const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
+		logger.debug('missingBlocksRanges', util.inspect(missingBlocksRanges));
 		for (let i = 0; i < missingBlocksRanges.length; i++) {
 			const { from, to } = missingBlocksRanges[i];
 
@@ -378,21 +381,6 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 			await buildIndex(from, to);
 		}
 	}
-
-	// eslint-disable-next-line consistent-return
-	waitForIt(async () => {
-		/* eslint-disable no-await-in-loop */
-		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
-		/* eslint-enable no-await-in-loop */
-		if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
-			setIndexReadyStatus(true);
-			return getIndexReadyStatus();
-		}
-		setIndexReadyStatus(false);
-		throw new Error('Block indexing still in progress...');
-	}, 5000);
 };
 
 const init = async () => {
@@ -424,16 +412,36 @@ const init = async () => {
 			// For when the index is partially built
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
-		const PAGE_SIZE = 100000;
+
+		const PAGE_SIZE = 25000;
 		const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
 		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 			const toHeight = currentHeight - (PAGE_SIZE * pageNum);
 			const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
 				? (toHeight - PAGE_SIZE)
 				: blockIndexLowerRange;
+
+			logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
+
 			// eslint-disable-next-line no-await-in-loop
 			await indexMissingBlocks(fromHeight, toHeight);
 		}
+
+		// eslint-disable-next-line consistent-return
+		waitForIt(async () => {
+			/* eslint-disable no-await-in-loop */
+			const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+			const numBlocksIndexed = await blocksDB.count();
+			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+			/* eslint-enable no-await-in-loop */
+			if (numBlocksIndexed >= currentHeight && lastIndexedBlock.height >= currentHeight) {
+				setIndexReadyStatus(true);
+				return getIndexReadyStatus();
+			}
+			setIndexReadyStatus(false);
+			throw new Error('Block indexing still in progress...');
+		}, 10000);
+
 		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');
