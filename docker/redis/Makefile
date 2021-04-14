@@ -9,4 +9,7 @@ up:
 down:
 	$(compose) down --volumes --remove-orphans
 
+logs:
+	$(compose) logs
+
 clean: down

@@ -14,6 +14,7 @@ def runServiceIfMissing(svcName, path, nPort) {
 		echo "${svcName} is not running, starting a new instance on port ${nPort}"
 		dir(path) { sh "make up" }
 		if (checkOpenPort(nPort) == false) { 
+			dir(path) { sh "make logs" }
 			currentBuild.result = "FAILURE"
 			throw new Exception("Failed to run ${svcName} instance")
 		}
