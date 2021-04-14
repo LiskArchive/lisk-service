@@ -99,7 +99,7 @@ const getAccountsFromCore = async (params) => {
 
 const indexAccountsbyAddress = async (addressesToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
-		addressesToIndex,
+		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async address => {
 			const accountFromDB = await getIndexedAccountInfo({
 				address: getBase32AddressFromHex(address),
@@ -182,7 +182,7 @@ const resolveDelegateInfo = async accounts => {
 
 const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
-		publicKeysToIndex,
+		publicKeysToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async publicKey => {
 			const address = getHexAddressFromPublicKey(publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
