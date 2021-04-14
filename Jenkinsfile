@@ -9,6 +9,17 @@ def checkOpenPort(nPort) {
 	return (result == 0)
 }
 
+def runServiceIfMissing(svcName, path, nPort) {
+	if (checkOpenPort(nPort) == false) {
+		echo "${svcName} is not running, starting a new instance on port ${nPort}"
+		dir(path) { sh "make up" }
+		if (checkOpenPort(nPort) == false) { 
+			currentBuild.result = "FAILURE"
+			throw new Exception("Failed to run ${svcName} instance")
+		}
+	}
+}
+
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
@@ -19,21 +30,12 @@ pipeline {
 		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test,rpc-v2'
 	}
 	stages {
-		stage ('Build deps') {
+		stage ('Run required services') {
 			steps {
 				script {
-					if (checkOpenPort(LISK_CORE_PORT) == false) {
-						echo "Lisk Core is not running, starting a new instance on port ${LISK_CORE_PORT}"
-						dir('./docker/lisk-core-jenkins') { sh "make up" }
-					}
-					if (checkOpenPort(MYSQL_PORT) == false) {
-						echo "MySQL is not running, starting a new instance on port ${MYSQL_PORT}"
-						dir('./docker/mysql') { sh "make up" }
-					}
-					if (checkOpenPort(REDIS_PORT) == false) {
-						echo 'Redis is not running, starting a new instance on port ${REDIS_PORT}'
-						dir('./docker/redis') { sh "make up" }
-					}
+					runServiceIfMissing('Lisk Core', './docker/lisk-core-jenkins', LISK_CORE_PORT)
+					runServiceIfMissing('MySQL', './docker/mysql', MYSQL_PORT)
+					runServiceIfMissing('Redis', './docker/redis', REDIS_PORT)
 				}
 			}
 		}
@@ -42,12 +44,10 @@ pipeline {
 		// failure {
 		// }
 		cleanup {
-			dir('./docker/lisk-core-jenkins') { sh "make down" }
-			dir('./docker/mysql') { sh "make down" }
-			dir('./docker/redis') { sh "make down" }
-
-			// Cleanup unused containers
-			// sh 'docker rmi $(docker images | grep "^<none>" | awk \'{print $3}\')'
+			echo 'Cleaning up...'
+			// dir('./docker/lisk-core-jenkins') { sh "make down" }
+			// dir('./docker/mysql') { sh "make down" }
+			// dir('./docker/redis') { sh "make down" }
 		}
 	}
 }
