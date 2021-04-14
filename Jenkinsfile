@@ -1,16 +1,12 @@
 @Library('lisk-jenkins') _
 
-Makefile = 'Makefile.jenkins'
+LISK_CORE_PORT = 4000
+MYSQL_PORT = 3306
+REDIS_PORT = 6379
 
-def waitForHttp() {
-	waitUntil {
-		script {
-			dir('./docker') {
-				def api_available = sh script: "make -f ${Makefile} ready", returnStatus: true
-				return (api_available == 0)
-			}
-		}
-	}
+def checkOpenPort(nPort) {
+	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
+	return (result == 0)
 }
 
 pipeline {
@@ -25,99 +21,33 @@ pipeline {
 	stages {
 		stage ('Build deps') {
 			steps {
-				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm ci' }
-					dir('./framework') { sh 'npm ci' }
-					dir('./services/core') { sh 'npm ci' }
-					dir('./services/gateway') { sh 'npm ci' }
-					dir('./services/template') { sh 'npm ci' }
-					dir('./tests') { sh "npm ci" }
-				}
-			}
-		}
-
-		stage ('Check linting') {
-			steps {
-				nvm(getNodejsVersion()) {
-					sh 'npm run eslint'
-				}
-			}
-		}
-
-		stage('Run services unit tests') {
-			steps {
-				nvm(getNodejsVersion()) {
-					dir('./services/core') {
-						sh "npm run test:unit"
+				script {
+					if (checkOpenPort(LISK_CORE_PORT) == false) {
+						echo "Lisk Core is not running, starting a new instance on port ${LISK_CORE_PORT}"
+						dir('./docker/lisk-core-jenkins') { sh "make up" }
 					}
-				}
-			}
-		}
-
-		stage('Run framework unit tests') {
-			steps {
-				nvm(getNodejsVersion()) {
-					dir('./framework') {
-						sh "npm run test:unit"
+					if (checkOpenPort(MYSQL_PORT) == false) {
+						echo "MySQL is not running, starting a new instance on port ${MYSQL_PORT}"
+						dir('./docker/mysql') { sh "make up" }
 					}
-				}
-			}
-		}
-
-		stage('Build docker images') {
-			steps {
-				sh 'make build-core'
-				sh 'make build-gateway'
-				sh 'make build-template'
-				sh 'make build-tests'
-			}
-		}
-
-		stage('Run microservices') {
-			steps {
-				ansiColor('xterm') {
-					dir('./docker') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} make -f ${Makefile} up" }
-				}
-			}
-		}
-
-		stage('Check API gateway status') {
-			steps {
-				timeout(time: 3, unit: 'MINUTES') {
-					waitForHttp()
-				}
-			}
-		}
-
-		stage('Run functional tests') {
-			steps {
-				ansiColor('xterm') {
-					dir('./docker') { sh "make -f ${Makefile} test-functional" }
-				}
-			}
-		}
-
-		stage('Run integration tests') {
-			steps {
-				dir('./docker') { 
-					sh """ 
-						sleep 30
-						make -f ${Makefile} test-integration
-					""" 
+					if (checkOpenPort(REDIS_PORT) == false) {
+						echo 'Redis is not running, starting a new instance on port ${REDIS_PORT}'
+						dir('./docker/redis') { sh "make up" }
+					}
 				}
 			}
 		}
 	}
 	post {
-		failure {
-			// dir('./docker') { sh "make -f ${Makefile} logs" }
-			dir('./docker') { sh "make -f ${Makefile} logs-template" }
-			dir('./docker') { sh "make -f ${Makefile} logs-gateway" }
-			dir('./docker') { sh "make -f ${Makefile} logs-core" }
-		}
+		// failure {
+		// }
 		cleanup {
-			dir('./docker') { sh "make -f ${Makefile} mrproper" }
-			sh 'docker rmi $(docker images | grep "^<none>" | awk \'{print $3}\')'
+			dir('./docker/lisk-core-jenkins') { sh "make down" }
+			dir('./docker/mysql') { sh "make down" }
+			dir('./docker/redis') { sh "make down" }
+
+			// Cleanup unused containers
+			// sh 'docker rmi $(docker images | grep "^<none>" | awk \'{print $3}\')'
 		}
 	}
 }

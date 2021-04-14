@@ -1,0 +1,148 @@
+@Library('lisk-jenkins') _
+
+Makefile = 'Makefile.jenkins'
+
+LISK_CORE_PORT = 4000
+MYSQL_PORT = 3306
+REDIS_PORT = 6379
+
+def waitForHttp() {
+	waitUntil {
+		script {
+			dir('./docker') {
+				def api_available = sh script: "make -f ${Makefile} ready", returnStatus: true
+				return (api_available == 0)
+			}
+		}
+	}
+}
+
+def checkOpenPort(nPort) {
+	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
+	return (result == 0)
+}
+
+pipeline {
+	agent { node { label 'lisk-service' } }
+	options {
+		timeout(time: 8, unit: 'MINUTES')
+	}
+	environment {
+		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
+		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test,rpc-v2'
+	}
+	stages {
+		stage ('Run required services') {
+			steps {
+				script {
+					if (checkOpenPort($LISK_CORE_PORT) == false) {
+						echo "Lisk Core is not running, starting a new instance on port ${LISK_CORE_PORT}"
+					}
+					if (checkOpenPort($MYSQL_PORT) == false) {
+						echo "MySQL is not running, starting a new instance on port ${MYSQL_PORT}"
+					}
+					if (checkOpenPort($REDIS_PORT) == false) {
+						echo 'Redis is not running, starting a new instance on port ${REDIS_PORT}'
+					}
+				}
+			}
+		}
+		stage ('Build deps') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./') { sh 'npm ci' }
+					dir('./framework') { sh 'npm ci' }
+					dir('./services/core') { sh 'npm ci' }
+					dir('./services/gateway') { sh 'npm ci' }
+					dir('./services/template') { sh 'npm ci' }
+					dir('./tests') { sh "npm ci" }
+				}
+			}
+		}
+
+		stage ('Check linting') {
+			steps {
+				nvm(getNodejsVersion()) {
+					sh 'npm run eslint'
+				}
+			}
+		}
+
+		stage('Run services unit tests') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./services/core') {
+						sh "npm run test:unit"
+					}
+				}
+			}
+		}
+
+		stage('Run framework unit tests') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./framework') {
+						sh "npm run test:unit"
+					}
+				}
+			}
+		}
+
+		stage('Build docker images') {
+			steps {
+				sh 'make build-core'
+				sh 'make build-gateway'
+				sh 'make build-template'
+				sh 'make build-tests'
+			}
+		}
+
+		stage('Run microservices') {
+			steps {
+				ansiColor('xterm') {
+					dir('./docker') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} make -f ${Makefile} up" }
+				}
+			}
+		}
+
+		stage('Check API gateway status') {
+			steps {
+				timeout(time: 3, unit: 'MINUTES') {
+					waitForHttp()
+				}
+			}
+		}
+
+		stage('Run functional tests') {
+			steps {
+				ansiColor('xterm') {
+					dir('./docker') { sh "make -f ${Makefile} test-functional" }
+				}
+			}
+		}
+
+		stage('Run integration tests') {
+			steps {
+				dir('./docker') { 
+					sh """ 
+						sleep 30
+						make -f ${Makefile} test-integration
+					""" 
+				}
+			}
+		}
+	}
+	post {
+		failure {
+			// dir('./docker') { sh "make -f ${Makefile} logs" }
+			dir('./docker') { sh "make -f ${Makefile} logs-template" }
+			dir('./docker') { sh "make -f ${Makefile} logs-gateway" }
+			dir('./docker') { sh "make -f ${Makefile} logs-core" }
+		}
+		cleanup {
+			dir('./docker') { sh "make -f ${Makefile} mrproper" }
+			sh 'docker rmi $(docker images | grep "^<none>" | awk \'{print $3}\')'
+		}
+	}
+}
+// vim: filetype=groovy
