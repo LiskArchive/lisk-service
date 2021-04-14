@@ -42,7 +42,6 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 const signals = require('../../../signals');
 
 const mysqlIndex = require('../../../indexdb/mysql');
-const waitForIt = require('../../../waitForIt');
 const blocksIndexSchema = require('./schema/blocks');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
@@ -384,7 +383,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 };
 
 const init = async () => {
-	const blocksDB = await getBlocksIndex();
+	await getBlocksIndex();
 	try {
 		// Index genesis block
 		await indexGenesisBlock();
@@ -413,7 +412,7 @@ const init = async () => {
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 
-		const PAGE_SIZE = 25000;
+		const PAGE_SIZE = 100000;
 		const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
 		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 			const toHeight = currentHeight - (PAGE_SIZE * pageNum);
@@ -427,20 +426,25 @@ const init = async () => {
 			await indexMissingBlocks(fromHeight, toHeight);
 		}
 
-		// eslint-disable-next-line consistent-return
-		waitForIt(async () => {
-			/* eslint-disable no-await-in-loop */
-			const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
-			const numBlocksIndexed = await blocksDB.count();
-			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
-			/* eslint-enable no-await-in-loop */
-			if (numBlocksIndexed >= currentChainHeight && lastIndexedBlock.height >= currentChainHeight) {
-				setIndexReadyStatus(true);
-				return getIndexReadyStatus();
+		// eslint-disable-next-line consistent-return, no-await-in-loop
+		signals.get('newBlock').add(async () => {
+			if (!getIndexReadyStatus()) {
+				const blocksDB = await getBlocksIndex();
+
+				const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
+				const numBlocksIndexed = await blocksDB.count();
+				const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+
+				if (numBlocksIndexed >= currentChainHeight && lastIndexedBlock.height >= currentChainHeight) {
+					setIndexReadyStatus(true);
+					logger.info('Blocks index is now ready');
+					return getIndexReadyStatus();
+				}
+
+				setIndexReadyStatus(false);
+				logger.debug('Blocks index is not yet ready');
 			}
-			setIndexReadyStatus(false);
-			throw new Error('Block indexing still in progress...');
-		}, 5000);
+		});
 
 		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
