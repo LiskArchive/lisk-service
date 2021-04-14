@@ -49,6 +49,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const logger = Logger();
 const blocksCache = CacheRedis('blocks', config.endpoints.redis);
 
+const genesisHeight = 0;
 let finalizedHeight;
 
 const setFinalizedHeight = (height) => finalizedHeight = height;
@@ -295,11 +296,12 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const indexGenesisBlock = async genesisHeight => {
+const indexGenesisBlock = async () => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
 	const accountAddressesToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length > 16) // To filter out reclaim accounts
 		.map(account => account.address);
+	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
 	await indexAccountsbyAddress(accountAddressesToIndex);
 	await indexTransactions([genesisBlock]);
 };
@@ -356,11 +358,11 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 	if (indexedBlockCount < toHeight) {
 		const missingBlocksQueryStatement = `
 			SELECT
-				(SELECT COALESCE(MAX(b0.height)+1, 1) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+				(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
 				(b1.height - 1) AS 'to'
 			FROM blocks b1
 			WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
-				AND b1.height != 1
+				AND b1.height != ${genesisHeight}
 				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
 		`;
 
@@ -392,9 +394,8 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 const init = async () => {
 	await getBlocksIndex();
 	try {
-		const genesisHeight = 0;
 		// Index genesis block
-		await indexGenesisBlock(genesisHeight);
+		await indexGenesisBlock();
 
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
@@ -421,7 +422,7 @@ const init = async () => {
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
 
-		await indexMissingBlocks(genesisHeight, currentHeight);
+		await indexMissingBlocks(blockIndexLowerRange, currentHeight);
 		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');

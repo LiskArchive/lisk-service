@@ -22,7 +22,6 @@ const getReady = async broker => {
         lisk_accounts: 'core.accounts',
         lisk_blocks: 'core.blocks',
         lisk_transactions: 'core.transactions',
-        lisk_delegates: 'core.delegates',
         lisk_peers: 'core.peers',
     };
     try {
