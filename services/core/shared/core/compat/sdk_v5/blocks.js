@@ -438,15 +438,14 @@ const init = async () => {
 				if (numBlocksIndexed >= currentChainHeight && lastIndexedBlock.height >= currentChainHeight) {
 					setIndexReadyStatus(true);
 					logger.info('Blocks index is now ready');
-					return getIndexReadyStatus();
+					signals.get('blockIndexReady').dispatch(true);
+				} else {
+					setIndexReadyStatus(false);
+					logger.debug('Blocks index is not yet ready');
 				}
-
-				setIndexReadyStatus(false);
-				logger.debug('Blocks index is not yet ready');
+				return getIndexReadyStatus();
 			}
 		});
-
-		signals.get('blockIndexReady').dispatch(true);
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
