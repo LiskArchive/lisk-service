@@ -8,8 +8,6 @@ services:
     ports:
       - 4000:4000
       - 5001
-    networks:
-      - local_lisk_core
     restart: always
     entrypoint: ['sh', '/entrypoint.sh']
     environment:
