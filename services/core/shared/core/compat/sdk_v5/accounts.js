@@ -56,7 +56,7 @@ const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexS
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
-	accounts.map(account => {
+	accounts.forEach(account => {
 		account.username = account.dpos.delegate.username || null;
 		account.balance = account.token.balance;
 		return account;

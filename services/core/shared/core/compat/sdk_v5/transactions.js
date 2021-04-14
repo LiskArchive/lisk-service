@@ -78,7 +78,7 @@ const indexTransactions = async blocks => {
 				tx.recipientId = getBase32AddressFromHex(tx.asset.recipientAddress);
 				recipientAddressesToIndex.push(tx.asset.recipientAddress);
 			}
-			publicKeysToIndex.push(tx.senderPublicKey);
+			if (tx.senderPublicKey) publicKeysToIndex.push(tx.senderPublicKey);
 			return tx;
 		});
 		return transactions;

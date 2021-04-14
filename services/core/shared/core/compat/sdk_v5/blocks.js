@@ -66,7 +66,9 @@ const indexBlocks = async job => {
 	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const publicKeysToIndex = [];
-	blocks.map(block => publicKeysToIndex.push(block.generatorPublicKey));
+	blocks.forEach(block => {
+		if (block.generatorPublicKey) publicKeysToIndex.push(block.generatorPublicKey);
+	});
 	await blocksDB.upsert(blocks);
 	await indexAccountsbyPublicKey(publicKeysToIndex);
 	await indexTransactions(blocks);
@@ -370,6 +372,8 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 		for (let i = 0; i < missingBlocksRanges.length; i++) {
 			const { from, to } = missingBlocksRanges[i];
 
+			logger.info(`Attempting to cache missing blocks ${from}-${to}`);
+
 			// eslint-disable-next-line no-await-in-loop
 			await buildIndex(from, to);
 		}
@@ -415,13 +419,11 @@ const init = async () => {
 		}
 
 		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
-
 		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
 		if (blockIndexLowerRange < lowestIndexedHeight) {
 			// For when the index is partially built
 			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
 		}
-
 		const PAGE_SIZE = 100000;
 		const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
 		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
@@ -429,7 +431,6 @@ const init = async () => {
 			const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
 				? (toHeight - PAGE_SIZE)
 				: blockIndexLowerRange;
-
 			// eslint-disable-next-line no-await-in-loop
 			await indexMissingBlocks(fromHeight, toHeight);
 		}
