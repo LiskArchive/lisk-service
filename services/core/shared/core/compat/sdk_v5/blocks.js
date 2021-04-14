@@ -376,8 +376,10 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 
 			logger.info(`Attempting to cache missing blocks ${from}-${to}`);
 
-			// eslint-disable-next-line no-await-in-loop
+			/* eslint-disable no-await-in-loop */
+			if (from === genesisHeight) await indexGenesisBlock();
 			await buildIndex(from, to);
+			/* eslint-enable no-await-in-loop */
 		}
 	}
 };
@@ -430,12 +432,12 @@ const init = async () => {
 		signals.get('newBlock').add(async () => {
 			if (!getIndexReadyStatus()) {
 				const blocksDB = await getBlocksIndex();
-
 				const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
 				const numBlocksIndexed = await blocksDB.count();
 				const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
-				if (numBlocksIndexed >= currentChainHeight && lastIndexedBlock.height >= currentChainHeight) {
+				if (numBlocksIndexed >= currentChainHeight
+					&& lastIndexedBlock.height >= currentChainHeight - 1) {
 					setIndexReadyStatus(true);
 					logger.info('Blocks index is now ready');
 					signals.get('blockIndexReady').dispatch(true);
