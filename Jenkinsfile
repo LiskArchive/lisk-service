@@ -117,6 +117,7 @@ pipeline {
 		}
 		cleanup {
 			dir('./docker') { sh "make -f ${Makefile} mrproper" }
+			sh 'docker rmi $(docker images | grep "^<none>" | awk \'{print $3}\')'
 		}
 	}
 }
