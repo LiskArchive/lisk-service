@@ -424,12 +424,13 @@ const init = async () => {
 
 		const PAGE_SIZE = 100000;
 		const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
-		for (let pageNum = 0; i < numOfPages; pageNum++) {
+		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 			const toHeight = currentHeight - (PAGE_SIZE * pageNum);
 			const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
 				? (toHeight - PAGE_SIZE)
 				: blockIndexLowerRange;
 
+			// eslint-disable-next-line no-await-in-loop
 			await indexMissingBlocks(fromHeight, toHeight);
 		}
 		signals.get('blockIndexReady').dispatch(true);
