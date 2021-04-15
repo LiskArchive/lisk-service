@@ -58,6 +58,27 @@ pipeline {
 				}
 			}
 		}
+		stage ('Check linting') {
+			steps {
+				nvm(getNodejsVersion()) {
+					sh 'npm run eslint'
+				}
+			}
+		}
+		stage('Perform unit tests') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./services/core') { sh "npm run test:unit" }
+				}
+			}
+		}
+		stage('Perform framework unit tests') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./framework') { sh "npm run test:unit" }
+				}
+			}
+		}
 		stage('Run microservices') {
 			steps {
 				ansiColor('xterm') {
@@ -65,11 +86,11 @@ pipeline {
 						sh 'pm2 start --silent ecosystem.jenkins.config.js'
 					}
 				}
+				sleep(30) // Replace it with readiness check
 			}
 		}
-		stage('Run integration tests') {
+		stage('Perform integration tests') {
 			steps {
-				sleep(30)
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
 						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
@@ -79,8 +100,9 @@ pipeline {
 		}
 	}
 	post {
-		// failure {
-		// }
+		failure {
+			echo 'Failed to run the pipeline'
+		}
 		cleanup {
 			echo 'Cleaning up...'
 
