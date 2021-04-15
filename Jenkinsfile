@@ -3,7 +3,7 @@
 LISK_CORE_HTTP_PORT = 4000
 LISK_CORE_WS_PORT = 5001
 MYSQL_PORT = 3306
-REDIS_PORT = 6379
+REDIS_PORT = 6381
 
 def checkOpenPort(nPort) {
 	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
