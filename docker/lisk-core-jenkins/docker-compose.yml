@@ -7,7 +7,7 @@ services:
       - ./entrypoint.sh:/entrypoint.sh
     ports:
       - "4000:4000"
-      - "5001"
+      - "5001:5001"
     restart: always
     entrypoint: ['sh', '/entrypoint.sh']
     environment:
