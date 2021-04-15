@@ -447,7 +447,7 @@ const init = async () => {
 					'currentChainHeight', currentChainHeight,
 				);
 				if (numBlocksIndexed >= currentChainHeight
-					&& lastIndexedBlock.height >= currentChainHeight - 1) {
+					&& lastIndexedBlock.height >= currentChainHeight) {
 					setIndexReadyStatus(true);
 					logger.info('Blocks index is now ready');
 					signals.get('blockIndexReady').dispatch(true);
