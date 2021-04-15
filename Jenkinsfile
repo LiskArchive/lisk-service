@@ -1,6 +1,7 @@
 @Library('lisk-jenkins') _
 
-LISK_CORE_PORT = 4000
+LISK_CORE_HTTP_PORT = 4000
+LISK_CORE_WS_PORT = 5001
 MYSQL_PORT = 3306
 REDIS_PORT = 6379
 
@@ -34,7 +35,7 @@ pipeline {
 		stage ('Run required services') {
 			steps {
 				script {
-					runServiceIfMissing('Lisk Core', './docker/lisk-core-jenkins', LISK_CORE_PORT)
+					runServiceIfMissing('Lisk Core', './docker/lisk-core-jenkins', LISK_CORE_WS_PORT)
 					runServiceIfMissing('MySQL', './docker/mysql', MYSQL_PORT)
 					runServiceIfMissing('Redis', './docker/redis', REDIS_PORT)
 
@@ -57,13 +58,28 @@ pipeline {
 				}
 			}
 		}
+		stage('Run microservices') {
+			steps {
+				ansiColor('xterm') {
+					nvm(getNodejsVersion()) {
+						sh 'pm2 start ecosystem.jenkins.config.js'
+					}
+					dir('./docker') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} make -f ${Makefile} up" }
+				}
+			}
+		}
 	}
 	post {
 		// failure {
 		// }
 		cleanup {
 			echo 'Cleaning up...'
-			// dir('./docker/lisk-core-jenkins') { sh "make down" }
+
+			nvm(getNodejsVersion()) {
+				sh 'pm2 stop ecosystem.jenkins.config.js'
+			}
+
+			dir('./docker/lisk-core-jenkins') { sh "make down" }
 			// dir('./docker/mysql') { sh "make down" }
 			// dir('./docker/redis') { sh "make down" }
 		}
