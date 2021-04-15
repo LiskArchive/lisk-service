@@ -432,7 +432,7 @@ const init = async () => {
 			await indexMissingBlocks(fromHeight, toHeight);
 		}
 
-		// eslint-disable-next-line consistent-return, no-await-in-loop
+		// eslint-disable-next-line no-await-in-loop
 		signals.get('newBlock').add(async () => {
 			logger.debug('============== Checking blocks index status ==============');
 			if (!getIndexReadyStatus()) {
@@ -448,11 +448,10 @@ const init = async () => {
 					logger.info('Blocks index is now ready');
 					signals.get('blockIndexReady').dispatch(true);
 				} else {
-					setIndexReadyStatus(false);
 					logger.debug('Blocks index is not yet ready');
 				}
-				return getIndexReadyStatus();
 			}
+			return getIndexReadyStatus();
 		});
 	} catch (err) {
 		logger.warn('Unable to update block index');
