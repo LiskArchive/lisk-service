@@ -42,9 +42,9 @@ pipeline {
 			steps {
 				script {
 					echoBanner(STAGE_NAME)
-					runServiceIfMissing('Lisk Core', './docker/lisk-core-jenkins', LISK_CORE_WS_PORT)
-					runServiceIfMissing('MySQL', './docker/mysql', MYSQL_PORT)
-					runServiceIfMissing('Redis', './docker/redis', REDIS_PORT)
+					runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
+					runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+					runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 
 					// Install PM2
 					nvm(getNodejsVersion()) {
@@ -123,9 +123,9 @@ pipeline {
 				sh 'pm2 stop --silent ecosystem.jenkins.config.js'
 			}
 
-			dir('./docker/lisk-core-jenkins') { sh "make down" }
-			dir('./docker/mysql') { sh "make down" }
-			// dir('./docker/redis') { sh "make down" }
+			dir('./jenkins/lisk-core') { sh "make down" }
+			dir('./jenkins/mysql') { sh "make down" }
+			dir('./jenkins/redis') { sh "make down" }
 		}
 	}
 }
