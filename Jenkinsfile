@@ -62,9 +62,18 @@ pipeline {
 			steps {
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
-						sh 'pm2 start ecosystem.jenkins.config.js'
+						sh 'pm2 start --silent ecosystem.jenkins.config.js'
 					}
-					dir('./docker') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} make -f ${Makefile} up" }
+				}
+			}
+		}
+		stage('Run integration tests') {
+			steps {
+				sleep(30)
+				ansiColor('xterm') {
+					nvm(getNodejsVersion()) {
+						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
+					}
 				}
 			}
 		}
@@ -76,11 +85,11 @@ pipeline {
 			echo 'Cleaning up...'
 
 			nvm(getNodejsVersion()) {
-				sh 'pm2 stop ecosystem.jenkins.config.js'
+				sh 'pm2 stop --silent ecosystem.jenkins.config.js'
 			}
 
 			dir('./docker/lisk-core-jenkins') { sh "make down" }
-			// dir('./docker/mysql') { sh "make down" }
+			dir('./docker/mysql') { sh "make down" }
 			// dir('./docker/redis') { sh "make down" }
 		}
 	}
