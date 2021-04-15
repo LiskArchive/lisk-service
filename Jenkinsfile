@@ -22,6 +22,12 @@ def runServiceIfMissing(svcName, path, nPort) {
 	}
 }
 
+def echoBanner(msg) {
+	echo '----------------------------------------------------------------------'
+	echo msg
+	echo '----------------------------------------------------------------------'
+}
+
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
@@ -35,6 +41,7 @@ pipeline {
 		stage ('Run required services') {
 			steps {
 				script {
+					echoBanner(STAGE_NAME)
 					runServiceIfMissing('Lisk Core', './docker/lisk-core-jenkins', LISK_CORE_WS_PORT)
 					runServiceIfMissing('MySQL', './docker/mysql', MYSQL_PORT)
 					runServiceIfMissing('Redis', './docker/redis', REDIS_PORT)
@@ -48,6 +55,7 @@ pipeline {
 		}
 		stage ('Build deps') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./') { sh 'npm ci' }
 					dir('./framework') { sh 'npm ci' }
@@ -60,6 +68,7 @@ pipeline {
 		}
 		stage ('Check linting') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					sh 'npm run eslint'
 				}
@@ -67,6 +76,7 @@ pipeline {
 		}
 		stage('Perform unit tests') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./services/core') { sh "npm run test:unit" }
 				}
@@ -74,6 +84,7 @@ pipeline {
 		}
 		stage('Perform framework unit tests') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./framework') { sh "npm run test:unit" }
 				}
@@ -81,6 +92,7 @@ pipeline {
 		}
 		stage('Run microservices') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
 						sh 'pm2 start --silent ecosystem.jenkins.config.js'
@@ -91,6 +103,7 @@ pipeline {
 		}
 		stage('Perform integration tests') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
 						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
@@ -101,10 +114,10 @@ pipeline {
 	}
 	post {
 		failure {
-			echo 'Failed to run the pipeline'
+			script { echoBanner('Failed to run the pipeline') }
 		}
 		cleanup {
-			echo 'Cleaning up...'
+			script { echoBanner('Cleaning up...') }
 
 			nvm(getNodejsVersion()) {
 				sh 'pm2 stop --silent ecosystem.jenkins.config.js'
