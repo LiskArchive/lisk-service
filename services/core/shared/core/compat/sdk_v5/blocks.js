@@ -287,8 +287,6 @@ const getBlocks = async params => {
 		blocks.data = await getLastBlock();
 	}
 
-	indexNewBlocks(blocks);
-
 	blocks.meta = {
 		count: blocks.data.length,
 		offset: params.offset,
@@ -386,6 +384,12 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 
 const init = async () => {
 	await getBlocksIndex();
+
+	signals.get('newBlock').add(async (newBlock) => {
+		logger.debug(`============== Indexing newBlock ${newBlock.height} ==============`);
+		await indexNewBlocks({ data: [newBlock] });
+	});
+
 	try {
 		// Index genesis block
 		await indexGenesisBlock();
@@ -430,12 +434,14 @@ const init = async () => {
 
 		// eslint-disable-next-line consistent-return, no-await-in-loop
 		signals.get('newBlock').add(async () => {
+			logger.debug('============== Checking blocks index status ==============');
 			if (!getIndexReadyStatus()) {
 				const blocksDB = await getBlocksIndex();
 				const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
 				const numBlocksIndexed = await blocksDB.count();
 				const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
+				logger.debug('lastIndexedBlock', lastIndexedBlock.height, 'currentChainHeight', currentChainHeight);
 				if (numBlocksIndexed >= currentChainHeight
 					&& lastIndexedBlock.height >= currentChainHeight - 1) {
 					setIndexReadyStatus(true);
