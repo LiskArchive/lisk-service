@@ -434,7 +434,7 @@ const init = async () => {
 
 		// eslint-disable-next-line no-await-in-loop
 		signals.get('newBlock').add(async () => {
-			logger.debug(`============== Checking blocks index ready status ==============`);
+			logger.debug('============== Checking blocks index ready status ==============');
 			if (!getIndexReadyStatus()) {
 				const blocksDB = await getBlocksIndex();
 				const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
