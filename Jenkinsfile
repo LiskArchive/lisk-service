@@ -37,6 +37,23 @@ pipeline {
 					runServiceIfMissing('Lisk Core', './docker/lisk-core-jenkins', LISK_CORE_PORT)
 					runServiceIfMissing('MySQL', './docker/mysql', MYSQL_PORT)
 					runServiceIfMissing('Redis', './docker/redis', REDIS_PORT)
+
+					// Install PM2
+					nvm(getNodejsVersion()) {
+						sh 'npm i -g pm2'
+					}
+				}
+			}
+		}
+		stage ('Build deps') {
+			steps {
+				nvm(getNodejsVersion()) {
+					dir('./') { sh 'npm ci' }
+					dir('./framework') { sh 'npm ci' }
+					dir('./services/core') { sh 'npm ci' }
+					dir('./services/gateway') { sh 'npm ci' }
+					dir('./services/template') { sh 'npm ci' }
+					dir('./tests') { sh "npm ci" }
 				}
 			}
 		}
