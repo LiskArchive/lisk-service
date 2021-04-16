@@ -31,7 +31,9 @@ module.exports = {
 			autorestart: true,
 			env: {
 				PORT: '9901',
-				SERVICE_BROKER: 'redis://localhost:6379/0',
+
+				// --- Remember to set the properties below
+				// SERVICE_BROKER: 'redis://localhost:6379/0',
 			},
 		},
 		{
@@ -48,20 +50,21 @@ module.exports = {
 			instances: 1,
 			autorestart: true,
 			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
-				LISK_CORE_WS: 'ws://localhost:4002',
-				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
-				SERVICE_CORE_MYSQL: 'mysql://root@localhost:3306/sdk_v5_betanet',
+				// --- Remember to set the properties below
+				// SERVICE_BROKER: 'redis://localhost:6379/0',
+				// LISK_CORE_WS: 'ws://localhost:4002',
+				// SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
+				// SERVICE_CORE_MYSQL: 'mysql://root@localhost:3306/sdk_v5_betanet',
 				LISK_STATIC: 'https://static-data.lisk.io',
 				GEOIP_JSON: 'https://geoip.lisk.io/json',
 				ENABLE_TRANSACTION_STATS: 'true',
-                TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '40',
-                TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
-                INDEX_N_BLOCKS: '12000',
-                ENABLE_FEE_ESTIMATOR_QUICK: 'false',
-                ENABLE_FEE_ESTIMATOR_FULL: 'false',
-                FEE_EST_COLD_START_BATCH_SIZE: '1',
-                FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
+				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '40',
+				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
+				INDEX_N_BLOCKS: '12000',
+				ENABLE_FEE_ESTIMATOR_QUICK: 'false',
+				ENABLE_FEE_ESTIMATOR_FULL: 'false',
+				FEE_EST_COLD_START_BATCH_SIZE: '1',
+				FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
 			},
 		},
 	],
