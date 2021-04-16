@@ -20,7 +20,7 @@ pipeline {
 		// 	steps {
 		// 		ansiColor('xterm') {
 		// 			dir('docker') {
-		// 				sh 'make mrproper'
+		// 				sh 'make down'
 		// 				sh 'make up-core2-testnet'
 		// 			}
 		// 		}
@@ -45,7 +45,7 @@ pipeline {
 			steps {
 				ansiColor('xterm') {
 					dir('./') {
-						sh 'make mrproper'
+						sh 'make down'
 						sh 'make up-custom-core3-cd'
 					}
 				}
