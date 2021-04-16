@@ -181,16 +181,19 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 		async accountInfo => {
 			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
-			const {
-				rewards: existingRewards = BigInt('0'),
-				producedBlocks: forgedBlocksCount = 0,
-			} = await getIndexedAccountInfo({ publicKey: accountInfo.publicKey });
+			const indexedAccountInfo = await getIndexedAccountInfo({ publicKey: accountInfo.publicKey });
+			if (indexedAccountInfo) {
+				const {
+					rewards: existingRewards = BigInt('0'),
+					producedBlocks: forgedBlocksCount = 0,
+				} = indexedAccountInfo;
 
-			account.rewards = accountInfo.reward
-				? BigInt(accountInfo.reward) + existingRewards
-				: null;
+				account.rewards = accountInfo.reward
+					? BigInt(accountInfo.reward) + existingRewards
+					: null;
 
-			account.producedBlocks = forgedBlocksCount + 1;
+				if (accountInfo.isForger) account.producedBlocks = forgedBlocksCount + 1;
+			}
 			account.publicKey = accountInfo.publicKey;
 			return account;
 		},

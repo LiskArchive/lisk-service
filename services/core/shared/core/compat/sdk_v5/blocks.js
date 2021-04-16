@@ -70,6 +70,7 @@ const indexBlocks = async job => {
 		if (block.generatorPublicKey) generatorPkInfoArray.push({
 			publicKey: block.generatorPublicKey,
 			reward: block.reward,
+			isForger: true,
 		});
 	});
 	await blocksDB.upsert(blocks);
