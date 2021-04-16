@@ -59,10 +59,6 @@ pipeline {
 					nvm(getNodejsVersion()) {
 						sh 'npm i -g pm2'
 					}
-
-					// Show env exports
-					echo 'Printing all exports'
-					sh 'export'
 				}
 			}
 		}
