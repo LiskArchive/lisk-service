@@ -17,8 +17,6 @@ services:
     env_file:
       - ./lisk-service/env/common.env
       - ./lisk-service/env/core.env
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
 
   redis_core:
     image: redis:5-alpine
