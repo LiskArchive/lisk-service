@@ -110,6 +110,7 @@ pipeline {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
 				waitForHttp('http://localhost:9901/api/ready')
+				sleep(30) // Workaround to increase CI phase stability
 			}
 		}
 		stage('Perform integration tests') {
