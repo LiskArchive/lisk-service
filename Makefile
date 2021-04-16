@@ -3,16 +3,36 @@ all: build up
 
 compose := docker-compose \
 	-f docker-compose.yml \
-	-f lisk_service/docker-compose.core.yml \
-	-f lisk_service/docker-compose.gateway.yml \
-	-f lisk_service/docker-compose.gateway-ports.yml \
-	-f docker-compose.mainnet.yml
+	-f lisk-service/docker-compose.core.yml \
+	-f lisk-service/docker-compose.gateway.yml \
+	-f lisk-service/docker-compose.gateway-ports.yml
 
-up:
-	cd ./docker && $(compose) up --detach
+up: up-core3
+
+up-mainnet: up-custom-core2-mainnet
+
+up-testnet: up-custom-core2-testnet
+
+up-core3: up-custom-core3-default
+
+up-custom-%:
+	cd ./docker && $(compose) --env-file ./network/$*.env up --detach
 
 down:
 	cd ./docker && $(compose) down --volumes --remove-orphans
+
+ready:
+	cd ./docker && $(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/ready' >/dev/null
+
+test: test-functional
+
+test-functional:
+	$(compose) exec -T tests npm run test:functional
+
+test-integration:
+	$(compose) exec -T tests npm run test:integration:APIv2:SDKv5
+
+cli: cli-gateway
 
 cli-%:
 	cd ./docker && $(compose) exec $* /bin/sh

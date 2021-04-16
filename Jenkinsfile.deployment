@@ -20,8 +20,8 @@ pipeline {
 			steps {
 				ansiColor('xterm') {
 					dir('docker') {
-						sh 'make -f Makefile.deployment mrproper'
-						sh 'make -f Makefile.deployment up'
+						sh 'make mrproper'
+						sh 'make up-core2-testnet'
 					}
 				}
 			}
@@ -40,12 +40,13 @@ pipeline {
 			environment {
 				ENABLE_HTTP_API='http-status,http-version2'
 				ENABLE_WS_API='blockchain,rpc-v2'
+				LISK_CORE_WS='ws://host.docker.internal:5001'
 			}
 			steps {
 				ansiColor('xterm') {
-					dir('docker') {
-						sh 'make -f Makefile.deployment.betanet5 mrproper'
-						sh 'make -f Makefile.deployment.betanet5 up'
+					dir('./') {
+						sh 'make mrproper'
+						sh 'make up-core3-cd'
 					}
 				}
 			}
