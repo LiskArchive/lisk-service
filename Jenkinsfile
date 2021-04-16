@@ -43,8 +43,8 @@ pipeline {
 		timeout(time: 8, unit: 'MINUTES')
 	}
 	environment {
-		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
-		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test,rpc-v2'
+		ENABLE_HTTP_API='http-status,http-test,http-version2'
+		ENABLE_WS_API='blockchain,rpc-test,rpc-v2'
 	}
 	stages {
 		stage ('Run required services') {
