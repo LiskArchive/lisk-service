@@ -7,11 +7,13 @@ compose := docker-compose \
 	-f lisk-service/docker-compose.gateway.yml \
 	-f lisk-service/docker-compose.gateway-ports.yml
 
-up: up-betanet5
+up: up-core3
 
-up-testnet: up-custom-testnet
+up-mainnet: up-custom-core2-mainnet
 
-up-betanet5: up-custom-betanet5
+up-testnet: up-custom-core2-testnet
+
+up-core3: up-custom-core3-default
 
 up-custom-%:
 	cd ./docker && $(compose) --env-file ./network/$*.env up --detach

@@ -12,6 +12,7 @@ services:
       - core_network
     restart: always
     environment:
+      - LISK_CORE_HTTP=${LISK_CORE_HTTP} # legacy (core2)
       - LISK_CORE_WS=${LISK_CORE_WS}
     env_file:
       - ./lisk-service/env/common.env

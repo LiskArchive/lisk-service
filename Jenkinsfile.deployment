@@ -21,7 +21,7 @@ pipeline {
 				ansiColor('xterm') {
 					dir('docker') {
 						sh 'make mrproper'
-						sh 'make up-testnet'
+						sh 'make up-core2-testnet'
 					}
 				}
 			}
@@ -46,7 +46,7 @@ pipeline {
 				ansiColor('xterm') {
 					dir('./') {
 						sh 'make mrproper'
-						sh 'make up-betanet5-cd'
+						sh 'make up-core3-cd'
 					}
 				}
 			}
