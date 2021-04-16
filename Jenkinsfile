@@ -28,6 +28,15 @@ def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 }
 
+def checkHttp(url) {
+	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
+	return (result == 0)
+}
+
+def waitForHttp(url) {
+	waitUntil { script { return checkHttp(url) } }
+}
+
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
@@ -50,6 +59,10 @@ pipeline {
 					nvm(getNodejsVersion()) {
 						sh 'npm i -g pm2'
 					}
+
+					// Show env exports
+					echo 'Printing all exports'
+					sh 'export'
 				}
 			}
 		}
@@ -93,12 +106,10 @@ pipeline {
 		stage('Run microservices') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				ansiColor('xterm') {
-					nvm(getNodejsVersion()) {
-						sh 'pm2 start --silent ecosystem.jenkins.config.js'
-					}
+				nvm(getNodejsVersion()) {
+					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
-				sleep(30) // Replace it with readiness check
+				waitForHttp('http://localhost:9901/api/ready')
 			}
 		}
 		stage('Perform integration tests') {
