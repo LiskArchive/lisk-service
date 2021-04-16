@@ -17,23 +17,23 @@ const config = require('../../config');
 const { api } = require('../../helpers/api');
 
 const {
-    statusSchema,
-    readySchema,
+	statusSchema,
+	readySchema,
 } = require('../../schemas/status.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api`;
 
 describe('Status reporting', () => {
-    describe(`GET ${endpoint}`, () => {
-        it('Report status -> 200 OK', async () => {
-            const response = await api.get(`${endpoint}/status`);
-            expect(response).toMap(statusSchema);
-        });
+	describe(`GET ${endpoint}`, () => {
+		it('Report status -> 200 OK', async () => {
+			const response = await api.get(`${endpoint}/status`);
+			expect(response).toMap(statusSchema);
+		});
 
-        it('Report readiness -> 200 OK', async () => {
-            const response = await api.get(`${endpoint}/ready`);
-            expect(response).toMap(readySchema);
-        });
-    });
+		it('Report readiness -> 200 OK', async () => {
+			const response = await api.get(`${endpoint}/ready`);
+			expect(response).toMap(readySchema);
+		});
+	});
 });

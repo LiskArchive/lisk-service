@@ -34,7 +34,7 @@ def checkHttp(url) {
 }
 
 def waitForHttp(url) {
-	waitUntil { script { return checkHttp(url) } }
+	waitUntil { script { return (checkHttp(url) == true) } }
 }
 
 pipeline {
@@ -51,6 +51,7 @@ pipeline {
 			steps {
 				script {
 					echoBanner(STAGE_NAME)
+
 					runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
 					runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
 					runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
