@@ -389,7 +389,7 @@ const init = async () => {
 	await getBlocksIndex();
 
 	signals.get('newBlock').add(async (newBlock) => {
-		logger.debug(`============== Indexing newBlock ${newBlock.height} ==============`);
+		logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
 		await indexNewBlocks({ data: [newBlock] });
 	});
 
@@ -437,16 +437,20 @@ const init = async () => {
 
 		// eslint-disable-next-line no-await-in-loop
 		signals.get('newBlock').add(async () => {
-			logger.debug('============== Checking blocks index status ==============');
+			logger.debug('============== Checking blocks index ready status ==============');
 			if (!getIndexReadyStatus()) {
 				const blocksDB = await getBlocksIndex();
 				const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
 				const numBlocksIndexed = await blocksDB.count();
 				const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
-				logger.debug('lastIndexedBlock', lastIndexedBlock.height, 'currentChainHeight', currentChainHeight);
+				logger.debug(
+					'numBlocksIndexed', numBlocksIndexed,
+					'lastIndexedBlock', lastIndexedBlock.height,
+					'currentChainHeight', currentChainHeight,
+				);
 				if (numBlocksIndexed >= currentChainHeight
-					&& lastIndexedBlock.height >= currentChainHeight - 1) {
+					&& lastIndexedBlock.height >= currentChainHeight) {
 					setIndexReadyStatus(true);
 					logger.info('Blocks index is now ready');
 					signals.get('blockIndexReady').dispatch(true);
