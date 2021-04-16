@@ -10,7 +10,7 @@ services:
       - services_network
     restart: always
     env_file:
-      - ./lisk_service/env/common.env
+      - ./lisk-service/env/common.env
 
   gateway:
     depends_on:

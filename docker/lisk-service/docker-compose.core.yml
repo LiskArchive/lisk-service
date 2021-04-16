@@ -11,9 +11,11 @@ services:
       - services_network
       - core_network
     restart: always
+    environment:
+      - LISK_CORE_WS=${LISK_CORE_WS}
     env_file:
-      - ./lisk_service/env/common.env
-      - ./lisk_service/env/core.env
+      - ./lisk-service/env/common.env
+      - ./lisk-service/env/core.env
     # extra_hosts:
     #   - "host.docker.internal:host-gateway"
 
@@ -36,7 +38,7 @@ services:
     networks:
       - core_network
     env_file:
-      - ./lisk_service/env/core.env
+      - ./lisk-service/env/mysql.env
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
       timeout: 20s
