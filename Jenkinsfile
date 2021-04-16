@@ -88,15 +88,8 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./services/core') { sh "npm run test:unit" }
-				}
-			}
-		}
-		stage('Perform framework unit tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
 					dir('./framework') { sh "npm run test:unit" }
+					dir('./services/core') { sh "npm run test:unit" }
 				}
 			}
 		}
