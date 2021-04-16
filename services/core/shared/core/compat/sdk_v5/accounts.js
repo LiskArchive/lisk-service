@@ -142,12 +142,13 @@ const resolveDelegateInfo = async accounts => {
 				};
 
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const {
-						rewards,
-						producedBlocks,
-					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					account.rewards = rewards;
-					account.producedBlocks = producedBlocks;
+					// TODO: Enable after fixing the aggregation issue
+					// const {
+					// 	rewards,
+					// 	producedBlocks,
+					// } = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					// account.rewards = rewards;
+					// account.producedBlocks = producedBlocks;
 				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
