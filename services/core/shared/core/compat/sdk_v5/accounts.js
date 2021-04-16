@@ -45,11 +45,9 @@ const coreApi = require('./coreApi');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
-const blocksIndexSchema = require('./schema/blocks');
 const accountsIndexSchema = require('./schema/accounts');
 const transactionsIndexSchema = require('./schema/transactions');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
@@ -133,8 +131,6 @@ const resolveAccountsInfo = async accounts => {
 };
 
 const resolveDelegateInfo = async accounts => {
-	const blocksDB = await getBlocksIndex();
-
 	const punishmentHeight = 780000;
 	accounts = await BluebirdPromise.map(
 		accounts,
@@ -146,13 +142,12 @@ const resolveDelegateInfo = async accounts => {
 				};
 
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const [{ total }] = await blocksDB.find({
-						generatorPublicKey: account.publicKey, aggregate: 'reward',
-					});
-					account.rewards = total;
-					account.producedBlocks = await blocksDB.count({
-						generatorPublicKey: account.publicKey,
-					});
+					const {
+						rewards,
+						producedBlocks,
+					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					account.rewards = rewards;
+					account.producedBlocks = producedBlocks;
 				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
@@ -180,16 +175,26 @@ const resolveDelegateInfo = async accounts => {
 	return accounts;
 };
 
-const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
+const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsToIndex = await BluebirdPromise.map(
-		publicKeysToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
-		async publicKey => {
-			const address = getHexAddressFromPublicKey(publicKey);
+		accountInfoArray,
+		async accountInfo => {
+			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
-			account.publicKey = publicKey;
+			const {
+				rewards: existingRewards = BigInt('0'),
+				producedBlocks: forgedBlocksCount = 0,
+			} = await getIndexedAccountInfo({ publicKey: accountInfo.publicKey });
+
+			account.rewards = accountInfo.reward
+				? BigInt(accountInfo.reward) + existingRewards
+				: null;
+
+			account.producedBlocks = forgedBlocksCount + 1;
+			account.publicKey = accountInfo.publicKey;
 			return account;
 		},
-		{ concurrency: publicKeysToIndex.length },
+		{ concurrency: accountInfoArray.length },
 	);
 	await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', { accounts: accountsToIndex });
 };

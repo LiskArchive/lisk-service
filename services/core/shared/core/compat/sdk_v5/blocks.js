@@ -65,12 +65,15 @@ const updateFinalizedHeight = async () => {
 const indexBlocks = async job => {
 	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const publicKeysToIndex = [];
-	blocks.forEach(block => {
-		if (block.generatorPublicKey) publicKeysToIndex.push(block.generatorPublicKey);
+	const generatorPkInfoArray = [];
+	blocks.forEach(async block => {
+		if (block.generatorPublicKey) generatorPkInfoArray.push({
+			publicKey: block.generatorPublicKey,
+			reward: block.reward,
+		});
 	});
 	await blocksDB.upsert(blocks);
-	await indexAccountsbyPublicKey(publicKeysToIndex);
+	await indexAccountsbyPublicKey(generatorPkInfoArray);
 	await indexTransactions(blocks);
 	await indexVotes(blocks);
 };
