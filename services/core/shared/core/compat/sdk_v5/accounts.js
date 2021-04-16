@@ -184,18 +184,20 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			const indexedAccountInfo = await getIndexedAccountInfo({ publicKey: accountInfo.publicKey });
 			if (indexedAccountInfo) {
 				const {
-					rewards: existingRewards = BigInt('0'),
-					producedBlocks: forgedBlocksCount = 0,
+					rewards: existingRewards,
+					producedBlocks: forgedBlocksCount,
 				} = indexedAccountInfo;
 
 				account.rewards = accountInfo.reward
-					? BigInt(accountInfo.reward) + existingRewards
+					? BigInt(accountInfo.reward) + BigInt(existingRewards || 0)
 					: null;
 
-				if (accountInfo.isForger) account.producedBlocks = forgedBlocksCount + 1;
+				account.producedBlocks = accountInfo.isForger
+					? (forgedBlocksCount || 0) + 1
+					: forgedBlocksCount;
 			}
 			account.publicKey = accountInfo.publicKey;
-			return account;
+			return parseToJSONCompatObj(account);
 		},
 		{ concurrency: accountInfoArray.length },
 	);
