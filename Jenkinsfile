@@ -1,16 +1,40 @@
 @Library('lisk-jenkins') _
 
-Makefile = 'Makefile.jenkins'
+LISK_CORE_HTTP_PORT = 4000
+LISK_CORE_WS_PORT = 5001
+MYSQL_PORT = 3306
+REDIS_PORT = 6381
 
-def waitForHttp() {
-	waitUntil {
-		script {
-			dir('./docker') {
-				def api_available = sh script: "make -f ${Makefile} ready", returnStatus: true
-				return (api_available == 0)
-			}
+def checkOpenPort(nPort) {
+	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
+	return (result == 0)
+}
+
+def runServiceIfMissing(svcName, path, nPort) {
+	if (checkOpenPort(nPort) == false) {
+		echo "${svcName} is not running, starting a new instance on port ${nPort}"
+		dir(path) { sh "make up" }
+		if (checkOpenPort(nPort) == false) { 
+			dir(path) { sh "make logs" }
+			currentBuild.result = "FAILURE"
+			throw new Exception("Failed to run ${svcName} instance")
 		}
 	}
+}
+
+def echoBanner(msg) {
+	echo '----------------------------------------------------------------------'
+	echo msg
+	echo '----------------------------------------------------------------------'
+}
+
+def checkHttp(url) {
+	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
+	return (result == 0)
+}
+
+def waitForHttp(url) {
+	waitUntil { script { return (checkHttp(url) == true) } }
 }
 
 pipeline {
@@ -19,12 +43,29 @@ pipeline {
 		timeout(time: 8, unit: 'MINUTES')
 	}
 	environment {
-		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status,http-test,http-version2'
-		ENABLE_WS_API='rpc,rpc-v1,blockchain,rpc-test,rpc-v2'
+		ENABLE_HTTP_API='http-status,http-test,http-version2'
+		ENABLE_WS_API='blockchain,rpc-test,rpc-v2'
 	}
 	stages {
+		stage ('Run required services') {
+			steps {
+				script {
+					echoBanner(STAGE_NAME)
+
+					runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
+					runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+					runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
+
+					// Install PM2
+					nvm(getNodejsVersion()) {
+						sh 'npm i -g pm2'
+					}
+				}
+			}
+		}
 		stage ('Build deps') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./') { sh 'npm ci' }
 					dir('./framework') { sh 'npm ci' }
@@ -35,115 +76,58 @@ pipeline {
 				}
 			}
 		}
-
 		stage ('Check linting') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					sh 'npm run eslint'
 				}
 			}
 		}
-
-		stage('Run services unit tests') {
+		stage('Perform unit tests') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./services/core') {
-						sh "npm run test:unit"
-					}
+					dir('./framework') { sh "npm run test:unit" }
+					dir('./services/core') { sh "npm run test:unit" }
 				}
 			}
 		}
-
-		stage('Run framework unit tests') {
-			steps {
-				nvm(getNodejsVersion()) {
-					dir('./framework') {
-						sh "npm run test:unit"
-					}
-				}
-			}
-		}
-
-		stage('Build docker images') {
-			steps {
-				sh 'make build-core'
-				sh 'make build-gateway'
-				sh 'make build-template'
-				sh 'make build-tests'
-			}
-		}
-
 		stage('Run microservices') {
 			steps {
+				script { echoBanner(STAGE_NAME) }
+				nvm(getNodejsVersion()) {
+					sh 'pm2 start --silent ecosystem.jenkins.config.js'
+				}
+				waitForHttp('http://localhost:9901/api/ready')
+				sleep(30) // Workaround to increase CI phase stability
+			}
+		}
+		stage('Perform integration tests') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
-					dir('./docker') { sh "ENABLE_HTTP_API=${ENABLE_HTTP_API} ENABLE_WS_API=${ENABLE_WS_API} make -f ${Makefile} up" }
+					nvm(getNodejsVersion()) {
+						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
+					}
 				}
 			}
 		}
-
-		stage('Check API gateway status') {
-			steps {
-				timeout(time: 3, unit: 'MINUTES') {
-					waitForHttp()
-				}
-			}
-		}
-
-		stage('Run functional tests') {
-			steps {
-				ansiColor('xterm') {
-					dir('./docker') { sh "make -f ${Makefile} test-functional" }
-				}
-			}
-		}
-
-		stage('Run integration tests') {
-			steps {
-				dir('./docker') {
-					sh '''#!/bin/bash -xe
-						make -f Makefile.core.jenkins down
-						make -f Makefile.core.jenkins up
-						sleep 30
-						readyblocks=1
-						readyAccounts=1
-						retries=0
-						set +e
-						while [ "$readyblocks" -ne 0 ] || [ "$readyAccounts" -ne 0 ]; do
-							curl --fail --verbose http://127.0.0.1:9901/api/v2/blocks
-							readyblocks=$?
-							curl --fail --verbose http://127.0.0.1:9901/api/v2/accounts
-							readyAccounts=$?
-							sleep 10
-							let retries++
-							if [ $retries = 10 ]; then
-								break
-							fi
-						done
-						set -e
-						if [ $retries -ge 10 ]; then
-							exit 1
-						fi
-						make -f Makefile.core.jenkins test-integration
-					'''
-				}
-			}
-		}
-
-		// stage('Run integration tests') {
-		// 	steps {
-		// 		dir('./docker') { sh "make -f ${Makefile} test-integration" }
-		// 	}
-		// }
 	}
 	post {
 		failure {
-			// dir('./docker') { sh "make -f ${Makefile} logs" }
-			dir('./docker') { sh "make -f ${Makefile} logs-template" }
-			dir('./docker') { sh "make -f ${Makefile} logs-gateway" }
-			dir('./docker') { sh "make -f ${Makefile} logs-core" }
+			script { echoBanner('Failed to run the pipeline') }
 		}
 		cleanup {
-			dir('./docker') { sh "make -f ${Makefile} mrproper" }
+			script { echoBanner('Cleaning up...') }
+
+			nvm(getNodejsVersion()) {
+				sh 'pm2 stop --silent ecosystem.jenkins.config.js'
+			}
+
+			dir('./jenkins/lisk-core') { sh "make down" }
+			dir('./jenkins/mysql') { sh "make down" }
+			dir('./jenkins/redis') { sh "make down" }
 		}
 	}
 }

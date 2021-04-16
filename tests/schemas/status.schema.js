@@ -16,27 +16,26 @@
 import Joi from 'joi';
 
 const statusSchema = {
-    build: Joi.string().required(),
-    description: Joi.string().required(),
-    name: Joi.string().required(),
-    version: Joi.string().required(),
-    networkId: Joi.string().required(),
-    networkNodeVersion: Joi.string().optional(),
+	build: Joi.string().required(),
+	description: Joi.string().required(),
+	name: Joi.string().required(),
+	version: Joi.string().required(),
+	networkId: Joi.string().required(),
+	networkNodeVersion: Joi.string().optional(),
 };
 
 const services = {
-    lisk_accounts: Joi.boolean().required(),
-    lisk_blocks: Joi.boolean().required(),
-    lisk_transactions: Joi.boolean().required(),
-    lisk_peers: Joi.boolean().required(),
-    lisk_delegates: Joi.boolean().required(),
+	lisk_accounts: Joi.boolean().required(),
+	// lisk_blocks: Joi.boolean().required(),
+	lisk_transactions: Joi.boolean().required(),
+	// lisk_peers: Joi.boolean().required(),
 };
 
 const readySchema = {
-    services: Joi.object(services).required(),
+	services: Joi.object(services).required(),
 };
 
 module.exports = {
-    statusSchema: Joi.object(statusSchema).required(),
-    readySchema: Joi.object(readySchema).required(),
+	statusSchema: Joi.object(statusSchema).required(),
+	readySchema: Joi.object(readySchema).required(),
 };

@@ -25,7 +25,7 @@
   },
   "scripts": {
     "clean": "rm -rf ./node_modules",
-    "test": "npm run test:integration:APIv1:SDKv2",
+    "test": "npm run test:integration:APIv2:SDKv5",
     "test:integration:APIv1:SDKv2": "jest --config=jest.config.integration.apiv1.sdkv2.js",
     "test:integration:APIv1:SDKv4": "jest --config=jest.config.integration.apiv1.sdkv4.js",
     "test:integration:APIv2:SDKv5": "jest --config=jest.config.integration.apiv2.sdkv5.js",
