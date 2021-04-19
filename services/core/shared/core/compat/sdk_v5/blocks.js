@@ -300,6 +300,10 @@ const getBlocks = async params => {
 	return blocks;
 };
 
+const deleteBlock = async (block) => {
+	// TODO: Implement
+};
+
 const indexGenesisBlock = async () => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
 	const accountAddressesToIndex = genesisBlock.asset.accounts
@@ -470,6 +474,7 @@ const init = async () => {
 module.exports = {
 	init,
 	getBlocks,
+	deleteBlock,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 	normalizeBlocks,

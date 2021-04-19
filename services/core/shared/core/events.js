@@ -16,9 +16,22 @@
 const { Logger } = require('lisk-service-framework');
 const core = require('./compat');
 const signals = require('../signals');
-const { reloadNextForgersCache, getNextForgers } = require('./delegates');
-const { calculateEstimateFeeByteNormal, calculateEstimateFeeByteQuick } = require('./dynamicFees');
-const { performLastBlockUpdate, getLastBlock } = require('./blocks');
+
+const {
+	performLastBlockUpdate,
+	getLastBlock,
+	deleteBlock,
+} = require('./blocks');
+
+const {
+	reloadNextForgersCache,
+	getNextForgers,
+} = require('./delegates');
+
+const {
+	calculateEstimateFeeByteNormal,
+	calculateEstimateFeeByteQuick,
+} = require('./dynamicFees');
 
 const config = require('../../config.js');
 
@@ -28,6 +41,10 @@ const events = {
 	newBlock: async () => {
 		await performLastBlockUpdate();
 		signals.get('newBlock').dispatch(getLastBlock());
+	},
+	deleteBlock: async (block) => {
+		await deleteBlock(block);
+		signals.get('deleteBlock').dispatch(block);
 	},
 	newRound: async () => {
 		await reloadNextForgersCache();
