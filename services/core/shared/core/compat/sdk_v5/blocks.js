@@ -25,17 +25,23 @@ const {
 	getIndexedAccountInfo,
 	indexAccountsbyAddress,
 } = require('./accounts');
-const { indexVotes } = require('./voters');
+
+const {
+	indexVotes,
+} = require('./voters');
+
 const {
 	indexTransactions,
 	removeTransactionsByBlockIDs,
 } = require('./transactions');
+
 const {
 	getApiClient,
 	getIndexReadyStatus,
 	setIndexReadyStatus,
 	setIsSyncFullBlockchain,
 } = require('../common');
+
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
@@ -60,6 +66,22 @@ const updateFinalizedHeight = async () => {
 	const result = await coreApi.getNetworkStatus();
 	setFinalizedHeight(result.data.finalizedHeight);
 	return result;
+};
+
+const deleteIndexedBlocks = async job => {
+	const { blocks } = job.data;
+	const blocksDB = await getBlocksIndex();
+	const generatorPkInfoArray = [];
+	blocks.forEach(async block => {
+		if (block.generatorPublicKey) generatorPkInfoArray.push({
+			publicKey: block.generatorPublicKey,
+			reward: BigInt('-1') * block.reward,
+			isForger: true,
+		});
+	});
+	await indexAccountsbyPublicKey(generatorPkInfoArray);
+	await removeTransactionsByBlockIDs(blocks.map(b => b.id));
+	await blocksDB.deleteIds(blocks.map(b => b.id));
 };
 
 const indexBlocks = async job => {
@@ -87,6 +109,7 @@ const updateBlockIndex = async job => {
 
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
+const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', deleteIndexedBlocks);
 
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
@@ -301,7 +324,8 @@ const getBlocks = async params => {
 };
 
 const deleteBlock = async (block) => {
-	// TODO: Implement
+	await deleteIndexedBlocksQueue.add('deleteIndexedBlocksQueue', { blocks: [block] });
+	return block;
 };
 
 const indexGenesisBlock = async () => {
