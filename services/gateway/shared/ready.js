@@ -20,17 +20,16 @@ const { MoleculerError } = require('moleculer').Errors;
 const getReady = async broker => {
     const coreMethods = {
         lisk_accounts: 'core.accounts',
-        lisk_blocks: 'core.blocks',
+        // lisk_blocks: 'core.blocks',
         lisk_transactions: 'core.transactions',
-        lisk_delegates: 'core.delegates',
-        lisk_peers: 'core.peers',
+        // lisk_peers: 'core.peers',
     };
     try {
         const services = await BluebirdPromise.map(
             Object.getOwnPropertyNames(coreMethods),
             async key => {
                 const service = {};
-                const response = await broker.call(coreMethods[key]);
+                const response = await broker.call(coreMethods[key], { limit: 10 });
                 service[key] = !!response.data;
                 return service;
             },

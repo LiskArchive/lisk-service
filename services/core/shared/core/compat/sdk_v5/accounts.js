@@ -45,18 +45,16 @@ const coreApi = require('./coreApi');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
-const blocksIndexSchema = require('./schema/blocks');
 const accountsIndexSchema = require('./schema/accounts');
 const transactionsIndexSchema = require('./schema/transactions');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
-	accounts.map(account => {
+	accounts.forEach(account => {
 		account.username = account.dpos.delegate.username || null;
 		account.balance = account.token.balance;
 		return account;
@@ -99,7 +97,7 @@ const getAccountsFromCore = async (params) => {
 
 const indexAccountsbyAddress = async (addressesToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
-		addressesToIndex,
+		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async address => {
 			const accountFromDB = await getIndexedAccountInfo({
 				address: getBase32AddressFromHex(address),
@@ -133,8 +131,6 @@ const resolveAccountsInfo = async accounts => {
 };
 
 const resolveDelegateInfo = async accounts => {
-	const blocksDB = await getBlocksIndex();
-
 	const punishmentHeight = 780000;
 	accounts = await BluebirdPromise.map(
 		accounts,
@@ -146,13 +142,13 @@ const resolveDelegateInfo = async accounts => {
 				};
 
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const [{ total }] = await blocksDB.find({
-						generatorPublicKey: account.publicKey, aggregate: 'reward',
-					});
-					account.rewards = total;
-					account.producedBlocks = await blocksDB.count({
-						generatorPublicKey: account.publicKey,
-					});
+					// TODO: Enable after fixing the aggregation issue
+					// const {
+					// 	rewards,
+					// 	producedBlocks,
+					// } = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					// account.rewards = rewards;
+					// account.producedBlocks = producedBlocks;
 				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
@@ -180,16 +176,31 @@ const resolveDelegateInfo = async accounts => {
 	return accounts;
 };
 
-const indexAccountsbyPublicKey = async (publicKeysToIndex) => {
+const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsToIndex = await BluebirdPromise.map(
-		publicKeysToIndex,
-		async publicKey => {
-			const address = getHexAddressFromPublicKey(publicKey);
+		accountInfoArray,
+		async accountInfo => {
+			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
-			account.publicKey = publicKey;
-			return account;
+			const indexedAccountInfo = await getIndexedAccountInfo({ publicKey: accountInfo.publicKey });
+			if (indexedAccountInfo) {
+				const {
+					rewards: existingRewards,
+					producedBlocks: forgedBlocksCount,
+				} = indexedAccountInfo;
+
+				account.rewards = accountInfo.reward
+					? BigInt(accountInfo.reward) + BigInt(existingRewards || 0)
+					: null;
+
+				account.producedBlocks = accountInfo.isForger
+					? (forgedBlocksCount || 0) + 1
+					: forgedBlocksCount;
+			}
+			account.publicKey = accountInfo.publicKey;
+			return parseToJSONCompatObj(account);
 		},
-		{ concurrency: publicKeysToIndex.length },
+		{ concurrency: accountInfoArray.length },
 	);
 	await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', { accounts: accountsToIndex });
 };
