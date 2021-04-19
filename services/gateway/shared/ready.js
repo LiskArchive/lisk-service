@@ -29,7 +29,7 @@ const getReady = async broker => {
             Object.getOwnPropertyNames(coreMethods),
             async key => {
                 const service = {};
-                const response = await broker.call(coreMethods[key]);
+                const response = await broker.call(coreMethods[key], { limit: 10 });
                 service[key] = !!response.data;
                 return service;
             },

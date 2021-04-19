@@ -62,4 +62,5 @@ Dockerfile
 # Embedded DB directory
 db_data
 
+# Benchmark directory
 benchmark

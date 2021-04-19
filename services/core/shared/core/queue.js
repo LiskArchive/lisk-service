@@ -42,9 +42,11 @@ const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.
 		logger.debug(`${queueName} Job completed`, result);
 		job.remove();
 	});
+
 	queue.on('error', (err) => {
 		logger.debug(`${queueName} Job error`, err);
 	});
+
 	queue.on('failed', (job, err) => {
 		logger.warn(`${queueName} Job failed`, err.message);
 		logger.warn(`${queueName} Job failed`, err.stack);

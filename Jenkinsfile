@@ -14,7 +14,7 @@ def runServiceIfMissing(svcName, path, nPort) {
 	if (checkOpenPort(nPort) == false) {
 		echo "${svcName} is not running, starting a new instance on port ${nPort}"
 		dir(path) { sh "make up" }
-		if (checkOpenPort(nPort) == false) { 
+		if (checkOpenPort(nPort) == false) {
 			dir(path) { sh "make logs" }
 			currentBuild.result = "FAILURE"
 			throw new Exception("Failed to run ${svcName} instance")
@@ -100,7 +100,7 @@ pipeline {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
 				waitForHttp('http://localhost:9901/api/ready')
-				sleep(30) // Workaround to increase CI phase stability
+				sleep(60) // Workaround to increase CI phase stability
 			}
 		}
 		stage('Perform integration tests') {
