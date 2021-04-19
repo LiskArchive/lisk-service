@@ -40,7 +40,7 @@ pipeline {
 			environment {
 				ENABLE_HTTP_API='http-status,http-version2'
 				ENABLE_WS_API='blockchain,rpc-v2'
-				LISK_CORE_WS='ws://host-gateway:8080'
+				LISK_CORE_WS='ws://host.docker.internal:8080'
 			}
 			steps {
 				ansiColor('xterm') {
