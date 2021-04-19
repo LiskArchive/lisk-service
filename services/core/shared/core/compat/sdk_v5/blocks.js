@@ -77,6 +77,7 @@ const deleteIndexedBlocks = async job => {
 			publicKey: block.generatorPublicKey,
 			reward: BigInt('-1') * block.reward,
 			isForger: true,
+			isDeleteBlock: true,
 		});
 	});
 	await indexAccountsbyPublicKey(generatorPkInfoArray);

@@ -194,9 +194,9 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 						? BigInt(accountInfo.reward) + BigInt(existingRewards)
 						: existingRewards;
 
-					account.producedBlocks = accountInfo.reward >= BigInt('0')
-						? forgedBlocksCount + 1
-						: forgedBlocksCount - 1;
+					account.producedBlocks = accountInfo.isDeleteBlock
+						? forgedBlocksCount - 1
+						: forgedBlocksCount + 1;
 				}
 			}
 			account.publicKey = accountInfo.publicKey;
