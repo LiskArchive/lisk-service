@@ -1,0 +1,14 @@
+version: '3'
+services:
+  lisk-core:
+    image: lisk/core:3.0.0-beta.4
+    volumes:
+      - ./snapshots/:/tmp/snapshots
+      - ./entrypoint.sh:/entrypoint.sh
+    ports:
+      - "4000:4000"
+      - "5001:5001"
+    restart: always
+    entrypoint: ['sh', '/entrypoint.sh']
+    environment:
+      - LISK_API_PUBLIC=true

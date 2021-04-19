@@ -33,13 +33,20 @@ const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.
 
 	queue.process(queueName, queueJob);
 
+	queue.process((job, done) => {
+		job.progress();
+		done();
+	});
+
 	queue.on('completed', (job, result) => {
 		logger.debug(`${queueName} Job completed`, result);
 		job.remove();
 	});
+
 	queue.on('error', (err) => {
 		logger.debug(`${queueName} Job error`, err);
 	});
+
 	queue.on('failed', (job, err) => {
 		logger.warn(`${queueName} Job failed`, err.message);
 		logger.warn(`${queueName} Job failed`, err.stack);

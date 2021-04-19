@@ -21,7 +21,8 @@ module.exports = {
 		'<rootDir>/integration/gateway/*.test.js',
 	],
 	testEnvironment: 'node',
-	testTimeout: 20000,
+	testTimeout: 50000,
+	maxWorkers: 1,
 	setupFilesAfterEnv: [
 		'jest-extended',
 		'<rootDir>/helpers/setupCustomMatchers.js',
