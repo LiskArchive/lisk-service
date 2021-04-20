@@ -344,6 +344,30 @@ const getMultisignatureGroups = async account => {
 
 const getMultisignatureMemberships = async () => []; // TODO
 
+// signals.get('blockIndexReady').add(async () => {
+// 	const accountsDB = await getAccountsIndex();
+// 	const blocksDB = await getBlocksIndex();
+
+// 	const delegates = await requestAll(getAccounts, { isDelegate: true });
+// 	await BluebirdPromise.map(
+// 		delegates,
+// 		async account => {
+// 			const query = `
+// 			SELECT  SUM(reward) as total FROM blocks WHERE generatorPublicKey='${account.publicKey}'`;
+// 			const [{ total }] = await blocksDB.rawQuery(query);
+// 			const count = await blocksDB.count({ generatorPublicKey: account.publicKey });
+// 			account.producedBlocks = count;
+// 			await accountsDB.increment({
+// 				increment: {
+// 					rewards: total ? BigInt(total) : BigInt('0'),
+// 					producedBlocks: count ? count : 0,
+// 				},
+// 				publicKey: account.publicKey,
+// 			});
+// 		},
+// 		{ concurrency: delegates.length },
+// 	);
+// });
 
 module.exports = {
 	confirmPublicKey,
