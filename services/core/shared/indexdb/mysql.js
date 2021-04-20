@@ -316,7 +316,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const result = await knex.transaction(
 			trx => trx(tableName)
 				.where('publicKey', '=', params.publicKey)
-				.increment(params.increment),
+				.increment(params.increment)
+				.transacting(trx)
 		);
 		return result;
 	};
