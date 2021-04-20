@@ -317,7 +317,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			trx => trx(tableName)
 				.where('publicKey', '=', params.publicKey)
 				.increment(params.increment)
-				.transacting(trx)
+				.transacting(trx),
 		);
 		return result;
 	};
