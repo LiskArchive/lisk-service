@@ -117,6 +117,7 @@ const resolveAccountsInfo = async accounts => {
 
 	accounts.map(async account => {
 		account.dpos.unlocking = account.dpos.unlocking.map(item => {
+			item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
 			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
 				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
 			item.height = {
