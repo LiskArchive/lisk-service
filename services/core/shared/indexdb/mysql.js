@@ -136,7 +136,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		rawRows.forEach(item => {
 			const row = {};
 			Object.keys(schema).forEach(o => {
-				if (item[o]) row[o] = getValue(cast(item[o], schema[o].type));
+				if (item[o] || item[o] === 0) row[o] = getValue(cast(item[o], schema[o].type));
 			});
 			rows.push(row);
 		});
