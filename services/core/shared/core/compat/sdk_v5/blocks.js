@@ -75,7 +75,7 @@ const deleteIndexedBlocks = async job => {
 	blocks.forEach(async block => {
 		if (block.generatorPublicKey) generatorPkInfoArray.push({
 			publicKey: block.generatorPublicKey,
-			reward: BigInt('-1') * block.reward,
+			reward: block.reward,
 			isForger: true,
 			isDeleteBlock: true,
 		});
@@ -90,11 +90,14 @@ const indexBlocks = async job => {
 	const blocksDB = await getBlocksIndex();
 	const generatorPkInfoArray = [];
 	blocks.forEach(async block => {
-		if (block.generatorPublicKey) generatorPkInfoArray.push({
-			publicKey: block.generatorPublicKey,
-			reward: block.reward,
-			isForger: true,
-		});
+		if (block.generatorPublicKey) {
+			const [blockInfo] = await blocksDB.find({ id: block.id });
+			generatorPkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: blockInfo ? '0' : block.reward,
+				isForger: true,
+			});
+		};
 	});
 	await blocksDB.upsert(blocks);
 	await indexAccountsbyPublicKey(generatorPkInfoArray);
