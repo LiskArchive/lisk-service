@@ -212,6 +212,8 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
 	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
 	if (accountInfo) {
+		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex')
+		const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
 		Object.assign(
 			legacyAccountInfo,
 			{
@@ -224,7 +226,10 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 				isDelegate: false,
 				isMultisignature: false,
 				token: { balance: BigInt('0') },
-				legacy: accountInfo,
+				legacy: {
+					...accountInfo,
+					address: legacyAddress,
+				},
 			},
 		);
 	} else {
