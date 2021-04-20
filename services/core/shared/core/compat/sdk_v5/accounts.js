@@ -186,7 +186,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = accountInfo.publicKey;
 
-			if (!accountInfo.isBlockIndexed && accountInfo.isForger) {
+			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
 				const rewards = BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1));
 				const producedBlocks = accountInfo.isDeleteBlock ? -1 : 1;
 				const updateQuery = `
