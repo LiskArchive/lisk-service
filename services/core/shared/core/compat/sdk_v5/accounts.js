@@ -185,7 +185,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = accountInfo.publicKey;
 			if (accountInfo.isForger) {
-				await accountsDB.increment({
+				accountsDB.increment({
 					increment: {
 						rewards: BigInt(accountInfo.reward),
 						producedBlocks: 1,
