@@ -82,7 +82,7 @@ const deleteIndexedBlocks = async job => {
 	});
 	await indexAccountsbyPublicKey(generatorPkInfoArray);
 	await removeTransactionsByBlockIDs(blocks.map(b => b.id));
-	await blocksDB.deleteIds(blocks.map(b => b.id));
+	await blocksDB.deleteIds(blocks.map(b => b.height));
 };
 
 const indexBlocks = async job => {
