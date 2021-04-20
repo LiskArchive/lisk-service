@@ -81,13 +81,11 @@ const createDbConnection = async (connEndpoint) => {
 };
 
 const cast = (val, type) => {
-	if (val) {
-		if (type === 'number') return Number(val);
-		if (type === 'integer') return Number(val);
-		if (type === 'string') return String(val);
-		if (type === 'boolean') return Boolean(val);
-		if (type === 'bigInteger') return BigInt(val);
-	}
+	if (type === 'number') return Number(val);
+	if (type === 'integer') return Number(val);
+	if (type === 'string') return String(val);
+	if (type === 'boolean') return Boolean(val);
+	if (type === 'bigInteger') return BigInt(val);
 	return val;
 };
 
@@ -135,7 +133,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		rawRows.forEach(item => {
 			const row = {};
 			Object.keys(schema).forEach(o => {
-				row[o] = getValue(cast(item[o], schema[o].type));
+				if (item[o]) row[o] = getValue(cast(item[o], schema[o].type));
 			});
 			rows.push(row);
 		});
