@@ -21,8 +21,8 @@ module.exports = {
 		isDelegate: { type: 'boolean' },
 		balance: { type: 'bigInteger' },
 		username: { type: 'string' },
-		rewards: { type: 'bigInteger' },
-		producedBlocks: { type: 'integer' },
+		rewards: { type: 'bigInteger', default: true, defaultValue: 0 },
+		producedBlocks: { type: 'integer', default: true, defaultValue: 0 },
 	},
 	indexes: {
 		address: { type: 'key' },
