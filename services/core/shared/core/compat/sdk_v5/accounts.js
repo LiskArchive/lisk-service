@@ -143,12 +143,12 @@ const resolveDelegateInfo = async accounts => {
 
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
 					// TODO: Enable after fixing the aggregation issue
-					// const {
-					// 	rewards,
-					// 	producedBlocks,
-					// } = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					// account.rewards = rewards;
-					// account.producedBlocks = producedBlocks;
+					const {
+						rewards,
+						producedBlocks,
+					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					account.rewards = rewards;
+					account.producedBlocks = producedBlocks;
 				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
@@ -183,16 +183,15 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 		async accountInfo => {
 			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
+			account.publicKey = accountInfo.publicKey;
 			if (accountInfo.isForger) {
-				const rewards = BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1));
-				const producedBlocks = accountInfo.isDeleteBlock ? -1 : 1;
-				const updateQuery = `
-					UPDATE accounts
-					SET rewards = COALESCE(rewards, 0) + ${rewards},
-						producedBlocks = COALESCE(producedBlocks, 0) + ${producedBlocks}
-					WHERE address = '${account.address}'
-				`;
-				await accountsDB.rawQuery(updateQuery);
+				await accountsDB.increment({
+					increment: {
+						rewards: BigInt(accountInfo.reward),
+						producedBlocks: 1,
+					},
+					publicKey: accountInfo.publicKey,
+				});
 			}
 			return account;
 		},
@@ -343,31 +342,6 @@ const getMultisignatureGroups = async account => {
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
-
-// signals.get('blockIndexReady').add(async () => {
-// 	const accountsDB = await getAccountsIndex();
-// 	const blocksDB = await getBlocksIndex();
-
-// 	const delegates = await requestAll(getAccounts, { isDelegate: true });
-// 	await BluebirdPromise.map(
-// 		delegates,
-// 		async account => {
-// 			const query = `
-// 			SELECT  SUM(reward) as total FROM blocks WHERE generatorPublicKey='${account.publicKey}'`;
-// 			const [{ total }] = await blocksDB.rawQuery(query);
-// 			const count = await blocksDB.count({ generatorPublicKey: account.publicKey });
-// 			account.producedBlocks = count;
-// 			await accountsDB.increment({
-// 				increment: {
-// 					rewards: total ? BigInt(total) : BigInt('0'),
-// 					producedBlocks: count ? count : 0,
-// 				},
-// 				publicKey: account.publicKey,
-// 			});
-// 		},
-// 		{ concurrency: delegates.length },
-// 	);
-// });
 
 module.exports = {
 	confirmPublicKey,
