@@ -178,29 +178,25 @@ const resolveDelegateInfo = async accounts => {
 };
 
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
+	const accountsDB = await getAccountsIndex();
 	const accountsToIndex = await BluebirdPromise.map(
 		accountInfoArray,
 		async accountInfo => {
 			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
-			const indexedAccountInfo = await getIndexedAccountInfo({ publicKey: accountInfo.publicKey });
-			if (indexedAccountInfo) {
-				const {
-					rewards: existingRewards = BigInt('0'),
-					producedBlocks: forgedBlocksCount = 0,
-				} = indexedAccountInfo;
-
-				if (accountInfo.isForger) {
-					account.rewards = accountInfo.reward
-						? BigInt(accountInfo.reward) + BigInt(existingRewards)
-						: existingRewards;
-
-					account.producedBlocks = accountInfo.isDeleteBlock
-						? forgedBlocksCount - 1
-						: forgedBlocksCount + 1;
-				}
-			}
 			account.publicKey = accountInfo.publicKey;
+
+			if (!accountInfo.isBlockIndexed && accountInfo.isForger) {
+				const rewards = BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1));
+				const producedBlocks = accountInfo.isDeleteBlock ? -1 : 1;
+				const updateQuery = `
+					UPDATE accounts
+					SET rewards = COALESCE(rewards, 0) + ${rewards},
+						producedBlocks = COALESCE(producedBlocks, 0) + ${producedBlocks}
+					WHERE address = '${account.address}'
+				`;
+				await accountsDB.rawQuery(updateQuery);
+			}
 			return parseToJSONCompatObj(account);
 		},
 		{ concurrency: accountInfoArray.length },
@@ -212,7 +208,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
 	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
 	if (accountInfo) {
-		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex')
+		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
 		const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
 		Object.assign(
 			legacyAccountInfo,

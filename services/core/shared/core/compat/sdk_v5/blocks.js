@@ -94,10 +94,11 @@ const indexBlocks = async job => {
 			const [blockInfo] = await blocksDB.find({ id: block.id });
 			generatorPkInfoArray.push({
 				publicKey: block.generatorPublicKey,
-				reward: blockInfo ? '0' : block.reward,
+				reward: block.reward,
 				isForger: true,
+				isBlockIndexed: !!blockInfo,
 			});
-		};
+		}
 	});
 	await blocksDB.upsert(blocks);
 	await indexAccountsbyPublicKey(generatorPkInfoArray);
