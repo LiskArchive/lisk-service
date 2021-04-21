@@ -312,15 +312,12 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return resultSet;
 	};
 
-	const increment = async params => {
-		const result = await knex.transaction(
-			trx => trx(tableName)
-				.where('publicKey', '=', params.publicKey)
-				.increment(params.increment)
-				.transacting(trx),
-		);
-		return result;
-	};
+	const increment = async params => knex.transaction(
+		trx => trx(tableName)
+			.where(params.property, '=', params.value)
+			.increment(params.increment)
+			.transacting(trx),
+	);
 
 	return {
 		upsert,
