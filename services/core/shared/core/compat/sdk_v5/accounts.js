@@ -142,7 +142,6 @@ const resolveDelegateInfo = async accounts => {
 				};
 
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					// TODO: Enable after fixing the aggregation issue
 					const {
 						rewards,
 						producedBlocks,
