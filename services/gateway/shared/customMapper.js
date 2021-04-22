@@ -46,7 +46,7 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 		if (definition[key] !== null && typeof definition[key] === 'string') {
 			const [path, type] = definition[key].split(',');
 			const val = (path === '=') ? subObj[key] : resolvePath(rootObj, path);
-			acc[key] = (val || val === 0) && type ? cast[type](val) : val;
+			acc[key] = val !== undefined && type ? cast[type](val) : val;
 		} else if (Array.isArray(definition[key])) {
 			if (definition[key].length === 2) {
 				const innerDef = definition[key][1];
