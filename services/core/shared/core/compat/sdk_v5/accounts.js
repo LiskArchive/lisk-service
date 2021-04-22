@@ -311,7 +311,7 @@ const getAccounts = async params => {
 		const [account = {}] = accounts.data;
 		const legacyAccountInfo = await getLegacyAccountInfo(params);
 		Object.assign(account, legacyAccountInfo);
-		if (!accounts.data.length) accounts.data.push(account);
+		if (!accounts.data.length && Object.keys(account).length) accounts.data.push(account);
 	}
 
 	accounts.meta.count = accounts.data.length;
