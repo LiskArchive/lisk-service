@@ -313,7 +313,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const increment = async params => knex.transaction(
 		trx => trx(tableName)
-			.where(params.property, '=', params.value)
+			.where(params.where)
 			.increment(params.increment)
 			.transacting(trx),
 	);
