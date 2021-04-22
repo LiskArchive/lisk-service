@@ -184,11 +184,11 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = accountInfo.publicKey;
-			if (accountInfo.isForger) {
+			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
 				accountsDB.increment({
 					increment: {
-						rewards: BigInt(accountInfo.reward),
-						producedBlocks: 1,
+						rewards: BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1)),
+						producedBlocks: accountInfo.isDeleteBlock ? -1 : 1,
 					},
 					property: 'address',
 					value: getBase32AddressFromPublicKey(accountInfo.publicKey),
