@@ -35,7 +35,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			Object.keys(schema).map(p => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
-				if (schema[p].default) kProp.defaultTo(schema[p].defaultValue);
+				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
 				if (p === primaryKey) kProp.primary();
 				if (indexes[p]) kProp.index();
 
