@@ -386,18 +386,7 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 	}
 };
 
-const init = async () => {
-	await getBlocksIndex();
-
-	signals.get('newBlock').add(async (newBlock) => {
-		logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
-		await indexNewBlocks({ data: [newBlock] });
-	});
-
-	try {
-		// Index genesis block
-		await indexGenesisBlock();
-
+const indexPastBlocks = async () => {
 		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
 		const blockIndexLowerRange = config.indexNumOfBlocks > 0
@@ -435,36 +424,51 @@ const init = async () => {
 			// eslint-disable-next-line no-await-in-loop
 			await indexMissingBlocks(fromHeight, toHeight);
 		}
+};
 
-		// eslint-disable-next-line no-await-in-loop
-		signals.get('newBlock').add(async () => {
-			logger.debug('============== Checking blocks index ready status ==============');
-			if (!getIndexReadyStatus()) {
-				const blocksDB = await getBlocksIndex();
-				const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
-				const numBlocksIndexed = await blocksDB.count();
-				const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+const checkIndexReadiness = () => async () => {
+	logger.debug('============== Checking blocks index ready status ==============');
+	if (!getIndexReadyStatus()) {
+		const blocksDB = await getBlocksIndex();
+		const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
+		const numBlocksIndexed = await blocksDB.count();
+		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
-				logger.debug(
-					'numBlocksIndexed', numBlocksIndexed,
-					'lastIndexedBlock', lastIndexedBlock.height,
-					'currentChainHeight', currentChainHeight,
-				);
-				if (numBlocksIndexed >= currentChainHeight
-					&& lastIndexedBlock.height >= currentChainHeight) {
-					setIndexReadyStatus(true);
-					logger.info('Blocks index is now ready');
-					signals.get('blockIndexReady').dispatch(true);
-				} else {
-					logger.debug('Blocks index is not yet ready');
-				}
-			}
-			return getIndexReadyStatus();
-		});
+		logger.debug(
+			'numBlocksIndexed', numBlocksIndexed,
+			'lastIndexedBlock', lastIndexedBlock.height,
+			'currentChainHeight', currentChainHeight,
+		);
+		if (numBlocksIndexed >= currentChainHeight
+			&& lastIndexedBlock.height >= currentChainHeight) {
+			setIndexReadyStatus(true);
+			logger.info('Blocks index is now ready');
+			signals.get('blockIndexReady').dispatch(true);
+		} else {
+			logger.debug('Blocks index is not yet ready');
+		}
+	}
+	return getIndexReadyStatus();
+};
+
+const indexNewBlock = () => async (newBlock) => {
+	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
+	await indexNewBlocks({ data: [newBlock] });
+};
+
+const init = async () => {
+	// Check state of index and perform update
+	try {
+		await indexGenesisBlock();
+		await indexPastBlocks();
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
 	}
+
+	// Assign actions block updates
+	signals.get('newBlock').add(indexNewBlock);
+	signals.get('newBlock').add(checkIndexReadiness);
 };
 
 module.exports = {
