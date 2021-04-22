@@ -142,13 +142,12 @@ const resolveDelegateInfo = async accounts => {
 				};
 
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					// TODO: Enable after fixing the aggregation issue
-					// const {
-					// 	rewards,
-					// 	producedBlocks,
-					// } = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					// account.rewards = rewards;
-					// account.producedBlocks = producedBlocks;
+					const {
+						rewards,
+						producedBlocks,
+					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					account.rewards = rewards;
+					account.producedBlocks = producedBlocks;
 				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
@@ -177,28 +176,24 @@ const resolveDelegateInfo = async accounts => {
 };
 
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
+	const accountsDB = await getAccountsIndex();
 	const accountsToIndex = await BluebirdPromise.map(
 		accountInfoArray,
 		async accountInfo => {
 			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
-			const indexedAccountInfo = await getIndexedAccountInfo({ publicKey: accountInfo.publicKey });
-			if (indexedAccountInfo) {
-				const {
-					rewards: existingRewards,
-					producedBlocks: forgedBlocksCount,
-				} = indexedAccountInfo;
-
-				account.rewards = accountInfo.reward
-					? BigInt(accountInfo.reward) + BigInt(existingRewards || 0)
-					: null;
-
-				account.producedBlocks = accountInfo.isForger
-					? (forgedBlocksCount || 0) + 1
-					: forgedBlocksCount;
-			}
 			account.publicKey = accountInfo.publicKey;
-			return parseToJSONCompatObj(account);
+			if (accountInfo.isForger) {
+				accountsDB.increment({
+					increment: {
+						rewards: BigInt(accountInfo.reward),
+						producedBlocks: 1,
+					},
+					property: 'address',
+					value: getBase32AddressFromPublicKey(accountInfo.publicKey),
+				});
+			}
+			return account;
 		},
 		{ concurrency: accountInfoArray.length },
 	);

@@ -35,6 +35,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 			Object.keys(schema).map(p => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
+				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
 				if (p === primaryKey) kProp.primary();
 				if (indexes[p]) kProp.index();
 
@@ -135,7 +136,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		rawRows.forEach(item => {
 			const row = {};
 			Object.keys(schema).forEach(o => {
-				row[o] = getValue(cast(item[o], schema[o].type));
+				if (item[o] || item[o] === 0) row[o] = getValue(cast(item[o], schema[o].type));
 			});
 			rows.push(row);
 		});
@@ -311,12 +312,20 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return resultSet;
 	};
 
+	const increment = async params => knex.transaction(
+		trx => trx(tableName)
+			.where(params.property, '=', params.value)
+			.increment(params.increment)
+			.transacting(trx),
+	);
+
 	return {
 		upsert,
 		find,
 		deleteIds,
 		count,
 		rawQuery,
+		increment,
 	};
 };
 
