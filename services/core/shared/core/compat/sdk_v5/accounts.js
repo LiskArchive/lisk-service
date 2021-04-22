@@ -143,13 +143,12 @@ const resolveDelegateInfo = async accounts => {
 				};
 
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					// TODO: Enable after fixing the aggregation issue
-					// const {
-					// 	rewards,
-					// 	producedBlocks,
-					// } = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					// account.rewards = rewards;
-					// account.producedBlocks = producedBlocks;
+					const {
+						rewards,
+						producedBlocks,
+					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					account.rewards = rewards;
+					account.producedBlocks = producedBlocks;
 				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
@@ -185,19 +184,17 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = accountInfo.publicKey;
-
-			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
-				const rewards = BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1));
-				const producedBlocks = accountInfo.isDeleteBlock ? -1 : 1;
-				const updateQuery = `
-					UPDATE accounts
-					SET rewards = COALESCE(rewards, 0) + ${rewards},
-						producedBlocks = COALESCE(producedBlocks, 0) + ${producedBlocks}
-					WHERE address = '${account.address}'
-				`;
-				await accountsDB.rawQuery(updateQuery);
+			if (accountInfo.isForger) {
+				accountsDB.increment({
+					increment: {
+						rewards: BigInt(accountInfo.reward),
+						producedBlocks: 1,
+					},
+					property: 'address',
+					value: getBase32AddressFromPublicKey(accountInfo.publicKey),
+				});
 			}
-			return parseToJSONCompatObj(account);
+			return account;
 		},
 		{ concurrency: accountInfoArray.length },
 	);
