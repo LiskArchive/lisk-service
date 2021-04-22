@@ -300,23 +300,30 @@ const getBlocks = async params => {
 		if (resultSet.length) params.ids = resultSet.map(row => row.id);
 	}
 
-	if (params.id) {
-		blocks.data = await getBlockByID(params.id);
-	} else if (params.ids) {
-		blocks.data = await getBlocksByIDs(params.ids);
-	} else if (params.height) {
-		blocks.data = await getBlockByHeight(params.height);
-	} else if (params.heightBetween) {
-		const { from, to } = params.heightBetween;
-		blocks.data = await getBlocksByHeightBetween(from, to);
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			blocks.data = blocks.data.sort(
-				(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
-			);
+	try {
+		if (params.id) {
+			blocks.data = await getBlockByID(params.id);
+		} else if (params.ids) {
+			blocks.data = await getBlocksByIDs(params.ids);
+		} else if (params.height) {
+			blocks.data = await getBlockByHeight(params.height);
+		} else if (params.heightBetween) {
+			const { from, to } = params.heightBetween;
+			blocks.data = await getBlocksByHeightBetween(from, to);
+			if (params.sort) {
+				const [sortProp, sortOrder] = params.sort.split(':');
+				blocks.data = blocks.data.sort(
+					(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
+				);
+			}
+		} else {
+			blocks.data = await getLastBlock();
 		}
-	} else {
-		blocks.data = await getLastBlock();
+	} catch (err) {
+		// Return empty response when block at a certain height does not exist
+		if (params.height && err.message.includes('does not exist')) return blocks;
+
+		throw new Error(err);
 	}
 
 	blocks.meta = {

@@ -103,9 +103,9 @@ describe('Blocks API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('non-existent height -> 500', async () => {
-			const response = await api.get(`${endpoint}?height=2000000000`, 500);
-			expect(response).toMap(badRequestSchema);
+		it('non-existent height -> 404', async () => {
+			const response = await api.get(`${endpoint}?height=2000000000`, 404);
+			expect(response).toMap(notFoundSchema);
 		});
 
 		it('invalid query parameter -> 400', async () => {
