@@ -190,8 +190,10 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 						rewards: BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1)),
 						producedBlocks: accountInfo.isDeleteBlock ? -1 : 1,
 					},
-					property: 'address',
-					value: getBase32AddressFromPublicKey(accountInfo.publicKey),
+					where: {
+						property: 'address',
+						value: getBase32AddressFromPublicKey(accountInfo.publicKey),
+					},
 				});
 			}
 			return account;
