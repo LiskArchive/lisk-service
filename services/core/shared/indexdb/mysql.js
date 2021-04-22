@@ -116,6 +116,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
 	if (!connectionPool[connPoolKey]) {
+		logger.info(`Attempting to connect ${connEndpoint}...`);
 		connectionPool[connPoolKey] = await createDbConnection(connEndpoint);
 	}
 
