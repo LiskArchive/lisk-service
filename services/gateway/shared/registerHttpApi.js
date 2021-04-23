@@ -160,34 +160,31 @@ const registerApi = (apiName, config) => {
 
 			const routeAlias = `${req.method.toUpperCase()} ${req.$alias.path}`;
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
+			req.$params = paramReport.valid;
 
 			if (paramReport.missing.length > 0) {
-				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
 				return;
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
-				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join(', ')}`);
 				return;
 			}
 
 			if (paramReport.required.length) {
-				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}`);
 				return;
 			}
 
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
-				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
 				return;
 			}
 
-			const params = transformRequest(routeAlias, dropEmptyProps(paramReport.valid));
+			const params = transformRequest(routeAlias, dropEmptyProps(req.$params));
 			req.$params = params;
 		},
 

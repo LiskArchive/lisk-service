@@ -127,6 +127,12 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 	);
 	if (paramReport.invalid === true) paramReport.invalid = [];
 
+	paramReport.invalid.forEach(invalid => {
+		if (Object.keys(paramReport.valid).includes(invalid.field)) {
+			paramReport.valid = {};
+		}
+	});
+
 	return paramReport;
 };
 

@@ -287,7 +287,6 @@ describe('Transactions API', () => {
 		});
 	});
 
-
 	describe('Retrieve transaction list within timestamps', () => {
 		it('transactions within set timestamps are returned', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
