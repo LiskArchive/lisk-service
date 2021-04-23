@@ -194,7 +194,7 @@ module.exports = {
         rooms: { type: 'array', items: 'string', optional: true }
       },
       async handler(ctx) {
-        this.logger.debug('broadcast: ', ctx.params);
+        this.logger.debug('broadcast: ', util.inspect(ctx.params));
         let namespace = this.io;
         if (ctx.params.namespace) {
           namespace = namespace.of(ctx.params.namespace);
