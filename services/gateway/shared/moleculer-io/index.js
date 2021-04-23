@@ -53,7 +53,7 @@ module.exports = {
     let namespaces = this.settings.io.namespaces;
     for (let nsp in namespaces) {
       let item = namespaces[nsp];
-      this.logger.debug('Add route:', util.inspect(item));
+      this.logger.debug('Add route:', item);
       if (!handlers[nsp]) handlers[nsp] = {};
       let events = item.events;
       for (let event in events) {
@@ -373,7 +373,7 @@ function translateHttpToRpcCode(code) {
 
 
 function makeHandler(svc, handlerItem) {
-  svc.logger.debug('makeHandler:', util.inspect(handlerItem));
+  svc.logger.debug('makeHandler:', handlerItem);
   return async function (requests, respond) {
     const performClientRequest = async (jsonRpcInput, id = 1) => {
       if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
