@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheRedis, Logger } = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const util = require('util');
 
@@ -53,7 +53,6 @@ const blocksIndexSchema = require('./schema/blocks');
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
-const blocksCache = CacheRedis('blocks', config.endpoints.redis);
 
 const genesisHeight = 0;
 let finalizedHeight;
@@ -231,10 +230,6 @@ const indexNewBlocks = async blocks => {
 				await removeTransactionsByBlockIDs(blockIDsToRemove);
 			}
 		}
-		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
-		if ((blockInfo && blockInfo.id !== block.id) || block.height > highestIndexedHeight) {
-			await blocksCache.set('highestIndexedHeight', block.height);
-		}
 	}
 };
 
@@ -361,7 +356,6 @@ const buildIndex = async (from, to) => {
 	const MAX_BLOCKS_LIMIT_PP = 100;
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
-	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight');
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 		/* eslint-disable no-await-in-loop */
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
@@ -377,15 +371,6 @@ const buildIndex = async (from, to) => {
 		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
 
 		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
-
-		const sortedBlocks = blocks.sort((a, b) => a.height - b.height);
-
-		const topHeightFromBatch = (sortedBlocks.pop()).height;
-		const bottomHeightFromBatch = sortedBlocks.length
-			? (sortedBlocks.shift()).height : topHeightFromBatch;
-		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
-		if (bottomHeightFromBatch < lowestIndexedHeight || lowestIndexedHeight === 0) await blocksCache.set('lowestIndexedHeight', bottomHeightFromBatch);
-		if (topHeightFromBatch > highestIndexedHeight) await blocksCache.set('highestIndexedHeight', topHeightFromBatch);
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished building block index (${from}-${to})`);
@@ -427,37 +412,30 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 };
 
 const indexPastBlocks = async () => {
-	const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+	const blocksDB = await getBlocksIndex();
 
-	const blockIndexLowerRange = config.indexNumOfBlocks > 0
-		? currentHeight - config.indexNumOfBlocks : genesisHeight;
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
-	const blockIndexHigherRange = currentHeight;
 
-	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
+	// Lowest and highest block heights expected to be indexed
+	const blockIndexHigherRange = (await coreApi.getNetworkStatus()).data.height;
+	const blockIndexLowerRange = config.indexNumOfBlocks > 0
+		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
 
-	const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
-	if (lastNumOfBlocks !== config.indexNumOfBlocks) {
-		logger.info('Configuration has been updated, re-index eveything');
-		await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
-		await blocksCache.set('lowestIndexedHeight', 0);
-		await blocksCache.set('highestIndexedHeight', currentHeight);
-	}
+	// Highest block available within the index
+	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
+	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
+		? lastIndexedHeight : blockIndexLowerRange;
 
+	// Start building the block index
 	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
-	const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
-	if (blockIndexLowerRange < lowestIndexedHeight) {
-		// For when the index is partially built
-		await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
-	}
 
 	const PAGE_SIZE = 100000;
-	const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
+	const numOfPages = Math.ceil((blockIndexHigherRange - blockIndexLowerRange) / PAGE_SIZE);
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		const toHeight = currentHeight - (PAGE_SIZE * pageNum);
+		const toHeight = blockIndexHigherRange - (PAGE_SIZE * pageNum);
 		const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
-			? (toHeight - PAGE_SIZE)
-			: blockIndexLowerRange;
+			? (toHeight - PAGE_SIZE) : blockIndexLowerRange;
 
 		logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
 
