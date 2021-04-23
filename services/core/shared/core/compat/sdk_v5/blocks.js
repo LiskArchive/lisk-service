@@ -427,43 +427,43 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 };
 
 const indexPastBlocks = async () => {
-		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+	const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
-		const blockIndexLowerRange = config.indexNumOfBlocks > 0
-			? currentHeight - config.indexNumOfBlocks : genesisHeight;
-		if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
-		const blockIndexHigherRange = currentHeight;
+	const blockIndexLowerRange = config.indexNumOfBlocks > 0
+		? currentHeight - config.indexNumOfBlocks : genesisHeight;
+	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
+	const blockIndexHigherRange = currentHeight;
 
-		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
+	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
-		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
-		if (lastNumOfBlocks !== config.indexNumOfBlocks) {
-			logger.info('Configuration has been updated, re-index eveything');
-			await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
-			await blocksCache.set('lowestIndexedHeight', 0);
-			await blocksCache.set('highestIndexedHeight', currentHeight);
-		}
+	const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
+	if (lastNumOfBlocks !== config.indexNumOfBlocks) {
+		logger.info('Configuration has been updated, re-index eveything');
+		await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
+		await blocksCache.set('lowestIndexedHeight', 0);
+		await blocksCache.set('highestIndexedHeight', currentHeight);
+	}
 
-		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
-		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
-		if (blockIndexLowerRange < lowestIndexedHeight) {
-			// For when the index is partially built
-			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
-		}
+	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+	const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
+	if (blockIndexLowerRange < lowestIndexedHeight) {
+		// For when the index is partially built
+		await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
+	}
 
-		const PAGE_SIZE = 100000;
-		const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
-		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-			const toHeight = currentHeight - (PAGE_SIZE * pageNum);
-			const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
-				? (toHeight - PAGE_SIZE)
-				: blockIndexLowerRange;
+	const PAGE_SIZE = 100000;
+	const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
+	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		const toHeight = currentHeight - (PAGE_SIZE * pageNum);
+		const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
+			? (toHeight - PAGE_SIZE)
+			: blockIndexLowerRange;
 
-			logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
+		logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
 
-			// eslint-disable-next-line no-await-in-loop
-			await indexMissingBlocks(fromHeight, toHeight);
-		}
+		// eslint-disable-next-line no-await-in-loop
+		await indexMissingBlocks(fromHeight, toHeight);
+	}
 };
 
 const checkIndexReadiness = () => async () => {
