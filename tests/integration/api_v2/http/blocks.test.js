@@ -26,6 +26,7 @@ const endpoint = `${baseUrlV2}/blocks`;
 const {
 	goodRequestSchema,
 	badRequestSchema,
+	notFoundSchema,
 	wrongInputParamSchema,
 	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
