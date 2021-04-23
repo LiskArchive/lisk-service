@@ -297,7 +297,7 @@ const getBlocks = async params => {
 	const total = await blocksDB.count(params);
 	if (isQueryFromIndex(params)) {
 		const resultSet = await blocksDB.find(params);
-		if (resultSet.length) params.ids = resultSet.map(row => row.id);
+		params.ids = resultSet.map(row => row.id);
 	}
 
 	try {
@@ -426,85 +426,91 @@ const indexMissingBlocks = async (fromHeight, toHeight) => {
 	}
 };
 
-const init = async () => {
-	await getBlocksIndex();
+const indexPastBlocks = async () => {
+	const currentHeight = (await coreApi.getNetworkStatus()).data.height;
 
-	signals.get('newBlock').add(async (newBlock) => {
-		logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
-		await indexNewBlocks({ data: [newBlock] });
-	});
+	const blockIndexLowerRange = config.indexNumOfBlocks > 0
+		? currentHeight - config.indexNumOfBlocks : genesisHeight;
+	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
+	const blockIndexHigherRange = currentHeight;
 
-	try {
-		// Index genesis block
-		await indexGenesisBlock();
+	const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
 
-		const currentHeight = (await coreApi.getNetworkStatus()).data.height;
+	const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
+	if (lastNumOfBlocks !== config.indexNumOfBlocks) {
+		logger.info('Configuration has been updated, re-index eveything');
+		await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
+		await blocksCache.set('lowestIndexedHeight', 0);
+		await blocksCache.set('highestIndexedHeight', currentHeight);
+	}
 
-		const blockIndexLowerRange = config.indexNumOfBlocks > 0
-			? currentHeight - config.indexNumOfBlocks : genesisHeight;
-		if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
-		const blockIndexHigherRange = currentHeight;
+	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+	const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
+	if (blockIndexLowerRange < lowestIndexedHeight) {
+		// For when the index is partially built
+		await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
+	}
 
-		const highestIndexedHeight = await blocksCache.get('highestIndexedHeight') || blockIndexLowerRange;
+	const PAGE_SIZE = 100000;
+	const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
+	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		const toHeight = currentHeight - (PAGE_SIZE * pageNum);
+		const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
+			? (toHeight - PAGE_SIZE)
+			: blockIndexLowerRange;
 
-		const lastNumOfBlocks = await blocksCache.get('lastNumOfBlocks');
-		if (lastNumOfBlocks !== config.indexNumOfBlocks) {
-			logger.info('Configuration has been updated, re-index eveything');
-			await blocksCache.set('lastNumOfBlocks', config.indexNumOfBlocks);
-			await blocksCache.set('lowestIndexedHeight', 0);
-			await blocksCache.set('highestIndexedHeight', currentHeight);
-		}
-
-		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
-		const lowestIndexedHeight = await blocksCache.get('lowestIndexedHeight');
-		if (blockIndexLowerRange < lowestIndexedHeight) {
-			// For when the index is partially built
-			await buildIndex(blockIndexLowerRange, lowestIndexedHeight);
-		}
-
-		const PAGE_SIZE = 100000;
-		const numOfPages = Math.ceil((currentHeight - blockIndexLowerRange) / PAGE_SIZE);
-		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-			const toHeight = currentHeight - (PAGE_SIZE * pageNum);
-			const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
-				? (toHeight - PAGE_SIZE)
-				: blockIndexLowerRange;
-
-			logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
-
-			// eslint-disable-next-line no-await-in-loop
-			await indexMissingBlocks(fromHeight, toHeight);
-		}
+		logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
 
 		// eslint-disable-next-line no-await-in-loop
-		signals.get('newBlock').add(async () => {
-			logger.debug('============== Checking blocks index ready status ==============');
-			if (!getIndexReadyStatus()) {
-				const blocksDB = await getBlocksIndex();
-				const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
-				const numBlocksIndexed = await blocksDB.count();
-				const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+		await indexMissingBlocks(fromHeight, toHeight);
+	}
+};
 
-				logger.debug(
-					`\nnumBlocksIndexed: ${numBlocksIndexed}`,
-					`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
-					`\ncurrentChainHeight: ${currentChainHeight}`,
-				);
-				if (numBlocksIndexed >= currentChainHeight
-					&& lastIndexedBlock.height >= currentChainHeight - 1) {
-					setIndexReadyStatus(true);
-					logger.info('Blocks index is now ready');
-					signals.get('blockIndexReady').dispatch(true);
-				} else {
-					logger.debug('Blocks index is not yet ready');
-				}
-			}
-			return getIndexReadyStatus();
-		});
+const checkIndexReadiness = () => async () => {
+	logger.debug('============== Checking blocks index ready status ==============');
+	if (!getIndexReadyStatus()) {
+		const blocksDB = await getBlocksIndex();
+		const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
+		const numBlocksIndexed = await blocksDB.count();
+		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+
+		logger.debug(
+			`\nnumBlocksIndexed: ${numBlocksIndexed}`,
+			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
+			`\ncurrentChainHeight: ${currentChainHeight}`,
+		);
+		if (numBlocksIndexed >= currentChainHeight
+			&& lastIndexedBlock.height >= currentChainHeight - 1) {
+			setIndexReadyStatus(true);
+			logger.info('Blocks index is now ready');
+			signals.get('blockIndexReady').dispatch(true);
+		} else {
+			logger.debug('Blocks index is not yet ready');
+		}
+	}
+	return getIndexReadyStatus();
+};
+
+const indexNewBlock = () => async (newBlock) => {
+	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
+	await indexNewBlocks({ data: [newBlock] });
+};
+
+const init = async () => {
+	// Index every new incoming block
+	signals.get('newBlock').add(indexNewBlock);
+
+	// Check state of index and perform update
+	try {
+		await indexGenesisBlock();
+		await indexPastBlocks();
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
 	}
+
+	// Check and update index readiness status
+	signals.get('newBlock').add(checkIndexReadiness);
 };
 
 module.exports = {
