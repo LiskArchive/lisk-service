@@ -17,6 +17,11 @@ const BluebirdPromise = require('bluebird');
 
 const { MoleculerError } = require('moleculer').Errors;
 
+const currentStatus = {
+    indexReadyStatus: false,
+    transactionStatsStatus: false,
+};
+
 const getReady = async broker => {
     const coreMethods = {
         lisk_accounts: 'core.accounts',
@@ -34,13 +39,25 @@ const getReady = async broker => {
                 return service;
             },
         );
-        return Promise.resolve({ services: Object.assign({}, ...services) });
+        const servicesStatus = Object.keys(Object.assign(currentStatus, ...services))
+            .some(value => !Object.assign(currentStatus, ...services)[value]);
+        if (servicesStatus === false) return Promise.resolve({
+            services: Object.assign(currentStatus, ...services),
+        });
+        return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
     } catch (_) {
         return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
     }
 };
 
+const updateSvcStatus = async data => {
+    const { isIndexReady, isTransactionStatsReady } = data;
+    currentStatus.indexReadyStatus = isIndexReady;
+    currentStatus.transactionStatsStatus = isTransactionStatsReady;
+};
+
 
 module.exports = {
     getReady,
+    updateSvcStatus,
 };
