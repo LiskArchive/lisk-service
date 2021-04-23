@@ -29,6 +29,8 @@ const services = {
 	// lisk_blocks: Joi.boolean().required(),
 	lisk_transactions: Joi.boolean().required(),
 	// lisk_peers: Joi.boolean().required(),
+	indexReadyStatus: Joi.boolean().required(),
+	transactionStatsStatus: Joi.boolean().required(),
 };
 
 const readySchema = {
