@@ -35,6 +35,16 @@ const register = async (events) => {
 		}
 	});
 
+	apiClient.subscribe('app:block:delete', async data => {
+		try {
+			const incomingBlock = apiClient.block.decode(Buffer.from(data.block, 'hex'));
+			const [deletedBlock] = await normalizeBlocks([incomingBlock]);
+			events.deleteBlock(deletedBlock);
+		} catch (err) {
+			logger.error(err.message);
+		}
+	});
+
 	apiClient.subscribe('app:chain:validators:change', data => {
 		events.newRound(data);
 	});

@@ -21,7 +21,7 @@ const {
 
 const path = require('path');
 const mapper = require('./customMapper');
-
+const { ValidationException } = require('./exceptions');
 const { validate, dropEmptyProps } = require('./paramValidator');
 
 const apiMeta = [];
@@ -163,24 +163,24 @@ const registerApi = (apiName, config) => {
 
 			if (paramReport.missing.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
-				return;
+				throw new ValidationException('Request param validation error');
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join(', ')}`);
-				return;
+				throw new ValidationException('Request param validation error');
 			}
 
 			if (paramReport.required.length) {
 				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}`);
-				return;
+				throw new ValidationException('Request param validation error');
 			}
 
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
-				return;
+				throw new ValidationException('Request param validation error');
 			}
 
 			const params = transformRequest(routeAlias, dropEmptyProps(paramReport.valid));

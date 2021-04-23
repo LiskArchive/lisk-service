@@ -38,7 +38,7 @@ const blockSchema = {
 
 const blockSchemaVersion5 = {
 	id: Joi.string().required(),
-	height: Joi.number().integer().min(1).required(),
+	height: Joi.number().integer().min(0).required(),
 	version: Joi.number().required(),
 	timestamp: Joi.number().integer().min(1).required(),
 	generatorAddress: Joi.string().optional(),

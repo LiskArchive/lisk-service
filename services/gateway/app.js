@@ -29,6 +29,7 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
+const { ValidationException } = require('./shared/exceptions');
 const { getStatus } = require('./shared/status');
 const { getReady, updateSvcStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
@@ -112,12 +113,14 @@ broker.createService({
 		},
 
 		onError(req, res, err) {
-			res.setHeader('Content-Type', 'application/json');
-			res.writeHead(err.code || 500);
-			res.end(JSON.stringify({
-				error: true,
-				message: `Server error: ${err.message}`,
-			}));
+			if (err instanceof ValidationException === false) {
+				res.setHeader('Content-Type', 'application/json');
+				res.writeHead(err.code || 500);
+				res.end(JSON.stringify({
+					error: true,
+					message: `Server error: ${err.message}`,
+				}));
+			}
 		},
 		io: {
 			namespaces,
