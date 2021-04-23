@@ -30,7 +30,7 @@ const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
-const { getReady } = require('./shared/ready');
+const { getReady, updateSvcStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
@@ -133,6 +133,7 @@ broker.createService({
 		})),
 		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', payload),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
+		'status.core': (payload) => updateSvcStatus(payload),
 	},
 });
 
