@@ -23,7 +23,7 @@ module.exports = [
         name: 'status.core',
         description: 'Check status for core:',
         controller: async callback => {
-            signals.get('blockIndexReady').add(async () => {
+            signals.get('newBlock').add(async () => {
                 logger.debug('Check current status of core');
                 const coreStatus = await coreReadinessStatus();
                 callback(coreStatus);

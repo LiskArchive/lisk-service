@@ -41,16 +41,19 @@ const getReady = async broker => {
         );
         const servicesStatus = Object.keys(Object.assign(currentStatus, ...services))
             .some(value => !Object.assign(currentStatus, ...services)[value]);
-        if (servicesStatus === false) return Promise.resolve({
-            services: Object.assign(currentStatus, ...services),
-        });
-        return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
+        if (servicesStatus === false) {
+            return Promise.resolve({
+                services: Object.assign(currentStatus, ...services),
+            });
+        } else {
+            return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
+        }
     } catch (_) {
         return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
     }
 };
 
-const updateSvcStatus = async data => {
+const updateSvcStatus = data => {
     const { isIndexReady, isTransactionStatsReady } = data;
     currentStatus.indexReadyStatus = isIndexReady;
     currentStatus.transactionStatsStatus = isTransactionStatsReady;
