@@ -136,7 +136,7 @@ broker.createService({
 		})),
 		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', payload),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
-		'status.core': (payload) => updateSvcStatus(payload),
+		'status.core': async (payload) => updateSvcStatus(payload),
 	},
 });
 
