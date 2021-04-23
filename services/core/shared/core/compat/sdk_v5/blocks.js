@@ -444,7 +444,7 @@ const indexPastBlocks = async () => {
 	}
 };
 
-const checkIndexReadiness = () => async () => {
+const checkIndexReadiness = async () => {
 	logger.debug('============== Checking blocks index ready status ==============');
 	if (!getIndexReadyStatus()) {
 		const blocksDB = await getBlocksIndex();
@@ -469,7 +469,7 @@ const checkIndexReadiness = () => async () => {
 	return getIndexReadyStatus();
 };
 
-const indexNewBlock = () => async (newBlock) => {
+const indexNewBlock = async (newBlock) => {
 	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
 	await indexNewBlocks({ data: [newBlock] });
 };
