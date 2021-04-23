@@ -81,7 +81,7 @@ Make the version 2 API able to retrieve data by those criteria.
 
 | Parameter | Type             | Validation                                                 | Default        | Comment                                |
 | --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
-| address   | String           | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/`    | *(empty)*      | Resolves new and old address system    |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      | Resolves new and old address system    |
 | publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
 | username  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                 | *(empty)*      |
 | limit     | Number           | `<1;100>`                                                  | 10             |
@@ -218,7 +218,7 @@ Retrieves votes for a single account based on address, public key, or delegate n
 
 | Parameter | Type   | Validation                                              | Default   | Comment                          |
 | --------- | ------ | ------------------------------------------------------- | --------- | -------------------------------- |
-| address   | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves only new address system |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`       | *(empty)* | Resolves only new address system |
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
 | username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
 
@@ -288,7 +288,7 @@ https://service.lisk.io/api/v2/votes_sent?address=lsk24cd35u4jdq8szo3pnsqe5dsxwr
 
 | Parameter | Type   | Validation                                              | Default   | Comment                          |
 | --------- | ------ | ------------------------------------------------------- | --------- | -------------------------------- |
-| address   | String | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/` | *(empty)* | Resolves only new address system |
+| address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`       | *(empty)* | Resolves only new address system |
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
 | username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
 | limit     | Number | `<1;100>`                                               | 10        |
@@ -435,7 +435,7 @@ Make the version 2 API able to retrieve data by those criteria.
 | ------------------ | ---------------- | ----------------------------------------------------------------- | ----------- | ------------------------------------------------ |
 | blockId            | String           | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                  | *(empty)*   |
 | height             | String           | `/[0-9]+/` and `/[0-9]+:[0-9]+/`                                  | *(empty)*   | Can be expressed as an interval ie. `1:20`       |
-| generatorAddress   | String           | `/^lsk([a-hjkm-z]\|[2-9]){38}$/` and `/^[1-9]\d{0,19}[L\|l]$/`    | *(empty)*   | Resolves new and old address system              |
+| generatorAddress   | String           | `/^lsk[a-hjkm-z2-9]{38}$/` and `/^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*   | Resolves new and old address system              |
 | generatorPublicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                        | *(empty)*   |
 | generatorUsername  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                        | *(empty)*   |
 | timestamp          | String           | `/^[0-9]+$/` and `/^[0-9]+:[0-9]+$/`                              | *(empty)*   | Can be expressed as interval ie. `100000:200000` |
@@ -524,10 +524,10 @@ _Supports pagination._
 | transactionId      | String  | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                   | *(empty)*      |
 | moduleAssetId      | String  | `ModuleId:AssetId/[0-9]+:[0-9]+/`                                  | *(empty)*      | Transfer transaction: moduleID = 2,assetID = 0                 |
 | moduleAssetName    | String  | `ModuleName:AssetName/[a-z]+:[a-z]+/`                              | *(empty)*      | Transfer transaction: moduleName = token, assetName = transfer |
-| senderAddress      | String  | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/`            | *(empty)*      |
+| senderAddress      | String  | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`                  | *(empty)*      |
 | senderPublicKey    | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
 | senderUsername     | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
-| recipientAddress   | String  | `/^lsk([a-hjkm-z]\|[2-9]){38}$//^[1-9]\d{0,19}[L\|l]$/`            | *(empty)*      |
+| recipientAddress   | String  | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`                  | *(empty)*      |
 | recipientPublicKey | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
 | recipientUsername  | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
 | data               | String  |                                                                    | *(empty)*      | Wildcard search ie. "gene*" -> "genesis"                       |

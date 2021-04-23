@@ -117,6 +117,7 @@ const resolveAccountsInfo = async accounts => {
 
 	accounts.map(async account => {
 		account.dpos.unlocking = account.dpos.unlocking.map(item => {
+			item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
 			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
 				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
 			item.height = {
@@ -183,14 +184,16 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
 			const account = (await getAccountsFromCore({ address })).data[0];
 			account.publicKey = accountInfo.publicKey;
-			if (accountInfo.isForger) {
+			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
 				accountsDB.increment({
 					increment: {
-						rewards: BigInt(accountInfo.reward),
-						producedBlocks: 1,
+						rewards: BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1)),
+						producedBlocks: accountInfo.isDeleteBlock ? -1 : 1,
 					},
-					property: 'address',
-					value: getBase32AddressFromPublicKey(accountInfo.publicKey),
+					where: {
+						property: 'address',
+						value: getBase32AddressFromPublicKey(accountInfo.publicKey),
+					},
 				});
 			}
 			return account;
@@ -204,6 +207,8 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
 	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
 	if (accountInfo) {
+		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
+		const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
 		Object.assign(
 			legacyAccountInfo,
 			{
@@ -216,7 +221,10 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 				isDelegate: false,
 				isMultisignature: false,
 				token: { balance: BigInt('0') },
-				legacy: accountInfo,
+				legacy: {
+					...accountInfo,
+					address: legacyAddress,
+				},
 			},
 		);
 	} else {
@@ -303,7 +311,7 @@ const getAccounts = async params => {
 		const [account = {}] = accounts.data;
 		const legacyAccountInfo = await getLegacyAccountInfo(params);
 		Object.assign(account, legacyAccountInfo);
-		if (!accounts.data.length) accounts.data.push(account);
+		if (!accounts.data.length && Object.keys(account).length) accounts.data.push(account);
 	}
 
 	accounts.meta.count = accounts.data.length;

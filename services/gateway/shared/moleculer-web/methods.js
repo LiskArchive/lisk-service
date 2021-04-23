@@ -7,6 +7,7 @@
 const _ = require('lodash');
 const kleur = require('kleur');
 const util = require('util');
+const { ValidationException } = require('../exceptions');
 
 module.exports = {
     methods: {
@@ -42,7 +43,8 @@ module.exports = {
             } catch (err) {
                 if (this.settings.log4XXResponses || (err && !_.inRange(err.code, 400, 500))) {
                     const reqParams = Object.fromEntries(new Map(Object.entries(req.$params).filter(([_, v]) => v)));
-                    this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: \nRequest params: ${util.inspect(reqParams)} \nRequest body: ${util.inspect(req.body)}`);
+                    if (err instanceof ValidationException === false)
+                        this.logger.error(`<= ${this.coloringStatusCode(err.code)} Request error: ${err.name}: ${err.message} \n${err.stack} \nData: \nRequest params: ${util.inspect(reqParams)} \nRequest body: ${util.inspect(req.body)}`);
                 }
                 this.sendError(req, res, err);
             }

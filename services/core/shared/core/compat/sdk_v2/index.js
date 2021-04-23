@@ -82,6 +82,7 @@ module.exports = {
 	validateAddress,
 	getAccounts,
 	getBlocks,
+	deleteBlock: nop,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getVotes,
