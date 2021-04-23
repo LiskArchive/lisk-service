@@ -162,23 +162,27 @@ const registerApi = (apiName, config) => {
 			const paramReport = validate(req.$params, methodPaths[routeAlias]);
 
 			if (paramReport.missing.length > 0) {
+				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
 				return;
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
+				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join(', ')}`);
 				return;
 			}
 
 			if (paramReport.required.length) {
+				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}`);
 				return;
 			}
 
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
+				req.$params = {};
 				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
 				return;
 			}
