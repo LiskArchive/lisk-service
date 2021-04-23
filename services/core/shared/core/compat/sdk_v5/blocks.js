@@ -25,17 +25,23 @@ const {
 	getIndexedAccountInfo,
 	indexAccountsbyAddress,
 } = require('./accounts');
-const { indexVotes } = require('./voters');
+
+const {
+	indexVotes,
+} = require('./voters');
+
 const {
 	indexTransactions,
 	removeTransactionsByBlockIDs,
 } = require('./transactions');
+
 const {
 	getApiClient,
 	getIndexReadyStatus,
 	setIndexReadyStatus,
 	setIsSyncFullBlockchain,
 } = require('../common');
+
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
@@ -62,7 +68,7 @@ const updateFinalizedHeight = async () => {
 	return result;
 };
 
-const indexBlocks = async job => {
+const deleteIndexedBlocks = async job => {
 	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const generatorPkInfoArray = [];
@@ -71,7 +77,28 @@ const indexBlocks = async job => {
 			publicKey: block.generatorPublicKey,
 			reward: block.reward,
 			isForger: true,
+			isDeleteBlock: true,
 		});
+	});
+	await indexAccountsbyPublicKey(generatorPkInfoArray);
+	await removeTransactionsByBlockIDs(blocks.map(b => b.id));
+	await blocksDB.deleteIds(blocks.map(b => b.height));
+};
+
+const indexBlocks = async job => {
+	const { blocks } = job.data;
+	const blocksDB = await getBlocksIndex();
+	const generatorPkInfoArray = [];
+	blocks.forEach(async block => {
+		if (block.generatorPublicKey) {
+			const [blockInfo] = await blocksDB.find({ id: block.id });
+			generatorPkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: block.reward,
+				isForger: true,
+				isBlockIndexed: !!blockInfo,
+			});
+		}
 	});
 	await blocksDB.upsert(blocks);
 	await indexAccountsbyPublicKey(generatorPkInfoArray);
@@ -87,6 +114,7 @@ const updateBlockIndex = async job => {
 
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
+const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', deleteIndexedBlocks);
 
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
@@ -272,23 +300,30 @@ const getBlocks = async params => {
 		params.ids = resultSet.map(row => row.id);
 	}
 
-	if (params.id) {
-		blocks.data = await getBlockByID(params.id);
-	} else if (params.ids) {
-		blocks.data = await getBlocksByIDs(params.ids);
-	} else if (params.height) {
-		blocks.data = await getBlockByHeight(params.height);
-	} else if (params.heightBetween) {
-		const { from, to } = params.heightBetween;
-		blocks.data = await getBlocksByHeightBetween(from, to);
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			blocks.data = blocks.data.sort(
-				(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
-			);
+	try {
+		if (params.id) {
+			blocks.data = await getBlockByID(params.id);
+		} else if (params.ids) {
+			blocks.data = await getBlocksByIDs(params.ids);
+		} else if (params.height) {
+			blocks.data = await getBlockByHeight(params.height);
+		} else if (params.heightBetween) {
+			const { from, to } = params.heightBetween;
+			blocks.data = await getBlocksByHeightBetween(from, to);
+			if (params.sort) {
+				const [sortProp, sortOrder] = params.sort.split(':');
+				blocks.data = blocks.data.sort(
+					(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
+				);
+			}
+		} else {
+			blocks.data = await getLastBlock();
 		}
-	} else {
-		blocks.data = await getLastBlock();
+	} catch (err) {
+		// Return empty response when block at a certain height does not exist
+		if (params.height && err.message.includes('does not exist')) return blocks;
+
+		throw new Error(err);
 	}
 
 	blocks.meta = {
@@ -298,6 +333,11 @@ const getBlocks = async params => {
 	};
 
 	return blocks;
+};
+
+const deleteBlock = async (block) => {
+	await deleteIndexedBlocksQueue.add('deleteIndexedBlocksQueue', { blocks: [block] });
+	return block;
 };
 
 const indexGenesisBlock = async () => {
@@ -435,12 +475,12 @@ const checkIndexReadiness = () => async () => {
 		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
 		logger.debug(
-			'numBlocksIndexed', numBlocksIndexed,
-			'lastIndexedBlock', lastIndexedBlock.height,
-			'currentChainHeight', currentChainHeight,
+			`\nnumBlocksIndexed: ${numBlocksIndexed}`,
+			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
+			`\ncurrentChainHeight: ${currentChainHeight}`,
 		);
 		if (numBlocksIndexed >= currentChainHeight
-			&& lastIndexedBlock.height >= currentChainHeight) {
+			&& lastIndexedBlock.height >= currentChainHeight - 1) {
 			setIndexReadyStatus(true);
 			logger.info('Blocks index is now ready');
 			signals.get('blockIndexReady').dispatch(true);
@@ -461,6 +501,8 @@ const init = async () => {
 	try {
 		await indexGenesisBlock();
 		await indexPastBlocks();
+		// eslint-disable-next-line no-await-in-loop
+		signals.get('newBlock').add(checkIndexReadiness);
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
@@ -474,6 +516,7 @@ const init = async () => {
 module.exports = {
 	init,
 	getBlocks,
+	deleteBlock,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 	normalizeBlocks,

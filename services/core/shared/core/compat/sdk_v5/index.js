@@ -18,6 +18,7 @@ const events = require('./events');
 const {
     init,
     getBlocks,
+    deleteBlock,
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('./blocks');
@@ -87,6 +88,7 @@ module.exports = {
 
     init,
     getBlocks,
+    deleteBlock,
     updateFinalizedHeight,
     getFinalizedHeight,
 

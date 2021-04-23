@@ -82,13 +82,11 @@ const createDbConnection = async (connEndpoint) => {
 };
 
 const cast = (val, type) => {
-	if (val) {
-		if (type === 'number') return Number(val);
-		if (type === 'integer') return Number(val);
-		if (type === 'string') return String(val);
-		if (type === 'boolean') return Boolean(val);
-		if (type === 'bigInteger') return BigInt(val);
-	}
+	if (type === 'number') return Number(val);
+	if (type === 'integer') return Number(val);
+	if (type === 'string') return String(val);
+	if (type === 'boolean') return Boolean(val);
+	if (type === 'bigInteger') return BigInt(val);
 	return val;
 };
 
@@ -137,7 +135,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		rawRows.forEach(item => {
 			const row = {};
 			Object.keys(schema).forEach(o => {
-				if (item[o] || item[o] === 0) row[o] = getValue(cast(item[o], schema[o].type));
+				const val = item[o];
+				if (val || val === 0) row[o] = getValue(cast(val, schema[o].type));
 			});
 			rows.push(row);
 		});
@@ -315,7 +314,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const increment = async params => knex.transaction(
 		trx => trx(tableName)
-			.where(params.property, '=', params.value)
+			.where(params.where.property, '=', params.where.value)
 			.increment(params.increment)
 			.transacting(trx),
 	);
