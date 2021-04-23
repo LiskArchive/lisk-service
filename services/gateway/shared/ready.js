@@ -45,9 +45,8 @@ const getReady = async broker => {
             return Promise.resolve({
                 services: Object.assign(currentStatus, ...services),
             });
-        } else {
-            return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
         }
+            return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
     } catch (_) {
         return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
     }
