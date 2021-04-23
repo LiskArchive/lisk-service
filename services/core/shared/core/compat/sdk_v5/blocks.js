@@ -486,12 +486,12 @@ const init = async () => {
 				const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
 				logger.debug(
-					'numBlocksIndexed', numBlocksIndexed,
-					'lastIndexedBlock', lastIndexedBlock.height,
-					'currentChainHeight', currentChainHeight,
+					`\nnumBlocksIndexed: ${numBlocksIndexed}`,
+					`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
+					`\ncurrentChainHeight: ${currentChainHeight}`,
 				);
 				if (numBlocksIndexed >= currentChainHeight
-					&& lastIndexedBlock.height >= currentChainHeight) {
+					&& lastIndexedBlock.height >= currentChainHeight - 1) {
 					setIndexReadyStatus(true);
 					logger.info('Blocks index is now ready');
 					signals.get('blockIndexReady').dispatch(true);
