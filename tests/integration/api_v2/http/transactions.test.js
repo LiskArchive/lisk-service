@@ -127,7 +127,7 @@ describe('Transactions API', () => {
 
 	describe('Retrieve transaction list by block ID', () => {
 		it('known block -> ok', async () => {
-			const response = await api.get(`${endpoint}?block=${refTransaction.block.id}`);
+			const response = await api.get(`${endpoint}?blockId=${refTransaction.block.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -137,12 +137,12 @@ describe('Transactions API', () => {
 		});
 
 		it('invalid block -> 404', async () => {
-			const response = await api.get(`${endpoint}?block=1000000000000000000000000'`, 404);
+			const response = await api.get(`${endpoint}?blockId=1000000000000000000000000'`, 404);
 			expect(response).toMap(notFoundSchema);
 		});
 
 		it('empty block param -> ok', async () => {
-			const response = await api.get(`${endpoint}?block=`);
+			const response = await api.get(`${endpoint}?blockId=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);

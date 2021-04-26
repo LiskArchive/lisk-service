@@ -19,6 +19,8 @@ const {
     init,
     getBlocks,
     deleteBlock,
+    getGenesisHeight,
+    indexMissingBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
 } = require('./blocks');
@@ -89,6 +91,8 @@ module.exports = {
     init,
     getBlocks,
     deleteBlock,
+    getGenesisHeight,
+    indexMissingBlocks,
     updateFinalizedHeight,
     getFinalizedHeight,
 

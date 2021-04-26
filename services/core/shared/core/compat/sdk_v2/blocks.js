@@ -21,7 +21,10 @@ const {
 } = require('../common');
 
 let currentHeight = 0;
+const genesisHeight = 1;
 const considerFinalHeight = 202;
+
+const getGenesisHeight = () => genesisHeight;
 
 const getBlocks = async params => {
 	await Promise.all(['fromTimestamp', 'toTimestamp'].map(async (timestamp) => {
@@ -49,4 +52,7 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-module.exports = { getBlocks };
+module.exports = {
+	getBlocks,
+	getGenesisHeight,
+};

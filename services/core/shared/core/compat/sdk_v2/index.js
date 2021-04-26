@@ -16,7 +16,10 @@
 const coreApi = require('./coreApi');
 
 const { request } = require('./request');
-const { getBlocks } = require('./blocks');
+const {
+	getBlocks,
+	getGenesisHeight,
+} = require('./blocks');
 
 const {
 	getTransactions,
@@ -82,7 +85,9 @@ module.exports = {
 	validateAddress,
 	getAccounts,
 	getBlocks,
+	getGenesisHeight,
 	deleteBlock: nop,
+	indexMissingBlocks: nop,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getVotes,
