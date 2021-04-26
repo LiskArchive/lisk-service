@@ -41,7 +41,7 @@ module.exports = [
 			amount: { optional: true, type: 'any' },
 			timestamp: { optional: true, type: 'any' },
 			nonce: { optional: true, type: 'any' },
-			block: { optional: true, type: 'any' },
+			blockId: { optional: true, type: 'any' },
 			height: { optional: true, type: 'any' },
 			search: { optional: true, type: 'any' },
 			data: { optional: true, type: 'any' },
