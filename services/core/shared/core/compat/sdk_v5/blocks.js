@@ -464,6 +464,9 @@ const checkIndexReadiness = async () => {
 			signals.get('blockIndexReady').dispatch(true);
 		} else {
 			logger.debug('Blocks index is not yet ready');
+			const startHeight = config.indexNumOfBlocks > 0
+				? currentChainHeight - config.indexNumOfBlocks : genesisHeight;
+			await indexMissingBlocks(startHeight, currentChainHeight);
 		}
 	}
 	return getIndexReadyStatus();
