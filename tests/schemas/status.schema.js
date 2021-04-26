@@ -31,6 +31,7 @@ const services = {
 	// lisk_peers: Joi.boolean().required(),
 	indexReadyStatus: Joi.boolean().required(),
 	transactionStatsStatus: Joi.boolean().required(),
+	feesStatus: Joi.boolean().required(),
 };
 
 const readySchema = {
