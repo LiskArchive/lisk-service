@@ -109,6 +109,7 @@ const {
 	updateFinalizedHeight,
 	getSDKVersion,
 	init,
+	indexMissingBlocks,
 } = require('./compat');
 
 const events = require('./events');
@@ -175,4 +176,5 @@ module.exports = {
 	getSDKVersion,
 	waitForLastBlock,
 	init,
+	indexMissingBlocks,
 };

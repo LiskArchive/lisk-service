@@ -94,7 +94,6 @@ config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
  */
 config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS || 202);
 
-
 /**
  * Cache delegate info in order to replace address by username
  * Delegate caching support (true - enabled, false - disabled)
@@ -187,6 +186,13 @@ config.queue = {
 			removeOnComplete: true,
 		},
 		settings: {},
+	},
+};
+
+config.jobs = {
+	missingBlocks: {
+		enabled: Boolean(String(process.env.ENABLE_JOB_MISSING_BLOCKS).toLowerCase() === 'true'),
+		range: Number(process.env.INDEX_MISSING_BLOCKS_RANGE || 1080), // Expected number of blocks every 3 hrs
 	},
 };
 

@@ -377,6 +377,8 @@ const buildIndex = async (from, to) => {
 };
 
 const indexMissingBlocks = async (fromHeight, toHeight) => {
+	logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
+
 	const blocksDB = await getBlocksIndex();
 	const propBetweens = [{
 		property: 'height',
@@ -437,8 +439,6 @@ const indexPastBlocks = async () => {
 		const fromHeight = (toHeight - PAGE_SIZE) > blockIndexLowerRange
 			? (toHeight - PAGE_SIZE) : blockIndexLowerRange;
 
-		logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
-
 		// eslint-disable-next-line no-await-in-loop
 		await indexMissingBlocks(fromHeight, toHeight);
 	}
@@ -495,6 +495,7 @@ module.exports = {
 	init,
 	getBlocks,
 	deleteBlock,
+	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
