@@ -14,8 +14,9 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-
 const { MoleculerError } = require('moleculer').Errors;
+
+const config = require('../config');
 
 const currentStatus = {
     indexReadyStatus: false,
@@ -40,7 +41,13 @@ const getReady = async broker => {
                 return service;
             },
         );
-        const allServices = Object.assign(currentStatus, ...services);
+        let allServices;
+        if (config.coreReadiness) {
+            allServices = Object.assign(...services, currentStatus);
+        } else {
+            allServices = Object.assign(...services);
+        }
+
         const servicesStatus = Object.keys(allServices).some(value => !allServices[value]);
         if (servicesStatus === false) {
             return Promise.resolve({ services: allServices });

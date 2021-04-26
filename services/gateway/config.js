@@ -66,4 +66,6 @@ config.api.versions = {
 	'/api/v2': 'http-version2',
 };
 
+config.coreReadiness = true;
+
 module.exports = config;

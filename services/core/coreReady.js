@@ -49,7 +49,7 @@ signals.get('newBlock').add(async () => {
 
     // Core reports readiness only if all services available
     const isCoreReady = Object.keys(features).some(value => !features[value]);
-    if (isCoreReady === false) signals.get('coreReady').dispatch(features);
+    if (!isCoreReady) signals.get('coreReady').dispatch(features);
 });
 
 const getCurrentStatus = () => features;
