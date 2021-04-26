@@ -24,20 +24,28 @@ const features = {
     isFeeEstimatesReady: false,
 };
 
-signals.get('blockIndexReady').add(() => {
-    logger.debug('Indexing finished');
-    features.isIndexReady = true;
-});
-
-signals.get('transactionStatsReady').add((days) => {
-    logger.debug('Transaction stats calculated for:', `${days}days`);
-    features.isTransactionStatsReady = true;
-});
-
 signals.get('newBlock').add(async () => {
+    // Check for fee estimates
     logger.debug('Check if fee estmates are ready');
     const fees = await core.getEstimateFeeByte();
     if (Object.getOwnPropertyNames(fees).length) features.isFeeEstimatesReady = true;
+
+
+    // Check if all blocks are indexed
+    signals.get('blockIndexReady').add(() => {
+        logger.debug('Indexing finished');
+        features.isIndexReady = true;
+    });
+
+    // Check if transaction stats are built
+    signals.get('transactionStatsReady').add((days) => {
+        logger.debug('Transaction stats calculated for:', `${days}days`);
+        features.isTransactionStatsReady = true;
+    });
+
+    // Core reports readiness only if all services available
+    const isCoreReady = Object.keys(features).some(value => !features[value]);
+    if (isCoreReady === false) signals.get('coreReady').dispatch(features);
 });
 
 const getCurrentStatus = () => features;

@@ -23,7 +23,7 @@ module.exports = [
         name: 'status.core',
         description: 'Check status for core:',
         controller: async callback => {
-            signals.get('newBlock').add(() => {
+            signals.get('coreReady').add(() => {
                 logger.debug('Check current status of core');
                 const coreStatus = getCurrentStatus();
                 callback(coreStatus);
