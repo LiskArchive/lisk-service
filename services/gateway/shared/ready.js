@@ -50,7 +50,7 @@ const getReady = async broker => {
     }
 };
 
-const updateSvcStatus = async data => {
+const updateSvcStatus = data => {
     const { isIndexReady, isTransactionStatsReady } = data;
     currentStatus.indexReadyStatus = isIndexReady;
     currentStatus.transactionStatsStatus = isTransactionStatsReady;

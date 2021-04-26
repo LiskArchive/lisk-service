@@ -14,7 +14,7 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const signals = require('../signals');
+const signals = require('./shared/signals');
 
 const features = {
     isIndexReady: false,
@@ -31,7 +31,7 @@ signals.get('transactionStatsReady').add((days) => {
     features.isTransactionStatsReady = true;
 });
 
-const getCurrentStatus = async () => features;
+const getCurrentStatus = () => features;
 
 module.exports = {
     getCurrentStatus,
