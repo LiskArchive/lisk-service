@@ -192,7 +192,7 @@ config.queue = {
 config.jobs = {
 	missingBlocks: {
 		enabled: Boolean(String(process.env.ENABLE_JOB_MISSING_BLOCKS).toLowerCase() === 'true'),
-		range: Number(process.env.INDEX_MISSING_BLOCKS_RANGE || 1080), // Expected number of blocks every 3 hrs
+		range: Number(process.env.INDEX_MISSING_BLOCKS_RANGE || 1080), // Avg. block count every 3hrs
 	},
 };
 
