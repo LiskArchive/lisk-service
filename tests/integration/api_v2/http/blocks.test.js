@@ -99,6 +99,16 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('known block by timestamp -> ok', async () => {
+			const timestamp = 1615917187;
+			const response = await api.get(`${endpoint}?timestamp=${timestamp}`);
+			expect(response).toMap(goodRequestSchema);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5, { timestamp });
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
 		it('limit=0 -> 400', async () => {
 			const response = await api.get(`${endpoint}?limit=0`, 400);
 			expect(response).toMap(badRequestSchema);
@@ -117,7 +127,7 @@ describe('Blocks API', () => {
 
 	describe('Retrieve blocks list within timestamps', () => {
 		it('blocks within set timestamps are returned', async () => {
-			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
 			const toTimestamp = refBlock.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
@@ -133,7 +143,7 @@ describe('Blocks API', () => {
 		});
 
 		it('blocks with half bounded range: fromTimestamp', async () => {
-			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

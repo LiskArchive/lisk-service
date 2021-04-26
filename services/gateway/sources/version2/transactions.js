@@ -34,7 +34,7 @@ module.exports = {
 		limit: '=',
 		amount: '=',
 		timestamp: '=',
-		blockId: 'block',
+		blockId: '=',
 		height: '=',
 		search: '=',
 		sort: '=',

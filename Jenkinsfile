@@ -99,8 +99,10 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
-				waitForHttp('http://localhost:9901/api/ready')
-				sleep(60) // Workaround to increase CI phase stability
+				// TODO: Update when readiness report is fixed
+				// waitForHttp('http://localhost:9901/api/ready')
+				waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
+				sleep(5) // Workaround to increase CI phase stability
 			}
 		}
 		stage('Perform integration tests') {
@@ -117,6 +119,11 @@ pipeline {
 	post {
 		failure {
 			script { echoBanner('Failed to run the pipeline') }
+
+			nvm(getNodejsVersion()) {
+				sh 'pm2 logs lisk-service-gateway --lines=100'
+				sh 'pm2 logs lisk-service-core --lines=100'
+			}
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') }

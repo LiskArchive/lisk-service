@@ -254,7 +254,7 @@ const getTransactions = async params => {
 
 	const resultSet = await transactionsDB.find(params);
 	const total = await transactionsDB.count(params);
-	if (resultSet.length) params.ids = resultSet.map(row => row.id);
+	params.ids = resultSet.map(row => row.id);
 	if (params.ids || params.id) {
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));

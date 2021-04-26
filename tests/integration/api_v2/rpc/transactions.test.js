@@ -69,7 +69,7 @@ describe('Method get.transactions', () => {
 
 	describe('is able to retrieve list of transactions using block ID', () => {
 		it('known block -> ok', async () => {
-			const response = await requestTransactions({ block: refTransaction.block.id });
+			const response = await requestTransactions({ blockId: refTransaction.block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -80,7 +80,7 @@ describe('Method get.transactions', () => {
 		});
 
 		it('empty block ->  empty response', async () => {
-			const response = await requestTransactions({ block: '' });
+			const response = await requestTransactions({ blockId: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
