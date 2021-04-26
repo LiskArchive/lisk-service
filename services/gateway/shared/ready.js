@@ -20,6 +20,7 @@ const { MoleculerError } = require('moleculer').Errors;
 const currentStatus = {
     indexReadyStatus: false,
     transactionStatsStatus: false,
+    feesStatus: false,
 };
 
 const getReady = async broker => {
@@ -51,9 +52,10 @@ const getReady = async broker => {
 };
 
 const updateSvcStatus = data => {
-    const { isIndexReady, isTransactionStatsReady } = data;
+    const { isIndexReady, isTransactionStatsReady, isFeeEstimatesReady } = data;
     currentStatus.indexReadyStatus = isIndexReady;
     currentStatus.transactionStatsStatus = isTransactionStatsReady;
+    currentStatus.feesStatus = isFeeEstimatesReady;
 };
 
 

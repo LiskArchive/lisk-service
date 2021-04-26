@@ -14,11 +14,14 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
+
+const core = require('./shared/core');
 const signals = require('./shared/signals');
 
 const features = {
     isIndexReady: false,
     isTransactionStatsReady: false,
+    isFeeEstimatesReady: false,
 };
 
 signals.get('blockIndexReady').add(() => {
@@ -29,6 +32,12 @@ signals.get('blockIndexReady').add(() => {
 signals.get('transactionStatsReady').add((days) => {
     logger.debug('Transaction stats calculated for:', `${days}days`);
     features.isTransactionStatsReady = true;
+});
+
+signals.get('newBlock').add(async () => {
+    logger.debug('Check if fee estmates are ready');
+    const fees = await core.getEstimateFeeByte();
+    if (fees) features.isFeeEstimatesReady = true;
 });
 
 const getCurrentStatus = () => features;
