@@ -100,7 +100,24 @@ pipeline {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
 				sleep(60)
-				waitForHttp('http://localhost:9901/api/ready')
+				sh '''
+						ready=1
+						retries=0
+						set +e
+						while [ $ready -ne 0 ]; do
+							curl --fail --verbose http://localhost:9901/api/ready
+							ready=$?
+							sleep 10
+							let retries++
+							if [ $retries = 6 ]; then
+							break
+							fi
+						done
+						set -e
+						if [ $retries -ge 6 ]; then
+								exit 1
+						fi
+					'''
 			}
 		}
 		stage('Perform integration tests') {
