@@ -99,8 +99,8 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
+				sleep(60)
 				waitForHttp('http://localhost:9901/api/ready')
-				sleep(30) // Workaround to increase CI phase stability
 			}
 		}
 		stage('Perform integration tests') {
