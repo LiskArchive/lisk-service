@@ -103,7 +103,7 @@ const summary = {
 	legacyAddress: Joi.string().optional(),
 	balance: Joi.string().required(),
 	username: Joi.string().allow('').optional(),
-	publicKey: Joi.string().required(),
+	publicKey: Joi.string().allow(null).required(),
 	isMigrated: Joi.boolean().optional(),
 	isDelegate: Joi.boolean().required(),
 	isMultisignature: Joi.boolean().required(),
