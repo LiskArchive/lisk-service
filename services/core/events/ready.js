@@ -15,7 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const { coreReadinessStatus } = require('../coreReady');
+const core = require('../shared/core');
 const signals = require('../shared/signals');
 
 module.exports = [
@@ -25,7 +25,7 @@ module.exports = [
         controller: async callback => {
             signals.get('newBlock').add(async () => {
                 logger.debug('Check current status of core');
-                const coreStatus = await coreReadinessStatus();
+                const coreStatus = await core.getCurrentStatus();
                 callback(coreStatus);
             });
         },

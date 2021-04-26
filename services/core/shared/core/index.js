@@ -69,6 +69,9 @@ const {
 // getAddressByUsername,
 // } = require('./delegateUtils');
 
+
+const { getCurrentStatus } = require('./coreReady');
+
 const {
 	getPeers,
 	getConnectedPeers,
@@ -175,4 +178,5 @@ module.exports = {
 	getSDKVersion,
 	waitForLastBlock,
 	init,
+	getCurrentStatus,
 };

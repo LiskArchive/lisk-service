@@ -14,27 +14,25 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const signals = require('./shared/signals');
+const signals = require('../signals');
 
 const features = {
     isIndexReady: false,
     isTransactionStatsReady: false,
 };
 
-const coreReadinessStatus = async () => {
-    // signals.get('blockIndexReady').add(() => {
-    //     logger.debug('Indexing finished');
-    //     features.isIndexReady = true;
-    // });
+signals.get('blockIndexReady').add(() => {
+    logger.debug('Indexing finished');
+    features.isIndexReady = true;
+});
 
-    signals.get('transactionStatsReady').add((days) => {
-        logger.debug('Transaction stats calculated for:', `${days}days`);
-        features.isTransactionStatsReady = true;
-        features.isIndexReady = true;
-    });
-    return features;
-};
+signals.get('transactionStatsReady').add((days) => {
+    logger.debug('Transaction stats calculated for:', `${days}days`);
+    features.isTransactionStatsReady = true;
+});
+
+const getCurrentStatus = async () => features;
 
 module.exports = {
-    coreReadinessStatus,
+    getCurrentStatus,
 };
