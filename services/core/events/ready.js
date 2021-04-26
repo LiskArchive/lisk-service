@@ -21,10 +21,10 @@ const signals = require('../shared/signals');
 module.exports = [
     {
         name: 'status.core',
-        description: 'Check status for core:',
+        description: 'Returns current status of core service:',
         controller: async callback => {
             signals.get('coreReady').add(() => {
-                logger.debug('Check current status of core');
+                logger.debug('Returns current status of core');
                 const coreStatus = getCurrentStatus();
                 callback(coreStatus);
             });
