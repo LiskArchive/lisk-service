@@ -17,7 +17,7 @@ const logger = require('lisk-service-framework').Logger();
 const core = require('../shared/core');
 const config = require('../config');
 
-const genesisHeight = 0;
+const genesisHeight = core.getGenesisHeight();
 
 module.exports = [
 	{

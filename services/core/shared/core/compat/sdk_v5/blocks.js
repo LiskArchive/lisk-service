@@ -57,6 +57,8 @@ const logger = Logger();
 const genesisHeight = 0;
 let finalizedHeight;
 
+const getGenesisHeight = () => genesisHeight;
+
 const setFinalizedHeight = (height) => finalizedHeight = height;
 
 const getFinalizedHeight = () => finalizedHeight;
@@ -495,6 +497,7 @@ module.exports = {
 	init,
 	getBlocks,
 	deleteBlock,
+	getGenesisHeight,
 	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
