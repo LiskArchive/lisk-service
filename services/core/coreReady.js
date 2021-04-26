@@ -37,7 +37,7 @@ signals.get('transactionStatsReady').add((days) => {
 signals.get('newBlock').add(async () => {
     logger.debug('Check if fee estmates are ready');
     const fees = await core.getEstimateFeeByte();
-    if (fees) features.isFeeEstimatesReady = true;
+    if (Object.getOwnPropertyNames(fees).length) features.isFeeEstimatesReady = true;
 });
 
 const getCurrentStatus = () => features;
