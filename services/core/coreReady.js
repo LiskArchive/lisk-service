@@ -23,7 +23,7 @@ const features = {
     isTransactionStatsReady: false,
     isFeeEstimatesReady: false,
     isDelegatesReady: false,
-    IsPeersReady: false,
+    // IsPeersReady: false,
 };
 
 const isCoreReady = () => !Object.keys(features).some(value => !features[value]);
@@ -41,11 +41,13 @@ signals.get('transactionStatsReady').add((days) => {
 });
 
 // Check if peers are tracked in real time
-signals.get('peerReload').add(async (peers) => {
-    const currentHeight = (await core.getNetworkStatus()).data.height;
-    const isPeersReady = peers[0].height === currentHeight;
-    features.IsPeersReady = isPeersReady;
-});
+// signals.get('peerReload').add(async (peers) => {
+//     const currentHeight = (await core.getNetworkStatus()).data.height;
+//     if (peers.length) {
+//         const isPeersReady = peers[0].height === currentHeight;
+//         features.IsPeersReady = isPeersReady;
+//     }
+// });
 
 signals.get('newBlock').add(async () => {
     if (!isCoreReady()) {
