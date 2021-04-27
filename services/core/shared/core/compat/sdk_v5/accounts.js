@@ -51,8 +51,8 @@ const transactionsIndexSchema = require('./schema/transactions');
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
-// A boolean mapping against the account addresses to indicate migration status
-const migratedAccounts = {};
+// A boolean mapping against the genesis account addresses to indicate migration status
+const genesisAccounts = {};
 
 const indexAccounts = async job => {
 	const { accounts } = job.data;
@@ -103,7 +103,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async address => {
 			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) migratedAccounts[getBase32AddressFromHex(address)] = true;
+			if (isGenesisBlockAccount) genesisAccounts[getBase32AddressFromHex(address)] = true;
 
 			const account = (await getAccountsFromCore({ address })).data[0];
 			const accountFromDB = await getIndexedAccountInfo({
@@ -242,8 +242,6 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			moduleAssetId: reclaimTxModuleAssetId,
 		});
 		if (reclaimTx) {
-			// Add address to the dictionary if account is already reclaimed
-			migratedAccounts[getBase32AddressFromPublicKey(publicKey)] = true;
 			Object.assign(
 				legacyAccountInfo,
 				{
@@ -324,8 +322,8 @@ const getAccounts = async params => {
 			}
 
 			if (account.publicKey) {
-				if (migratedAccounts[account.address]) {
-					account.isMigrated = migratedAccounts[account.address];
+				if (genesisAccounts[account.address]) {
+					account.isMigrated = genesisAccounts[account.address];
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
 					const legacyAccountInfo = await getLegacyAccountInfo({ publicKey: account.publicKey });
