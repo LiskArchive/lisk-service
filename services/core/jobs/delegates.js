@@ -16,19 +16,13 @@
 const logger = require('lisk-service-framework').Logger();
 const core = require('../shared/core');
 
-// const setTimeoutPromise = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-// const sleepAndExec = async (fn, delay = 1000) => {
-// 	await setTimeoutPromise(delay);
-// 	return fn();
-// };
-
 module.exports = [
 	{
 		name: 'refresh.delegates',
 		description: 'Keep the delegate list up-to-date',
 		schedule: '*/5 * * * *', // Every 5 min
 		updateOnInit: true,
+		init: () => { },
 		controller: () => {
 			logger.debug('Scheduling delegate list reload...');
 			core.reloadDelegateCache();
