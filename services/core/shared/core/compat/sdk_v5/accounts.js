@@ -51,6 +51,9 @@ const transactionsIndexSchema = require('./schema/transactions');
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
+// A boolean mapping against the account addresses to indicate migration status
+const migratedAccounts = {};
+
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
@@ -95,14 +98,17 @@ const getAccountsFromCore = async (params) => {
 	return accounts;
 };
 
-const indexAccountsbyAddress = async (addressesToIndex) => {
+const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
 	const accountsToIndex = await BluebirdPromise.map(
 		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async address => {
+			// A genesis block account is considered migrated
+			if (isGenesisBlockAccount) migratedAccounts[address] = true;
+
+			const account = (await getAccountsFromCore({ address })).data[0];
 			const accountFromDB = await getIndexedAccountInfo({
 				address: getBase32AddressFromHex(address),
 			});
-			const account = (await getAccountsFromCore({ address })).data[0];
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
