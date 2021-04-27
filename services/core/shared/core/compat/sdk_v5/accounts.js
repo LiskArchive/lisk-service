@@ -318,16 +318,15 @@ const getAccounts = async params => {
 				if (indexedAccount.publicKey) {
 					account.publicKey = indexedAccount.publicKey;
 				} else if (paramPublicKey
-					&& indexedAccount.address === getBase32AddressFromPublicKey(paramPublicKey)
-				) {
+					&& indexedAccount.address === getBase32AddressFromPublicKey(paramPublicKey)) {
 					account.publicKey = paramPublicKey;
 					indexedAccount.publicKey = paramPublicKey;
 					await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
 				}
-				if (migratedAccounts[account.address]) {
-					account.isMigrated = migratedAccounts[account.address];
-					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
-				}
+			}
+			if (account.publicKey && migratedAccounts[account.address]) {
+				account.isMigrated = migratedAccounts[account.address];
+				account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 			}
 			return account;
 		},
