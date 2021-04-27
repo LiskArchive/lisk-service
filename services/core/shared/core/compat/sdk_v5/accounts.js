@@ -242,6 +242,8 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			moduleAssetId: reclaimTxModuleAssetId,
 		});
 		if (reclaimTx) {
+			// Add address to the dictionary if account is already reclaimed
+			migratedAccounts[getBase32AddressFromPublicKey(publicKey)] = true;
 			Object.assign(
 				legacyAccountInfo,
 				{
