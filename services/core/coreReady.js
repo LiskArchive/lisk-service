@@ -51,7 +51,7 @@ signals.get('newBlock').add(async () => {
         if (delegatesList.data.length) features.isDelegatesReady = true;
 
         // Core reports readiness only if all services available
-        if (isCoreReady()) signals.get('coreReady').dispatch(features);
+        if (isCoreReady()) signals.get('coreServiceReady').dispatch(features);
     }
 });
 
