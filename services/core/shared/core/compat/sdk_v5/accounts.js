@@ -314,13 +314,16 @@ const getAccounts = async params => {
 		accounts.data,
 		async account => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
-			if ((paramPublicKey && indexedAccount)
-				&& indexedAccount.address === getBase32AddressFromPublicKey(paramPublicKey)) {
-				indexedAccount.publicKey = paramPublicKey;
-				await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
-			}
-			if (indexedAccount && indexedAccount.publicKey) {
-				account.publicKey = indexedAccount.publicKey;
+			if (indexedAccount) {
+				if (indexedAccount.publicKey) {
+					account.publicKey = indexedAccount.publicKey;
+				} else if (paramPublicKey
+					&& indexedAccount.address === getBase32AddressFromPublicKey(paramPublicKey)
+				) {
+					account.publicKey = paramPublicKey;
+					indexedAccount.publicKey = paramPublicKey;
+					await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
+				}
 				if (migratedAccounts[account.address]) {
 					account.isMigrated = migratedAccounts[account.address];
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
