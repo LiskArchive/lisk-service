@@ -338,13 +338,12 @@ const getAccounts = async params => {
 	accounts.data = await resolveAccountsInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
 
-	if (paramPublicKey) {
-		params.publicKey = paramPublicKey;
-		// If available, update legacy account information
-		const [account = {}] = accounts.data;
-		const legacyAccountInfo = await getLegacyAccountInfo(params);
+	if (paramPublicKey && !accounts.data.length) {
+		// Check if account is eligible for reclaim
+		const account = {};
+		const legacyAccountInfo = await getLegacyAccountInfo({ publicKey: paramPublicKey });
 		Object.assign(account, legacyAccountInfo);
-		if (!accounts.data.length && Object.keys(account).length) accounts.data.push(account);
+		if (Object.keys(account).length) accounts.data.push(account);
 	}
 
 	accounts.meta.count = accounts.data.length;
