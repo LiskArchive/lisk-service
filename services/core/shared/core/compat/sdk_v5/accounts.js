@@ -304,7 +304,13 @@ const getAccounts = async params => {
 		accounts.data,
 		async account => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
-			if (indexedAccount) account.publicKey = indexedAccount.publicKey;
+			if (indexedAccount && indexedAccount.publicKey) {
+				account.publicKey = indexedAccount.publicKey;
+				if (migratedAccounts[indexedAccount.address]) {
+					account.isMigrated = migratedAccounts[account];
+					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
+				}
+			}
 			return account;
 		},
 		{ concurrency: accounts.data.length },
