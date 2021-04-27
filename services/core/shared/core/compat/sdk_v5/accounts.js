@@ -279,9 +279,14 @@ const getAccounts = async params => {
 		if (!(await confirmAddress(params.address))) return {};
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
-		if (!validatePublicKey(params.publicKey)) {
-			return {};
-		}
+		if (!validatePublicKey(params.publicKey)) return {};
+
+		const { publicKey, ...remParams } = params;
+		paramPublicKey = publicKey;
+		params = {
+			...remParams,
+			address: getBase32AddressFromPublicKey(publicKey),
+		};
 	}
 	if (params.addresses) {
 		const { addresses, ...remParams } = params;
@@ -289,15 +294,6 @@ const getAccounts = async params => {
 		params.whereIn = {
 			property: 'address',
 			values: addresses,
-		};
-	}
-
-	if (params.publicKey) {
-		const { publicKey, ...remParams } = params;
-		paramPublicKey = publicKey;
-		params = {
-			...remParams,
-			address: getBase32AddressFromPublicKey(publicKey),
 		};
 	}
 
