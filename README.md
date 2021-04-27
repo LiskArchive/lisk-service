@@ -32,7 +32,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 | API                      | Description                                                                                                   |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
 | [HTTP API](docs/api/version2.md)     | HTTP API is the public RESTful API that provides blockchain data in standardized JSON format.   |
-| [WebSocket JSON-RPC API](docs/api/websocket_json_rpc_api.md)     | The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format. The API uses the socket.io library and it is compatible with JSON-RPC 2.0 standard.   |
+| [WebSocket JSON-RPC API](docs/api/version2.md)     | The WebSocket-based JSON-RPC API provides blockchain data in standardized JSON format. The API uses the socket.io library and it is compatible with JSON-RPC 2.0 standard.   |
 | [Subscribe API](docs/api/websocket_subscribe_api.md)     | The Subscribe API is an event-driven API. It uses a two-way streaming connection, which can notify the client about new data instantly as it arrives. It is responsible for updating users regarding changes in the blockchain network and markets.   |
 
 ## Installation
@@ -77,7 +77,22 @@ make build
 
 The default configuration is sufficient to run Lisk Service against the [mainnet network](https://explorer.lisk.io/).
 
-To change the default config in Docker, modify the file `docker/custom.env` and replace line 9 in `Makefile` from `-f docker-compose.mainnet.yml` to `-f docker-compose.custom.yml`.
+Before running the application set the required environment variables:
+
+```
+## Required
+# The local Lisk Core node WebSocket API port
+export LISK_CORE_WS="ws://localhost:5000"
+
+## Optional
+# To index all blocks in the blockchain (might take a while)
+export INDEX_N_BLOCKS="0"
+
+# To enable transaction statistics
+export ENABLE_TRANSACTION_STATS="true"
+export TRANSACTION_STATS_HISTORY_LENGTH_DAYS="366"
+export TRANSACTION_STATS_UPDATE_INTERVAL="3600"
+```
 
 Configuration options are described [in this document](./docs/config_options.md).
 
