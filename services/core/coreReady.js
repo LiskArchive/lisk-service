@@ -25,6 +25,8 @@ const features = {
     isDelegatesReady: false,
 };
 
+const isCoreReady = () => !Object.keys(features).some(value => !features[value]);
+
 // Check if all blocks are indexed
 signals.get('blockIndexReady').add(() => {
     logger.debug('Indexing finished');
@@ -38,18 +40,19 @@ signals.get('transactionStatsReady').add((days) => {
 });
 
 signals.get('newBlock').add(async () => {
-    // Check for fee estimates
-    logger.debug('Check if fee estmates are ready');
-    const fees = await core.getEstimateFeeByte();
-    if (Object.getOwnPropertyNames(fees).length) features.isFeeEstimatesReady = true;
+    if (!isCoreReady()) {
+        // Check for fee estimates
+        logger.debug('Check if fee estmates are ready');
+        const fees = await core.getEstimateFeeByte();
+        if (Object.getOwnPropertyNames(fees).length) features.isFeeEstimatesReady = true;
 
-    // Check if delegates list is ready
-    const delegatesList = await core.getDelegates({});
-    if (delegatesList.data.length) features.isDelegatesReady = true;
+        // Check if delegates list is ready
+        const delegatesList = await core.getDelegates({});
+        if (delegatesList.data.length) features.isDelegatesReady = true;
 
-    // Core reports readiness only if all services available
-    const isCoreReady = Object.keys(features).some(value => !features[value]);
-    if (!isCoreReady) signals.get('coreReady').dispatch(features);
+        // Core reports readiness only if all services available
+        if (isCoreReady()) signals.get('coreReady').dispatch(features);
+    }
 });
 
 const getCurrentStatus = () => features;
