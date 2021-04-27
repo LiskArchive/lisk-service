@@ -102,7 +102,7 @@ pipeline {
 				// TODO: Update when readiness report is fixed
 				// waitForHttp('http://localhost:9901/api/ready')
 				waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
-				sleep(60) // Workaround to increase CI phase stability
+				sleep(90) // Workaround to increase CI phase stability
 			}
 		}
 		stage('Perform integration tests') {
