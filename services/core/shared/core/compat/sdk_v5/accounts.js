@@ -103,7 +103,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async address => {
 			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) migratedAccounts[address] = true;
+			if (isGenesisBlockAccount) migratedAccounts[getBase32AddressFromHex(address)] = true;
 
 			const account = (await getAccountsFromCore({ address })).data[0];
 			const accountFromDB = await getIndexedAccountInfo({
@@ -306,8 +306,8 @@ const getAccounts = async params => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
 			if (indexedAccount && indexedAccount.publicKey) {
 				account.publicKey = indexedAccount.publicKey;
-				if (migratedAccounts[indexedAccount.address]) {
-					account.isMigrated = migratedAccounts[account];
+				if (migratedAccounts[account.address]) {
+					account.isMigrated = migratedAccounts[account.address];
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				}
 			}
