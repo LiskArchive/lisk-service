@@ -343,7 +343,7 @@ const indexGenesisBlock = async () => {
 		.filter(account => account.address.length > 16) // To filter out reclaim accounts
 		.map(account => account.address);
 	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
-	await indexAccountsbyAddress(accountAddressesToIndex, true);
+	await indexAccountsbyAddress(accountAddressesToIndex);
 	await indexTransactions([genesisBlock]);
 };
 

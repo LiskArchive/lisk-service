@@ -95,7 +95,7 @@ const getAccountsFromCore = async (params) => {
 	return accounts;
 };
 
-const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
+const indexAccountsbyAddress = async (addressesToIndex) => {
 	const accountsToIndex = await BluebirdPromise.map(
 		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async address => {
@@ -103,9 +103,6 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 				address: getBase32AddressFromHex(address),
 			});
 			const account = (await getAccountsFromCore({ address })).data[0];
-			account.isMigrated = accountFromDB && accountFromDB.isMigrated 
-				? accountFromDB.isMigrated 
-				: isGenesisBlockAccount; // Accounts within the genesis block are already migrated
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
