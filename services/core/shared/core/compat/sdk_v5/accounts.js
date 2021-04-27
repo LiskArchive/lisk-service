@@ -259,6 +259,7 @@ const getAccounts = async params => {
 		data: [],
 		meta: {},
 	};
+	let paramPublicKey;
 	const accountsDB = await getAccountsIndex();
 	if (params.sort && params.sort.includes('rank')) {
 		return new Error('Rank based sorting is supported only for delegates');
@@ -291,6 +292,15 @@ const getAccounts = async params => {
 		};
 	}
 
+	if (params.publicKey) {
+		const { publicKey, ...remParams } = params;
+		paramPublicKey = publicKey;
+		params = {
+			...remParams,
+			address: getBase32AddressFromPublicKey(publicKey),
+		};
+	}
+
 	const resultSet = await accountsDB.find(params);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
@@ -304,8 +314,14 @@ const getAccounts = async params => {
 		accounts.data,
 		async account => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
-			if (indexedAccount && indexedAccount.publicKey) {
-				account.publicKey = indexedAccount.publicKey;
+			if (indexedAccount) {
+				if (paramPublicKey
+					&& indexedAccount.address === getBase32AddressFromPublicKey(paramPublicKey)) {
+					account.publicKey = paramPublicKey;
+					await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
+				} else {
+					account.publicKey = indexedAccount.publicKey;
+				}
 				if (migratedAccounts[account.address]) {
 					account.isMigrated = migratedAccounts[account.address];
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
@@ -318,7 +334,8 @@ const getAccounts = async params => {
 	accounts.data = await resolveAccountsInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
 
-	if (params.publicKey) {
+	if (paramPublicKey) {
+		params.publicKey = paramPublicKey;
 		// If available, update legacy account information
 		const [account = {}] = accounts.data;
 		const legacyAccountInfo = await getLegacyAccountInfo(params);
