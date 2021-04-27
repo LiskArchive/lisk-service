@@ -23,11 +23,10 @@ const features = {
     isTransactionStatsReady: false,
     isFeeEstimatesReady: false,
     isDelegatesReady: false,
-    // IsPeersReady: false,
+    IsPeersReady: false,
 };
 
 const isCoreReady = () => !Object.keys(features).some(value => !features[value]);
-
 
 // Check if all blocks are indexed
 signals.get('blockIndexReady').add(() => {
@@ -44,14 +43,7 @@ signals.get('transactionStatsReady').add((days) => {
 // Check if peers are tracked in real time
 signals.get('peerReload').add(async (peers) => {
     const currentHeight = (await core.getNetworkStatus()).data.height;
-    const isPeersReady = peers.some(peer => {
-        // check for peers if up-to-date
-        if (peer.height === currentHeight) {
-            logger.debug('Peers list is up-to-date');
-            return true;
-        }
-        return peer;
-    });
+    const isPeersReady = peers[0].height === currentHeight;
     features.IsPeersReady = isPeersReady;
 });
 

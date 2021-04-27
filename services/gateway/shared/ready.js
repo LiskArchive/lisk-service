@@ -42,7 +42,7 @@ const getReady = async broker => {
             },
         );
         let allServices;
-        if (config.coreReadiness) {
+        if (config.includeCoreReadiness) {
             allServices = Object.assign(...services, currentStatus);
         } else {
             allServices = Object.assign(...services);
