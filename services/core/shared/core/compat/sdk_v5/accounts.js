@@ -324,10 +324,17 @@ const getAccounts = async params => {
 					await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
 				}
 			}
-			if (account.publicKey && migratedAccounts[account.address]) {
-				account.isMigrated = migratedAccounts[account.address];
-				account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
+
+			if (account.publicKey) {
+				if (migratedAccounts[account.address]) {
+					account.isMigrated = migratedAccounts[account.address];
+					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
+				} else {
+					const legacyAccountInfo = await getLegacyAccountInfo({ publicKey: account.publicKey });
+					Object.assign(account, legacyAccountInfo);
+				}
 			}
+
 			return account;
 		},
 		{ concurrency: accounts.data.length },
