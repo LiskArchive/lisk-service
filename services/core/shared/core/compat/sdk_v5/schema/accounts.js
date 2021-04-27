@@ -18,7 +18,7 @@ module.exports = {
 	schema: {
 		address: { type: 'string' },
 		publicKey: { type: 'string' },
-		isDelegate: { type: 'boolean' },
+		isDelegate: { type: 'boolean', null: false, defaultValue: false },
 		balance: { type: 'bigInteger' },
 		username: { type: 'string' },
 		rewards: { type: 'bigInteger', defaultValue: 0 },
