@@ -302,8 +302,13 @@ const getAccounts = async params => {
 		.map(row => getHexAddressFromBase32(row.address));
 
 	if (params.address || (params.addresses && params.addresses.length)) {
-		const response = await getAccountsFromCore(params);
-		if (response.data) accounts.data = response.data;
+		try {
+			const response = await getAccountsFromCore(params);
+			if (response.data) accounts.data = response.data;
+		} catch (err) {
+			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN'))
+				throw new Error(err);
+		}
 	}
 
 	accounts.data = await BluebirdPromise.map(
