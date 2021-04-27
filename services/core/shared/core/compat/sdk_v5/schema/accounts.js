@@ -19,6 +19,7 @@ module.exports = {
 		address: { type: 'string' },
 		publicKey: { type: 'string' },
 		isDelegate: { type: 'boolean' },
+		isMigrated: { type: 'boolean' },
 		balance: { type: 'bigInteger' },
 		username: { type: 'string' },
 		rewards: { type: 'bigInteger', defaultValue: 0 },
