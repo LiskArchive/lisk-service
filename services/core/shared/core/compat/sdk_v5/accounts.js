@@ -260,6 +260,7 @@ const getAccounts = async params => {
 		meta: {},
 	};
 	let paramPublicKey;
+	let addressFromParamPublicKey;
 	const accountsDB = await getAccountsIndex();
 	if (params.sort && params.sort.includes('rank')) {
 		return new Error('Rank based sorting is supported only for delegates');
@@ -283,6 +284,7 @@ const getAccounts = async params => {
 
 		const { publicKey, ...remParams } = params;
 		paramPublicKey = publicKey;
+		addressFromParamPublicKey = getBase32AddressFromPublicKey(paramPublicKey);
 		params = {
 			...remParams,
 			address: getBase32AddressFromPublicKey(publicKey),
@@ -317,8 +319,7 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (indexedAccount.publicKey) {
 					account.publicKey = indexedAccount.publicKey;
-				} else if (paramPublicKey
-					&& indexedAccount.address === getBase32AddressFromPublicKey(paramPublicKey)) {
+				} else if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
 					indexedAccount.publicKey = paramPublicKey;
 					await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
