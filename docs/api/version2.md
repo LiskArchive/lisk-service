@@ -538,13 +538,12 @@ _Supports pagination._
 | recipientAddress   | String  | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`                  | *(empty)*      |
 | recipientPublicKey | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
 | recipientUsername  | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
-search ie. "gene*" -> "genesis"                       |
 | amount             | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
 | timestamp          | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
 | blockId             | String  | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                  | *(empty)*      | Block ID
 | height             | String  |                                                                    | *(empty)*      | Block height
 | search             | String  |                                                                    | *(empty)*      | Wildcard search
-| data               | String  |                                                                    | *(empty)*      | Wildcard search
+| data               | String  |                                                                    | *(empty)*      | Wildcard search                       |
 | includePending     | Boolean |                                                                    | false          |
 | nonce              | String  | `/^\d+$/`                                                          | *(empty)*      | In conjunction with senderAddress                              |
 | limit              | Number  | `<1;100>`                                                          | 10             |
