@@ -66,6 +66,6 @@ config.api.versions = {
 	'/api/v2': 'http-version2',
 };
 
-// Until and unless config is explicitly specified to be false, it default to true
+// Unless STRICT_READINESS_CHECK env. variable is explicitly set 'false', 'includeCoreReadiness' always evaluates to true
 config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
 module.exports = config;
