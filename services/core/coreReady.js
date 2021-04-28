@@ -51,7 +51,7 @@ signals.get('transactionStatsReady').add((days) => {
 // });
 
 signals.get('newBlock').add(async () => {
-    if (isCoreReady() === false) {
+    if (!isCoreReady()) {
         // Check for fee estimates
         logger.debug('Check if fee estmates are ready');
         const fees = await core.getEstimateFeeByte();
@@ -63,10 +63,10 @@ signals.get('newBlock').add(async () => {
 
         // Check if transaction stats are disabled, set isTransactionStatsReady to true
         if (config.transactionStatistics.enabled === false) features.isTransactionStatsReady = true;
-
-        // Core reports readiness only if all services available
-        if (isCoreReady()) signals.get('coreServiceReady').dispatch(features);
     }
+
+    // Core reports readiness only if all services available
+    if (isCoreReady()) signals.get('coreServiceReady').dispatch(features);
 });
 
 const getCurrentStatus = async () => features;
