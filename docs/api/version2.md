@@ -15,7 +15,6 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 ## Table of Contents
 
 - [Lisk Service HTTP API Documentation](#lisk-service-http-api-documentation)
-  - [Endpoint Logic](#endpoint-logic)
   - [Response format](#response-format)
   - [The Date Format](#the-date-format)
 - [Lisk Blockchain-related Endpoints](#lisk-blockchain-related-endpoints)
@@ -36,11 +35,6 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
-
-## Endpoint Logic
-
-The logic of the endpoints are as follows:
-- the structure is always based on `/<root_entity>/<object>/<properties>`
 
 ## Response format
 
@@ -84,6 +78,9 @@ Make the version 2 API able to retrieve data by those criteria.
 | address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      | Resolves new and old address system    |
 | publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
 | username  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                 | *(empty)*      |
+| isDelegate | Boolean         | `true` or `false`                                          | *(empty)*      |
+| status    | String           | `active`, `standby`, `banned`, `punished`, `non-eligible`              | *(empty)*      | Multiple choice possible i.e. `active,banned`
+| search    | String           |                                  | *(empty)*      |
 | limit     | Number           | `<1;100>`                                                  | 10             |
 | offset    | Number           | `<0;+Inf>`                                                 | 0              |
 | sort      | Array of strings | `["balance:asc", "balance:desc", "rank:asc", "rank:desc"]` | `balance:desc` | Rank is dedicated to delegate accounts |
@@ -203,6 +200,12 @@ Get address with certain Lisk account ID
 ```
 https://service.lisk.io/api/v2/accounts?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
+
+Get all delegates
+```
+https://service.lisk.io/api/v2/accounts?isDelegate=true
+```
+
 
 ### Sent votes
 
@@ -499,9 +502,14 @@ Make the version 2 API able to retrieve data by those criteria.
 
 #### Examples
 
-
+Get blocks by block ID
 ```
 https://service.lisk.io/api/v2/blocks?blockId=1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e
+```
+
+Get blocks by height
+```
+https://service.lisk.io/api/v2/blocks?height=9
 ```
 
 ## Transactions
@@ -530,9 +538,12 @@ _Supports pagination._
 | recipientAddress   | String  | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`                  | *(empty)*      |
 | recipientPublicKey | String  | `/^([A-Fa-f0-9]{2}){32}$/`                                         | *(empty)*      |
 | recipientUsername  | String  | `/^[a-z0-9!@$&_.]{1,20}$/`                                         | *(empty)*      |
-| data               | String  |                                                                    | *(empty)*      | Wildcard search ie. "gene*" -> "genesis"                       |
 | amount             | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
 | timestamp          | String  |                                                                    | *(empty)*      | Can be expressed as interval ie. `100000:200000`               |
+| blockId             | String  | `/^([1-9]\|[A-Fa-f0-9]){1,64}$/`                                  | *(empty)*      | Block ID
+| height             | String  |                                                                    | *(empty)*      | Block height
+| search             | String  |                                                                    | *(empty)*      | Wildcard search
+| data               | String  |                                                                    | *(empty)*      | Wildcard search                       |
 | includePending     | Boolean |                                                                    | false          |
 | nonce              | String  | `/^\d+$/`                                                          | *(empty)*      | In conjunction with senderAddress                              |
 | limit              | Number  | `<1;100>`                                                          | 10             |
