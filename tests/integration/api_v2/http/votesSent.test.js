@@ -37,7 +37,12 @@ const {
 	describe('Votes Sent (Votes) API', () => {
 		let refDelegate;
 		beforeAll(async () => {
-			[refDelegate] = (await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`)).data;
+			let response;
+			do {
+				// eslint-disable-next-line no-await-in-loop
+				response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
+			} while (!response);
+			[refDelegate] = response.data;
 		});
 
 		describe(`GET ${endpoint}`, () => {
