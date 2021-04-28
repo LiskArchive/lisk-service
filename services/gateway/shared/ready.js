@@ -48,10 +48,8 @@ const getReady = async broker => {
             allServices = Object.assign(...services);
         }
 
-        const servicesStatus = Object.keys(allServices).some(value => !allServices[value]);
-        if (servicesStatus === false) {
-            return Promise.resolve({ services: allServices });
-        }
+        const servicesStatus = !Object.keys(allServices).some(value => !allServices[value]);
+        if (servicesStatus) return Promise.resolve({ services: allServices });
         return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
     } catch (_) {
         return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
