@@ -165,9 +165,11 @@ const getDelegates = async params => {
 			&& String(acc.username).match(new RegExp(params.search, 'i'))));
 	}
 
-	delegates.data = delegates.data
-		.sort(sortComparator(params.sort))
-		.slice(offset, offset + limit);
+	if (delegates.data.length) {
+		delegates.data = delegates.data
+			.sort(sortComparator(params.sort))
+			.slice(offset, offset + limit);
+	}
 
 	delegates.meta.count = delegates.data.length;
 	delegates.meta.offset = params.offset;
