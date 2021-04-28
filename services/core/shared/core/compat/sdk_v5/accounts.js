@@ -318,11 +318,11 @@ const getAccounts = async params => {
 		async account => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
 			if (indexedAccount) {
-				if (indexedAccount.publicKey) {
-					account.publicKey = indexedAccount.publicKey;
-				} else if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
+				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
 					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [{ ...indexedAccount, publicKey: paramPublicKey }] });
+				} else {
+					account.publicKey = indexedAccount.publicKey;
 				}
 			}
 
