@@ -51,6 +51,9 @@ const transactionsIndexSchema = require('./schema/transactions');
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
+// A boolean mapping against the genesis account addresses to indicate migration status
+const genesisAccounts = {};
+
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
@@ -62,6 +65,7 @@ const indexAccounts = async job => {
 	await accountsDB.upsert(accounts);
 };
 
+const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
 const indexAccountsByAddressQueue = initializeQueue('indexAccountsByAddressQueue', indexAccounts);
 const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQueue', indexAccounts);
 
@@ -95,14 +99,17 @@ const getAccountsFromCore = async (params) => {
 	return accounts;
 };
 
-const indexAccountsbyAddress = async (addressesToIndex) => {
+const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
 	const accountsToIndex = await BluebirdPromise.map(
 		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
 		async address => {
+			// A genesis block account is considered migrated
+			if (isGenesisBlockAccount) genesisAccounts[getBase32AddressFromHex(address)] = true;
+
+			const account = (await getAccountsFromCore({ address })).data[0];
 			const accountFromDB = await getIndexedAccountInfo({
 				address: getBase32AddressFromHex(address),
 			});
-			const account = (await getAccountsFromCore({ address })).data[0];
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
@@ -253,6 +260,8 @@ const getAccounts = async params => {
 		data: [],
 		meta: {},
 	};
+	let paramPublicKey;
+	let addressFromParamPublicKey;
 	const accountsDB = await getAccountsIndex();
 	if (params.sort && params.sort.includes('rank')) {
 		return new Error('Rank based sorting is supported only for delegates');
@@ -272,9 +281,15 @@ const getAccounts = async params => {
 		if (!(await confirmAddress(params.address))) return {};
 	}
 	if (params.publicKey && typeof params.publicKey === 'string') {
-		if (!validatePublicKey(params.publicKey)) {
-			return {};
-		}
+		if (!validatePublicKey(params.publicKey)) return {};
+
+		const { publicKey, ...remParams } = params;
+		paramPublicKey = publicKey;
+		addressFromParamPublicKey = getBase32AddressFromPublicKey(paramPublicKey);
+		params = {
+			...remParams,
+			address: addressFromParamPublicKey,
+		};
 	}
 	if (params.addresses) {
 		const { addresses, ...remParams } = params;
@@ -290,15 +305,37 @@ const getAccounts = async params => {
 		.map(row => getHexAddressFromBase32(row.address));
 
 	if (params.address || (params.addresses && params.addresses.length)) {
-		const response = await getAccountsFromCore(params);
-		if (response.data) accounts.data = response.data;
+		try {
+			const response = await getAccountsFromCore(params);
+			if (response.data) accounts.data = response.data;
+		} catch (err) {
+			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
+		}
 	}
 
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
-			if (indexedAccount) account.publicKey = indexedAccount.publicKey;
+			if (indexedAccount) {
+				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
+					account.publicKey = paramPublicKey;
+					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [{ ...indexedAccount, publicKey: paramPublicKey }] });
+				} else {
+					account.publicKey = indexedAccount.publicKey;
+				}
+			}
+
+			if (account.publicKey) {
+				if (genesisAccounts[account.address]) {
+					account.isMigrated = genesisAccounts[account.address];
+					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
+				} else {
+					const legacyAccountInfo = await getLegacyAccountInfo({ publicKey: account.publicKey });
+					Object.assign(account, legacyAccountInfo);
+				}
+			}
+
 			return account;
 		},
 		{ concurrency: accounts.data.length },
@@ -306,12 +343,12 @@ const getAccounts = async params => {
 	accounts.data = await resolveAccountsInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
 
-	if (params.publicKey) {
-		// If available, update legacy account information
-		const [account = {}] = accounts.data;
-		const legacyAccountInfo = await getLegacyAccountInfo(params);
+	if (paramPublicKey && !accounts.data.length) {
+		// Check if reclaim information is available for the account
+		const account = {};
+		const legacyAccountInfo = await getLegacyAccountInfo({ publicKey: paramPublicKey });
 		Object.assign(account, legacyAccountInfo);
-		if (!accounts.data.length && Object.keys(account).length) accounts.data.push(account);
+		if (Object.keys(account).length) accounts.data.push(account);
 	}
 
 	accounts.meta.count = accounts.data.length;
