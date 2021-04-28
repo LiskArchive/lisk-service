@@ -44,7 +44,10 @@ const api = {
 };
 
 const close = (socketName) => {
-	if (socketPool[socketName]) socketPool[socketName].close();
+	if (socketPool[socketName]) {
+		socketPool[socketName].close();
+		delete socketPool[socketName];
+	}
 };
 
 const closeAll = () => {
