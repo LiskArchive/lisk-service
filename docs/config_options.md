@@ -4,9 +4,9 @@
 
 These options are available for all micro-services provided by Lisk Service.
 
-Note that most of them are set properly in the Docker environment.
+Note that most of them are set correctly in the Docker environment.
 
-If the Docker environment is being used, the only required variable `LISK_CORE_WS` is needed.
+If the Docker environment is being used, only the required variable `LISK_CORE_WS` is needed.
 
 ### Service broker
 
