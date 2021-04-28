@@ -32,6 +32,7 @@ const services = {
 	indexReadyStatus: Joi.boolean().required(),
 	transactionStatsStatus: Joi.boolean().required(),
 	feesStatus: Joi.boolean().required(),
+	delegatesStatus: Joi.boolean().required(),
 };
 
 const readySchema = {

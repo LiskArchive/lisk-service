@@ -22,6 +22,7 @@ const currentStatus = {
     indexReadyStatus: false,
     transactionStatsStatus: false,
     feesStatus: false,
+    delegatesStatus: false,
 };
 
 const getReady = async broker => {
@@ -57,10 +58,11 @@ const getReady = async broker => {
 };
 
 const updateSvcStatus = data => {
-    const { isIndexReady, isTransactionStatsReady, isFeeEstimatesReady } = data;
+    const { isIndexReady, isTransactionStatsReady, isFeeEstimatesReady, isDelegatesReady } = data;
     currentStatus.indexReadyStatus = isIndexReady;
     currentStatus.transactionStatsStatus = isTransactionStatsReady;
     currentStatus.feesStatus = isFeeEstimatesReady;
+    currentStatus.delegatesStatus = isDelegatesReady;
 };
 
 
