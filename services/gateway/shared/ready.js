@@ -14,13 +14,21 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-
 const { MoleculerError } = require('moleculer').Errors;
+
+const config = require('../config');
+
+const currentStatus = {
+    indexReadyStatus: false,
+    transactionStatsStatus: false,
+    feesStatus: false,
+    delegatesStatus: false,
+};
 
 const getReady = async broker => {
     const coreMethods = {
         lisk_accounts: 'core.accounts',
-        // lisk_blocks: 'core.blocks',
+        lisk_blocks: 'core.blocks',
         lisk_transactions: 'core.transactions',
         // lisk_peers: 'core.peers',
     };
@@ -34,13 +42,31 @@ const getReady = async broker => {
                 return service;
             },
         );
-        return Promise.resolve({ services: Object.assign({}, ...services) });
+        let allServices;
+        if (config.includeCoreReadiness) {
+            allServices = Object.assign(...services, currentStatus);
+        } else {
+            allServices = Object.assign(...services);
+        }
+
+        const servicesStatus = !Object.keys(allServices).some(value => !allServices[value]);
+        if (servicesStatus) return Promise.resolve({ services: allServices });
+        return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentStatus));
     } catch (_) {
-        return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
+        return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentStatus));
     }
+};
+
+const updateSvcStatus = data => {
+    const { isIndexReady, isTransactionStatsReady, isFeeEstimatesReady, isDelegatesReady } = data;
+    currentStatus.indexReadyStatus = isIndexReady;
+    currentStatus.transactionStatsStatus = isTransactionStatsReady;
+    currentStatus.feesStatus = isFeeEstimatesReady;
+    currentStatus.delegatesStatus = isDelegatesReady;
 };
 
 
 module.exports = {
     getReady,
+    updateSvcStatus,
 };

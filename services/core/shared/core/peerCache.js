@@ -20,6 +20,8 @@ const requestAll = require('../requestAll');
 
 const { peerStates } = require('./compat');
 
+const signals = require('../signals');
+
 const logger = Logger();
 
 const sdkVersion = coreApi.getSDKVersion();
@@ -97,6 +99,7 @@ const reload = async () => {
 	peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
 	peerStore.statistics = await refreshStatistics();
 	logger.debug('Updated peer cache.');
+	signals.get('peerReload').dispatch(peerStore.peers);
 };
 
 module.exports = {
