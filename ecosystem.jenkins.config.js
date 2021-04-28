@@ -32,7 +32,7 @@ module.exports = {
 			env: {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				ENABLE_CORE_READINESS: true,
+				STRICT_READINESS_CHECK: true,
 			},
 		},
 		{

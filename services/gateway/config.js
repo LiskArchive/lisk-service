@@ -66,5 +66,5 @@ config.api.versions = {
 	'/api/v2': 'http-version2',
 };
 
-config.includeCoreReadiness = Boolean(String(process.env.ENABLE_CORE_READINESS).toLowerCase() !== 'false');
+config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
 module.exports = config;
