@@ -4,6 +4,10 @@
 
 These options are available for all micro-services provided by Lisk Service.
 
+Note that most of them are set correctly in the Docker environment.
+
+If the Docker environment is being used, only the required variable `LISK_CORE_WS` is needed.
+
 ### Service broker
 
 ```bash
@@ -37,9 +41,11 @@ HOST=0.0.0.0   # or 127.0.0.1 for localhost
 ```bash
 # Enable certain APIs (HTTP & WebSocket)
 # Use comma separated list
-ENABLE_HTTP_API=http-version1,http-version1-compat,http-status,http-version2
-ENABLE_WS_API=rpc,rpc-v1,blockchain,rpc-v2
+ENABLE_HTTP_API=http-status,http-version2
+ENABLE_WS_API=blockchain,rpc-v2
 ```
+
+Note: Since the SDK version 5 the HTTP APIs `http-version1,http-version1-compat` and WebSocket APIs `rpc,rpc-v1` are considered deprecated. Please use only `version2` APIs when connecting to the SDKv5-based node.
 
 ### Compatibility settings
 
@@ -55,9 +61,15 @@ JSON_RPC_STRICT_MODE=false
 ### Node settings
 
 ```bash
-LISK_CORE_HTTP=https://mainnet.lisk.io # Lisk Core HTTP URL
-LISK_CORE_WS=wss://mainnet.lisk.io     # Lisk Core WebSocket URL
+LISK_CORE_WS=ws://localhost:5000       # Lisk Core WebSocket RPC API
 LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
+```
+
+Deprecated settings
+
+```
+# This setting is required only for SDK version 4 or lower.
+LISK_CORE_HTTP=https://mainnet.lisk.io # Lisk Core HTTP URL
 ```
 
 ### Internal cache & persistence
@@ -69,7 +81,10 @@ LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
 # Note: SERVICE_BROKER uses a different DB
 SERVICE_CORE_REDIS=redis://localhost:6379/1
 
-# MySQL install
+# MySQL settings
+SERVICE_CORE_MYSQL=mysql://lisk:password@localhost:3306/lisk_service_core
+
+# MySQL install (for local Docker container)
 MYSQL_ROOT_PASSWORD=password
 MYSQL_DATABASE=lisk
 MYSQL_USER=lisk

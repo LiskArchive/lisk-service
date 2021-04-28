@@ -40,7 +40,12 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 	describe(`Method ${methodName}`, () => {
 		let refDelegate;
 		beforeAll(async () => {
-			[refDelegate] = (await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 })).result.data;
+			let response;
+			do {
+				// eslint-disable-next-line no-await-in-loop
+				response = await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 });
+			} while (!response.result);
+			[refDelegate] = response.result.data;
 		});
 
 		it('Returns list of voters when requested for existing account by account ID', async () => {
