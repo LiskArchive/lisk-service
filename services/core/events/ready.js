@@ -23,9 +23,9 @@ module.exports = [
         name: 'coreService.Ready',
         description: 'Returns current status of core service:',
         controller: async callback => {
-            signals.get('coreServiceReady').add(() => {
+            signals.get('coreServiceReady').add(async () => {
                 logger.debug('Returns current status of core');
-                const coreStatus = getCurrentStatus();
+                const coreStatus = await getCurrentStatus();
                 callback(coreStatus);
             });
         },

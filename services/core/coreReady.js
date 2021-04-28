@@ -51,7 +51,7 @@ signals.get('transactionStatsReady').add((days) => {
 // });
 
 signals.get('newBlock').add(async () => {
-    if (!isCoreReady()) {
+    if (isCoreReady() === false) {
         // Check for fee estimates
         logger.debug('Check if fee estmates are ready');
         const fees = await core.getEstimateFeeByte();
@@ -69,7 +69,7 @@ signals.get('newBlock').add(async () => {
     }
 });
 
-const getCurrentStatus = () => features;
+const getCurrentStatus = async () => features;
 
 module.exports = {
     getCurrentStatus,
