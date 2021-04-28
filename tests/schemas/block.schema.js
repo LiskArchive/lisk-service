@@ -22,7 +22,7 @@ const blockSchema = {
 	timestamp: Joi.number().integer().min(1).required(),
 	generatorAddress: Joi.string().required(),
 	generatorPublicKey: Joi.string().required(),
-	generatorUsername: Joi.string().required(),
+	generatorUsername: Joi.string().allow(null).required(),
 	payloadLength: Joi.number().integer().min(0).required(),
 	payloadHash: Joi.string().required(),
 	blockSignature: Joi.string().required(),

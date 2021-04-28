@@ -37,7 +37,7 @@ describe('Method get.delegates', () => {
 		do {
 			// eslint-disable-next-line no-await-in-loop
 			response = await getDelegates({ isDelegate: true, limit: 1 });
-		} while (!response.result.data);
+		} while (!response.result);
 		[refDelegate] = response.result.data;
 	});
 
