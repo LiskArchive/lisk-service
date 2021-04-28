@@ -61,7 +61,7 @@ JSON_RPC_STRICT_MODE=false
 ### Node settings
 
 ```bash
-LISK_CORE_WS=wss://mainnet.lisk.io     # Lisk Core WebSocket URL
+LISK_CORE_WS=ws://localhost:5000       # Lisk Core WebSocket RPC API
 LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
 ```
 
@@ -81,7 +81,10 @@ LISK_CORE_HTTP=https://mainnet.lisk.io # Lisk Core HTTP URL
 # Note: SERVICE_BROKER uses a different DB
 SERVICE_CORE_REDIS=redis://localhost:6379/1
 
-# MySQL install
+# MySQL settings
+SERVICE_CORE_MYSQL=mysql://lisk:password@localhost:3306/lisk_service_core
+
+# MySQL install (for local Docker container)
 MYSQL_ROOT_PASSWORD=password
 MYSQL_DATABASE=lisk
 MYSQL_USER=lisk
