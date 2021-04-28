@@ -65,6 +65,7 @@ const indexAccounts = async job => {
 	await accountsDB.upsert(accounts);
 };
 
+const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
 const indexAccountsByAddressQueue = initializeQueue('indexAccountsByAddressQueue', indexAccounts);
 const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQueue', indexAccounts);
 
@@ -321,7 +322,7 @@ const getAccounts = async params => {
 					account.publicKey = indexedAccount.publicKey;
 				} else if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
-					await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
+					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [{ ...indexedAccount, publicKey: paramPublicKey }] });
 				}
 			}
 
