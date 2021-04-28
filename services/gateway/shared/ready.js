@@ -29,7 +29,7 @@ const getReady = async broker => {
         lisk_accounts: 'core.accounts',
         lisk_blocks: 'core.blocks',
         lisk_transactions: 'core.transactions',
-        lisk_peers: 'core.peers',
+        // lisk_peers: 'core.peers',
     };
     try {
         const services = await BluebirdPromise.map(

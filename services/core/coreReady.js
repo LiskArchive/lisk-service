@@ -17,6 +17,7 @@ const logger = require('lisk-service-framework').Logger();
 
 const core = require('./shared/core');
 const signals = require('./shared/signals');
+const config = require('./config');
 
 const features = {
     isIndexReady: false,
@@ -59,6 +60,9 @@ signals.get('newBlock').add(async () => {
         // Check if delegates list is ready
         const delegatesList = await core.getDelegates({});
         if (delegatesList.data.length) features.isDelegatesReady = true;
+
+        // Check if transaction stats are disabled, set isTransactionStatsReady to true
+        if (config.transactionStatistics.enabled === false) features.isTransactionStatsReady = true;
 
         // Core reports readiness only if all services available
         if (isCoreReady()) signals.get('coreServiceReady').dispatch(features);
