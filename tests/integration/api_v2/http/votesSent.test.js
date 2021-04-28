@@ -41,7 +41,7 @@ const {
 			do {
 				// eslint-disable-next-line no-await-in-loop
 				response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
-			} while (!response);
+			} while (!response.data);
 			[refDelegate] = response.data;
 		});
 
