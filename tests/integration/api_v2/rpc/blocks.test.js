@@ -22,6 +22,7 @@ const config = require('../../../config');
 
 const {
 	request,
+	closeAll,
 } = require('../../../helpers/socketIoRpcRequest');
 
 const {
@@ -267,3 +268,5 @@ describe('Method get.blocks', () => {
 		});
 	});
 });
+
+afterAll(() => { closeAll(); });

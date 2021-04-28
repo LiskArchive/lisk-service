@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { request } = require('../../../helpers/socketIoRpcRequest');
+const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	jsonRpcEnvelopeSchema,
@@ -41,3 +41,5 @@ describe('get.network.status', () => {
 		expect(response).toMap(invalidParamsSchema);
 	});
 });
+
+afterAll(() => { closeAll(); });

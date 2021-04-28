@@ -16,7 +16,7 @@
 import moment from 'moment';
 
 const config = require('../../../config');
-const { request } = require('../../../helpers/socketIoRpcRequest');
+const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
@@ -335,3 +335,5 @@ describe('Method get.transactions', () => {
 		});
 	});
 });
+
+afterAll(() => { closeAll(); });

@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { request } = require('../../../helpers/socketIoRpcRequest');
+const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	wrongMethodSchema,
@@ -232,3 +232,5 @@ describe('Peers API', () => {
 		});
 	});
 });
+
+afterAll(() => { closeAll(); });

@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { request } = require('../../../helpers/socketIoRpcRequest');
+const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
@@ -56,3 +56,5 @@ describe('Forgers API', () => {
         });
     });
 });
+afterAll(() => { closeAll(); });
+
