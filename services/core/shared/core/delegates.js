@@ -122,20 +122,24 @@ const getDelegates = async params => {
 	const sortComparator = (sortParam) => {
 		const sortProp = sortParam.split(':')[0];
 		const sortOrder = sortParam.split(':')[1];
-
-		const comparator = (a, b) => {
-			try {
-				if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting');
-				return (sortOrder === 'asc')
-					? a[sortProp] - b[sortProp]
-					: b[sortProp] - a[sortProp];
-			} catch (_) {
-				return (sortOrder === 'asc')
-					? a[sortProp].localeCompare(b[sortProp])
-					: b[sortProp].localeCompare(a[sortProp]);
-			}
-		};
-		return comparator;
+		try {
+			const comparator = (a, b) => {
+				try {
+					if (Number.isNaN(Number(a[sortProp]))) throw new Error('Not a number, try string sorting');
+					return (sortOrder === 'asc')
+						? a[sortProp] - b[sortProp]
+						: b[sortProp] - a[sortProp];
+				} catch (_) {
+					return (sortOrder === 'asc')
+						? a[sortProp].localeCompare(b[sortProp])
+						: b[sortProp].localeCompare(a[sortProp]);
+				}
+			};
+			return comparator;
+		} catch (err) {
+			logger.error(err);
+			throw err;
+		}
 	};
 
 	const filterBy = (list, entity) => list.filter((acc) => params[entity].includes(',')
