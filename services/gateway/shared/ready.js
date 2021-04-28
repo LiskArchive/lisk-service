@@ -51,9 +51,9 @@ const getReady = async broker => {
 
         const servicesStatus = !Object.keys(allServices).some(value => !allServices[value]);
         if (servicesStatus) return Promise.resolve({ services: allServices });
-        return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
+        return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentStatus));
     } catch (_) {
-        return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING'));
+        return Promise.reject(new MoleculerError('Core Service Unavailable', 503, 'CORE_SERVICES_NOT_READY', currentStatus));
     }
 };
 
