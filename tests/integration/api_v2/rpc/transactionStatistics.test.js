@@ -140,6 +140,6 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 			expect(response).toMap(wrongMethodSchema);
 		});
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});

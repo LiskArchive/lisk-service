@@ -124,6 +124,6 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 			expect(response).toMap(invalidRequestSchema);
 		});
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});

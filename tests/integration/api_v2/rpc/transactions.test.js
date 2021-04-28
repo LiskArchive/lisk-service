@@ -334,6 +334,6 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});

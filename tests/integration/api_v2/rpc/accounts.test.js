@@ -184,6 +184,6 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});

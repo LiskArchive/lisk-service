@@ -122,6 +122,6 @@ describe('Method get.transactions.schemas', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});

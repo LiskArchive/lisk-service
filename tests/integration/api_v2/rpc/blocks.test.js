@@ -267,6 +267,6 @@ describe('Method get.blocks', () => {
 			});
 		});
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});

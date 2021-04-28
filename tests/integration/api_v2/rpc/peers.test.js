@@ -231,6 +231,6 @@ describe('Peers API', () => {
 			expect(response).toMap(wrongMethodSchema);
 		});
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});

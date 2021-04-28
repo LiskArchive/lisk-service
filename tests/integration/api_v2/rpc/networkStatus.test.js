@@ -40,6 +40,6 @@ describe('get.network.status', () => {
 		const response = await requestNetworkStatus({ someparam: 'not_supported' }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});
-});
 
-afterAll(() => { closeAll(); });
+	afterAll(() => { closeAll(); });
+});
