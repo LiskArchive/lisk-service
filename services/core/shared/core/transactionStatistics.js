@@ -126,8 +126,8 @@ const insertToDb = async (statsList, date) => {
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
 		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
-		delete statistic.range;
-		return statistic;
+		const { range, ...trimmedStatistic } = statistic;
+		return trimmedStatistic;
 	});
 	await db.upsert(statsList);
 
