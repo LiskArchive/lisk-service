@@ -287,7 +287,7 @@ const getAccounts = async params => {
 		addressFromParamPublicKey = getBase32AddressFromPublicKey(paramPublicKey);
 		params = {
 			...remParams,
-			address: getBase32AddressFromPublicKey(publicKey),
+			address: addressFromParamPublicKey,
 		};
 	}
 	if (params.addresses) {
@@ -321,7 +321,6 @@ const getAccounts = async params => {
 					account.publicKey = indexedAccount.publicKey;
 				} else if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
-					indexedAccount.publicKey = paramPublicKey;
 					await accountsDB.upsert({ ...indexedAccount, publicKey: paramPublicKey });
 				}
 			}
@@ -344,7 +343,7 @@ const getAccounts = async params => {
 	accounts.data = await resolveDelegateInfo(accounts.data);
 
 	if (paramPublicKey && !accounts.data.length) {
-		// Check if account is eligible for reclaim
+		// Check if reclaim information is available for the account
 		const account = {};
 		const legacyAccountInfo = await getLegacyAccountInfo({ publicKey: paramPublicKey });
 		Object.assign(account, legacyAccountInfo);
