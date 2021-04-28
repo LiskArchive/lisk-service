@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
@@ -122,6 +122,4 @@ describe('Method get.transactions.schemas', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
-
-	afterAll(() => { closeAll(); });
 });

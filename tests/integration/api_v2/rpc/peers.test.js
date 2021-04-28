@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	wrongMethodSchema,
@@ -231,6 +231,4 @@ describe('Peers API', () => {
 			expect(response).toMap(wrongMethodSchema);
 		});
 	});
-
-	afterAll(() => { closeAll(); });
 });

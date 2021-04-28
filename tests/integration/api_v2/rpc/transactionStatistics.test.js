@@ -16,7 +16,7 @@
 import moment from 'moment';
 
 const config = require('../../../config');
-const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -140,6 +140,4 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 			expect(response).toMap(wrongMethodSchema);
 		});
 	});
-
-	afterAll(() => { closeAll(); });
 });

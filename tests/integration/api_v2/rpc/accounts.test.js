@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -184,6 +184,4 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
-
-	afterAll(() => { closeAll(); });
 });

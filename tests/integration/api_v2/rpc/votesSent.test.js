@@ -14,7 +14,7 @@
  *
  */
 const config = require('../../../config');
-const { request, closeAll } = require('../../../helpers/socketIoRpcRequest');
+const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	invalidParamsSchema,
@@ -92,6 +92,4 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 			expect(response).toMap(invalidRequestSchema);
 		});
 	});
-
-	afterAll(() => { closeAll(); });
 });
