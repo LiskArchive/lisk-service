@@ -32,24 +32,26 @@ const getAccounts = async params => {
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
-	accounts.data = await await Bluebird.map(
+	accounts.data = await Bluebird.map(
 		accounts.data,
 		async account => {
 			if (account.isDelegate === true) {
 				const delegate = await getDelegates({ address: account.address });
 				const delegateOrigProps = parseToJSONCompatObj(account.delegate);
 				const delegateExtraProps = parseToJSONCompatObj(delegate.data[0]);
-				const delegateAccount = { ...account, delegate: { ...delegateOrigProps, ...delegateExtraProps } };
+				const delegateAccount = {
+					...account,
+					delegate: { ...delegateOrigProps, ...delegateExtraProps },
+				};
 				return delegateAccount;
-			} else {
-				const {
-					delegate, approval, missedBlocks, producedBlocks, productivity,
-					rank, rewards, username, vote, isBanned, status, pomHeights,
-					lastForgedHeight, consecutiveMissedBlocks,
-					...nonDelegateAccount,
-				} = account;
-				return nonDelegateAccount;
 			}
+			const {
+				delegate, approval, missedBlocks, producedBlocks, productivity,
+				rank, rewards, username, vote, isBanned, status: _status, pomHeights,
+				lastForgedHeight, consecutiveMissedBlocks,
+				...nonDelegateAccount
+			} = account;
+			return nonDelegateAccount;
 		},
 		{ concurrency: accounts.data.length },
 	);
