@@ -45,10 +45,10 @@ const performRequest = async (url, params) => {
 				message: err.message,
 			};
 		}
-		return {
-			status: err.code,
-			message: err.message,
-		};
+			return {
+				status: err.code,
+				message: err.message,
+			};
 	}
 };
 
@@ -73,14 +73,15 @@ const request = async (url, params = {}) => {
 	let response;
 	let key;
 
-	const { cacheTTL, ...httpParams } = params;
+	const httpParams = { ...params };
+	delete httpParams.cacheTTL;
 
 	if (!httpParams.method) httpParams.method = 'get';
 
 	if (httpParams.method.toLowerCase() === 'get'
 		&& params.cacheTTL && params.cacheTTL > 0) {
-		key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
-		response = await cache.get(key);
+			key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
+			response = await cache.get(key);
 	}
 
 	if (!response) {
