@@ -79,7 +79,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchemaVersion5);
-				expect(block.generatorAddress).toEqual(refDelegate.summary.address);
+				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -89,7 +89,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchemaVersion5);
-				expect(block.generatorPublicKey).toEqual(refDelegate.summary.publicKey);
+				expect(block.generatorPublicKey).toEqual(refBlock.generatorPublicKey);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -99,7 +99,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchemaVersion5);
-				expect(block.generatorUsername).toEqual(refDelegate.summary.username);
+				expect(block.generatorUsername).toEqual(refBlock.generatorUsername);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
