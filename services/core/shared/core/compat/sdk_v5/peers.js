@@ -20,32 +20,26 @@ const peerStates = {
 	DISCONNECTED: 'disconnected',
 };
 
+const refactorPeer = (orgPeer, state) => {
+	const { ipAddress, options: { height } = {}, ...peer } = orgPeer;
+	peer.state = state;
+	peer.height = height;
+	peer.ip = ipAddress;
+	return peer;
+};
+
 const getPeers = async () => {
 	const connectedPeers = await coreApi.getPeers(peerStates.CONNECTED);
-	connectedPeers.data = connectedPeers.data.map(orgPeer => {
-		const { ipAddress, options: { height }, ...peer } = orgPeer;
-
-		peer.state = peerStates.CONNECTED;
-		peer.height = height;
-		peer.ip = ipAddress;
-		return peer;
-	});
-
+	connectedPeers.data = connectedPeers.data
+		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
 	const disconnectedPeers = await coreApi.getPeers(peerStates.DISCONNECTED);
-	disconnectedPeers.data.forEach(peer => {
-		peer.state = peerStates.DISCONNECTED;
-		peer.ip = peer.ipAddress;
-		if (peer.options) peer.height = peer.options.height;
-		return peer;
-	});
-
+	disconnectedPeers.data = disconnectedPeers.data
+		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
 	const data = [
 		...connectedPeers.data,
 		...disconnectedPeers.data,
 	];
-
 	const meta = { count: data.length };
-
 	return { data, meta };
 };
 
