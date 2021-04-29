@@ -75,7 +75,7 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by account -> ok', async () => {
-			const response = await api.get(`${endpoint}?generatorAddress=${refDelegate.summary.address}`);
+			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generatorAddress}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchemaVersion5);
@@ -85,7 +85,7 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by publickey -> ok', async () => {
-			const response = await api.get(`${endpoint}?generatorPublicKey=${refDelegate.summary.publicKey}`);
+			const response = await api.get(`${endpoint}?generatorPublicKey=${refBlock.generatorPublicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchemaVersion5);
@@ -95,7 +95,7 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by username -> ok', async () => {
-			const response = await api.get(`${endpoint}?generatorUsername=${refDelegate.summary.username}`);
+			const response = await api.get(`${endpoint}?generatorUsername=${refBlock.generatorUsername}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchemaVersion5);
