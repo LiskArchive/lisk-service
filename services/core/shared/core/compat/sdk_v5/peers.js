@@ -35,6 +35,7 @@ const getPeers = async () => {
 	disconnectedPeers.data.forEach(peer => {
 		peer.state = peerStates.DISCONNECTED;
 		peer.ip = peer.ipAddress;
+		if (peer.options) peer.height = peer.options.height;
 		return peer;
 	});
 
