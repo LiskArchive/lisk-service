@@ -32,7 +32,11 @@ const getPeers = async () => {
 	});
 
 	const disconnectedPeers = await coreApi.getPeers(peerStates.DISCONNECTED);
-	disconnectedPeers.data.forEach(peer => peer.state = peerStates.DISCONNECTED);
+	disconnectedPeers.data.forEach(peer => {
+		peer.state = peerStates.DISCONNECTED;
+		peer.ip = peer.ipAddress;
+		return peer;
+	});
 
 	const data = [
 		...connectedPeers.data,
