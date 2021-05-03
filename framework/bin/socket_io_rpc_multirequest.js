@@ -18,8 +18,7 @@
 
 const io = require('socket.io-client');
 const util = require('util');
-// const prettyjson = require('prettyjson');
-const jsome = require('jsome');
+const colorize = require('json-colorizer');
 
 if (process.argv.length < 3) {
 	console.log('Usage: node socket_io_rpc_multirequest.js <endpoint>');
@@ -104,7 +103,7 @@ setTimeout(() => {
 	// console.log(JSON.stringify(results));
 
 	// This returns combined result
-	jsome(response2);
+	console.log(colorize(JSON.stringify(response2, null, 2)));
 	// console.log(prettyjson.render(response2));
 
 	process.exit(0);

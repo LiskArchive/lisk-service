@@ -17,11 +17,8 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const jsome = require('jsome');
 const { events } = require('../constants/event');
-// const prettyjson = require('prettyjson');
-
-jsome.params.colored = true;
+const colorize = require('json-colorizer');
 
 /* Usage:
  * node socket_io_rpc_client.js http://localhost:9901/rpc-test get.hello.param '{"path_name1": "user1"}'
@@ -54,7 +51,7 @@ events.forEach(item => {
 const request = (path, params) => {
 	socket.emit(path, params, answer => {
 		// console.log(prettyjson.render(answer));
-		jsome(answer);
+		console.log(colorize(JSON.stringify(answer, null, 2)));
 		process.exit(0);
 	});
 };
