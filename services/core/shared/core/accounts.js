@@ -18,7 +18,7 @@ const BluebirdPromise = require('bluebird');
 const coreApi = require('./compat');
 const { getDelegates } = require('./delegates');
 const { parseToJSONCompatObj } = require('../jsonTools');
-const { getAccountKnowledge } = require('./knownAccounts');
+const { getAccountKnowledge } = require('../knownAccounts');
 
 const getAccounts = async params => {
 	const accounts = {
