@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const coreApi = require('./compat');
 const { getDelegates } = require('./delegates');
 const { parseToJSONCompatObj } = require('../jsonTools');
@@ -31,7 +33,7 @@ const getAccounts = async params => {
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
-	accounts.data = await Bluebird.map(
+	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
 			account.multisignatureGroups = await coreApi.getMultisignatureGroups(account);
