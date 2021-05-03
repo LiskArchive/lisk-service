@@ -44,8 +44,8 @@ const getAccounts = async params => {
 
 			if (account.isDelegate === true) {
 				const delegate = await getDelegates({ address: account.address });
-				const delegateOrigProps = parseToJSONCompatObj(account.delegate);
-				const delegateExtraProps = parseToJSONCompatObj(delegate.data[0]);
+				const delegateOrigProps = account.delegate;
+				const delegateExtraProps = delegate.data[0];
 				const delegateAccount = {
 					...account,
 					delegate: { ...delegateOrigProps, ...delegateExtraProps },
@@ -63,7 +63,7 @@ const getAccounts = async params => {
 		{ concurrency: accounts.data.length },
 	);
 
-	return accounts;
+	return parseToJSONCompatObj(accounts);
 };
 
 module.exports = {
