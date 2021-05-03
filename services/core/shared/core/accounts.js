@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Bluebird = require('bluebird');
-
 const coreApi = require('./compat');
 const { getDelegates } = require('./delegates');
 const { parseToJSONCompatObj } = require('../jsonTools');
