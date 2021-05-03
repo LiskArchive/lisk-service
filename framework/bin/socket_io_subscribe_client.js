@@ -17,8 +17,8 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const { webSocket, events } = require('../constants/event');
 const colorize = require('json-colorizer');
+const { webSocket, events } = require('../constants/event');
 
 const socket = io(process.env.WS_ENDPOINT || webSocket.endpoint, {
 	forceNew: true,

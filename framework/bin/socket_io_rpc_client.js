@@ -17,8 +17,8 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const { events } = require('../constants/event');
 const colorize = require('json-colorizer');
+const { events } = require('../constants/event');
 
 /* Usage:
  * node socket_io_rpc_client.js http://localhost:9901/rpc-test get.hello.param '{"path_name1": "user1"}'
