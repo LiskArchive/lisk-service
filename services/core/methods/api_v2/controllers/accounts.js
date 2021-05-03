@@ -16,8 +16,6 @@
 const { Logger, Utils } = require('lisk-service-framework');
 
 const CoreService = require('../../../shared/core');
-const { getAccountKnowledge } = require('../../../shared/knownAccounts');
-const { parseToJSONCompatObj } = require('../../../shared/jsonTools');
 
 const ObjectUtilService = Utils.Data;
 const { isEmptyObject } = ObjectUtilService;
@@ -32,16 +30,11 @@ const getAccounts = async params => {
 		meta: {},
 	};
 
-	const response = await CoreService.getAccounts({ sort: 'balance:desc', ...params });
+	const response = params.isDelegate
+		? await CoreService.getDelegates({ sort: 'rank:asc', ...params })
+		: await CoreService.getAccounts({ sort: 'balance:desc', ...params });
 
-	if (response.data) {
-		accounts.data = response.data.map(
-			account => {
-				account.knowledge = getAccountKnowledge(account.address);
-				return parseToJSONCompatObj(account);
-			});
-	}
-
+	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
 	return accounts;

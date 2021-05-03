@@ -18,6 +18,7 @@ const Bluebird = require('bluebird');
 const coreApi = require('./compat');
 const { getDelegates } = require('./delegates');
 const { parseToJSONCompatObj } = require('../jsonTools');
+const { getAccountKnowledge } = require('./knownAccounts');
 
 const getAccounts = async params => {
 	const accounts = {
@@ -35,6 +36,12 @@ const getAccounts = async params => {
 	accounts.data = await Bluebird.map(
 		accounts.data,
 		async account => {
+			account.multisignatureGroups = await coreApi.getMultisignatureGroups(account);
+			account.incomingTxsCount = await coreApi.getIncomingTxsCount(account.address);
+			account.outgoingTxsCount = await coreApi.getOutgoingTxsCount(account.address);
+			account.multisignatureMemberships = await coreApi.getMultisignatureMemberships(account);
+			account.knowledge = await getAccountKnowledge(account.address);
+
 			if (account.isDelegate === true) {
 				const delegate = await getDelegates({ address: account.address });
 				const delegateOrigProps = parseToJSONCompatObj(account.delegate);
