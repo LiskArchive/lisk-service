@@ -266,4 +266,80 @@ describe('Method get.blocks', () => {
 			});
 		});
 	});
+
+	describe('Blocks sorted by height', () => {
+		it('returns 10 blocks sorted by height descending', async () => {
+			const response = await getBlocks({ sort: 'height:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevBlock = result.data[i - 1];
+					const currBlock = result.data[i];
+					expect(prevBlock.height).toBeGreaterThan(currBlock.height);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 blocks sorted by height ascending', async () => {
+			const response = await getBlocks({ sort: 'height:asc', offset: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevBlock = result.data[i - 1];
+					const currBlock = result.data[i];
+					expect(prevBlock.height).toBeLessThan(currBlock.height);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Blocks sorted by timestamp', () => {
+		it('returns 10 blocks sorted by timestamp descending', async () => {
+			const response = await getBlocks({ sort: 'timestamp:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevBlock = result.data[i - 1];
+					const currBlock = result.data[i];
+					expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 blocks sorted by timestamp ascending', async () => {
+			const response = await getBlocks({ sort: 'timestamp:asc', offset: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((blockItem) => expect(blockItem).toMap(blockSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevBlock = result.data[i - 1];
+					const currBlock = result.data[i];
+					expect(prevBlock.timestamp).toBeLessThan(currBlock.timestamp);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
 });
