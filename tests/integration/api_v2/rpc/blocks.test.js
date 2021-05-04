@@ -287,6 +287,7 @@ describe('Method get.blocks', () => {
 		});
 
 		it('returns 10 blocks sorted by height ascending', async () => {
+			// Ignore the genesis block with offset=1
 			const response = await getBlocks({ sort: 'height:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -325,6 +326,7 @@ describe('Method get.blocks', () => {
 		});
 
 		it('returns 10 blocks sorted by timestamp ascending', async () => {
+			// Ignore the genesis block with offset=1
 			const response = await getBlocks({ sort: 'timestamp:asc', offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
