@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const semver = require('semver');
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
@@ -217,6 +218,84 @@ describe('Peers API', () => {
 		it('wrong url -> not found', async () => {
 			const response = await api.get(`${endpoint}/112`, 404);
 			expect(response).toMap(urlNotFoundSchema);
+		});
+	});
+
+	describe('Peers sorted by height', () => {
+		it('returns 10 peers sorted by height descending', async () => {
+			const response = await api.get(`${endpoint}?sort=height:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevPeer = response.data[i - 1];
+					const currPeer = response.data[i];
+					expect(prevPeer.height).toBeGreaterThanOrEqual(currPeer.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 peers sorted by height ascending', async () => {
+			const response = await api.get(`${endpoint}?sort=height:asc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevPeer = response.data[i - 1];
+					const currPeer = response.data[i];
+					expect(prevPeer.height).toBeLessThanOrEqual(currPeer.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Peers sorted by networkVersion', () => {
+		it('returns 10 peers sorted by networkVersion descending', async () => {
+			const response = await api.get(`${endpoint}?sort=networkVersion:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevPeer = response.data[i - 1];
+					const currPeer = response.data[i];
+					expect(semver.gte(
+						semver.coerce(prevPeer.networkVersion),
+						semver.coerce(currPeer.networkVersion),
+					)).toBeTruthy();
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 peers sorted by networkVersion ascending', async () => {
+			const response = await api.get(`${endpoint}?sort=networkVersion:asc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevPeer = response.data[i - 1];
+					const currPeer = response.data[i];
+					expect(semver.lte(
+						semver.coerce(prevPeer.networkVersion),
+						semver.coerce(currPeer.networkVersion),
+					)).toBeTruthy();
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });

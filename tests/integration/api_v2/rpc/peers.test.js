@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const semver = require('semver');
 const config = require('../../../config');
 const { request } = require('../../../helpers/socketIoRpcRequest');
 
@@ -229,6 +230,90 @@ describe('Peers API', () => {
 		it('wrong url -> invalid request', async () => {
 			const response = await request(wsRpcUrl, 'get.peers.connected', {});
 			expect(response).toMap(wrongMethodSchema);
+		});
+	});
+
+	describe('Peers sorted by height', () => {
+		it('returns 10 peers sorted by height descending', async () => {
+			const response = await requestPeers({ sort: 'height:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevPeer = result.data[i - 1];
+					const currPeer = result.data[i];
+					expect(prevPeer.height).toBeGreaterThanOrEqual(currPeer.height);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 peers sorted by height ascending', async () => {
+			const response = await requestPeers({ sort: 'height:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevPeer = result.data[i - 1];
+					const currPeer = result.data[i];
+					expect(prevPeer.height).toBeLessThanOrEqual(currPeer.height);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Peers sorted by networkVersion', () => {
+		it('returns 10 peers sorted by networkVersion descending', async () => {
+			const response = await requestPeers({ sort: 'networkVersion:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevPeer = result.data[i - 1];
+					const currPeer = result.data[i];
+					expect(semver.gte(
+						semver.coerce(prevPeer.networkVersion),
+						semver.coerce(currPeer.networkVersion),
+					)).toBeTruthy();
+
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 peers sorted by networkVersion ascending', async () => {
+			const response = await requestPeers({ sort: 'networkVersion:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(peer => expect(peer).toMap(peerSchema));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevPeer = result.data[i - 1];
+					const currPeer = result.data[i];
+					expect(semver.lte(
+						semver.coerce(prevPeer.networkVersion),
+						semver.coerce(currPeer.networkVersion),
+					)).toBeTruthy();
+
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
 		});
 	});
 });
