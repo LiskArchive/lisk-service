@@ -349,7 +349,8 @@ describe('Method get.transactions', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevTransaction = result.data[i - 1];
 					const currTransaction = result.data[i];
-					expect(prevTransaction.block.timestamp).toBeGreaterThanOrEqual(currTransaction.block.timestamp);
+					expect(prevTransaction.block.timestamp)
+						.toBeGreaterThanOrEqual(currTransaction.block.timestamp);
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
@@ -368,7 +369,8 @@ describe('Method get.transactions', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevTransaction = result.data[i - 1];
 					const currTransaction = result.data[i];
-					expect(prevTransaction.block.timestamp).toBeLessThanOrEqual(currTransaction.block.timestamp);
+					expect(prevTransaction.block.timestamp)
+						.toBeLessThanOrEqual(currTransaction.block.timestamp);
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
@@ -389,7 +391,8 @@ describe('Method get.transactions', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevTransaction = result.data[i - 1];
 					const currTransaction = result.data[i];
-					expect(BigInt(prevTransaction.asset.amount)).toBeGreaterThanOrEqual(BigInt(currTransaction.asset.amount));
+					expect(BigInt(prevTransaction.asset.amount))
+						.toBeGreaterThanOrEqual(BigInt(currTransaction.asset.amount));
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
@@ -409,7 +412,8 @@ describe('Method get.transactions', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevTransaction = result.data[i - 1];
 					const currTransaction = result.data[i];
-					expect(BigInt(prevTransaction.asset.amount)).toBeLessThanOrEqual(BigInt(currTransaction.asset.amount));
+					expect(BigInt(prevTransaction.asset.amount))
+						.toBeLessThanOrEqual(BigInt(currTransaction.asset.amount));
 				}
 			}
 			expect(result.meta).toMap(metaSchema);

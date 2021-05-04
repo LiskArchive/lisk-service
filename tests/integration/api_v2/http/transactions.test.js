@@ -391,7 +391,8 @@ describe('Transactions API', () => {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevTransaction = response.data[i - 1];
 					const currTransaction = response.data[i];
-					expect(prevTransaction.block.timestamp).toBeGreaterThanOrEqual(currTransaction.block.timestamp);
+					expect(prevTransaction.block.timestamp)
+						.toBeGreaterThanOrEqual(currTransaction.block.timestamp);
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -408,7 +409,8 @@ describe('Transactions API', () => {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevTransaction = response.data[i - 1];
 					const currTransaction = response.data[i];
-					expect(prevTransaction.block.timestamp).toBeLessThanOrEqual(currTransaction.block.timestamp);
+					expect(prevTransaction.block.timestamp)
+						.toBeLessThanOrEqual(currTransaction.block.timestamp);
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -427,7 +429,8 @@ describe('Transactions API', () => {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevTransaction = response.data[i - 1];
 					const currTransaction = response.data[i];
-					expect(BigInt(prevTransaction.asset.amount)).toBeGreaterThanOrEqual(BigInt(currTransaction.asset.amount));
+					expect(BigInt(prevTransaction.asset.amount))
+						.toBeGreaterThanOrEqual(BigInt(currTransaction.asset.amount));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -444,9 +447,9 @@ describe('Transactions API', () => {
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevTransaction = response.data[i - 1];
-					console.log(prevTransaction)
 					const currTransaction = response.data[i];
-					expect(BigInt(prevTransaction.asset.amount)).toBeLessThanOrEqual(BigInt(currTransaction.asset.amount));
+					expect(BigInt(prevTransaction.asset.amount))
+						.toBeLessThanOrEqual(BigInt(currTransaction.asset.amount));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
