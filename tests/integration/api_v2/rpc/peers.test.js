@@ -233,7 +233,7 @@ describe('Peers API', () => {
 		});
 	});
 
-	describe('Peers sorted by height', () => {
+	xdescribe('Peers sorted by height', () => {
 		it('returns 10 peers sorted by height descending', async () => {
 			const response = await requestPeers({ sort: 'height:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -271,7 +271,7 @@ describe('Peers API', () => {
 		});
 	});
 
-	describe('Peers sorted by networkVersion', () => {
+	xdescribe('Peers sorted by networkVersion', () => {
 		it('returns 10 peers sorted by networkVersion descending', async () => {
 			const response = await requestPeers({ sort: 'networkVersion:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
