@@ -184,4 +184,55 @@ describe('Method get.delegates', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('Delegate accounts sorted by rank', () => {
+		it('returns 10 delegate accounts sorted by rank descending', async () => {
+			const response = await getDelegates({ isDelegate: true, sort: 'rank:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(prevAccount.dpos.delegate.rank).toBeGreaterThan(currAccount.dpos.delegate.rank);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 delegate accounts sorted by rank ascending', async () => {
+			const response = await getDelegates({ isDelegate: true, sort: 'rank:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(prevAccount.dpos.delegate.rank).toBeLessThan(currAccount.dpos.delegate.rank);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Delegate accounts sorted by rank without the isDelegate flag', () => {
+		// TODO implement this case in the API
+		it.todo('Return delegate accounts when sort (ascending) by rank specified without the isDelegate flag');
+
+		it.todo('Return delegate accounts when sort (descending) by rank specified without the isDelegate flag');
+	});
 });

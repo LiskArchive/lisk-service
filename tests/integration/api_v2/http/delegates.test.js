@@ -149,4 +149,47 @@ describe('Delegates API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('Delegate accounts sorted by rank', () => {
+		it('returns 10 delegate accounts sorted by rank descending', async () => {
+			const response = await api.get(`${endpoint}?isDelegate=true&sort=rank:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevAccount = response.data[i - 1];
+					const currAccount = response.data[i];
+					expect(prevAccount.dpos.delegate.rank).toBeGreaterThan(currAccount.dpos.delegate.rank);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 delegate accounts sorted by rank ascending', async () => {
+			const response = await api.get(`${endpoint}?isDelegate=true&sort=rank:asc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevAccount = response.data[i - 1];
+					const currAccount = response.data[i];
+					expect(prevAccount.dpos.delegate.rank).toBeLessThan(currAccount.dpos.delegate.rank);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Delegate accounts sorted by rank without the isDelegate flag', () => {
+		// TODO implement this case in the API
+		it.todo('Return delegate accounts when sort (ascending) by rank specified without the isDelegate flag');
+
+		it.todo('Return delegate accounts when sort (descending) by rank specified without the isDelegate flag');
+	});
 });
