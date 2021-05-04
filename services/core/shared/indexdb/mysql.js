@@ -214,6 +214,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			query.orderBy(sortProp, sortOrder);
+			query.whereNotNull(sortProp);
 		}
 
 		if (params.whereIn) {
