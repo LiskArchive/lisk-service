@@ -17,13 +17,22 @@
 const signals = require('../../shared/signals');
 
 describe('Signals tests', () => {
-    let signal;
-    const tesFunc = () => { };
-    beforeEach(async () => {
-        signal = signals.register('mockEvent');
+    describe('Test cases for signal.dispatch()', () => {
+        const signal = signals.get('testEvent1');
+        it('Dispatch signal data', async () => {
+            signal.dispatch('Event is dispatched');
+            signal.add((data) => {
+                expect(data.toBe('Event is dispatched'));
+            });
+        });
+
+        it.todo('Failing test cases for dispatched event');
     });
 
     describe('Test cases for signal.add()', () => {
+        const signal = signals.get('testEvent2');
+        const tesFunc = () => { };
+
         it('Add valid listener to signal.add()', async () => {
             // initially 0 listeners
             expect(signal.getNumListeners()).toBe(0);
