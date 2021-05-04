@@ -23,12 +23,22 @@ describe('Signals tests', () => {
         signal = signals.register('mockEvent');
     });
 
-    it('check number of listeners', async () => {
-        // initially 0 listeners
-        expect(signal.getNumListeners()).toBe(0);
+    describe('Test cases for signal.add()', () => {
+        it('Add valid listener to signal.add()', async () => {
+            // initially 0 listeners
+            expect(signal.getNumListeners()).toBe(0);
 
-        // Add 1 listener to signals
-        signal.add(tesFunc);
-        expect(signal.getNumListeners()).toBe(1);
+            // Add 1 listener to signals
+            signal.add(tesFunc);
+            expect(signal.getNumListeners()).toBe(1);
+        });
+
+        it('Add invalid listener to signal.add() throws an error', async () => {
+            try {
+                signal.add();
+            } catch (err) {
+                expect(err.message).toEqual('listener is a required param of add() and should be a Function.');
+            }
+        });
     });
 });
