@@ -288,7 +288,6 @@ describe('Peers API', () => {
 						semver.coerce(prevPeer.networkVersion),
 						semver.coerce(currPeer.networkVersion),
 					)).toBeTruthy();
-
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
@@ -310,7 +309,6 @@ describe('Peers API', () => {
 						semver.coerce(prevPeer.networkVersion),
 						semver.coerce(currPeer.networkVersion),
 					)).toBeTruthy();
-
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
