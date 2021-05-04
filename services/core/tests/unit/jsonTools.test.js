@@ -36,7 +36,43 @@ describe('jsonTools tests', () => {
         const bufferData = Buffer.from('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hex');
         const parsedResult = parseToJSONCompatObj(bufferData);
         expect(typeof parsedResult).toBe('string');
-        expect(parsedResult).toBe('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+        expect(parsedResult).toEqual('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+    });
+
+
+    it('Parse string', async () => {
+        const parsedResult = parseToJSONCompatObj('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+        expect(typeof parsedResult).toBe('string');
+        expect(parsedResult).toEqual('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
+    });
+
+    it('Parse number', async () => {
+        const data = 10;
+        const parsedResult = parseToJSONCompatObj(data);
+        expect(typeof parsedResult).toBe('number');
+        expect(parsedResult).toEqual(data);
+    });
+
+    it('Parse array', async () => {
+        const data = [BigInt(1000000000), BigInt(2000000000), BigInt(3000000000)];
+        const parsedResult = parseToJSONCompatObj(data);
+        expect(parsedResult).toBeInstanceOf(Array);
+        expect(parsedResult).toEqual(['1000000000', '2000000000', '3000000000']);
+    });
+
+    it('Parse array of object', async () => {
+        const data = [{
+            delegateAddress: Buffer.from('8a9494ab112fb99ffd0ae8b653c4ed4e27f87fcb', 'hex'),
+            amount: BigInt(2000000000),
+            unvoteHeight: 934107,
+        }];
+        const parsedResult = parseToJSONCompatObj(data);
+        expect(parsedResult).toBeInstanceOf(Array);
+        expect(parsedResult[0]).toMatchObject({
+            delegateAddress: '8a9494ab112fb99ffd0ae8b653c4ed4e27f87fcb',
+            amount: '2000000000',
+            unvoteHeight: 934107,
+        });
     });
 
     it('Parse object', async () => {
