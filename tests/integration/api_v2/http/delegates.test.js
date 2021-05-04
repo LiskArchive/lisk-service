@@ -186,7 +186,7 @@ describe('Delegates API', () => {
 		});
 	});
 
-	describe('Delegate accounts sorted by rank', () => {
+	describe('Delegate accounts sorted by rank without the isDelegate flag', () => {
 		// TODO implement this case in the API
 		it.todo('Return delegate accounts when sort (ascending) by rank specified without the isDelegate flag');
 

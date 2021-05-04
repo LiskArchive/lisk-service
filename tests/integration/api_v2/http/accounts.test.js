@@ -241,7 +241,8 @@ describe('Accounts API', () => {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevAccount = response.data[i - 1];
 					const currAccount = response.data[i];
-					expect(BigInt(prevAccount.summary.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -258,7 +259,8 @@ describe('Accounts API', () => {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevAccount = response.data[i - 1];
 					const currAccount = response.data[i];
-					expect(BigInt(prevAccount.summary.balance)).toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);

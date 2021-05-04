@@ -201,7 +201,8 @@ describe('Method get.accounts', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevAccount = result.data[i - 1];
 					const currAccount = result.data[i];
-					expect(BigInt(prevAccount.summary.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
@@ -222,7 +223,8 @@ describe('Method get.accounts', () => {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevAccount = result.data[i - 1];
 					const currAccount = result.data[i];
-					expect(BigInt(prevAccount.summary.balance)).toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(result.meta).toMap(metaSchema);

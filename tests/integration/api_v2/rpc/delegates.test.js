@@ -187,7 +187,7 @@ describe('Method get.delegates', () => {
 
 	describe('Delegate accounts sorted by rank', () => {
 		it('returns 10 delegate accounts sorted by rank descending', async () => {
-			const response = await getAccounts({ isDelegate: true, sort: 'rank:desc' });
+			const response = await getDelegates({ isDelegate: true, sort: 'rank:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -208,7 +208,7 @@ describe('Method get.delegates', () => {
 		});
 
 		it('returns 10 delegate accounts sorted by rank ascending', async () => {
-			const response = await getAccounts({ isDelegate: true, sort: 'rank:asc' });
+			const response = await getDelegates({ isDelegate: true, sort: 'rank:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -229,7 +229,7 @@ describe('Method get.delegates', () => {
 		});
 	});
 
-	describe('Delegate accounts sorted by rank', () => {
+	describe('Delegate accounts sorted by rank without the isDelegate flag', () => {
 		// TODO implement this case in the API
 		it.todo('Return delegate accounts when sort (ascending) by rank specified without the isDelegate flag');
 
