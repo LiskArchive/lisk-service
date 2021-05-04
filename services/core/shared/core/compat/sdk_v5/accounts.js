@@ -58,8 +58,8 @@ const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
 	accounts.forEach(account => {
-		account.username = account.dpos.delegate.username || null;
-		account.balance = account.token.balance;
+		account.username = account.dpos ? account.dpos.delegate.username : null;
+		account.balance = account.token ? account.token.balance : null;
 		return account;
 	});
 	await accountsDB.upsert(accounts);
