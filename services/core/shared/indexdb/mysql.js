@@ -289,6 +289,11 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				});
 		}
 
+		if (params.sort) {
+			const [sortProp] = params.sort.split(':');
+			query.whereNotNull(sortProp);
+		}
+
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
