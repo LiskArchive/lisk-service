@@ -334,4 +334,85 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('Transactions sorted by timestamp', () => {
+		it('returns 10 transactions sorted by timestamp descending', async () => {
+			const response = await requestTransactions({ sort: 'timestamp:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevTransaction = result.data[i - 1];
+					const currTransaction = result.data[i];
+					expect(prevTransaction.block.timestamp).toBeGreaterThanOrEqual(currTransaction.block.timestamp);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 transactions sorted by timestamp ascending', async () => {
+			const response = await requestTransactions({ sort: 'timestamp:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevTransaction = result.data[i - 1];
+					const currTransaction = result.data[i];
+					expect(prevTransaction.block.timestamp).toBeLessThanOrEqual(currTransaction.block.timestamp);
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Transactions sorted by amount', () => {
+		it('returns 10 transactions sorted by amount descending', async () => {
+			const response = await requestTransactions({ sort: 'amount:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevTransaction = result.data[i - 1];
+					const currTransaction = result.data[i];
+					expect(BigInt(prevTransaction.asset.amount)).toBeGreaterThanOrEqual(BigInt(currTransaction.asset.amount));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		// TODO: Enable after the logic is fixed
+		xit('returns 10 transactions sorted by amount ascending', async () => {
+			const response = await requestTransactions({ sort: 'amount:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevTransaction = result.data[i - 1];
+					const currTransaction = result.data[i];
+					expect(BigInt(prevTransaction.asset.amount)).toBeLessThanOrEqual(BigInt(currTransaction.asset.amount));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
 });
