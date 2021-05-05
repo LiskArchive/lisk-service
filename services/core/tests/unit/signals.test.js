@@ -30,14 +30,14 @@ describe('Signals tests', () => {
 
     describe('signal.add()', () => {
         const signal = signals.get('addEvent');
-        const tesFunc = () => { };
+        const testFunc = () => { };
 
         it('Add valid listener to signal.add()', async () => {
             // initially 0 listeners
             expect(signal.getNumListeners()).toBe(0);
 
             // Add 1 listener to signals
-            signal.add(tesFunc);
+            signal.add(testFunc);
             expect(signal.getNumListeners()).toBe(1);
         });
 
@@ -67,13 +67,24 @@ describe('Signals tests', () => {
 
     describe('signal.remove()', () => {
         const signal = signals.get('removeEvent');
-        const tesFunc = () => { };
+        const testFunc = () => { };
 
         it('Remove valid listener', async () => {
-            signal.add(tesFunc);
+            signal.add(testFunc);
             expect(signal.getNumListeners()).toBe(1);
 
-            signal.remove(tesFunc);
+            signal.remove(testFunc);
+            expect(signal.getNumListeners()).toBe(0);
+        });
+
+        it('Remove all listeners', async () => {
+            signal.add(testFunc);
+            expect(signal.getNumListeners()).toBe(1);
+
+            signal.add(() => { });
+            expect(signal.getNumListeners()).toBe(2);
+
+            signal.removeAll();
             expect(signal.getNumListeners()).toBe(0);
         });
 
