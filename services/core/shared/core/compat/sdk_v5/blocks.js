@@ -379,6 +379,9 @@ const buildIndex = async (from, to) => {
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
+	// startHeight can never be lower than genesisHeight
+	if (startHeight < genesisHeight) startHeight = genesisHeight;
+
 	const PAGE_SIZE = 100000;
 	const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {

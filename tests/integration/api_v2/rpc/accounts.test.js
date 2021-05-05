@@ -184,4 +184,50 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('Accounts sorted by balance', () => {
+		it('returns 10 accounts sorted by balance descending', async () => {
+			const response = await getAccounts({ sort: 'balance:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 accounts sorted by balance ascending', async () => {
+			const response = await getAccounts({ sort: 'balance:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
 });
