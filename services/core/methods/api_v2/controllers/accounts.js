@@ -14,18 +14,17 @@
  *
  */
 const { Logger, Utils } = require('lisk-service-framework');
-const Bluebird = require('bluebird');
 
 const CoreService = require('../../../shared/core');
-const { getAccountKnowledge } = require('../../../shared/knownAccounts');
-const { parseToJSONCompatObj } = require('../../../shared/jsonTools');
 
 const ObjectUtilService = Utils.Data;
 const { isEmptyObject } = ObjectUtilService;
 
 const logger = Logger();
 
-const getDataForAccounts = async params => {
+const getAccounts = async params => {
+	logger.debug(`Retrieving account ${params.publicKey || params.address || params.username || '(params)'}`);
+
 	const accounts = {
 		data: [],
 		meta: {},
@@ -34,53 +33,7 @@ const getDataForAccounts = async params => {
 	const response = params.isDelegate
 		? await CoreService.getDelegates({ sort: 'rank:asc', ...params })
 		: await CoreService.getAccounts({ sort: 'balance:desc', ...params });
-	if (response.data) accounts.data = response.data;
-	if (response.meta) accounts.meta = response.meta;
 
-	const accountDataCopy = parseToJSONCompatObj(response.data);
-
-	await Bluebird.map(
-		accountDataCopy,
-		async account => {
-			try {
-				account.multisignatureGroups = await CoreService.getMultisignatureGroups(account);
-				account.incomingTxsCount = await CoreService.getIncomingTxsCount(account.address);
-				account.outgoingTxsCount = await CoreService.getOutgoingTxsCount(account.address);
-				account.multisignatureMemberships = await CoreService
-					.getMultisignatureMemberships(account);
-				account.knowledge = await getAccountKnowledge(account.address);
-			} catch (err) {
-				logger.warn(err.message);
-			}
-		},
-		{ concurrency: 4 },
-	);
-
-	accounts.data = accountDataCopy;
-
-	return accounts;
-};
-
-const getAccounts = async params => {
-	const accounts = {
-		data: [],
-		meta: {},
-	};
-
-	const response = await getDataForAccounts(params);
-	if (response.data) accounts.data = response.data;
-	if (response.meta) accounts.meta = response.meta;
-
-	return accounts;
-};
-
-const getTopAccounts = async params => {
-	const accounts = {
-		data: [],
-		meta: {},
-	};
-
-	const response = await getDataForAccounts({ sort: 'balance:desc', ...params });
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
@@ -99,6 +52,5 @@ const getNextForgers = async params => {
 
 module.exports = {
 	getAccounts,
-	getTopAccounts,
 	getNextForgers,
 };
