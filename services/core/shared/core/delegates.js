@@ -165,7 +165,7 @@ const getDelegates = async params => {
 			&& String(acc.username).match(new RegExp(params.search, 'i'))));
 	}
 
-	if (delegates.data.every(acc => !acc.rank)) await computeDelegateRank();
+	if (delegates.data.every(delegate => !delegate.rank)) await computeDelegateRank();
 
 	delegates.data = delegates.data
 		.sort(sortComparator(params.sort))
