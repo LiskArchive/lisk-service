@@ -16,19 +16,19 @@
 const signals = require('../../shared/signals');
 
 describe('Signals tests', () => {
-    describe('Test cases for signal.dispatch()', () => {
+    describe('signal.dispatch()', () => {
         const signal = signals.get('dispatchEvent');
         it('Dispatch and add signal data', async () => {
             signal.dispatch('Event is dispatched');
             signal.add((data) => {
-                expect(data.toBe('Event is dispatched'));
+                expect(data.toEqual('Event is dispatched'));
             });
         });
 
         it.todo('Failing test case for dispatched event');
     });
 
-    describe('Test cases for signal.add()', () => {
+    describe('signal.add()', () => {
         const signal = signals.get('addEvent');
         const tesFunc = () => { };
 
@@ -50,12 +50,12 @@ describe('Signals tests', () => {
         });
     });
 
-    describe('Test cases for signal.dispose()', () => {
+    describe('signal.dispose()', () => {
         const signal = signals.get('disposeEvent');
         it('Dispose signal', async () => {
             signal.dispatch('Event is dispatched');
             signal.add((data) => {
-                expect(data.toBe('Event is dispatched'));
+                expect(data.toEqual('Event is dispatched'));
             });
 
             signal.dispose();
@@ -65,7 +65,7 @@ describe('Signals tests', () => {
         });
     });
 
-    describe('Test cases for signal.remove()', () => {
+    describe('signal.remove()', () => {
         const signal = signals.get('removeEvent');
         const tesFunc = () => { };
 
