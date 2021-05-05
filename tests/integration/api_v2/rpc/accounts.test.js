@@ -326,14 +326,14 @@ describe('Method get.accounts', () => {
 		});
 
 		// TODO: Fix the scenario
-		xit('non-delegate accounts with \'active\' status returns 404 NOT FOUND', async () => {
+		xit('non-delegate accounts with \'active\' status returns empty response', async () => {
 			const response = await getAccounts({ isDelegate: false, status: 'active' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('non-delegate accounts with \'any\' status returns 400 BAD REQUEST', async () => {
+		it('non-delegate accounts with \'any\' status returns invalid params', async () => {
 			const response = await getAccounts({ isDelegate: false, status: 'any' });
 			expect(response).toMap(invalidParamsSchema);
 		});
