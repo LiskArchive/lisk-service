@@ -163,7 +163,7 @@ describe('Delegates API', () => {
 					const prevAccount = response.data[i - 1];
 					const currAccount = response.data[i];
 					expect(BigInt(prevAccount.summary.balance))
-						.toBeGreaterThan(BigInt(currAccount.summary.balance));
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -181,7 +181,7 @@ describe('Delegates API', () => {
 					const prevAccount = response.data[i - 1];
 					const currAccount = response.data[i];
 					expect(BigInt(prevAccount.summary.balance))
-						.toBeLessThan(BigInt(currAccount.summary.balance));
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -240,7 +240,7 @@ describe('Delegates API', () => {
 					const prevAccount = response.data[i - 1];
 					const currAccount = response.data[i];
 					expect(BigInt(prevAccount.summary.balance))
-						.toBeGreaterThan(BigInt(currAccount.summary.balance));
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -281,7 +281,7 @@ describe('Delegates API', () => {
 					const prevAccount = response.data[i - 1];
 					const currAccount = response.data[i];
 					expect(BigInt(prevAccount.summary.balance))
-						.toBeLessThan(BigInt(currAccount.summary.balance));
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
@@ -301,7 +301,7 @@ describe('Delegates API', () => {
 					const prevAccount = response.data[i - 1];
 					const currAccount = response.data[i];
 					expect(BigInt(prevAccount.summary.balance))
-						.toBeLessThan(BigInt(currAccount.summary.balance));
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(response.meta).toMap(metaSchema);
