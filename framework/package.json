@@ -34,7 +34,7 @@
     "debug": "^4.1.1",
     "fastest-validator": "^1.3.0",
     "http-status-codes": "^1.4.0",
-    "jsome": "^2.5.0",
+    "json-colorizer": "^2.2.2",
     "keyv": "^4.0.0",
     "keyv-lru": "^3.0.3",
     "knex": "^0.21.0",
