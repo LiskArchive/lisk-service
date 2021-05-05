@@ -487,7 +487,8 @@ describe('Method get.blocks', () => {
 		});
 
 		it('returns empty response when queried with block timestamp and non-zero offset', async () => {
-			const response = await getBlocks({ timestamp: String(refBlock.timestamp), offset: 1 }).catch(e => e);
+			const response = await getBlocks({ timestamp: String(refBlock.timestamp), offset: 1 })
+				.catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
