@@ -54,9 +54,9 @@ signals.get('newBlock').add(async () => {
 
         // Check if blocks are ready with generatorUsername
         const blocks = await core.getBlocks({});
-        if (blocks.data.length && blocks.data
-            .every(block => block.generatorUsername !== null)) features.isBlocksReady = true;
-
+        if (blocks.data.every(block => block.height > core.getGenesisHeight()
+            ? block.generatorUsername !== null
+            : true)) features.isBlocksReady = true;
 
         // Check if transaction stats are disabled, set isTransactionStatsReady to true
         if (config.transactionStatistics.enabled === false) features.isTransactionStatsReady = true;
