@@ -35,7 +35,7 @@
   "dependencies": {
     "chai": "^4.2.0",
     "express": "^4.17.1",
-    "http-proxy": "^1.18.0",
+    "http-proxy": "^1.18.1",
     "http-status-codes": "^1.3.1",
     "jest-watch-toggle-config": "^1.0.2",
     "jest-watch-typeahead": "^0.4.2",
@@ -46,7 +46,7 @@
     "popsicle": "^10.0.1",
     "prettyjson": "^1.2.1",
     "semver": "^7.3.2",
-    "socket.io": "^2.2.0",
+    "socket.io": "^2.4.1",
     "socket.io-client": "^2.2.0",
     "vscode-json-languageservice": "^3.2.0"
   },
