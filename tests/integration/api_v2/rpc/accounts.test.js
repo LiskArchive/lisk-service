@@ -244,7 +244,7 @@ describe('Method get.accounts', () => {
 		});
 	});
 
-	describe('Fetch accounts based on multiple request params', async () => {
+	describe('Fetch accounts based on multiple request params', () => {
 		it('search \'genesis\' and sort balance descending', async () => {
 			const response = await getAccounts({ search: 'genesis', sort: 'balance:desc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
