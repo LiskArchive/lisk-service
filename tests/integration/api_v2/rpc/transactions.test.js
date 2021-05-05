@@ -398,8 +398,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Enable after the logic is fixed
-		xit('returns 10 transactions sorted by amount ascending', async () => {
+		it('returns 10 transactions sorted by amount ascending', async () => {
 			const response = await requestTransactions({ sort: 'amount:asc' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

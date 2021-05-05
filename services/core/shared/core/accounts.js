@@ -13,9 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const coreApi = require('./compat');
 const { getDelegates } = require('./delegates');
 const { parseToJSONCompatObj } = require('../jsonTools');
+const { getAccountKnowledge } = require('../knownAccounts');
 
 const getAccounts = async params => {
 	const accounts = {
@@ -30,31 +33,37 @@ const getAccounts = async params => {
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
 
-	await Promise.all(accounts.data.map(async account => {
-		if (account.isDelegate === true) {
-			const delegate = await getDelegates({ address: account.address });
-			const delegateOrigProps = parseToJSONCompatObj(account.delegate);
-			const delegateExtraProps = parseToJSONCompatObj(delegate.data[0]);
-			account.delegate = { ...delegateOrigProps, ...delegateExtraProps };
-		} else {
-			delete account.delegate;
-			delete account.approval;
-			delete account.missedBlocks;
-			delete account.producedBlocks;
-			delete account.productivity;
-			delete account.rank;
-			delete account.rewards;
-			delete account.username;
-			delete account.vote;
-			delete account.isBanned;
-			delete account.status;
-			delete account.pomHeights;
-			delete account.lastForgedHeight;
-			delete account.consecutiveMissedBlocks;
-		}
-	}));
+	accounts.data = await BluebirdPromise.map(
+		accounts.data,
+		async account => {
+			account.multisignatureGroups = await coreApi.getMultisignatureGroups(account);
+			account.incomingTxsCount = await coreApi.getIncomingTxsCount(account.address);
+			account.outgoingTxsCount = await coreApi.getOutgoingTxsCount(account.address);
+			account.multisignatureMemberships = await coreApi.getMultisignatureMemberships(account);
+			account.knowledge = await getAccountKnowledge(account.address);
 
-	return accounts;
+			if (account.isDelegate === true) {
+				const delegate = await getDelegates({ address: account.address });
+				const delegateOrigProps = account.delegate;
+				const delegateExtraProps = delegate.data[0];
+				const delegateAccount = {
+					...account,
+					delegate: { ...delegateOrigProps, ...delegateExtraProps },
+				};
+				return delegateAccount;
+			}
+			const {
+				delegate, approval, missedBlocks, producedBlocks, productivity,
+				rank, rewards, username, vote, isBanned, status: _status, pomHeights,
+				lastForgedHeight, consecutiveMissedBlocks,
+				...nonDelegateAccount
+			} = account;
+			return nonDelegateAccount;
+		},
+		{ concurrency: accounts.data.length },
+	);
+
+	return parseToJSONCompatObj(accounts);
 };
 
 module.exports = {

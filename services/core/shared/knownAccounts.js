@@ -17,7 +17,8 @@ const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
 const { isObject } = Utils.Data;
 
-const { waitForLastBlock, getNetworkStatus } = require('./core');
+const { waitForLastBlock } = require('./core/blocks');
+const { getNetworkStatus } = require('./core/compat');
 const config = require('../config');
 
 const logger = Logger();

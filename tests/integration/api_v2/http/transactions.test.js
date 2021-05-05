@@ -436,8 +436,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Enable after the logic is fixed
-		xit('returns 10 transactions sorted by amount ascending', async () => {
+		it('returns 10 transactions sorted by amount ascending', async () => {
 			const response = await api.get(`${endpoint}?sort=amount:asc`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

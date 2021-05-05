@@ -214,6 +214,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.sort) {
 			const [sortProp, sortOrder] = params.sort.split(':');
 			query.orderBy(sortProp, sortOrder);
+			query.whereNotNull(sortProp);
 		}
 
 		if (params.whereIn) {
@@ -270,15 +271,6 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
-		if (params.orWhere) {
-			const { orWhere } = params;
-			query.where(function () {
-				this.where(queryParams).orWhere(orWhere);
-			});
-		} else {
-			query.where(queryParams);
-		}
-
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -288,9 +280,23 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				});
 		}
 
+		if (params.sort) {
+			const [sortProp] = params.sort.split(':');
+			query.whereNotNull(sortProp);
+		}
+
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
+		}
+
+		if (params.orWhere) {
+			const { orWhere } = params;
+			query.where(function () {
+				this.where(queryParams).orWhere(orWhere);
+			});
+		} else {
+			query.where(queryParams);
 		}
 
 		if (params.orWhereIn) {

@@ -43,7 +43,7 @@ describe('Blocks API', () => {
 		[refBlock] = (await api.get(`${endpoint}?limit=1&offset=2`)).data;
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
+			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1&search=genesis`);
 		} while (!response.data);
 		[refDelegate] = response.data;
 	});

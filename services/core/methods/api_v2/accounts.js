@@ -15,7 +15,6 @@
  */
 const {
 	getAccounts,
-	getTopAccounts,
 	getNextForgers,
 } = require('./controllers/accounts');
 
@@ -34,14 +33,6 @@ module.exports = [
 			offset: { optional: true, type: 'any' },
 			sort: { optional: true, type: 'any' },
 
-		},
-	},
-	{
-		name: 'accounts.top',
-		controller: getTopAccounts,
-		params: {
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
 		},
 	},
 	{
