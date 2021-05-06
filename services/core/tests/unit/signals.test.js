@@ -13,12 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable mocha/no-synchronous-tests */
+
 const signals = require('../../shared/signals');
 
 describe('Signals tests', () => {
     describe('signal.dispatch()', () => {
         const signal = signals.get('dispatchEvent');
-        it('Dispatch and add signal data', async () => {
+        it('Dispatch and add signal data', () => {
             signal.dispatch('Event is dispatched');
             signal.add((data) => {
                 expect(data.toEqual('Event is dispatched'));
@@ -32,7 +34,7 @@ describe('Signals tests', () => {
         const signal = signals.get('addEvent');
         const testFunc = () => { };
 
-        it('Add valid listener to signal.add()', async () => {
+        it('Add valid listener to signal.add()', () => {
             // initially 0 listeners
             expect(signal.getNumListeners()).toBe(0);
 
@@ -41,14 +43,14 @@ describe('Signals tests', () => {
             expect(signal.getNumListeners()).toBe(1);
         });
 
-        it('Add invalid listener to signal.add() throws an error', async () => {
+        it('Add invalid listener to signal.add() throws an error', () => {
             expect(() => signal.add()).toThrow();
         });
     });
 
     describe('signal.dispose()', () => {
         const signal = signals.get('disposeEvent');
-        it('Dispose signal', async () => {
+        it('Dispose signal', () => {
             signal.dispatch('Event is dispatched');
             signal.add((data) => {
                 expect(data.toEqual('Event is dispatched'));
@@ -65,7 +67,7 @@ describe('Signals tests', () => {
         const signal = signals.get('removeEvent');
         const testFunc = () => { };
 
-        it('Remove valid listener', async () => {
+        it('Remove valid listener', () => {
             signal.add(testFunc);
             expect(signal.getNumListeners()).toBe(1);
 
@@ -73,7 +75,7 @@ describe('Signals tests', () => {
             expect(signal.getNumListeners()).toBe(0);
         });
 
-        it('Remove all listeners', async () => {
+        it('Remove all listeners', () => {
             signal.add(testFunc);
             expect(signal.getNumListeners()).toBe(1);
 
@@ -84,7 +86,7 @@ describe('Signals tests', () => {
             expect(signal.getNumListeners()).toBe(0);
         });
 
-        it('Remove invalid listener should throws an error', async () => {
+        it('Remove invalid listener should throws an error', () => {
             expect(() => signal.remove()).toThrow();
         });
     });
