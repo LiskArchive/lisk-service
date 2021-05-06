@@ -13,12 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+/* eslint-disable mocha/no-synchronous-tests */
+
 const {
     parseToJSONCompatObj,
 } = require('../../shared/jsonTools');
 
 describe('jsonTools tests', () => {
-    it('Parse buffer', async () => {
+    it('Parse buffer', () => {
         const bufferData = Buffer.from('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'hex');
         const parsedResult = parseToJSONCompatObj(bufferData);
         expect(typeof parsedResult).toBe('string');
@@ -26,54 +28,54 @@ describe('jsonTools tests', () => {
     });
 
 
-    it('Parse string', async () => {
+    it('Parse string', () => {
         const parsedResult = parseToJSONCompatObj('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
         expect(typeof parsedResult).toBe('string');
         expect(parsedResult).toEqual('e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855');
     });
 
-    it('Parse number', async () => {
+    it('Parse number', () => {
         const data = 10;
         const parsedResult = parseToJSONCompatObj(data);
         expect(typeof parsedResult).toBe('number');
         expect(parsedResult).toEqual(data);
     });
 
-    it('Parse boolean', async () => {
+    it('Parse boolean', () => {
         const parsedResult = parseToJSONCompatObj(true);
         expect(typeof parsedResult).toBe('boolean');
         expect(parsedResult).toEqual(true);
     });
 
-    it('Parse array of big integers', async () => {
+    it('Parse array of big integers', () => {
         const data = [BigInt(1000000000), BigInt(2000000000), BigInt(3000000000)];
         const parsedResult = parseToJSONCompatObj(data);
         expect(parsedResult).toBeInstanceOf(Array);
         expect(parsedResult).toEqual(['1000000000', '2000000000', '3000000000']);
     });
 
-    it('Parse array of numbers', async () => {
+    it('Parse array of numbers', () => {
         const data = [1000000000, 2000000000, 3000000000];
         const parsedResult = parseToJSONCompatObj(data);
         expect(parsedResult).toBeInstanceOf(Array);
         expect(parsedResult).toEqual([1000000000, 2000000000, 3000000000]);
     });
 
-    it('Parse array of boolean', async () => {
+    it('Parse array of boolean', () => {
         const data = [true, false, true];
         const parsedResult = parseToJSONCompatObj(data);
         expect(parsedResult).toBeInstanceOf(Array);
         expect(parsedResult).toEqual([true, false, true]);
     });
 
-    it('Parse array of strings', async () => {
+    it('Parse array of strings', () => {
         const data = ['genesis_19', 'genesis_17', 'genesis_85'];
         const parsedResult = parseToJSONCompatObj(data);
         expect(parsedResult).toBeInstanceOf(Array);
         expect(parsedResult).toEqual(['genesis_19', 'genesis_17', 'genesis_85']);
     });
 
-    it('Parse array of object', async () => {
+    it('Parse array of object', () => {
         const data = [{
             delegateAddress: Buffer.from('8a9494ab112fb99ffd0ae8b653c4ed4e27f87fcb', 'hex'),
             amount: BigInt(2000000000),
@@ -88,7 +90,7 @@ describe('jsonTools tests', () => {
         });
     });
 
-    it('Parse object', async () => {
+    it('Parse object', () => {
         const data = {
             asset: {
                 amount: BigInt(150000000000),
