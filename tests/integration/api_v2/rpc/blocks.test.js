@@ -38,18 +38,16 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
+const getDelegates = async params => request(wsRpcUrl, 'get.accounts', { ...params, isDelegate: true });
 
 describe('Method get.blocks', () => {
 	let refBlock;
 	let refDelegate;
 	beforeAll(async () => {
-		let response;
 		[refBlock] = (await getBlocks({ limit: 1, offset: 2 })).result.data;
-		do {
-			// eslint-disable-next-line no-await-in-loop
-			response = await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 });
-		} while (!response.result);
-		[refDelegate] = response.result.data;
+		[refDelegate] = (await getDelegates({
+			search: refBlock.generatorUsername, limit: 1,
+		})).result.data;
 	});
 
 	describe('is able to retireve block lists', () => {
