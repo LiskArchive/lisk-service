@@ -39,21 +39,17 @@ describe('Method get.transactions', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
-		let response1;
-		do {
-			// eslint-disable-next-line no-await-in-loop
-			response1 = await getDelegates({ isDelegate: true, limit: 1 });
-		} while (!response1.result);
-		[refDelegate] = response1.result.data;
+		const response1 = await getTransactions({ moduleAssetId: '2:0', limit: 1 });
+		[refTransaction] = response1.result.data;
 
-		let offset = -1;
-		do {
-			offset++;
-
-			// eslint-disable-next-line no-await-in-loop
-			const response2 = await getTransactions({ limit: 1, offset });
-			[refTransaction] = response2.result.data;
-		} while (!refTransaction.asset.recipient);
+		try {
+			const response2 = await getDelegates({ search: 'test_delegate' });
+			[refDelegate] = response2.result.data;
+			if (!refDelegate) throw new Error();
+		} catch (_) {
+			const response2 = await getDelegates({ limit: 1 });
+			[refDelegate] = response2.result.data;
+		}
 	});
 
 	describe('is able to retrieve transaction using transaction ID', () => {
