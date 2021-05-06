@@ -42,7 +42,7 @@ describe('Signals tests', () => {
         });
 
         it('Add invalid listener to signal.add() throws an error', async () => {
-            expect(() => { signal.add(); }).toThrowError('listener is a required param of add() and should be a Function.');
+            expect(() => { signal.add(); }).toThrow();
         });
     });
 
@@ -55,9 +55,9 @@ describe('Signals tests', () => {
             });
 
             signal.dispose();
-            expect(() => { signal.getNumListeners(); }).toThrowError();
-            expect(() => { signal.add(() => { }); }).toThrowError();
-            expect(() => { signal.dispatch(); }).toThrowError();
+            expect(() => { signal.getNumListeners(); }).toThrow();
+            expect(() => { signal.add(() => { }); }).toThrow();
+            expect(() => { signal.dispatch(); }).toThrow();
         });
     });
 
@@ -85,7 +85,7 @@ describe('Signals tests', () => {
         });
 
         it('Remove invalid listener should throws an error', async () => {
-            expect(() => { signal.remove(); }).toThrowError('listener is a required param of remove() and should be a Function.');
+            expect(() => { signal.remove(); }).toThrow();
         });
     });
 });
