@@ -58,8 +58,8 @@ const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
 	accounts.forEach(account => {
-		account.username = account.dpos ? account.dpos.delegate.username : null;
-		account.balance = account.token ? account.token.balance : null;
+		account.username = account.dpos.delegate.username || null;
+		account.balance = account.token.balance || null;
 		return account;
 	});
 	await accountsDB.upsert(accounts);
@@ -320,7 +320,7 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
-					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [{ ...indexedAccount, publicKey: paramPublicKey }] });
+					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [account] });
 				} else {
 					account.publicKey = indexedAccount.publicKey;
 				}
