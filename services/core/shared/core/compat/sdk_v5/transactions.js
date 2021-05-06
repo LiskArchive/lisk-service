@@ -255,10 +255,14 @@ const getTransactions = async params => {
 	const resultSet = await transactionsDB.find(params);
 	const total = await transactionsDB.count(params);
 	params.ids = resultSet.map(row => row.id);
-	if (params.ids || params.id) {
+
+	if (params.ids.length || params.id) {
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
 		if (response.meta) transactions.meta = response.meta;
+
+		if (params.id) transactions.data = transactions.data
+			.slice(params.offset, params.offset + params.limit);
 
 		transactions.data = await BluebirdPromise.map(
 			transactions.data,
