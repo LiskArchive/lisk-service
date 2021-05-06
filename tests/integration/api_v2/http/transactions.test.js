@@ -588,13 +588,11 @@ describe('Transactions API', () => {
 					address: senderAddress,
 					username: senderUserName,
 				} = transaction.sender;
-				/* eslint-disable no-multi-assign */
-				const {
+				const { recipient: {
 					publicKey: recipientPublicKey,
 					address: recipientAddress,
 					username: recipientUsername,
-				} = transaction.asset.recipient = {};
-				/* eslint-enable no-multi-assign */
+				} = {} } = transaction.asset;
 				const {
 					username: assetUserName,
 				} = transaction.asset;
@@ -626,13 +624,11 @@ describe('Transactions API', () => {
 						address: senderAddress,
 						username: senderUserName,
 					} = transaction.sender;
-					/* eslint-disable no-multi-assign */
-					const {
+					const { recipient: {
 						publicKey: recipientPublicKey,
 						address: recipientAddress,
 						username: recipientUsername,
-					} = transaction.asset.recipient = {};
-					/* eslint-enable no-multi-assign */
+					} = {} } = transaction.asset;
 					const {
 						username: assetUserName,
 					} = transaction.asset;

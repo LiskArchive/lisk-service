@@ -604,13 +604,11 @@ describe('Method get.transactions', () => {
 					address: senderAddress,
 					username: senderUserName,
 				} = transaction.sender;
-				/* eslint-disable no-multi-assign */
-				const {
+				const { recipient: {
 					publicKey: recipientPublicKey,
 					address: recipientAddress,
 					username: recipientUsername,
-				} = transaction.asset.recipient = {};
-				/* eslint-enable no-multi-assign */
+				} = {} } = transaction.asset;
 				const {
 					username: assetUserName,
 				} = transaction.asset;
@@ -620,8 +618,8 @@ describe('Method get.transactions', () => {
 					expect(senderUserName).toBe(refDelegate.summary.username);
 				}
 
-				expect([senderPublicKey, recipientPublicKey]).toContain(refDelegate.summary.publicKey);
 				expect([senderAddress, recipientAddress]).toContain(refDelegate.summary.address);
+				expect([senderPublicKey, recipientPublicKey]).toContain(refDelegate.summary.publicKey);
 				expect([senderUserName, recipientUsername, assetUserName])
 					.toContain(refDelegate.summary.username);
 			});
@@ -647,13 +645,11 @@ describe('Method get.transactions', () => {
 						address: senderAddress,
 						username: senderUserName,
 					} = transaction.sender;
-					/* eslint-disable no-multi-assign */
-					const {
+					const { recipient: {
 						publicKey: recipientPublicKey,
 						address: recipientAddress,
 						username: recipientUsername,
-					} = transaction.asset.recipient = {};
-					/* eslint-enable no-multi-assign */
+					} = {} } = transaction.asset;
 					const {
 						username: assetUserName,
 					} = transaction.asset;
