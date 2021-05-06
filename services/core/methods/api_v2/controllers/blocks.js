@@ -15,52 +15,60 @@
  */
 const { HTTP, Utils } = require('lisk-service-framework');
 
-const { StatusCodes: { NOT_FOUND } } = HTTP;
+const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
 const Core = require('../../../shared/core');
+const { ValidationException } = require('../../../shared/exceptions');
 
 const { isEmptyArray } = ObjectUtilService;
 
 const getBlocks = async params => {
-	if (typeof params.height === 'number') {
-		params.height = `${params.height}`;
-	}
-	if (params.username) {
-		const { username, ...remParams } = params;
-		params = remParams;
-
-		params.address = await Core.getAddressByUsername(username);
-		if (!params.address) return { status: NOT_FOUND, data: { error: `Account ID corresponding to username: '${username}' not found.` } };
-	}
-
-	if (params.address) {
-		const { address, ...remParams } = params;
-		params = remParams;
-
-		params.generatorPublicKey = await Core.getPublicKeyByAny(address);
-		if (!params.generatorPublicKey) return { status: NOT_FOUND, data: { error: `Account ID ${address} not found.` } };
-	}
-
-	const response = await Core.getBlocks(params);
-
-	if (typeof params.blockId === 'string') {
-		if (isEmptyArray(response.data)) {
-			return { status: NOT_FOUND, data: { error: `Block ID ${params.blockId} not found.` } };
+	try {
+		if (typeof params.height === 'number') {
+			params.height = `${params.height}`;
 		}
-	}
+		if (params.username) {
+			const { username, ...remParams } = params;
+			params = remParams;
 
-	if (typeof params.height === 'string') {
-		if (isEmptyArray(response.data)) {
-			return { status: NOT_FOUND, data: { error: `Height ${params.height} not found.` } };
+			params.address = await Core.getAddressByUsername(username);
+			if (!params.address) return { status: NOT_FOUND, data: { error: `Account ID corresponding to username: '${username}' not found.` } };
 		}
-	}
 
-	return {
-		data: response.data,
-		meta: response.meta,
-		link: {},
-	};
+		if (params.address) {
+			const { address, ...remParams } = params;
+			params = remParams;
+
+			params.generatorPublicKey = await Core.getPublicKeyByAny(address);
+			if (!params.generatorPublicKey) return { status: NOT_FOUND, data: { error: `Account ID ${address} not found.` } };
+		}
+
+		const response = await Core.getBlocks(params);
+
+		if (typeof params.blockId === 'string') {
+			if (isEmptyArray(response.data)) {
+				return { status: NOT_FOUND, data: { error: `Block ID ${params.blockId} not found.` } };
+			}
+		}
+
+		if (typeof params.height === 'string') {
+			if (isEmptyArray(response.data)) {
+				return { status: NOT_FOUND, data: { error: `Height ${params.height} not found.` } };
+			}
+		}
+
+		return {
+			data: response.data,
+			meta: response.meta,
+			link: {},
+		};
+	} catch (err) {
+		let status;
+		if (err instanceof ValidationException) status = BAD_REQUEST;
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 const getBestBlocks = async params => {

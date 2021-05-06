@@ -48,6 +48,8 @@ const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
 const transactionsIndexSchema = require('./schema/transactions');
 
+const { ValidationException } = require('../../../exceptions');
+
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
@@ -264,7 +266,7 @@ const getAccounts = async params => {
 	let addressFromParamPublicKey;
 	const accountsDB = await getAccountsIndex();
 	if (params.sort && params.sort.includes('rank')) {
-		return new Error('Rank based sorting is supported only for delegates');
+		throw new ValidationException('Rank based sorting is supported only for delegates');
 	}
 	if (params.search) {
 		params.search = {
