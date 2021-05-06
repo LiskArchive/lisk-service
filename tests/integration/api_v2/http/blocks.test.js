@@ -43,7 +43,7 @@ describe('Blocks API', () => {
 		[refBlock] = (await api.get(`${endpoint}?limit=1&offset=2`)).data;
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
+			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1&search=genesis`);
 		} while (!response.data);
 		[refDelegate] = response.data;
 	});
@@ -218,6 +218,81 @@ describe('Blocks API', () => {
 				expect(block).toMap(blockSchemaVersion5);
 				expect(block.height).toBeLessThanOrEqual(maxHeight);
 			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Blocks sorted by height', () => {
+		it('returns 10 blocks sorted by height descending', async () => {
+			const response = await api.get(`${endpoint}?sort=height:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.height).toBeGreaterThan(currBlock.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 blocks sorted by height ascending', async () => {
+			// Ignore the genesis block with offset=1
+			const response = await api.get(`${endpoint}?sort=height:asc&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.height).toBeLessThan(currBlock.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+
+	describe('Blocks sorted by timestamp', () => {
+		it('returns 10 blocks sorted by timestamp descending', async () => {
+			const response = await api.get(`${endpoint}?sort=timestamp:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 blocks sorted by timestamp ascending', async () => {
+			// Ignore the genesis block with offset=1
+			const response = await api.get(`${endpoint}?sort=timestamp:asc&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.timestamp).toBeLessThan(currBlock.timestamp);
+				}
+			}
 			expect(response.meta).toMap(metaSchema);
 		});
 	});

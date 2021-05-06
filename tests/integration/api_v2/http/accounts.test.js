@@ -228,4 +228,42 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
+
+	describe('Accounts sorted by balance', () => {
+		it('returns 10 accounts sorted by balance descending', async () => {
+			const response = await api.get(`${endpoint}?sort=balance:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevAccount = response.data[i - 1];
+					const currAccount = response.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 accounts sorted by balance ascending', async () => {
+			const response = await api.get(`${endpoint}?sort=balance:asc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevAccount = response.data[i - 1];
+					const currAccount = response.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
 });
