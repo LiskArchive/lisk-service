@@ -109,7 +109,7 @@ const getVoters = async params => {
 	if (resultSet.length) {
 		params.ids = resultSet.map(row => row.id);
 
-		const response = await coreApi.getTransactions(params);
+		const response = await coreApi.getTransactionsByIDs(params.ids);
 		if (response.data) {
 			const voteMultiArray = response.data
 				.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));

@@ -103,20 +103,35 @@ const removeTransactionsByBlockIDs = async blockIDs => {
 	await removeVotesByTransactionIDs(forkedTransactionIDs);
 };
 
-const normalizeTransaction = tx => {
-	const [{ id, name }] = availableLiskModuleAssets
-		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-	tx = parseToJSONCompatObj(tx);
-	tx.moduleAssetId = id;
-	tx.moduleAssetName = name;
-	if (tx.asset.recipientAddress) {
-		tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
-	}
-	if (tx.asset.votes && tx.asset.votes.length) {
-		tx.asset.votes
-			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
-	}
-	return tx;
+const normalizeTransaction = txs => {
+	const normalizedTransactions = BluebirdPromise.map(
+		txs,
+		async tx => {
+			const [{ id, name }] = availableLiskModuleAssets
+				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			tx = parseToJSONCompatObj(tx);
+			tx.moduleAssetId = id;
+			tx.moduleAssetName = name;
+			if (tx.asset.recipientAddress) {
+				tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
+			}
+			if (tx.asset.votes && tx.asset.votes.length) {
+				tx.asset.votes
+					.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
+			}
+			return tx;
+		}, { concurrency: txs.length });
+	return normalizedTransactions;
+};
+
+const getTransactionByID = async id => {
+	const response = await coreApi.getTransactionByID(id);
+	return normalizeTransaction(response.data);
+};
+
+const getTransactionsByIDs = async ids => {
+	const response = await coreApi.getTransactionsByIDs(ids);
+	return normalizeTransaction(response.data);
 };
 
 const validateParams = async params => {
@@ -256,54 +271,53 @@ const getTransactions = async params => {
 	const total = await transactionsDB.count(params);
 	params.ids = resultSet.map(row => row.id);
 
-	if (params.ids.length || params.id) {
-		const response = await coreApi.getTransactions(params);
-		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
-		if (response.meta) transactions.meta = response.meta;
-
-		if (params.id) transactions.data = transactions.data
+	if (params.id) {
+		transactions.data = await getTransactionByID(params.id);
+		transactions.data = transactions.data
 			.slice(params.offset, params.offset + params.limit);
-
-		transactions.data = await BluebirdPromise.map(
-			transactions.data,
-			async transaction => {
-				const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
-				transaction.unixTimestamp = indexedTxInfo.timestamp;
-				transaction.height = indexedTxInfo.height;
-				transaction.blockId = indexedTxInfo.blockId;
-				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
-				transaction.senderId = account && account.address ? account.address
-					: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
-				transaction.username = account && account.username ? account.username : undefined;
-				transaction.isPending = false;
-
-				// For recipient info
-				if (transaction.asset.recipientAddress) {
-					const { recipientAddress, ...asset } = transaction.asset;
-					const recipientInfo = await getIndexedAccountInfo({
-						address: recipientAddress,
-					});
-					transaction.asset = asset;
-					transaction.asset.recipient = {};
-					transaction.asset.recipient = {
-						address: recipientInfo
-							&& (recipientInfo.address !== null) ? recipientInfo.address : undefined,
-						publicKey: recipientInfo
-							&& (recipientInfo.publicKey !== null) ? recipientInfo.publicKey : undefined,
-						username: recipientInfo
-							&& (recipientInfo.username !== null) ? recipientInfo.username : undefined,
-					};
-				}
-
-				// The two lines below are needed for transaction statistics
-				if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
-				transaction.amount = transaction.asset.amount || 0;
-
-				return transaction;
-			},
-			{ concurrency: transactions.data.length },
-		);
+	} else if (params.ids.length) {
+		transactions.data = await getTransactionsByIDs(params.ids);
 	}
+
+	transactions.data = await BluebirdPromise.map(
+		transactions.data,
+		async transaction => {
+			const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
+			transaction.unixTimestamp = indexedTxInfo.timestamp;
+			transaction.height = indexedTxInfo.height;
+			transaction.blockId = indexedTxInfo.blockId;
+			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			transaction.senderId = account && account.address ? account.address
+				: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
+			transaction.username = account && account.username ? account.username : undefined;
+			transaction.isPending = false;
+
+			// For recipient info
+			if (transaction.asset.recipientAddress) {
+				const { recipientAddress, ...asset } = transaction.asset;
+				const recipientInfo = await getIndexedAccountInfo({
+					address: recipientAddress,
+				});
+				transaction.asset = asset;
+				transaction.asset.recipient = {};
+				transaction.asset.recipient = {
+					address: recipientInfo
+						&& (recipientInfo.address !== null) ? recipientInfo.address : undefined,
+					publicKey: recipientInfo
+						&& (recipientInfo.publicKey !== null) ? recipientInfo.publicKey : undefined,
+					username: recipientInfo
+						&& (recipientInfo.username !== null) ? recipientInfo.username : undefined,
+				};
+			}
+
+			// The two lines below are needed for transaction statistics
+			if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
+			transaction.amount = transaction.asset.amount || 0;
+
+			return transaction;
+		},
+		{ concurrency: transactions.data.length },
+	);
 	transactions.meta.total = total;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset;
