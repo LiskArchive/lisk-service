@@ -304,13 +304,16 @@ const getAccounts = async params => {
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
 
-	if (params.address || (params.addresses && params.addresses.length)) {
+	if (params.address) {
+		params.address = getHexAddressFromBase32(params.address);
+		if (params.addresses) {
+			const { address, ...remParams } = params;
+			params = remParams;
+		}
+	}
+
+	if ((params.addresses && params.addresses.length) || params.address) {
 		try {
-			if (params.addresses && params.address) {
-				const { address, ...remParams } = params;
-				params = remParams;
-			}
-			if (params.address) params.address = getHexAddressFromBase32(params.address);
 			const response = await getAccountsFromCore(params);
 			if (response.data) accounts.data = response.data;
 

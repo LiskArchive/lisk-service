@@ -16,12 +16,11 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const coreApi = require('./coreApi');
 
 const { getIndexedAccountInfo } = require('./accounts');
-const { parseToJSONCompatObj } = require('../../../jsonTools');
 const { getBase32AddressFromHex } = require('./accountUtils');
-
+const { getTransactions } = require('./transactions');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
@@ -109,7 +108,7 @@ const getVoters = async params => {
 	if (resultSet.length) {
 		params.ids = resultSet.map(row => row.id);
 
-		const response = await coreApi.getTransactionsByIDs(params.ids);
+		const response = await getTransactions(params);
 		if (response.data) {
 			const voteMultiArray = response.data
 				.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));

@@ -13,14 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const moment = require('moment');
 const { HTTP, Utils } = require('lisk-service-framework');
 
-const {
-	StatusCodes: { NOT_FOUND },
-} = HTTP;
+const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 const { isEmptyArray, isEmptyObject } = Utils.Data;
 
-const moment = require('moment');
+const { ValidationException, NotFoundException } = require('../../../shared/exceptions');
 
 const CoreService = require('../../../shared/core');
 const txStatisticsService = require('../../../shared/core/transactionStatistics');
@@ -69,12 +68,11 @@ const getTransactions = async (params) => {
 			link: {},
 		};
 	} catch (err) {
-		if (err.message.includes('does not exist')) {
-			return {
-				status: NOT_FOUND,
-				data: { error: err.message },
-			};
-		}
+		let status;
+		if (err instanceof ValidationException) status = BAD_REQUEST;
+		if (err instanceof NotFoundException) status = NOT_FOUND;
+		if (err.message.includes('does not exist')) status = NOT_FOUND;
+		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}
 };

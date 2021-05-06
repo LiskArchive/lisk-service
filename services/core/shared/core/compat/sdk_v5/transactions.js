@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
-
-const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const coreApi = require('./coreApi');
 
@@ -35,7 +32,7 @@ const {
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-
+const { ValidationException, NotFoundException } = require('../../../exceptions');
 const mysqlIndex = require('../../../indexdb/mysql');
 const transactionsIndexSchema = require('./schema/transactions');
 
@@ -165,8 +162,8 @@ const validateParams = async params => {
 		});
 	}
 
-	if (params.nonce && !params.senderAddress) {
-		throw new Error('Nonce based retrieval is only possible along with senderAddress');
+	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
+		throw new ValidationException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
 	}
 
 	if (params.senderIdOrRecipientId) {
@@ -188,7 +185,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ address: senderAddress });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderAddress} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${senderAddress} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
 
@@ -197,7 +194,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ username: senderUsername });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderUsername} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${senderUsername} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
 
@@ -206,7 +203,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientPublicKey} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${recipientPublicKey} not found.`);
 		params.recipientId = account.address;
 	}
 
@@ -215,7 +212,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ username: recipientUsername });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientUsername} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${recipientUsername} not found.`);
 		params.recipientId = account.address;
 	}
 
@@ -271,12 +268,12 @@ const getTransactions = async params => {
 	const total = await transactionsDB.count(params);
 	params.ids = resultSet.map(row => row.id);
 
-	if (params.id) {
+	if (params.ids.length) {
+		transactions.data = await getTransactionsByIDs(params.ids);
+	} else if (params.id) {
 		transactions.data = await getTransactionByID(params.id);
 		transactions.data = transactions.data
 			.slice(params.offset, params.offset + params.limit);
-	} else if (params.ids.length) {
-		transactions.data = await getTransactionsByIDs(params.ids);
 	}
 
 	transactions.data = await BluebirdPromise.map(
