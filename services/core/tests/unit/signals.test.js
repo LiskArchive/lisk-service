@@ -42,11 +42,7 @@ describe('Signals tests', () => {
         });
 
         it('Add invalid listener to signal.add() throws an error', async () => {
-            try {
-                signal.add();
-            } catch (err) {
-                expect(err.message).toEqual('listener is a required param of add() and should be a Function.');
-            }
+            expect(() => { signal.add(); }).toThrowError('listener is a required param of add() and should be a Function.');
         });
     });
 
@@ -89,11 +85,7 @@ describe('Signals tests', () => {
         });
 
         it('Remove invalid listener should throws an error', async () => {
-            try {
-                signal.remove();
-            } catch (err) {
-                expect(err.message).toEqual('listener is a required param of remove() and should be a Function.');
-            }
+            expect(() => { signal.remove(); }).toThrowError('listener is a required param of remove() and should be a Function.');
         });
     });
 });
