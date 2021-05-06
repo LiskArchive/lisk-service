@@ -575,7 +575,9 @@ describe('Method get.transactions', () => {
 				expect(result.data.length).toBeLessThanOrEqual(5);
 				result.data.forEach(transaction => {
 					expect(transaction).toMap(transactionSchemaVersion5);
-					expect(transaction.asset.data).toContain(refTransaction.asset.data);
+					const txData = transaction.asset.data;
+					const refTxData = refTransaction.asset.data;
+					expect(txData === refTxData || txData.includes(refTxData)).toBeTruthy();
 				});
 				expect(result.meta).toMap(metaSchema);
 			} catch (_) {
