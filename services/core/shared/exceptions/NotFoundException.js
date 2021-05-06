@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-export default class NotFoundException extends Error {
+class NotFoundException extends Error {
     constructor(message) {
         super(message);
         this.name = 'NotFoundException';
     }
 }
+
+module.exports = NotFoundException;

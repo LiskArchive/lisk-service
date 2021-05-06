@@ -19,7 +19,7 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const { getIndexedAccountInfo } = require('./accounts');
 const { getBase32AddressFromHex } = require('./accountUtils');
-const { getTransactions } = require('./transactions');
+const { getTransactionsByIDs } = require('./transactions');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
@@ -108,7 +108,7 @@ const getVoters = async params => {
 	if (resultSet.length) {
 		params.ids = resultSet.map(row => row.id);
 
-		const response = await getTransactions(params);
+		const response = await getTransactionsByIDs(params.ids);
 		if (response.data) {
 			const voteMultiArray = response.data
 				.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));

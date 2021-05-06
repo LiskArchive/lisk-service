@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-export default class ValidationException extends Error {
+class ValidationException extends Error {
     constructor(message) {
         super(message);
         this.name = 'ValidationException';
     }
 }
+
+module.exports = ValidationException;

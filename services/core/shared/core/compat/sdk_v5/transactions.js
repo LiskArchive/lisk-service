@@ -354,4 +354,5 @@ module.exports = {
 	indexTransactions,
 	removeTransactionsByBlockIDs,
 	getTransactionsByBlockId,
+	getTransactionsByIDs,
 };
