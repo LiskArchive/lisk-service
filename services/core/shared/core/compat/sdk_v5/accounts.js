@@ -306,9 +306,16 @@ const getAccounts = async params => {
 
 	if (params.address || (params.addresses && params.addresses.length)) {
 		try {
+			if (params.addresses && params.address) {
+				const { address, ...remParams } = params;
+				params = remParams;
+			}
 			if (params.address) params.address = getHexAddressFromBase32(params.address);
 			const response = await getAccountsFromCore(params);
 			if (response.data) accounts.data = response.data;
+
+			if (params.address) accounts.data = accounts.data
+				.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
 			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
 		}

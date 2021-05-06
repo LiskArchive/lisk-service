@@ -300,6 +300,7 @@ const getBlocks = async params => {
 	try {
 		if (params.id) {
 			blocks.data = await getBlockByID(params.id);
+			blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.ids) {
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.height) {
