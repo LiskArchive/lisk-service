@@ -37,8 +37,8 @@ describe('Transactions API', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
-
 		do {
+			// eslint-disable-next-line no-await-in-loop
 			const response1 = await api.get(`${endpoint}?limit=1&moduleAssetId=2:0`);
 			[refTransaction] = response1.data;
 		} while (!refTransaction.asset.data);

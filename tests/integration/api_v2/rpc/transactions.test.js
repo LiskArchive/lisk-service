@@ -40,6 +40,7 @@ describe('Method get.transactions', () => {
 	let refDelegate;
 	beforeAll(async () => {
 		do {
+			// eslint-disable-next-line no-await-in-loop
 			const response1 = await getTransactions({ moduleAssetId: '2:0', limit: 1 });
 			[refTransaction] = response1.result.data;
 		} while (!refTransaction.asset.data);
