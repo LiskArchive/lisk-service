@@ -37,8 +37,11 @@ describe('Transactions API', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
-		const response1 = await api.get(`${endpoint}?limit=1&moduleAssetId=2:0`);
-		[refTransaction] = response1.data;
+
+		do {
+			const response1 = await api.get(`${endpoint}?limit=1&moduleAssetId=2:0`);
+			[refTransaction] = response1.data;
+		} while (!refTransaction.asset.data);
 
 		try {
 			const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&search=test_delegate`);

@@ -39,8 +39,10 @@ describe('Method get.transactions', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
-		const response1 = await getTransactions({ moduleAssetId: '2:0', limit: 1 });
-		[refTransaction] = response1.result.data;
+		do {
+			const response1 = await getTransactions({ moduleAssetId: '2:0', limit: 1 });
+			[refTransaction] = response1.result.data;
+		} while (!refTransaction.asset.data);
 
 		try {
 			const response2 = await getDelegates({ search: 'test_delegate' });
