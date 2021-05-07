@@ -450,18 +450,6 @@ describe('Transactions API', () => {
 	});
 
 	describe('Fetch transactions based on multiple request params', () => {
-		xit('returns transactions with address and nonce', async () => {
-			const response = await api.get(`${endpoint}?address=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toEqual(1);
-			response.data.forEach(transaction => {
-				expect(transaction).toMap(transactionSchemaVersion5);
-				expect(transaction.sender.address).toBe(refDelegate.summary.address);
-			});
-			expect(response.meta).toMap(metaSchema);
-		});
-
 		it('returns transactions with senderAddress and nonce', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`);
 			expect(response).toMap(goodRequestSchema);
@@ -484,6 +472,12 @@ describe('Transactions API', () => {
 				expect(transaction.sender.publicKey).toBe(refDelegate.summary.publicKey);
 			});
 			expect(response.meta).toMap(metaSchema);
+		});
+
+		xit('returns 400 BAD REQUEST with address and nonce', async () => {
+			const expectedStatusCode = 400;
+			const response = await api.get(`${endpoint}?address=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		xit('returns 400 BAD REQUEST with senderUsername and nonce', async () => {

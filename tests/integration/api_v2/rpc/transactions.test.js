@@ -425,22 +425,6 @@ describe('Method get.transactions', () => {
 	});
 
 	describe('Fetch transactions based on multiple request params', () => {
-		xit('returns transactions with address and nonce', async () => {
-			const response = await getTransactions({
-				address: refDelegate.summary.address,
-				nonce: String(Number(refDelegate.sequence.nonce) - 1),
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toEqual(1);
-			result.data.forEach(transaction => {
-				expect(transaction).toMap(transactionSchemaVersion5);
-				expect(transaction.sender.address).toBe(refDelegate.summary.address);
-			});
-			expect(result.meta).toMap(metaSchema);
-		});
-
 		it('returns transactions with senderAddress and nonce', async () => {
 			const response = await getTransactions({
 				senderAddress: refDelegate.summary.address,
@@ -471,6 +455,14 @@ describe('Method get.transactions', () => {
 				expect(transaction.sender.publicKey).toBe(refDelegate.summary.publicKey);
 			});
 			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns transactions with address and nonce', async () => {
+			const response = await getTransactions({
+				address: refDelegate.summary.address,
+				nonce: Number(refDelegate.sequence.nonce) - 1,
+			});
+			expect(response).toMap(invalidParamsSchema);
 		});
 
 		it('returns invalid params response with senderUsername and nonce', async () => {
