@@ -16,10 +16,14 @@
 const moment = require('moment');
 const { HTTP, Utils } = require('lisk-service-framework');
 
-const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
+const { StatusCodes: { INVALID_PARAMS, NOT_FOUND, BAD_REQUEST } } = HTTP;
 const { isEmptyArray, isEmptyObject } = Utils.Data;
 
-const { ValidationException, NotFoundException } = require('../../../shared/exceptions');
+const {
+	InvalidParamsException,
+	ValidationException,
+	NotFoundException,
+} = require('../../../shared/exceptions');
 
 const CoreService = require('../../../shared/core');
 const txStatisticsService = require('../../../shared/core/transactionStatistics');
@@ -69,6 +73,7 @@ const getTransactions = async (params) => {
 		};
 	} catch (err) {
 		let status;
+		if (err instanceof InvalidParamsException) status = INVALID_PARAMS;
 		if (err instanceof ValidationException) status = BAD_REQUEST;
 		if (err instanceof NotFoundException) status = NOT_FOUND;
 		if (err.message.includes('does not exist')) status = NOT_FOUND;

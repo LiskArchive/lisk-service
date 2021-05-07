@@ -13,12 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const InvalidParamsException = require('./InvalidParamsException');
-const NotFoundException = require('./NotFoundException');
-const ValidationException = require('./ValidationException');
+class InvalidParamsException extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'InvalidParamsException';
+    }
+}
 
-module.exports = {
-    InvalidParamsException,
-    NotFoundException,
-    ValidationException,
-};
+module.exports = InvalidParamsException;

@@ -32,7 +32,7 @@ const {
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const { ValidationException, NotFoundException } = require('../../../exceptions');
+const { InvalidParamsException, NotFoundException } = require('../../../exceptions');
 const mysqlIndex = require('../../../indexdb/mysql');
 const transactionsIndexSchema = require('./schema/transactions');
 
@@ -163,7 +163,7 @@ const validateParams = async params => {
 	}
 
 	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
-		throw new ValidationException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
+		throw new InvalidParamsException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
 	}
 
 	if (params.senderIdOrRecipientId) {
