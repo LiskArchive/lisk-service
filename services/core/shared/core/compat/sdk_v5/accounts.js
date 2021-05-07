@@ -319,8 +319,7 @@ const getAccounts = async params => {
 			const response = await getAccountsFromCore(params);
 			if (response.data) accounts.data = response.data;
 
-			if (params.address) accounts.data = accounts.data
-				.slice(params.offset, params.offset + params.limit);
+			if ('address' in params && 'offset' in params && 'limit' in params) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
 			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
 		}
@@ -380,16 +379,20 @@ const getMultisignatureGroups = async account => {
 		multisignatureAccount.members = [];
 
 		await BluebirdPromise.map(
-			account.keys.mandatoryKeys, async publicKey => {
-				const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+			account.keys.mandatoryKeys,
+			async publicKey => {
+				const [accountByPublicKey = {}] = (await getAccounts({ publicKey })).data;
+				accountByPublicKey.publicKey = publicKey;
 				accountByPublicKey.isMandatory = true;
 				multisignatureAccount.members.push(accountByPublicKey);
 			},
 			{ concurrency: account.keys.mandatoryKeys.length },
 		);
 		await BluebirdPromise.map(
-			account.keys.optionalKeys, async publicKey => {
-				const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+			account.keys.optionalKeys,
+			async publicKey => {
+				const [accountByPublicKey = {}] = (await getAccounts({ publicKey })).data;
+				accountByPublicKey.publicKey = publicKey;
 				accountByPublicKey.isMandatory = false;
 				multisignatureAccount.members.push(accountByPublicKey);
 			},
