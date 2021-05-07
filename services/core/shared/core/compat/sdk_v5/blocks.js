@@ -44,7 +44,7 @@ const {
 
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const { ValidationException } = require('../../../exceptions');
+const { ValidationException, NotFoundException } = require('../../../exceptions');
 
 const signals = require('../../../signals');
 
@@ -298,32 +298,31 @@ const getBlocks = async params => {
 		params.ids = resultSet.map(row => row.id);
 	}
 
-	try {
-		if (params.id) {
-			blocks.data = await getBlockByID(params.id);
-			blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} else if (params.ids) {
-			blocks.data = await getBlocksByIDs(params.ids);
-		} else if (params.height) {
+	if (params.id) {
+		blocks.data = await getBlockByID(params.id);
+		blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
+	} else if (params.ids) {
+		blocks.data = await getBlocksByIDs(params.ids);
+	} else if (params.height) {
+		try {
 			blocks.data = await getBlockByHeight(params.height);
 			blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} else if (params.heightBetween) {
-			const { from, to } = params.heightBetween;
-			blocks.data = await getBlocksByHeightBetween(from, to);
-			if (params.sort) {
-				const [sortProp, sortOrder] = params.sort.split(':');
-				blocks.data = blocks.data.sort(
-					(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
-				);
-			}
-		} else {
-			blocks.data = await getLastBlock();
+		} catch (err) {
+			// Return empty response when block at a certain height does not exist
+			if (err.message.includes('does not exist')) throw new NotFoundException(`Block at height ${params.height} does not exist`);
+			throw err;
 		}
-	} catch (err) {
-		// Return empty response when block at a certain height does not exist
-		if (params.height && err.message.includes('does not exist')) return blocks;
-
-		throw new Error(err);
+	} else if (params.heightBetween) {
+		const { from, to } = params.heightBetween;
+		blocks.data = await getBlocksByHeightBetween(from, to);
+		if (params.sort) {
+			const [sortProp, sortOrder] = params.sort.split(':');
+			blocks.data = blocks.data.sort(
+				(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
+			);
+		}
+	} else {
+		blocks.data = await getLastBlock();
 	}
 
 	blocks.meta = {

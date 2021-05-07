@@ -19,7 +19,7 @@ const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
 const Core = require('../../../shared/core');
-const { ValidationException } = require('../../../shared/exceptions');
+const { ValidationException, NotFoundException } = require('../../../shared/exceptions');
 
 const { isEmptyArray } = ObjectUtilService;
 
@@ -66,6 +66,7 @@ const getBlocks = async params => {
 	} catch (err) {
 		let status;
 		if (err instanceof ValidationException) status = BAD_REQUEST;
+		if (err instanceof NotFoundException) status = NOT_FOUND;
 		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}
