@@ -480,7 +480,10 @@ describe('Method get.blocks', () => {
 
 		// TODO: Fix this scenario
 		xit('returns empty response when queried with block height and non-zero offset', async () => {
-			const response = await getBlocks({ height: String(refBlock.height), offset: 1 }).catch(e => e);
+			const response = await getBlocks({
+				height: String(refBlock.height),
+				offset: 1,
+			}).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
