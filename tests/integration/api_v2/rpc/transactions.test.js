@@ -460,7 +460,7 @@ describe('Method get.transactions', () => {
 		xit('returns transactions with senderPublicKey and nonce', async () => {
 			const response = await getTransactions({
 				senderPublicKey: refDelegate.summary.publicKey,
-				nonce: Number(refDelegate.sequence.nonce) - 1,
+				nonce: String(Number(refDelegate.sequence.nonce) - 1),
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
