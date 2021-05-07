@@ -272,8 +272,7 @@ const getTransactions = async params => {
 		transactions.data = await getTransactionsByIDs(params.ids);
 	} else if (params.id) {
 		transactions.data = await getTransactionByID(params.id);
-		transactions.data = transactions.data
-			.slice(params.offset, params.offset + params.limit);
+		if ('offset' in params && params.limit) transactions.data = transactions.data.slice(params.offset, params.offset + params.limit);
 	}
 
 	transactions.data = await BluebirdPromise.map(

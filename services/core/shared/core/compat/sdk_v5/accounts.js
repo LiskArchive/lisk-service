@@ -318,8 +318,7 @@ const getAccounts = async params => {
 		try {
 			const response = await getAccountsFromCore(params);
 			if (response.data) accounts.data = response.data;
-
-			if ('address' in params && 'offset' in params && 'limit' in params) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
+			if (params.address && 'offset' in params && params.limit) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
 			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
 		}
