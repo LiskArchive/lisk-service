@@ -39,11 +39,8 @@ describe('Method get.transactions', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
-		do {
-			// eslint-disable-next-line no-await-in-loop
-			const response1 = await getTransactions({ moduleAssetId: '2:0', limit: 1 });
-			[refTransaction] = response1.result.data;
-		} while (!refTransaction.asset.data);
+		const response1 = await getTransactions({ moduleAssetId: '2:0', limit: 1 });
+		[refTransaction] = response1.result.data;
 
 		try {
 			const response2 = await getDelegates({ search: 'test_delegate' });
@@ -549,7 +546,8 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions when queried with data', async () => {
+		// TODO: Re-enable after test blockchain update with transaction data
+		xit('returns transactions when queried with data', async () => {
 			const response = await getTransactions({ data: refTransaction.asset.data });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -564,7 +562,8 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions when queried with data, limit and offset', async () => {
+		// TODO: Re-enable after test blockchain update with transaction data
+		xit('returns transactions when queried with data, limit and offset', async () => {
 			try {
 				const response = await getTransactions({
 					data: refTransaction.asset.data,
