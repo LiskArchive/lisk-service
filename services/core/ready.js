@@ -24,6 +24,7 @@ const features = {
     isTransactionStatsReady: false,
     isFeeEstimatesReady: false,
     isDelegatesReady: false,
+    isBlocksReady: false,
 };
 
 const isCoreReady = () => !Object.keys(features).some(value => !features[value]);
@@ -50,6 +51,12 @@ signals.get('newBlock').add(async () => {
         // Check if delegates list is ready
         const delegatesList = await core.getDelegates({});
         if (delegatesList.data.length) features.isDelegatesReady = true;
+
+        // Check if blocks are ready with generatorUsername
+        const blocks = await core.getBlocks({});
+        if (blocks.data.every(block => block.height > core.getGenesisHeight()
+            ? block.generatorUsername !== null
+            : true)) features.isBlocksReady = true;
 
         // Check if transaction stats are disabled, set isTransactionStatsReady to true
         if (config.transactionStatistics.enabled === false) features.isTransactionStatsReady = true;
