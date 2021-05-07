@@ -298,31 +298,36 @@ const getBlocks = async params => {
 		params.ids = resultSet.map(row => row.id);
 	}
 
-	if (params.id) {
-		blocks.data = await getBlockByID(params.id);
-		blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-	} else if (params.ids) {
-		blocks.data = await getBlocksByIDs(params.ids);
-	} else if (params.height) {
-		try {
+	try {
+		if (params.id) {
+			blocks.data = await getBlockByID(params.id);
+			blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
+		} else if (params.ids) {
+			blocks.data = await getBlocksByIDs(params.ids);
+		} else if (params.height) {
 			blocks.data = await getBlockByHeight(params.height);
 			blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} catch (err) {
-			// Return empty response when block at a certain height does not exist
-			if (err.message.includes('does not exist')) throw new NotFoundException(`Block at height ${params.height} does not exist`);
-			throw err;
+		} else if (params.heightBetween) {
+			const { from, to } = params.heightBetween;
+			blocks.data = await getBlocksByHeightBetween(from, to);
+			if (params.sort) {
+				const [sortProp, sortOrder] = params.sort.split(':');
+				blocks.data = blocks.data.sort(
+					(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
+				);
+			}
+		} else {
+			blocks.data = await getLastBlock();
 		}
-	} else if (params.heightBetween) {
-		const { from, to } = params.heightBetween;
-		blocks.data = await getBlocksByHeightBetween(from, to);
-		if (params.sort) {
-			const [sortProp, sortOrder] = params.sort.split(':');
-			blocks.data = blocks.data.sort(
-				(a, b) => sortOrder === 'asc' ? a[sortProp] - b[sortProp] : b[sortProp] - a[sortProp],
-			);
+	} catch (err) {
+		// Block does not exist
+		if (err.message.includes('does not exist')) {
+			let errMessage;
+			if (err.message.includes(':id')) errMessage = `Block ${params.id} does not exist`;
+			if (err.message.includes(':height')) errMessage = `Block at height ${params.height} does not exist`;
+			throw new NotFoundException(errMessage);
 		}
-	} else {
-		blocks.data = await getLastBlock();
+		throw err;
 	}
 
 	blocks.meta = {
