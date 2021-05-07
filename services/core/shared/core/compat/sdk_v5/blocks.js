@@ -306,6 +306,7 @@ const getBlocks = async params => {
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.height) {
 			blocks.data = await getBlockByHeight(params.height);
+			blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.heightBetween) {
 			const { from, to } = params.heightBetween;
 			blocks.data = await getBlocksByHeightBetween(from, to);
