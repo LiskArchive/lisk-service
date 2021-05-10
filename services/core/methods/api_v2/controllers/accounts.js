@@ -13,9 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Utils } = require('lisk-service-framework');
+const { Logger, Utils, HTTP } = require('lisk-service-framework');
+
+const { StatusCodes: { BAD_REQUEST } } = HTTP;
 
 const CoreService = require('../../../shared/core');
+const { ValidationException } = require('../../../shared/exceptions');
 
 const ObjectUtilService = Utils.Data;
 const { isEmptyObject } = ObjectUtilService;
@@ -23,21 +26,28 @@ const { isEmptyObject } = ObjectUtilService;
 const logger = Logger();
 
 const getAccounts = async params => {
-	logger.debug(`Retrieving account ${params.publicKey || params.address || params.username || '(params)'}`);
+	try {
+		logger.debug(`Retrieving account ${params.publicKey || params.address || params.username || '(params)'}`);
 
-	const accounts = {
-		data: [],
-		meta: {},
-	};
+		const accounts = {
+			data: [],
+			meta: {},
+		};
 
-	const response = params.isDelegate
-		? await CoreService.getDelegates({ sort: 'rank:asc', ...params })
-		: await CoreService.getAccounts({ sort: 'balance:desc', ...params });
+		const response = params.isDelegate
+			? await CoreService.getDelegates({ sort: 'rank:asc', ...params })
+			: await CoreService.getAccounts({ sort: 'balance:desc', ...params });
 
-	if (response.data) accounts.data = response.data;
-	if (response.meta) accounts.meta = response.meta;
+		if (response.data) accounts.data = response.data;
+		if (response.meta) accounts.meta = response.meta;
 
-	return accounts;
+		return accounts;
+	} catch (err) {
+		let status;
+		if (err instanceof ValidationException) status = BAD_REQUEST;
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 const getNextForgers = async params => {
