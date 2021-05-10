@@ -320,7 +320,7 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
-					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [{ ...indexedAccount, publicKey: paramPublicKey }] });
+					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [account] });
 				} else {
 					account.publicKey = indexedAccount.publicKey;
 				}
