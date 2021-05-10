@@ -441,6 +441,14 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
+		it('returns transactions with senderAddress and nonce (incorrect data type)', async () => {
+			const response = await getTransactions({
+				senderAddress: refDelegate.summary.address,
+				nonce: Number(refDelegate.sequence.nonce) - 1,
+			});
+			expect(response).toMap(invalidParamsSchema);
+		});
+
 		xit('returns transactions with senderPublicKey and nonce', async () => {
 			const response = await getTransactions({
 				senderPublicKey: refDelegate.summary.publicKey,
