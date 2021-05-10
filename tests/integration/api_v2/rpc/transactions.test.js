@@ -457,42 +457,42 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions with address and nonce', async () => {
+		xit('returns transactions with address and nonce', async () => {
 			const response = await getTransactions({
 				address: refDelegate.summary.address,
-				nonce: Number(refDelegate.sequence.nonce) - 1,
+				nonce: String(Number(refDelegate.sequence.nonce) - 1),
 			});
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('returns invalid params response with senderUsername and nonce', async () => {
+		xit('returns invalid params response with senderUsername and nonce', async () => {
 			const response = await getTransactions({
 				senderUsername: refDelegate.summary.username,
-				nonce: Number(refDelegate.sequence.nonce) - 1,
+				nonce: String(Number(refDelegate.sequence.nonce) - 1),
 			});
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('returns invalid params response with recipientAddress and nonce', async () => {
+		xit('returns invalid params response with recipientAddress and nonce', async () => {
 			const response = await getTransactions({
 				recipientAddress: refDelegate.summary.address,
-				nonce: Number(refDelegate.sequence.nonce) - 1,
+				nonce: String(Number(refDelegate.sequence.nonce) - 1),
 			});
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('returns invalid params response with recipientPublicKey and nonce', async () => {
+		xit('returns invalid params response with recipientPublicKey and nonce', async () => {
 			const response = await getTransactions({
 				recipientPublicKey: refDelegate.summary.publicKey,
-				nonce: Number(refDelegate.sequence.nonce) - 1,
+				nonce: String(Number(refDelegate.sequence.nonce) - 1),
 			});
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('returns invalid params response with recipientUsername and nonce', async () => {
+		xit('returns invalid params response with recipientUsername and nonce', async () => {
 			const response = await getTransactions({
 				recipientUsername: refDelegate.summary.username,
-				nonce: Number(refDelegate.sequence.nonce) - 1,
+				nonce: String(Number(refDelegate.sequence.nonce) - 1),
 			});
 			expect(response).toMap(invalidParamsSchema);
 		});
