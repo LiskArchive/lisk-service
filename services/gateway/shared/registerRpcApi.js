@@ -176,7 +176,7 @@ const registerApi = (apiNames, config) => {
 
 				onAfterCall: async (ctx, socket, req, data) => {
 					if (data.data && data.status) {
-						if (data.status === 'INVALID_PARAMS') throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: data.data.error })
+						if (data.status === 'INVALID_PARAMS') throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: data.data.error });
 					}
 
 					return transformResponse(req.method, data);
