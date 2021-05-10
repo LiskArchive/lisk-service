@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
-
-const { StatusCodes: { NOT_FOUND } } = HTTP;
 
 const coreApi = require('./coreApi');
 
@@ -35,7 +32,7 @@ const {
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-
+const { InvalidParamsException, NotFoundException } = require('../../../exceptions');
 const mysqlIndex = require('../../../indexdb/mysql');
 const transactionsIndexSchema = require('./schema/transactions');
 
@@ -103,20 +100,35 @@ const removeTransactionsByBlockIDs = async blockIDs => {
 	await removeVotesByTransactionIDs(forkedTransactionIDs);
 };
 
-const normalizeTransaction = tx => {
-	const [{ id, name }] = availableLiskModuleAssets
-		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-	tx = parseToJSONCompatObj(tx);
-	tx.moduleAssetId = id;
-	tx.moduleAssetName = name;
-	if (tx.asset.recipientAddress) {
-		tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
-	}
-	if (tx.asset.votes && tx.asset.votes.length) {
-		tx.asset.votes
-			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
-	}
-	return tx;
+const normalizeTransaction = txs => {
+	const normalizedTransactions = BluebirdPromise.map(
+		txs,
+		async tx => {
+			const [{ id, name }] = availableLiskModuleAssets
+				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			tx = parseToJSONCompatObj(tx);
+			tx.moduleAssetId = id;
+			tx.moduleAssetName = name;
+			if (tx.asset.recipientAddress) {
+				tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
+			}
+			if (tx.asset.votes && tx.asset.votes.length) {
+				tx.asset.votes
+					.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
+			}
+			return tx;
+		}, { concurrency: txs.length });
+	return normalizedTransactions;
+};
+
+const getTransactionByID = async id => {
+	const response = await coreApi.getTransactionByID(id);
+	return normalizeTransaction(response.data);
+};
+
+const getTransactionsByIDs = async ids => {
+	const response = await coreApi.getTransactionsByIDs(ids);
+	return normalizeTransaction(response.data);
 };
 
 const validateParams = async params => {
@@ -150,8 +162,8 @@ const validateParams = async params => {
 		});
 	}
 
-	if (params.nonce && !params.senderAddress) {
-		throw new Error('Nonce based retrieval is only possible along with senderAddress');
+	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
+		throw new InvalidParamsException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
 	}
 
 	if (params.senderIdOrRecipientId) {
@@ -173,7 +185,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ address: senderAddress });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderAddress} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${senderAddress} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
 
@@ -182,7 +194,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ username: senderUsername });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${senderUsername} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${senderUsername} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
 
@@ -191,7 +203,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientPublicKey} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${recipientPublicKey} not found.`);
 		params.recipientId = account.address;
 	}
 
@@ -200,7 +212,7 @@ const validateParams = async params => {
 		params = remParams;
 
 		const account = await getIndexedAccountInfo({ username: recipientUsername });
-		if (!account) return { status: NOT_FOUND, data: { error: `Account ${recipientUsername} not found.` } };
+		if (!account) throw new NotFoundException(`Account ${recipientUsername} not found.`);
 		params.recipientId = account.address;
 	}
 
@@ -255,51 +267,53 @@ const getTransactions = async params => {
 	const resultSet = await transactionsDB.find(params);
 	const total = await transactionsDB.count(params);
 	params.ids = resultSet.map(row => row.id);
-	if (params.ids || params.id) {
-		const response = await coreApi.getTransactions(params);
-		if (response.data) transactions.data = response.data.map(tx => normalizeTransaction(tx));
-		if (response.meta) transactions.meta = response.meta;
 
-		transactions.data = await BluebirdPromise.map(
-			transactions.data,
-			async transaction => {
-				const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
-				transaction.unixTimestamp = indexedTxInfo.timestamp;
-				transaction.height = indexedTxInfo.height;
-				transaction.blockId = indexedTxInfo.blockId;
-				const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
-				transaction.senderId = account && account.address ? account.address
-					: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
-				transaction.username = account && account.username ? account.username : undefined;
-				transaction.isPending = false;
-
-				// For recipient info
-				if (transaction.asset.recipientAddress) {
-					const { recipientAddress, ...asset } = transaction.asset;
-					const recipientInfo = await getIndexedAccountInfo({
-						address: recipientAddress,
-					});
-					transaction.asset = asset;
-					transaction.asset.recipient = {};
-					transaction.asset.recipient = {
-						address: recipientInfo
-							&& (recipientInfo.address !== null) ? recipientInfo.address : undefined,
-						publicKey: recipientInfo
-							&& (recipientInfo.publicKey !== null) ? recipientInfo.publicKey : undefined,
-						username: recipientInfo
-							&& (recipientInfo.username !== null) ? recipientInfo.username : undefined,
-					};
-				}
-
-				// The two lines below are needed for transaction statistics
-				if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
-				transaction.amount = transaction.asset.amount || 0;
-
-				return transaction;
-			},
-			{ concurrency: transactions.data.length },
-		);
+	if (params.ids.length) {
+		transactions.data = await getTransactionsByIDs(params.ids);
+	} else if (params.id) {
+		transactions.data = await getTransactionByID(params.id);
+		if ('offset' in params && params.limit) transactions.data = transactions.data.slice(params.offset, params.offset + params.limit);
 	}
+
+	transactions.data = await BluebirdPromise.map(
+		transactions.data,
+		async transaction => {
+			const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
+			transaction.unixTimestamp = indexedTxInfo.timestamp;
+			transaction.height = indexedTxInfo.height;
+			transaction.blockId = indexedTxInfo.blockId;
+			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			transaction.senderId = account && account.address ? account.address
+				: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
+			transaction.username = account && account.username ? account.username : undefined;
+			transaction.isPending = false;
+
+			// For recipient info
+			if (transaction.asset.recipientAddress) {
+				const { recipientAddress, ...asset } = transaction.asset;
+				const recipientInfo = await getIndexedAccountInfo({
+					address: recipientAddress,
+				});
+				transaction.asset = asset;
+				transaction.asset.recipient = {};
+				transaction.asset.recipient = {
+					address: recipientInfo
+						&& (recipientInfo.address !== null) ? recipientInfo.address : undefined,
+					publicKey: recipientInfo
+						&& (recipientInfo.publicKey !== null) ? recipientInfo.publicKey : undefined,
+					username: recipientInfo
+						&& (recipientInfo.username !== null) ? recipientInfo.username : undefined,
+				};
+			}
+
+			// The two lines below are needed for transaction statistics
+			if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
+			transaction.amount = transaction.asset.amount || 0;
+
+			return transaction;
+		},
+		{ concurrency: transactions.data.length },
+	);
 	transactions.meta.total = total;
 	transactions.meta.count = transactions.data.length;
 	transactions.meta.offset = params.offset;
@@ -339,4 +353,5 @@ module.exports = {
 	indexTransactions,
 	removeTransactionsByBlockIDs,
 	getTransactionsByBlockId,
+	getTransactionsByIDs,
 };

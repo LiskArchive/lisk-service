@@ -28,7 +28,8 @@ const getAccounts = async params => {
 	const { status, ...remainingParams } = params;
 	let response = await coreApi.getAccounts(remainingParams);
 	if (status && ['active', 'banned', 'punished', 'standby'].some(item => status.includes(item))) {
-		response = await getDelegates(params);
+		// Include delegate info in all accounts requests unless explicitly stated
+		response = params.isDelegate !== false ? await getDelegates(params) : { data: [] };
 	}
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;

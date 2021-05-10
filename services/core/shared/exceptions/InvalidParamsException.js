@@ -13,13 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ValidationException extends Error {
+class InvalidParamsException extends Error {
     constructor(message) {
         super(message);
-        this.name = 'ValidationException';
+        this.name = 'InvalidParamsException';
     }
 }
 
-module.exports = {
-    ValidationException,
-};
+module.exports = InvalidParamsException;

@@ -24,6 +24,7 @@ const {
 } = require('./accounts');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
+const { ValidationException, NotFoundException } = require('../../../exceptions');
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 let pendingTransactionsList = [];
@@ -61,13 +62,13 @@ const loadAllPendingTransactions = async () => {
 
 const validateParams = async params => {
     const requestParams = {};
-    if (params.sort && params.sort.includes('nonce') && !params.senderId) {
-        throw new Error('Nonce based sorting is only possible along with senderId');
+    if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
+        throw new ValidationException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
     }
 
     if (params.username) {
         const [accountInfo] = await getIndexedAccountInfo({ username: params.username });
-        if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${params.username} does not exist`);
+        if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.username} does not exist`);
         requestParams.senderPublicKey = accountInfo.publicKey;
     }
 
