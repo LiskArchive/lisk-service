@@ -33,7 +33,7 @@ const getBlocks = async params => {
 			params = remParams;
 
 			params.address = await Core.getAddressByUsername(username);
-			if (!params.address) return { status: NOT_FOUND, data: { error: `Account ID corresponding to username: '${username}' not found.` } };
+			if (!params.address) throw new NotFoundException(`Account ID corresponding to username: '${username}' not found.`);
 		}
 
 		if (params.address) {
@@ -41,20 +41,20 @@ const getBlocks = async params => {
 			params = remParams;
 
 			params.generatorPublicKey = await Core.getPublicKeyByAny(address);
-			if (!params.generatorPublicKey) return { status: NOT_FOUND, data: { error: `Account ID ${address} not found.` } };
+			if (!params.generatorPublicKey) throw new NotFoundException(`Account ID ${address} not found.`);
 		}
 
 		const response = await Core.getBlocks(params);
 
 		if (typeof params.blockId === 'string') {
 			if (isEmptyArray(response.data)) {
-				return { status: NOT_FOUND, data: { error: `Block ID ${params.blockId} not found.` } };
+				throw new NotFoundException(`Block ID ${params.blockId} not found.`);
 			}
 		}
 
 		if (typeof params.height === 'string') {
 			if (isEmptyArray(response.data)) {
-				return { status: NOT_FOUND, data: { error: `Height ${params.height} not found.` } };
+				throw new NotFoundException(`Height ${params.height} not found.`);
 			}
 		}
 
