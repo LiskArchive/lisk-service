@@ -32,11 +32,6 @@ const {
 } = require('./transactions');
 
 const {
-	getIncomingTxsCount,
-	getOutgoingTxsCount,
-} = require('./transactionUtils');
-
-const {
 	getAccounts,
 } = require('./accounts');
 
@@ -141,8 +136,6 @@ module.exports = {
 	getTransactionsSchemas,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	getIncomingTxsCount,
-	getOutgoingTxsCount,
 	getVotes,
 	getVoters,
 	getDelegates,
