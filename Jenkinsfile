@@ -70,6 +70,7 @@ pipeline {
 					dir('./') { sh 'npm ci' }
 					dir('./framework') { sh 'npm ci' }
 					dir('./services/core') { sh 'npm ci' }
+					dir('./services/market') { sh 'npm ci' }
 					dir('./services/gateway') { sh 'npm ci' }
 					dir('./services/template') { sh 'npm ci' }
 					dir('./tests') { sh "npm ci" }
