@@ -48,6 +48,8 @@ const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
 const transactionsIndexSchema = require('./schema/transactions');
 
+const { ValidationException } = require('../../../exceptions');
+
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
@@ -264,7 +266,7 @@ const getAccounts = async params => {
 	let addressFromParamPublicKey;
 	const accountsDB = await getAccountsIndex();
 	if (params.sort && params.sort.includes('rank')) {
-		return new Error('Rank based sorting is supported only for delegates');
+		throw new ValidationException('Rank based sorting is supported only for delegates');
 	}
 	if (params.search) {
 		params.search = {
@@ -304,10 +306,19 @@ const getAccounts = async params => {
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
 
-	if (params.address || (params.addresses && params.addresses.length)) {
+	if (params.address) {
+		params.address = getHexAddressFromBase32(params.address);
+		if (params.addresses) {
+			const { address, ...remParams } = params;
+			params = remParams;
+		}
+	}
+
+	if ((params.addresses && params.addresses.length) || params.address) {
 		try {
 			const response = await getAccountsFromCore(params);
 			if (response.data) accounts.data = response.data;
+			if (params.address && 'offset' in params && params.limit) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
 			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
 		}
@@ -367,16 +378,20 @@ const getMultisignatureGroups = async account => {
 		multisignatureAccount.members = [];
 
 		await BluebirdPromise.map(
-			account.keys.mandatoryKeys, async publicKey => {
-				const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+			account.keys.mandatoryKeys,
+			async publicKey => {
+				const [accountByPublicKey = {}] = (await getAccounts({ publicKey })).data;
+				accountByPublicKey.publicKey = publicKey;
 				accountByPublicKey.isMandatory = true;
 				multisignatureAccount.members.push(accountByPublicKey);
 			},
 			{ concurrency: account.keys.mandatoryKeys.length },
 		);
 		await BluebirdPromise.map(
-			account.keys.optionalKeys, async publicKey => {
-				const accountByPublicKey = (await getAccounts({ publicKey })).data[0];
+			account.keys.optionalKeys,
+			async publicKey => {
+				const [accountByPublicKey = {}] = (await getAccounts({ publicKey })).data;
+				accountByPublicKey.publicKey = publicKey;
 				accountByPublicKey.isMandatory = false;
 				multisignatureAccount.members.push(accountByPublicKey);
 			},

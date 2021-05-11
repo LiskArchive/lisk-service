@@ -38,7 +38,7 @@ const getReady = async broker => {
             async key => {
                 const service = {};
                 const response = await broker.call(coreMethods[key], { limit: 10 });
-                service[key] = !!response.data;
+                service[key] = !!response.data.length;
                 return service;
             },
         );

@@ -191,6 +191,8 @@ const registerApi = (apiName, config) => {
 			// TODO: Add support for ETag
 
 			if (data.data && data.status) {
+				if (data.status === 'INVALID_PARAMS') data.status = 'BAD_REQUEST';
+
 				ctx.meta.$statusCode = StatusCodes[data.status] || data.status;
 				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
 				let message = `The request ended up with error ${data.status}`;
