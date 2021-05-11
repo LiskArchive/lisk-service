@@ -30,8 +30,8 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getMarketPrices = async params => request(wsRpcUrl, 'get.market.prices', params);
 
 describe('Method get.market.prices', () => {
-	xdescribe('is able to retrieve market prices', () => {
-		it('returns market prices with no params', async () => {
+	describe('is able to retrieve market prices', () => {
+		xit('returns market prices with no params', async () => {
 			const response = await getMarketPrices({});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

@@ -32,8 +32,8 @@ const baseUrlV2 = `${baseUrl}/api/v2`;
 const endpoint = `${baseUrlV2}/market/prices`;
 
 describe('Market API', () => {
-	xdescribe('Retrieve prices', () => {
-		it('returns market prices', async () => {
+	describe('Retrieve prices', () => {
+		xit('returns market prices', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -43,7 +43,8 @@ describe('Market API', () => {
 		});
 
 		it('returns 400 BAD REQUEST with params', async () => {
-			const response = await api.get(`${endpoint}?limit=10`);
+			const expectedResponseCode = 400;
+			const response = await api.get(`${endpoint}?limit=10`, expectedResponseCode);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
