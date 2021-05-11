@@ -13,9 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP } = require('lisk-service-framework');
-
-const { StatusCodes: { SERVICE_UNAVAILABLE } } = HTTP;
 const { ServiceUnavailableException } = require('../../../shared/exceptions');
 
 const CoreService = require('../../../shared/core');
@@ -34,7 +31,7 @@ const getMarketPrices = async () => {
 		return marketPrices;
 	} catch (err) {
 		let status;
-		if (err instanceof ServiceUnavailableException) status = SERVICE_UNAVAILABLE;
+		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
 		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}

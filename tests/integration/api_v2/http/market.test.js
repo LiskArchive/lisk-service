@@ -21,6 +21,7 @@ const {
 	goodRequestSchema,
 	badRequestSchema,
 	metaSchema,
+	serviceUnavailableSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
@@ -33,13 +34,19 @@ const endpoint = `${baseUrlV2}/market/prices`;
 
 describe('Market API', () => {
 	describe('Retrieve prices', () => {
-		xit('returns market prices', async () => {
-			const response = await api.get(`${endpoint}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			response.data.forEach(account => expect(account).toMap(marketPriceSchema));
-			expect(response.meta).toMap(metaSchema);
+		it('returns market prices or 503 SERVICE UNAVAILABLE', async () => {
+			try {
+				const response = await api.get(`${endpoint}`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				response.data.forEach(account => expect(account).toMap(marketPriceSchema));
+				expect(response.meta).toMap(metaSchema);
+			} catch (_) {
+				const expectedResponseCode = 503;
+				const response = await api.get(`${endpoint}`, expectedResponseCode);
+				expect(response).toMap(serviceUnavailableSchema);
+			}
 		});
 
 		it('returns 400 BAD REQUEST with params', async () => {
