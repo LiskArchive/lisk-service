@@ -14,7 +14,7 @@
  *
  */
 const emptyBlock = {
-    id: 5683515590859200000,
+    id: '5683515590859200000',
     height: 14955,
     version: 1,
     timestamp: 1601455679,
@@ -35,7 +35,7 @@ const emptyBlock = {
 };
 
 const nonEmptyBlock = {
-    id: 894345162569656300,
+    id: '894345162569656300',
     height: 30428,
     version: 1,
     timestamp: 1601455680,
