@@ -13,13 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ValidationException extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'ValidationException';
-    }
-}
 
-module.exports = {
-    ValidationException,
-};
+/* eslint-disable mocha/no-synchronous-tests,mocha/no-top-level-hooks */
+
+const { closeAll } = require('./helpers/socketIoRpcRequest');
+
+afterAll(() => { closeAll(); });

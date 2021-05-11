@@ -37,14 +37,8 @@ describe('Transactions API', () => {
 	let refTransaction;
 	let refDelegate;
 	beforeAll(async () => {
-		let offset = -1;
-		do {
-			offset++;
-
-			// eslint-disable-next-line no-await-in-loop
-			const response1 = await api.get(`${endpoint}?limit=1&offset=${offset}`);
-			[refTransaction] = response1.data;
-		} while (!refTransaction.asset.recipient);
+		const response1 = await api.get(`${endpoint}?limit=1&moduleAssetId=2:0`);
+		[refTransaction] = response1.data;
 
 		try {
 			const response2 = await api.get(`${baseUrlV2}/accounts?isDelegate=true&search=test_delegate`);
@@ -376,6 +370,283 @@ describe('Transactions API', () => {
 				expect(BigInt(transaction.asset.amount)).toBeLessThanOrEqual(maxAmount);
 			});
 			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Transactions sorted by timestamp', () => {
+		it('returns 10 transactions sorted by timestamp descending', async () => {
+			const response = await api.get(`${endpoint}?sort=timestamp:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevTransaction = response.data[i - 1];
+					const currTransaction = response.data[i];
+					expect(prevTransaction.block.timestamp)
+						.toBeGreaterThanOrEqual(currTransaction.block.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 transactions sorted by timestamp ascending', async () => {
+			const response = await api.get(`${endpoint}?sort=timestamp:asc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevTransaction = response.data[i - 1];
+					const currTransaction = response.data[i];
+					expect(prevTransaction.block.timestamp)
+						.toBeLessThanOrEqual(currTransaction.block.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Transactions sorted by amount', () => {
+		it('returns 10 transactions sorted by amount descending', async () => {
+			const response = await api.get(`${endpoint}?sort=amount:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevTransaction = response.data[i - 1];
+					const currTransaction = response.data[i];
+					expect(BigInt(prevTransaction.asset.amount))
+						.toBeGreaterThanOrEqual(BigInt(currTransaction.asset.amount));
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 transactions sorted by amount ascending', async () => {
+			const response = await api.get(`${endpoint}?sort=amount:asc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(transaction => expect(transaction).toMap(transactionSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevTransaction = response.data[i - 1];
+					const currTransaction = response.data[i];
+					expect(BigInt(prevTransaction.asset.amount))
+						.toBeLessThanOrEqual(BigInt(currTransaction.asset.amount));
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Fetch transactions based on multiple request params', () => {
+		it('returns transactions with senderAddress and nonce', async () => {
+			const response = await api.get(`${endpoint}?senderAddress=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.address).toBe(refDelegate.summary.address);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		xit('returns transactions with senderPublicKey and nonce', async () => {
+			const response = await api.get(`${endpoint}?senderPublicKey=${refDelegate.summary.publicKey}&nonce=${Number(refDelegate.sequence.nonce) - 1}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.sender.publicKey).toBe(refDelegate.summary.publicKey);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		xit('returns 400 BAD REQUEST with address and nonce', async () => {
+			const expectedStatusCode = 400;
+			const response = await api.get(`${endpoint}?address=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		xit('returns 400 BAD REQUEST with senderUsername and nonce', async () => {
+			const expectedStatusCode = 400;
+			const response = await api.get(`${endpoint}?senderUsername=${refDelegate.summary.username}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		xit('returns 400 BAD REQUEST with recipientAddress and nonce', async () => {
+			const expectedStatusCode = 400;
+			const response = await api.get(`${endpoint}?recipientAddress=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		xit('returns 400 BAD REQUEST with recipientPublicKey and nonce', async () => {
+			const expectedStatusCode = 400;
+			const response = await api.get(`${endpoint}?recipientPublicKey=${refDelegate.summary.publicKey}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		xit('returns 400 BAD REQUEST with recipientUsername and nonce', async () => {
+			const expectedStatusCode = 400;
+			const response = await api.get(`${endpoint}?recipientUsername=${refDelegate.summary.username}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		xit('returns 404 NOT FOUND when queried with transactionId and non-zero offset', async () => {
+			const expectedStatusCode = 404;
+			const response = await api.get(`${endpoint}?transactionId=${refTransaction.id}&offset=1`, expectedStatusCode);
+			expect(response).toMap(notFoundSchema);
+		});
+
+		it('returns transaction when queried with transactionId and blockId', async () => {
+			const response = await api.get(`${endpoint}?transactionId=${refTransaction.id}&blockId=${refTransaction.block.id}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.id).toBe(refTransaction.id);
+				expect(transaction.block.id).toBe(refTransaction.block.id);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns transaction when queried with transactionId and height', async () => {
+			const response = await api.get(`${endpoint}?transactionId=${refTransaction.id}&height=${refTransaction.height}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.id).toBe(refTransaction.id);
+				expect(transaction.height).toBe(refTransaction.height);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		// TODO: Re-enable after test blockchain update with transaction data
+		xit('returns transactions when queried with data', async () => {
+			const response = await api.get(`${endpoint}?data=${refTransaction.asset.data}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				const txData = transaction.asset.data;
+				const refTxData = refTransaction.asset.data;
+				expect(txData === refTxData || txData.includes(refTxData)).toBeTruthy();
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		// TODO: Re-enable after test blockchain update with transaction data
+		xit('returns transactions when queried with data, limit and offset', async () => {
+			try {
+				const response = await api.get(`${endpoint}?data=${refTransaction.asset.data}&limit=5&offset=1`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(5);
+				response.data.forEach(transaction => {
+					expect(transaction).toMap(transactionSchemaVersion5);
+					const txData = transaction.asset.data;
+					const refTxData = refTransaction.asset.data;
+					expect(txData === refTxData || txData.includes(refTxData)).toBeTruthy();
+				});
+				expect(response.meta).toMap(metaSchema);
+			} catch (_) {
+				const expectedStatusCode = 404;
+				const response = await api.get(`${endpoint}?data=${refTransaction.asset.data}&limit=5&offset=1`, expectedStatusCode);
+				expect(response).toMap(notFoundSchema);
+			}
+		});
+
+		it('returns transactions when queried with search', async () => {
+			const response = await api.get(`${endpoint}?search=${refDelegate.summary.username}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				const {
+					publicKey: senderPublicKey,
+					address: senderAddress,
+					username: senderUserName,
+				} = transaction.sender;
+				const { recipient: {
+					publicKey: recipientPublicKey,
+					address: recipientAddress,
+					username: recipientUsername,
+				} = {} } = transaction.asset;
+				const {
+					username: assetUserName,
+				} = transaction.asset;
+
+				if (assetUserName) {
+					expect(assetUserName).toBe(refDelegate.summary.username);
+					expect(senderUserName).toBe(refDelegate.summary.username);
+				}
+
+				expect([senderPublicKey, recipientPublicKey]).toContain(refDelegate.summary.publicKey);
+				expect([senderAddress, recipientAddress]).toContain(refDelegate.summary.address);
+				expect([senderUserName, recipientUsername, assetUserName])
+					.toContain(refDelegate.summary.username);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns transactions when queried with search, limit and offset', async () => {
+			try {
+				const response = await api.get(`${endpoint}?search=${refDelegate.summary.username}&limit=5&offset=1`);
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
+				response.data.forEach(transaction => {
+					expect(transaction).toMap(transactionSchemaVersion5);
+					const {
+						publicKey: senderPublicKey,
+						address: senderAddress,
+						username: senderUserName,
+					} = transaction.sender;
+					const { recipient: {
+						publicKey: recipientPublicKey,
+						address: recipientAddress,
+						username: recipientUsername,
+					} = {} } = transaction.asset;
+					const {
+						username: assetUserName,
+					} = transaction.asset;
+
+					if (assetUserName) {
+						expect(assetUserName).toBe(refDelegate.summary.username);
+						expect(senderUserName).toBe(refDelegate.summary.username);
+					}
+
+					expect([senderPublicKey, recipientPublicKey]).toContain(refDelegate.summary.publicKey);
+					expect([senderAddress, recipientAddress]).toContain(refDelegate.summary.address);
+					expect([senderUserName, recipientUsername, assetUserName])
+						.toContain(refDelegate.summary.username);
+				});
+				expect(response.meta).toMap(metaSchema);
+			} catch (_) {
+				const expectedStatusCode = 404;
+				const response = await api.get(`${endpoint}?search=${refDelegate.summary.username}&limit=5&offset=1`, expectedStatusCode);
+				expect(response).toMap(notFoundSchema);
+			}
 		});
 	});
 });

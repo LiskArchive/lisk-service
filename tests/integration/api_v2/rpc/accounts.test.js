@@ -50,6 +50,20 @@ describe('Method get.accounts', () => {
 			result.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
 			expect(result.meta).toMap(metaSchema);
 		});
+
+		it('allows to retrieve list of non-delegate accounts with \'isDelegate=false\'', async () => {
+			const response = await getAccounts({ isDelegate: false });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.summary.isDelegate).toBeFalsy();
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
 	});
 
 	describe('is able to retrieve account based on address', () => {
@@ -182,6 +196,149 @@ describe('Method get.accounts', () => {
 				expect(account.dpos).toMap(dpos);
 			});
 			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Accounts sorted by balance', () => {
+		it('returns 10 accounts sorted by balance descending', async () => {
+			const response = await getAccounts({ sort: 'balance:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 accounts sorted by balance ascending', async () => {
+			const response = await getAccounts({ sort: 'balance:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.dpos).toMap(dpos);
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Fetch accounts based on multiple request params', () => {
+		it('search \'genesis\' and sort balance descending', async () => {
+			const response = await getAccounts({ search: 'genesis', sort: 'balance:desc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.summary.username.includes('genesis')).toBeTruthy();
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('search \'genesis\' and sort balance ascending', async () => {
+			const response = await getAccounts({ search: 'genesis', sort: 'balance:asc' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => {
+				expect(account).toMap(accountSchemaVersion5);
+				expect(account.summary.username.includes('genesis')).toBeTruthy();
+			});
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		xit('non-delegate accounts, sort balance descending, with limit and offset', async () => {
+			const response = await getAccounts({ isDelegate: false, sort: 'balance:desc', limit: 5, offset: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(5);
+			result.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		xit('non-delegate accounts, sort balance ascending, with limit and offset', async () => {
+			const response = await getAccounts({ isDelegate: false, sort: 'balance:asc', limit: 5, offset: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(5);
+			result.data.forEach(account => expect(account).toMap(accountSchemaVersion5));
+			if (result.data.length > 1) {
+				for (let i = 1; i < result.data.length; i++) {
+					const prevAccount = result.data[i - 1];
+					const currAccount = result.data[i];
+					expect(BigInt(prevAccount.summary.balance))
+						.toBeLessThanOrEqual(BigInt(currAccount.summary.balance));
+				}
+			}
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		// TODO: Fix the scenario
+		xit('non-delegate accounts with \'active\' status returns empty response', async () => {
+			const response = await getAccounts({ isDelegate: false, status: 'active' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('non-delegate accounts with \'any\' status returns invalid params', async () => {
+			const response = await getAccounts({ isDelegate: false, status: 'any' });
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 });

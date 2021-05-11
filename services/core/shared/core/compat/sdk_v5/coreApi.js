@@ -57,20 +57,16 @@ const getLastBlock = async () => {
     return { data: [block] };
 };
 
-const getTransactions = async params => {
+const getTransactionByID = async id => {
     const apiClient = await getApiClient();
-    let transaction;
-    let transactions;
-
-    if (params.id) {
-        transaction = await apiClient.transaction.get(params.id);
-    } else if (params.ids) {
-        transactions = await apiClient._channel.invoke('app:getTransactionsByIDs', { ids: params.ids });
-    }
-
-    if (transactions) transactions = transactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
-    const result = transactions || [transaction];
-    return { data: result };
+    const transaction = await apiClient.transaction.get(id);
+    return { data: [transaction] };
+};
+const getTransactionsByIDs = async ids => {
+    const apiClient = await getApiClient();
+    const encodedTransactions = await apiClient._channel.invoke('app:getTransactionsByIDs', { ids });
+    const transactions = encodedTransactions.map(tx => apiClient.transaction.decode(Buffer.from(tx, 'hex')));
+    return { data: transactions };
 };
 
 const getAccountByAddress = async address => {
@@ -138,10 +134,11 @@ module.exports = {
     getAccountsByAddresses,
     getLegacyAccountInfo,
     getNetworkStatus,
-    getTransactions,
     getPeers,
     getForgers,
     getPendingTransactions,
     postTransaction,
     getTransactionsSchemas,
+    getTransactionsByIDs,
+    getTransactionByID,
 };

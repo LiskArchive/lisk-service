@@ -17,10 +17,7 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const { ServiceBroker } = require('moleculer');
-const prettyjson = require('prettyjson');
-const jsome = require('jsome');
-
-jsome.params.colored = true;
+const colorize = require('json-colorizer');
 
 if (process.argv.length < 3) {
 	console.log('Usage: moleculer.js <endpoint> [params_json]');
@@ -43,8 +40,7 @@ const request = (method, params) => {
 		.then(() => broker.waitForServices(method.split('.')[0]))
 		.then(() => broker.call(method, params || {}))
 		.then(res => {
-			// console.log(prettyjson.render(res));
-			jsome(res);
+			console.log(colorize(JSON.stringify(res, null, 2)));
 			process.exit(0);
 		})
 		.catch(err => console.error(`Error occured! ${err.message}`));

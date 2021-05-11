@@ -17,11 +17,8 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const jsome = require('jsome');
+const colorize = require('json-colorizer');
 const { webSocket, events } = require('../constants/event');
-// const prettyjson = require('prettyjson');
-
-jsome.params.colored = true;
 
 const socket = io(process.env.WS_ENDPOINT || webSocket.endpoint, {
 	forceNew: true,
@@ -45,8 +42,7 @@ events.forEach(item => {
 const subscribe = event => {
 	socket.on(event, answer => {
 		console.log(`====== ${event} ======`);
-		// console.log(prettyjson.render(answer));
-		jsome(answer);
+		console.log(colorize(JSON.stringify(answer, null, 2)));
 	});
 };
 

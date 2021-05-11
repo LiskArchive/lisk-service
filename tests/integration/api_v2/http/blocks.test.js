@@ -43,7 +43,7 @@ describe('Blocks API', () => {
 		[refBlock] = (await api.get(`${endpoint}?limit=1&offset=2`)).data;
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
+			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1&search=${refBlock.generatorUsername}`);
 		} while (!response.data);
 		[refDelegate] = response.data;
 	});
@@ -219,6 +219,222 @@ describe('Blocks API', () => {
 				expect(block.height).toBeLessThanOrEqual(maxHeight);
 			});
 			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Blocks sorted by height', () => {
+		it('returns 10 blocks sorted by height descending', async () => {
+			const response = await api.get(`${endpoint}?sort=height:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.height).toBeGreaterThan(currBlock.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 blocks sorted by height ascending', async () => {
+			// Ignore the genesis block with offset=1
+			const response = await api.get(`${endpoint}?sort=height:asc&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.height).toBeLessThan(currBlock.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Blocks sorted by timestamp', () => {
+		it('returns 10 blocks sorted by timestamp descending', async () => {
+			const response = await api.get(`${endpoint}?sort=timestamp:desc`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns 10 blocks sorted by timestamp ascending', async () => {
+			// Ignore the genesis block with offset=1
+			const response = await api.get(`${endpoint}?sort=timestamp:asc&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.timestamp).toBeLessThan(currBlock.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Fetch blocks based on multiple request params', () => {
+		it('returns blocks by generatorUsername sorted by timestamp descending, limit & offset', async () => {
+			const response = await api.get(`${endpoint}?generatorUsername=${refDelegate.summary.username}&sort=timestamp:desc&limit=5&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.generatorUsername).toEqual(refDelegate.summary.username);
+			});
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
+			const response = await api.get(`${endpoint}?generatorAddress=${refDelegate.summary.address}&sort=timestamp:desc&limit=5&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.generatorAddress).toEqual(refDelegate.summary.address);
+			});
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns blocks by generatorPublicKey sorted by timestamp descending, limit & offset', async () => {
+			const response = await api.get(`${endpoint}?generatorPublicKey=${refDelegate.summary.publicKey}&sort=timestamp:desc&limit=5&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.generatorPublicKey).toEqual(refDelegate.summary.publicKey);
+			});
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.timestamp).toBeGreaterThan(currBlock.timestamp);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns blocks by generatorUsername sorted by height ascending, limit & offset', async () => {
+			const response = await api.get(`${endpoint}?generatorUsername=${refDelegate.summary.username}&sort=height:asc&limit=5&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.generatorUsername).toEqual(refDelegate.summary.username);
+			});
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.height).toBeLessThan(currBlock.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns blocks by generatorAddress sorted by height ascending, limit & offset', async () => {
+			const response = await api.get(`${endpoint}?generatorAddress=${refDelegate.summary.address}&sort=height:asc&limit=5&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.generatorAddress).toEqual(refDelegate.summary.address);
+			});
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.height).toBeLessThan(currBlock.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns blocks by generatorPublicKey sorted by height ascending, limit & offset', async () => {
+			const response = await api.get(`${endpoint}?generatorPublicKey=${refDelegate.summary.publicKey}&sort=height:asc&limit=5&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(5);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5);
+				expect(block.generatorPublicKey).toEqual(refDelegate.summary.publicKey);
+			});
+			if (response.data.length > 1) {
+				for (let i = 1; i < response.data.length; i++) {
+					const prevBlock = response.data[i - 1];
+					const currBlock = response.data[i];
+					expect(prevBlock.height).toBeLessThan(currBlock.height);
+				}
+			}
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		// TODO: Fix this scenario
+		xit('returns 404 NOT FOUND when queried with blockId and non-zero offset', async () => {
+			const expectedStatus = 404;
+			const response = await api.get(`${endpoint}?blockId=${refBlock.id}&offset=1`, expectedStatus);
+			expect(response).toMap(notFoundSchema);
+		});
+
+		// TODO: Fix this scenario
+		xit('returns 404 NOT FOUND when queried with block height and non-zero offset', async () => {
+			const expectedStatus = 404;
+			const response = await api.get(`${endpoint}?height=${refBlock.height}&offset=1`, expectedStatus);
+			expect(response).toMap(notFoundSchema);
+		});
+
+		it('returns 404 NOT FOUND when queried with block timestamp and non-zero offset', async () => {
+			const expectedStatus = 404;
+			const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}&offset=1`, expectedStatus);
+			expect(response).toMap(notFoundSchema);
 		});
 	});
 });

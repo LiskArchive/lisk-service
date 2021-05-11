@@ -44,6 +44,7 @@ const {
 
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
+const { ValidationException, NotFoundException } = require('../../../exceptions');
 
 const signals = require('../../../signals');
 
@@ -269,7 +270,7 @@ const getBlocks = async params => {
 		const { height, ...remParams } = params;
 		params = remParams;
 		const [from, to] = height.split(':');
-		if (from && to && from > to) return new Error('From height cannot be greater than to height');
+		if (from && to && from > to) throw new ValidationException('From height cannot be greater than to height');
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'height',
@@ -282,7 +283,7 @@ const getBlocks = async params => {
 		const { timestamp, ...remParams } = params;
 		params = remParams;
 		const [from, to] = timestamp.split(':');
-		if (from && to && from > to) return new Error('From timestamp cannot be greater than to timestamp');
+		if (from && to && from > to) throw new ValidationException('From timestamp cannot be greater than to timestamp');
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'timestamp',
@@ -300,10 +301,12 @@ const getBlocks = async params => {
 	try {
 		if (params.id) {
 			blocks.data = await getBlockByID(params.id);
+			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.ids) {
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.height) {
 			blocks.data = await getBlockByHeight(params.height);
+			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.heightBetween) {
 			const { from, to } = params.heightBetween;
 			blocks.data = await getBlocksByHeightBetween(from, to);
@@ -317,10 +320,14 @@ const getBlocks = async params => {
 			blocks.data = await getLastBlock();
 		}
 	} catch (err) {
-		// Return empty response when block at a certain height does not exist
-		if (params.height && err.message.includes('does not exist')) return blocks;
-
-		throw new Error(err);
+		// Block does not exist
+		if (err.message.includes('does not exist')) {
+			let errMessage;
+			if (err.message.includes(':id')) errMessage = `Block ${params.id} does not exist`;
+			if (err.message.includes(':height')) errMessage = `Block at height ${params.height} does not exist`;
+			throw new NotFoundException(errMessage);
+		}
+		throw err;
 	}
 
 	blocks.meta = {
@@ -379,6 +386,9 @@ const buildIndex = async (from, to) => {
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
+	// startHeight can never be lower than genesisHeight
+	if (startHeight < genesisHeight) startHeight = genesisHeight;
+
 	const PAGE_SIZE = 100000;
 	const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {

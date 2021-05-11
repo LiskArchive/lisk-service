@@ -19,11 +19,15 @@ import config from '../config';
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
+const socketPool = {};
+
 const request = (endpoint, method, params) => new Promise(resolve => {
-	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
+	if (!socketPool[endpoint]) {
+		socketPool[endpoint] = io(endpoint, { forceNew: true, transports: ['websocket'] });
+	}
+	const socket = socketPool[endpoint];
 
 	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
-		socket.close();
 		resolve(answer);
 	});
 });
@@ -39,7 +43,20 @@ const api = {
 	getJsonRpcV1: (...args) => api.get(wsRpcUrl, ...args),
 };
 
+const close = (socketName) => {
+	if (socketPool[socketName]) {
+		socketPool[socketName].close();
+		delete socketPool[socketName];
+	}
+};
+
+const closeAll = () => {
+	Object.keys(socketPool).forEach(n => close(n));
+};
+
 module.exports = {
 	api,
 	request,
+	close,
+	closeAll,
 };
