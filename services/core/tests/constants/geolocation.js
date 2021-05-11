@@ -13,13 +13,34 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ValidationException extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'ValidationException';
-    }
-}
+
+const geolocationObjects = [
+	{
+		ip: '116.203.214.46',
+		country_code: 'DE',
+		latitude: 52.3688,
+		longitude: 13.6152,
+	},
+	{
+		ip: '149.28.210.158',
+		country_code: 'US',
+		latitude: 37.3387,
+		longitude: -121.8914,
+	},
+	{
+		ip: '51.15.85.58',
+		country_code: 'NL',
+		latitude: 52.3759,
+		longitude: 4.8975,
+	},
+	{
+		ip: '216.128.135.183',
+		country_code: 'US',
+		latitude: 37.751,
+		longitude: -97.822,
+	},
+];
 
 module.exports = {
-    ValidationException,
+	geolocationObjects,
 };

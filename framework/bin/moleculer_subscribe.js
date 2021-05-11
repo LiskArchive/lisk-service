@@ -17,10 +17,6 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const { ServiceBroker } = require('moleculer');
-const prettyjson = require('prettyjson');
-const jsome = require('jsome');
-
-jsome.params.colored = true;
 
 if (process.argv.length < 0) {
 	console.log('Usage: moleculer_subscribe.js');

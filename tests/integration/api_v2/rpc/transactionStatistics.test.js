@@ -130,7 +130,7 @@ describe('get.transactions.statistics.{aggregateBy}', () => {
 			});
 
 			// TODO implement this case in the API
-			it.todo('returns error 404 if called with ?offset=365 or higher as only last year is guarantied');
+			it.todo('returns error 404 if called with ?offset=365 or higher as only last year is guaranteed');
 		});
 	});
 

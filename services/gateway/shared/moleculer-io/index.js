@@ -238,6 +238,10 @@ module.exports = {
       }
       opts = opts || this.settings.io.options || {};
       srv = srv || this.server || (this.settings.server ? this.settings.port : undefined);
+
+      // comptability flag to support v2.x
+      opts.allowEIO3 = true;
+
       if (this.settings.cors && this.settings.cors.origin && !opts.origins) {
         // cors settings
         opts.origins = function (origin, callback) {
@@ -253,7 +257,7 @@ module.exports = {
           }
         }.bind(this);
       }
-      this.io = new IO(srv, opts);
+      this.io = new IO.Server(srv, opts);
     },
     socketGetMeta(socket) {
       let meta = {

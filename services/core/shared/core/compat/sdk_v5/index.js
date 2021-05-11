@@ -82,6 +82,8 @@ const {
     loadAllPendingTransactions,
 } = require('./pendingTransactions');
 
+const nop = () => { };
+
 module.exports = {
     ...require('../sdk_v4'),
     ...require('./coreCache'),
@@ -130,4 +132,7 @@ module.exports = {
     getVotes,
 
     getVoters,
+
+    getIncomingTxsCount: nop,
+    getOutgoingTxsCount: nop,
 };

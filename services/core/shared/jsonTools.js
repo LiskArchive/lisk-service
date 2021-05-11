@@ -14,7 +14,7 @@
  *
  */
 const parseToJSONCompatObj = obj => {
-    if (!obj) return obj;
+    if (typeof obj === 'boolean' || !obj) return obj;
 
     if (['string', 'number'].includes(typeof obj)) return obj;
     if (obj instanceof Buffer) return Buffer.from(obj).toString('hex');
