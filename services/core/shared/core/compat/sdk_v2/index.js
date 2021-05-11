@@ -41,6 +41,11 @@ const { getVotes } = require('./votes');
 const { getVoters } = require('./voters');
 const { getNetworkStatus } = require('./network');
 
+const {
+	getIncomingTxsCount,
+	getOutgoingTxsCount,
+} = require('./transactionUtils');
+
 const events = require('./events');
 
 const signals = require('../../../signals');
@@ -117,4 +122,6 @@ module.exports = {
 	getTransactionsSchemas: nop,
 	events,
 	init,
+	getIncomingTxsCount,
+	getOutgoingTxsCount,
 };
