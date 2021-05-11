@@ -13,6 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { HTTP } = require('lisk-service-framework');
+
+const { StatusCodes: { SERVICE_UNAVAILABLE } } = HTTP;
+const { ServiceUnavailableException } = require('../../../shared/exceptions');
+
 const CoreService = require('../../../shared/core');
 
 const getMarketPrices = async () => {
@@ -21,11 +26,18 @@ const getMarketPrices = async () => {
 		meta: {},
 	};
 
-	const response = await CoreService.getMarketPrices();
-	if (response.data) marketPrices.data = response.data;
-	if (response.meta) marketPrices.meta = response.meta;
+	try {
+		const response = await CoreService.getMarketPrices();
+		if (response.data) marketPrices.data = response.data;
+		if (response.meta) marketPrices.meta = response.meta;
 
-	return marketPrices;
+		return marketPrices;
+	} catch (err) {
+		let status;
+		if (err instanceof ServiceUnavailableException) status = SERVICE_UNAVAILABLE;
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 module.exports = {

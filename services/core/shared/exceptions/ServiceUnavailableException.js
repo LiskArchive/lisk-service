@@ -13,22 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { ServiceUnavailableException } = require('../exceptions');
+class ServiceUnavailableException extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ServiceUnavailableException';
+    }
+}
 
-const getMarketPrices = async () => {
-	const marketPrices = {
-		data: [],
-		meta: {},
-	};
-
-	// TODO: Place holder for actual implementation
-	// const response = await getMarketPricesFromCache();
-
-	if (!marketPrices.data.length) throw new ServiceUnavailableException('Service is not ready yet');
-
-	return marketPrices;
-};
-
-module.exports = {
-	getMarketPrices,
-};
+module.exports = ServiceUnavailableException;
