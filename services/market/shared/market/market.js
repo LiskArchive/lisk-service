@@ -44,7 +44,7 @@ const getMarketPrices = async () => {
 	];
 
 	marketPrices.meta = {
-		count: 1,
+		count: marketPrices.data.length,
 	};
 
 	if (!marketPrices.data.length) throw new ServiceUnavailableException('Service is not ready yet');
