@@ -23,6 +23,29 @@ const getMarketPrices = async () => {
 
 	// TODO: Place holder for actual implementation
 	// const response = await getMarketPricesFromCache();
+	// Return mock response for now
+	marketPrices.data = [
+		{
+			code: 'LSK_BTC',
+			from: 'LSK',
+			rate: '0.00009027',
+			to: 'BTC',
+			updateTimestamp: 1616939448,
+			sources: ['kraken'],
+		},
+		{
+			code: 'LSK_CHF',
+			from: 'LSK',
+			rate: '35.3452',
+			to: 'CHF',
+			updateTimestamp: 1616939448,
+			sources: ['kraken', 'exchangeratesapi.io'],
+		},
+	];
+
+	marketPrices.meta = {
+		count: 1,
+	};
 
 	if (!marketPrices.data.length) throw new ServiceUnavailableException('Service is not ready yet');
 
