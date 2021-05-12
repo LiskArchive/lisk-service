@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { ServiceUnavailableException } = require('../../../shared/exceptions');
+const { ServiceUnavailableException } = require('../../shared/exceptions');
 
-const CoreService = require('../../../shared/core');
+const CoreService = require('../../shared/market');
 
 const getMarketPrices = async () => {
 	const marketPrices = {
