@@ -5,6 +5,7 @@ compose := docker-compose \
 	-f docker-compose.yml \
 	-f lisk-service/docker-compose.core.yml \
 	-f lisk-service/docker-compose.gateway.yml \
+	-f lisk-service/docker-compose.market.yml \
 	-f lisk-service/docker-compose.gateway-ports.yml
 
 up: up-core3
