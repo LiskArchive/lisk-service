@@ -34,6 +34,8 @@ describe('Test market prices', () => {
         it('call market.prices', async () => {
             const result = await broker.call('market.prices', {});
             expect(result.data.length).toBeGreaterThanOrEqual(1);
+            expect(result.data).toBeInstanceOf(Array);
+            expect(result.meta).toHaveProperty('count');
         });
     });
 });
