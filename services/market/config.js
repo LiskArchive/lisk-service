@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = {};
+const config = {
+    endpoints: {},
+};
 
 // Moleculer broker config
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
@@ -46,5 +48,10 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
+
+/**
+ * External endpoints
+ */
+config.endpoints.bittrex = 'https://api.bittrex.com/v3';
 
 module.exports = config;

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -17,10 +17,11 @@ const logger = require('lisk-service-framework').Logger();
 
 module.exports = [
 	{
-		name: 'job.1',
-		description: 'Generic job template',
+		name: 'prices.retrieve.bittrex',
+		description: 'Fetches up-to-date market prices from Bittrex',
 		schedule: '* * * * *', // Every 1 min
 		controller: () => {
+			// TODO: Implement
 			const operationResult = (() => ([1, 2, 3, 4, 5]))();
 			logger.info(`Dummy job is done, processed ${operationResult.length} items`);
 		},
