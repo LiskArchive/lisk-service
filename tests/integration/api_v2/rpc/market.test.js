@@ -32,6 +32,16 @@ const getMarketPrices = async params => request(wsRpcUrl, 'get.market.prices', p
 
 describe('Method get.market.prices', () => {
 	describe('is able to retrieve market prices', () => {
+		it('returns market prices', async () => {
+			const response = await getMarketPrices({});
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(account => expect(account).toMap(marketPriceSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
 		it('returns market prices with no params', async () => {
 			try {
 				const response = await getMarketPrices({});
