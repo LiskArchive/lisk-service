@@ -15,7 +15,7 @@
  */
 const { ServiceUnavailableException } = require('../../shared/exceptions');
 
-const CoreService = require('../../shared/market');
+const marketService = require('../../shared/market');
 
 const getMarketPrices = async () => {
 	const marketPrices = {
@@ -24,7 +24,7 @@ const getMarketPrices = async () => {
 	};
 
 	try {
-		const response = await CoreService.getMarketPrices();
+		const response = await marketService.getMarketPrices();
 		if (response.data) marketPrices.data = response.data;
 		if (response.meta) marketPrices.meta = response.meta;
 
