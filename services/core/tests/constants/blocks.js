@@ -1,5 +1,20 @@
+/*
+ * LiskHQ/lisk-service
+ * Copyright © 2021 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
 const emptyBlock = {
-    id: 5683515590859200000,
+    id: '5683515590859200000',
     height: 14955,
     version: 1,
     timestamp: 1601455679,
@@ -20,7 +35,7 @@ const emptyBlock = {
 };
 
 const nonEmptyBlock = {
-    id: 894345162569656300,
+    id: '894345162569656300',
     height: 30428,
     version: 1,
     timestamp: 1601455680,
