@@ -55,6 +55,7 @@ const standardizeTickers = (tickers) => {
             from,
             to,
             rate: currentTicker.lastTradeRate,
+            updateTimestamp: Date.now(),
             sources: ['bittrex'],
         };
         return price;
