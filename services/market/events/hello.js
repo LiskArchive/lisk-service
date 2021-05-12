@@ -23,7 +23,7 @@ module.exports = [
 					data: ['Hello!'],
 					meta: { count: 1 },
 				});
-			}, 1000);
+			}, 5000);
 		},
 	},
 ];

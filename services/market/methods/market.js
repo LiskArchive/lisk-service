@@ -19,7 +19,7 @@ const {
 
 module.exports = [
 	{
-		name: 'market.prices',
+		name: 'prices',
 		controller: getMarketPrices,
 		params: {},
 	},

@@ -17,7 +17,7 @@ const marketPrice = require('./mappings/marketPrice');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.market.prices',
+	method: 'market.prices',
 	params: {},
 	definition: {
 		data: ['data', marketPrice],
