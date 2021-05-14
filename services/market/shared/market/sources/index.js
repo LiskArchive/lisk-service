@@ -13,15 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    getMarketPrices,
-} = require('./market');
-
-const {
-    UpdateBinancePrices,
-} = require('./sources');
+const { UpdateBinancePrices } = require('./binance');
 
 module.exports = {
-    getMarketPrices,
     UpdateBinancePrices,
 };
