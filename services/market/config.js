@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,12 +13,32 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = {};
+const config = {
+    endpoints: {},
+};
 
 // Moleculer broker config
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
+/**
+ * Database config
+ */
+config.db = {
+    defaults: {
+        db: 'redis',
+        directory: 'db_data',
+        adapter: 'leveldb',
+        auto_compaction: false,
+    },
+    collections: {
+        binance_prices: {
+            name: 'binance_prices',
+            indexes: [],
+            adapter: 'memory',
+        },
+    },
+};
 // Logging
 config.log = {};
 /**
@@ -35,6 +55,12 @@ config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
  */
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';
 config.log.stdout = process.env.SERVICE_LOG_STDOUT || 'true';
+
+/**
+ * External endpoints
+ */
+config.endpoints.binance = 'https://api.binance.com/api/v3';
+config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
 
 /*
  * Configurable outputs
