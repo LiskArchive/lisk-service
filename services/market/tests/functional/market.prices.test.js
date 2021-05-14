@@ -35,6 +35,17 @@ describe('Test market prices', () => {
             const result = await broker.call('market.prices', {});
             expect(result.data.length).toBeGreaterThanOrEqual(1);
             expect(result.data).toBeInstanceOf(Array);
+            result.data.forEach(price => {
+                expect(price).toEqual(expect.objectContaining({
+                    code: expect.any(String),
+                    from: expect.any(String),
+                    rate: expect.any(String),
+                    to: expect.any(String),
+                    updateTimestamp: expect.any(Number),
+                    sources: expect.any(Array),
+
+                }));
+            });
             expect(result.meta).toHaveProperty('count');
         });
     });
