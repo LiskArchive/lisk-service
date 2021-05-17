@@ -323,6 +323,7 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		// TODO: Update test blockchain to cover the scenario
 		xit('non-delegate accounts, sort balance descending, with limit and offset', async () => {
 			const response = await api.get(`${endpoint}?isDelegate=false&sort=balance:desc&limit=5&offset=1`);
 			expect(response).toMap(goodRequestSchema);
@@ -341,6 +342,7 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		// TODO: Update test blockchain to cover the scenario
 		xit('non-delegate accounts, sort balance ascending, with limit and offset', async () => {
 			const response = await api.get(`${endpoint}?isDelegate=false&sort=balance:asc&limit=5&offset=1`);
 			expect(response).toMap(goodRequestSchema);
@@ -359,8 +361,7 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Fix the scenario
-		xit('non-delegate accounts with \'active\' status returns 404 NOT FOUND', async () => {
+		it('non-delegate accounts with \'active\' status returns 404 NOT FOUND', async () => {
 			const expectedStatus = 404;
 			const response = await api.get(`${endpoint}?isDelegate=false&status=active`, expectedStatus);
 			expect(response).toMap(notFoundSchema);

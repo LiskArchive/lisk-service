@@ -36,13 +36,19 @@ const {
 ].forEach(endpoint => {
 	describe('Votes Received (Voters) API', () => {
 		let refDelegate;
+		let refDelegateAddress;
 		beforeAll(async () => {
-			let response;
 			do {
 				// eslint-disable-next-line no-await-in-loop
-				response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
-			} while (!response.data);
-			[refDelegate] = response.data;
+				const { data: [voteTx] = [] } = await api.get(`${baseUrlV2}/transactions?moduleAssetId=5:1&limit=1`);
+				if (voteTx) {
+					// Destructure to refer first entry of all the sent votes within the transaction
+					const { asset: { votes: [vote] } } = voteTx;
+					refDelegateAddress = vote.delegateAddress;
+				}
+			} while (!refDelegateAddress);
+			const response2 = await api.get(`${baseUrlV2}/accounts?address=${refDelegateAddress}`);
+			[refDelegate] = response2.data;
 		});
 
 		describe(`GET ${endpoint}`, () => {

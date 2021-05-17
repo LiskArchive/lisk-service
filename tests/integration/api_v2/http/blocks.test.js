@@ -417,15 +417,13 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Fix this scenario
-		xit('returns 404 NOT FOUND when queried with blockId and non-zero offset', async () => {
+		it('returns 404 NOT FOUND when queried with blockId and non-zero offset', async () => {
 			const expectedStatus = 404;
 			const response = await api.get(`${endpoint}?blockId=${refBlock.id}&offset=1`, expectedStatus);
 			expect(response).toMap(notFoundSchema);
 		});
 
-		// TODO: Fix this scenario
-		xit('returns 404 NOT FOUND when queried with block height and non-zero offset', async () => {
+		it('returns 404 NOT FOUND when queried with block height and non-zero offset', async () => {
 			const expectedStatus = 404;
 			const response = await api.get(`${endpoint}?height=${refBlock.height}&offset=1`, expectedStatus);
 			expect(response).toMap(notFoundSchema);
