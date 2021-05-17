@@ -44,7 +44,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 			do {
 				// eslint-disable-next-line no-await-in-loop
 				const response1 = await request(wsRpcUrl, 'get.transactions', { moduleAssetId: '5:1', limit: 1 });
-				const { data: [voteTx] = {} } = response1.result;
+				const { data: [voteTx] = [] } = response1.result;
 				if (voteTx) {
 					// Destructure to refer first entry of all the sent votes within the transaction
 					const { asset: { votes: [vote] } } = voteTx;

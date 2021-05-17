@@ -120,7 +120,6 @@ const getVoters = async params => {
 				}))));
 			votes.data.votes = allVotes;
 		}
-		if (response.meta) votes.meta = response.meta;
 	}
 
 	votes.data.votes = await BluebirdPromise.map(

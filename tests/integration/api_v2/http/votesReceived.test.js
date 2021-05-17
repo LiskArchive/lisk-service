@@ -40,7 +40,7 @@ const {
 		beforeAll(async () => {
 			do {
 				// eslint-disable-next-line no-await-in-loop
-				const { data: [voteTx] = {} } = await api.get(`${baseUrlV2}/transactions?moduleAssetId=5:1&limit=1`);
+				const { data: [voteTx] = [] } = await api.get(`${baseUrlV2}/transactions?moduleAssetId=5:1&limit=1`);
 				if (voteTx) {
 					// Destructure to refer first entry of all the sent votes within the transaction
 					const { asset: { votes: [vote] } } = voteTx;
