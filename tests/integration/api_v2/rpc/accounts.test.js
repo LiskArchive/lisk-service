@@ -290,6 +290,7 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
+		// TODO: Update test blockchain to cover the scenario
 		xit('non-delegate accounts, sort balance descending, with limit and offset', async () => {
 			const response = await getAccounts({ isDelegate: false, sort: 'balance:desc', limit: 5, offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -309,6 +310,7 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
+		// TODO: Update test blockchain to cover the scenario
 		xit('non-delegate accounts, sort balance ascending, with limit and offset', async () => {
 			const response = await getAccounts({ isDelegate: false, sort: 'balance:asc', limit: 5, offset: 1 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -328,8 +330,7 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Fix the scenario
-		xit('non-delegate accounts with \'active\' status returns empty response', async () => {
+		it('non-delegate accounts with \'active\' status returns empty response', async () => {
 			const response = await getAccounts({ isDelegate: false, status: 'active' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
