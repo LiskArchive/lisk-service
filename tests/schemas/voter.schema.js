@@ -46,8 +46,8 @@ const votes = {
 };
 
 const voterSchemaVersion5 = {
-	account: Joi.object(account).optional(),
-	votes: Joi.array().items(votes).optional(),
+	account: Joi.object(account).required(),
+	votes: Joi.array().items(votes).required(),
 };
 
 module.exports = {
