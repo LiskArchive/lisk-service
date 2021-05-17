@@ -342,6 +342,7 @@ const getAccounts = async params => {
 					account.isMigrated = genesisAccounts[account.address];
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
+					// Use only dynamically computed legacyAccount information, ignore the hardcoded info
 					const { isMigrated, legacy, legacyAddress } = await getLegacyAccountInfo({ publicKey: account.publicKey });
 					Object.assign(account, { isMigrated, legacy, legacyAddress });
 				}
