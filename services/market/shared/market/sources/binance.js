@@ -18,7 +18,7 @@ const { HTTP, Logger } = require('lisk-service-framework');
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const rediscache = require('../../indexdb/redis');
+const rediscache = require('../../redis');
 
 const initRedisCache = () => rediscache('binance_prices');
 

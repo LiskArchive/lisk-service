@@ -31,6 +31,7 @@
     "test:unit": "./node_modules/.bin/jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
+    "ioredis": "^4.27.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef65aa995325768e00248a97a6febd6a346b7027/framework/dist/lisk-service-framework-1.0.2.tgz",
     "moleculer": "^0.14.13",
     "node-cron": "=2.0.3"
