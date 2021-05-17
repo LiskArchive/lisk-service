@@ -18,10 +18,10 @@ const {
 } = require('./market');
 
 const {
-    UpdateBinancePrices,
+    reloadPricesFromBinance,
 } = require('./sources');
 
 module.exports = {
     getMarketPrices,
-    UpdateBinancePrices,
+    reloadPricesFromBinance,
 };

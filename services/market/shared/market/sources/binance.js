@@ -42,7 +42,7 @@ const symbolMap = {
 
 const fetchAllMarketTickers = async () => {
     try {
-        const response = await requestLib(`${apiEndpoint}/ticker/bookTicker`);
+        const response = await requestLib(`${apiEndpoint}/ticker/price`);
         if (typeof response === 'string') return JSON.parse(response).data;
         return response.data;
     } catch (err) {
@@ -67,7 +67,7 @@ const standardizeTickers = (tickers) => {
             code: k,
             from,
             to,
-            rate: currentTicker.askPrice,
+            rate: currentTicker.price,
             sources: ['binance'],
         };
         return price;
@@ -75,7 +75,7 @@ const standardizeTickers = (tickers) => {
     return transformedPrices;
 };
 
-const UpdateBinancePrices = async () => {
+const reloadPricesFromBinance = async () => {
     const binanceCache = await initRedisCache();
     const tickers = await fetchAllMarketTickers();
     const filteredTickers = filterTickers(tickers);
@@ -90,6 +90,6 @@ const getBinancePricesFromCache = async () => {
 };
 
 module.exports = {
-    UpdateBinancePrices,
+    reloadPricesFromBinance,
     getBinancePricesFromCache,
 };
