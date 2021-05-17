@@ -16,7 +16,7 @@
 const redis = require('ioredis');
 const { Logger } = require('lisk-service-framework');
 
-const config = require('../config');
+const config = require('../../config');
 
 const logger = Logger();
 

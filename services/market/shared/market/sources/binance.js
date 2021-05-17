@@ -18,7 +18,7 @@ const { HTTP, Logger } = require('lisk-service-framework');
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const rediscache = require('../../redis');
+const rediscache = require('../../database/redis');
 
 const initRedisCache = () => rediscache('binance_prices');
 
@@ -28,8 +28,16 @@ const apiEndpoint = config.endpoints.binance;
 
 const symbolMap = {
     LSK_BTC: 'LSKBTC',
-    BTC_USD: 'BTCUSDT',
+    LSK_ETH: 'LSKETH',
+    LSK_USDT: 'LSKUSDT',
+    EUR_USDT: 'EURUSDT',
     BTC_EUR: 'BTCEUR',
+    BTC_GBP: 'BTCGBP',
+    ETH_GBP: 'ETHGBP',
+    BTC_RUB: 'BTCRUB',
+    ETH_EUR: 'ETHEUR',
+    ETH_RUB: 'ETHRUB',
+    USDT_RUB: 'USDTRUB',
 };
 
 const fetchAllMarketTickers = async () => {
@@ -59,7 +67,7 @@ const standardizeTickers = (tickers) => {
             code: k,
             from,
             to,
-            rate: currentTicker.bidPrice,
+            rate: currentTicker.askPrice,
             sources: ['binance'],
         };
         return price;
