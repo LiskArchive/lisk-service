@@ -14,6 +14,7 @@
  *
  */
 const { HTTP, Logger } = require('lisk-service-framework');
+const moment = require('moment');
 
 const requestLib = HTTP.request;
 const logger = Logger();
@@ -68,6 +69,7 @@ const standardizeTickers = (tickers) => {
             from,
             to,
             rate: currentTicker.price,
+            updateTimestamp: moment(Date.now()).unix(),
             sources: ['binance'],
         };
         return price;
