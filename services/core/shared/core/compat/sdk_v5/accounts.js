@@ -342,8 +342,13 @@ const getAccounts = async params => {
 					account.isMigrated = genesisAccounts[account.address];
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
-					const legacyAccountInfo = await getLegacyAccountInfo({ publicKey: account.publicKey });
-					Object.assign(account, legacyAccountInfo);
+					// Use only dynamically computed legacyAccount information, ignore the hardcoded info
+					const {
+						isMigrated,
+						legacy,
+						legacyAddress,
+					} = await getLegacyAccountInfo({ publicKey: account.publicKey });
+					Object.assign(account, { isMigrated, legacy, legacyAddress });
 				}
 			}
 
@@ -372,7 +377,7 @@ const getDelegates = async params => getAccounts({ ...params, isDelegate: true }
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
-	if (account.keys.numberOfSignatures) {
+	if (account.keys && account.keys.numberOfSignatures) {
 		multisignatureAccount.isMultisignature = true;
 		multisignatureAccount.numberOfReqSignatures = account.keys.numberOfSignatures;
 		multisignatureAccount.members = [];
