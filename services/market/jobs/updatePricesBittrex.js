@@ -14,16 +14,20 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
+const { reloadPricesFromBittrex } = require('../shared/market/sources');
 
 module.exports = [
 	{
 		name: 'prices.retrieve.bittrex',
 		description: 'Fetches up-to-date market prices from Bittrex',
 		schedule: '* * * * *', // Every 1 min
-		controller: () => {
-			// TODO: Implement
-			const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			logger.info(`Dummy job is done, processed ${operationResult.length} items`);
+		init: async () => {
+			logger.debug('Initializing market prices from Bittrex');
+			await reloadPricesFromBittrex();
+		},
+		controller: async () => {
+			logger.debug('Updating market prices from Bittrex');
+			await reloadPricesFromBittrex();
 		},
 	},
 ];

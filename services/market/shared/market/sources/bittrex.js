@@ -55,7 +55,7 @@ const standardizeTickers = (tickers) => {
             from,
             to,
             rate: currentTicker.lastTradeRate,
-            updateTimestamp: Date.now(),
+            updateTimestamp: Math.floor(Date.now() / 1000),
             sources: ['bittrex'],
         };
         return price;
@@ -63,11 +63,22 @@ const standardizeTickers = (tickers) => {
     return transformedPrices;
 };
 
-const getLatestMarketPrices = async () => {
+const reloadPricesFromBittrex = async () => {
     const tickers = await fetchAllMarketTickers();
     const filteredTickers = filterTickers(tickers);
     const transformedPrices = standardizeTickers(filteredTickers);
+
+    // TODO: Write to the cache
+
     return transformedPrices;
 };
 
-module.exports = getLatestMarketPrices;
+const getPricesFromBittrex = async () => {
+    // TODO: Read from cache, when implemented
+    return reloadPricesFromBittrex();
+};
+
+module.exports = {
+    reloadPricesFromBittrex,
+    getPricesFromBittrex,
+};
