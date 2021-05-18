@@ -91,7 +91,6 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					dir('./framework') { sh "npm run test:unit" }
 					dir('./services/core') { sh "npm run test:unit" }
-					dir('./services/market') { sh "npm run test:unit" }
 				}
 			}
 		}
