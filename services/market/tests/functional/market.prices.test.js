@@ -43,7 +43,6 @@ describe('Test market prices', () => {
             const result = await broker.call('market.prices', {});
             expect(result.data.length).toBeGreaterThanOrEqual(1);
             expect(result.data).toBeInstanceOf(Array);
-            console.log(marketPriceSchema);
             result.data.forEach(price => {
                 marketPriceSchema.validate(price);
             });
