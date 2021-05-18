@@ -42,6 +42,9 @@ const getDbInstance = async (
                 res = res.filter(acc => acc[property] === values);
             }
 
+            if (params.offset) res = res.splice(Number(params.offset));
+            if (params.limit) res = res.slice(0, Number(params.limit));
+
             return resolve(res);
         });
     });
