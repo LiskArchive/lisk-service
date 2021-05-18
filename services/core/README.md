@@ -1,15 +1,14 @@
 # Lisk Service Core
 
-The REST client component acts as a bridge between the Lisk Core and the Lisk Service API.
-Its main purpose is to provide enriched data from the Lisk Core API.
-This component is aimed at providing high availability, efficient and reliable access to the Lisk Core API. 
+The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API.
+
+> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes running all microservices at once.
 
 ## Installation
 
 ### Prerequisites
 
-- [Linux Prerequisites](docs/prerequisites-linux.md)
-- [MacOS Prerequisites](docs/prerequisites-macos.md)
+Please refer to the readme file (`README.md`) in the project root directory.
 
 ## Installation
 
@@ -27,18 +26,33 @@ To configure the different components, there are a number of environment variabl
 
 List of the most commonly used environment variables:
 
-- `SERVICE_NATS`: URL of the micro-service message broker (NATS)
-- `SERVICE_CORE_POSTGRES`: URL of the local Lisk Service Core database
-- `SERVICE_CORE_REDIS`: URL of Redis server
-- `LISK_CORE_HTTP`: URL of Lisk Core node (HTTP API).
-- `LISK_CORE_WS`: URL of Lisk Core node (WebSocket API),
+- `SERVICE_BROKER`: URL of the microservice message broker (Redis)
+- `SERVICE_CORE_MYSQL`: URL of the local Lisk Service Core database
+- `SERVICE_CORE_REDIS`: URL of Redis server (dedicated for core, different than the message broker)
+- `LISK_CORE_WS`: URL of Lisk Core node (WebSocket API)
 - `LISK_STATIC`: URL of Lisk static assets
 - `GEOIP_JSON`: URL of GeoIP server
+- `ENABLE_TRANSACTION_STATS`: Enables global transaction statistics
+- `ENABLE_FEE_ESTIMATOR_QUICK`: Enabled fee estimator (quick algorithm)
+- `ENABLE_FEE_ESTIMATOR_FULL`: Enabled fee estimator (full blockchain analysis)
 
 The variables listed above can be overridden globally by using global variables.
 
 ```bash
 export LISK_CORE_HTTP="http://localhost:4000" # Set Lisk node port to the given URL globally
+```
+
+### Example
+
+```bash
+# Run local instance with a local core node, MySQL and Redis
+# Also enable transaction statistics for the last 40 days
+LISK_CORE_WS="ws://localhost:4001" \
+SERVICE_CORE_MYSQL="mysql://lisk:password@localhost:3306/lisk" \
+SERVICE_CORE_REDIS="redis://localhost:6379/7" \
+ENABLE_TRANSACTION_STATS="true" \
+TRANSACTION_STATS_HISTORY_LENGTH_DAYS="40" \
+node app.js
 ```
 
 ## Management
@@ -48,14 +62,11 @@ export LISK_CORE_HTTP="http://localhost:4000" # Set Lisk node port to the given 
 ```bash
 cd lisk-service/components/core # move into root folder of the core component
 npm start # start the component with running nodes locally
-npm run start:local # start the component with running nodes locally
-npm run start:testnet # start the component with running nodes on testnet
-npm run start:mainnet # start the component with running nodes on mainnet
- ```
+```
 
-Use the `utils/moleculer_client.js` and `utils/moleculer_subscribe.js` clients to test particular service endpoints.
+Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
 
-If you want to run a production variant of the service use `Docker` or `PM2`. This will automatically recover the process if it fails.
+If you want to run a production variant of the service use `Docker` or `PM2`. This will automatically recover the process when it fails.
 
 #### Stop
 
