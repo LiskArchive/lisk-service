@@ -34,8 +34,7 @@
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef65aa995325768e00248a97a6febd6a346b7027/framework/dist/lisk-service-framework-1.0.2.tgz",
     "moleculer": "^0.14.13",
     "moment": "^2.29.1",
-    "node-cron": "=2.0.3",
-    "redis": "^3.1.2"
+    "node-cron": "=2.0.3"
   },
   "devDependencies": {
     "ioredis": "^4.27.2",

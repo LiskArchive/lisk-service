@@ -13,17 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger } = require('lisk-service-framework');
+const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
 const moment = require('moment');
 
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const rediscache = require('../../database/redis');
-
-const initRedisCache = () => rediscache('binance_prices');
-
 const config = require('../../../config.js');
+
+const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
 
 const apiEndpoint = config.endpoints.binance;
 
@@ -77,16 +75,14 @@ const standardizeTickers = (tickers) => {
 };
 
 const reloadPricesFromBinance = async () => {
-    const binanceCache = await initRedisCache();
     const tickers = await fetchAllMarketTickers();
     const filteredTickers = filterTickers(tickers);
     const transformedPrices = standardizeTickers(filteredTickers);
-    await binanceCache.upsert(transformedPrices);
+    transformedPrices.forEach(price => binanceCache.set(price.code, price));
 };
 
-const getBinancePricesFromCache = async () => {
-    const binanceCache = await initRedisCache();
-    const latestPricesFromCache = await binanceCache.find({});
+const getBinancePricesFromCache = async symbol => {
+    const latestPricesFromCache = await binanceCache.get(symbol);
     return latestPricesFromCache;
 };
 
