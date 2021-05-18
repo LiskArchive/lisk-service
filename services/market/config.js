@@ -29,12 +29,12 @@ config.db = {
         db: 'redis',
         directory: 'db_data',
         adapter: 'leveldb',
-        auto_compaction: false,
+        primaryKey: 'id',
     },
     collections: {
         binance_prices: {
             name: 'binance_prices',
-            indexes: [],
+            primaryKey: 'code',
             adapter: 'memory',
         },
     },

@@ -64,7 +64,6 @@ const standardizeTickers = (tickers) => {
         const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
         const [from, to] = k.split('_');
         const price = {
-            id: from.concat(to),
             code: k,
             from,
             to,
