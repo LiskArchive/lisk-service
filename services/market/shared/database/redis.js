@@ -28,8 +28,8 @@ const getDbInstance = async (
     const collection = config.db.collections[collectionName];
     db.on('error', (err) => logger.error('connection issues ', err));
 
-    const upsert = async (docs) => docs
-        .forEach(async doc => db.hmset(collectionName, collection.primaryKey, JSON.stringify(doc)));
+    const upsert = async docs => docs.forEach(async doc => db
+        .hmset(collectionName, doc[collection.primaryKey], JSON.stringify(doc)));
 
     const find = async () => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
