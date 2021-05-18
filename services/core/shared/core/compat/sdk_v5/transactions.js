@@ -279,9 +279,11 @@ const getTransactions = async params => {
 		transactions.data,
 		async transaction => {
 			const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
-			transaction.unixTimestamp = indexedTxInfo.timestamp;
-			transaction.height = indexedTxInfo.height;
-			transaction.blockId = indexedTxInfo.blockId;
+			if (indexedTxInfo) {
+				transaction.unixTimestamp = indexedTxInfo.timestamp;
+				transaction.height = indexedTxInfo.height;
+				transaction.blockId = indexedTxInfo.blockId;
+			}
 			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
 			transaction.senderId = account && account.address ? account.address
 				: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));

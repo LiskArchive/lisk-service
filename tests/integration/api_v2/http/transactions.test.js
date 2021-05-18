@@ -462,7 +462,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('returns transactions with senderPublicKey and nonce', async () => {
+		it('returns transactions with senderPublicKey and nonce', async () => {
 			const response = await api.get(`${endpoint}?senderPublicKey=${refDelegate.summary.publicKey}&nonce=${Number(refDelegate.sequence.nonce) - 1}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -474,37 +474,37 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('returns 400 BAD REQUEST with address and nonce', async () => {
+		it('returns 400 BAD REQUEST with address and nonce', async () => {
 			const expectedStatusCode = 400;
 			const response = await api.get(`${endpoint}?address=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('returns 400 BAD REQUEST with senderUsername and nonce', async () => {
+		it('returns 400 BAD REQUEST with senderUsername and nonce', async () => {
 			const expectedStatusCode = 400;
 			const response = await api.get(`${endpoint}?senderUsername=${refDelegate.summary.username}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('returns 400 BAD REQUEST with recipientAddress and nonce', async () => {
+		it('returns 400 BAD REQUEST with recipientAddress and nonce', async () => {
 			const expectedStatusCode = 400;
 			const response = await api.get(`${endpoint}?recipientAddress=${refDelegate.summary.address}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('returns 400 BAD REQUEST with recipientPublicKey and nonce', async () => {
+		it('returns 400 BAD REQUEST with recipientPublicKey and nonce', async () => {
 			const expectedStatusCode = 400;
 			const response = await api.get(`${endpoint}?recipientPublicKey=${refDelegate.summary.publicKey}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('returns 400 BAD REQUEST with recipientUsername and nonce', async () => {
+		it('returns 400 BAD REQUEST with recipientUsername and nonce', async () => {
 			const expectedStatusCode = 400;
 			const response = await api.get(`${endpoint}?recipientUsername=${refDelegate.summary.username}&nonce=${Number(refDelegate.sequence.nonce) - 1}`, expectedStatusCode);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		xit('returns 404 NOT FOUND when queried with transactionId and non-zero offset', async () => {
+		it('returns 404 NOT FOUND when queried with transactionId and non-zero offset', async () => {
 			const expectedStatusCode = 404;
 			const response = await api.get(`${endpoint}?transactionId=${refTransaction.id}&offset=1`, expectedStatusCode);
 			expect(response).toMap(notFoundSchema);
