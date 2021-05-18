@@ -86,7 +86,7 @@ const reloadPricesFromBinance = async () => {
 
 const getBinancePricesFromCache = async () => {
     const binanceCache = await initRedisCache();
-    const latestPricesFromCache = await binanceCache.find();
+    const latestPricesFromCache = await binanceCache.find({});
     return latestPricesFromCache;
 };
 

@@ -31,11 +31,17 @@ const getDbInstance = async (
     const upsert = async docs => docs.forEach(async doc => db
         .hmset(collectionName, doc[collection.primaryKey], JSON.stringify(doc)));
 
-    const find = async () => new Promise(resolve => {
+    const find = async params => new Promise(resolve => {
         db.hgetall(collectionName, async (err, result) => {
             if (err) logger.error(`Error retrieving ${collectionName} data: `, err);
 
-            const res = Object.values(result).map(v => JSON.parse(v));
+            let res = Object.values(result).map(v => JSON.parse(v));
+
+            if (params.where) {
+                const { property, values } = params.where;
+                res = res.filter(acc => acc[property] === values);
+            }
+
             return resolve(res);
         });
     });
