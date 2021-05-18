@@ -82,12 +82,12 @@ const reloadPricesFromBinance = async () => {
     const tickers = await fetchAllMarketTickers();
     const filteredTickers = filterTickers(tickers);
     const transformedPrices = standardizeTickers(filteredTickers);
-    await binanceCache.writeBatch(transformedPrices);
+    await binanceCache.upsert(transformedPrices);
 };
 
 const getBinancePricesFromCache = async () => {
     const binanceCache = await initRedisCache();
-    const latestPricesFromCache = await binanceCache.findAll();
+    const latestPricesFromCache = await binanceCache.find();
     return latestPricesFromCache;
 };
 
