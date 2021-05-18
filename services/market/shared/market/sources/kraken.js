@@ -22,21 +22,22 @@ const config = require('../../../config.js');
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const apiEndpoint = config.endpoints.bittrex;
+const apiEndpoint = config.endpoints.kraken;
 
-const bittrexCache = CacheRedis('bittrex', config.endpoints.redis);
+const krakenCache = CacheRedis('kraken', config.endpoints.redis);
 
 const symbolMap = {
-    LSK_BTC: 'LSK-BTC',
-    BTC_USD: 'BTC-USD',
-    BTC_EUR: 'BTC-EUR',
+    LSK_USD: 'LSKUSD',
+    LSK_EUR: 'LSKEUR',
+    LSK_BTC: 'LSKBTC',
 };
 
 const fetchAllMarketTickers = async () => {
     try {
-        const response = await requestLib(`${apiEndpoint}/markets/tickers`);
-        if (typeof response === 'string') return JSON.parse(response).data;
-        return response.data;
+        const tradingPairs = Object.values(symbolMap).join(',');
+        const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
+        if (typeof response === 'string') return JSON.parse(response).data.result;
+        return response.data.result;
     } catch (err) {
         logger.error(err.message);
         logger.error(err.stack);
@@ -44,47 +45,41 @@ const fetchAllMarketTickers = async () => {
     }
 };
 
-const filterTickers = (tickers) => {
-    const allowedMarketSymbols = Object.values(symbolMap);
-    const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
-    return filteredTickers;
-};
-
 const standardizeTickers = (tickers) => {
     const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
-        const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
+        if (v === symbolMap.LSK_BTC) v = 'LSKXBT'; // Kraken API returns LSKBTC as LSKXBT
+        const currentTicker = tickers[v];
         const [from, to] = k.split('_');
         const price = {
             code: k,
             from,
             to,
-            rate: currentTicker.lastTradeRate,
+            rate: currentTicker.o,
             updateTimestamp: Math.floor(Date.now() / 1000),
-            sources: ['bittrex'],
+            sources: ['kraken'],
         };
         return price;
     });
     return transformedPrices;
 };
 
-const reloadPricesFromBittrex = async () => {
+const reloadPricesFromKraken = async () => {
     const tickers = await fetchAllMarketTickers();
-    const filteredTickers = filterTickers(tickers);
-    const transformedPrices = standardizeTickers(filteredTickers);
+    const transformedPrices = standardizeTickers(tickers);
 
     // Serialize individual price item and write to the cache
     await BluebirdPromise.all(transformedPrices
-        .map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item))));
+        .map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item))));
 
     return transformedPrices;
 };
 
-const getPricesFromBittrex = async () => {
+const getPricesFromKraken = async () => {
     // Read individual price item from cache and deserialize
     const prices = await BluebirdPromise.map(
         Object.getOwnPropertyNames(symbolMap),
         async (itemCode) => {
-            const serializedPrice = await bittrexCache.get(`bittrex_${itemCode}`);
+            const serializedPrice = await krakenCache.get(`kraken_${itemCode}`);
             return JSON.parse(serializedPrice);
         },
         { concurrency: Object.getOwnPropertyNames(symbolMap).length },
@@ -93,6 +88,6 @@ const getPricesFromBittrex = async () => {
 };
 
 module.exports = {
-    reloadPricesFromBittrex,
-    getPricesFromBittrex,
+    reloadPricesFromKraken,
+    getPricesFromKraken,
 };
