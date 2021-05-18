@@ -28,9 +28,10 @@
     "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
     "clean": "rm -rf ./node_modules",
     "watch": "supervisor -w . -i ./node_modules app.js",
-    "test:unit": "./node_modules/.bin/jest --config=jest.config.js --detectOpenHandles --forceExit"
+    "test:functional": "./node_modules/.bin/jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
+    "joi": "^17.4.0",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef65aa995325768e00248a97a6febd6a346b7027/framework/dist/lisk-service-framework-1.0.2.tgz",
     "moleculer": "^0.14.13",
     "node-cron": "=2.0.3"
