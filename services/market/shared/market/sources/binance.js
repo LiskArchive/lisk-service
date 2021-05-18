@@ -29,14 +29,18 @@ const apiEndpoint = config.endpoints.binance;
 const symbolMap = {
     LSK_BTC: 'LSKBTC',
     LSK_ETH: 'LSKETH',
-    EUR_USDT: 'EURUSDT',
+
     BTC_EUR: 'BTCEUR',
     BTC_GBP: 'BTCGBP',
-    ETH_GBP: 'ETHGBP',
     BTC_RUB: 'BTCRUB',
+
     ETH_EUR: 'ETHEUR',
     ETH_RUB: 'ETHRUB',
+    ETH_GBP: 'ETHGBP',
+
     USDT_RUB: 'USDTRUB',
+    
+    EUR_USDT: 'EURUSDT',
 };
 
 const fetchAllMarketTickers = async () => {
