@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getMarketPrices } = require('./market');
-
+const { getPricesFromBittrex, reloadPricesFromBittrex } = require('./bittrex');
 
 module.exports = {
-    getMarketPrices,
+    getPricesFromBittrex,
+    reloadPricesFromBittrex,
 };

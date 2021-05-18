@@ -73,10 +73,8 @@ const reloadPricesFromBittrex = async () => {
     return transformedPrices;
 };
 
-const getPricesFromBittrex = async () => {
-    // TODO: Read from cache, when implemented
-    return reloadPricesFromBittrex();
-};
+// TODO: Read from cache, when implemented
+const getPricesFromBittrex = async () => reloadPricesFromBittrex();
 
 module.exports = {
     reloadPricesFromBittrex,
