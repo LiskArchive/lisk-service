@@ -19,9 +19,11 @@ const {
 
 const {
     reloadPricesFromBinance,
+    getPricesFromBinance,
 } = require('./sources');
 
 module.exports = {
     getMarketPrices,
     reloadPricesFromBinance,
+    getPricesFromBinance,
 };

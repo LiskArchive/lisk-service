@@ -14,7 +14,8 @@
  *
  */
 const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
-const moment = require('moment');
+
+const BluebirdPromise = require('bluebird');
 
 const requestLib = HTTP.request;
 const logger = Logger();
@@ -28,7 +29,6 @@ const apiEndpoint = config.endpoints.binance;
 const symbolMap = {
     LSK_BTC: 'LSKBTC',
     LSK_ETH: 'LSKETH',
-    LSK_USDT: 'LSKUSDT',
     EUR_USDT: 'EURUSDT',
     BTC_EUR: 'BTCEUR',
     BTC_GBP: 'BTCGBP',
@@ -66,7 +66,7 @@ const standardizeTickers = (tickers) => {
             from,
             to,
             rate: currentTicker.price,
-            updateTimestamp: moment(Date.now()).unix(),
+            updateTimestamp: Math.floor(Date.now() / 1000),
             sources: ['binance'],
         };
         return price;
@@ -78,15 +78,26 @@ const reloadPricesFromBinance = async () => {
     const tickers = await fetchAllMarketTickers();
     const filteredTickers = filterTickers(tickers);
     const transformedPrices = standardizeTickers(filteredTickers);
-    transformedPrices.forEach(price => binanceCache.set(price.code, price));
+
+    // Serialize individual price item and write to the cache
+    await BluebirdPromise.all(transformedPrices
+        .map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item))));
 };
 
-const getBinancePricesFromCache = async symbol => {
-    const latestPricesFromCache = await binanceCache.get(symbol);
-    return latestPricesFromCache;
+const getPricesFromBinance = async () => {
+    // Read individual price item from cache and deserialize
+    const prices = await BluebirdPromise.map(
+        Object.getOwnPropertyNames(symbolMap),
+        async (itemCode) => {
+            const serializedPrice = await binanceCache.get(`binance_${itemCode}`);
+            return JSON.parse(serializedPrice);
+        },
+        { concurrency: Object.getOwnPropertyNames(symbolMap).length },
+    );
+    return prices;
 };
 
 module.exports = {
     reloadPricesFromBinance,
-    getBinancePricesFromCache,
+    getPricesFromBinance,
 };

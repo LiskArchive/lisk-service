@@ -13,8 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { reloadPricesFromBinance } = require('./binance');
+const {
+    reloadPricesFromBinance,
+    getPricesFromBinance,
+} = require('./binance');
 
 module.exports = {
     reloadPricesFromBinance,
+    getPricesFromBinance,
 };
