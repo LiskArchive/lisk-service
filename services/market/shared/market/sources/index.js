@@ -15,10 +15,10 @@
  */
 const {
     reloadPricesFromBinance,
-    getPricesFromBinance,
+    getBinancePricesFromDB,
 } = require('./binance');
 
 module.exports = {
     reloadPricesFromBinance,
-    getPricesFromBinance,
+    getBinancePricesFromDB,
 };

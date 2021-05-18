@@ -39,7 +39,7 @@ const symbolMap = {
     ETH_GBP: 'ETHGBP',
 
     USDT_RUB: 'USDTRUB',
-    
+
     EUR_USDT: 'EURUSDT',
 };
 
@@ -88,7 +88,7 @@ const reloadPricesFromBinance = async () => {
         .map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item))));
 };
 
-const getPricesFromBinance = async () => {
+const getBinancePricesFromDB = async () => {
     // Read individual price item from cache and deserialize
     const prices = await BluebirdPromise.map(
         Object.getOwnPropertyNames(symbolMap),
@@ -103,5 +103,5 @@ const getPricesFromBinance = async () => {
 
 module.exports = {
     reloadPricesFromBinance,
-    getPricesFromBinance,
+    getBinancePricesFromDB,
 };

@@ -19,11 +19,11 @@ const {
 
 const {
     reloadPricesFromBinance,
-    getPricesFromBinance,
+    getBinancePricesFromDB,
 } = require('./sources');
 
 module.exports = {
     getMarketPrices,
     reloadPricesFromBinance,
-    getPricesFromBinance,
+    getBinancePricesFromDB,
 };
