@@ -39,13 +39,20 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 
 	describe(`Method ${methodName}`, () => {
 		let refDelegate;
+		let refDelegateAddress;
 		beforeAll(async () => {
-			let response;
 			do {
 				// eslint-disable-next-line no-await-in-loop
-				response = await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 });
-			} while (!response.result);
-			[refDelegate] = response.result.data;
+				const response1 = await request(wsRpcUrl, 'get.transactions', { moduleAssetId: '5:1', limit: 1 });
+				const { data: [voteTx] = [] } = response1.result;
+				if (voteTx) {
+					// Destructure to refer first entry of all the sent votes within the transaction
+					const { asset: { votes: [vote] } } = voteTx;
+					refDelegateAddress = vote.delegateAddress;
+				}
+			} while (!refDelegateAddress);
+			const response2 = await request(wsRpcUrl, 'get.accounts', { address: refDelegateAddress });
+			[refDelegate] = response2.result.data;
 		});
 
 		it('Returns list of voters when requested for existing account by account ID', async () => {
