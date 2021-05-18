@@ -1,15 +1,14 @@
 # Lisk Service Template
 
-The Template component is an abstract component that the all Lisk Service components inherit from.
-It allows all components to share a similar interface and design pattern.
-Its purpose is to reduce code duplication and increase consistency between each component, simplifying code maintenance and testing.
+The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
+
+> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes running all microservices at once.
 
 ## Installation
 
 ### Prerequisites
 
-- [Linux Prerequisites](docs/prerequisites-linux.md)
-- [MacOS Prerequisites](docs/prerequisites-macos.md)
+Please refer to the readme file (`README.md`) in the project root directory.
 
 ## Installation
 
@@ -30,11 +29,11 @@ To configure the different components, there are a number of environment variabl
 ### Start
 
 ```bash
-cd lisk-service/services/gateway # move into root folder of the template component
+cd lisk-service/services/template # move into root folder of the template component
 npm start # start the component
- ```
+```
 
-Use the `utils/moleculer_client.js` to connect with the NATS-enabled micro-service.
+Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
 
 Once the process is verified as running correctly, `CTRL+C` and start the process with `PM2`. This will fork the process into the background and automatically recover the process if it fails.
 
