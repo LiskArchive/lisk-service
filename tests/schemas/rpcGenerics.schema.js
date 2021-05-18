@@ -58,7 +58,7 @@ const serverErrorSchema = {
 	},
 };
 
-const serverUnavailableSchema = {
+const serviceUnavailableSchema = {
 	jsonrpc: jsonRPCSchema,
 	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
 	error: {
@@ -91,5 +91,5 @@ module.exports = {
 	jsonRpcListSchema,
 	emptyResponseSchema: Joi.object(emptyResponseSchema).required(),
 	serverErrorSchema: Joi.object(serverErrorSchema).required(),
-	serverUnavailableSchema: Joi.object(serverUnavailableSchema).required(),
+	serviceUnavailableSchema: Joi.object(serviceUnavailableSchema).required(),
 };
