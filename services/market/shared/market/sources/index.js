@@ -16,6 +16,6 @@
 const { getPricesFromBittrex, reloadPricesFromBittrex } = require('./bittrex');
 
 module.exports = {
-    getPricesFromBittrex,
     reloadPricesFromBittrex,
+    getPricesFromBittrex,
 };

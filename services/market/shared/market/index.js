@@ -15,7 +15,6 @@
  */
 const { getMarketPrices } = require('./market');
 
-
 module.exports = {
     getMarketPrices,
 };

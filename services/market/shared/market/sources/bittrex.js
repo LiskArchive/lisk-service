@@ -13,14 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger } = require('lisk-service-framework');
+const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
+
+const BluebirdPromise = require('bluebird');
+
+const config = require('../../../config.js');
 
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const config = require('../../../config.js');
 
 const apiEndpoint = config.endpoints.bittrex;
+
+const bittrexCache = CacheRedis('bittrex', config.endpoints.redis);
 
 const symbolMap = {
     LSK_BTC: 'LSK-BTC',
@@ -68,13 +73,25 @@ const reloadPricesFromBittrex = async () => {
     const filteredTickers = filterTickers(tickers);
     const transformedPrices = standardizeTickers(filteredTickers);
 
-    // TODO: Write to the cache
+    // Serialize individual price item and write to the cache
+    await BluebirdPromise.all(transformedPrices
+        .map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item))));
 
     return transformedPrices;
 };
 
-// TODO: Read from cache, when implemented
-const getPricesFromBittrex = async () => reloadPricesFromBittrex();
+const getPricesFromBittrex = async () => {
+    // Read individual price item from cache and deserialize
+    const prices = await BluebirdPromise.map(
+        Object.getOwnPropertyNames(symbolMap),
+        async (itemCode) => {
+            const serializedPrice = await bittrexCache.get(`bittrex_${itemCode}`);
+            return JSON.parse(serializedPrice);
+        },
+        { concurrency: Object.getOwnPropertyNames(symbolMap).length },
+    );
+    return prices;
+};
 
 module.exports = {
     reloadPricesFromBittrex,
