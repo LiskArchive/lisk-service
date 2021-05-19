@@ -66,7 +66,7 @@ const fetchAllMarketTickers = async () => {
 
 const filterTickers = (tickers) => {
     const [transformedTickers] = Object.entries(tickers)
-        .map(([k, v]) => Object.keys(v).map(value => value = { symbol: `${k}_${value}`, price: v[value] }));
+        .map(([k, v]) => Object.keys(v).map(value => ({ symbol: `${k}_${value}`, price: v[value] })));
     return transformedTickers;
 };
 
