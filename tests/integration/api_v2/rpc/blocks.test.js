@@ -109,7 +109,7 @@ describe('Method get.blocks', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		xit('invalid block id -> empty response', async () => {
+		it('invalid block id -> empty response', async () => {
 			const response = await getBlocks({ blockId: '12602944501676077162' }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -470,16 +470,14 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Fix this scenario
-		xit('returns empty response when queried with blockId and non-zero offset', async () => {
+		it('returns empty response when queried with blockId and non-zero offset', async () => {
 			const response = await getBlocks({ blockId: refBlock.id, offset: 1 }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		// TODO: Fix this scenario
-		xit('returns empty response when queried with block height and non-zero offset', async () => {
+		it('returns empty response when queried with block height and non-zero offset', async () => {
 			const response = await getBlocks({
 				height: String(refBlock.height),
 				offset: 1,

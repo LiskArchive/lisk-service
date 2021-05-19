@@ -109,8 +109,8 @@ const getVoters = async params => {
 		params.ids = resultSet.map(row => row.id);
 
 		const response = await getTransactionsByIDs(params.ids);
-		if (response.data) {
-			const voteMultiArray = response.data
+		if (response) {
+			const voteMultiArray = response
 				.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));
 			let allVotes = [];
 			voteMultiArray
@@ -120,7 +120,6 @@ const getVoters = async params => {
 				}))));
 			votes.data.votes = allVotes;
 		}
-		if (response.meta) votes.meta = response.meta;
 	}
 
 	votes.data.votes = await BluebirdPromise.map(

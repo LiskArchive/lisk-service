@@ -60,7 +60,7 @@ module.exports = [
 					});
 				}, 500);
 			});
-			return request('https://some.data.source.com');
+			return request();
 		},
 	},
 	{
