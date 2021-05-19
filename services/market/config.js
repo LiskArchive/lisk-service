@@ -21,24 +21,6 @@ const config = {
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
-/**
- * Database config
- */
-config.db = {
-    defaults: {
-        db: 'redis',
-        directory: 'db_data',
-        adapter: 'leveldb',
-        primaryKey: 'id',
-    },
-    collections: {
-        binance_prices: {
-            name: 'binance_prices',
-            primaryKey: 'code',
-            adapter: 'memory',
-        },
-    },
-};
 // Logging
 config.log = {};
 /**

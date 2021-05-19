@@ -76,7 +76,7 @@ setTimeout(() => {
 	* Enable particular console.log to see different outputs
 	* Consider `jq` as a JSON parser
 	*/
-	const results = [];
+	// const results = [];
 
 	// const response1 = await request('request', { method: 'get.blocks', params: { limit: 100 } });
 
@@ -99,7 +99,7 @@ setTimeout(() => {
 	const response2 = await request('request', requests);
 	// console.log(JSON.stringify(response2));
 
-	results.push(response2);
+	// results.push(response2);
 	// console.log(JSON.stringify(results));
 
 	// This returns combined result

@@ -85,6 +85,15 @@ pipeline {
 				}
 			}
 		}
+		stage('Perform unit tests') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				nvm(getNodejsVersion()) {
+					dir('./framework') { sh "npm run test:unit" }
+					dir('./services/core') { sh "npm run test:unit" }
+				}
+			}
+		}
 		stage('Run microservices') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
@@ -95,13 +104,11 @@ pipeline {
 				// waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
 			}
 		}
-		stage('Perform unit tests') {
+		stage('Perform functional tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./framework') { sh "npm run test:unit" }
-					dir('./services/core') { sh "npm run test:unit" }
-					dir('./services/market') { sh "npm run test:unit" }
+					dir('./services/market') { sh "npm run test:functional" }
 				}
 			}
 		}

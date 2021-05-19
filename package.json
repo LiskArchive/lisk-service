@@ -39,7 +39,5 @@
     "eslint-plugin-jest": "^23.16.0",
     "eslint-plugin-mocha": "^7.0.1"
   },
-  "dependencies": {
-    "ioredis": "^4.27.2"
-  }
+  "dependencies": {}
 }

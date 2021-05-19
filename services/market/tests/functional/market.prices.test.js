@@ -15,7 +15,7 @@
  *
  */
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
-
+const Joi = require('joi');
 const { ServiceBroker } = require('moleculer');
 
 const broker = new ServiceBroker({
@@ -25,6 +25,14 @@ const broker = new ServiceBroker({
     logger: console,
 });
 
+const marketPriceItemSchema = Joi.object({
+    code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
+    from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+    to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+    rate: Joi.string().required(),
+    updateTimestamp: Joi.number().integer().positive().required(),
+    sources: Joi.array().items(Joi.string().required()).required(),
+}).required();
 
 describe('Test market prices', () => {
     beforeAll(() => broker.start());
@@ -35,17 +43,7 @@ describe('Test market prices', () => {
             const result = await broker.call('market.prices', {});
             expect(result.data.length).toBeGreaterThanOrEqual(1);
             expect(result.data).toBeInstanceOf(Array);
-            result.data.forEach(price => {
-                expect(price).toEqual(expect.objectContaining({
-                    code: expect.any(String),
-                    from: expect.any(String),
-                    rate: expect.any(String),
-                    to: expect.any(String),
-                    updateTimestamp: expect.any(Number),
-                    sources: expect.any(Array),
-
-                }));
-            });
+            result.data.forEach(price => marketPriceItemSchema.validate(price));
             expect(result.meta).toHaveProperty('count');
         });
     });
