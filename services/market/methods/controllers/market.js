@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { ServiceUnavailableException } = require('../exceptions');
+const { ServiceUnavailableException } = require('../../shared/exceptions');
+
+const marketService = require('../../shared/market');
 
 const getMarketPrices = async () => {
 	const marketPrices = {
@@ -21,12 +23,18 @@ const getMarketPrices = async () => {
 		meta: {},
 	};
 
-	// TODO: Place holder for actual implementation
-	// const response = await getMarketPricesFromCache();
+	try {
+		const response = await marketService.getMarketPrices();
+		if (response.data) marketPrices.data = response.data;
+		if (response.meta) marketPrices.meta = response.meta;
 
-	if (!marketPrices.data.length) throw new ServiceUnavailableException('Service is not ready yet');
-
-	return marketPrices;
+		return marketPrices;
+	} catch (err) {
+		let status;
+		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 module.exports = {

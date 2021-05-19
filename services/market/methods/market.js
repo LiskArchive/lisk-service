@@ -13,17 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const marketPrice = require('./mappings/marketPrice');
+const {
+	getMarketPrices,
+} = require('./controllers/market');
 
-module.exports = {
-	type: 'moleculer',
-	method: 'market.prices',
-	params: {},
-	definition: {
-		data: ['data', marketPrice],
-		meta: {
-			count: '=,number',
-		},
-		links: {},
+module.exports = [
+	{
+		name: 'prices',
+		controller: getMarketPrices,
+		params: {},
 	},
-};
+];

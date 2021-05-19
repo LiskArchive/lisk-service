@@ -13,17 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const marketPrice = require('./mappings/marketPrice');
+class ServiceUnavailableException extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ServiceUnavailableException';
+    }
+}
 
-module.exports = {
-	type: 'moleculer',
-	method: 'market.prices',
-	params: {},
-	definition: {
-		data: ['data', marketPrice],
-		meta: {
-			count: '=,number',
-		},
-		links: {},
-	},
-};
+module.exports = ServiceUnavailableException;

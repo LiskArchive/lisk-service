@@ -13,14 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getMarketPrices,
-} = require('./controllers/market');
+class InvalidParamsException extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'InvalidParamsException';
+    }
+}
 
-module.exports = [
-	{
-		name: 'market.prices',
-		controller: getMarketPrices,
-		params: {},
-	},
-];
+module.exports = InvalidParamsException;
