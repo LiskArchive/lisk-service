@@ -91,7 +91,7 @@ const getExchangeratesapiPricesFromDB = async () => {
 const reloadPricesFromExchangerateapi = async () => {
     const pricesFromCache = await getExchangeratesapiPricesFromDB();
 
-    // Check if prices expired or
+    // Check if prices exists in cache
     if (pricesFromCache.includes(undefined)) {
         const tickers = await fetchAllMarketTickers();
         const filteredTickers = filterTickers(tickers);
