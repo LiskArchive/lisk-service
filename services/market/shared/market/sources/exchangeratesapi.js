@@ -99,7 +99,7 @@ const reloadPricesFromExchangerateapi = async () => {
 
         // Serialize individual price item and write to the cache
         await BluebirdPromise.all(transformedPrices
-            .map(item => binanceCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), 24 * 60 * 60)));
+            .map(item => binanceCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), 24 * 60 * 60 * 1000)));
     }
 };
 
