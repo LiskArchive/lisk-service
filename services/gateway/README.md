@@ -1,8 +1,8 @@
 # Lisk Service Gateway
 
-The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides users with a central point of data access that never breaks existing application compatibility.
+The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never disrupts or breaks the existing application compatibility.
 
-> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
 ## Installation
 
@@ -22,9 +22,9 @@ npm install # install required Node.js modules
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations.
+To configure the different components, there are a number of environment variables the user can define in order to customize the configurations.
 
-List of the most commonly used environment variables:
+A list of the most commonly used environment variables can be seen below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis)
 - `JSON_RPC_STRICT_MODE`: Makes JSON-RPC require a valid JSON-RPC 2.0 envelope
@@ -65,7 +65,7 @@ npm start # start the component with running nodes locally
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
 
-If you want to run a production variant of the service use `Docker` or `PM2`. This will automatically recover the process when it fails.
+If you want to run a production variant of the service use `Docker` or `PM2`. In the event whereby the process fails, it will be automatically recovered.
 
 #### Stop
 

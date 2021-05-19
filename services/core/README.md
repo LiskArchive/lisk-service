@@ -2,7 +2,7 @@
 
 The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API.
 
-> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
 ## Installation
 
@@ -24,7 +24,7 @@ npm install # install required Node.js modules
 
 To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations.
 
-List of the most commonly used environment variables:
+A list of the most commonly used environment variables can be seen below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis)
 - `SERVICE_CORE_MYSQL`: URL of the local Lisk Service Core database
@@ -33,8 +33,8 @@ List of the most commonly used environment variables:
 - `LISK_STATIC`: URL of Lisk static assets
 - `GEOIP_JSON`: URL of GeoIP server
 - `ENABLE_TRANSACTION_STATS`: Enables global transaction statistics
-- `ENABLE_FEE_ESTIMATOR_QUICK`: Enabled fee estimator (quick algorithm)
-- `ENABLE_FEE_ESTIMATOR_FULL`: Enabled fee estimator (full blockchain analysis)
+- `ENABLE_FEE_ESTIMATOR_QUICK`: Enables the fee estimator (quick algorithm)
+- `ENABLE_FEE_ESTIMATOR_FULL`: Enables the fee estimator (full blockchain analysis)
 
 The variables listed above can be overridden globally by using global variables.
 
@@ -45,8 +45,8 @@ export LISK_CORE_HTTP="http://localhost:4000" # Set Lisk node port to the given 
 ### Example
 
 ```bash
-# Run local instance with a local core node, MySQL and Redis
-# Also enable transaction statistics for the last 40 days
+# Run a local instance with a local core node, MySQL and Redis
+# This also enables the transaction statistics for the previous 40 days
 LISK_CORE_WS="ws://localhost:4001" \
 SERVICE_CORE_MYSQL="mysql://lisk:password@localhost:3306/lisk" \
 SERVICE_CORE_REDIS="redis://localhost:6379/7" \
@@ -64,9 +64,9 @@ cd lisk-service/components/core # move into root folder of the core component
 npm start # start the component with running nodes locally
 ```
 
-Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
+Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.
 
-If you want to run a production variant of the service use `Docker` or `PM2`. This will automatically recover the process when it fails.
+If you want to run a production variant of the service use `Docker` or `PM2`. In the event whereby the process fails, it will be automatically recovered.
 
 #### Stop
 

@@ -2,7 +2,7 @@
 
 The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
 
-> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes running all microservices at once.
+> Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
 ## Installation
 
@@ -33,7 +33,7 @@ cd lisk-service/services/template # move into root folder of the template compon
 npm start # start the component
 ```
 
-Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
+Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.
 
 Once the process is verified as running correctly, `CTRL+C` and start the process with `PM2`. This will fork the process into the background and automatically recover the process if it fails.
 
