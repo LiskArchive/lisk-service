@@ -104,6 +104,14 @@ pipeline {
 				// waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
 			}
 		}
+		stage('Perform functional tests') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				nvm(getNodejsVersion()) {
+					dir('./services/market') { sh "npm run test:functional" }
+				}
+			}
+		}
 		stage('Perform integration tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
