@@ -21,28 +21,42 @@ const requestLib = HTTP.request;
 const logger = Logger();
 
 const config = require('../../../config.js');
-const { symbolMap } = require('./constants/exchangeratesapi.js');
 
 const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
 
 const apiEndpoint = config.endpoints.exchangeratesapi;
 const accessKey = config.access_key.exchangeratesapi;
 
-const basePrices = ['EUR', 'USD', 'GBP', 'CHF', 'BTC', 'RUB', 'JPY'];
+const currencies = ['EUR', 'USD', 'CHF', 'BTC'];
+
+const symbolMap = {
+    EUR_USD: 'EURUSD',
+    EUR_CHF: 'EURCHF',
+    EUR_BTC: 'EURBTC',
+
+    USD_EUR: 'USDEUR',
+    USD_CHF: 'USDCHF',
+    USD_BTC: 'USDBTC',
+
+    CHF_USD: 'CHFUSD',
+    CHF_EUR: 'CHFEUR',
+    CHF_BTC: 'CHFBTC',
+
+    BTC_USD: 'BTCUSD',
+    BTC_CHF: 'BTCCHF',
+    BTC_EUR: 'BTCEUR',
+};
 
 const fetchAllMarketTickers = async () => {
     try {
-        const allMarketPrices = [];
-        await BluebirdPromise.map(
-            basePrices,
-            async (basePrice) => {
-                const response = await requestLib(`${apiEndpoint}/latest?access_key=${accessKey}&base=${basePrice}`);
-                if (response) allMarketPrices.push(response.data);
-            },
-            { concurrency: basePrices.length },
+        const allMarketTickers = {};
+        await BluebirdPromise.all(
+            currencies.map(async (baseCurrency) => {
+                const response = await requestLib(`${apiEndpoint}/latest?access_key=${accessKey}&base=${baseCurrency}&symbols=${currencies.join(',')}`);
+                if (response) allMarketTickers[baseCurrency] = response.data.rates;
+            }),
         );
-
-        return allMarketPrices;
+        return allMarketTickers;
     } catch (err) {
         logger.error(err.message);
         logger.error(err.stack);
@@ -51,13 +65,9 @@ const fetchAllMarketTickers = async () => {
 };
 
 const filterTickers = (tickers) => {
-    const filteredTickers = [];
-    tickers.map(ticker => {
-        const transformData = Object.entries(ticker.rates).filter(([k]) => basePrices.includes(k));
-        transformData.forEach(acc => filteredTickers.push({ symbol: `${ticker.base}_${acc[0]}`, price: acc[1] }));
-        return transformData;
-    });
-    return filteredTickers;
+    const [transformedTickers] = Object.entries(tickers)
+        .map(([k, v]) => Object.keys(v).map(value => value = { symbol: `${k}_${value}`, price: v[value] }));
+    return transformedTickers;
 };
 
 const standardizeTickers = (tickers) => {
