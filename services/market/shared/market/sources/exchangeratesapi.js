@@ -33,18 +33,6 @@ const symbolMap = {
     EUR_USD: 'EURUSD',
     EUR_CHF: 'EURCHF',
     EUR_BTC: 'EURBTC',
-
-    USD_EUR: 'USDEUR',
-    USD_CHF: 'USDCHF',
-    USD_BTC: 'USDBTC',
-
-    CHF_USD: 'CHFUSD',
-    CHF_EUR: 'CHFEUR',
-    CHF_BTC: 'CHFBTC',
-
-    BTC_USD: 'BTCUSD',
-    BTC_CHF: 'BTCCHF',
-    BTC_EUR: 'BTCEUR',
 };
 
 const fetchAllMarketTickers = async () => {
@@ -86,28 +74,35 @@ const standardizeTickers = (tickers) => {
     return transformedPrices;
 };
 
-const reloadPricesFromExchangerateapi = async () => {
-    const tickers = await fetchAllMarketTickers();
-    const filteredTickers = filterTickers(tickers);
-    const transformedPrices = standardizeTickers(filteredTickers);
-
-    // Serialize individual price item and write to the cache
-    await BluebirdPromise.all(transformedPrices
-        .map(item => binanceCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item))));
-};
-
 const getExchangeratesapiPricesFromDB = async () => {
     // Read individual price item from cache and deserialize
     const prices = await BluebirdPromise.map(
         Object.getOwnPropertyNames(symbolMap),
         async (itemCode) => {
             const serializedPrice = await binanceCache.get(`exchangeratesapi_${itemCode}`);
-            return JSON.parse(serializedPrice);
+            if (serializedPrice) return JSON.parse(serializedPrice);
+            return serializedPrice;
         },
         { concurrency: Object.getOwnPropertyNames(symbolMap).length },
     );
     return prices;
 };
+
+const reloadPricesFromExchangerateapi = async () => {
+    const pricesFromCache = await getExchangeratesapiPricesFromDB();
+
+    // Check if prices expired or
+    if (pricesFromCache.includes(undefined)) {
+        const tickers = await fetchAllMarketTickers();
+        const filteredTickers = filterTickers(tickers);
+        const transformedPrices = standardizeTickers(filteredTickers);
+
+        // Serialize individual price item and write to the cache
+        await BluebirdPromise.all(transformedPrices
+            .map(item => binanceCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), 24 * 60 * 60)));
+    }
+};
+
 
 module.exports = {
     reloadPricesFromExchangerateapi,

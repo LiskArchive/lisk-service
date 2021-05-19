@@ -76,6 +76,6 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 // Api keys to access apis
 config.access_key = {};
-config.access_key.exchangeratesapi = '';
+config.access_key.exchangeratesapi = 'e27c981843d2d08916cf4e3864f5a92b';
 
 module.exports = config;
