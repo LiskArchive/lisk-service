@@ -47,7 +47,7 @@ node app.js
 ```
 
 ```bash
-# Run local instance with the RPC API in a strict mode and HTTP
+# Run a local instance with the RPC API in a strict mode and using HTTP
 ENABLE_HTTP_API="http-status,http-version2" \
 ENABLE_WS_API="blockchain,rpc-v2" \
 JSON_RPC_STRICT_MODE="true" \
@@ -59,7 +59,7 @@ node app.js
 ### Start
 
 ```bash
-cd lisk-service/components/gateway # move into root folder of the core component
+cd lisk-service/components/gateway # navigate into the root folder of the core component
 npm start # start the component with running nodes locally
 ```
 
