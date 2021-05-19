@@ -25,7 +25,7 @@ const broker = new ServiceBroker({
     logger: console,
 });
 
-const marketPriceSchema = Joi.object({
+const marketPriceItemSchema = Joi.object({
     code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
     from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
     to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
@@ -43,7 +43,7 @@ describe('Test market prices', () => {
             const result = await broker.call('market.prices', {});
             expect(result.data.length).toBeGreaterThanOrEqual(1);
             expect(result.data).toBeInstanceOf(Array);
-            result.data.forEach(price => marketPriceSchema.validate(price));
+            result.data.forEach(price => marketPriceItemSchema.validate(price));
             expect(result.meta).toHaveProperty('count');
         });
     });
