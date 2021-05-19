@@ -54,7 +54,7 @@ const standardizeTickers = (tickers) => {
             code: k,
             from,
             to,
-            rate: currentTicker.o,
+            rate: currentTicker.c[0],
             updateTimestamp: Math.floor(Date.now() / 1000),
             sources: ['kraken'],
         };
