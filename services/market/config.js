@@ -60,6 +60,7 @@ config.log.stdout = process.env.SERVICE_LOG_STDOUT || 'true';
  * External endpoints
  */
 config.endpoints.binance = 'https://api.binance.com/api/v3';
+config.endpoints.exchangeratesapi = 'http://api.exchangeratesapi.io/v1';
 config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
 
 /*
@@ -72,5 +73,9 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
+
+// Api keys to access apis
+config.access_key = {};
+config.access_key.exchangeratesapi = '';
 
 module.exports = config;

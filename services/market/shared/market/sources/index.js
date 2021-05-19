@@ -18,7 +18,15 @@ const {
     getBinancePricesFromDB,
 } = require('./binance');
 
+const {
+    reloadPricesFromExchangerateapi,
+    getExchangeratesapiPricesFromDB,
+} = require('./exchangeratesapi');
+
 module.exports = {
     reloadPricesFromBinance,
     getBinancePricesFromDB,
+
+    reloadPricesFromExchangerateapi,
+    getExchangeratesapiPricesFromDB,
 };
