@@ -24,10 +24,6 @@
   },
   "scripts": {
     "start": "node app.js",
-    "start:local": "LISK_CORE_HTTP='http://127.0.0.1:4000/api' LISK_CORE_WS='ws://127.0.0.1:4000' node app.js",
-    "start:mock": "LISK_CORE_HTTP='http://127.0.0.1:9006/api' LISK_CORE_WS='ws://127.0.0.1:9006' node app.js",
-    "start:testnet": "LISK_CORE_HTTP='http://testnet.lisk.io:7000/api' LISK_CORE_WS='ws://testnet.lisk.io:7000' node app.js",
-    "start:mainnet": "LISK_CORE_HTTP='http://explorer.lisk.io:8000/api' LISK_CORE_WS='ws://explorer.lisk.io:8000' node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:unit",
     "test:unit": "./node_modules/.bin/jest --config=jest.config.js --detectOpenHandles --forceExit"
