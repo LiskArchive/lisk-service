@@ -13,14 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const InvalidParamsException = require('./InvalidParamsException');
-const NotFoundException = require('./NotFoundException');
-const ServiceUnavailableException = require('./ServiceUnavailableException');
-const ValidationException = require('./ValidationException');
+const marketPrice = require('./mappings/marketPrice');
 
 module.exports = {
-    InvalidParamsException,
-    NotFoundException,
-    ServiceUnavailableException,
-    ValidationException,
+	type: 'moleculer',
+	method: 'core.market.prices',
+	params: {},
+	definition: {
+		data: ['data', marketPrice],
+		meta: {
+			count: '=,number',
+		},
+		links: {},
+	},
 };

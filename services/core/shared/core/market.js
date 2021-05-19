@@ -13,14 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const InvalidParamsException = require('./InvalidParamsException');
-const NotFoundException = require('./NotFoundException');
-const ServiceUnavailableException = require('./ServiceUnavailableException');
-const ValidationException = require('./ValidationException');
+const { ServiceUnavailableException } = require('../exceptions');
+
+const getMarketPrices = async () => {
+	const marketPrices = {
+		data: [],
+		meta: {},
+	};
+
+	// TODO: Place holder for actual implementation
+	// const response = await getMarketPricesFromCache();
+
+	if (!marketPrices.data.length) throw new ServiceUnavailableException('Service is not ready yet');
+
+	return marketPrices;
+};
 
 module.exports = {
-    InvalidParamsException,
-    NotFoundException,
-    ServiceUnavailableException,
-    ValidationException,
+	getMarketPrices,
 };

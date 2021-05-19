@@ -13,14 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const InvalidParamsException = require('./InvalidParamsException');
-const NotFoundException = require('./NotFoundException');
-const ServiceUnavailableException = require('./ServiceUnavailableException');
-const ValidationException = require('./ValidationException');
+class ServiceUnavailableException extends Error {
+    constructor(message) {
+        super(message);
+        this.name = 'ServiceUnavailableException';
+    }
+}
 
-module.exports = {
-    InvalidParamsException,
-    NotFoundException,
-    ServiceUnavailableException,
-    ValidationException,
-};
+module.exports = ServiceUnavailableException;

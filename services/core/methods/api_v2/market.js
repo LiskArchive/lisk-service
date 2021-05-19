@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const InvalidParamsException = require('./InvalidParamsException');
-const NotFoundException = require('./NotFoundException');
-const ServiceUnavailableException = require('./ServiceUnavailableException');
-const ValidationException = require('./ValidationException');
+const {
+	getMarketPrices,
+} = require('./controllers/market');
 
-module.exports = {
-    InvalidParamsException,
-    NotFoundException,
-    ServiceUnavailableException,
-    ValidationException,
-};
+module.exports = [
+	{
+		name: 'market.prices',
+		controller: getMarketPrices,
+		params: {},
+	},
+];

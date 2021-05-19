@@ -85,6 +85,10 @@ const {
 } = require('./votes');
 
 const {
+	getMarketPrices,
+} = require('./market');
+
+const {
 	get,
 	validateAddress,
 	validatePublicKey,
@@ -172,4 +176,5 @@ module.exports = {
 	init,
 	indexMissingBlocks,
 	getGenesisHeight,
+	getMarketPrices,
 };

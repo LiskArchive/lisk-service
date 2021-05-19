@@ -58,6 +58,15 @@ const serverErrorSchema = {
 	},
 };
 
+const serverUnavailableSchema = {
+	jsonrpc: jsonRPCSchema,
+	id: Joi.alternatives(Joi.number(), Joi.string(), null).required(),
+	error: {
+		code: Joi.number().required().equal(JSON_RPC.SERVICE_UNAVAILABLE[0]),
+		message: Joi.string().required(),
+	},
+};
+
 const jsonRpcEnvelopeSchema = {
 	jsonrpc: jsonRPCSchema,
 	result: Joi.object().required(),
@@ -82,4 +91,5 @@ module.exports = {
 	jsonRpcListSchema,
 	emptyResponseSchema: Joi.object(emptyResponseSchema).required(),
 	serverErrorSchema: Joi.object(serverErrorSchema).required(),
+	serverUnavailableSchema: Joi.object(serverUnavailableSchema).required(),
 };

@@ -13,14 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const InvalidParamsException = require('./InvalidParamsException');
-const NotFoundException = require('./NotFoundException');
-const ServiceUnavailableException = require('./ServiceUnavailableException');
-const ValidationException = require('./ValidationException');
+import Joi from 'joi';
+
+const marketPriceSchema = {
+	code: Joi.string().required(),
+	from: Joi.string().required(),
+	rate: Joi.string().required(),
+	to: Joi.string().required(),
+	updateTimestamp: Joi.number().integer().positive().required(),
+	sources: Joi.array().items(Joi.string().required()).required(),
+};
 
 module.exports = {
-    InvalidParamsException,
-    NotFoundException,
-    ServiceUnavailableException,
-    ValidationException,
+	marketPriceSchema: Joi.object(marketPriceSchema).required(),
 };
