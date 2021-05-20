@@ -14,44 +14,44 @@
  *
  */
 const mapTransaction = transaction => {
-    const changesByType = {
-        8: {
-            asset: {
-                amount: transaction.amount,
-                recipientId: transaction.recipientId,
-                data: transaction.asset.data,
-            },
-        },
-        9: {
-            asset: transaction.asset.signature,
-        },
-        10: {
-            asset: transaction.asset.delegate,
-        },
-        11: {
-            senderPublicKey: transaction.recipientPublicKey,
-        },
-        12: {
-            asset: transaction.asset.multisignature,
-        },
-    };
+	const changesByType = {
+		8: {
+			asset: {
+				amount: transaction.amount,
+				recipientId: transaction.recipientId,
+				data: transaction.asset.data,
+			},
+		},
+		9: {
+			asset: transaction.asset.signature,
+		},
+		10: {
+			asset: transaction.asset.delegate,
+		},
+		11: {
+			senderPublicKey: transaction.recipientPublicKey,
+		},
+		12: {
+			asset: transaction.asset.multisignature,
+		},
+	};
 
-    return ({
-        ...transaction,
-        ...changesByType[transaction.type] || {},
-    });
+	return ({
+		...transaction,
+		...changesByType[transaction.type] || {},
+	});
 };
 
 const responseMappers = {
-    transactions: response => response.map(mapTransaction),
+	transactions: response => response.map(mapTransaction),
 };
 
 const mapToOriginal = (response, type) => {
-    const mapper = responseMappers[type];
-    if (mapper) response = mapper(response);
-    return response;
+	const mapper = responseMappers[type];
+	if (mapper) response = mapper(response);
+	return response;
 };
 
 module.exports = {
-    mapToOriginal,
+	mapToOriginal,
 };

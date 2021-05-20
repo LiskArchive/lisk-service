@@ -14,24 +14,24 @@
  *
  */
 module.exports = {
-    primaryKey: 'height',
-    schema: {
-        id: { type: 'string' },
-        height: { type: 'integer' },
-        timestamp: { type: 'integer' },
-        generatorPublicKey: { type: 'string' },
-        size: { type: 'integer' },
-        reward: { type: 'bigInteger' },
-        isFinal: { type: 'boolean' },
-    },
-    indexes: {
-        id: { type: 'key' },
-        height: { type: 'range' },
-        timestamp: { type: 'range' },
-        generatorPublicKey: { type: 'key' },
-        size: { type: 'range' },
-        isFinal: { type: 'key' },
-        reward: { type: 'range' },
-    },
-    purge: {},
+	primaryKey: 'height',
+	schema: {
+		id: { type: 'string' },
+		height: { type: 'integer' },
+		timestamp: { type: 'integer' },
+		generatorPublicKey: { type: 'string' },
+		size: { type: 'integer' },
+		reward: { type: 'bigInteger' },
+		isFinal: { type: 'boolean' },
+	},
+	indexes: {
+		id: { type: 'key' },
+		height: { type: 'range' },
+		timestamp: { type: 'range' },
+		generatorPublicKey: { type: 'key' },
+		size: { type: 'range' },
+		isFinal: { type: 'key' },
+		reward: { type: 'range' },
+	},
+	purge: {},
 };

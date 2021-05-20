@@ -18,76 +18,76 @@
 const signals = require('../../shared/signals');
 
 describe('Signals tests', () => {
-    describe('signal.dispatch()', () => {
-        const signal = signals.get('dispatchEvent');
-        it('Dispatch and add signal data', () => {
-            signal.dispatch('Event is dispatched');
-            signal.add((data) => {
-                expect(data.toEqual('Event is dispatched'));
-            });
-        });
+	describe('signal.dispatch()', () => {
+		const signal = signals.get('dispatchEvent');
+		it('Dispatch and add signal data', () => {
+			signal.dispatch('Event is dispatched');
+			signal.add((data) => {
+				expect(data.toEqual('Event is dispatched'));
+			});
+		});
 
-        it.todo('Failing test case for dispatched event');
-    });
+		it.todo('Failing test case for dispatched event');
+	});
 
-    describe('signal.add()', () => {
-        const signal = signals.get('addEvent');
-        const testFunc = () => { };
+	describe('signal.add()', () => {
+		const signal = signals.get('addEvent');
+		const testFunc = () => { };
 
-        it('Add valid listener to signal.add()', () => {
-            // initially 0 listeners
-            expect(signal.getNumListeners()).toBe(0);
+		it('Add valid listener to signal.add()', () => {
+			// initially 0 listeners
+			expect(signal.getNumListeners()).toBe(0);
 
-            // Add 1 listener to signals
-            signal.add(testFunc);
-            expect(signal.getNumListeners()).toBe(1);
-        });
+			// Add 1 listener to signals
+			signal.add(testFunc);
+			expect(signal.getNumListeners()).toBe(1);
+		});
 
-        it('Add invalid listener to signal.add() throws an error', () => {
-            expect(() => signal.add()).toThrow();
-        });
-    });
+		it('Add invalid listener to signal.add() throws an error', () => {
+			expect(() => signal.add()).toThrow();
+		});
+	});
 
-    describe('signal.dispose()', () => {
-        const signal = signals.get('disposeEvent');
-        it('Dispose signal', () => {
-            signal.dispatch('Event is dispatched');
-            signal.add((data) => {
-                expect(data.toEqual('Event is dispatched'));
-            });
+	describe('signal.dispose()', () => {
+		const signal = signals.get('disposeEvent');
+		it('Dispose signal', () => {
+			signal.dispatch('Event is dispatched');
+			signal.add((data) => {
+				expect(data.toEqual('Event is dispatched'));
+			});
 
-            signal.dispose();
-            expect(() => signal.getNumListeners()).toThrow();
-            expect(() => signal.add(() => { })).toThrow();
-            expect(() => signal.dispatch()).toThrow();
-        });
-    });
+			signal.dispose();
+			expect(() => signal.getNumListeners()).toThrow();
+			expect(() => signal.add(() => { })).toThrow();
+			expect(() => signal.dispatch()).toThrow();
+		});
+	});
 
-    describe('signal.remove()', () => {
-        const signal = signals.get('removeEvent');
-        const testFunc = () => { };
+	describe('signal.remove()', () => {
+		const signal = signals.get('removeEvent');
+		const testFunc = () => { };
 
-        it('Remove valid listener', () => {
-            signal.add(testFunc);
-            expect(signal.getNumListeners()).toBe(1);
+		it('Remove valid listener', () => {
+			signal.add(testFunc);
+			expect(signal.getNumListeners()).toBe(1);
 
-            signal.remove(testFunc);
-            expect(signal.getNumListeners()).toBe(0);
-        });
+			signal.remove(testFunc);
+			expect(signal.getNumListeners()).toBe(0);
+		});
 
-        it('Remove all listeners', () => {
-            signal.add(testFunc);
-            expect(signal.getNumListeners()).toBe(1);
+		it('Remove all listeners', () => {
+			signal.add(testFunc);
+			expect(signal.getNumListeners()).toBe(1);
 
-            signal.add(() => { });
-            expect(signal.getNumListeners()).toBe(2);
+			signal.add(() => { });
+			expect(signal.getNumListeners()).toBe(2);
 
-            signal.removeAll();
-            expect(signal.getNumListeners()).toBe(0);
-        });
+			signal.removeAll();
+			expect(signal.getNumListeners()).toBe(0);
+		});
 
-        it('Remove invalid listener should throws an error', () => {
-            expect(() => signal.remove()).toThrow();
-        });
-    });
+		it('Remove invalid listener should throws an error', () => {
+			expect(() => signal.remove()).toThrow();
+		});
+	});
 });

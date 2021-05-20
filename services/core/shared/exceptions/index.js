@@ -19,8 +19,8 @@ const ServiceUnavailableException = require('./ServiceUnavailableException');
 const ValidationException = require('./ValidationException');
 
 module.exports = {
-    InvalidParamsException,
-    NotFoundException,
-    ServiceUnavailableException,
-    ValidationException,
+	InvalidParamsException,
+	NotFoundException,
+	ServiceUnavailableException,
+	ValidationException,
 };

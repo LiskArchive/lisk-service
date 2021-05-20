@@ -16,123 +16,123 @@
 const events = require('./events');
 
 const {
-    init,
-    getBlocks,
-    deleteBlock,
-    getGenesisHeight,
-    indexMissingBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
+	init,
+	getBlocks,
+	deleteBlock,
+	getGenesisHeight,
+	indexMissingBlocks,
+	updateFinalizedHeight,
+	getFinalizedHeight,
 } = require('./blocks');
 
 const {
-    getAccounts,
-    getDelegates,
-    getMultisignatureGroups,
-    getMultisignatureMemberships,
-    validateAddress,
+	getAccounts,
+	getDelegates,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
+	validateAddress,
 } = require('./accounts');
 
 const {
-    getNetworkStatus,
+	getNetworkStatus,
 } = require('./network');
 
 const {
-    getTransactions,
-    getTransactionsByBlockId,
+	getTransactions,
+	getTransactionsByBlockId,
 } = require('./transactions');
 
 const {
-    postTransactions,
+	postTransactions,
 } = require('./postTransactions');
 
 const {
-    getTransactionsSchemas,
+	getTransactionsSchemas,
 } = require('./transactionsSchemas');
 
 const {
-    getForgers,
+	getForgers,
 } = require('./forgers');
 const {
-    peerStates,
-    getPeers,
+	peerStates,
+	getPeers,
 } = require('./peers');
 
 const {
-    getCachedAccountByAddress,
-    getCachedAccountByPublicKey,
-    getCachedAccountBySecondPublicKey,
-    getCachedAccountByUsername,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
 } = require('./coreCache');
 
 const {
-    getEstimateFeeByteForBatch,
+	getEstimateFeeByteForBatch,
 } = require('./dynamicFees');
 
 const {
-    getVotes,
+	getVotes,
 } = require('./votes');
 
 const {
-    getVoters,
+	getVoters,
 } = require('./voters');
 
 const {
-    getPendingTransactions,
-    loadAllPendingTransactions,
+	getPendingTransactions,
+	loadAllPendingTransactions,
 } = require('./pendingTransactions');
 
 const nop = () => { };
 
 module.exports = {
-    ...require('../sdk_v4'),
-    ...require('./coreCache'),
+	...require('../sdk_v4'),
+	...require('./coreCache'),
 
-    events,
+	events,
 
-    init,
-    getBlocks,
-    deleteBlock,
-    getGenesisHeight,
-    indexMissingBlocks,
-    updateFinalizedHeight,
-    getFinalizedHeight,
+	init,
+	getBlocks,
+	deleteBlock,
+	getGenesisHeight,
+	indexMissingBlocks,
+	updateFinalizedHeight,
+	getFinalizedHeight,
 
-    getAccounts,
-    getMultisignatureGroups,
-    getMultisignatureMemberships,
-    validateAddress,
+	getAccounts,
+	getMultisignatureGroups,
+	getMultisignatureMemberships,
+	validateAddress,
 
-    getNetworkStatus,
+	getNetworkStatus,
 
-    getTransactions,
-    getTransactionsByBlockId,
+	getTransactions,
+	getTransactionsByBlockId,
 
-    postTransactions,
+	postTransactions,
 
-    getTransactionsSchemas,
+	getTransactionsSchemas,
 
-    getPendingTransactions,
-    loadAllPendingTransactions,
+	getPendingTransactions,
+	loadAllPendingTransactions,
 
-    peerStates,
-    getPeers,
+	peerStates,
+	getPeers,
 
-    getForgers,
+	getForgers,
 
-    getCachedAccountByAddress,
-    getCachedAccountByPublicKey,
-    getCachedAccountBySecondPublicKey,
-    getCachedAccountByUsername,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
 
-    getDelegates,
+	getDelegates,
 
-    getEstimateFeeByteForBatch,
+	getEstimateFeeByteForBatch,
 
-    getVotes,
+	getVotes,
 
-    getVoters,
+	getVoters,
 
-    getIncomingTxsCount: nop,
-    getOutgoingTxsCount: nop,
+	getIncomingTxsCount: nop,
+	getOutgoingTxsCount: nop,
 };

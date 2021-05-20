@@ -41,9 +41,9 @@ const requestAll = async (fn, params, limit) => {
 					offset: oneRequestLimit * page,
 				},
 			})).then((result) => {
-				result.data.forEach((item) => { data.push(item); });
-				return data;
-			}), Promise.resolve());
+			result.data.forEach((item) => { data.push(item); });
+			return data;
+		}), Promise.resolve());
 		return collection;
 	}
 	return data;

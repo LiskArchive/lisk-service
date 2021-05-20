@@ -22,78 +22,77 @@ const config = require('../../../config.js');
 const requestLib = HTTP.request;
 const logger = Logger();
 
-
 const apiEndpoint = config.endpoints.bittrex;
 
 const bittrexCache = CacheRedis('bittrex', config.endpoints.redis);
 
 const symbolMap = {
-    LSK_BTC: 'LSK-BTC',
-    BTC_USD: 'BTC-USD',
-    BTC_EUR: 'BTC-EUR',
+	LSK_BTC: 'LSK-BTC',
+	BTC_USD: 'BTC-USD',
+	BTC_EUR: 'BTC-EUR',
 };
 
 const fetchAllMarketTickers = async () => {
-    try {
-        const response = await requestLib(`${apiEndpoint}/markets/tickers`);
-        if (typeof response === 'string') return JSON.parse(response).data;
-        return response.data;
-    } catch (err) {
-        logger.error(err.message);
-        logger.error(err.stack);
-        return err;
-    }
+	try {
+		const response = await requestLib(`${apiEndpoint}/markets/tickers`);
+		if (typeof response === 'string') return JSON.parse(response).data;
+		return response.data;
+	} catch (err) {
+		logger.error(err.message);
+		logger.error(err.stack);
+		return err;
+	}
 };
 
 const filterTickers = (tickers) => {
-    const allowedMarketSymbols = Object.values(symbolMap);
-    const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
-    return filteredTickers;
+	const allowedMarketSymbols = Object.values(symbolMap);
+	const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
+	return filteredTickers;
 };
 
 const standardizeTickers = (tickers) => {
-    const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
-        const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
-        const [from, to] = k.split('_');
-        const price = {
-            code: k,
-            from,
-            to,
-            rate: currentTicker.lastTradeRate,
-            updateTimestamp: Math.floor(Date.now() / 1000),
-            sources: ['bittrex'],
-        };
-        return price;
-    });
-    return transformedPrices;
+	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
+		const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
+		const [from, to] = k.split('_');
+		const price = {
+			code: k,
+			from,
+			to,
+			rate: currentTicker.lastTradeRate,
+			updateTimestamp: Math.floor(Date.now() / 1000),
+			sources: ['bittrex'],
+		};
+		return price;
+	});
+	return transformedPrices;
 };
 
 const reloadPricesFromBittrex = async () => {
-    const tickers = await fetchAllMarketTickers();
-    const filteredTickers = filterTickers(tickers);
-    const transformedPrices = standardizeTickers(filteredTickers);
+	const tickers = await fetchAllMarketTickers();
+	const filteredTickers = filterTickers(tickers);
+	const transformedPrices = standardizeTickers(filteredTickers);
 
-    // Serialize individual price item and write to the cache
-    await BluebirdPromise.all(transformedPrices
-        .map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item))));
+	// Serialize individual price item and write to the cache
+	await BluebirdPromise.all(transformedPrices
+		.map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item))));
 
-    return transformedPrices;
+	return transformedPrices;
 };
 
 const getPricesFromBittrex = async () => {
-    // Read individual price item from cache and deserialize
-    const prices = await BluebirdPromise.map(
-        Object.getOwnPropertyNames(symbolMap),
-        async (itemCode) => {
-            const serializedPrice = await bittrexCache.get(`bittrex_${itemCode}`);
-            return JSON.parse(serializedPrice);
-        },
-        { concurrency: Object.getOwnPropertyNames(symbolMap).length },
-    );
-    return prices;
+	// Read individual price item from cache and deserialize
+	const prices = await BluebirdPromise.map(
+		Object.getOwnPropertyNames(symbolMap),
+		async (itemCode) => {
+			const serializedPrice = await bittrexCache.get(`bittrex_${itemCode}`);
+			return JSON.parse(serializedPrice);
+		},
+		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
+	);
+	return prices;
 };
 
 module.exports = {
-    reloadPricesFromBittrex,
-    getPricesFromBittrex,
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
 };

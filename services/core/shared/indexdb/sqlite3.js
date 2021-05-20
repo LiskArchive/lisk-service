@@ -21,107 +21,107 @@ const logger = Logger();
 const connectionPool = {};
 
 const createDb = async (dbDataDir, tableName) => {
-    // TODO: Must be config based
-    const client = 'sqlite3';
+	// TODO: Must be config based
+	const client = 'sqlite3';
 
-    // TODO: Update connection object based on client
-    const connection = { filename: `./${dbDataDir}/${tableName}_db.sqlite3` };
+	// TODO: Update connection object based on client
+	const connection = { filename: `./${dbDataDir}/${tableName}_db.sqlite3` };
 
-    const knex = require('knex')({
-        client,
-        connection,
-        useNullAsDefault: true,
-        log: {
-            warn(message) { logger.warn(message); },
-            error(message) { logger.error(message); },
-            deprecate(message) { logger.deprecate(message); },
-            debug(message) { logger.debug(message); },
-        },
-        migrations: {
-            directory: './shared/database/knex_migrations',
-            loadExtensions: ['.js'],
-        },
-    });
+	const knex = require('knex')({
+		client,
+		connection,
+		useNullAsDefault: true,
+		log: {
+			warn(message) { logger.warn(message); },
+			error(message) { logger.error(message); },
+			deprecate(message) { logger.deprecate(message); },
+			debug(message) { logger.debug(message); },
+		},
+		migrations: {
+			directory: './shared/database/knex_migrations',
+			loadExtensions: ['.js'],
+		},
+	});
 
-    return knex;
+	return knex;
 };
 
 const getDbInstance = async (tableName) => {
-    if (!connectionPool[tableName]) {
-        const dbDataDir = 'db_data';
-        if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
+	if (!connectionPool[tableName]) {
+		const dbDataDir = 'db_data';
+		if (!fs.existsSync(dbDataDir)) fs.mkdirSync(dbDataDir, { recursive: true });
 
-        connectionPool[tableName] = await createDb(dbDataDir, tableName);
-        await connectionPool[tableName].migrate.latest();
-    }
+		connectionPool[tableName] = await createDb(dbDataDir, tableName);
+		await connectionPool[tableName].migrate.latest();
+	}
 
-    const knex = connectionPool[tableName];
+	const knex = connectionPool[tableName];
 
-    const write = async (row) => knex.transaction(async trx => {
-        const inserts = await trx(tableName).insert(row).onConflict(['id']).merge()
-            .transacting(trx);
+	const write = async (row) => knex.transaction(async trx => {
+		const inserts = await trx(tableName).insert(row).onConflict(['id']).merge()
+			.transacting(trx);
 
-        logger.info(`${inserts.length} row inserted/updated in '${tableName}' table`);
-        return inserts;
-    });
+		logger.info(`${inserts.length} row inserted/updated in '${tableName}' table`);
+		return inserts;
+	});
 
-    const writeOnce = async (row) => write(row);
+	const writeOnce = async (row) => write(row);
 
-    const writeBatch = async (rows) => knex.transaction(async trx => {
-        const inserts = await Promise.all(rows.map(row => trx(tableName).insert(row).onConflict(['id']).merge()
-            .transacting(trx)));
+	const writeBatch = async (rows) => knex.transaction(async trx => {
+		const inserts = await Promise.all(rows.map(row => trx(tableName).insert(row).onConflict(['id']).merge()
+			.transacting(trx)));
 
-        logger.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-        return inserts;
-    });
+		logger.info(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+		return inserts;
+	});
 
-    const findAll = async () => knex.select().table(tableName);
+	const findAll = async () => knex.select().table(tableName);
 
-    const find = async (params) => {
-        const whereParams = params.selector;
-        const res = await knex.select().table(tableName).where(whereParams);
-        return res;
-    };
+	const find = async (params) => {
+		const whereParams = params.selector;
+		const res = await knex.select().table(tableName).where(whereParams);
+		return res;
+	};
 
-    const findById = async (id) => {
-        const params = { selector: { id } };
-        return find(params);
-    };
+	const findById = async (id) => {
+		const params = { selector: { id } };
+		return find(params);
+	};
 
-    const findOneByProperty = async (property, value) => {
-        const selector = {};
-        selector[property] = value;
-        return find({ selector });
-    };
+	const findOneByProperty = async (property, value) => {
+		const selector = {};
+		selector[property] = value;
+		return find({ selector });
+	};
 
-    const deleteByProperty = async (property, value) => {
-        const whereParams = {};
-        whereParams[property] = value;
-        return knex(tableName).where(whereParams).del();
-    };
+	const deleteByProperty = async (property, value) => {
+		const whereParams = {};
+		whereParams[property] = value;
+		return knex(tableName).where(whereParams).del();
+	};
 
-    const deleteById = async (id) => deleteByProperty('id', id);
+	const deleteById = async (id) => deleteByProperty('id', id);
 
-    const deleteBatch = async (rows) => {
-        if (rows instanceof Array && rows.length === 0) return null;
-        return knex(tableName).delete().whereIn('id', rows.map(row => row.id));
-    };
+	const deleteBatch = async (rows) => {
+		if (rows instanceof Array && rows.length === 0) return null;
+		return knex(tableName).delete().whereIn('id', rows.map(row => row.id));
+	};
 
-    const getCount = async () => knex(tableName).count({ count: '*' });
+	const getCount = async () => knex(tableName).count({ count: '*' });
 
-    return {
-        write,
-        writeOnce,
-        writeBatch,
-        findAll,
-        findById,
-        find,
-        findOneByProperty,
-        deleteById,
-        deleteBatch,
-        deleteByProperty,
-        getCount,
-    };
+	return {
+		write,
+		writeOnce,
+		writeBatch,
+		findAll,
+		findById,
+		find,
+		findOneByProperty,
+		deleteById,
+		deleteBatch,
+		deleteByProperty,
+		getCount,
+	};
 };
 
 module.exports = getDbInstance;

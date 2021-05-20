@@ -17,38 +17,38 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const {
-    badRequestSchema,
-    goodRequestSchema,
-    metaSchema,
+	badRequestSchema,
+	goodRequestSchema,
+	metaSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-    forgerSchema,
+	forgerSchema,
 } = require('../../../schemas/forger.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api/v2`;
 
 describe('Forgers API', () => {
-    describe('GET /forgers', () => {
-        it('limit = 100 -> ok', async () => {
-            const response = await api.get(`${endpoint}/forgers?limit=100`);
-            expect(response).toMap(goodRequestSchema);
-            expect(response.data).toBeArrayOfSize(100);
-            response.data.map(forger => expect(forger).toMap(forgerSchema));
-            expect(response.meta).toMap(metaSchema);
-        });
+	describe('GET /forgers', () => {
+		it('limit = 100 -> ok', async () => {
+			const response = await api.get(`${endpoint}/forgers?limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(100);
+			response.data.map(forger => expect(forger).toMap(forgerSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
 
-        it('limit = 0 -> 400', async () => {
-            const response = await api.get(`${endpoint}/forgers?limit=0`, 400);
-            expect(response).toMap(badRequestSchema);
-        });
+		it('limit = 0 -> 400', async () => {
+			const response = await api.get(`${endpoint}/forgers?limit=0`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
 
-        it('empty limit -> all forgers', async () => {
-            const response = await api.get(`${endpoint}/forgers?limit=`);
-            expect(response).toMap(goodRequestSchema);
-            response.data.map(forger => expect(forger).toMap(forgerSchema));
-            expect(response.meta).toMap(metaSchema);
-        });
-    });
+		it('empty limit -> all forgers', async () => {
+			const response = await api.get(`${endpoint}/forgers?limit=`);
+			expect(response).toMap(goodRequestSchema);
+			response.data.map(forger => expect(forger).toMap(forgerSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
 });
