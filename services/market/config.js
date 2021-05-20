@@ -38,13 +38,6 @@ config.log.level = process.env.SERVICE_LOG_LEVEL || 'info';
 config.log.console = process.env.SERVICE_LOG_CONSOLE || 'false';
 config.log.stdout = process.env.SERVICE_LOG_STDOUT || 'true';
 
-/**
- * External endpoints
- */
-config.endpoints.binance = 'https://api.binance.com/api/v3';
-config.endpoints.exchangeratesapi = 'http://api.exchangeratesapi.io/v1';
-config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
-
 /*
  * Configurable outputs
  * log.file   - outputs to a file (ie. ./logs/app.log)
@@ -64,5 +57,13 @@ config.access_key.exchangeratesapi = process.env.EXCHANGERATESAPI_API_KEY;
 config.ttl = {
     exchangeratesapi: 24 * 60 * 60 * 100, // miliseconds
 };
+
+/**
+ * External endpoints
+ */
+config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
+config.endpoints.bittrex = 'https://api.bittrex.com/v3';
+config.endpoints.binance = 'https://api.binance.com/api/v3';
+config.endpoints.exchangeratesapi = 'http://api.exchangeratesapi.io/v1';
 
 module.exports = config;

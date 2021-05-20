@@ -19,6 +19,11 @@ const {
 } = require('./binance');
 
 const {
+    reloadPricesFromBittrex,
+    getPricesFromBittrex,
+} = require('./bittrex');
+
+const {
     reloadPricesFromExchangerateapi,
     getExchangeratesapiPricesFromDB,
 } = require('./exchangeratesapi');
@@ -26,6 +31,9 @@ const {
 module.exports = {
     reloadPricesFromBinance,
     getBinancePricesFromDB,
+
+    reloadPricesFromBittrex,
+    getPricesFromBittrex,
 
     reloadPricesFromExchangerateapi,
     getExchangeratesapiPricesFromDB,
