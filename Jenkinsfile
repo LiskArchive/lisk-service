@@ -128,9 +128,9 @@ pipeline {
 			script { echoBanner('Failed to run the pipeline') }
 
 			nvm(getNodejsVersion()) {
-				sh 'pm2 logs lisk-service-gateway --lines=100'
-				sh 'pm2 logs lisk-service-core --lines=100'
-				sh 'pm2 logs lisk-service-market --lines=100'
+				sh 'pm2 logs lisk-service-gateway --lines=100  --nostream'
+				sh 'pm2 logs lisk-service-core --lines=100  --nostream'
+				sh 'pm2 logs lisk-service-market --lines=100  --nostream'
 			}
 		}
 		cleanup {

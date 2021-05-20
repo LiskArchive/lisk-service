@@ -14,27 +14,35 @@
  *
  */
 const {
-    reloadPricesFromBinance,
-    getBinancePricesFromDB,
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
 } = require('./binance');
 
 const {
-    reloadPricesFromBittrex,
-    getPricesFromBittrex,
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
 } = require('./bittrex');
 
 const {
-    reloadPricesFromExchangerateapi,
-    getExchangeratesapiPricesFromDB,
+	reloadPricesFromExchangerateapi,
+	getExchangeratesapiPricesFromDB,
 } = require('./exchangeratesapi');
 
+const {
+	reloadPricesFromKraken,
+	getPricesFromKraken,
+} = require('./kraken');
+
 module.exports = {
-    reloadPricesFromBinance,
-    getBinancePricesFromDB,
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
 
-    reloadPricesFromBittrex,
-    getPricesFromBittrex,
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
 
-    reloadPricesFromExchangerateapi,
-    getExchangeratesapiPricesFromDB,
+	reloadPricesFromExchangerateapi,
+	getExchangeratesapiPricesFromDB,
+
+	reloadPricesFromKraken,
+	getPricesFromKraken,
 };

@@ -19,32 +19,32 @@ const Joi = require('joi');
 const { ServiceBroker } = require('moleculer');
 
 const broker = new ServiceBroker({
-    transporter: 'redis://localhost:6379/0',
-    logLevel: 'info',
-    requestTimeout: 15 * 1000,
-    logger: console,
+	transporter: 'redis://localhost:6379/0',
+	logLevel: 'info',
+	requestTimeout: 15 * 1000,
+	logger: console,
 });
 
 const marketPriceItemSchema = Joi.object({
-    code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
-    from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
-    to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
-    rate: Joi.string().required(),
-    updateTimestamp: Joi.number().integer().positive().required(),
-    sources: Joi.array().items(Joi.string().required()).required(),
+	code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
+	from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+	to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+	rate: Joi.string().required(),
+	updateTimestamp: Joi.number().integer().positive().required(),
+	sources: Joi.array().items(Joi.string().required()).required(),
 }).required();
 
 describe('Test market prices', () => {
-    beforeAll(() => broker.start());
-    afterAll(() => broker.stop());
+	beforeAll(() => broker.start());
+	afterAll(() => broker.stop());
 
-    describe('Connect to client and retrieve market prices', () => {
-        it('call market.prices', async () => {
-            const result = await broker.call('market.prices', {});
-            expect(result.data.length).toBeGreaterThanOrEqual(1);
-            expect(result.data).toBeInstanceOf(Array);
-            result.data.forEach(price => marketPriceItemSchema.validate(price));
-            expect(result.meta).toHaveProperty('count');
-        });
-    });
+	describe('Connect to client and retrieve market prices', () => {
+		it('call market.prices', async () => {
+			const result = await broker.call('market.prices', {});
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data).toBeInstanceOf(Array);
+			result.data.forEach(price => marketPriceItemSchema.validate(price));
+			expect(result.meta).toHaveProperty('count');
+		});
+	});
 });

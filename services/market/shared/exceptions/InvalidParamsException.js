@@ -14,10 +14,10 @@
  *
  */
 class InvalidParamsException extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'InvalidParamsException';
-    }
+	constructor(message) {
+		super(message);
+		this.name = 'InvalidParamsException';
+	}
 }
 
 module.exports = InvalidParamsException;

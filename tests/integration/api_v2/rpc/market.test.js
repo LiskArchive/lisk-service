@@ -20,7 +20,7 @@ const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
 	metaSchema,
-	serverUnavailableSchema,
+	serviceUnavailableSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -44,7 +44,7 @@ describe('Method get.market.prices', () => {
 				expect(result.meta).toMap(metaSchema);
 			} catch (_) {
 				const response = await getMarketPrices({}).catch(e => e);
-				expect(response).toMap(serverUnavailableSchema);
+				expect(response).toMap(serviceUnavailableSchema);
 			}
 		});
 

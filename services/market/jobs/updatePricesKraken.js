@@ -14,20 +14,20 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { reloadPricesFromExchangerateapi } = require('../shared/market/sources');
+const { reloadPricesFromKraken } = require('../shared/market/sources');
 
 module.exports = [
 	{
-		name: 'prices.retrieve.exchangeratesapi',
-		description: 'Fetches up-to-date market prices from exchangeratesapi',
+		name: 'prices.retrieve.kraken',
+		description: 'Fetches up-to-date market prices from Kraken',
 		schedule: '* * * * *', // Every 1 min
 		init: async () => {
-			logger.debug('Initializing market prices');
-			await reloadPricesFromExchangerateapi();
+			logger.debug('Initializing market prices from Kraken');
+			await reloadPricesFromKraken();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from Binance');
-			await reloadPricesFromExchangerateapi();
+			logger.debug('Updating market prices from Kraken');
+			await reloadPricesFromKraken();
 		},
 	},
 ];
