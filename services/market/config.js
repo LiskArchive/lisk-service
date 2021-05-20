@@ -43,6 +43,7 @@ config.log.stdout = process.env.SERVICE_LOG_STDOUT || 'true';
  */
 config.endpoints.binance = 'https://api.binance.com/api/v3';
 config.endpoints.exchangeratesapi = 'http://api.exchangeratesapi.io/v1';
+config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
 
 /*
  * Configurable outputs
@@ -57,6 +58,11 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 // Api keys to access apis
 config.access_key = {};
-config.access_key.exchangeratesapi = 'e27c981843d2d08916cf4e3864f5a92b';
+config.access_key.exchangeratesapi = process.env.EXCHANGERATESAPI_API_KEY;
+
+// Expiry time for redis
+config.ttl = {
+    exchangeratesapi: 24 * 60 * 60 * 100, // miliseconds
+};
 
 module.exports = config;

@@ -8,6 +8,7 @@ services:
     restart: always
     env_file:
       - ./lisk-service/env/common.env
+      - ./lisk-service/env/market.env
 
   redis_core:
     image: redis:5-alpine
