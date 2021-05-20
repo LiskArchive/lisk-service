@@ -14,10 +14,10 @@
  *
  */
 module.exports = {
-    username: '=,string',
-    totalVotesReceived: '=,string',
-    address: '=,string',
-    minActiveHeight: '=,number',
-    isConsensusParticipant: '=,boolean',
-    nextForgingTime: '=,number',
+	username: '=,string',
+	totalVotesReceived: '=,string',
+	address: '=,string',
+	minActiveHeight: '=,number',
+	isConsensusParticipant: '=,boolean',
+	nextForgingTime: '=,number',
 };

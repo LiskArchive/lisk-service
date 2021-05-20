@@ -17,9 +17,9 @@ const { reloadPricesFromBittrex, getPricesFromBittrex } = require('./bittrex');
 const { reloadPricesFromKraken, getPricesFromKraken } = require('./kraken');
 
 module.exports = {
-    reloadPricesFromBittrex,
-    getPricesFromBittrex,
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
 
-    reloadPricesFromKraken,
-    getPricesFromKraken,
+	reloadPricesFromKraken,
+	getPricesFromKraken,
 };

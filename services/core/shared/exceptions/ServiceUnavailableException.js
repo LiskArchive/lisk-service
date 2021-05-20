@@ -14,10 +14,10 @@
  *
  */
 class ServiceUnavailableException extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'ServiceUnavailableException';
-    }
+	constructor(message) {
+		super(message);
+		this.name = 'ServiceUnavailableException';
+	}
 }
 
 module.exports = ServiceUnavailableException;

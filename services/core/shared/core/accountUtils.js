@@ -16,10 +16,10 @@
 const { Utils } = require('lisk-service-framework');
 
 const {
-    getCachedAccountByAddress,
-    getCachedAccountByPublicKey,
-    getCachedAccountBySecondPublicKey,
-    getCachedAccountByUsername,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
 } = require('./compat');
 
 const { getAccounts } = require('./accounts');
@@ -40,122 +40,122 @@ const validatePublicKey = publicKey => isStringType(publicKey) && publicKey.matc
 
 // Lisk Core API functions
 const confirmAddress = async address => {
-    if (!address || typeof address !== 'string') return false;
-    const account = await getCachedAccountByAddress(parseAddress(address));
-    return account && account.address.toUpperCase() === address;
+	if (!address || typeof address !== 'string') return false;
+	const account = await getCachedAccountByAddress(parseAddress(address));
+	return account && account.address.toUpperCase() === address;
 };
 
 const confirmUsername = async username => {
-    if (!username || typeof username !== 'string') return false;
-    const result = await getDelegates({ username });
-    if (!Array.isArray(result.data) || isEmptyArray(result.data)) return false;
-    return result.data[0].username === username;
+	if (!username || typeof username !== 'string') return false;
+	const result = await getDelegates({ username });
+	if (!Array.isArray(result.data) || isEmptyArray(result.data)) return false;
+	return result.data[0].username === username;
 };
 
 const confirmPublicKey = async publicKey => {
-    if (!publicKey || typeof publicKey !== 'string') return false;
-    const account = await getCachedAccountByPublicKey(publicKey);
-    return account && account.publicKey === publicKey;
+	if (!publicKey || typeof publicKey !== 'string') return false;
+	const account = await getCachedAccountByPublicKey(publicKey);
+	return account && account.publicKey === publicKey;
 };
 
 const confirmSecondPublicKey = async secondPublicKey => {
-    if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
-    const account = await getCachedAccountBySecondPublicKey(secondPublicKey);
-    return account && account.secondPublicKey === secondPublicKey;
+	if (!secondPublicKey || typeof secondPublicKey !== 'string') return false;
+	const account = await getCachedAccountBySecondPublicKey(secondPublicKey);
+	return account && account.secondPublicKey === secondPublicKey;
 };
 
 const confirmAnyId = async params => {
-    if (
-        (typeof params.username === 'string' && !(await confirmUsername(params.username)))
+	if (
+		(typeof params.username === 'string' && !(await confirmUsername(params.username)))
         || (typeof params.address === 'string' && !(await confirmAddress(parseAddress(params.address))))
         || (typeof params.publicKey === 'string' && (!(await confirmPublicKey(params.publicKey))))
         || (typeof params.secondPublicKey === 'string' && (!(await confirmSecondPublicKey(params.secondPublicKey))))
-    ) return false;
+	) return false;
 
-    return true;
+	return true;
 };
 
 const getUsernameByAddress = async address => {
-    const account = await getCachedAccountByAddress(parseAddress(address));
-    return account && account.username;
+	const account = await getCachedAccountByAddress(parseAddress(address));
+	return account && account.username;
 };
 
 const getAddressByPublicKey = async publicKey => {
-    if (!publicKey || typeof publicKey !== 'string') return '';
-    const account = await getCachedAccountByPublicKey(publicKey);
-    return account ? account.address : '';
+	if (!publicKey || typeof publicKey !== 'string') return '';
+	const account = await getCachedAccountByPublicKey(publicKey);
+	return account ? account.address : '';
 };
 
 const getAddressByUsername = async username => {
-    if (!username || typeof username !== 'string') return '';
-    const account = await getCachedAccountByUsername(username);
-    return account ? account.address : '';
+	if (!username || typeof username !== 'string') return '';
+	const account = await getCachedAccountByUsername(username);
+	return account ? account.address : '';
 };
 
 const getAddressByAny = async param => {
-    const paramNames = {
-        'username:': getAddressByUsername,
-        'address:': parseAddress,
-        'publickey:': getAddressByPublicKey,
-    };
+	const paramNames = {
+		'username:': getAddressByUsername,
+		'address:': parseAddress,
+		'publickey:': getAddressByPublicKey,
+	};
 
-    const hasPrefix = p => !!Object.keys(paramNames).filter(item => p.indexOf(item) === 0).length;
+	const hasPrefix = p => !!Object.keys(paramNames).filter(item => p.indexOf(item) === 0).length;
 
-    const separateParam = p => Object.keys(paramNames)
-        .filter(prefix => p.indexOf(prefix) === 0)
-        .reduce((array, prefix) => [...array, prefix, p.slice(prefix.length)], []);
+	const separateParam = p => Object.keys(paramNames)
+		.filter(prefix => p.indexOf(prefix) === 0)
+		.reduce((array, prefix) => [...array, prefix, p.slice(prefix.length)], []);
 
-    if (!hasPrefix(param)) {
-        const parsedAddress = parseAddress(param);
-        if (validateAddress(parsedAddress)
+	if (!hasPrefix(param)) {
+		const parsedAddress = parseAddress(param);
+		if (validateAddress(parsedAddress)
             && await confirmAddress(parsedAddress)) return parsedAddress;
-    }
+	}
 
-    const [prefix, body] = separateParam(param);
-    if (prefix && body) return paramNames[prefix](body);
-    return null;
+	const [prefix, body] = separateParam(param);
+	if (prefix && body) return paramNames[prefix](body);
+	return null;
 };
 
 const getPublicKeyByAddress = async address => {
-    if (!address || typeof address !== 'string') return '';
-    const account = await getAccounts({ address });
-    if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
-    return account.data[0].publicKey;
+	if (!address || typeof address !== 'string') return '';
+	const account = await getAccounts({ address });
+	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
+	return account.data[0].publicKey;
 };
 
 const getPublicKeyByUsername = async username => {
-    if (!username || typeof username !== 'string') return '';
-    const account = await getAccounts({ username });
-    if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
-    const { publicKey } = account.data[0];
-    return publicKey;
+	if (!username || typeof username !== 'string') return '';
+	const account = await getAccounts({ username });
+	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
+	const { publicKey } = account.data[0];
+	return publicKey;
 };
 
 const getPublicKeyByAny = async param => {
-    if (!param || typeof param !== 'string') return '';
-    if (validatePublicKey(param) && (await confirmPublicKey(param))) return param;
-    if (validateAddress(param)) return getPublicKeyByAddress(param);
-    return getPublicKeyByUsername(param);
+	if (!param || typeof param !== 'string') return '';
+	if (validatePublicKey(param) && (await confirmPublicKey(param))) return param;
+	if (validateAddress(param)) return getPublicKeyByAddress(param);
+	return getPublicKeyByUsername(param);
 };
 
 module.exports = {
-    getCachedAccountByAddress,
-    getCachedAccountByPublicKey,
-    getCachedAccountBySecondPublicKey,
-    getCachedAccountByUsername,
-    parseAddress,
-    validateAddress,
-    validatePublicKey,
-    confirmAddress,
-    confirmUsername,
-    confirmPublicKey,
-    confirmSecondPublicKey,
-    confirmAnyId,
-    getUsernameByAddress,
-    getAddressByPublicKey,
-    getAddressByUsername,
-    getAddressByAny,
-    getPublicKeyByAddress,
-    getPublicKeyByUsername,
-    getPublicKeyByAny,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
+	parseAddress,
+	validateAddress,
+	validatePublicKey,
+	confirmAddress,
+	confirmUsername,
+	confirmPublicKey,
+	confirmSecondPublicKey,
+	confirmAnyId,
+	getUsernameByAddress,
+	getAddressByPublicKey,
+	getAddressByUsername,
+	getAddressByAny,
+	getPublicKeyByAddress,
+	getPublicKeyByUsername,
+	getPublicKeyByAny,
 };

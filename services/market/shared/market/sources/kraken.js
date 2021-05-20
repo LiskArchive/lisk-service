@@ -27,67 +27,67 @@ const apiEndpoint = config.endpoints.kraken;
 const krakenCache = CacheRedis('kraken', config.endpoints.redis);
 
 const symbolMap = {
-    LSK_USD: 'LSKUSD',
-    LSK_EUR: 'LSKEUR',
-    LSK_BTC: 'LSKBTC',
+	LSK_USD: 'LSKUSD',
+	LSK_EUR: 'LSKEUR',
+	LSK_BTC: 'LSKBTC',
 };
 
 const fetchAllMarketTickers = async () => {
-    try {
-        const tradingPairs = Object.values(symbolMap).join(',');
-        const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
-        if (typeof response === 'string') return JSON.parse(response).data.result;
-        return response.data.result;
-    } catch (err) {
-        logger.error(err.message);
-        logger.error(err.stack);
-        return err;
-    }
+	try {
+		const tradingPairs = Object.values(symbolMap).join(',');
+		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
+		if (typeof response === 'string') return JSON.parse(response).data.result;
+		return response.data.result;
+	} catch (err) {
+		logger.error(err.message);
+		logger.error(err.stack);
+		return err;
+	}
 };
 
 const standardizeTickers = (tickers) => {
-    const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
-        if (v === symbolMap.LSK_BTC) v = 'LSKXBT'; // Kraken API returns LSKBTC as LSKXBT
-        const currentTicker = tickers[v];
-        const [from, to] = k.split('_');
-        const price = {
-            code: k,
-            from,
-            to,
-            rate: currentTicker.c[0],
-            updateTimestamp: Math.floor(Date.now() / 1000),
-            sources: ['kraken'],
-        };
-        return price;
-    });
-    return transformedPrices;
+	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
+		if (v === symbolMap.LSK_BTC) v = 'LSKXBT'; // Kraken API returns LSKBTC as LSKXBT
+		const currentTicker = tickers[v];
+		const [from, to] = k.split('_');
+		const price = {
+			code: k,
+			from,
+			to,
+			rate: currentTicker.c[0],
+			updateTimestamp: Math.floor(Date.now() / 1000),
+			sources: ['kraken'],
+		};
+		return price;
+	});
+	return transformedPrices;
 };
 
 const reloadPricesFromKraken = async () => {
-    const tickers = await fetchAllMarketTickers();
-    const transformedPrices = standardizeTickers(tickers);
+	const tickers = await fetchAllMarketTickers();
+	const transformedPrices = standardizeTickers(tickers);
 
-    // Serialize individual price item and write to the cache
-    await BluebirdPromise.all(transformedPrices
-        .map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item))));
+	// Serialize individual price item and write to the cache
+	await BluebirdPromise.all(transformedPrices
+		.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item))));
 
-    return transformedPrices;
+	return transformedPrices;
 };
 
 const getPricesFromKraken = async () => {
-    // Read individual price item from cache and deserialize
-    const prices = await BluebirdPromise.map(
-        Object.getOwnPropertyNames(symbolMap),
-        async (itemCode) => {
-            const serializedPrice = await krakenCache.get(`kraken_${itemCode}`);
-            return JSON.parse(serializedPrice);
-        },
-        { concurrency: Object.getOwnPropertyNames(symbolMap).length },
-    );
-    return prices;
+	// Read individual price item from cache and deserialize
+	const prices = await BluebirdPromise.map(
+		Object.getOwnPropertyNames(symbolMap),
+		async (itemCode) => {
+			const serializedPrice = await krakenCache.get(`kraken_${itemCode}`);
+			return JSON.parse(serializedPrice);
+		},
+		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
+	);
+	return prices;
 };
 
 module.exports = {
-    reloadPricesFromKraken,
-    getPricesFromKraken,
+	reloadPricesFromKraken,
+	getPricesFromKraken,
 };

@@ -23,43 +23,43 @@ const liskAddress = config.endpoints.liskHttp;
 
 // HTTP request stack
 const validateCoreResponse = body => {
-    try {
-        if (typeof body === 'object') {
-            return true;
-        }
-        return false;
-    } catch (err) {
-        return false;
-    }
+	try {
+		if (typeof body === 'object') {
+			return true;
+		}
+		return false;
+	} catch (err) {
+		return false;
+	}
 };
 
 const requestGet = (url, params) => new Promise((resolve, reject) => {
-    logger.info(`Requesting ${liskAddress}${url}`);
-    requestLib(`${liskAddress}${url}`, {
-        params,
-        timeout: (config.httpTimeout || 15) * 1000, // ms
-    }).then(body => {
-        if (!body) resolve({});
+	logger.info(`Requesting ${liskAddress}${url}`);
+	requestLib(`${liskAddress}${url}`, {
+		params,
+		timeout: (config.httpTimeout || 15) * 1000, // ms
+	}).then(body => {
+		if (!body) resolve({});
 
-        let jsonContent;
-        try {
-            if (typeof body === 'string') jsonContent = JSON.parse(body);
-            else jsonContent = body.data;
-        } catch (err) {
-            logger.error(err.stack);
-            return reject(err);
-        }
+		let jsonContent;
+		try {
+			if (typeof body === 'string') jsonContent = JSON.parse(body);
+			else jsonContent = body.data;
+		} catch (err) {
+			logger.error(err.stack);
+			return reject(err);
+		}
 
-        if (validateCoreResponse(jsonContent)) {
-            return resolve(jsonContent);
-        }
-        return reject(body.error || 'Response was unsuccessful');
-    }).catch(err => {
-        logger.error(err.stack);
-        resolve({});
-    });
+		if (validateCoreResponse(jsonContent)) {
+			return resolve(jsonContent);
+		}
+		return reject(body.error || 'Response was unsuccessful');
+	}).catch(err => {
+		logger.error(err.stack);
+		resolve({});
+	});
 });
 
 module.exports = {
-    get: requestGet,
+	get: requestGet,
 };

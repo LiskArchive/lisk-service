@@ -24,34 +24,34 @@ const isStringType = value => typeof value === 'string';
 const parseAddress = address => isStringType(address) ? address.toUpperCase() : '';
 
 const getIncomingTxsCount = async address => {
-    const result = await getTransactions({
-        recipientId: parseAddress(address),
-        limit: 1,
-    });
-    if (!isProperObject(result)
+	const result = await getTransactions({
+		recipientId: parseAddress(address),
+		limit: 1,
+	});
+	if (!isProperObject(result)
         || !isProperObject(result.meta)
         || !Number.isInteger(result.meta.count)) {
-        throw new Error('Could not retrieve incoming transaction count.');
-    }
+		throw new Error('Could not retrieve incoming transaction count.');
+	}
 
-    return result.meta.total;
+	return result.meta.total;
 };
 
 const getOutgoingTxsCount = async address => {
-    const result = await getTransactions({
-        senderId: parseAddress(address),
-        limit: 1,
-    });
-    if (!isProperObject(result)
+	const result = await getTransactions({
+		senderId: parseAddress(address),
+		limit: 1,
+	});
+	if (!isProperObject(result)
         || !isProperObject(result.meta)
         || !Number.isInteger(result.meta.count)) {
-        throw new Error('Could not retrieve outgoing transaction count.');
-    }
+		throw new Error('Could not retrieve outgoing transaction count.');
+	}
 
-    return result.meta.total;
+	return result.meta.total;
 };
 
 module.exports = {
-    getIncomingTxsCount,
-    getOutgoingTxsCount,
+	getIncomingTxsCount,
+	getOutgoingTxsCount,
 };
