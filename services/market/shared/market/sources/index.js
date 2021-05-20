@@ -13,9 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getPricesFromBittrex, reloadPricesFromBittrex } = require('./bittrex');
+const {
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
+} = require('./binance');
+
+const {
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
+} = require('./bittrex');
 
 module.exports = {
-    reloadPricesFromBittrex,
-    getPricesFromBittrex,
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
+
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
 };
