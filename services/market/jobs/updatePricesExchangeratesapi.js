@@ -14,7 +14,7 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { reloadPricesFromExchangerateapi } = require('../shared/market');
+const { reloadPricesFromExchangerateapi } = require('../shared/market/sources');
 
 module.exports = [
     {

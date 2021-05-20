@@ -43,7 +43,6 @@ config.log.stdout = process.env.SERVICE_LOG_STDOUT || 'true';
  */
 config.endpoints.binance = 'https://api.binance.com/api/v3';
 config.endpoints.exchangeratesapi = 'http://api.exchangeratesapi.io/v1';
-config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
 
 /*
  * Configurable outputs

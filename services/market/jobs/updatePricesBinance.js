@@ -14,7 +14,7 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { reloadPricesFromBinance } = require('../shared/market');
+const { reloadPricesFromBinance } = require('../shared/market/sources');
 
 module.exports = [
     {
