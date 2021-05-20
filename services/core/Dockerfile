@@ -15,7 +15,7 @@ RUN npm ci
 FROM node:12
 
 RUN apt update
-RUN apt install curl
+RUN apt install -y curl
 RUN useradd -m -s /bin/sh lisk
 
 COPY ./ /home/lisk/lisk-service/core/
