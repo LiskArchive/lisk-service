@@ -13,10 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { reloadPricesFromBinance, getBinancePricesFromDB } = require('./binance');
 const { reloadPricesFromBittrex, getPricesFromBittrex } = require('./bittrex');
 const { reloadPricesFromKraken, getPricesFromKraken } = require('./kraken');
 
 module.exports = {
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
+
 	reloadPricesFromBittrex,
 	getPricesFromBittrex,
 

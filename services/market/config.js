@@ -53,6 +53,7 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
  * External endpoints
  */
 config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
+config.endpoints.binance = 'https://api.binance.com/api/v3';
 config.endpoints.bittrex = 'https://api.bittrex.com/v3';
 config.endpoints.kraken = 'https://api.kraken.com/0';
 
