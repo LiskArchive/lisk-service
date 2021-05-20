@@ -14,11 +14,19 @@
  *
  */
 const {
-    reloadPricesFromBinance,
-    getBinancePricesFromDB,
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
 } = require('./binance');
 
+const {
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
+} = require('./bittrex');
+
 module.exports = {
-    reloadPricesFromBinance,
-    getBinancePricesFromDB,
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
+
+	reloadPricesFromBittrex,
+	getPricesFromBittrex,
 };
