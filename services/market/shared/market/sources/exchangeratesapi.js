@@ -22,7 +22,7 @@ const logger = Logger();
 
 const config = require('../../../config.js');
 
-const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
+const exchangeratesapiCache = CacheRedis('exchangeratesapi_prices', config.endpoints.redis);
 
 const apiEndpoint = config.endpoints.exchangeratesapi;
 const accessKey = config.access_key.exchangeratesapi;
@@ -52,14 +52,11 @@ const fetchAllMarketTickers = async () => {
     }
 };
 
-const filterTickers = (tickers) => {
+const standardizeTickers = (tickers) => {
     const [transformedTickers] = Object.entries(tickers)
         .map(([k, v]) => Object.keys(v).map(value => ({ symbol: `${k}_${value}`, price: v[value] })));
-    return transformedTickers;
-};
 
-const standardizeTickers = (tickers) => {
-    const transformedPrices = tickers.map(ticker => {
+    const transformedPrices = transformedTickers.map(ticker => {
         const [from, to] = ticker.symbol.split('_');
         const price = {
             code: ticker.symbol,
@@ -79,12 +76,13 @@ const getExchangeratesapiPricesFromDB = async () => {
     const prices = await BluebirdPromise.map(
         Object.getOwnPropertyNames(symbolMap),
         async (itemCode) => {
-            const serializedPrice = await binanceCache.get(`exchangeratesapi_${itemCode}`);
+            const serializedPrice = await exchangeratesapiCache.get(`exchangeratesapi_${itemCode}`);
             if (serializedPrice) return JSON.parse(serializedPrice);
-            return serializedPrice;
+            return null;
         },
         { concurrency: Object.getOwnPropertyNames(symbolMap).length },
     );
+    if (prices.includes(null)) return null;
     return prices;
 };
 
@@ -92,14 +90,13 @@ const reloadPricesFromExchangerateapi = async () => {
     const pricesFromCache = await getExchangeratesapiPricesFromDB();
 
     // Check if prices exists in cache
-    if (pricesFromCache.includes(undefined)) {
+    if (!pricesFromCache) {
         const tickers = await fetchAllMarketTickers();
-        const filteredTickers = filterTickers(tickers);
-        const transformedPrices = standardizeTickers(filteredTickers);
+        const transformedPrices = standardizeTickers(tickers);
 
         // Serialize individual price item and write to the cache
         await BluebirdPromise.all(transformedPrices
-            .map(item => binanceCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), 24 * 60 * 60 * 1000)));
+            .map(item => exchangeratesapiCache.set(`exchangeratesapi_${item.code}`, JSON.stringify(item), 24 * 60 * 60 * 1000)));
     }
 };
 
