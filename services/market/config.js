@@ -51,7 +51,7 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 // Api keys to access apis
 config.access_key = {};
-config.access_key.exchangeratesapi = process.env.EXCHANGERATESAPI_API_KEY;
+config.access_key.exchangeratesapi = process.env.EXCHANGERATESAPI_IO_API_KEY;
 
 // Expiry time for redis
 config.ttl = {
