@@ -31,6 +31,7 @@
     "test:functional": "./node_modules/.bin/jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
+    "bluebird": "^3.7.2",
     "joi": "^17.4.0",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef65aa995325768e00248a97a6febd6a346b7027/framework/dist/lisk-service-framework-1.0.2.tgz",
     "moleculer": "^0.14.13",
