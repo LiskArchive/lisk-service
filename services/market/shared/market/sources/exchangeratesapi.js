@@ -54,23 +54,24 @@ const fetchAllCurrencyConversionRates = async () => {
 	}
 };
 
-const standardizeCurrencyConversionRates = (tickers) => {
-	const [transformedTickers] = Object.entries(tickers)
-		.map(([k, v]) => Object.keys(v).map(value => ({ symbol: `${k}_${value}`, price: v[value] })));
-
-	const transformedConversionRates = transformedTickers.map(ticker => {
-		const [from, to] = ticker.symbol.split('_');
+const standardizeCurrencyConversionRates = (rawConversionRates) => {
+	const [transformedConversionRates] = Object.entries(rawConversionRates).map(
+		([baseCur, convRates]) => Object.getOwnPropertyNames(convRates)
+			.map(targetCur => ({ symbol: `${baseCur}_${targetCur}`, price: convRates[targetCur] })),
+	);
+	const standardizedConversionRates = transformedConversionRates.map(convRate => {
+		const [from, to] = convRate.symbol.split('_');
 		const price = {
-			code: ticker.symbol,
+			code: convRate.symbol,
 			from,
 			to,
-			rate: ticker.price,
+			rate: convRate.price,
 			updateTimestamp: Math.floor(Date.now() / 1000),
 			sources: ['exchangeratesapi'],
 		};
 		return price;
 	});
-	return transformedConversionRates;
+	return standardizedConversionRates;
 };
 
 const getExchangeratesapiPricesFromDB = async () => {
