@@ -27,81 +27,81 @@ const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
 const apiEndpoint = config.endpoints.binance;
 
 const symbolMap = {
-    LSK_BTC: 'LSKBTC',
-    LSK_ETH: 'LSKETH',
+	LSK_BTC: 'LSKBTC',
+	LSK_ETH: 'LSKETH',
 
-    BTC_EUR: 'BTCEUR',
-    BTC_GBP: 'BTCGBP',
-    BTC_RUB: 'BTCRUB',
+	BTC_EUR: 'BTCEUR',
+	BTC_GBP: 'BTCGBP',
+	BTC_RUB: 'BTCRUB',
 
-    ETH_EUR: 'ETHEUR',
-    ETH_RUB: 'ETHRUB',
-    ETH_GBP: 'ETHGBP',
+	ETH_EUR: 'ETHEUR',
+	ETH_RUB: 'ETHRUB',
+	ETH_GBP: 'ETHGBP',
 
-    USDT_RUB: 'USDTRUB',
+	USDT_RUB: 'USDTRUB',
 
-    EUR_USDT: 'EURUSDT',
+	EUR_USDT: 'EURUSDT',
 };
 
 const fetchAllMarketTickers = async () => {
-    try {
-        const response = await requestLib(`${apiEndpoint}/ticker/price`);
-        if (typeof response === 'string') return JSON.parse(response).data;
-        return response.data;
-    } catch (err) {
-        logger.error(err.message);
-        logger.error(err.stack);
-        return err;
-    }
+	try {
+		const response = await requestLib(`${apiEndpoint}/ticker/price`);
+		if (typeof response === 'string') return JSON.parse(response).data;
+		return response.data;
+	} catch (err) {
+		logger.error(err.message);
+		logger.error(err.stack);
+		return err;
+	}
 };
 
 const filterTickers = (tickers) => {
-    const allowedMarketSymbols = Object.values(symbolMap);
-    const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
-    return filteredTickers;
+	const allowedMarketSymbols = Object.values(symbolMap);
+	const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
+	return filteredTickers;
 };
 
 const standardizeTickers = (tickers) => {
-    const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
-        const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
-        const [from, to] = k.split('_');
-        const price = {
-            code: k,
-            from,
-            to,
-            rate: currentTicker.price,
-            updateTimestamp: Math.floor(Date.now() / 1000),
-            sources: ['binance'],
-        };
-        return price;
-    });
-    return transformedPrices;
+	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
+		const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
+		const [from, to] = k.split('_');
+		const price = {
+			code: k,
+			from,
+			to,
+			rate: currentTicker.price,
+			updateTimestamp: Math.floor(Date.now() / 1000),
+			sources: ['binance'],
+		};
+		return price;
+	});
+	return transformedPrices;
 };
 
 const reloadPricesFromBinance = async () => {
-    const tickers = await fetchAllMarketTickers();
-    const filteredTickers = filterTickers(tickers);
-    const transformedPrices = standardizeTickers(filteredTickers);
+	const tickers = await fetchAllMarketTickers();
+	const filteredTickers = filterTickers(tickers);
+	const transformedPrices = standardizeTickers(filteredTickers);
 
-    // Serialize individual price item and write to the cache
-    await BluebirdPromise.all(transformedPrices
-        .map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item))));
+	// Serialize individual price item and write to the cache
+	await BluebirdPromise.all(transformedPrices
+		.map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item))));
 };
 
 const getBinancePricesFromDB = async () => {
-    // Read individual price item from cache and deserialize
-    const prices = await BluebirdPromise.map(
-        Object.getOwnPropertyNames(symbolMap),
-        async (itemCode) => {
-            const serializedPrice = await binanceCache.get(`binance_${itemCode}`);
-            return JSON.parse(serializedPrice);
-        },
-        { concurrency: Object.getOwnPropertyNames(symbolMap).length },
-    );
-    return prices;
+	// Read individual price item from cache and deserialize
+	const prices = await BluebirdPromise.map(
+		Object.getOwnPropertyNames(symbolMap),
+		async (itemCode) => {
+			const serializedPrice = await binanceCache.get(`binance_${itemCode}`);
+			return JSON.parse(serializedPrice);
+		},
+		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
+	);
+	return prices;
 };
 
 module.exports = {
-    reloadPricesFromBinance,
-    getBinancePricesFromDB,
+	reloadPricesFromBinance,
+	getBinancePricesFromDB,
 };
