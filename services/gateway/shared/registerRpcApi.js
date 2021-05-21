@@ -14,27 +14,31 @@
  *
  */
 const {
-	mapper,
 	Utils,
-	Constants: { JSON_RPC: { INVALID_PARAMS } },
+	Constants: { JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST } },
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
 const path = require('path');
 
+const mapper = require('./customMapper');
 const { validate } = require('./paramValidator');
 
 const apiMeta = [];
 
-const configureApi = (apiName, apiPrefix) => {
+const configureApi = (apiNames, apiPrefix) => {
+	const allMethods = {};
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
 		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
 
 		return curlyBracketsToColon(dropSlash(url));
 	};
-
-	const allMethods = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
+	if (typeof apiNames === 'string') apiNames = [apiNames];
+	apiNames.forEach(apiName => Object.assign(
+		allMethods,
+		Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
+	));
 
 	const methods = Object.keys(allMethods).reduce((acc, key) => {
 		const method = allMethods[key];
@@ -111,8 +115,8 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
-const registerApi = (apiName, config) => {
-	const { aliases, whitelist, methodPaths } = configureApi(apiName, config.path);
+const registerApi = (apiNames, config) => {
+	const { aliases, whitelist, methodPaths } = configureApi(apiNames, config.path);
 
 	const transformRequest = (apiPath, params) => {
 		try {
@@ -158,15 +162,25 @@ const registerApi = (apiName, config) => {
 						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Unknown input parameter(s): ${unknownList.join(', ')}` });
 					}
 
+					if (paramReport.required.length) {
+						throw new MoleculerClientError({ code: INVALID_REQUEST[0], message: `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}` });
+					}
+
 					const invalidList = paramReport.invalid;
 					if (invalidList.length > 0) {
 						throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: `Invalid input parameter values: ${invalidList.map(o => o.message).join(', ')}` });
 					}
 
-					request.params = transformRequest(request.method, request.params);
+					request.params = transformRequest(request.method, paramReport.valid);
 				},
 
-				onAfterCall: async (ctx, socket, request, data) => transformResponse(request.method, data),
+				onAfterCall: async (ctx, socket, req, data) => {
+					if (data.data && data.status) {
+						if (data.status === 'INVALID_PARAMS') throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: data.data.error });
+					}
+
+					return transformResponse(req.method, data);
+				},
 			},
 		},
 	};

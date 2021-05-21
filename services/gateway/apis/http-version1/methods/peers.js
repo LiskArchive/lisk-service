@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peersSource = require('../../../sources/peers');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const peersSource = require('../../../sources/version1/peers');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -31,14 +31,15 @@ module.exports = {
 		state: { optional: true, type: 'string', enum: ['0', '1', '2', 'connected', 'disconnected', 'unknown'], lowercase: true },
 		height: { optional: true, type: 'number', integer: true },
 		broadhash: { optional: true, type: 'string' },
-		limit: { optional: true, min: 1, type: 'number', integer: true },
-		offset: { optional: true, min: 0, type: 'number', integer: true },
+		limit: { optional: true, min: 1, type: 'number', integer: true, default: 10 },
+		offset: { optional: true, min: 0, type: 'number', integer: true, default: 0 },
 		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'version:asc', 'version:desc'], default: 'height:desc' },
 	},
 	get schema() {
 		const peerSchema = {};
 		peerSchema[this.swaggerApiPath] = { get: {} };
 		peerSchema[this.swaggerApiPath].get.tags = this.tags;
+		peerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
 		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {

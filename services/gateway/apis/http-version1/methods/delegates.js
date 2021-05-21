@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegatesSource = require('../../../sources/delegates');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const delegatesSource = require('../../../sources/version1/delegates');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -27,8 +27,13 @@ module.exports = {
 		publickey: { optional: true, type: 'string', min: 1 },
 		secpubkey: { optional: true, type: 'string', min: 1 },
 		username: { optional: true, type: 'string', min: 1 },
+		status: {
+			optional: true,
+			type: 'string',
+			pattern: /^(?:\b(?:active|standby|banned|punished|non-eligible)\b|\b(?:active|standby|banned|punished|non-eligible|,){3,}\b){1}$/,
+		},
 		search: { optional: true, type: 'string', min: 1 },
-		limit: { optional: true, type: 'number', min: 1, max: 101, default: 10 },
+		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
 			optional: true,
@@ -46,6 +51,7 @@ module.exports = {
 		const delegateSchema = {};
 		delegateSchema[this.swaggerApiPath] = { get: {} };
 		delegateSchema[this.swaggerApiPath].get.tags = this.tags;
+		delegateSchema[this.swaggerApiPath].get.summary = 'Requests delegates data';
 		delegateSchema[this.swaggerApiPath].get.parameters = transformParams('delegates', this.params);
 		delegateSchema[this.swaggerApiPath].get.responses = {
 			200: {

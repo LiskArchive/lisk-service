@@ -14,28 +14,31 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { SocketClient } = require('lisk-service-framework');
 
 const core = require('../shared/core');
-const recentBlocksCache = require('../shared/recentBlocksCache');
-const delegateCache = require('../shared/delegateCache');
+const signals = require('../shared/signals');
 
-const config = require('../config');
-
-const coreSocket = SocketClient(config.endpoints.liskWs);
-logger.info(`Registering ${config.endpoints.liskWs}`);
-
-recentBlocksCache.init(core);
+let localPreviousBlockId;
 
 module.exports = [
 	{
 		name: 'block.change',
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
-			coreSocket.socket.on('blocks/change', async data => {
-				logger.debug('Returning block list to the socket.io client...');
-				const restData = await core.getBlocks({ blockId: data.id });
-				callback(restData.data[0]);
+			signals.get('newBlock').add(async data => {
+				logger.debug(`New block arrived (${data.id})...`);
+
+				// Fork detection
+				if (localPreviousBlockId) {
+					if (localPreviousBlockId !== data.previousBlockId) {
+						logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+					}
+				}
+
+				localPreviousBlockId = data.id;
+
+				core.reloadAllPendingTransactions();
+				callback(data);
 			});
 		},
 	},
@@ -43,18 +46,24 @@ module.exports = [
 		name: 'transactions.confirmed',
 		description: 'Keep confirmed transaction list up-to-date',
 		controller: callback => {
-			coreSocket.socket.on('blocks/change', async data => {
-				logger.debug('Scheduling block list reload...');
-				const emitData = await core.getBlocks({ blockId: data.id });
-
-				if (Array.isArray(emitData.data) && emitData.data.length > 0
-					&& emitData.data[0].numberOfTransactions > 0) {
-						const transactionData = await core.getTransactions({ blockId: data.id });
-						recentBlocksCache.addNewBlock(emitData.data[0], transactionData);
-						callback(transactionData);
-				} else {
-					recentBlocksCache.addNewBlock(emitData.data[0], []);
+			signals.get('newBlock').add(async (block) => {
+				if (block.numberOfTransactions > 0) {
+					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
+					const transactionData = await core.getTransactionsByBlockId(block.id);
+					callback(transactionData);
 				}
+			});
+		},
+	},
+	{
+		name: 'forgers.change',
+		description: 'Track round change updates',
+		controller: callback => {
+			signals.get('newBlock').add(async () => {
+				await core.reloadDelegateCache();
+				await core.reloadNextForgersCache();
+				const forgers = await core.getNextForgers({ limit: 25 });
+				callback(forgers);
 			});
 		},
 	},
@@ -62,11 +71,34 @@ module.exports = [
 		name: 'round.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			coreSocket.socket.on('round/change', async data => {
+			signals.get('newRound').add(async data => {
 				logger.debug('New round, updating delegates...');
-				delegateCache.init(core);
+				core.reloadDelegateCache();
+				core.reloadNextForgersCache();
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
+			});
+		},
+	},
+	{
+		name: 'update.fee_estimates',
+		description: 'Keep the fee estimates up-to-date',
+		controller: callback => {
+			signals.get('newFeeEstimate').add(async () => {
+				logger.debug('Returning latest fee_estimates to the socket.io client...');
+				const restData = await core.getEstimateFeeByte();
+				callback(restData);
+			});
+		},
+	},
+	{
+		name: 'update.height_finalized',
+		description: 'Keep the block finality height up-to-date',
+		controller: callback => {
+			signals.get('newBlock').add(async () => {
+				logger.debug('Returning latest heightFinalized to the socket.io client...');
+				const restData = await core.updateFinalizedHeight();
+				callback(restData ? restData.data : null);
 			});
 		},
 	},

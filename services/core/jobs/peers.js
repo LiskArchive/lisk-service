@@ -15,21 +15,20 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const peerCache = require('../shared/peerCache');
-const core = require('../shared/core');
+const peerCache = require('../shared/core/peerCache');
 
 module.exports = [
 	{
 		name: 'refresh.peers',
 		description: 'Keep the peer list up-to-date',
-		interval: 45, // seconds
+		interval: 90, // seconds
 		init: () => {
 			logger.debug('Initializing peer list...');
-			peerCache.reload(core);
+			peerCache.reload();
 		},
 		controller: () => {
 			logger.debug('Scheduling peer list reload...');
-			peerCache.reload(core);
+			peerCache.reload();
 		},
 	},
 ];

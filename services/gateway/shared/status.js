@@ -13,12 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger } = require('lisk-service-framework');
 const packageJson = require('../package.json');
-
-const logger = Logger('CustomAPI');
-const requestLib = HTTP.request;
-const config = require('../config.js');
 
 const getBuildTimestamp = () => {
 	let timestamp;
@@ -36,84 +31,29 @@ const getBuildTimestamp = () => {
 
 const buildTimestamp = getBuildTimestamp();
 
-const getNetworkId = (url) => new Promise((resolve, reject) => {
-		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
-			.then((response) => {
-				if (response) return resolve(response.data.nethash);
-				return resolve(false);
-			})
-			.catch((err) => {
-				logger.error(err.stack);
-				reject(err);
-			});
-	});
-
-const getNetworkNodeVersion = (url) => new Promise((resolve, reject) => {
-		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
-			.then((response) => {
-				if (response) {
-					const { coreVer } = response.data.data;
-					const versionCount = Object.values(coreVer);
-					const networkNodeVersion = Object.keys(coreVer)[
-						versionCount.indexOf(Math.max(...versionCount))
-					];
-					return resolve(networkNodeVersion);
-				}
-				return resolve(false);
-			})
-			.catch((err) => {
-				logger.error(err.stack);
-				reject(err);
-			});
-	});
-
-const getStatus = async () => ({
-	build: buildTimestamp,
-	description: 'Lisk Service Gateway',
-	name: packageJson.name,
-	version: packageJson.version,
-	networkId: await getNetworkId('/network/status'),
-	networkNodeVersion: await getNetworkNodeVersion('/network/statistics'),
-});
-
-const checkAPI = (url, dataCheck) => new Promise((resolve, reject) => {
-		requestLib(`http://127.0.0.1:${config.port}/api/v1${url}`)
-			.then((response) => {
-				try {
-					if (!response) resolve(false);
-					else if (response.status === 200) {
-						if (dataCheck === true) {
-							if (response.data.data.length > 0) {
-								return resolve(true);
-							}
-							return resolve(false);
-						}
-						return resolve(true);
-					}
-				} catch (err) {
-					logger.error(err.stack);
-					return reject(err);
-				}
-				return resolve(false);
-			})
-			.catch((err) => {
-				logger.error(err.stack);
-				resolve({});
-			});
-	});
-
-const getReady = async () => ({
-	services: {
-		lisk_blocks: await checkAPI('/blocks', true),
-		lisk_transactions: await checkAPI('/transactions', true),
-		lisk_transaction_statistics: await checkAPI('/transactions/statistics/day', false),
-		lisk_accounts: await checkAPI('/accounts', true),
-		lisk_delegates: await checkAPI('/delegates', true),
-		lisk_peers: await checkAPI('/peers', true),
-	},
-});
+const getStatus = async broker => {
+	let version;
+	const networkstatus = await broker.call('core.network.status');
+	const networkStatistics = await broker.call('core.peers.statistics');
+	if (Object.getOwnPropertyNames(networkStatistics.data.coreVer).length) {
+		version = networkStatistics.data.coreVer;
+	} else {
+		version = networkStatistics.data.networkVersion;
+	}
+	const versionCount = Object.values(version);
+	const networkNodeVersion = Object.keys(version)[
+		versionCount.indexOf(Math.max(...versionCount))
+	];
+	return {
+		build: buildTimestamp,
+		description: 'Lisk Service Gateway',
+		name: packageJson.name,
+		version: packageJson.version,
+		networkId: networkstatus.data.constants.nethash,
+		networkNodeVersion,
+	};
+};
 
 module.exports = {
-	getReady,
 	getStatus,
 };

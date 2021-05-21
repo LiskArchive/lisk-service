@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const config = require('./config');
 const registerApi = require('./shared/registerHttpApi');
 
 const defaultConfig = {
@@ -40,9 +41,21 @@ const defaultConfig = {
 	},
 };
 
-module.exports = [
-	registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
-	registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
-	registerApi('http-test', { ...defaultConfig, path: '/test' }),
-	registerApi('http-status', { ...defaultConfig, path: '/' }),
-];
+const filterApis = (requiredApis, availableApis) => {
+	const filteredApis = [];
+
+	requiredApis = requiredApis.split(',');
+	Object.keys(availableApis).forEach(key => {
+		if (requiredApis.includes(key)) filteredApis.push(availableApis[key]());
+	});
+
+	return filteredApis;
+};
+
+module.exports = filterApis(config.api.http, {
+	'http-version1': () => registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
+	'http-version2': () => registerApi('http-version2', { ...defaultConfig, path: '/v2' }),
+	'http-version1-compat': () => registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
+	'http-test': () => registerApi('http-test', { ...defaultConfig, path: '/test' }),
+	'http-status': () => registerApi('http-status', { ...defaultConfig, path: '/' }),
+});

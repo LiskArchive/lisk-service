@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const delegatesSource = require('../../../sources/delegates');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const delegatesSource = require('../../../sources/version1/delegates');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -23,13 +23,14 @@ module.exports = {
 	rpcMethod: 'get.delegates.next_forgers',
 	tags: ['Delegates'],
 	params: {
-		limit: { optional: true, min: 1, max: 101, type: 'number' },
-		offset: { optional: true, min: 0, type: 'number' },
+		limit: { optional: true, min: 1, max: 103, type: 'number', default: 10 },
+		offset: { optional: true, min: 0, type: 'number', default: 0 },
 	},
 	get schema() {
 		const delegateSchema = {};
 		delegateSchema[this.swaggerApiPath] = { get: {} };
 		delegateSchema[this.swaggerApiPath].get.tags = this.tags;
+		delegateSchema[this.swaggerApiPath].get.summary = 'Requests next forgers data';
 		delegateSchema[this.swaggerApiPath].get.parameters = transformParams('delegates', this.params);
 		delegateSchema[this.swaggerApiPath].get.responses = {
 			200: {

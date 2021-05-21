@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const networkStatisticsSource = require('../../../sources/networkStatistics');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const networkStatisticsSource = require('../../../sources/version1/networkStatistics');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
@@ -25,9 +25,10 @@ module.exports = {
 		const networkSchema = {};
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkSchema[this.swaggerApiPath].get.summary = 'Requests network statistics';
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of peers',
+				description: 'network statistics info',
 				schema: {
 					type: 'array',
 					items: {

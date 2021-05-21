@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsStatisticsMonthSource = require('../../../sources/transactionsStatisticsMonth');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const transactionsStatisticsMonthSource = require('../../../sources/version1/transactionsStatisticsMonth');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -30,10 +30,11 @@ module.exports = {
 		const transactionSchema = {};
 		transactionSchema[this.swaggerApiPath] = { get: {} };
 		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transaction statistics month';
 		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of transactions with details',
+				description: 'array of transactions statistics aggregated per month',
 				schema: {
 					type: 'array',
 					items: {

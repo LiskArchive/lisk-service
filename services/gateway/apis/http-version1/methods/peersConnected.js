@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peersSource = require('../../../sources/peers');
-const envelope = require('../../../sources/mappings/stdEnvelope');
+const peersSource = require('../../../sources/version1/peers');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
 
 module.exports = {
 	version: '2.0',
@@ -24,6 +24,7 @@ module.exports = {
 		const peerSchema = {};
 		peerSchema[this.swaggerApiPath] = { get: {} };
 		peerSchema[this.swaggerApiPath].get.tags = this.tags;
+		peerSchema[this.swaggerApiPath].get.summary = 'Requests connected peers data';
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of connected peers',

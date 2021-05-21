@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsSource = require('../../../sources/transactions');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const transactionsSource = require('../../../sources/version1/transactions');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -34,8 +34,8 @@ module.exports = {
 		to: { optional: true, type: 'string', min: 1 },
 		block: { optional: true, type: 'string', min: 1 },
 		height: { optional: true, type: 'string', min: 1 },
-		limit: { optional: true, type: 'number', min: 1, max: 100 },
-		offset: { optional: true, type: 'number', min: 0 },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
 			optional: true,
 			type: 'string',
@@ -51,6 +51,7 @@ module.exports = {
 		const transactionSchema = {};
 		transactionSchema[this.swaggerApiPath] = { get: {} };
 		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transactions data';
 		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].get.responses = {
 			200: {

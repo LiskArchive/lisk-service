@@ -17,10 +17,6 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const { ServiceBroker } = require('moleculer');
-const prettyjson = require('prettyjson');
-const jsome = require('jsome');
-
-jsome.params.colored = true;
 
 if (process.argv.length < 0) {
 	console.log('Usage: moleculer_subscribe.js');
@@ -32,7 +28,7 @@ const cliParams = process.argv[3] ? JSON.parse(process.argv[3]) : undefined;
 const TIMEOUT = 15 * 1000;
 
 const broker = new ServiceBroker({
-	transporter: 'nats://localhost:4222',
+	transporter: 'redis://localhost:6379',
 	logLevel: 'info',
 	requestTimeout: 15 * 1000,
 	logger: console,
@@ -47,10 +43,13 @@ moleculerConfig.events = {
 	'event.hello': (payload, sender, event) => {
 		console.log(`Event '${event}' received from ${sender} node:`, payload);
 	},
-	'blocks.change': (payload, sender, event) => {
+	'block.change': (payload, sender, event) => {
 		console.log(`Event '${event}' received from ${sender} node:`, payload);
 	},
-	'rounds.change': (payload, sender, event) => {
+	'round.change': (payload, sender, event) => {
+		console.log(`Event '${event}' received from ${sender} node:`, payload);
+	},
+	'update.fee_estimates': (payload, sender, event) => {
 		console.log(`Event '${event}' received from ${sender} node:`, payload);
 	},
 };

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const networkStatusSource = require('../../../sources/networkStatus');
+const networkStatusSource = require('../../../sources/version1/networkStatus');
 
 module.exports = {
 	version: '2.0',
@@ -24,13 +24,14 @@ module.exports = {
 		const networkSchema = {};
 		networkSchema[this.swaggerApiPath] = { get: {} };
 		networkSchema[this.swaggerApiPath].get.tags = this.tags;
+		networkSchema[this.swaggerApiPath].get.summary = 'Requests network status';
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of peers',
+				description: 'network status info',
 				schema: {
 					type: 'array',
 					items: {
-						$ref: '#/definitions/NetworkStatistics',
+						$ref: '#/definitions/NetworkStatus',
 					},
 				},
 			},

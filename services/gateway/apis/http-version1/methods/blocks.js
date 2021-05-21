@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blocksSource = require('../../../sources/blocks');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const blocksSource = require('../../../sources/version1/blocks');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -28,6 +28,7 @@ module.exports = {
 		from: { optional: true, type: 'number' },
 		to: { optional: true, type: 'number' },
 		address: { optional: true, type: 'string', min: 2 },
+		username: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
@@ -46,6 +47,7 @@ module.exports = {
 		const blockSchema = {};
 		blockSchema[this.swaggerApiPath] = { get: {} };
 		blockSchema[this.swaggerApiPath].get.tags = this.tags;
+		blockSchema[this.swaggerApiPath].get.summary = 'Requests blocks data';
 		blockSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
 		blockSchema[this.swaggerApiPath].get.responses = {
 			200: {

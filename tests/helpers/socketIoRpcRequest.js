@@ -15,21 +15,24 @@
  */
 import to from 'await-to-js';
 import io from 'socket.io-client';
+import config from '../config';
 
-const request = (endpoint, method, params) => new Promise((resolve, reject) => {
-	const socket = io(endpoint, { forceNew: true, transports: ['websocket'] });
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 
-	socket.emit('request', { method, params }, answer => {
-		socket.close();
-		if (answer.error) {
-			reject(answer);
-		} else {
-			resolve(answer);
-		}
+const socketPool = {};
+
+const request = (endpoint, method, params) => new Promise(resolve => {
+	if (!socketPool[endpoint]) {
+		socketPool[endpoint] = io(endpoint, { forceNew: true, transports: ['websocket'] });
+	}
+	const socket = socketPool[endpoint];
+
+	socket.emit('request', { jsonrpc: '2.0', method, params }, answer => {
+		resolve(answer);
 	});
 });
 
-export const api = {
+const api = {
 	get: async (...args) => {
 		const [error, response] = await to(request(...args));
 		if (error) {
@@ -37,7 +40,23 @@ export const api = {
 		}
 		return response.result;
 	},
-	getJsonRpcV1: (...args) => api.get(...args),
+	getJsonRpcV1: (...args) => api.get(wsRpcUrl, ...args),
 };
 
-export default request;
+const close = (socketName) => {
+	if (socketPool[socketName]) {
+		socketPool[socketName].close();
+		delete socketPool[socketName];
+	}
+};
+
+const closeAll = () => {
+	Object.keys(socketPool).forEach(n => close(n));
+};
+
+module.exports = {
+	api,
+	request,
+	close,
+	closeAll,
+};

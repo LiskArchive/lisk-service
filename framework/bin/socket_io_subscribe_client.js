@@ -17,27 +17,15 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-const prettyjson = require('prettyjson');
-const jsome = require('jsome');
+const colorize = require('json-colorizer');
+const { webSocket, events } = require('../constants/event');
 
-jsome.params.colored = true;
+const socket = io(process.env.WS_ENDPOINT || webSocket.endpoint, {
+	forceNew: true,
+	transports: ['websocket'],
+});
 
-const cliEndpoint = 'blockchain';
-const config = {
-	// endpoint: `wss://testnet-service-staging.lisk.io/${cliEndpoint}`,
-	// endpoint: `ws://testnet-service-dev.liskdev.net/${cliEndpoint}`,
-	endpoint: `ws://localhost:9901/${cliEndpoint}`,
-};
-
-const socket = io(config.endpoint, { forceNew: true, transports: ['websocket'] });
-
-[
-	'connect', 'reconnect',
-	'connect_error', 'connect_timeout', 'error', 'disconnect',
-	'reconnect', 'reconnect_attempt',
-	'reconnecting', 'reconnect_error', 'reconnect_failed',
-	// 'ping', 'pong',
-].forEach(item => {
+events.forEach(item => {
 	socket.on(item, res => {
 		console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
@@ -45,19 +33,21 @@ const socket = io(config.endpoint, { forceNew: true, transports: ['websocket'] }
 
 ['status'].forEach(eventName => {
 	socket.on(eventName, newData => {
-		console.log(`Received data from ${config.endpoint}/${eventName}: ${newData}`);
+		console.log(
+			`Received data from ${webSocket.endpoint}/${eventName}: ${newData}`,
+		);
 	});
 });
 
 const subscribe = event => {
 	socket.on(event, answer => {
 		console.log(`====== ${event} ======`);
-		// console.log(prettyjson.render(answer));
-		jsome(answer);
+		console.log(colorize(JSON.stringify(answer, null, 2)));
 	});
 };
 
 subscribe('update.block');
-subscribe('update.transactions.unconfirmed');
+subscribe('update.round');
+subscribe('update.forgers');
 subscribe('update.transactions.confirmed');
-subscribe('update.moleculer.test');
+subscribe('update.fee_estimates');

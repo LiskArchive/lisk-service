@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const accountsSource = require('../../../sources/accounts');
-const envelope = require('../../../sources/mappings/stdEnvelope');
-const { transformParams, response } = require('../swagger/utils');
+const accountsSource = require('../../../sources/version1/accounts');
+const envelope = require('../../../sources/version1/mappings/stdEnvelope');
+const { transformParams, response } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -39,6 +39,7 @@ module.exports = {
 			'accounts',
 			this.params,
 		);
+		accountSchema[this.swaggerApiPath].get.summary = 'Requests account data';
 		accountSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'array of accounts with details',

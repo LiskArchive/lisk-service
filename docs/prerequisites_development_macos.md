@@ -39,15 +39,16 @@ brew install redis
 
 > Note: During this step it is possible to change your port if you wish to have more Redis instances in the future. Remember to adjust the environment variables `SERVICE_BROKER` and `SERVICE_CORE_REDIS` accordingly.
 
-### PostgreSQL
 
-[Postgres 10](https://www.postgresql.org/) is used for storing persistent data.
+### MySQL
+
+[MySQL 5.7](https://dev.mysql.com/downloads/mysql/5.7.html) is used for storing persistent data.
 
 ```bash
-brew install postgres@10
+brew tap homebrew/services
+brew install mysql@5.7
+brew services start mysql@5.7
 ```
-
-> Note: During this step it is possible to change your port if you wish to have more Postgres instances in the future. Remember to adjust the environment variable `SERVICE_CORE_POSTGRES` accordingly.
 
 ### Node.js
 

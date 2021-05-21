@@ -14,6 +14,7 @@
  *
  */
 const config = {
+	api: {},
 	log: {},
 };
 
@@ -50,5 +51,22 @@ config.log.gelf = process.env.SERVICE_LOG_GELF || 'false';
 config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
+
+/**
+ * API enablement
+ */
+config.api.http = process.env.ENABLE_HTTP_API || 'http-version1,http-version1-compat,http-status,http-version2';
+config.api.ws = process.env.ENABLE_WS_API || 'rpc,rpc-v1,blockchain,rpc-v2';
+
+/**
+ * API versions
+ */
+config.api.versions = {
+	'/api/v1': 'http-version1',
+	'/api/v2': 'http-version2',
+};
+
+// Unless STRICT_READINESS_CHECK env. variable is set false, includeCoreReadiness evaluates to true
+config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
 
 module.exports = config;

@@ -17,21 +17,25 @@ const logger = require('lisk-service-framework').Logger();
 
 const config = require('../config');
 
-const transactionStatistics = require('../shared/transactionStatistics');
+const transactionStatistics = require('../shared/core/transactionStatistics');
 
 module.exports = [
 	{
-		name: 'refresh.delegates',
+		name: 'refresh.transactionstats',
 		description: 'Keep the transaction statistics up-to-date',
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
 		init: () => {
-			logger.debug('Scheduling delegate list init...');
-			transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+			if (config.transactionStatistics.enabled) {
+				logger.debug('Initiating transaction statistics computation.');
+				transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+			}
 		},
 		controller: async () => {
-			logger.debug('Scheduling delegate list reload...');
-			transactionStatistics.updateTodayStats();
+			if (config.transactionStatistics.enabled) {
+				logger.debug('Job scheduled to update transaction statistics.');
+				transactionStatistics.updateTodayStats();
+			}
 		},
 	},
 ];

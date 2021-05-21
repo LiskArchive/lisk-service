@@ -28,10 +28,10 @@ const objDiff = (reference, testedObject) => Object.keys(testedObject).filter(o 
 const arrDiff = (arr1, arr2) => arr2.filter(x => !arr1.includes(x));
 
 const dropEmptyProps = p => Object.keys(p)
-.reduce((acc, cur) => {
-	if (p[cur] !== '') acc[cur] = p[cur];
-	return acc;
-}, {});
+	.reduce((acc, cur) => {
+		if (p[cur] !== '') acc[cur] = p[cur];
+		return acc;
+	}, {});
 
 const parseParams = (p) => {
 	const combinedParams = { ...p.swaggerParams, ...p.inputParams };
@@ -44,8 +44,11 @@ const parseParams = (p) => {
 	}, {});
 
 	const validParamsList = Object.keys(p.swaggerParams).filter(o => typeof p.swaggerParams[o] !== 'undefined');
-	const validParams = validParamsList.reduce((acc, val) => {
-		acc[val] = p.inputParams[val];
+	const validParams = validParamsList.reduce((acc, param) => {
+		const defaultVal = p.swaggerParams[param];
+		const inputVal = p.swaggerParams[param];
+		acc[param] = Number.isNaN(Number(inputVal)) && !Number.isNaN(Number(defaultVal))
+			? defaultVal : inputVal;
 		return acc;
 	}, {});
 
@@ -56,6 +59,18 @@ const parseParams = (p) => {
 };
 
 const validateInputParams = (rawInputParams = {}, specs) => {
+	const validateFromParamPairings = (paramsRequired = false, inputParamKeys, paramPairings) => {
+		if (!paramsRequired) return [];
+
+		const relevantPairings = paramPairings
+			.filter(pairing => inputParamKeys.some(key => pairing.includes(key)));
+		if (relevantPairings.length === 0) return paramPairings;
+
+		const result = relevantPairings
+			.some(pairing => pairing.every(param => inputParamKeys.includes(param)));
+		return result ? [] : paramPairings;
+	};
+
 	const checkMissingParams = (routeParams, requestParams) => {
 		const requiredParamList = Object.keys(routeParams)
 			.filter(o => routeParams[o].required === true);
@@ -67,12 +82,17 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 
 	const parseAllParams = (routeParams, requestParams) => Object.keys(routeParams)
 		.reduce((acc, cur) => {
+			const paramDatatype = routeParams[cur].type;
 			if (routeParams[cur].default !== undefined) acc[cur] = routeParams[cur].default;
-			if (requestParams[cur] !== undefined) acc[cur] = requestParams[cur];
+			if (requestParams[cur] !== undefined) {
+				if (paramDatatype === 'number') {
+					acc[cur] = requestParams[cur] === '' ? acc[cur] : requestParams[cur];
+				} else {
+					acc[cur] = requestParams[cur];
+				}
+			}
 			return acc;
 		}, {});
-
-	const specParams = specs.params || {};
 
 	const looseSpecParams = (specPar) => Object.keys(specPar).reduce((acc, cur) => {
 		if (specPar[cur].type === 'number' || specPar[cur].type === 'boolean') {
@@ -81,21 +101,30 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 		return acc;
 	}, {}); // adds convert: true
 
+	const specParams = specs.params || {};
 	const inputParams = rawInputParams;
+
+	const paramPairings = specs.validParamPairings || [];
+	const inputParamKeys = Object.getOwnPropertyNames(inputParams);
 
 	const paramReport = parseParams({
 		swaggerParams: parseAllParams(specParams, inputParams),
 		inputParams: { ...parseDefaultParams(specParams), ...inputParams },
 	});
 
+	paramReport.required = validateFromParamPairings(
+		specs.paramsRequired, inputParamKeys, paramPairings);
+
 	paramReport.missing = checkMissingParams(specParams, inputParams);
 
 	if (paramReport.missing.length > 0) return paramReport;
 	if (Object.keys(paramReport.unknown).length > 0) return paramReport;
+	if (paramReport.required.length) return paramReport;
 
 	paramReport.invalid = validator.validate(
 		dropEmptyProps(inputParams),
-		looseSpecParams(specParams));
+		looseSpecParams(specParams),
+	);
 	if (paramReport.invalid === true) paramReport.invalid = [];
 
 	return paramReport;

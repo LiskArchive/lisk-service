@@ -20,18 +20,22 @@ const {
 	Libs,
 } = require('lisk-service-framework');
 
-const { MoleculerError } = require('moleculer').Errors;
-
 const SocketIOService = require('./shared/moleculer-io');
 
 const ApiService = Libs['moleculer-web'];
+const { methods } = require('./shared/moleculer-web/methods');
 
 const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
-const { getStatus, getReady } = require('./shared/status');
-const { genDocs } = require('./apis/http-version1/swagger/generateDocs');
+const { ValidationException } = require('./shared/exceptions');
+const { getStatus } = require('./shared/status');
+const { getReady, updateSvcStatus } = require('./shared/ready');
+const { genDocs } = require('./shared/generateDocs');
+
+const mapper = require('./shared/customMapper');
+const delegateResponse = require('./apis/socketio-blockchain-updates/mappers/socketDelegate');
 
 const { host, port } = config;
 
@@ -52,35 +56,41 @@ const broker = Microservice({
 	logger: loggerConf,
 }).getBroker();
 
+const sendSocketIoEvent = (eventName, payload) => {
+	broker.call('gateway.broadcast', {
+		namespace: '/blockchain',
+		event: eventName,
+		args: [payload],
+	});
+};
+
 broker.createService({
 	transporter: config.transporter,
 	mixins: [ApiService, SocketIOService],
 	name: 'gateway',
 	actions: {
-		spec() { return genDocs(); },
-		status() { return getStatus(); },
-		async ready() {
-			const services = await getReady();
-			// isReady: returns true if any one of service is unavailable
-			const isReady = Object.keys(services.services).some(value => !services.services[value]);
-			if (isReady === true) {
-				return Promise.reject(new MoleculerError('503 Not available', 503, 'ERR_SOMETHING', { services }));
-			} return Promise.resolve(services);
-		},
+		spec(ctx) { return genDocs(ctx); },
+		status() { return getStatus(this.broker); },
+		ready() { return getReady(this.broker); },
 	},
 	settings: {
 		host,
 		port,
 		path: '/api',
-		use: [
-			// compression(),
-			// cookieParser()
-		],
+		use: [],
 
-		// Global CORS settings for all routes
 		cors: {
-			// Configure the Access-Control-Allow-Origin CORS header
 			origin: '*',
+			methods: ['GET', 'OPTIONS', 'POST', 'PUT', 'DELETE'],
+			allowedHeaders: [
+				'Content-Type',
+				'Access-Control-Request-Method',
+				'Access-Control-Request-Headers',
+				'Access-Control-Max-Age',
+			],
+			exposedHeaders: [],
+			credentials: false,
+			maxAge: 3600,
 		},
 
 		// Used server instance. If null, it will create a new HTTP(s)(2) server
@@ -89,6 +99,10 @@ broker.createService({
 
 		logRequestParams: 'debug',
 		logResponseData: 'debug',
+		logRequest: 'debug',
+		enableHTTPRequest: false,
+		log2XXResponses: 'debug',
+		enable2XXResponses: false,
 		httpServerTimeout: 30 * 1000, // ms
 		optimizeOrder: true,
 		routes,
@@ -99,18 +113,34 @@ broker.createService({
 		},
 
 		onError(req, res, err) {
-			res.setHeader('Content-Type', 'application/json');
-			res.writeHead(err.code || 500);
-			res.end(JSON.stringify({
-				error: true,
-				message: `Server error: ${err.message}`,
-			}));
+			if (err instanceof ValidationException === false) {
+				res.setHeader('Content-Type', 'application/json');
+				res.writeHead(err.code || 500);
+				res.end(JSON.stringify({
+					error: true,
+					message: `Server error: ${err.message}`,
+				}));
+			}
 		},
 		io: {
 			namespaces,
 		},
 	},
+	methods,
+	events: {
+		'block.change': (payload) => sendSocketIoEvent('update.block', payload),
+		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
+		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, {
+			data: ['data', delegateResponse],
+			meta: {},
+		})),
+		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', payload),
+		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
+		'coreService.Ready': (payload) => updateSvcStatus(payload),
+	},
 });
+
+broker.waitForServices('core');
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);

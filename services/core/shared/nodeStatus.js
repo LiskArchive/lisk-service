@@ -15,7 +15,15 @@
  */
 const { Logger } = require('lisk-service-framework');
 const config = require('../config');
-const core = require('./core');
+const {
+	setCoreVersion,
+	getEpochUnixTime,
+	getNetworkConstants,
+	setReadyStatus,
+	setRegisteredmoduleAssets,
+} = require('./core/compat/common');
+
+const waitForIt = require('./waitForIt');
 
 const liskCoreAddress = config.endpoints.liskHttp;
 const logger = Logger();
@@ -26,39 +34,34 @@ const CORE_DISCOVERY_INTERVAL = 1 * 1000; // ms
 let logConnectStatus = true;
 
 const checkStatus = () => new Promise((resolve, reject) => {
-	core.getNetworkConstants().then(result => {
-		if (typeof result.data === 'object' && result.data.version) {
-			core.setProtocolVersion(result.data.protocolVersion);
-			core.setReadyStatus(true);
+	getNetworkConstants().then(networkConstants => {
+		if (typeof networkConstants.data === 'object' && networkConstants.data.version) {
+			setCoreVersion(networkConstants.data.version);
+			getEpochUnixTime();
+			setReadyStatus(true);
 			if (logConnectStatus) {
-				logger.info(`Connected to the node ${liskCoreAddress}, Lisk Core version ${result.data.version}`);
+				logger.debug(`Connected to the node ${liskCoreAddress}, Lisk Core version ${networkConstants.data.version}`);
 				logConnectStatus = false;
 			}
-			resolve(result.data);
+			if (networkConstants.data.moduleAssets) {
+				setRegisteredmoduleAssets(networkConstants.data.moduleAssets);
+			}
+			resolve(networkConstants.data);
 		} else {
-			core.setReadyStatus(false);
-			logger.warn(`The node ${liskCoreAddress} has an incompatible API or is not available at the moment.`);
+			setReadyStatus(false);
+			logger.debug(`The node ${liskCoreAddress} has an incompatible API or is not available at the moment.`);
 			logConnectStatus = true;
 			reject();
 		}
 	}).catch(() => {
-		core.setReadyStatus(false);
-		logger.warn(`The node ${liskCoreAddress} not available at the moment.`);
+		setReadyStatus(false);
+		logger.debug(`The node ${liskCoreAddress} not available at the moment.`);
 		logConnectStatus = true;
 		reject();
 	});
 });
 
-const waitForNode = () => new Promise((resolve) => {
-	setInterval(async () => {
-		try {
-			const result = await checkStatus();
-			resolve(result);
-		} catch (err) {
-			logger.debug('Could not connect with a Lisk Core node (yet)');
-		}
-	}, CORE_DISCOVERY_INTERVAL);
-});
+const waitForNode = () => waitForIt(checkStatus, CORE_DISCOVERY_INTERVAL);
 
 const getStatus = () => logConnectStatus;
 

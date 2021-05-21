@@ -14,13 +14,14 @@
  *
  */
 const {
-	mapper,
 	Utils,
+	HTTP: { StatusCodes },
 	Constants: { HTTP: { INVALID_REQUEST, NOT_FOUND } },
 } = require('lisk-service-framework');
 
 const path = require('path');
-
+const mapper = require('./customMapper');
+const { ValidationException } = require('./exceptions');
 const { validate, dropEmptyProps } = require('./paramValidator');
 
 const apiMeta = [];
@@ -79,6 +80,7 @@ const typeMappings = {
 	string_number: (input) => Number(input),
 	number_string: (input) => String(input),
 	array_string: (input) => input.join(','),
+	string_boolean: (input) => String(input).toLowerCase() === 'true',
 };
 
 const convertType = (item, type) => {
@@ -161,22 +163,27 @@ const registerApi = (apiName, config) => {
 
 			if (paramReport.missing.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Missing parameter(s): ${paramReport.missing.join(', ')}`);
-				return;
+				throw new ValidationException('Request param validation error');
 			}
 
 			const unknownList = Object.keys(paramReport.unknown);
 			if (unknownList.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Unknown input parameter(s): ${unknownList.join(', ')}`);
-				return;
+				throw new ValidationException('Request param validation error');
+			}
+
+			if (paramReport.required.length) {
+				sendResponse(INVALID_REQUEST[0], `Require one of the following parameter combination(s): ${paramReport.required.join(', ')}`);
+				throw new ValidationException('Request param validation error');
 			}
 
 			const invalidList = paramReport.invalid;
 			if (invalidList.length > 0) {
 				sendResponse(INVALID_REQUEST[0], `Invalid input: ${invalidList.map(o => o.message).join(', ')}`);
-				return;
+				throw new ValidationException('Request param validation error');
 			}
 
-			const params = transformRequest(routeAlias, dropEmptyProps(req.$params));
+			const params = transformRequest(routeAlias, dropEmptyProps(paramReport.valid));
 			req.$params = params;
 		},
 
@@ -184,7 +191,10 @@ const registerApi = (apiName, config) => {
 			// TODO: Add support for ETag
 
 			if (data.data && data.status) {
-				ctx.meta.$statusCode = data.status;
+				if (data.status === 'INVALID_PARAMS') data.status = 'BAD_REQUEST';
+
+				ctx.meta.$statusCode = StatusCodes[data.status] || data.status;
+				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
 				let message = `The request ended up with error ${data.status}`;
 
 				if (typeof data.data === 'object' && typeof data.data.error === 'string') {

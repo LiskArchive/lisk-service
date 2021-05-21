@@ -17,10 +17,8 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 
 const io = require('socket.io-client');
-// const prettyjson = require('prettyjson');
-const jsome = require('jsome');
-
-jsome.params.colored = true;
+const colorize = require('json-colorizer');
+const { events } = require('../constants/event');
 
 /* Usage:
  * node socket_io_rpc_client.js http://localhost:9901/rpc-test get.hello.param '{"path_name1": "user1"}'
@@ -38,13 +36,7 @@ const TIMEOUT = 15 * 1000;
 
 const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 
-[
-	'connect', 'reconnect',
-	'connect_error', 'connect_timeout', 'error', 'disconnect',
-	'reconnect', 'reconnect_attempt',
-	'reconnecting', 'reconnect_error', 'reconnect_failed',
-	// 'ping', 'pong',
-].forEach(item => {
+events.forEach(item => {
 	socket.on(item, res => {
 		// console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
@@ -59,7 +51,7 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 const request = (path, params) => {
 	socket.emit(path, params, answer => {
 		// console.log(prettyjson.render(answer));
-		jsome(answer);
+		console.log(colorize(JSON.stringify(answer, null, 2)));
 		process.exit(0);
 	});
 };

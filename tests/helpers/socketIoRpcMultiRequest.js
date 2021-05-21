@@ -24,4 +24,6 @@ const request = (endpoint, params) => new Promise((resolve) => {
 	});
 });
 
-module.exports = request;
+module.exports = {
+	request,
+};

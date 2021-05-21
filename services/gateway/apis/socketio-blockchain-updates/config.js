@@ -77,7 +77,7 @@ module.exports = {
 			},
 		},
 		{
-			name: 'rounds',
+			name: 'update.round',
 			type: 'event',
 			cache: false,
 			source: {
@@ -85,6 +85,19 @@ module.exports = {
 				event: 'rounds.change',
 				mapper: {
 					data: [require('./mappers/socketRound')],
+					meta: {},
+				},
+			},
+		},
+		{
+			name: 'update.forgers',
+			type: 'event',
+			cache: false,
+			source: {
+				endpoint: 'moleculer',
+				event: 'forgers.change',
+				mapper: {
+					data: [require('./mappers/socketDelegate')],
 					meta: {},
 				},
 			},
