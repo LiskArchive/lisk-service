@@ -33,7 +33,7 @@ const symbolMap = {
 	LSK_BTC: 'LSKBTC',
 };
 
-const fetchAllCurrencyConversionRates = async () => {
+const fetchAllMarketTickers = async () => {
 	try {
 		const tradingPairs = Object.values(symbolMap).join(',');
 		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
@@ -46,22 +46,22 @@ const fetchAllCurrencyConversionRates = async () => {
 	}
 };
 
-const standardizeCurrencyConversionRates = (rawConversionRates) => {
-	const standardizedConversionRates = Object.entries(symbolMap).map(([k, v]) => {
+const standardizeTickers = (tickers) => {
+	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
 		if (v === symbolMap.LSK_BTC) v = 'LSKXBT'; // Kraken API returns LSKBTC as LSKXBT
-		const currentConversionRates = rawConversionRates[v];
+		const currentTicker = tickers[v];
 		const [from, to] = k.split('_');
 		const price = {
 			code: k,
 			from,
 			to,
-			rate: currentConversionRates.c[0],
+			rate: currentTicker.c[0],
 			updateTimestamp: Math.floor(Date.now() / 1000),
 			sources: ['kraken'],
 		};
 		return price;
 	});
-	return standardizedConversionRates;
+	return transformedPrices;
 };
 
 const getPricesFromKraken = async () => {
@@ -84,11 +84,11 @@ const reloadPricesFromKraken = async () => {
 
 	// Check if prices exists in cache
 	if (!conversionRatesFromCache) {
-		const currencyConversionRates = await fetchAllCurrencyConversionRates();
-		const transformedRates = standardizeCurrencyConversionRates(currencyConversionRates);
+		const tickers = await fetchAllMarketTickers();
+		const transformedPrices = standardizeTickers(tickers);
 
 		// Serialize individual price item and write to the cache
-		await BluebirdPromise.all(transformedRates
+		await BluebirdPromise.all(transformedPrices
 			.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds)));
 	}
 };

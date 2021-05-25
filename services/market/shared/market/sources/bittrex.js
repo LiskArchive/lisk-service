@@ -33,7 +33,7 @@ const symbolMap = {
 	BTC_EUR: 'BTC-EUR',
 };
 
-const fetchAllCurrencyConversionRates = async () => {
+const fetchAllMarketTickers = async () => {
 	try {
 		const response = await requestLib(`${apiEndpoint}/markets/tickers`);
 		if (typeof response === 'string') return JSON.parse(response).data;
@@ -44,29 +44,28 @@ const fetchAllCurrencyConversionRates = async () => {
 		return err;
 	}
 };
-const filterCurrencyConversionRates = (currencyConversionRates) => {
+
+const filterTickers = (tickers) => {
 	const allowedMarketSymbols = Object.values(symbolMap);
-	const filteredcurrencyConversionRates = currencyConversionRates
-		.filter(convRate => allowedMarketSymbols.includes(convRate.symbol));
-	return filteredcurrencyConversionRates;
+	const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
+	return filteredTickers;
 };
 
-const standardizeCurrencyConversionRates = (rawConversionRates) => {
-	const standardizedConversionRates = Object.entries(symbolMap).map(([k, v]) => {
-		const [currentConversionRates] = rawConversionRates
-			.filter(rawConversionRate => rawConversionRate.symbol === v);
+const standardizeTickers = (tickers) => {
+	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
+		const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
 		const [from, to] = k.split('_');
 		const price = {
 			code: k,
 			from,
 			to,
-			rate: currentConversionRates.lastTradeRate,
+			rate: currentTicker.lastTradeRate,
 			updateTimestamp: Math.floor(Date.now() / 1000),
 			sources: ['bittrex'],
 		};
 		return price;
 	});
-	return standardizedConversionRates;
+	return transformedPrices;
 };
 
 const getPricesFromBittrex = async () => {
@@ -89,12 +88,12 @@ const reloadPricesFromBittrex = async () => {
 
 	// Check if prices exists in cache
 	if (!conversionRatesFromCache) {
-		const currencyConversionRates = await fetchAllCurrencyConversionRates();
-		const filteredcurrencyConversionRates = filterCurrencyConversionRates(currencyConversionRates);
-		const transformedRates = standardizeCurrencyConversionRates(filteredcurrencyConversionRates);
+		const tickers = await fetchAllMarketTickers();
+		const filteredTickers = filterTickers(tickers);
+		const transformedPrices = standardizeTickers(filteredTickers);
 
 		// Serialize individual price item and write to the cache
-		await BluebirdPromise.all(transformedRates
+		await BluebirdPromise.all(transformedPrices
 			.map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item), expireMiliseconds)));
 	}
 };

@@ -44,7 +44,7 @@ const symbolMap = {
 	EUR_USDT: 'EURUSDT',
 };
 
-const fetchAllCurrencyConversionRates = async () => {
+const fetchAllMarketTickers = async () => {
 	try {
 		const response = await requestLib(`${apiEndpoint}/ticker/price`);
 		if (typeof response === 'string') return JSON.parse(response).data;
@@ -56,34 +56,32 @@ const fetchAllCurrencyConversionRates = async () => {
 	}
 };
 
-const filterCurrencyConversionRates = (currencyConversionRates) => {
+const filterTickers = (tickers) => {
 	const allowedMarketSymbols = Object.values(symbolMap);
-	const filteredcurrencyConversionRates = currencyConversionRates
-		.filter(convRate => allowedMarketSymbols.includes(convRate.symbol));
-	return filteredcurrencyConversionRates;
+	const filteredTickers = tickers.filter(ticker => allowedMarketSymbols.includes(ticker.symbol));
+	return filteredTickers;
 };
 
-const standardizeCurrencyConversionRates = (rawConversionRates) => {
-	const standardizedConversionRates = Object.entries(symbolMap).map(([k, v]) => {
-		const [currentConversionRates] = rawConversionRates
-			.filter(rawConversionRate => rawConversionRate.symbol === v);
+const standardizeTickers = (tickers) => {
+	const transformedPrices = Object.entries(symbolMap).map(([k, v]) => {
+		const [currentTicker] = tickers.filter(ticker => ticker.symbol === v);
 		const [from, to] = k.split('_');
 		const price = {
 			code: k,
 			from,
 			to,
-			rate: currentConversionRates.price,
+			rate: currentTicker.price,
 			updateTimestamp: Math.floor(Date.now() / 1000),
 			sources: ['binance'],
 		};
 		return price;
 	});
-	return standardizedConversionRates;
+	return transformedPrices;
 };
 
 const getBinancePricesFromDB = async () => {
 	// Read individual price item from cache and deserialize
-	const ConversionRates = await BluebirdPromise.map(
+	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
 		async (itemCode) => {
 			const serializedPrice = await binanceCache.get(`binance_${itemCode}`);
@@ -92,8 +90,8 @@ const getBinancePricesFromDB = async () => {
 		},
 		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
 	);
-	if (ConversionRates.includes(null)) return null;
-	return ConversionRates;
+	if (prices.includes(null)) return null;
+	return prices;
 };
 
 const reloadPricesFromBinance = async () => {
@@ -101,12 +99,12 @@ const reloadPricesFromBinance = async () => {
 
 	// Check if prices exists in cache
 	if (!conversionRatesFromCache) {
-		const currencyConversionRates = await fetchAllCurrencyConversionRates();
-		const filteredcurrencyConversionRates = filterCurrencyConversionRates(currencyConversionRates);
-		const transformedRates = standardizeCurrencyConversionRates(filteredcurrencyConversionRates);
+		const tickers = await fetchAllMarketTickers();
+		const filteredTickers = filterTickers(tickers);
+		const transformedPrices = standardizeTickers(filteredTickers);
 
 		// Serialize individual price item and write to the cache
-		await BluebirdPromise.all(transformedRates
+		await BluebirdPromise.all(transformedPrices
 			.map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item), expireMiliseconds)));
 	}
 };
