@@ -24,7 +24,7 @@ const config = require('../../../config.js');
 
 const exchangeratesapiCache = CacheRedis('exchangeratesapi_prices', config.endpoints.redis);
 
-const accessKey = 'e27c981843d2d08916cf4e3864f5a92b';
+const accessKey = config.access_key.exchangeratesapi;
 
 const currencies = ['EUR', 'USD', 'CHF', 'BTC'];
 const expireMiliseconds = config.ttl.exchangeratesapi;
