@@ -15,7 +15,7 @@
  */
 const moment = require('moment');
 
-const validateEntries = (entries, allowRefreshAfter) => entries && entries.some(
+const validateEntries = (entries, allowRefreshAfter) => entries.some(
 	entry => entry.updateTimestamp <= moment().subtract(allowRefreshAfter).unix(),
 );
 
