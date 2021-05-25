@@ -14,21 +14,21 @@
  *
  */
 const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
-
 const BluebirdPromise = require('bluebird');
 
 const requestLib = HTTP.request;
 const logger = Logger();
 
+const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const exchangeratesapiCache = CacheRedis('exchangeratesapi_prices', config.endpoints.redis);
 
-const apiEndpoint = config.endpoints.exchangeratesapi;
-const accessKey = config.access_key.exchangeratesapi;
+const accessKey = 'e27c981843d2d08916cf4e3864f5a92b';
 
 const currencies = ['EUR', 'USD', 'CHF', 'BTC'];
 const expireMiliseconds = config.ttl.exchangeratesapi;
+const { apiEndpoint, allowRefreshAfter } = config.sources.exchangeratesapi;
 
 const symbolMap = {
 	EUR_USD: 'EURUSD',
@@ -74,7 +74,7 @@ const standardizeCurrencyConversionRates = (rawConversionRates) => {
 	return standardizedConversionRates;
 };
 
-const getExchangeratesapiPricesFromDB = async () => {
+const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const ConversionRates = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
@@ -89,11 +89,11 @@ const getExchangeratesapiPricesFromDB = async () => {
 	return ConversionRates;
 };
 
-const reloadPricesFromExchangerateapi = async () => {
-	const conversionRatesFromCache = await getExchangeratesapiPricesFromDB();
+const reload = async () => {
+	const conversionRatesFromCache = await getFromCache();
 
 	// Check if prices exists in cache
-	if (!conversionRatesFromCache) {
+	if (!conversionRatesFromCache || validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const currencyConversionRates = await fetchAllCurrencyConversionRates();
 		const transformedRates = standardizeCurrencyConversionRates(currencyConversionRates);
 
@@ -104,6 +104,6 @@ const reloadPricesFromExchangerateapi = async () => {
 };
 
 module.exports = {
-	reloadPricesFromExchangerateapi,
-	getExchangeratesapiPricesFromDB,
+	reload,
+	getFromCache,
 };

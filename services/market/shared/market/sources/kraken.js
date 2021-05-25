@@ -17,12 +17,13 @@ const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
+const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const apiEndpoint = config.endpoints.kraken;
+const { apiEndpoint, allowRefreshAfter } = config.sources.kraken;
 const expireMiliseconds = config.ttl.kraken;
 
 const krakenCache = CacheRedis('kraken', config.endpoints.redis);
@@ -64,7 +65,7 @@ const standardizeTickers = (tickers) => {
 	return transformedPrices;
 };
 
-const getPricesFromKraken = async () => {
+const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
@@ -79,11 +80,8 @@ const getPricesFromKraken = async () => {
 	return prices;
 };
 
-const reloadPricesFromKraken = async () => {
-	const conversionRatesFromCache = await getPricesFromKraken();
-
-	// Check if prices exists in cache
-	if (!conversionRatesFromCache) {
+const reload = async () => {
+	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
 		const transformedPrices = standardizeTickers(tickers);
 
@@ -94,6 +92,6 @@ const reloadPricesFromKraken = async () => {
 };
 
 module.exports = {
-	reloadPricesFromKraken,
-	getPricesFromKraken,
+	reload,
+	getFromCache,
 };

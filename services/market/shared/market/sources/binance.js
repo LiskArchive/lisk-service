@@ -20,11 +20,12 @@ const BluebirdPromise = require('bluebird');
 const requestLib = HTTP.request;
 const logger = Logger();
 
+const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
 
-const apiEndpoint = config.endpoints.binance;
+const { apiEndpoint, allowRefreshAfter } = config.sources.binance;
 const expireMiliseconds = config.ttl.binance;
 
 const symbolMap = {
@@ -79,7 +80,7 @@ const standardizeTickers = (tickers) => {
 	return transformedPrices;
 };
 
-const getBinancePricesFromDB = async () => {
+const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
@@ -94,11 +95,8 @@ const getBinancePricesFromDB = async () => {
 	return prices;
 };
 
-const reloadPricesFromBinance = async () => {
-	const conversionRatesFromCache = await getBinancePricesFromDB();
-
-	// Check if prices exists in cache
-	if (!conversionRatesFromCache) {
+const reload = async () => {
+	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
 		const filteredTickers = filterTickers(tickers);
 		const transformedPrices = standardizeTickers(filteredTickers);
@@ -110,6 +108,6 @@ const reloadPricesFromBinance = async () => {
 };
 
 module.exports = {
-	reloadPricesFromBinance,
-	getBinancePricesFromDB,
+	reload,
+	getFromCache,
 };

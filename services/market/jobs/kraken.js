@@ -14,20 +14,21 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { reloadPricesFromBinance } = require('../shared/market/sources');
+const { reload } = require('../shared/market/sources/kraken');
+const config = require('../config');
 
 module.exports = [
 	{
-		name: 'prices.retrieve.binance',
-		description: 'Fetches up-to-date market prices from Binance',
-		schedule: '* * * * *', // Every 1 min
+		name: 'prices.retrieve.kraken',
+		description: 'Fetches up-to-date market prices from Kraken',
+		schedule: config.sources.kraken.cron,
 		init: async () => {
-			logger.debug('Initializing market prices');
-			await reloadPricesFromBinance();
+			logger.debug('Initializing market prices from Kraken');
+			await reload();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from Binance');
-			await reloadPricesFromBinance();
+			logger.debug('Updating market prices from Kraken');
+			await reload();
 		},
 	},
 ];

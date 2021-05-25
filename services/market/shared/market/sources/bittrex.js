@@ -17,12 +17,13 @@ const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
+const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const apiEndpoint = config.endpoints.bittrex;
+const { apiEndpoint, allowRefreshAfter } = config.sources.bittrex;
 const expireMiliseconds = config.ttl.bittrex;
 
 const bittrexCache = CacheRedis('bittrex', config.endpoints.redis);
@@ -68,7 +69,7 @@ const standardizeTickers = (tickers) => {
 	return transformedPrices;
 };
 
-const getPricesFromBittrex = async () => {
+const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
@@ -83,11 +84,8 @@ const getPricesFromBittrex = async () => {
 	return prices;
 };
 
-const reloadPricesFromBittrex = async () => {
-	const conversionRatesFromCache = await getPricesFromBittrex();
-
-	// Check if prices exists in cache
-	if (!conversionRatesFromCache) {
+const reload = async () => {
+	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
 		const filteredTickers = filterTickers(tickers);
 		const transformedPrices = standardizeTickers(filteredTickers);
@@ -99,6 +97,6 @@ const reloadPricesFromBittrex = async () => {
 };
 
 module.exports = {
-	reloadPricesFromBittrex,
-	getPricesFromBittrex,
+	reload,
+	getFromCache,
 };

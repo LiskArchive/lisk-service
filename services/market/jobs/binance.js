@@ -14,20 +14,21 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { reloadPricesFromBittrex } = require('../shared/market/sources');
+const { reload } = require('../shared/market/sources/binance');
+const config = require('../config');
 
 module.exports = [
 	{
-		name: 'prices.retrieve.bittrex',
-		description: 'Fetches up-to-date market prices from Bittrex',
-		schedule: '* * * * *', // Every 1 min
+		name: 'prices.retrieve.binance',
+		description: 'Fetches up-to-date market prices from Binance',
+		schedule: config.sources.binance.cron,
 		init: async () => {
-			logger.debug('Initializing market prices from Bittrex');
-			await reloadPricesFromBittrex();
+			logger.debug('Initializing market prices');
+			await reload();
 		},
 		controller: async () => {
-			logger.debug('Updating market prices from Bittrex');
-			await reloadPricesFromBittrex();
+			logger.debug('Job scheduled to update prices from Binance');
+			await reload();
 		},
 	},
 ];
