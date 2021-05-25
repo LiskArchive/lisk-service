@@ -103,7 +103,6 @@ const reloadPricesFromExchangerateapi = async () => {
 	}
 };
 
-
 module.exports = {
 	reloadPricesFromExchangerateapi,
 	getExchangeratesapiPricesFromDB,
