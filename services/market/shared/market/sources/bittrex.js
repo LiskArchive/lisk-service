@@ -23,6 +23,7 @@ const requestLib = HTTP.request;
 const logger = Logger();
 
 const apiEndpoint = config.endpoints.bittrex;
+const expireMiliseconds = config.ttl.bittrex;
 
 const bittrexCache = CacheRedis('bittrex', config.endpoints.redis);
 
@@ -67,29 +68,34 @@ const standardizeTickers = (tickers) => {
 	return transformedPrices;
 };
 
-const reloadPricesFromBittrex = async () => {
-	const tickers = await fetchAllMarketTickers();
-	const filteredTickers = filterTickers(tickers);
-	const transformedPrices = standardizeTickers(filteredTickers);
-
-	// Serialize individual price item and write to the cache
-	await BluebirdPromise.all(transformedPrices
-		.map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item))));
-
-	return transformedPrices;
-};
-
 const getPricesFromBittrex = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
 		async (itemCode) => {
 			const serializedPrice = await bittrexCache.get(`bittrex_${itemCode}`);
-			return JSON.parse(serializedPrice);
+			if (serializedPrice) return JSON.parse(serializedPrice);
+			return null;
 		},
 		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
 	);
+	if (prices.includes(null)) return null;
 	return prices;
+};
+
+const reloadPricesFromBittrex = async () => {
+	const conversionRatesFromCache = await getPricesFromBittrex();
+
+	// Check if prices exists in cache
+	if (!conversionRatesFromCache) {
+		const tickers = await fetchAllMarketTickers();
+		const filteredTickers = filterTickers(tickers);
+		const transformedPrices = standardizeTickers(filteredTickers);
+
+		// Serialize individual price item and write to the cache
+		await BluebirdPromise.all(transformedPrices
+			.map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+	}
 };
 
 module.exports = {

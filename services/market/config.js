@@ -55,7 +55,10 @@ config.access_key.exchangeratesapi = process.env.EXCHANGERATESAPI_IO_API_KEY;
 
 // Expiry time for redis
 config.ttl = {
-	exchangeratesapi: 24 * 60 * 60 * 100, // miliseconds
+	exchangeratesapi: 24 * 60 * 60 * 100, // miliseconds,
+	binance: 15 * 60 * 1000, // miliseconds
+	bittrex: 15 * 60 * 1000, // miliseconds
+	kraken: 15 * 60 * 1000, // miliseconds
 };
 
 /**
