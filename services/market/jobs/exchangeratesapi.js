@@ -15,13 +15,12 @@
  */
 const logger = require('lisk-service-framework').Logger();
 const { reload } = require('../shared/market/sources/exchangeratesapi');
-const config = require('../config');
 
 module.exports = [
 	{
 		name: 'prices.retrieve.exchangeratesapi',
 		description: 'Fetches up-to-date market prices from exchangeratesapi',
-		schedule: config.sources.exchangeratesapi.cron,
+		schedule: '* * * * *',
 		init: async () => {
 			logger.debug('Initializing market prices');
 			await reload();

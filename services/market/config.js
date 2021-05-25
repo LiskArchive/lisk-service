@@ -69,22 +69,18 @@ config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:
 config.sources = {
 	binance: {
 		apiEndpoint: 'https://api.binance.com/api/v3',
-		cron: '* * * * *',
 		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
 	},
 	bittrex: {
 		apiEndpoint: 'https://api.bittrex.com/v3',
-		cron: '* * * * *',
 		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
 	},
 	exchangeratesapi: {
 		apiEndpoint: 'http://api.exchangeratesapi.io/v1',
-		cron: '* * * * *',
 		allowRefreshAfter: 8 * 60 * 60 * 1000, // miliseconds
 	},
 	kraken: {
 		apiEndpoint: 'https://api.kraken.com/0',
-		cron: '* * * * *',
 		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
 	},
 };

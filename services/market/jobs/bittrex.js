@@ -15,13 +15,12 @@
  */
 const logger = require('lisk-service-framework').Logger();
 const { reload } = require('../shared/market/sources/bittrex');
-const config = require('../config');
 
 module.exports = [
 	{
 		name: 'prices.retrieve.bittrex',
 		description: 'Fetches up-to-date market prices from Bittrex',
-		schedule: config.sources.bittrex.cron,
+		schedule: '* * * * *',
 		init: async () => {
 			logger.debug('Initializing market prices from Bittrex');
 			await reload();
