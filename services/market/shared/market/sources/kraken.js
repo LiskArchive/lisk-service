@@ -17,12 +17,14 @@ const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
+const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const apiEndpoint = config.endpoints.kraken;
+const { apiEndpoint, allowRefreshAfter } = config.sources.kraken;
+const expireMiliseconds = config.ttl.kraken;
 
 const krakenCache = CacheRedis('kraken', config.endpoints.redis);
 
@@ -63,31 +65,33 @@ const standardizeTickers = (tickers) => {
 	return transformedPrices;
 };
 
-const reloadPricesFromKraken = async () => {
-	const tickers = await fetchAllMarketTickers();
-	const transformedPrices = standardizeTickers(tickers);
-
-	// Serialize individual price item and write to the cache
-	await BluebirdPromise.all(transformedPrices
-		.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item))));
-
-	return transformedPrices;
-};
-
-const getPricesFromKraken = async () => {
+const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
 		async (itemCode) => {
 			const serializedPrice = await krakenCache.get(`kraken_${itemCode}`);
-			return JSON.parse(serializedPrice);
+			if (serializedPrice) return JSON.parse(serializedPrice);
+			return null;
 		},
 		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
 	);
+	if (prices.includes(null)) return null;
 	return prices;
 };
 
+const reload = async () => {
+	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
+		const tickers = await fetchAllMarketTickers();
+		const transformedPrices = standardizeTickers(tickers);
+
+		// Serialize individual price item and write to the cache
+		await BluebirdPromise.all(transformedPrices
+			.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+	}
+};
+
 module.exports = {
-	reloadPricesFromKraken,
-	getPricesFromKraken,
+	reload,
+	getFromCache,
 };

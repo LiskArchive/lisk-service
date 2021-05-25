@@ -14,20 +14,20 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const { reloadPricesFromExchangerateapi } = require('../shared/market/sources');
+const { reload } = require('../shared/market/sources/bittrex');
 
 module.exports = [
 	{
-		name: 'prices.retrieve.exchangeratesapi',
-		description: 'Fetches up-to-date market prices from exchangeratesapi',
-		schedule: '* * * * *', // Every 1 min
+		name: 'prices.retrieve.bittrex',
+		description: 'Fetches up-to-date market prices from Bittrex',
+		schedule: '* * * * *',
 		init: async () => {
-			logger.debug('Initializing market prices');
-			await reloadPricesFromExchangerateapi();
+			logger.debug('Initializing market prices from Bittrex');
+			await reload();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from Binance');
-			await reloadPricesFromExchangerateapi();
+			logger.debug('Updating market prices from Bittrex');
+			await reload();
 		},
 	},
 ];

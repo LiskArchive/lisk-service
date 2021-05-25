@@ -17,12 +17,14 @@ const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
+const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const apiEndpoint = config.endpoints.bittrex;
+const { apiEndpoint, allowRefreshAfter } = config.sources.bittrex;
+const expireMiliseconds = config.ttl.bittrex;
 
 const bittrexCache = CacheRedis('bittrex', config.endpoints.redis);
 
@@ -67,32 +69,34 @@ const standardizeTickers = (tickers) => {
 	return transformedPrices;
 };
 
-const reloadPricesFromBittrex = async () => {
-	const tickers = await fetchAllMarketTickers();
-	const filteredTickers = filterTickers(tickers);
-	const transformedPrices = standardizeTickers(filteredTickers);
-
-	// Serialize individual price item and write to the cache
-	await BluebirdPromise.all(transformedPrices
-		.map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item))));
-
-	return transformedPrices;
-};
-
-const getPricesFromBittrex = async () => {
+const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
 		async (itemCode) => {
 			const serializedPrice = await bittrexCache.get(`bittrex_${itemCode}`);
-			return JSON.parse(serializedPrice);
+			if (serializedPrice) return JSON.parse(serializedPrice);
+			return null;
 		},
 		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
 	);
+	if (prices.includes(null)) return null;
 	return prices;
 };
 
+const reload = async () => {
+	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
+		const tickers = await fetchAllMarketTickers();
+		const filteredTickers = filterTickers(tickers);
+		const transformedPrices = standardizeTickers(filteredTickers);
+
+		// Serialize individual price item and write to the cache
+		await BluebirdPromise.all(transformedPrices
+			.map(item => bittrexCache.set(`bittrex_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+	}
+};
+
 module.exports = {
-	reloadPricesFromBittrex,
-	getPricesFromBittrex,
+	reload,
+	getFromCache,
 };

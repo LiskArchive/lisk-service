@@ -13,8 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getMarketPrices } = require('./market');
+const moment = require('moment');
+
+const validateEntries = (entries, allowRefreshAfter) => entries === null
+	|| Array.isArray(entries) && entries
+		.some(entry => entry.updateTimestamp <= moment().subtract(allowRefreshAfter).unix());
 
 module.exports = {
-	getMarketPrices,
+	validateEntries,
 };

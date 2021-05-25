@@ -20,11 +20,13 @@ const BluebirdPromise = require('bluebird');
 const requestLib = HTTP.request;
 const logger = Logger();
 
+const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
 
-const apiEndpoint = config.endpoints.binance;
+const { apiEndpoint, allowRefreshAfter } = config.sources.binance;
+const expireMiliseconds = config.ttl.binance;
 
 const symbolMap = {
 	LSK_BTC: 'LSKBTC',
@@ -78,30 +80,34 @@ const standardizeTickers = (tickers) => {
 	return transformedPrices;
 };
 
-const reloadPricesFromBinance = async () => {
-	const tickers = await fetchAllMarketTickers();
-	const filteredTickers = filterTickers(tickers);
-	const transformedPrices = standardizeTickers(filteredTickers);
-
-	// Serialize individual price item and write to the cache
-	await BluebirdPromise.all(transformedPrices
-		.map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item))));
-};
-
-const getBinancePricesFromDB = async () => {
+const getFromCache = async () => {
 	// Read individual price item from cache and deserialize
 	const prices = await BluebirdPromise.map(
 		Object.getOwnPropertyNames(symbolMap),
 		async (itemCode) => {
 			const serializedPrice = await binanceCache.get(`binance_${itemCode}`);
-			return JSON.parse(serializedPrice);
+			if (serializedPrice) return JSON.parse(serializedPrice);
+			return null;
 		},
 		{ concurrency: Object.getOwnPropertyNames(symbolMap).length },
 	);
+	if (prices.includes(null)) return null;
 	return prices;
 };
 
+const reload = async () => {
+	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
+		const tickers = await fetchAllMarketTickers();
+		const filteredTickers = filterTickers(tickers);
+		const transformedPrices = standardizeTickers(filteredTickers);
+
+		// Serialize individual price item and write to the cache
+		await BluebirdPromise.all(transformedPrices
+			.map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+	}
+};
+
 module.exports = {
-	reloadPricesFromBinance,
-	getBinancePricesFromDB,
+	reload,
+	getFromCache,
 };

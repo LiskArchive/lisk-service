@@ -15,7 +15,7 @@
  */
 const { ServiceUnavailableException } = require('../../shared/exceptions');
 
-const marketService = require('../../shared/market');
+const marketService = require('../../shared/market/market');
 
 const getMarketPrices = async () => {
 	const marketPrices = {

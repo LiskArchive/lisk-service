@@ -55,16 +55,34 @@ config.access_key.exchangeratesapi = process.env.EXCHANGERATESAPI_IO_API_KEY;
 
 // Expiry time for redis
 config.ttl = {
-	exchangeratesapi: 24 * 60 * 60 * 100, // miliseconds
+	exchangeratesapi: 24 * 60 * 60 * 100, // miliseconds,
+	binance: 15 * 60 * 1000, // miliseconds
+	bittrex: 15 * 60 * 1000, // miliseconds
+	kraken: 15 * 60 * 1000, // miliseconds
 };
 
 /**
  * External endpoints
  */
 config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
-config.endpoints.binance = 'https://api.binance.com/api/v3';
-config.endpoints.bittrex = 'https://api.bittrex.com/v3';
-config.endpoints.exchangeratesapi = 'http://api.exchangeratesapi.io/v1';
-config.endpoints.kraken = 'https://api.kraken.com/0';
+
+config.sources = {
+	binance: {
+		apiEndpoint: 'https://api.binance.com/api/v3',
+		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
+	},
+	bittrex: {
+		apiEndpoint: 'https://api.bittrex.com/v3',
+		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
+	},
+	exchangeratesapi: {
+		apiEndpoint: 'http://api.exchangeratesapi.io/v1',
+		allowRefreshAfter: 8 * 60 * 60 * 1000, // miliseconds
+	},
+	kraken: {
+		apiEndpoint: 'https://api.kraken.com/0',
+		allowRefreshAfter: 1 * 60 * 1000, // miliseconds
+	},
+};
 
 module.exports = config;
