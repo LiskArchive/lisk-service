@@ -144,7 +144,7 @@ pipeline {
 			dir('./jenkins/mysql') { sh "make down" }
 			dir('./jenkins/redis') { sh "make down" }
 			
-			dir('./') { sh 'make clean-node_modules' }
+			dir('./') { sh 'make clean' }
 		}
 	}
 }
