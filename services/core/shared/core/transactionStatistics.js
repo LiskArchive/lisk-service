@@ -127,7 +127,8 @@ const insertToDb = async (statsList, date) => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
 		statistic.id = String(statistic.date)
 			.concat('-').concat(statistic.type)
-			.concat('-').concat(statistic.amount_range);
+			.concat('-')
+			.concat(statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});
