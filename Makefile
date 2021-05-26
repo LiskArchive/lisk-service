@@ -85,13 +85,7 @@ clean-node_modules:
 	cd ./tests && rm -rf node_modules
 
 clean:
-	rm -rf node_modules
-	cd ./framework && rm -rf node_modules
-	cd ./services/core && rm -rf node_modules
-	cd ./services/market && rm -rf node_modules
-	cd ./services/gateway && rm -rf node_modules
-	cd ./services/template && rm -rf node_modules
-	cd ./tests && rm -rf node_modules
+	clean-node_modules:
 	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests
 
 audit:
