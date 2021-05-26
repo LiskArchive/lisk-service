@@ -141,12 +141,12 @@ pipeline {
 			}
 
 			dir('./') { sh 'rm -rf node_modules' }
-            dir('./framework') { sh 'rm -rf node_modules' }
-            dir('./services/core') { sh 'rm -rf node_modules' }
-            dir('./services/market') { sh 'rm -rf node_modules' }
-            dir('./services/gateway') { sh 'rm -rf node_modules' }
-            dir('./services/template') { sh 'rm -rf node_modules' }
-            dir('./tests') { sh "rm -rf node_modules" }
+			dir('./framework') { sh 'rm -rf node_modules' }
+			dir('./services/core') { sh 'rm -rf node_modules' }
+			dir('./services/market') { sh 'rm -rf node_modules' }
+			dir('./services/gateway') { sh 'rm -rf node_modules' }
+			dir('./services/template') { sh 'rm -rf node_modules' }
+			dir('./tests') { sh "rm -rf node_modules" }
 
 			dir('./jenkins/lisk-core') { sh "make down" }
 			dir('./jenkins/mysql') { sh "make down" }
