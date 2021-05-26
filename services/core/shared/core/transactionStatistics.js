@@ -94,8 +94,8 @@ const computeTransactionStats = transactions => transactions.reduce((acc, tx) =>
 		...acc[tx.type],
 		[getRange(tx)]: {
 			count: getWithFallback(acc, tx.type, getRange(tx)).count + 1,
-			volume: BigNumber(getWithFallback(acc, tx.type,
-				getRange(tx)).volume).add(getTxValue(tx)),
+			volume: BigNumber(getWithFallback(acc, tx.type, getRange(tx)).volume)
+				.add(getTxValue(tx)),
 		},
 	},
 }), getInitialValueToEnsureEachDayHasAtLeastOneEntry());
@@ -125,7 +125,9 @@ const insertToDb = async (statsList, date) => {
 
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
-		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
+		statistic.id = String(statistic.date)
+			.concat('-').concat(statistic.type)
+			.concat('-').concat(statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});
