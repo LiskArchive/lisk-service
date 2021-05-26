@@ -83,7 +83,7 @@ clean:
 	cd ./services/gateway && rm -rf node_modules
 	cd ./services/template && rm -rf node_modules
 	cd ./tests && rm -rf node_modules
-	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests
+	docker rmi $(docker images -q lisk/service_*)
 
 audit:
 	cd ./framework && npm audit; :
