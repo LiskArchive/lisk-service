@@ -94,8 +94,8 @@ const computeTransactionStats = transactions => transactions.reduce((acc, tx) =>
 		...acc[tx.type],
 		[getRange(tx)]: {
 			count: getWithFallback(acc, tx.type, getRange(tx)).count + 1,
-			volume: BigNumber(getWithFallback(acc, tx.type,
-				getRange(tx)).volume).add(getTxValue(tx)),
+			volume: BigNumber(getWithFallback(acc, tx.type, getRange(tx)).volume)
+				.add(getTxValue(tx)),
 		},
 	},
 }), getInitialValueToEnsureEachDayHasAtLeastOneEntry());
@@ -125,7 +125,9 @@ const insertToDb = async (statsList, date) => {
 
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
-		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
+		statistic.id = String(statistic.date)
+			.concat('-', statistic.type)
+			.concat('-', statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});
@@ -248,7 +250,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 
 const init = async historyLengthDays => {
 	signals.get('blockIndexReady').add(async () => {
-		await fetchTransactionsForPastNDays(historyLengthDays);
+		await fetchTransactionsForPastNDays(historyLengthDays, true);
 		signals.get('transactionStatsReady').dispatch(historyLengthDays);
 	});
 };

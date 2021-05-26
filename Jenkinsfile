@@ -143,6 +143,8 @@ pipeline {
 			dir('./jenkins/lisk-core') { sh "make down" }
 			dir('./jenkins/mysql') { sh "make down" }
 			dir('./jenkins/redis') { sh "make down" }
+			
+			dir('./') { sh 'make clean' }
 		}
 	}
 }

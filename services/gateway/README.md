@@ -1,6 +1,6 @@
-# Lisk Service Core
+# Lisk Service Gateway
 
-The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API.
+The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never disrupts or breaks the existing application compatibility.
 
 > Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
@@ -16,42 +16,41 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/components/core # move into core component folder
+cd lisk-service/components/gateway # move into core component folder
 npm install # install required Node.js modules
 ```
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations.
+To configure the different components, there are a number of environment variables the user can define in order to customize the configurations.
 
 A list of the most commonly used environment variables can be seen below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis)
-- `SERVICE_CORE_MYSQL`: URL of the local Lisk Service Core database
-- `SERVICE_CORE_REDIS`: URL of Redis server (dedicated for core, different than the message broker)
-- `LISK_CORE_WS`: URL of Lisk Core node (WebSocket API)
-- `LISK_STATIC`: URL of Lisk static assets
-- `GEOIP_JSON`: URL of GeoIP server
-- `ENABLE_TRANSACTION_STATS`: Enables global transaction statistics
-- `ENABLE_FEE_ESTIMATOR_QUICK`: Enables the fee estimator (quick algorithm)
-- `ENABLE_FEE_ESTIMATOR_FULL`: Enables the fee estimator (full blockchain analysis)
+- `JSON_RPC_STRICT_MODE`: Makes JSON-RPC require a valid JSON-RPC 2.0 envelope
+- `ENABLE_HTTP_API`: Enables particular HTTP APIs listed by a comma
+- `ENABLE_WS_API`: Enables particular JSON-RPC APIs listed by a comma
 
 The variables listed above can be overridden globally by using global variables.
 
 ```bash
-export LISK_CORE_HTTP="http://localhost:4000" # Set Lisk node port to the given URL globally
+export ENABLE_HTTP_API="http-status,http-version2"
 ```
 
-### Example
+### Examples
 
 ```bash
-# Run a local instance with a local core node, MySQL and Redis
-# This also enables the transaction statistics for the previous 40 days
-LISK_CORE_WS="ws://localhost:4001" \
-SERVICE_CORE_MYSQL="mysql://lisk:password@localhost:3306/lisk" \
-SERVICE_CORE_REDIS="redis://localhost:6379/7" \
-ENABLE_TRANSACTION_STATS="true" \
-TRANSACTION_STATS_HISTORY_LENGTH_DAYS="40" \
+# Run local instance with HTTP API only
+ENABLE_HTTP_API="http-status,http-version2" \
+ENABLE_WS_API="" \
+node app.js
+```
+
+```bash
+# Run a local instance with the RPC API in a strict mode and using HTTP
+ENABLE_HTTP_API="http-status,http-version2" \
+ENABLE_WS_API="blockchain,rpc-v2" \
+JSON_RPC_STRICT_MODE="true" \
 node app.js
 ```
 
@@ -60,11 +59,11 @@ node app.js
 ### Start
 
 ```bash
-cd lisk-service/components/core # move into root folder of the core component
+cd lisk-service/components/gateway # navigate into the root folder of the core component
 npm start # start the component with running nodes locally
 ```
 
-Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.
+Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
 
 If you want to run a production variant of the service use `Docker` or `PM2`. In the event whereby the process fails, it will be automatically recovered.
 
