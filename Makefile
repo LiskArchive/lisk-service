@@ -74,7 +74,7 @@ build-local:
 	cd ./services/gateway && npm ci
 	cd ./services/template && npm ci
 	cd ./tests && npm ci
-	
+
 clean-node_modules:
 	rm -rf node_modules
 	cd ./framework && rm -rf node_modules
