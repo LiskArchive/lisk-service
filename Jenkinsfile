@@ -140,6 +140,10 @@ pipeline {
 				sh 'pm2 stop --silent ecosystem.jenkins.config.js'
 			}
 
+			dir('./jenkins/lisk-core') { sh "make down" }
+			dir('./jenkins/mysql') { sh "make down" }
+			dir('./jenkins/redis') { sh "make down" }
+			
 			dir('./') { sh 'rm -rf node_modules' }
 			dir('./framework') { sh 'rm -rf node_modules' }
 			dir('./services/core') { sh 'rm -rf node_modules' }
@@ -147,10 +151,6 @@ pipeline {
 			dir('./services/gateway') { sh 'rm -rf node_modules' }
 			dir('./services/template') { sh 'rm -rf node_modules' }
 			dir('./tests') { sh "rm -rf node_modules" }
-
-			dir('./jenkins/lisk-core') { sh "make down" }
-			dir('./jenkins/mysql') { sh "make down" }
-			dir('./jenkins/redis') { sh "make down" }
 		}
 	}
 }
