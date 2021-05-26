@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-gateway",
-  "version": "0.3.0-rc.0",
+  "version": "0.3.0",
   "description": "Lisk Serivce Gateway",
   "keywords": [
     "lisk",
@@ -19,6 +19,8 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
+    "clean": "rm -rf ./node_modules",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
