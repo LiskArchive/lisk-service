@@ -22,6 +22,7 @@ module.exports = {
 		address: '=,string',
 		username: '=,string',
 		publicKey: '=,string',
+		aggregate: '=,boolean',
 		limit: '=,number',
 		offset: '=,number',
 	},
