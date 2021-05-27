@@ -24,8 +24,10 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
+const aggregateVotesIndexSchema = require('./schema/aggregatedVotes');
 
 const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
+const getAggregatedVotesIndex = () => mysqlIndex('aggregatedVotes', aggregateVotesIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
@@ -34,6 +36,7 @@ const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(p
 
 const indexVotes = async blocks => {
 	const votesDB = await getVotesIndex();
+	const votesAggregateDB = await getAggregatedVotesIndex();
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
@@ -50,6 +53,22 @@ const indexVotes = async blocks => {
 					voteEntry.receivedAddress = getBase32AddressFromHex(vote.delegateAddress);
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
+					votesAggregateDB.increment({
+						increment: {
+							amount: BigInt(vote.amount),
+						},
+						where: {
+							property: 'aggId',
+							value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+						},
+					}, {
+						aggId: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+						sentAddress: voteEntry.sentAddress,
+						receivedAddress: voteEntry.receivedAddress,
+						amount: voteEntry.amount,
+						id: voteEntry.id,
+						timestamp: voteEntry.timestamp,
+					});
 					return voteEntry;
 				});
 				return voteEntries;
