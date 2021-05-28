@@ -97,6 +97,7 @@ const normalizeVote = vote => parseToJSONCompatObj(vote);
 
 const getVoters = async params => {
 	const votesDB = await getVotesIndex();
+	const votesAggregateDB = await getAggregatedVotesIndex();
 	const votes = {
 		data: { votes: [] },
 		meta: {},
@@ -123,21 +124,26 @@ const getVoters = async params => {
 		params.receivedAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
 	}
 
-	const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
-	if (resultSet.length) {
-		params.ids = resultSet.map(row => row.id);
+	if (params.aggregate) {
+		const resultSet = await votesAggregateDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
+		if (resultSet.length) votes.data.votes = resultSet;
+	} else {
+		const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
+		if (resultSet.length) {
+			params.ids = resultSet.map(row => row.id);
 
-		const response = await getTransactionsByIDs(params.ids);
-		if (response) {
-			const voteMultiArray = response
-				.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));
-			let allVotes = [];
-			voteMultiArray
-				.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => ({
-					...normalizeVote(v),
-					sentAddress: getBase32AddressFromHex(extractAddressFromPublicKey(v.senderPublicKey)),
-				}))));
-			votes.data.votes = allVotes;
+			const response = await getTransactionsByIDs(params.ids);
+			if (response) {
+				const voteMultiArray = response
+					.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));
+				let allVotes = [];
+				voteMultiArray
+					.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => ({
+						...normalizeVote(v),
+						sentAddress: getBase32AddressFromHex(extractAddressFromPublicKey(v.senderPublicKey)),
+					}))));
+				votes.data.votes = allVotes;
+			}
 		}
 	}
 
