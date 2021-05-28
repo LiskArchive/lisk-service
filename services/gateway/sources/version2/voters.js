@@ -31,7 +31,7 @@ module.exports = {
 			account: {
 				address: '=,string',
 				username: '=,string',
-				votesUsed: '=,number',
+				votesReceived: '=,number',
 			},
 			votes: ['data.votes', vote],
 		},

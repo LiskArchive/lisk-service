@@ -66,6 +66,7 @@ const indexVotes = async blocks => {
 					});
 
 					// TODO: Remove 'tempId' after composite PK support is added
+					// Only for indexing all votes
 					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
 					voteEntry.id = tx.id;
 					return voteEntry;
@@ -161,10 +162,10 @@ const getVoters = async params => {
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
-		votesUsed: votes.data.votes.length,
+		votesReceived: await votesDB.count({ receivedAddress: params.receivedAddress }),
 	};
 	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
-	votes.meta.total = votes.data.account.votesUsed;
+	votes.meta.total = votes.data.account.votesReceived;
 	votes.meta.count = votes.data.votes.length;
 	votes.meta.offset = params.offset;
 	return votes;
