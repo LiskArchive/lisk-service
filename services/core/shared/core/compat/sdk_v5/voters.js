@@ -44,31 +44,30 @@ const indexVotes = async blocks => {
 				const voteEntries = tx.asset.votes.map(vote => {
 					const voteEntry = {};
 
-					// TODO: Remove 'tempId' after composite PK support is added
-					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
-					voteEntry.id = tx.id;
 					voteEntry.sentAddress = getBase32AddressFromHex(
 						extractAddressFromPublicKey(tx.senderPublicKey),
 					);
 					voteEntry.receivedAddress = getBase32AddressFromHex(vote.delegateAddress);
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
+
+					// indexing aggregated votes per account
 					votesAggregateDB.increment({
 						increment: {
 							amount: BigInt(vote.amount),
 						},
 						where: {
-							property: 'aggId',
+							property: 'id',
 							value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
 						},
 					}, {
-						aggId: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-						sentAddress: voteEntry.sentAddress,
-						receivedAddress: voteEntry.receivedAddress,
-						amount: voteEntry.amount,
-						id: voteEntry.id,
-						timestamp: voteEntry.timestamp,
+						...voteEntry,
+						id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
 					});
+
+					// TODO: Remove 'tempId' after composite PK support is added
+					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
+					voteEntry.id = tx.id;
 					return voteEntry;
 				});
 				return voteEntries;
