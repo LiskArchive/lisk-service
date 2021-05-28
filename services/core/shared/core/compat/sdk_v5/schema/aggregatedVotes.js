@@ -14,9 +14,8 @@
  *
  */
 module.exports = {
-	primaryKey: 'aggId',
+	primaryKey: 'id',
 	schema: {
-		aggId: { type: 'string' },
 		id: { type: 'string' },
 		sentAddress: { type: 'string' },
 		receivedAddress: { type: 'string' },
@@ -24,7 +23,6 @@ module.exports = {
 		timestamp: { type: 'integer' },
 	},
 	indexes: {
-		id: { type: 'key' },
 		sentAddress: { type: 'key' },
 		receivedAddress: { type: 'key' },
 		amount: { type: 'range' },
