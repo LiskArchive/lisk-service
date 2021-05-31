@@ -22,10 +22,10 @@ const { getBase32AddressFromHex } = require('./accountUtils');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
-const votesAggregatedIndexSchema = require('./schema/votesAggregated');
+const votesAggregateIndexSchema = require('./schema/votesAggregate');
 
 const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
-const getVotesAggregatedIndex = () => mysqlIndex('votes_aggregated', votesAggregatedIndexSchema);
+const getVotesAggregateIndex = () => mysqlIndex('votes_aggregate', votesAggregateIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
@@ -34,12 +34,12 @@ const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(p
 
 const indexVotes = async blocks => {
 	const votesDB = await getVotesIndex();
-	const votesAggregateDB = await getVotesAggregatedIndex();
+	const votesAggregateDB = await getVotesAggregateIndex();
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
 			.map(tx => {
-				const voteEntries = tx.asset.votes.map(vote => {
+				const voteEntries = tx.asset.votes.map(async vote => {
 					const voteEntry = {};
 
 					voteEntry.sentAddress = getBase32AddressFromHex(
@@ -49,23 +49,30 @@ const indexVotes = async blocks => {
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
 
-					// indexing aggregated votes per account
-					votesAggregateDB.increment({
-						increment: {
-							amount: BigInt(vote.amount),
-						},
-						where: {
-							property: 'id',
-							value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-						},
-					}, {
-						...voteEntry,
-						id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+					const [row] = await votesDB.find({
+						id: tx.id,
+						receivedAddress: voteEntry.receivedAddress,
 					});
+					if (!row || !row.isAggregated) {
+						// indexing aggregated votes per account
+						const numRowsAffected = await votesAggregateDB.increment({
+							increment: {
+								amount: BigInt(vote.amount),
+							},
+							where: {
+								property: 'id',
+								value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+							},
+						}, {
+							...voteEntry,
+							id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+						});
+						voteEntry.isAggregated = numRowsAffected > 0;
+					}
 
 					// TODO: Remove 'tempId' after composite PK support is added
 					// Only for indexing all votes
-					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
+					voteEntry.tempId = tx.id.concat('_', voteEntry.receivedAddress);
 					voteEntry.id = tx.id;
 					return voteEntry;
 				});
@@ -75,8 +82,9 @@ const indexVotes = async blocks => {
 		votesArray.forEach(arr => votes = votes.concat(arr));
 		return votes;
 	});
-	let allVotes = [];
-	votesMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
+	let allVotePromises = [];
+	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
+	const allVotes = await BluebirdPromise.all(allVotePromises);
 	if (allVotes.length) await votesDB.upsert(allVotes);
 };
 
@@ -93,7 +101,7 @@ const removeVotesByTransactionIDs = async transactionIDs => {
 
 const getVoters = async params => {
 	const votesDB = await getVotesIndex();
-	const votesAggregateDB = await getVotesAggregatedIndex();
+	const votesAggregateDB = await getVotesAggregateIndex();
 	const votes = {
 		data: { votes: [] },
 		meta: {},
@@ -143,7 +151,9 @@ const getVoters = async params => {
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
-		votesReceived: votes.data.votes.length,
+		votesReceived: params.aggregate
+			? await votesAggregateDB.count({ receivedAddress: params.receivedAddress })
+			: await votesDB.count({ receivedAddress: params.receivedAddress }),
 	};
 	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
 	votes.meta.total = votes.data.account.votesReceived;

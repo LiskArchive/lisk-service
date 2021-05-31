@@ -23,6 +23,7 @@ module.exports = {
 		receivedAddress: { type: 'string' },
 		amount: { type: 'bigInteger' },
 		timestamp: { type: 'integer' },
+		isAggregated: { type: 'boolean', null: false, defaultValue: false },
 	},
 	indexes: {
 		id: { type: 'key' },
