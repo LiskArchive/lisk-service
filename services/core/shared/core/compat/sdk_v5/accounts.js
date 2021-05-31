@@ -203,7 +203,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 						property: 'address',
 						value: getBase32AddressFromPublicKey(accountInfo.publicKey),
 					},
-				});
+				}, account);
 			}
 			return account;
 		},
