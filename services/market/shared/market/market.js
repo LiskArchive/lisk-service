@@ -39,16 +39,14 @@ const getMarketPrices = async () => {
 		meta: {},
 	};
 
-	const response = await getMarketPricesFromCache();
-	if (response) {
-		Object.values(response).forEach(prices => {
-			let price;
-			while (!price && prices.length) {
-				price = prices.shift();
-				marketPrices.data.push(price);
-			}
-		});
-	}
+	const pricesByPairs = await getMarketPricesFromCache();
+	Object.values(pricesByPairs).forEach(prices => {
+		let price;
+		while (!price && prices.length) {
+			price = prices.shift();
+			marketPrices.data.push(price);
+		}
+	});
 
 	marketPrices.meta = {
 		count: marketPrices.data.length,
