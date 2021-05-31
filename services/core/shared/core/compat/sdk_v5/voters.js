@@ -143,7 +143,7 @@ const getVoters = async params => {
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
-		votesReceived: await votesDB.count({ receivedAddress: params.receivedAddress }),
+		votesReceived: votes.data.votes.length,
 	};
 	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
 	votes.meta.total = votes.data.account.votesReceived;
