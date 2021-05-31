@@ -16,6 +16,12 @@
 const logger = require('lisk-service-framework').Logger();
 const { updatePrices } = require('../shared/market/priceUpdater');
 
+const setTimeoutPromise = ms => new Promise(resolve => setTimeout(resolve, ms));
+const delayExec = async (fn, delay = 1000) => {
+	await setTimeoutPromise(delay);
+	return fn();
+};
+
 module.exports = [
 	{
 		name: 'prices.update',
@@ -23,7 +29,7 @@ module.exports = [
 		schedule: '* * * * *',
 		init: async () => {
 			logger.debug('Initializing market prices');
-			await updatePrices();
+			await delayExec(updatePrices); // Delay ensures that the source prices are fetched and cached
 		},
 		controller: async () => {
 			logger.debug('Job scheduled to maintain updated market prices');
