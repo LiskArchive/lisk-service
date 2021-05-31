@@ -115,5 +115,6 @@ const updatePrices = async () => {
 };
 
 module.exports = {
+	calcTargetPairPrices,
 	updatePrices,
 };

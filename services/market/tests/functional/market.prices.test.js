@@ -15,8 +15,8 @@
  *
  */
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
-const Joi = require('joi');
 const { ServiceBroker } = require('moleculer');
+const { marketPriceItemSchema } = require('../schemas/marketPriceItem.schema');
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',
@@ -24,15 +24,6 @@ const broker = new ServiceBroker({
 	requestTimeout: 15 * 1000,
 	logger: console,
 });
-
-const marketPriceItemSchema = Joi.object({
-	code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
-	from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
-	to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
-	rate: Joi.string().required(),
-	updateTimestamp: Joi.number().integer().positive().required(),
-	sources: Joi.array().items(Joi.string().required()).required(),
-}).required();
 
 describe('Test market prices', () => {
 	beforeAll(() => broker.start());
