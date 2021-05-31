@@ -17,6 +17,7 @@
 /* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
 const { ServiceBroker } = require('moleculer');
 const { marketPriceItemSchema } = require('../schemas/marketPriceItem.schema');
+const { serviceUnavailableSchema } = require('../schemas/serviceUnavailable.schema');
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',
@@ -32,10 +33,14 @@ describe('Test market prices', () => {
 	describe('Connect to client and retrieve market prices', () => {
 		it('call market.prices', async () => {
 			const result = await broker.call('market.prices', {});
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data).toBeInstanceOf(Array);
-			result.data.forEach(price => marketPriceItemSchema.validate(price));
-			expect(result.meta).toHaveProperty('count');
+			if (result.data.error) {
+				serviceUnavailableSchema.validate(result);
+			} else {
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
+				result.data.forEach(price => marketPriceItemSchema.validate(price));
+				expect(result.meta).toHaveProperty('count');
+			}
 		});
 	});
 });
