@@ -19,15 +19,13 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const { getIndexedAccountInfo } = require('./accounts');
 const { getBase32AddressFromHex } = require('./accountUtils');
-const { getTransactionsByIDs } = require('./transactions');
-const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
-const aggregateVotesIndexSchema = require('./schema/aggregatedVotes');
+const votesAggregatedIndexSchema = require('./schema/votesAggregated');
 
 const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
-const getAggregatedVotesIndex = () => mysqlIndex('aggregatedVotes', aggregateVotesIndexSchema);
+const getVotesAggregatedIndex = () => mysqlIndex('votes_aggregated', votesAggregatedIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
@@ -36,7 +34,7 @@ const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(p
 
 const indexVotes = async blocks => {
 	const votesDB = await getVotesIndex();
-	const votesAggregateDB = await getAggregatedVotesIndex();
+	const votesAggregateDB = await getVotesAggregatedIndex();
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
@@ -93,11 +91,9 @@ const removeVotesByTransactionIDs = async transactionIDs => {
 	await votesDB.deleteIds(forkedVotes.map(v => v.tempId));
 };
 
-const normalizeVote = vote => parseToJSONCompatObj(vote);
-
 const getVoters = async params => {
 	const votesDB = await getVotesIndex();
-	const votesAggregateDB = await getAggregatedVotesIndex();
+	const votesAggregateDB = await getVotesAggregatedIndex();
 	const votes = {
 		data: { votes: [] },
 		meta: {},
@@ -124,28 +120,13 @@ const getVoters = async params => {
 		params.receivedAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
 	}
 
+	let resultSet;
 	if (params.aggregate) {
-		const resultSet = await votesAggregateDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
-		if (resultSet.length) votes.data.votes = resultSet;
+		resultSet = await votesAggregateDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
 	} else {
-		const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
-		if (resultSet.length) {
-			params.ids = resultSet.map(row => row.id);
-
-			const response = await getTransactionsByIDs(params.ids);
-			if (response) {
-				const voteMultiArray = response
-					.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));
-				let allVotes = [];
-				voteMultiArray
-					.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => ({
-						...normalizeVote(v),
-						sentAddress: getBase32AddressFromHex(extractAddressFromPublicKey(v.senderPublicKey)),
-					}))));
-				votes.data.votes = allVotes;
-			}
-		}
+		resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
 	}
+	if (resultSet.length) votes.data.votes = resultSet;
 
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
