@@ -27,7 +27,7 @@ const kraken = require('./sources/kraken');
 const pricesCache = CacheRedis('market_prices', config.endpoints.redis);
 const logger = Logger();
 
-const targetPairs = [
+const targetPairs = config.market.targetPairs || [
 	'LSK_EUR', 'LSK_USD', 'LSK_CHF',
 	'BTC_EUR', 'BTC_USD', 'BTC_CHF',
 ];

@@ -25,7 +25,7 @@ const config = require('../../../config.js');
 
 const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
 
-const { apiEndpoint, allowRefreshAfter } = config.sources.binance;
+const { apiEndpoint, allowRefreshAfter } = config.market.sources.binance;
 const expireMiliseconds = config.ttl.binance;
 
 const symbolMap = {

@@ -15,6 +15,7 @@
  */
 const config = {
 	endpoints: {},
+	market: {},
 };
 
 // Moleculer broker config
@@ -66,7 +67,12 @@ config.ttl = {
  */
 config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
 
-config.sources = {
+/**
+ * Market prices config
+ */
+// SERVICE_MARKET_TARGETPAIRS should be a CSV-based string Eg: 'LSK_EUR,BTC_USD'
+config.market.targetPairs = process.env.SERVICE_MARKET_TARGETPAIRS ? process.env.SERVICE_MARKET_TARGETPAIRS.split(',') : '';
+config.market.sources = {
 	binance: {
 		apiEndpoint: 'https://api.binance.com/api/v3',
 		allowRefreshAfter: 1 * 60 * 1000, // miliseconds

@@ -28,7 +28,7 @@ const accessKey = config.access_key.exchangeratesapi;
 
 const currencies = ['EUR', 'USD', 'CHF', 'BTC'];
 const expireMiliseconds = config.ttl.exchangeratesapi;
-const { apiEndpoint, allowRefreshAfter } = config.sources.exchangeratesapi;
+const { apiEndpoint, allowRefreshAfter } = config.market.sources.exchangeratesapi;
 
 const symbolMap = {
 	EUR_USD: 'EURUSD',
