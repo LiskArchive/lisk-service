@@ -33,7 +33,7 @@ const rawPricesBySource = {
 };
 
 describe('Market prices', () => {
-	it('Calculates prices properly from raw prices', () => {
+	it('Calculates prices properly from raw prices', async () => {
 		const targetPairPrices = calcTargetPairPrices(rawPricesBySource, targetPairs);
 		expect(Object.keys(targetPairPrices).length).toEqual(targetPairs.length);
 		Object.values(targetPairPrices).forEach(prices => {
