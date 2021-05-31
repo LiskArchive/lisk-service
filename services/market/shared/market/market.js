@@ -27,7 +27,10 @@ const getMarketPricesFromCache = async () => {
 	const prices = {};
 	await BluebirdPromise.map(
 		targetPairs,
-		async pair => prices[pair] = JSON.parse(await pricesCache.get(pair)),
+		async pair => {
+			const price = await pricesCache.get(pair);
+			if (price) prices[pair] = JSON.parse(price);
+		},
 		{ concurrency: targetPairs.length },
 	);
 	return prices;
