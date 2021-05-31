@@ -85,7 +85,7 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 								code: targetPair,
 								from: tpSource,
 								to: tpTarget,
-								rate: rps.rate * rpt.rate,
+								rate: String(rps.rate * rpt.rate),
 								updateTimestamp: Math.min(rps.updateTimestamp, rpt.updateTimestamp),
 								sources: rps.sources.concat(rpt.sources),
 							};

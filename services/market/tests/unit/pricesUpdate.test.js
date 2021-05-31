@@ -41,5 +41,32 @@ describe('Market prices', () => {
 			expect(prices.length).toBeGreaterThanOrEqual(1);
 			prices.forEach(price => marketPriceItemSchema.validate(price));
 		});
+
+		// Deep compare the results
+		expect(targetPairPrices['LSK_EUR']).toEqual([
+			{ code: 'LSK_EUR', from: 'LSK', to: 'BTC', rate: '2.75', updateTimestamp: 1622414485, sources: ['cx2'] },
+		]);
+
+		expect(targetPairPrices['LSK_USD']).toEqual([
+			{ code: 'LSK_USD', from: 'LSK', to: 'USD', rate: 3.325, updateTimestamp: 1622414485, sources: ['cx1', 'cx2'] },
+			{ code: 'LSK_USD', from: 'LSK', to: 'USD', rate: 3.355, updateTimestamp: 1622414485, sources: ['cx2', 'fx1'] },
+		]);
+
+		expect(targetPairPrices['LSK_CHF']).toEqual([
+			{ code: 'LSK_CHF', from: 'LSK', to: 'CHF', rate: 3.0250000000000004, updateTimestamp: 1622414485, sources: ['cx2', 'fx1'] },
+		]);
+
+		expect(targetPairPrices['BTC_EUR']).toEqual([
+			{ code: 'BTC_EUR', from: 'BTC', to: 'EUR', rate: '28500', updateTimestamp: 1622414485, sources: ['cx1'] },
+		]);
+
+		expect(targetPairPrices['BTC_USD']).toEqual([
+			{ code: 'BTC_USD', from: 'BTC', to: 'USD', rate: 34770, updateTimestamp: 1622414485, sources: ['cx1', 'fx1'] },
+			{ code: 'BTC_USD', from: 'BTC', to: 'USD', rate: '35000', updateTimestamp: 1622414485, sources: ['cx2'] },
+		]);
+
+		expect(targetPairPrices['BTC_CHF']).toEqual([
+			{ code: 'BTC_CHF', from: 'BTC', to: 'CHF', rate: 31350.000000000004, updateTimestamp: 1622414485, sources: ['cx1', 'fx1'] }
+		]);
 	});
 });
