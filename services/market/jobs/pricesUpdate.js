@@ -20,7 +20,7 @@ module.exports = [
 	{
 		name: 'prices.update',
 		description: 'Keeps the market prices up-to-date',
-		schedule: '* * * * *',
+		interval: 5, // seconds
 		init: async () => {
 			logger.debug('Initializing market prices');
 			await updatePrices();
