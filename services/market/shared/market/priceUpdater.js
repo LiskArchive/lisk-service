@@ -38,18 +38,6 @@ const getRawPricesBySource = async () => ({
 	exchangeratesapi: await exchangeratesapi.getFromCache(),
 	kraken: await kraken.getFromCache(),
 });
-	const binancePrices = await binance.getFromCache();
-	const bittrexPrices = await bittrex.getFromCache();
-	const exchangeratesapiPrices = await exchangeratesapi.getFromCache();
-	const krakenPrices = await kraken.getFromCache();
-
-	return {
-		binance: binancePrices,
-		bittrex: bittrexPrices,
-		exchangeratesapi: exchangeratesapiPrices,
-		kraken: krakenPrices,
-	};
-};
 
 const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) => {
 	const finalPrices = {};
