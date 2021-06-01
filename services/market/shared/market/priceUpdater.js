@@ -32,7 +32,12 @@ const targetPairs = config.market.targetPairs || [
 	'BTC_EUR', 'BTC_USD', 'BTC_CHF',
 ];
 
-const getRawPricesBySource = async () => {
+const getRawPricesBySource = async () => ({
+	binance: await binance.getFromCache(),
+	bittrex: await bittrex.getFromCache(),
+	exchangeratesapi: await exchangeratesapi.getFromCache(),
+	kraken: await kraken.getFromCache(),
+});
 	const binancePrices = await binance.getFromCache();
 	const bittrexPrices = await bittrex.getFromCache();
 	const exchangeratesapiPrices = await exchangeratesapi.getFromCache();
@@ -108,7 +113,7 @@ const updatePrices = async () => {
 	logger.debug('Raw prices by source: ', util.inspect(rawPricesBySource, false, 3, true));
 
 	const targetPairPrices = calcTargetPairPrices(rawPricesBySource);
-	logger.debug('Final calculated prices by target pairs: ', util.inspect(rawPricesBySource, false, 3, true));
+	logger.debug('Final calculated prices by target pairs: ', util.inspect(targetPairPrices, false, 3, true));
 
 	await updatePricesCache(targetPairPrices);
 	return true;
