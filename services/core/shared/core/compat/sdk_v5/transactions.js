@@ -340,7 +340,6 @@ const getTransactionsByBlockId = async blockId => {
 		},
 		{ concurrency: block.payload.length },
 	);
-
 	return {
 		data: await normalizeTransaction(transactions),
 		meta: {
