@@ -77,6 +77,7 @@ broker.createService({
 		host,
 		port,
 		path: '/api',
+		etag: 'strong',
 		use: [],
 
 		cors: {
