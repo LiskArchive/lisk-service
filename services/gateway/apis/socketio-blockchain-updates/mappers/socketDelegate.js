@@ -14,11 +14,7 @@
  *
  */
 module.exports = {
-	address: '=,string',
-	publicKey: '=,string',
+	address: 'account.address,string',
+	publicKey: 'account.publicKey,string',
 	username: '=,string',
-	totalVotesReceived: '=,string',
-	minActiveHeight: '=,number',
-	isConsensusParticipant: '=,boolean',
-	nextForgingTime: '=,number',
 };

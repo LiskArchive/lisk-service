@@ -34,9 +34,6 @@ const { getStatus } = require('./shared/status');
 const { getReady, updateSvcStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
-const mapper = require('./shared/customMapper');
-const delegateResponse = require('./apis/socketio-blockchain-updates/mappers/socketDelegate');
-
 const { host, port } = config;
 
 const loggerConf = {
@@ -130,10 +127,7 @@ broker.createService({
 	events: {
 		'block.change': (payload) => sendSocketIoEvent('update.block', payload),
 		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
-		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, {
-			data: ['data', delegateResponse],
-			meta: {},
-		})),
+		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', payload),
 		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', payload),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
