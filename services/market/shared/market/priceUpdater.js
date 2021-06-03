@@ -29,12 +29,7 @@ const logger = Logger();
 
 const supportedFiatCurrencies = ['USD', 'EUR', 'CHF'];
 
-const targetPairs = config.market.targetPairs && config.market.targetPairs.length
-	? config.market.targetPairs.split(',')
-	: [
-		'LSK_BTC', 'LSK_EUR', 'LSK_USD', 'LSK_CHF',
-		'BTC_EUR', 'BTC_USD', 'BTC_CHF',
-	];
+const targetPairs = config.market.targetPairs.split(',');
 
 const getRawPricesBySource = async () => ({
 	binance: await binance.getFromCache(),

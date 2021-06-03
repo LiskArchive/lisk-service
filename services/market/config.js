@@ -71,7 +71,7 @@ config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:
  * Market prices config
  */
 // SERVICE_MARKET_TARGETPAIRS should be a CSV-based string Eg: 'LSK_EUR,BTC_USD'
-config.market.targetPairs = process.env.SERVICE_MARKET_TARGETPAIRS;
+config.market.targetPairs = process.env.SERVICE_MARKET_TARGETPAIRS || 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF';
 config.market.sources = {
 	binance: {
 		apiEndpoint: 'https://api.binance.com/api/v3',
