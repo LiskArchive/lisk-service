@@ -28,8 +28,7 @@ const pricesCache = CacheRedis('market_prices', config.endpoints.redis);
 const logger = Logger();
 
 const targetPairs = config.market.targetPairs || [
-	'LSK_BTC',
-	'LSK_EUR', 'LSK_USD', 'LSK_CHF',
+	'LSK_BTC', 'LSK_EUR', 'LSK_USD', 'LSK_CHF',
 	'BTC_EUR', 'BTC_USD', 'BTC_CHF',
 ];
 
@@ -49,6 +48,7 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 		// Append source name to the price code and push to sourcePrices array
 		// Eg: LSK_BTC from binance results in binance_LSK_EUR
 		if (Array.isArray(prices)) prices.forEach(item => sourcePrices.push({ ...item, code: `${source}_${item.code}` }));
+		else logger.warn(`Data from '${source}' is unavailable for market price computation.`);
 	});
 
 	// Loop through each target pair and calculate the final prices
