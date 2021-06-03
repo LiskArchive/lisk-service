@@ -45,7 +45,7 @@ const getRawPricesBySource = async () => ({
 
 const formatCalculatedRate = (targetCurrency, rate) => String(
 	supportedFiatCurrencies.includes(targetCurrency)
-		? Number(rate).toFixed(4)  // To fiat - 4 significant digits
+		? Number(rate).toFixed(4) // To fiat - 4 significant digits
 		: Number(rate).toFixed(8), // To crypto - 8 significant digits
 );
 
