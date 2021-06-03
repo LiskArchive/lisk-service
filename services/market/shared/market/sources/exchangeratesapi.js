@@ -59,18 +59,20 @@ const standardizeCurrencyConversionRates = (rawConversionRates) => {
 		([baseCur, convRates]) => Object.getOwnPropertyNames(convRates)
 			.map(targetCur => ({ symbol: `${baseCur}_${targetCur}`, price: convRates[targetCur] })),
 	);
-	const standardizedConversionRates = transformedConversionRates.map(convRate => {
-		const [from, to] = convRate.symbol.split('_');
-		const price = {
-			code: convRate.symbol,
-			from,
-			to,
-			rate: convRate.price,
-			updateTimestamp: Math.floor(Date.now() / 1000),
-			sources: ['exchangeratesapi'],
-		};
-		return price;
-	});
+	const standardizedConversionRates = (Array.isArray(transformedConversionRates))
+		? transformedConversionRates.map(convRate => {
+			const [from, to] = convRate.symbol.split('_');
+			const price = {
+				code: convRate.symbol,
+				from,
+				to,
+				rate: convRate.price,
+				updateTimestamp: Math.floor(Date.now() / 1000),
+				sources: ['exchangeratesapi'],
+			};
+			return price;
+		})
+		: [];
 	return standardizedConversionRates;
 };
 
