@@ -16,7 +16,7 @@
 const { calcTargetPairPrices } = require('../../shared/market/priceUpdater');
 const { marketPriceItemSchema } = require('../schemas/marketPriceItem.schema');
 
-const targetPairs = ['LSK_EUR', 'LSK_USD', 'LSK_CHF', 'BTC_EUR', 'BTC_USD', 'BTC_CHF'];
+const targetPairs = ['LSK_BTC', 'LSK_EUR', 'LSK_USD', 'LSK_CHF', 'BTC_EUR', 'BTC_USD', 'BTC_CHF'];
 const rawPricesBySource = {
 	cryptoExchange1: [
 		{ code: 'LSK_BTC', from: 'LSK', to: 'BTC', rate: '0.000095', updateTimestamp: 1622414485, sources: ['cx1'] },
@@ -43,6 +43,10 @@ describe('Market prices', () => {
 		});
 
 		// Deep compare the results
+		expect(targetPairPrices.LSK_BTC).toEqual([
+			{ code: 'LSK_BTC', from: 'LSK', to: 'BTC', rate: '0.00009500', updateTimestamp: 1622414485, sources: ['cx1'] },
+		]);
+
 		expect(targetPairPrices.LSK_EUR).toEqual([
 			{ code: 'LSK_EUR', from: 'LSK', to: 'BTC', rate: '2.7500', updateTimestamp: 1622414485, sources: ['cx2'] },
 		]);
