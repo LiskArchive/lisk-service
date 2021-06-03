@@ -22,6 +22,7 @@ module.exports = {
 		address: '=,string',
 		username: '=,string',
 		publicKey: '=,string',
+		aggregate: '=,boolean',
 		limit: '=,number',
 		offset: '=,number',
 	},
@@ -30,7 +31,7 @@ module.exports = {
 			account: {
 				address: '=,string',
 				username: '=,string',
-				votesUsed: '=,number',
+				votesReceived: '=,number',
 			},
 			votes: ['data.votes', vote],
 		},
