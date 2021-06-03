@@ -27,7 +27,7 @@ const kraken = require('./sources/kraken');
 const pricesCache = CacheRedis('market_prices', config.endpoints.redis);
 const logger = Logger();
 
-const supportedFiatCurrencies = ['USD', 'EUR', 'CHF'];
+const supportedFiatCurrencies = config.market.supportedFiatCurrencies.split(',');
 
 const targetPairs = config.market.targetPairs.split(',');
 
