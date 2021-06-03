@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-/* eslint-disable mocha/no-synchronous-tests,mocha/no-top-level-hooks */
-
 const { closeAll } = require('./helpers/socketIoRpcRequest');
 
-afterAll(() => { closeAll(); });
+// eslint-disable-next-line mocha/no-top-level-hooks
+afterAll(async () => { closeAll(); });

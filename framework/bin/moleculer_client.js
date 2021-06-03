@@ -14,7 +14,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
+/* eslint-disable no-console */
 
 const { ServiceBroker } = require('moleculer');
 const colorize = require('json-colorizer');

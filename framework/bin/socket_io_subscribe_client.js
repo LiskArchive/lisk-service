@@ -14,7 +14,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
+/* eslint-disable no-console */
 
 const io = require('socket.io-client');
 const colorize = require('json-colorizer');
