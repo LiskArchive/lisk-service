@@ -27,6 +27,8 @@ const kraken = require('./sources/kraken');
 const pricesCache = CacheRedis('market_prices', config.endpoints.redis);
 const logger = Logger();
 
+const supportedFiatCurrencies = ['USD', 'EUR', 'CHF'];
+
 const targetPairs = config.market.targetPairs && config.market.targetPairs.length
 	? config.market.targetPairs.split(',')
 	: [
@@ -40,6 +42,12 @@ const getRawPricesBySource = async () => ({
 	exchangeratesapi: await exchangeratesapi.getFromCache(),
 	kraken: await kraken.getFromCache(),
 });
+
+const formatCalculatedRate = (targetCurrency, rate) => String(
+	supportedFiatCurrencies.includes(targetCurrency)
+		? Number(rate).toFixed(4)  // To fiat - 4 significant digits
+		: Number(rate).toFixed(8), // To crypto - 8 significant digits
+);
 
 const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) => {
 	const finalPrices = {};
@@ -64,7 +72,11 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 		rawPricesWithMatchingSource.forEach(rps => {
 			if (rps.code.endsWith(`_${targetPair}`)) {
 				// If code is an exact match of the target pair, use the prices as is
-				finalPrices[targetPair].push({ ...rps, code: targetPair });
+				finalPrices[targetPair].push({
+					...rps,
+					code: targetPair,
+					rate: formatCalculatedRate(tpTarget, rps.rate),
+				});
 			} else {
 				// If exact match not found, check for intermediate pairs and calculate the required price
 				// Eg: LSK_EUR price can be calculated from LSK_BTC and BTC_EUR price values
@@ -81,7 +93,7 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 								code: targetPair,
 								from: tpSource,
 								to: tpTarget,
-								rate: String(rps.rate * rpt.rate),
+								rate: formatCalculatedRate(tpTarget, rps.rate * rpt.rate),
 								updateTimestamp: Math.min(rps.updateTimestamp, rpt.updateTimestamp),
 								sources: rps.sources.concat(rpt.sources),
 							};
