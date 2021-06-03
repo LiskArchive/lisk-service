@@ -47,7 +47,7 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 	Object.entries(rawPricesBySource).forEach(([source, prices]) => {
 		// Append source name to the price code and push to sourcePrices array
 		// Eg: LSK_BTC from binance results in binance_LSK_EUR
-		prices.forEach(item => sourcePrices.push({ ...item, code: `${source}_${item.code}` }));
+		if (Array.isArray(prices)) prices.forEach(item => sourcePrices.push({ ...item, code: `${source}_${item.code}` }));
 	});
 
 	// Loop through each target pair and calculate the final prices
