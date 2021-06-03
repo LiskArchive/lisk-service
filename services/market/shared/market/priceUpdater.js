@@ -27,10 +27,12 @@ const kraken = require('./sources/kraken');
 const pricesCache = CacheRedis('market_prices', config.endpoints.redis);
 const logger = Logger();
 
-const targetPairs = config.market.targetPairs || [
-	'LSK_BTC', 'LSK_EUR', 'LSK_USD', 'LSK_CHF',
-	'BTC_EUR', 'BTC_USD', 'BTC_CHF',
-];
+const targetPairs = config.market.targetPairs && config.market.targetPairs.length
+	? config.market.targetPairs.split(',')
+	: [
+		'LSK_BTC', 'LSK_EUR', 'LSK_USD', 'LSK_CHF',
+		'BTC_EUR', 'BTC_USD', 'BTC_CHF',
+	];
 
 const getRawPricesBySource = async () => ({
 	binance: await binance.getFromCache(),
