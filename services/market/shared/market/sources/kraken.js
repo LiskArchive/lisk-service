@@ -23,7 +23,7 @@ const config = require('../../../config.js');
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const { apiEndpoint, allowRefreshAfter } = config.sources.kraken;
+const { apiEndpoint, allowRefreshAfter } = config.market.sources.kraken;
 const expireMiliseconds = config.ttl.kraken;
 
 const krakenCache = CacheRedis('kraken', config.endpoints.redis);
