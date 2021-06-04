@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable import/no-extraneous-dependencies */
 const node = {};
 
 // Requires
+// eslint-disable-next-line import/no-extraneous-dependencies
 node.async = require('async');
 node.popsicle = require('popsicle');
 node.expect = require('chai').expect;

@@ -13,5 +13,5 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable */
+// eslint-disable-next-line no-console
 console.log('Use \'npm test\' to run tests');

@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-await-in-loop */
 const axios = require('axios');
 const HttpStatus = require('http-status-codes');
 
@@ -45,17 +44,19 @@ const performRequest = async (url, params) => {
 				message: err.message,
 			};
 		}
-			return {
-				status: err.code,
-				message: err.message,
-			};
+		return {
+			status: err.code,
+			message: err.message,
+		};
 	}
 };
 
 const performRequestUntilSuccess = async (url, params) => {
 	let retries = params.retries || 0;
 	let response;
+
 	do {
+		/* eslint-disable no-await-in-loop */
 		response = await performRequest(url, params);
 		const firstErrorCoreDigit = response.status.toString()[0];
 		if (firstErrorCoreDigit === '1') return response;
@@ -64,6 +65,7 @@ const performRequestUntilSuccess = async (url, params) => {
 
 		--retries;
 		await delay(params.retryDelay || 100);
+		/* eslint-enable no-await-in-loop */
 	} while (retries > 0);
 
 	return response;
@@ -80,8 +82,8 @@ const request = async (url, params = {}) => {
 
 	if (httpParams.method.toLowerCase() === 'get'
 		&& params.cacheTTL && params.cacheTTL > 0) {
-			key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
-			response = await cache.get(key);
+		key = `${encodeURI(url)}:ttl=${params.cacheTTL}`;
+		response = await cache.get(key);
 	}
 
 	if (!response) {
