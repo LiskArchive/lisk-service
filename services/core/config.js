@@ -28,43 +28,6 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; 
 config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in seconds
 
 /**
- * Database config
- */
-config.db = {
-	defaults: {
-		db: 'redis',
-		directory: 'db_data',
-		adapter: 'leveldb',
-		auto_compaction: false,
-	},
-	collections: {
-		pending_transactions: {
-			name: 'pending_transactions',
-			indexes: [],
-			adapter: 'memory',
-		},
-		transactions: {
-			name: 'transactions',
-			indexes: [
-				'id',
-				'amount',
-				'fee',
-				'type',
-				'height',
-				'blockId',
-				'timestamp',
-				'senderId',
-				'recipientId',
-				['senderId', 'timestamp'],
-				['recipientId', 'timestamp'],
-			],
-			// Only retain transactions contained in the latest n blocks
-			purge_limit: process.env.SERVICE_DB_PURGE_LIMIT_TRANSACTIONS || 8640,
-		},
-	},
-};
-
-/**
  * External endpoints
  */
 config.endpoints.liskHttp = `${(process.env.LISK_CORE_HTTP || 'http://127.0.0.1:4000')}/api`;
