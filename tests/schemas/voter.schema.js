@@ -36,7 +36,7 @@ const metaSchema = {
 const account = {
 	address: Joi.string().required(),
 	username: Joi.string().optional(),
-	votesUsed: Joi.number().required(),
+	votesReceived: Joi.number().required(),
 };
 
 const votes = {

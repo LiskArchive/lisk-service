@@ -18,6 +18,7 @@ Each service is an independent part of the repository and is placed in a separat
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [Gateway](services/gateway) | The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides users with a central point of data access that never breaks existing application compatibility.|
 | [Lisk](services/core) | The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
+| [Market](services/market) |  |
 | [Template](services/template) | The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing. |
 
 **Remarks**

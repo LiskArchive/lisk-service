@@ -14,31 +14,31 @@
  *
  */
 module.exports = {
-    type: 'moleculer',
-    params: {},
-    method: 'core.network.status',
-    definition: {
-        data: {
-            height: '=,string',
-            finalizedHeight: '=,number',
-            milestone: 'data.genesisConfig.rewards.milestones',
-            networkVersion: '=,string',
-            networkIdentifier: '=,string',
-            currentReward: '=,number',
-            rewards: 'data.genesisConfig.rewards',
-            supply: '=,string',
-            registeredModules: '=',
-            moduleAssets: '=',
-            blockTime: 'data.genesisConfig.blockTime,number',
-            communityIdentifier: 'data.genesisConfig.communityIdentifier,string',
-            minRemainingBalance: 'data.genesisConfig.minRemainingBalance,string',
-            maxPayloadLength: 'data.genesisConfig.maxPayloadLength,number',
-        },
-        meta: {
-            lastUpdate: 'data.lastUpdate,number',
-            lastBlockHeight: 'data.height,string',
-            lastBlockId: 'data.lastBlockID,string',
-        },
-        links: {},
-    },
+	type: 'moleculer',
+	params: {},
+	method: 'core.network.status',
+	definition: {
+		data: {
+			height: '=,string',
+			finalizedHeight: '=,number',
+			milestone: 'data.genesisConfig.rewards.milestones',
+			networkVersion: '=,string',
+			networkIdentifier: '=,string',
+			currentReward: '=,number',
+			rewards: 'data.genesisConfig.rewards',
+			supply: '=,string',
+			registeredModules: '=',
+			moduleAssets: '=',
+			blockTime: 'data.genesisConfig.blockTime,number',
+			communityIdentifier: 'data.genesisConfig.communityIdentifier,string',
+			minRemainingBalance: 'data.genesisConfig.minRemainingBalance,string',
+			maxPayloadLength: 'data.genesisConfig.maxPayloadLength,number',
+		},
+		meta: {
+			lastUpdate: 'data.lastUpdate,number',
+			lastBlockHeight: 'data.height,string',
+			lastBlockId: 'data.lastBlockID,string',
+		},
+		links: {},
+	},
 };

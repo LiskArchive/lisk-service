@@ -20,47 +20,47 @@ const signals = require('./shared/signals');
 const config = require('./config');
 
 const features = {
-    isIndexReady: false,
-    isTransactionStatsReady: false,
-    isFeeEstimatesReady: false,
-    isDelegatesReady: false,
+	isIndexReady: false,
+	isTransactionStatsReady: false,
+	isFeeEstimatesReady: false,
+	isDelegatesReady: false,
 };
 
 const isCoreReady = () => !Object.keys(features).some(value => !features[value]);
 
 // Check if all blocks are indexed
 signals.get('blockIndexReady').add(() => {
-    logger.debug('Indexing finished');
-    features.isIndexReady = true;
+	logger.debug('Indexing finished');
+	features.isIndexReady = true;
 });
 
 // Check if transaction stats are built
 signals.get('transactionStatsReady').add((days) => {
-    logger.debug('Transaction stats calculated for:', `${days}days`);
-    features.isTransactionStatsReady = true;
+	logger.debug('Transaction stats calculated for:', `${days}days`);
+	features.isTransactionStatsReady = true;
 });
 
 signals.get('newBlock').add(async () => {
-    if (!isCoreReady()) {
-        // Check for fee estimates
-        logger.debug('Check if fee estmates are ready');
-        const fees = await core.getEstimateFeeByte();
-        if (Object.getOwnPropertyNames(fees).length) features.isFeeEstimatesReady = true;
+	if (!isCoreReady()) {
+		// Check for fee estimates
+		logger.debug('Check if fee estmates are ready');
+		const fees = await core.getEstimateFeeByte();
+		if (Object.getOwnPropertyNames(fees).length) features.isFeeEstimatesReady = true;
 
-        // Check if delegates list is ready
-        const delegatesList = await core.getDelegates({});
-        if (delegatesList.data.length) features.isDelegatesReady = true;
+		// Check if delegates list is ready
+		const delegatesList = await core.getDelegates({});
+		if (delegatesList.data.length) features.isDelegatesReady = true;
 
-        // Check if transaction stats are disabled, set isTransactionStatsReady to true
-        if (config.transactionStatistics.enabled === false) features.isTransactionStatsReady = true;
-    }
+		// Check if transaction stats are disabled, set isTransactionStatsReady to true
+		if (config.transactionStatistics.enabled === false) features.isTransactionStatsReady = true;
+	}
 
-    // Core reports readiness only if all services available
-    if (isCoreReady()) signals.get('coreServiceReady').dispatch(true);
+	// Core reports readiness only if all services available
+	if (isCoreReady()) signals.get('coreServiceReady').dispatch(true);
 });
 
 const getCurrentStatus = async () => features;
 
 module.exports = {
-    getCurrentStatus,
+	getCurrentStatus,
 };

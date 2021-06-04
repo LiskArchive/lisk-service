@@ -77,6 +77,7 @@ broker.createService({
 		host,
 		port,
 		path: '/api',
+		etag: 'strong',
 		use: [],
 
 		cors: {
@@ -140,7 +141,7 @@ broker.createService({
 	},
 });
 
-broker.waitForServices('core');
+broker.waitForServices(['core', 'market']);
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);

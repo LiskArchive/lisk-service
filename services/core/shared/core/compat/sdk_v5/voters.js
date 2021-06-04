@@ -19,13 +19,13 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const { getIndexedAccountInfo } = require('./accounts');
 const { getBase32AddressFromHex } = require('./accountUtils');
-const { getTransactionsByIDs } = require('./transactions');
-const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
+const votesAggregateIndexSchema = require('./schema/votesAggregate');
 
 const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
+const getVotesAggregateIndex = () => mysqlIndex('votes_aggregate', votesAggregateIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
@@ -34,22 +34,46 @@ const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(p
 
 const indexVotes = async blocks => {
 	const votesDB = await getVotesIndex();
+	const votesAggregateDB = await getVotesAggregateIndex();
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
 			.map(tx => {
-				const voteEntries = tx.asset.votes.map(vote => {
+				const voteEntries = tx.asset.votes.map(async vote => {
 					const voteEntry = {};
 
-					// TODO: Remove 'tempId' after composite PK support is added
-					voteEntry.tempId = tx.id.concat(vote.delegateAddress);
-					voteEntry.id = tx.id;
 					voteEntry.sentAddress = getBase32AddressFromHex(
 						extractAddressFromPublicKey(tx.senderPublicKey),
 					);
 					voteEntry.receivedAddress = getBase32AddressFromHex(vote.delegateAddress);
 					voteEntry.amount = vote.amount;
 					voteEntry.timestamp = block.timestamp;
+
+					const [row] = await votesDB.find({
+						id: tx.id,
+						receivedAddress: voteEntry.receivedAddress,
+					});
+					if (!row || !row.isAggregated) {
+						// indexing aggregated votes per account
+						const numRowsAffected = await votesAggregateDB.increment({
+							increment: {
+								amount: BigInt(vote.amount),
+							},
+							where: {
+								property: 'id',
+								value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+							},
+						}, {
+							...voteEntry,
+							id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+						});
+						voteEntry.isAggregated = numRowsAffected > 0;
+					}
+
+					// TODO: Remove 'tempId' after composite PK support is added
+					// Only for indexing all votes
+					voteEntry.tempId = tx.id.concat('_', voteEntry.receivedAddress);
+					voteEntry.id = tx.id;
 					return voteEntry;
 				});
 				return voteEntries;
@@ -58,8 +82,9 @@ const indexVotes = async blocks => {
 		votesArray.forEach(arr => votes = votes.concat(arr));
 		return votes;
 	});
-	let allVotes = [];
-	votesMultiArray.forEach(votes => allVotes = allVotes.concat(votes));
+	let allVotePromises = [];
+	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
+	const allVotes = await BluebirdPromise.all(allVotePromises);
 	if (allVotes.length) await votesDB.upsert(allVotes);
 };
 
@@ -74,10 +99,9 @@ const removeVotesByTransactionIDs = async transactionIDs => {
 	await votesDB.deleteIds(forkedVotes.map(v => v.tempId));
 };
 
-const normalizeVote = vote => parseToJSONCompatObj(vote);
-
 const getVoters = async params => {
 	const votesDB = await getVotesIndex();
+	const votesAggregateDB = await getVotesAggregateIndex();
 	const votes = {
 		data: { votes: [] },
 		meta: {},
@@ -104,23 +128,13 @@ const getVoters = async params => {
 		params.receivedAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
 	}
 
-	const resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
-	if (resultSet.length) {
-		params.ids = resultSet.map(row => row.id);
-
-		const response = await getTransactionsByIDs(params.ids);
-		if (response) {
-			const voteMultiArray = response
-				.map(tx => tx.asset.votes.map(v => ({ ...v, senderPublicKey: tx.senderPublicKey })));
-			let allVotes = [];
-			voteMultiArray
-				.forEach(lvotes => allVotes = allVotes.concat(lvotes.map(v => ({
-					...normalizeVote(v),
-					sentAddress: getBase32AddressFromHex(extractAddressFromPublicKey(v.senderPublicKey)),
-				}))));
-			votes.data.votes = allVotes;
-		}
+	let resultSet;
+	if (params.aggregate) {
+		resultSet = await votesAggregateDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
+	} else {
+		resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
 	}
+	if (resultSet.length) votes.data.votes = resultSet;
 
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
@@ -137,10 +151,12 @@ const getVoters = async params => {
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
-		votesUsed: votes.data.votes.length,
+		votesReceived: params.aggregate
+			? await votesAggregateDB.count({ receivedAddress: params.receivedAddress })
+			: await votesDB.count({ receivedAddress: params.receivedAddress }),
 	};
 	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
-	votes.meta.total = votes.data.account.votesUsed;
+	votes.meta.total = votes.data.account.votesReceived;
 	votes.meta.count = votes.data.votes.length;
 	votes.meta.offset = params.offset;
 	return votes;
