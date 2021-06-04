@@ -13,7 +13,28 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
+const { CacheRedis } = require('lisk-service-framework');
 const { ServiceUnavailableException } = require('../exceptions');
+
+const config = require('../../config');
+const { targetPairs } = require('./priceUpdater');
+
+const pricesCache = CacheRedis('market_prices', config.endpoints.redis);
+
+const getMarketPricesFromCache = async () => {
+	const prices = {};
+	await BluebirdPromise.map(
+		targetPairs,
+		async pair => {
+			const price = await pricesCache.get(pair);
+			if (price) prices[pair] = JSON.parse(price);
+		},
+		{ concurrency: targetPairs.length },
+	);
+	return prices;
+};
 
 const getMarketPrices = async () => {
 	const marketPrices = {
@@ -21,27 +42,14 @@ const getMarketPrices = async () => {
 		meta: {},
 	};
 
-	// TODO: Place holder for actual implementation
-	// const response = await getMarketPricesFromCache();
-	// Return mock response for now
-	marketPrices.data = [
-		{
-			code: 'LSK_BTC',
-			from: 'LSK',
-			rate: '0.00009027',
-			to: 'BTC',
-			updateTimestamp: 1616939448,
-			sources: ['kraken'],
-		},
-		{
-			code: 'LSK_CHF',
-			from: 'LSK',
-			rate: '35.3452',
-			to: 'CHF',
-			updateTimestamp: 1616939448,
-			sources: ['kraken', 'exchangeratesapi.io'],
-		},
-	];
+	const pricesByPairs = await getMarketPricesFromCache();
+	Object.values(pricesByPairs).forEach(prices => {
+		let price;
+		while (!price && prices.length) {
+			price = prices.shift();
+			marketPrices.data.push(price);
+		}
+	});
 
 	marketPrices.meta = {
 		count: marketPrices.data.length,

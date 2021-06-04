@@ -23,7 +23,7 @@ const config = require('../../../config.js');
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const { apiEndpoint, allowRefreshAfter } = config.sources.bittrex;
+const { apiEndpoint, allowRefreshAfter } = config.market.sources.bittrex;
 const expireMiliseconds = config.ttl.bittrex;
 
 const bittrexCache = CacheRedis('bittrex', config.endpoints.redis);
