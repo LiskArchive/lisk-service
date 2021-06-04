@@ -73,4 +73,7 @@ describe('Market prices', () => {
 			{ code: 'BTC_CHF', from: 'BTC', to: 'CHF', rate: '31350.0000', updateTimestamp: 1622414485, sources: ['cx1', 'fx1'] },
 		]);
 	});
+
+	it.todo('formatCalculatedRate rounds to 4 when the currency is FIAT');
+	it.todo('formatCalculatedRate rounds to 8 when the currency is Crypto');
 });
