@@ -58,6 +58,8 @@ const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexS
 // A boolean mapping against the genesis account addresses to indicate migration status
 const genesisAccounts = {};
 
+const isItGenesisAccount = address => genesisAccounts[address] || false;
+
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
@@ -157,15 +159,6 @@ const resolveDelegateInfo = async accounts => {
 					publicKey: account.publicKey,
 				};
 
-				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const {
-						rewards,
-						producedBlocks,
-					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					account.rewards = rewards || 0;
-					account.producedBlocks = producedBlocks || 0;
-				}
-
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
 				const totalVotes = account.dpos.sentVotes.reduce(adder, BigInt(0));
 				const selfVote = account.dpos.sentVotes
@@ -183,21 +176,31 @@ const resolveDelegateInfo = async accounts => {
 					.sort((a, b) => b - a).slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentHeight }));
 
-				const [delegateRegTx = {}] = await transactionsDB.find({
-					senderPublicKey: account.publicKey,
-					moduleAssetId: delegateRegTxModuleAssetId,
-				});
-
 				const [lastForgedBlock = {}] = await blocksDB.find({
 					generatorPublicKey: account.publicKey,
 					limit: 1,
 				});
+				account.dpos.delegate.lastForgedHeight = lastForgedBlock.height || null;
 
-				account.dpos.delegate = {
-					...account.dpos.delegate,
-					registrationHeight: delegateRegTx.height || null,
-					lastForgedHeight: lastForgedBlock.height || null,
-				};
+				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
+				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
+					const {
+						rewards,
+						producedBlocks,
+					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					account.rewards = rewards || 0;
+					account.producedBlocks = producedBlocks || 0;
+
+					// Check for the delegate registration transaction
+					const [delegateRegTx = {}] = await transactionsDB.find({
+						senderPublicKey: account.publicKey,
+						moduleAssetId: delegateRegTxModuleAssetId,
+					});
+					const genesisHeight = 0; // Local declaration to avoid circular dependency
+					account.dpos.delegate.registrationHeight = delegateRegTx.height
+						? delegateRegTx.height
+						: isItGenesisAccount(account.address) && genesisHeight;
+				}
 			}
 			return account;
 		},
@@ -360,8 +363,8 @@ const getAccounts = async params => {
 			}
 
 			if (account.publicKey) {
-				if (genesisAccounts[account.address]) {
-					account.isMigrated = genesisAccounts[account.address];
+				if (isItGenesisAccount(account.address)) {
+					account.isMigrated = isItGenesisAccount(account.address);
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
 					// Use only dynamically computed legacyAccount information, ignore the hardcoded info
