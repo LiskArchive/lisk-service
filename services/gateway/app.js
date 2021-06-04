@@ -35,8 +35,8 @@ const { getReady, updateSvcStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
+const metaResponse = require('./sources/meta');
 const blockResponse = require('./sources/version2/mappings/block');
-const forgerResponse = require('./sources/version2/mappings/forgers');
 const transactionResponse = require('./sources/version2/mappings/transaction');
 
 const { host, port } = config;
@@ -130,22 +130,16 @@ broker.createService({
 	},
 	methods,
 	events: {
-		'block.change': (payload) => sendSocketIoEvent('update.block', mapper({ data: [payload] }, {
+		'block.change': (payload) => sendSocketIoEvent('update.block', mapper(payload, {
 			data: ['data', blockResponse],
-			meta: {},
-		})),
-		'round.change': (payload) => sendSocketIoEvent('update.round', mapper(payload, {
-			data: ['data', forgerResponse],
-			meta: {},
-		})),
-		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, {
-			data: ['data', forgerResponse],
-			meta: {},
+			meta: metaResponse,
 		})),
 		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', mapper(payload, {
 			data: ['data', transactionResponse],
-			meta: {},
+			meta: metaResponse,
 		})),
+		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
+		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', payload),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},
