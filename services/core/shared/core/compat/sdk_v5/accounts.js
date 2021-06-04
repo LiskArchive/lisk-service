@@ -183,12 +183,12 @@ const resolveDelegateInfo = async accounts => {
 					.sort((a, b) => b - a).slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentHeight }));
 
-				[delegateRegTx = {}] = await transactionsDB.find({
+				const [delegateRegTx = {}] = await transactionsDB.find({
 					senderPublicKey: account.publicKey,
 					moduleAssetId: delegateRegTxModuleAssetId,
 				});
 
-				[lastForgedBlock = {}] = await blocksDB.find({
+				const [lastForgedBlock = {}] = await blocksDB.find({
 					generatorPublicKey: account.publicKey,
 					limit: 1,
 				});
