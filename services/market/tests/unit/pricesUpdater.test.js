@@ -56,7 +56,7 @@ describe('Format rates', () => {
 		});
 	});
 
-	it('formatCalculatedRate rounds to 8 digits when the currency is Crypto', () => {
+	it('formatCalculatedRate rounds to 8 digits when the currency is Crypto', async () => {
 		cryptoCurrencies.forEach(targetCurrency => {
 			rates.forEach(rate => {
 				const formattedPrice = formatCalculatedRate(targetCurrency, rate);
@@ -67,7 +67,7 @@ describe('Format rates', () => {
 	});
 });
 
-describe('Market prices', () => {
+describe('Market prices calculation', () => {
 	it('Calculates prices properly from raw prices', async () => {
 		const targetPairPrices = calcTargetPairPrices(rawPricesBySource, targetPairs);
 		expect(Object.keys(targetPairPrices).length).toEqual(targetPairs.length);
