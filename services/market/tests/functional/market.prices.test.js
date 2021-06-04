@@ -14,14 +14,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console */
 const { ServiceBroker } = require('moleculer');
 const { marketPriceItemSchema } = require('../schemas/marketPriceItem.schema');
 const { serviceUnavailableSchema } = require('../schemas/serviceUnavailable.schema');
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',
-	logLevel: 'info',
+	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
 	logger: console,
 });
