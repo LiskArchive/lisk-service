@@ -15,9 +15,7 @@
  */
 const config = {
 	endpoints: {},
-	cacheDelegateAddress: {},
 	log: {},
-	wsEvents: [],
 };
 
 /**
@@ -57,15 +55,6 @@ config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
  */
 config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS || 202);
 
-/**
- * Cache delegate info in order to replace address by username
- * Delegate caching support (true - enabled, false - disabled)
- */
-// TODO: These options seem to be unused, need to clarify
-config.cacheDelegateAddress.enabled = true;
-// Interval in ms for checking new delegates registration (default: 60 seconds)
-config.cacheDelegateAddress.updateInterval = 60000;
-
 config.transactionStatistics = {
 	enabled: Boolean(String(process.env.ENABLE_TRANSACTION_STATS).toLowerCase() === 'true'),
 	updateInterval: Number(process.env.TRANSACTION_STATS_UPDATE_INTERVAL || 10 * 60), // seconds
@@ -90,23 +79,6 @@ config.feeEstimates = {
 	emaDecayRate: Number(process.env.FEE_EST_EMA_DECAY_RATE || 0.5),
 	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE || 10),
 };
-
-/**
- * Lisk Core socket.io events
- */
-config.wsEvents = [
-	'dapps/change',
-	'multisignatures/change',
-	'delegates/fork',
-	'rounds/change',
-	'signature/change',
-	'transactions/change',
-	'blocks/change',
-	'multisignatures/signature/change',
-	'multisignatures/change',
-	'delegates/fork',
-	'loader/sync',
-];
 
 /**
  * LOGGING
