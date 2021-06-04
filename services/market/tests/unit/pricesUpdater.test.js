@@ -51,7 +51,7 @@ describe('Format rates', () => {
 			rates.forEach(rate => {
 				const formattedPrice = formatCalculatedRate(targetCurrency, rate);
 				expect(typeof formattedPrice).toEqual('string');
-				expect(String(formattedPrice).split('.')[1].length).toEqual(4);
+				expect(formattedPrice.split('.')[1].length).toEqual(4);
 			});
 		});
 	});
@@ -61,7 +61,7 @@ describe('Format rates', () => {
 			rates.forEach(rate => {
 				const formattedPrice = formatCalculatedRate(targetCurrency, rate);
 				expect(typeof formattedPrice).toEqual('string');
-				expect(String(formattedPrice).split('.')[1].length).toEqual(8);
+				expect(formattedPrice.split('.')[1].length).toEqual(8);
 			});
 		});
 	});
