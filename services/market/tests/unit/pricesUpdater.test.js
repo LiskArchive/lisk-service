@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { calcTargetPairPrices } = require('../../shared/market/priceUpdater');
+const {
+	formatCalculatedRate,
+	calcTargetPairPrices,
+} = require('../../shared/market/priceUpdater');
 const { marketPriceItemSchema } = require('../schemas/marketPriceItem.schema');
 
 const targetPairs = ['LSK_BTC', 'LSK_EUR', 'LSK_USD', 'LSK_CHF', 'BTC_EUR', 'BTC_USD', 'BTC_CHF'];
@@ -31,6 +34,38 @@ const rawPricesBySource = {
 		{ code: 'EUR_USD', from: 'EUR', to: 'USD', rate: '1.22', updateTimestamp: 1622414485, sources: ['fx1'] },
 	],
 };
+
+describe('Format rates', () => {
+	const rates = [
+		0, 1, 1234, 123456, 12345678, 1234567890,
+		0.1, 0.1234, 0.123456, 0.12345678, 0.123456789,
+		99.1, 99.1234, 99.123456, 99.12345678, 99.123456789,
+		'0.1', '0.1234', '0.123456', '0.12345678', '0.123456789',
+		'99.1', '99.1234', '99.123456', '99.12345678', '99.123456789',
+	];
+	const fiatCurrencies = ['EUR', 'USD', 'CHF', 'GBP', 'RUB'];
+	const cryptoCurrencies = ['LSK', 'BTC', 'ETH'];
+
+	it('formatCalculatedRate rounds to 4 digits when the currency is FIAT', async () => {
+		fiatCurrencies.forEach(targetCurrency => {
+			rates.forEach(rate => {
+				const formattedPrice = formatCalculatedRate(targetCurrency, rate);
+				expect(typeof formattedPrice).toEqual('string');
+				expect(String(formattedPrice).split('.')[1].length).toEqual(4);
+			});
+		});
+	});
+
+	it('formatCalculatedRate rounds to 8 digits when the currency is Crypto', () => {
+		cryptoCurrencies.forEach(targetCurrency => {
+			rates.forEach(rate => {
+				const formattedPrice = formatCalculatedRate(targetCurrency, rate);
+				expect(typeof formattedPrice).toEqual('string');
+				expect(String(formattedPrice).split('.')[1].length).toEqual(8);
+			});
+		});
+	});
+});
 
 describe('Market prices', () => {
 	it('Calculates prices properly from raw prices', async () => {
@@ -73,7 +108,4 @@ describe('Market prices', () => {
 			{ code: 'BTC_CHF', from: 'BTC', to: 'CHF', rate: '31350.0000', updateTimestamp: 1622414485, sources: ['cx1', 'fx1'] },
 		]);
 	});
-
-	it.todo('formatCalculatedRate rounds to 4 when the currency is FIAT');
-	it.todo('formatCalculatedRate rounds to 8 when the currency is Crypto');
 });
