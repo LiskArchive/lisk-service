@@ -75,7 +75,7 @@ const getAccountByAddress = async address => {
 		const account = await apiClient.account.get(address);
 		return { data: [account] };
 	} catch (err) {
-		logger.warn(`Unable to currently fetch account information for address: ${address}. Network synchronization process might still be in progress for the Lisk Core node.`);
+		logger.warn(`Unable to currently fetch account information for address: ${address}. The network synchronization process might still be in progress for the Lisk Core node or the requested account has not been migrated yet.`);
 		throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
 	}
 };

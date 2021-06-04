@@ -13,33 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const vote = require('./mappings/vote');
+const Joi = require('joi');
+
+const marketPriceItemSchema = {
+	code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
+	from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+	to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+	rate: Joi.string().required(),
+	updateTimestamp: Joi.number().integer().positive().required(),
+	sources: Joi.array().items(Joi.string().required()).required(),
+};
 
 module.exports = {
-	type: 'moleculer',
-	method: 'core.voters',
-	params: {
-		address: '=,string',
-		username: '=,string',
-		publicKey: '=,string',
-		aggregate: '=,boolean',
-		limit: '=,number',
-		offset: '=,number',
-	},
-	definition: {
-		data: {
-			account: {
-				address: '=,string',
-				username: '=,string',
-				votesReceived: '=,number',
-			},
-			votes: ['data.votes', vote],
-		},
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	marketPriceItemSchema: Joi.object(marketPriceItemSchema).required(),
 };

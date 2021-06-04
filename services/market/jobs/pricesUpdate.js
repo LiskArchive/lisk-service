@@ -13,33 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const vote = require('./mappings/vote');
+const logger = require('lisk-service-framework').Logger();
+const { updatePrices } = require('../shared/market/priceUpdater');
 
-module.exports = {
-	type: 'moleculer',
-	method: 'core.voters',
-	params: {
-		address: '=,string',
-		username: '=,string',
-		publicKey: '=,string',
-		aggregate: '=,boolean',
-		limit: '=,number',
-		offset: '=,number',
-	},
-	definition: {
-		data: {
-			account: {
-				address: '=,string',
-				username: '=,string',
-				votesReceived: '=,number',
-			},
-			votes: ['data.votes', vote],
+module.exports = [
+	{
+		name: 'prices.update',
+		description: 'Keeps the market prices up-to-date',
+		interval: 5, // seconds
+		init: async () => {
+			logger.debug('Initializing market prices');
+			await updatePrices();
 		},
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
+		controller: async () => {
+			logger.debug('Job scheduled to maintain updated market prices');
+			await updatePrices();
 		},
-		links: {},
 	},
-};
+];

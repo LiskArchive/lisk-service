@@ -13,33 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const vote = require('./mappings/vote');
+const Joi = require('joi');
+
+const serviceUnavailableSchema = {
+	status: Joi.string().valid('SERVICE_UNAVAILABLE').required(),
+	data: Joi.object().keys({
+		error: Joi.string().valid('Service is not ready yet').required(),
+	}).required(),
+};
 
 module.exports = {
-	type: 'moleculer',
-	method: 'core.voters',
-	params: {
-		address: '=,string',
-		username: '=,string',
-		publicKey: '=,string',
-		aggregate: '=,boolean',
-		limit: '=,number',
-		offset: '=,number',
-	},
-	definition: {
-		data: {
-			account: {
-				address: '=,string',
-				username: '=,string',
-				votesReceived: '=,number',
-			},
-			votes: ['data.votes', vote],
-		},
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	serviceUnavailableSchema: Joi.object(serviceUnavailableSchema).required(),
 };
