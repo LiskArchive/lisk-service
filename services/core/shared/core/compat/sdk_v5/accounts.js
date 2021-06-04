@@ -46,11 +46,13 @@ const coreApi = require('./coreApi');
 const mysqlIndex = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
+const blocksIndexSchema = require('./schema/blocks');
 const transactionsIndexSchema = require('./schema/transactions');
 
 const { ValidationException } = require('../../../exceptions');
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
@@ -146,6 +148,10 @@ const resolveDelegateInfo = async accounts => {
 		accounts,
 		async account => {
 			if (account.isDelegate) {
+				const blocksDB = await getBlocksIndex();
+				const transactionsDB = await getTransactionsIndex();
+				const delegateRegTxModuleAssetId = '5:0';
+
 				account.account = {
 					address: account.address,
 					publicKey: account.publicKey,
@@ -156,8 +162,8 @@ const resolveDelegateInfo = async accounts => {
 						rewards,
 						producedBlocks,
 					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					account.rewards = rewards;
-					account.producedBlocks = producedBlocks;
+					account.rewards = rewards || 0;
+					account.producedBlocks = producedBlocks || 0;
 				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
@@ -176,6 +182,22 @@ const resolveDelegateInfo = async accounts => {
 				account.pomHeights = account.dpos.delegate.pomHeights
 					.sort((a, b) => b - a).slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentHeight }));
+
+				[delegateRegTx = {}] = await transactionsDB.find({
+					senderPublicKey: account.publicKey,
+					moduleAssetId: delegateRegTxModuleAssetId,
+				});
+
+				[lastForgedBlock = {}] = await blocksDB.find({
+					generatorPublicKey: account.publicKey,
+					limit: 1,
+				});
+
+				account.dpos.delegate = {
+					...account.dpos.delegate,
+					registrationHeight: delegateRegTx.height || null,
+					lastForgedHeight: lastForgedBlock.height || null,
+				};
 			}
 			return account;
 		},
