@@ -481,7 +481,7 @@ const checkIndexReadiness = async () => {
 
 const indexNewBlock = async (newBlock) => {
 	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
-	await indexNewBlocks({ data: [newBlock] });
+	await indexNewBlocks(newBlock);
 };
 
 const init = async () => {
