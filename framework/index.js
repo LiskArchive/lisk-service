@@ -23,6 +23,7 @@ module.exports = {
 	CacheLRU: require('./src/cacheLru'),
 	Exceptions: require('./src/exceptions'),
 	HTTP: require('./src/http'),
+	Signals: require('./src/signals'),
 	SocketClient: require('./src/socketClient'),
 	mapper: require('./src/mapper'),
 	Utils: {
