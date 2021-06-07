@@ -36,13 +36,6 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
 config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 /**
- * Caching
- */
-// Time in seconds to keep the general cache
-config.cacheTTL = 20;
-config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
-
-/**
  * Indexing
  *
  * Important: The number of blocks makes the process responsible of creating
@@ -57,13 +50,11 @@ config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS || 202);
 
 config.transactionStatistics = {
 	enabled: Boolean(String(process.env.ENABLE_TRANSACTION_STATS).toLowerCase() === 'true'),
-	updateInterval: Number(process.env.TRANSACTION_STATS_UPDATE_INTERVAL || 10 * 60), // seconds
 	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 5),
 };
 
 config.ttl = {
 	affectedByNewBlocks: 1000,
-	stable: 60 * 60, // seconds
 };
 
 config.feeEstimates = {
