@@ -19,7 +19,7 @@ const signals = require('../signals');
 
 const {
 	performLastBlockUpdate,
-	getLastBlock,
+	getBlocks,
 	deleteBlock,
 } = require('./blocks');
 
@@ -40,7 +40,7 @@ const logger = Logger();
 const events = {
 	newBlock: async () => {
 		await performLastBlockUpdate();
-		signals.get('newBlock').dispatch(getLastBlock());
+		signals.get('newBlock').dispatch(await getBlocks({ limit: 1 }));
 	},
 	deleteBlock: async (block) => {
 		await deleteBlock(block);
@@ -49,7 +49,7 @@ const events = {
 	newRound: async () => {
 		await reloadNextForgersCache();
 		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
-		const nextForgers = await getNextForgers({ limit });
+		const nextForgers = await getNextForgers({ limit, offset: 0 });
 		const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
 		signals.get('newRound').dispatch(response);
 	},

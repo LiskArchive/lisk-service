@@ -14,7 +14,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
+/* eslint-disable no-console */
 
 const io = require('socket.io-client');
 const colorize = require('json-colorizer');
@@ -38,13 +38,13 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 
 events.forEach(item => {
 	socket.on(item, res => {
-		// console.log(`Event: ${item}, res: ${res || '-'}`);
+		console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
 ['status'].forEach(eventName => {
 	socket.on(eventName, newData => {
-		// console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
+		console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
 	});
 });
 

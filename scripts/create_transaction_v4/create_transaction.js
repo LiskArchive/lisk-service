@@ -14,7 +14,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
+/* eslint-disable no-console */
 
 const util = require('util');
 
@@ -32,8 +32,8 @@ const genesis = {
 };
 
 const networkIdentifier = cryptography.getNetworkIdentifier(
-    "19074b69c97e6f6b86969bb62d4f15b888898b499777bda56a3a2ee642a7f20a",
-    "Lisk",
+	"19074b69c97e6f6b86969bb62d4f15b888898b499777bda56a3a2ee642a7f20a",
+	"Lisk",
 );
 
 const currentTimestamp = () => Math.round((new Date()).getTime() / 1000);
@@ -61,14 +61,12 @@ const sendTransaction = (async () => {
 		genesis.passphrase,
 	);
 
-	// console.log(tx.toJSON());
-
 	client.transactions.broadcast(tx.toJSON())
-	.then(res => {
-		console.log(util.inspect(res.data));
-	}).catch(err => {
-		console.log(util.inspect(err));
-	});
+		.then(res => {
+			console.log(util.inspect(res.data));
+		}).catch(err => {
+			console.log(util.inspect(err));
+		});
 });
 
 setInterval(sendTransaction, 10000);
