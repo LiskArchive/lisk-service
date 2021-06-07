@@ -13,14 +13,28 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const ForbiddenException = require('./ForbiddenException');
 const InvalidParamsException = require('./InvalidParamsException');
+const InvalidRequestException = require('./InvalidRequestException');
+const MethodNotFoundException = require('./MethodNotFoundException');
 const NotFoundException = require('./NotFoundException');
+const NotImplementedException = require('./NotImplementedException');
+const ParseException = require('./ParseException');
 const ServiceUnavailableException = require('./ServiceUnavailableException');
+const TooManyRequestsException = require('./TooManyRequestsException');
+const UnauthorizedException = require('./UnauthorizedException');
 const ValidationException = require('./ValidationException');
 
 module.exports = {
+	ForbiddenException,
 	InvalidParamsException,
+	InvalidRequestException,
+	MethodNotFoundException,
 	NotFoundException,
+	NotImplementedException,
+	ParseException,
 	ServiceUnavailableException,
+	TooManyRequestsException,
+	UnauthorizedException,
 	ValidationException,
 };
