@@ -14,6 +14,9 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const {
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
 
 const {
 	validatePublicKey,
@@ -47,8 +50,6 @@ const mysqlIndex = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
 const transactionsIndexSchema = require('./schema/transactions');
-
-const { ValidationException } = require('../../../exceptions');
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);

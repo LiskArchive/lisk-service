@@ -14,6 +14,9 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const {
+	Exceptions: { InvalidParamsException, NotFoundException },
+} = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
 
@@ -32,7 +35,6 @@ const {
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const { InvalidParamsException, NotFoundException } = require('../../../exceptions');
 const mysqlIndex = require('../../../indexdb/mysql');
 const transactionsIndexSchema = require('./schema/transactions');
 

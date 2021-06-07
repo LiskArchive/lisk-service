@@ -13,9 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const util = require('util');
+const {
+	Logger,
+	Exceptions: { ValidationException, NotFoundException },
+} = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
@@ -44,7 +47,6 @@ const {
 
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const { ValidationException, NotFoundException } = require('../../../exceptions');
 
 const signals = require('../../../signals');
 
