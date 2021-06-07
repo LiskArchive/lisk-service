@@ -62,7 +62,7 @@ module.exports = [
 			signals.get('newBlock').add(async () => {
 				await core.reloadDelegateCache();
 				await core.reloadNextForgersCache();
-				const forgers = await core.getNextForgers({ limit: 25 });
+				const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
 				callback(forgers);
 			});
 		},
