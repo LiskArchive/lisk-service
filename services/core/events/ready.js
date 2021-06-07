@@ -13,17 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const {
+	Logger,
+	Signals,
+} = require('lisk-service-framework');
 
 const { getCurrentStatus } = require('../ready');
-const signals = require('../shared/signals');
+
+const logger = Logger();
 
 module.exports = [
 	{
 		name: 'coreService.Ready',
 		description: 'Returns current readiness status of Lisk Core service',
 		controller: async callback => {
-			signals.get('coreServiceReady').add(async () => {
+			Signals.get('coreServiceReady').add(async () => {
 				logger.debug('Returns current readiness status of the Lisk Core service');
 				const coreStatus = await getCurrentStatus();
 				callback(coreStatus);
