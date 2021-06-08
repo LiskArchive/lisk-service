@@ -65,8 +65,8 @@ describe('Market prices', () => {
 		]);
 
 		expect(targetPairPrices.BTC_USD).toEqual([
-			{ code: 'BTC_USD', from: 'BTC', to: 'USD', rate: '34770.0000', updateTimestamp: 1622414485, sources: ['cx1', 'fx1'] },
 			{ code: 'BTC_USD', from: 'BTC', to: 'USD', rate: '35000.0000', updateTimestamp: 1622414485, sources: ['cx2'] },
+			{ code: 'BTC_USD', from: 'BTC', to: 'USD', rate: '34770.0000', updateTimestamp: 1622414485, sources: ['cx1', 'fx1'] },
 		]);
 
 		expect(targetPairPrices.BTC_CHF).toEqual([
