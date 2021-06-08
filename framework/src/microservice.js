@@ -125,27 +125,28 @@ const Microservice = (config = {}) => {
 			return;
 		}
 
-		if (!job.controller && !job.schedule && !job.interval) {
-			if (job.init) {
-				job.init();
-			}
-		} else {
-			if (job.controller && (!job.schedule && !job.interval)) {
-				logger.warn([
-					`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
-					`${util.inspect(job)}`,
-					`${util.inspect(validDefinition)}`,
-				].join('\n'));
-				return;
-			}
-			if (job.init) {
-				job.init();
-			}
-			if (job.interval) {
-				setInterval(job.controller, job.interval * 1000);
-			} else {
-				cron.schedule(job.schedule, job.controller);
-			}
+		if ((job.controller && !job.schedule && !job.interval)) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		} if ((job.schedule || job.interval) && !job.controller) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}, controller is required with schedule or interval:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return;
+		}
+		if (job.init) {
+			job.init();
+		}
+		if (job.interval) {
+			setInterval(job.controller, job.interval * 1000);
+		} else if (job.schedule) {
+			cron.schedule(job.schedule, job.controller);
 		}
 
 		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
