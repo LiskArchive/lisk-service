@@ -125,20 +125,19 @@ const Microservice = (config = {}) => {
 			return;
 		}
 
-		// if (!job.schedule && !job.interval) {
-		// 	logger.warn([
-		// 		`Invalid event definition in ${moleculerConfig.name}, neither schedule,nor interval set:`,
-		// 		`${util.inspect(job)}`,
-		// 		`${util.inspect(validDefinition)}`,
-		// 	].join('\n'));
-		// 	return;
-		// }
-
-		if (!job.schedule && !job.interval) {
+		if (!job.controller && !job.schedule && !job.interval) {
 			if (job.init) {
 				job.init();
 			}
 		} else {
+			if (job.controller && (!job.schedule && !job.interval)) {
+				logger.warn([
+					`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
+					`${util.inspect(job)}`,
+					`${util.inspect(validDefinition)}`,
+				].join('\n'));
+				return;
+			}
 			if (job.init) {
 				job.init();
 			}
