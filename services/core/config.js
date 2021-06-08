@@ -15,9 +15,7 @@
  */
 const config = {
 	endpoints: {},
-	cacheDelegateAddress: {},
 	log: {},
-	wsEvents: [],
 };
 
 /**
@@ -28,43 +26,6 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; 
 config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in seconds
 
 /**
- * Database config
- */
-config.db = {
-	defaults: {
-		db: 'redis',
-		directory: 'db_data',
-		adapter: 'leveldb',
-		auto_compaction: false,
-	},
-	collections: {
-		pending_transactions: {
-			name: 'pending_transactions',
-			indexes: [],
-			adapter: 'memory',
-		},
-		transactions: {
-			name: 'transactions',
-			indexes: [
-				'id',
-				'amount',
-				'fee',
-				'type',
-				'height',
-				'blockId',
-				'timestamp',
-				'senderId',
-				'recipientId',
-				['senderId', 'timestamp'],
-				['recipientId', 'timestamp'],
-			],
-			// Only retain transactions contained in the latest n blocks
-			purge_limit: process.env.SERVICE_DB_PURGE_LIMIT_TRANSACTIONS || 8640,
-		},
-	},
-};
-
-/**
  * External endpoints
  */
 config.endpoints.liskHttp = `${(process.env.LISK_CORE_HTTP || 'http://127.0.0.1:4000')}/api`;
@@ -73,13 +34,6 @@ config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://localhost:63
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.io';
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
 config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
-
-/**
- * Caching
- */
-// Time in seconds to keep the general cache
-config.cacheTTL = 20;
-config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
 
 /**
  * Indexing
@@ -94,24 +48,13 @@ config.cacheNumOfBlocks = Number(process.env.CACHE_N_BLOCKS) || 202;
  */
 config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS || 202);
 
-/**
- * Cache delegate info in order to replace address by username
- * Delegate caching support (true - enabled, false - disabled)
- */
-// TODO: These options seem to be unused, need to clarify
-config.cacheDelegateAddress.enabled = true;
-// Interval in ms for checking new delegates registration (default: 60 seconds)
-config.cacheDelegateAddress.updateInterval = 60000;
-
 config.transactionStatistics = {
 	enabled: Boolean(String(process.env.ENABLE_TRANSACTION_STATS).toLowerCase() === 'true'),
-	updateInterval: Number(process.env.TRANSACTION_STATS_UPDATE_INTERVAL || 10 * 60), // seconds
 	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 5),
 };
 
 config.ttl = {
 	affectedByNewBlocks: 1000,
-	stable: 60 * 60, // seconds
 };
 
 config.feeEstimates = {
@@ -127,23 +70,6 @@ config.feeEstimates = {
 	emaDecayRate: Number(process.env.FEE_EST_EMA_DECAY_RATE || 0.5),
 	wavgDecayPercentage: Number(process.env.FEE_EST_WAVG_DECAY_PERCENTAGE || 10),
 };
-
-/**
- * Lisk Core socket.io events
- */
-config.wsEvents = [
-	'dapps/change',
-	'multisignatures/change',
-	'delegates/fork',
-	'rounds/change',
-	'signature/change',
-	'transactions/change',
-	'blocks/change',
-	'multisignatures/signature/change',
-	'multisignatures/change',
-	'delegates/fork',
-	'loader/sync',
-];
 
 /**
  * LOGGING
