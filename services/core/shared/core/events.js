@@ -13,9 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const core = require('./compat');
-const signals = require('../signals');
 
 const {
 	performLastBlockUpdate,
@@ -40,18 +39,18 @@ const logger = Logger();
 const events = {
 	newBlock: async () => {
 		await performLastBlockUpdate();
-		signals.get('newBlock').dispatch(await getBlocks({ limit: 1 }));
+		Signals.get('newBlock').dispatch(await getBlocks({ limit: 1 }));
 	},
 	deleteBlock: async (block) => {
 		await deleteBlock(block);
-		signals.get('deleteBlock').dispatch(block);
+		Signals.get('deleteBlock').dispatch(block);
 	},
 	newRound: async () => {
 		await reloadNextForgersCache();
 		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
 		const nextForgers = await getNextForgers({ limit, offset: 0 });
 		const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
-		signals.get('newRound').dispatch(response);
+		Signals.get('newRound').dispatch(response);
 	},
 	calculateFeeEstimate: async () => {
 		if (core.getSDKVersion() >= 4) {
@@ -64,7 +63,7 @@ const events = {
 				const feeEstimate = await calculateEstimateFeeByteQuick();
 
 				// TODO: Make a better control over the estimate process
-				signals.get('newFeeEstimate').dispatch(feeEstimate);
+				Signals.get('newFeeEstimate').dispatch(feeEstimate);
 			}
 		}
 	},
@@ -72,7 +71,7 @@ const events = {
 
 const init = () => {
 	core.events.register(events);
-	Object.keys(events).forEach((eventName) => signals.register(eventName));
+	Object.keys(events).forEach((eventName) => Signals.register(eventName));
 };
 
 init();

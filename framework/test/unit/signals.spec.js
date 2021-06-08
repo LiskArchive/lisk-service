@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const signals = require('../../shared/signals');
+const signals = require('../../src/signals');
 
 describe('Signals tests', () => {
 	describe('signal.dispatch()', () => {

@@ -14,18 +14,19 @@
  *
  */
 const Signal = require('signals');
-const { Logger } = require('lisk-service-framework');
+
+const Logger = require('./logger').get;
 
 const logger = Logger();
 
 const signals = {};
 
-const register = (name) => {
+const register = name => {
 	signals[name] = new Signal();
 	logger.debug(`Registered internal signal ${name}`);
 	return signals[name];
 };
 
-const get = (name) => signals[name] ? signals[name] : register(name);
+const get = name => signals[name] ? signals[name] : register(name);
 
 module.exports = { register, get };

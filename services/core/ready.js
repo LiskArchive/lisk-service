@@ -13,11 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const {
+	Logger,
+	Signals,
+} = require('lisk-service-framework');
 
 const core = require('./shared/core');
-const signals = require('./shared/signals');
 const config = require('./config');
+
+const logger = Logger();
 
 const features = {
 	isIndexReady: false,
@@ -29,18 +33,18 @@ const features = {
 const isCoreReady = () => !Object.keys(features).some(value => !features[value]);
 
 // Check if all blocks are indexed
-signals.get('blockIndexReady').add(() => {
+Signals.get('blockIndexReady').add(() => {
 	logger.debug('Indexing finished');
 	features.isIndexReady = true;
 });
 
 // Check if transaction stats are built
-signals.get('transactionStatsReady').add((days) => {
+Signals.get('transactionStatsReady').add((days) => {
 	logger.debug('Transaction stats calculated for:', `${days}days`);
 	features.isTransactionStatsReady = true;
 });
 
-signals.get('newBlock').add(async () => {
+Signals.get('newBlock').add(async () => {
 	if (!isCoreReady()) {
 		// Check for fee estimates
 		logger.debug('Check if fee estmates are ready');
@@ -56,7 +60,7 @@ signals.get('newBlock').add(async () => {
 	}
 
 	// Core reports readiness only if all services available
-	if (isCoreReady()) signals.get('coreServiceReady').dispatch(true);
+	if (isCoreReady()) Signals.get('coreServiceReady').dispatch(true);
 });
 
 const getCurrentStatus = async () => features;

@@ -13,10 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const coreApi = require('./coreApi');
-const signals = require('../../../signals');
 const requestAll = require('../../../requestAll');
 
 const logger = Logger();
@@ -138,7 +137,7 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-signals.get('indexTransactions').add(async blockId => {
+Signals.get('indexTransactions').add(async blockId => {
 	const transactionIdx = await getTransactionIdx();
 	const blockResult = await transactionIdx.find({ blockId }, 'id');
 	if (blockResult.length > 0) return;
