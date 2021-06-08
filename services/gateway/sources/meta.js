@@ -13,14 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const InvalidParamsException = require('./InvalidParamsException');
-const NotFoundException = require('./NotFoundException');
-const ServiceUnavailableException = require('./ServiceUnavailableException');
-const ValidationException = require('./ValidationException');
-
 module.exports = {
-	InvalidParamsException,
-	NotFoundException,
-	ServiceUnavailableException,
-	ValidationException,
+	count: '=,number',
+	offset: '=,number',
+	total: '=,number',
 };

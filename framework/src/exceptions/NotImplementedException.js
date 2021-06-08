@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,19 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Signal = require('signals');
-const { Logger } = require('lisk-service-framework');
+class NotImplementedException extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'NotImplementedException';
+	}
+}
 
-const logger = Logger();
-
-const signals = {};
-
-const register = (name) => {
-	signals[name] = new Signal();
-	logger.debug(`Registered internal signal ${name}`);
-	return signals[name];
-};
-
-const get = (name) => signals[name] ? signals[name] : register(name);
-
-module.exports = { register, get };
+module.exports = NotImplementedException;

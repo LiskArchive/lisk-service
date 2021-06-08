@@ -13,8 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const ValidationException = require('./ValidationException');
+class MethodNotFoundException extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'MethodNotFoundException';
+	}
+}
 
-module.exports = {
-	ValidationException,
-};
+module.exports = MethodNotFoundException;

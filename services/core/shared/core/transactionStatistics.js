@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
@@ -21,7 +21,6 @@ const config = require('../../config');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
-const signals = require('../signals');
 const requestAll = require('../requestAll');
 
 const logger = Logger();
@@ -249,9 +248,9 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 };
 
 const init = async historyLengthDays => {
-	signals.get('blockIndexReady').add(async () => {
+	Signals.get('blockIndexReady').add(async () => {
 		await fetchTransactionsForPastNDays(historyLengthDays, true);
-		signals.get('transactionStatsReady').dispatch(historyLengthDays);
+		Signals.get('transactionStatsReady').dispatch(historyLengthDays);
 	});
 };
 

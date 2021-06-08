@@ -13,7 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { closeAll } = require('./helpers/socketIoRpcRequest');
+class ForbiddenException extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'ForbiddenException';
+	}
+}
 
-// eslint-disable-next-line mocha/no-top-level-hooks
-afterAll(async () => { closeAll(); });
+module.exports = ForbiddenException;

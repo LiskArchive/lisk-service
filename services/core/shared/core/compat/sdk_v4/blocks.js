@@ -13,10 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheRedis, Logger } = require('lisk-service-framework');
+const { CacheRedis, Logger, Signals } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
-const signals = require('../../../signals');
 
 const config = require('../../../../config');
 const { initializeQueue } = require('../../queue');
@@ -60,7 +59,7 @@ const indexBlocks = async job => {
 	blocks.forEach(block => {
 		if (block.numberOfTransactions > 0) {
 			blockIdx.upsert(block);
-			signals.get('indexTransactions').dispatch(block.id);
+			Signals.get('indexTransactions').dispatch(block.id);
 		}
 	});
 };
@@ -138,7 +137,7 @@ const buildIndex = async (from, to) => {
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished building block index (${from}-${to})`);
-	signals.get('blockIndexReady').dispatch(true);
+	Signals.get('blockIndexReady').dispatch(true);
 };
 
 const init = async () => {

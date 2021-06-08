@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class NotFoundException extends Error {
+class UnauthorizedException extends Error {
 	constructor(message) {
 		super(message);
-		this.name = 'NotFoundException';
+		this.name = 'UnauthorizedException';
 	}
 }
 
-module.exports = NotFoundException;
+module.exports = UnauthorizedException;

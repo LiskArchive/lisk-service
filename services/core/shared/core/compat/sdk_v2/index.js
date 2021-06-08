@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
+
 const coreApi = require('./coreApi');
 
 const { request } = require('./request');
@@ -48,8 +50,6 @@ const {
 
 const events = require('./events');
 
-const signals = require('../../../signals');
-
 const numOfActiveDelegates = 101;
 
 const peerStates = {
@@ -77,7 +77,7 @@ const getForgingStats = async address => {
 };
 
 const init = () => {
-	signals.get('blockIndexReady').dispatch(true);
+	Signals.get('blockIndexReady').dispatch(true);
 };
 
 const nop = () => { };

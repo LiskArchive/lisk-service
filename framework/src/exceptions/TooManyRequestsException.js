@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class InvalidParamsException extends Error {
+class TooManyRequestsException extends Error {
 	constructor(message) {
 		super(message);
-		this.name = 'InvalidParamsException';
+		this.name = 'TooManyRequestsException';
 	}
 }
 
-module.exports = InvalidParamsException;
+module.exports = TooManyRequestsException;

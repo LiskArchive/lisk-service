@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
+
 const {
 	getBlocks,
 	updateFinalizedHeight,
@@ -28,10 +30,8 @@ const { getVoters } = require('./voters');
 const events = require('./events');
 const { getNetworkStatus } = require('./network');
 
-const signals = require('../../../signals');
-
 const init = () => {
-	signals.get('blockIndexReady').dispatch(true);
+	Signals.get('blockIndexReady').dispatch(true);
 };
 
 module.exports = {

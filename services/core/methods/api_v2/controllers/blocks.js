@@ -13,13 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Utils } = require('lisk-service-framework');
+const {
+	HTTP,
+	Utils,
+	Exceptions: { ValidationException, NotFoundException },
+} = require('lisk-service-framework');
 
 const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 const ObjectUtilService = Utils.Data;
 
 const Core = require('../../../shared/core');
-const { ValidationException, NotFoundException } = require('../../../shared/exceptions');
 
 const { isEmptyArray } = ObjectUtilService;
 

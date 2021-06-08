@@ -15,8 +15,10 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { CacheRedis } = require('lisk-service-framework');
-const { ServiceUnavailableException } = require('../exceptions');
+const {
+	CacheRedis,
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const config = require('../../config');
 const { targetPairs } = require('./priceUpdater');

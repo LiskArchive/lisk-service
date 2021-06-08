@@ -14,6 +14,9 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const {
+	Exceptions: { InvalidParamsException, NotFoundException },
+} = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
 
@@ -32,7 +35,6 @@ const {
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const { InvalidParamsException, NotFoundException } = require('../../../exceptions');
 const mysqlIndex = require('../../../indexdb/mysql');
 const transactionsIndexSchema = require('./schema/transactions');
 
@@ -100,8 +102,8 @@ const removeTransactionsByBlockIDs = async blockIDs => {
 	await removeVotesByTransactionIDs(forkedTransactionIDs);
 };
 
-const normalizeTransaction = txs => {
-	const normalizedTransactions = BluebirdPromise.map(
+const normalizeTransaction = async txs => {
+	const normalizedTransactions = await BluebirdPromise.map(
 		txs,
 		async tx => {
 			const [{ id, name }] = availableLiskModuleAssets
@@ -341,7 +343,7 @@ const getTransactionsByBlockId = async blockId => {
 		{ concurrency: block.payload.length },
 	);
 	return {
-		data: transactions.map(tx => normalizeTransaction(tx)),
+		data: await normalizeTransaction(transactions),
 		meta: {
 			offset: 0,
 			count: transactions.length,

@@ -97,6 +97,8 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 						}
 					});
 			}
+			// Prefer a direct targetPair match from the source prices over calculated rates
+			finalPrices[targetPair].sort((a, b) => a.sources.length - b.sources.length);
 		});
 	});
 
@@ -119,6 +121,7 @@ const updatePrices = async () => {
 
 module.exports = {
 	targetPairs,
+	formatCalculatedRate,
 	calcTargetPairPrices,
 	updatePrices,
 };

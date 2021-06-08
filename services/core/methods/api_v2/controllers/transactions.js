@@ -14,16 +14,18 @@
  *
  */
 const moment = require('moment');
-const { HTTP, Utils } = require('lisk-service-framework');
+const {
+	HTTP,
+	Utils,
+	Exceptions: {
+		InvalidParamsException,
+		ValidationException,
+		NotFoundException,
+	},
+} = require('lisk-service-framework');
 
 const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 const { isEmptyArray, isEmptyObject } = Utils.Data;
-
-const {
-	InvalidParamsException,
-	ValidationException,
-	NotFoundException,
-} = require('../../../shared/exceptions');
 
 const CoreService = require('../../../shared/core');
 const txStatisticsService = require('../../../shared/core/transactionStatistics');

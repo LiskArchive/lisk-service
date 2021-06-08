@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2020 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,11 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ValidationException extends Error {
-	constructor(message) {
-		super(message);
-		this.name = 'ValidationException';
-	}
-}
+const Signal = require('signals');
 
-module.exports = ValidationException;
+const Logger = require('./logger').get;
+
+const logger = Logger();
+
+const signals = {};
+
+const register = name => {
+	signals[name] = new Signal();
+	logger.debug(`Registered internal signal ${name}`);
+	return signals[name];
+};
+
+const get = name => signals[name] ? signals[name] : register(name);
+
+module.exports = { register, get };

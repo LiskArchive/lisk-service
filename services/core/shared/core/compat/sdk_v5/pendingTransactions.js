@@ -13,8 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
+const {
+	Logger,
+	Exceptions: { ValidationException, NotFoundException },
+} = require('lisk-service-framework');
 
 const logger = Logger();
 
@@ -24,7 +27,6 @@ const {
 } = require('./accounts');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const { ValidationException, NotFoundException } = require('../../../exceptions');
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 let pendingTransactionsList = [];
@@ -114,21 +116,21 @@ const getPendingTransactions = async params => {
 	if (pendingTransactionsList.length) {
 		const filteredPendingTxs = pendingTransactionsList.filter(transaction => (
 			(!requestParams.senderPublicKey
-                || transaction.senderPublicKey === requestParams.senderPublicKey)
-            && (!requestParams.recipientId
-                || transaction.asset.recipientAddress === requestParams.recipientId)
-            && (!requestParams.moduleAssetId
-                || transaction.amoduleAssetId === requestParams.moduleAssetId)
-            && (!requestParams.moduleAssetName
-                || transaction.moduleAssetName === requestParams.moduleAssetName)
-            && (!requestParams.data
-                || transaction.asset.data.includes(requestParams.data))
-            && (!requestParams.data
-                || transaction.asset.data.includes(requestParams.data))
-            && (!requestParams.from
-                || Number(transaction.amount) >= requestParams.minAmount)
-            && (!requestParams.to
-                || Number(transaction.amount) <= requestParams.maxAmount)
+				|| transaction.senderPublicKey === requestParams.senderPublicKey)
+			&& (!requestParams.recipientId
+				|| transaction.asset.recipientAddress === requestParams.recipientId)
+			&& (!requestParams.moduleAssetId
+				|| transaction.amoduleAssetId === requestParams.moduleAssetId)
+			&& (!requestParams.moduleAssetName
+				|| transaction.moduleAssetName === requestParams.moduleAssetName)
+			&& (!requestParams.data
+				|| transaction.asset.data.includes(requestParams.data))
+			&& (!requestParams.data
+				|| transaction.asset.data.includes(requestParams.data))
+			&& (!requestParams.from
+				|| Number(transaction.amount) >= requestParams.minAmount)
+			&& (!requestParams.to
+				|| Number(transaction.amount) <= requestParams.maxAmount)
 		));
 		pendingTransactions.data = filteredPendingTxs
 			.sort(sortComparator(params.sort))
