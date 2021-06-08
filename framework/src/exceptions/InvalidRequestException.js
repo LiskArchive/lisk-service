@@ -13,8 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const ValidationException = require('./ValidationException');
+class InvalidRequestException extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'InvalidRequestException';
+	}
+}
 
-module.exports = {
-	ValidationException,
-};
+module.exports = InvalidRequestException;

@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ServiceUnavailableException extends Error {
+class TooManyRequestsException extends Error {
 	constructor(message) {
 		super(message);
-		this.name = 'ServiceUnavailableException';
+		this.name = 'TooManyRequestsException';
 	}
 }
 
-module.exports = ServiceUnavailableException;
+module.exports = TooManyRequestsException;

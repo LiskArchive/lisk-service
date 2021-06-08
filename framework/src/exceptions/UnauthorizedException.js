@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ValidationException extends Error {
+class UnauthorizedException extends Error {
 	constructor(message) {
 		super(message);
-		this.name = 'ValidationException';
+		this.name = 'UnauthorizedException';
 	}
 }
 
-module.exports = ValidationException;
+module.exports = UnauthorizedException;

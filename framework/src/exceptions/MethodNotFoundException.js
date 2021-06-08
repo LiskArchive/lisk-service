@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class NotFoundException extends Error {
+class MethodNotFoundException extends Error {
 	constructor(message) {
 		super(message);
-		this.name = 'NotFoundException';
+		this.name = 'MethodNotFoundException';
 	}
 }
 
-module.exports = NotFoundException;
+module.exports = MethodNotFoundException;

@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class InvalidParamsException extends Error {
+class NotImplementedException extends Error {
 	constructor(message) {
 		super(message);
-		this.name = 'InvalidParamsException';
+		this.name = 'NotImplementedException';
 	}
 }
 
-module.exports = InvalidParamsException;
+module.exports = NotImplementedException;

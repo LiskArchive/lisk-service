@@ -17,11 +17,11 @@ const {
 	Utils,
 	HTTP: { StatusCodes },
 	Constants: { HTTP: { INVALID_REQUEST, NOT_FOUND } },
+	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
 const path = require('path');
 const mapper = require('./customMapper');
-const { ValidationException } = require('./exceptions');
 const { validate, dropEmptyProps } = require('./paramValidator');
 
 const apiMeta = [];

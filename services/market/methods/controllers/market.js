@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { ServiceUnavailableException } = require('../../shared/exceptions');
+const {
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const marketService = require('../../shared/market/market');
 

@@ -18,6 +18,7 @@ const {
 	Logger,
 	LoggerConfig,
 	Libs,
+	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
 const SocketIOService = require('./shared/moleculer-io');
@@ -29,7 +30,6 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
-const { ValidationException } = require('./shared/exceptions');
 const { getStatus } = require('./shared/status');
 const { getReady, updateSvcStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');

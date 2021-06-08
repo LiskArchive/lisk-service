@@ -8,7 +8,9 @@
 const _ = require('lodash');
 const kleur = require('kleur');
 const util = require('util');
-const { ValidationException } = require('../exceptions');
+const {
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
 
 module.exports = {
 	methods: {
