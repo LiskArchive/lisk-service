@@ -14,7 +14,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
+/* eslint-disable no-console */
 
 const io = require('socket.io-client');
 const util = require('util');
@@ -30,8 +30,8 @@ if (process.argv.length < 3) {
 }
 
 const cliEndpoint = process.argv[2];
-const cliProcedureName = process.argv[3];
-const cliParams = process.argv[4] ? JSON.parse(process.argv[4]) : undefined;
+// const cliProcedureName = process.argv[3];
+// const cliParams = process.argv[4] ? JSON.parse(process.argv[4]) : undefined;
 const TIMEOUT = 15 * 1000;
 
 const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
@@ -45,14 +45,14 @@ const socket = io(cliEndpoint, { forceNew: true, transports: ['websocket'] });
 ].forEach(item => {
 	socket.on(item, res => {
 		// Enable this to log all events
-		// console.log(`Event: ${item}, res: ${res || '-'}`);
+		console.log(`Event: ${item}, res: ${res || '-'}`);
 	});
 });
 
 ['status'].forEach(eventName => {
 	socket.on(eventName, newData => {
 		// Enable this to log incoming data
-		// console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
+		console.log(`Received data from ${cliEndpoint}/${eventName}: ${newData}`);
 	});
 });
 
@@ -61,7 +61,7 @@ const request = (path, params) => new Promise(resolve => {
 		// Enable this to log incoming data
 		// console.log(`Got answer: ${JSON.stringify(answer)}`);
 		// console.log(path);
-		// console.log(util.inspect(answer));
+		console.log(util.inspect(answer));
 		resolve(answer);
 	});
 });

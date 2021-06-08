@@ -57,6 +57,7 @@ module.exports = {
 				end: '=,number',
 			}],
 			consecutiveMissedBlocks: '=,number',
+			registrationHeight: '=,number',
 			lastForgedHeight: '=,number',
 			isBanned: '=,boolean',
 			totalVotesReceived: '=,string',
@@ -81,7 +82,6 @@ module.exports = {
 		}],
 	},
 	legacy: {
-		// TODO: Verify field mappings with e2e setup
 		address: 'legacy.address,string',
 		balance: 'legacy.balance,string',
 	},

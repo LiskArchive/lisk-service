@@ -13,12 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// TODO: Enabled eslint when JSON-RPC is ready
-/* eslint-disable */
-const path = require('path');
+// eslint-disable-next-line import/no-extraneous-dependencies
 const requireAll = require('require-all');
+const path = require('path');
 const BluebirdPromise = require('bluebird');
 
+/* eslint-disable import/no-unresolved */
 const utils = require('../../services/utils');
 const MapperService = require('../../services/mapper');
 const errorCodesDef = require('./errorCodes').JSON_RPC;
@@ -26,6 +26,7 @@ const cachedPromise = require('../../services/cachedPromise');
 
 const logger = require('../../services/logger')();
 const trafficLogger = require('../../services/logger')('json-rpc-traffic');
+/* eslint-enable import/no-unresolved */
 
 const MULTI_REQUEST_CONCURRENCY = 16;
 
@@ -58,7 +59,7 @@ const errorResponse = (code, message) => ({
 });
 
 const errorCodes = Object.keys(errorCodesDef).reduce((acc, val) => {
-	acc[val] = errorCodesDef[val][0];
+	[acc[val]] = errorCodesDef[val];
 	return acc;
 }, {});
 
@@ -107,31 +108,31 @@ const performClientRequest = async (id, request) => {
 
 	const isAllowedValue = (param, value) => (
 		!param.enum || value === undefined
-			|| (!Array.isArray(value) && param.enum.includes(value))
-			|| (
-				param.allowMultiple && Array.isArray(value)
-				&& value.filter(v => !param.enum.includes(v)).length === 0
-			)
+		|| (!Array.isArray(value) && param.enum.includes(value))
+		|| (
+			param.allowMultiple && Array.isArray(value)
+			&& value.filter(v => !param.enum.includes(v)).length === 0
+		)
 	);
 
 	const getInvalidParamValues = () => (
 		Object.entries(params.valid).reduce((accumulator, [key, value]) => ([
 			...accumulator,
 			...(route.params[key].type !== undefined
-					// eslint-disable-next-line valid-typeof
-					&& typeof value !== route.params[key].type
+				// eslint-disable-next-line valid-typeof
+				&& typeof value !== route.params[key].type
 				? [`Type of '${key}' is ${typeof value} instead of expected ${route.params[key].type}`]
 				: []
 			),
 			...(route.params[key].max !== undefined
-					&& value !== undefined
-					&& value > route.params[key].max
+				&& value !== undefined
+				&& value > route.params[key].max
 				? [`Value of '${key}' bigger than allowed maximum ${route.params[key].max}`]
 				: []
 			),
 			...(route.params[key].min !== undefined
-					&& value !== undefined
-					&& value < route.params[key].min
+				&& value !== undefined
+				&& value < route.params[key].min
 				? [`Value of '${key}' smaller than allowed minimum ${route.params[key].min}`]
 				: []
 			),
@@ -140,8 +141,8 @@ const performClientRequest = async (id, request) => {
 				: []
 			),
 			...(route.params[key].minLength
-					&& typeof value === 'string'
-					&& value.length < route.params[key].minLength
+				&& typeof value === 'string'
+				&& value.length < route.params[key].minLength
 				? [`Length of '${key}' smaller than allowed minimum ${route.params[key].minLength}`]
 				: []
 			),
@@ -209,7 +210,7 @@ const registerCustomSocketApis = async socket => {
 
 	socket.on('connection', clientSocket => {
 		const ipAddress = clientSocket.handshake.address.split(':')[3];
-		clientSocket.on('request', async (requests, answerCb = () => {}) => {
+		clientSocket.on('request', async (requests, answerCb = () => { }) => {
 			if (!requests) answerCb(errorResponse(errorCodes.INVALID_PARAMS, 'No request params are passed'));
 
 			let singleResponse = false;
