@@ -121,6 +121,7 @@ const updatePrices = async () => {
 
 module.exports = {
 	targetPairs,
+	formatCalculatedRate,
 	calcTargetPairPrices,
 	updatePrices,
 };
