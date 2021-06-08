@@ -41,7 +41,7 @@ const jobSchema = {
 	description: { type: 'string', optional: true },
 	schedule: { type: 'string', optional: true },
 	interval: { type: 'number', integer: true, optional: true },
-	controller: { type: 'function' },
+	controller: { type: 'function', optional: true },
 	init: { type: 'function', optional: true },
 };
 
@@ -67,7 +67,7 @@ const Microservice = (config = {}) => {
 	});
 
 	const getBroker = () => broker;
-	const nop = () => {};
+	const nop = () => { };
 
 	const addMethod = item => {
 		const validDefinition = validator.validate(item, methodSchema);
@@ -125,23 +125,28 @@ const Microservice = (config = {}) => {
 			return;
 		}
 
+		// if (!job.schedule && !job.interval) {
+		// 	logger.warn([
+		// 		`Invalid event definition in ${moleculerConfig.name}, neither schedule,nor interval set:`,
+		// 		`${util.inspect(job)}`,
+		// 		`${util.inspect(validDefinition)}`,
+		// 	].join('\n'));
+		// 	return;
+		// }
+
 		if (!job.schedule && !job.interval) {
-			logger.warn([
-				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
-				`${util.inspect(job)}`,
-				`${util.inspect(validDefinition)}`,
-			].join('\n'));
-			return;
-		}
-
-		if (job.init) {
-			job.init();
-		}
-
-		if (job.interval) {
-			setInterval(job.controller, job.interval * 1000);
+			if (job.init) {
+				job.init();
+			}
 		} else {
-			cron.schedule(job.schedule, job.controller);
+			if (job.init) {
+				job.init();
+			}
+			if (job.interval) {
+				setInterval(job.controller, job.interval * 1000);
+			} else {
+				cron.schedule(job.schedule, job.controller);
+			}
 		}
 
 		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
