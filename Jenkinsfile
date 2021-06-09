@@ -119,6 +119,7 @@ pipeline {
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
 						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
+						dir('./framework') { sh "npm run test:functional" }
 					}
 				}
 			}
