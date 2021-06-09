@@ -77,7 +77,7 @@ const Microservice = (config = {}) => {
 				`${util.inspect(item)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
 
 		try {
@@ -87,7 +87,7 @@ const Microservice = (config = {}) => {
 				`Invalid parameter definition in ${moleculerConfig.name}:`,
 				`${util.inspect(item)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
 
 		moleculerConfig.actions[item.name] = {
@@ -95,6 +95,7 @@ const Microservice = (config = {}) => {
 			handler: ctx => item.controller(ctx.params),
 		};
 		logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
+		return true;
 	};
 
 	const addEvent = event => {
@@ -105,13 +106,14 @@ const Microservice = (config = {}) => {
 				`${util.inspect(event)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
 
 		event.controller(data => {
 			broker.emit(event.name, data, 'gateway');
 		});
 		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
+		return true;
 	};
 
 	const addJob = job => {
