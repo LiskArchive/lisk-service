@@ -131,14 +131,16 @@ const Microservice = (config = {}) => {
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
 			return false;
-		} if ((job.controller && !job.schedule && !job.interval)) {
+		}
+		if ((job.controller && !job.schedule && !job.interval)) {
 			logger.warn([
 				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
 				`${util.inspect(job)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
 			return false;
-		} if ((job.schedule || job.interval) && !job.controller) {
+		}
+		if ((job.schedule || job.interval) && !job.controller) {
 			logger.warn([
 				`Invalid event definition in ${moleculerConfig.name}, controller is required with schedule or interval:`,
 				`${util.inspect(job)}`,
