@@ -93,5 +93,13 @@ describe('Test microservice', () => {
 			}
 			expect(app.addJob(job)).toBe(false);
 		});
+
+		describe('addMethods()', () => {
+			it.todo('Add tests for addMethods');
+		})
+
+		describe('addEvents()', () => {
+			it.todo('Add tests for addEvents');
+		})
 	});
 });
