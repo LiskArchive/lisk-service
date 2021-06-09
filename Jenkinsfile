@@ -110,6 +110,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./services/market') { sh "npm run test:functional" }
+					dir('./framework') { sh "npm run test:functional" }
 				}
 			}
 		}
@@ -119,7 +120,6 @@ pipeline {
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
 						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
-						dir('./framework') { sh "npm run test:functional" }
 					}
 				}
 			}
