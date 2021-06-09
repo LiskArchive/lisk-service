@@ -122,23 +122,29 @@ const Microservice = (config = {}) => {
 				`${util.inspect(job)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
-
-		if ((job.controller && !job.schedule && !job.interval)) {
+		if (!job.init && !job.controller) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}, neither init, nor controller is defined for job:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return false;
+		} if ((job.controller && !job.schedule && !job.interval)) {
 			logger.warn([
 				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
 				`${util.inspect(job)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		} if ((job.schedule || job.interval) && !job.controller) {
 			logger.warn([
 				`Invalid event definition in ${moleculerConfig.name}, controller is required with schedule or interval:`,
 				`${util.inspect(job)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
 		if (job.init) {
 			job.init();
@@ -150,6 +156,7 @@ const Microservice = (config = {}) => {
 		}
 
 		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
+		return true;
 	};
 
 	const _addItems = (folderPath, type) => {
