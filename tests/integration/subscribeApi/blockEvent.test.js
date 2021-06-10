@@ -16,32 +16,32 @@
 const config = require('../../config');
 
 const {
-    subscribeAndReturn,
-    closeAllConnections,
+	subscribeAndReturn,
+	closeAllConnections,
 } = require('../../helpers/socketIoSubscribe');
 
 const {
-    goodRequestSchema,
-    metaSchema,
+	goodRequestSchema,
+	metaSchema,
 } = require('../../schemas/httpGenerics.schema');
 
 const {
-    blockSchemaVersion5,
+	blockSchemaVersion5,
 } = require('../../schemas/block.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 
 describe('Test subscribe API latest block event', () => {
-    it('event update.block', async () => {
-        const response = await subscribeAndReturn(endpoint, 'update.block');
-        expect(response).toMap(goodRequestSchema);
-        expect(response.data.length).toEqual(1);
-        response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
-        expect(response.meta).toMap(metaSchema);
-    });
+	it('event update.block', async () => {
+		const response = await subscribeAndReturn(endpoint, 'update.block');
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data.length).toEqual(1);
+		response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+		expect(response.meta).toMap(metaSchema);
+	});
 
-    afterAll(done => {
-        closeAllConnections();
-        done();
-    });
+	afterAll(done => {
+		closeAllConnections();
+		done();
+	});
 });
