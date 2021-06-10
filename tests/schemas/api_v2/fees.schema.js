@@ -21,8 +21,12 @@ const feeEstimateSchema = {
 		medium: Joi.number().min(0).required(),
 		high: Joi.number().min(0).required(),
 	}).required(),
-	baseFeeById: Joi.object().required(),
-	baseFeeByName: Joi.object().required(),
+	baseFeeById: Joi.object({
+		'5:0': Joi.string().required(),
+	}).required(),
+	baseFeeByName: Joi.object({
+		'dpos:registerDelegate': Joi.string().required(),
+	}).required(),
 	minFeePerByte: Joi.number().integer().required(),
 };
 
@@ -33,8 +37,12 @@ const feeEstimateEventSchema = {
 	updated: Joi.number().integer().min(1).required(),
 	blockHeight: Joi.number().integer().min(1).required(),
 	blockId: Joi.string().required(),
-	baseFeeByModuleAssetId: Joi.object().required(),
-	baseFeeByModuleAssetName: Joi.object().required(),
+	baseFeeByModuleAssetId: Joi.object({
+		'5:0': Joi.string().required(),
+	}).required(),
+	baseFeeByModuleAssetName: Joi.object({
+		'dpos:registerDelegate': Joi.string().required(),
+	}).required(),
 	minFeePerByte: Joi.number().integer().required(),
 };
 
