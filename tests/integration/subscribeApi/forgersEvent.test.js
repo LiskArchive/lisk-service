@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,33 +13,32 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../../config');
+const config = require('../../config');
 
 const {
 	subscribeAndReturn,
 	closeAllConnections,
-} = require('../../../helpers/socketIoSubscribe');
+} = require('../../helpers/socketIoSubscribe');
 
 const {
 	goodRequestSchema,
 	metaSchema,
-} = require('../../../schemas/httpGenerics.schema');
+} = require('../../schemas/httpGenerics.schema');
 
 const {
-	blockSchemaVersion5,
-} = require('../../../schemas/block.schema');
+	forgerSchema,
+} = require('../../schemas/forger.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 
-describe('Test subscribe API', () => {
-	it('event update.block', async () => {
-		const response = await subscribeAndReturn(endpoint, 'update.block');
+describe('Test subscribe API forgers event', () => {
+	it('event update.forgers', async () => {
+		const response = await subscribeAndReturn(endpoint, 'update.forgers');
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data.length).toEqual(1);
-		response.data.forEach(block => expect(block).toMap(blockSchemaVersion5));
+		expect(response.data.length).toEqual(25);
+		response.data.forEach(forger => expect(forger).toMap(forgerSchema));
 		expect(response.meta).toMap(metaSchema);
 	});
-
 	afterAll(done => {
 		closeAllConnections();
 		done();
