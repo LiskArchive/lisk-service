@@ -3,13 +3,17 @@ services:
 
   market:
     image: lisk/service_market
+    depends_on:
+      - redis_common
+      - redis_market
     networks:
       - services_network
     restart: always
     env_file:
       - ./lisk-service/env/common.env
+      - ./lisk-service/env/market.env
 
-  redis_core:
+  redis_market:
     image: redis:5-alpine
     volumes:
       - ./redis/redis.persistent.conf:/etc/redis/redis.conf:ro
