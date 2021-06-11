@@ -25,7 +25,7 @@ module.exports = {
 	params: {
 		ip: { optional: true, type: 'string', pattern: /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/ },
 		networkVersion: { optional: true, type: 'string', pattern: /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(-(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(\.(0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*)?(\+[0-9a-zA-Z-]+(\.[0-9a-zA-Z-]+)*)?$/ },
-		state: { optional: true, type: 'string', enum: ['connected', 'disconnected', 'any'], lowercase: true },
+		state: { optional: true, type: 'string', enum: ['connected', 'disconnected', 'any'], default: 'any', lowercase: true },
 		height: { optional: true, min: 0, type: 'number', integer: true },
 		limit: { optional: true, min: 1, max: 100, type: 'number', integer: true, default: 10 },
 		offset: { optional: true, min: 0, type: 'number', integer: true, default: 0 },
