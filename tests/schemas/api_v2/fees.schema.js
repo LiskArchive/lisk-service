@@ -55,8 +55,8 @@ const metaSchema = {
 };
 
 const goodRequestSchema = {
-	data: Joi.object(feeEstimateSchema).required(),
-	meta: Joi.object(metaSchema).required(),
+	data: Joi.object().required(),
+	meta: Joi.object().required(),
 	links: Joi.object().optional(),
 };
 
