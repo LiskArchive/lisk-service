@@ -47,8 +47,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'transactions.confirmed',
-		description: 'Keep confirmed transaction list up-to-date',
+		name: 'transactions.new',
+		description: 'Keep newly added transactions list up-to-date',
 		controller: callback => {
 			Signals.get('newBlock').add(async (data) => {
 				if (data && Array.isArray(data.data)) {

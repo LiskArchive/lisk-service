@@ -36,8 +36,8 @@ const baseUrlV2 = `${baseUrl}/api/v2`;
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 
-describe('Test subscribe API transaction confirmed event', () => {
-	it('event update.transactions.confirmed', async () => {
+describe('Test subscribe API transaction event', () => {
+	it('event update.transactions', async () => {
 		// Post signed transaction to lisk-core (test blockchain CI)
 		const postTransaction = await api.post(
 			`${baseUrlV2}/transactions`,
@@ -45,8 +45,8 @@ describe('Test subscribe API transaction confirmed event', () => {
 		);
 		expect(postTransaction).toMap(postTransactionSchema);
 
-		// Subscribe to event update.transactions.confirmed
-		const response = await subscribeAndReturn(endpoint, 'update.transactions.confirmed');
+		// Subscribe to event update.transactions
+		const response = await subscribeAndReturn(endpoint, 'update.transactionss');
 		expect(response).toMap(goodRequestSchema);
 		response.data.forEach(tx => expect(tx).toMap(transactionSchemaVersion5));
 		expect(response.meta).toMap(metaSchema);

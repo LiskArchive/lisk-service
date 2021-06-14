@@ -22,7 +22,7 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
     - [Response](#response-1)
   - [`update.forgers`](#updateforgers)
     - [Response](#response-2)
-  - [`update.transactions.confirmed`](#updatetransactionsconfirmed)
+  - [`update.transactions`](#updatetransactions)
     - [Response](#response-3)
   - [`update.fee_estimates`](#updatefee_estimates)
     - [Response](#response-4)
@@ -166,7 +166,7 @@ Updates the current forgers' list, so the current forger is on the first positio
 }
 ```
 
-## `update.transactions.confirmed`
+## `update.transactions`
 
 Updates about transactions from the last block.
 

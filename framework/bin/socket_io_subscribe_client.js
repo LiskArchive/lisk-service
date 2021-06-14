@@ -49,5 +49,5 @@ const subscribe = event => {
 subscribe('update.block');
 subscribe('update.round');
 subscribe('update.forgers');
-subscribe('update.transactions.confirmed');
+subscribe('update.transactions');
 subscribe('update.fee_estimates');

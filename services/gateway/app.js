@@ -136,7 +136,7 @@ broker.createService({
 			data: ['data', blockResponse],
 			meta: metaResponse,
 		})),
-		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', mapper(payload, {
+		'transactions.new': (payload) => sendSocketIoEvent('update.transactions', mapper(payload, {
 			data: ['data', transactionResponse],
 			meta: metaResponse,
 		})),
