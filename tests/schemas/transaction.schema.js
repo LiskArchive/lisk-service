@@ -68,7 +68,7 @@ const transactionSchemaVersion5 = {
 
 const postTransactionSchema = {
 	transactionId: Joi.string().required(),
-	message: Joi.string().required(),
+	message: Joi.string().valid('Transaction payload was successfully passed to the network node').required(),
 };
 
 module.exports = {
