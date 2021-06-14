@@ -71,7 +71,7 @@ module.exports = {
 				endpoint: 'moleculer',
 				event: 'transactions.new',
 				mapper: {
-					data: ['data', require('./mappers/socketConfirmedTransactions')],
+					data: ['data', require('./mappers/socketNewTransactions')],
 					meta: {},
 				},
 			},
