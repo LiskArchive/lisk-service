@@ -46,7 +46,7 @@ describe('Test subscribe API transaction event', () => {
 		expect(postTransaction).toMap(postTransactionSchema);
 
 		// Subscribe to event update.transactions
-		const response = await subscribeAndReturn(endpoint, 'update.transactionss');
+		const response = await subscribeAndReturn(endpoint, 'update.transactions');
 		expect(response).toMap(goodRequestSchema);
 		response.data.forEach(tx => expect(tx).toMap(transactionSchemaVersion5));
 		expect(response.meta).toMap(metaSchema);
