@@ -13,21 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../config');
+const config = require('../../../config');
 
 const {
 	subscribeAndReturn,
 	closeAllConnections,
-} = require('../../helpers/socketIoSubscribe');
+} = require('../../../helpers/socketIoSubscribe');
 
 const {
 	goodRequestSchema,
 	metaSchema,
-} = require('../../schemas/httpGenerics.schema');
+} = require('../../../schemas/httpGenerics.schema');
 
 const {
 	blockSchemaVersion5,
-} = require('../../schemas/block.schema');
+} = require('../../../schemas/block.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 

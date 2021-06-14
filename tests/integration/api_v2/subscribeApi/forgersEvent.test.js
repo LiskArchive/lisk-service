@@ -13,23 +13,31 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../config');
+const config = require('../../../config');
 
 const {
 	subscribeAndReturn,
 	closeAllConnections,
-} = require('../../helpers/socketIoSubscribe');
+} = require('../../../helpers/socketIoSubscribe');
 
 const {
-	feeEstimateEventSchema,
-} = require('../../schemas/api_v2/fees.schema');
+	goodRequestSchema,
+	metaSchema,
+} = require('../../../schemas/httpGenerics.schema');
+
+const {
+	forgerSchema,
+} = require('../../../schemas/forger.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 
-describe('Test subscribe API fees estimates event', () => {
-	it('event update.fee_estimates', async () => {
-		const response = await subscribeAndReturn(endpoint, 'update.fee_estimates');
-		expect(response).toMap(feeEstimateEventSchema);
+describe('Test subscribe API forgers event', () => {
+	it('event update.forgers', async () => {
+		const response = await subscribeAndReturn(endpoint, 'update.forgers');
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data.length).toEqual(25);
+		response.data.forEach(forger => expect(forger).toMap(forgerSchema));
+		expect(response.meta).toMap(metaSchema);
 	});
 	afterAll(done => {
 		closeAllConnections();
