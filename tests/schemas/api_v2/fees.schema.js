@@ -15,18 +15,24 @@
  */
 import Joi from 'joi';
 
+const baseFeeByIdObject = Joi.object()
+	.min(1)
+	.pattern(/^\b(?:[0-9]+:[0-9]+)\b$/, Joi.string().required())
+	.required();
+
+const baseFeeByNameObject = Joi.object()
+	.min(1)
+	.pattern(/^\b(?:[0-9a-zA-Z]+:[0-9a-zA-Z]+)\b$/, Joi.string().required())
+	.required();
+
 const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object({
 		low: Joi.number().min(0).required(),
 		medium: Joi.number().min(0).required(),
 		high: Joi.number().min(0).required(),
 	}).required(),
-	baseFeeById: Joi.object({
-		'5:0': Joi.string().required(),
-	}).required(),
-	baseFeeByName: Joi.object({
-		'dpos:registerDelegate': Joi.string().required(),
-	}).required(),
+	baseFeeById: baseFeeByIdObject,
+	baseFeeByName: baseFeeByNameObject,
 	minFeePerByte: Joi.number().integer().required(),
 };
 
@@ -37,12 +43,8 @@ const feeEstimateEventSchema = {
 	updated: Joi.number().integer().min(1).required(),
 	blockHeight: Joi.number().integer().min(1).required(),
 	blockId: Joi.string().required(),
-	baseFeeByModuleAssetId: Joi.object({
-		'5:0': Joi.string().required(),
-	}).required(),
-	baseFeeByModuleAssetName: Joi.object({
-		'dpos:registerDelegate': Joi.string().required(),
-	}).required(),
+	baseFeeByModuleAssetId: baseFeeByIdObject,
+	baseFeeByModuleAssetName: baseFeeByNameObject,
 	minFeePerByte: Joi.number().integer().required(),
 };
 
