@@ -30,20 +30,19 @@ module.exports = [
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			Signals.get('newBlock').add(async data => {
-				const block = data.data[0];
-				logger.debug(`New block arrived (${block.id})...`);
-
-				// Fork detection
-				if (localPreviousBlockId) {
-					if (localPreviousBlockId !== block.previousBlockId) {
-						logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+				if (data && Array.isArray(data.data)) {
+					const [block] = data.data;
+					logger.debug(`New block arrived (${block.id})...`);
+					// Fork detection
+					if (localPreviousBlockId) {
+						if (localPreviousBlockId !== block.previousBlockId) {
+							logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+						}
 					}
+					localPreviousBlockId = block.id;
+					core.reloadAllPendingTransactions();
+					callback(data);
 				}
-
-				localPreviousBlockId = block.id;
-
-				core.reloadAllPendingTransactions();
-				callback(data);
 			});
 		},
 	},
@@ -52,11 +51,13 @@ module.exports = [
 		description: 'Keep confirmed transaction list up-to-date',
 		controller: callback => {
 			Signals.get('newBlock').add(async (data) => {
-				const block = data.data[0];
-				if (block.numberOfTransactions > 0) {
-					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
-					const transactionData = await core.getTransactionsByBlockId(block.id);
-					callback(transactionData);
+				if (data && Array.isArray(data.data)) {
+					const [block] = data.data;
+					if (block.numberOfTransactions > 0) {
+						logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
+						const transactionData = await core.getTransactionsByBlockId(block.id);
+						callback(transactionData);
+					}
 				}
 			});
 		},
