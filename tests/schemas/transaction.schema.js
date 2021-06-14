@@ -66,7 +66,13 @@ const transactionSchemaVersion5 = {
 	isPending: Joi.boolean().required(),
 };
 
+const postTransactionSchema = {
+	transactionId: Joi.string().required(),
+	message: Joi.string().required(),
+};
+
 module.exports = {
 	transactionSchema: Joi.object(transactionSchema),
 	transactionSchemaVersion5: Joi.object(transactionSchemaVersion5),
+	postTransactionSchema: Joi.object(postTransactionSchema),
 };

@@ -30,16 +30,17 @@ module.exports = [
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			Signals.get('newBlock').add(async data => {
-				logger.debug(`New block arrived (${data.id})...`);
+				const block = data.data[0];
+				logger.debug(`New block arrived (${block.id})...`);
 
 				// Fork detection
 				if (localPreviousBlockId) {
-					if (localPreviousBlockId !== data.previousBlockId) {
+					if (localPreviousBlockId !== block.previousBlockId) {
 						logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
 					}
 				}
 
-				localPreviousBlockId = data.id;
+				localPreviousBlockId = block.id;
 
 				core.reloadAllPendingTransactions();
 				callback(data);
@@ -50,7 +51,8 @@ module.exports = [
 		name: 'transactions.confirmed',
 		description: 'Keep confirmed transaction list up-to-date',
 		controller: callback => {
-			Signals.get('newBlock').add(async (block) => {
+			Signals.get('newBlock').add(async (data) => {
+				const block = data.data[0];
 				if (block.numberOfTransactions > 0) {
 					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
 					const transactionData = await core.getTransactionsByBlockId(block.id);
