@@ -41,7 +41,7 @@ const jobSchema = {
 	description: { type: 'string', optional: true },
 	schedule: { type: 'string', optional: true },
 	interval: { type: 'number', integer: true, optional: true },
-	controller: { type: 'function' },
+	controller: { type: 'function', optional: true },
 	init: { type: 'function', optional: true },
 };
 
@@ -67,7 +67,7 @@ const Microservice = (config = {}) => {
 	});
 
 	const getBroker = () => broker;
-	const nop = () => {};
+	const nop = () => { };
 
 	const addMethod = item => {
 		const validDefinition = validator.validate(item, methodSchema);
@@ -77,7 +77,7 @@ const Microservice = (config = {}) => {
 				`${util.inspect(item)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
 
 		try {
@@ -87,7 +87,7 @@ const Microservice = (config = {}) => {
 				`Invalid parameter definition in ${moleculerConfig.name}:`,
 				`${util.inspect(item)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
 
 		moleculerConfig.actions[item.name] = {
@@ -95,6 +95,7 @@ const Microservice = (config = {}) => {
 			handler: ctx => item.controller(ctx.params),
 		};
 		logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
+		return true;
 	};
 
 	const addEvent = event => {
@@ -105,13 +106,14 @@ const Microservice = (config = {}) => {
 				`${util.inspect(event)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
 
 		event.controller(data => {
 			broker.emit(event.name, data, 'gateway');
 		});
 		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
+		return true;
 	};
 
 	const addJob = job => {
@@ -122,29 +124,43 @@ const Microservice = (config = {}) => {
 				`${util.inspect(job)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
-
-		if (!job.schedule && !job.interval) {
+		if (!job.init && !job.controller) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}, neither init, nor controller is defined for job:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return false;
+		}
+		if ((job.controller && !job.schedule && !job.interval)) {
 			logger.warn([
 				`Invalid event definition in ${moleculerConfig.name}, neither schedule, nor interval set:`,
 				`${util.inspect(job)}`,
 				`${util.inspect(validDefinition)}`,
 			].join('\n'));
-			return;
+			return false;
 		}
-
+		if ((job.schedule || job.interval) && !job.controller) {
+			logger.warn([
+				`Invalid event definition in ${moleculerConfig.name}, controller is required with schedule or interval:`,
+				`${util.inspect(job)}`,
+				`${util.inspect(validDefinition)}`,
+			].join('\n'));
+			return false;
+		}
 		if (job.init) {
 			job.init();
 		}
-
 		if (job.interval) {
 			setInterval(job.controller, job.interval * 1000);
-		} else {
+		} else if (job.schedule) {
 			cron.schedule(job.schedule, job.controller);
 		}
 
 		logger.info(`Registered job ${moleculerConfig.name}.${job.name}`);
+		return true;
 	};
 
 	const _addItems = (folderPath, type) => {
