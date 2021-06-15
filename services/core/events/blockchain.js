@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const {
 	Logger,
 	Signals,
@@ -30,31 +31,39 @@ module.exports = [
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			Signals.get('newBlock').add(async data => {
-				logger.debug(`New block arrived (${data.id})...`);
-
-				// Fork detection
-				if (localPreviousBlockId) {
-					if (localPreviousBlockId !== data.previousBlockId) {
-						logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+				if (data && Array.isArray(data.data)) {
+					const [block] = data.data;
+					logger.debug(`New block arrived (${block.id})...`);
+					// Fork detection
+					if (localPreviousBlockId) {
+						if (localPreviousBlockId !== block.previousBlockId) {
+							logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+						}
 					}
+					localPreviousBlockId = block.id;
+					core.reloadAllPendingTransactions();
+					callback(data);
+				} else {
+					logger.warn([
+						'Invalid payload received with the newBlock signal: ',
+						util.inspect(data),
+					].join('\n'));
 				}
-
-				localPreviousBlockId = data.id;
-
-				core.reloadAllPendingTransactions();
-				callback(data);
 			});
 		},
 	},
 	{
-		name: 'transactions.confirmed',
-		description: 'Keep confirmed transaction list up-to-date',
+		name: 'transactions.new',
+		description: 'Keep newly added transactions list up-to-date',
 		controller: callback => {
-			Signals.get('newBlock').add(async (block) => {
-				if (block.numberOfTransactions > 0) {
-					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
-					const transactionData = await core.getTransactionsByBlockId(block.id);
-					callback(transactionData);
+			Signals.get('newBlock').add(async (data) => {
+				if (data && Array.isArray(data.data)) {
+					const [block] = data.data;
+					if (block.numberOfTransactions > 0) {
+						logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
+						const transactionData = await core.getTransactionsByBlockId(block.id);
+						callback(transactionData);
+					}
 				}
 			});
 		},

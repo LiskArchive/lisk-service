@@ -22,7 +22,7 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
     - [Response](#response-1)
   - [`update.forgers`](#updateforgers)
     - [Response](#response-2)
-  - [`update.transactions.confirmed`](#updatetransactionsconfirmed)
+  - [`update.transactions`](#updatetransactions)
     - [Response](#response-3)
   - [`update.fee_estimates`](#updatefee_estimates)
     - [Response](#response-4)
@@ -166,7 +166,7 @@ Updates the current forgers' list, so the current forger is on the first positio
 }
 ```
 
-## `update.transactions.confirmed`
+## `update.transactions`
 
 Updates about transactions from the last block.
 
@@ -222,18 +222,24 @@ Updates about recent fee estimates.
 
 ```jsonc
 {
-  "blockHeight": 12463,
-  "low": 0,
-  "med": 0,
-  "high": 0,
-  "updated": 1622816707,
-  "blockId": "940c71fed31d45e5087ad63d494224d3417e32f44ddef6c182dfd0258994e3ea",
-  "minFeePerByte": 1000,
-  "baseFeeByModuleAssetId": {
-    "5:0": "1000000000"
+  "data": {
+    "feeEstimatePerByte": {
+      "low": 0,
+      "medium": 0,
+      "high": 0
+    },
+    "baseFeeById": {
+      "5:0": "1000000000"
+    },
+    "baseFeeByName": {
+      "dpos:registerDelegate": "1000000000"
+    },
+    "minFeePerByte": 1000
   },
-  "baseFeeByModuleAssetName": {
-    "dpos:registerDelegate": "1000000000"
+  "meta": {
+    "lastUpdate": 1623755357,
+    "lastBlockHeight": 4996,
+    "lastBlockId": "03237f191c8acd0077fc897213973c25ed086c1b5e78dccb4cc1c4dd83a00e21"
   }
 }
 ```

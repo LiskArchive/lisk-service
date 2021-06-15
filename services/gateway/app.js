@@ -35,10 +35,10 @@ const { getReady, updateSvcStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
-const metaResponse = require('./sources/meta');
-const blockResponse = require('./sources/version2/mappings/block');
-const forgerResponse = require('./sources/version2/mappings/forgers');
-const transactionResponse = require('./sources/version2/mappings/transaction');
+const { definition: blocksDefinition } = require('./sources/version2/blocks');
+const { definition: feesDefinition } = require('./sources/version2/fees');
+const { definition: forgersDefinition } = require('./sources/version2/forgers');
+const { definition: transactionsDefinition } = require('./sources/version2/transactions');
 
 const { host, port } = config;
 
@@ -132,23 +132,11 @@ broker.createService({
 	},
 	methods,
 	events: {
-		'block.change': (payload) => sendSocketIoEvent('update.block', mapper(payload, {
-			data: ['data', blockResponse],
-			meta: metaResponse,
-		})),
-		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', mapper(payload, {
-			data: ['data', transactionResponse],
-			meta: metaResponse,
-		})),
-		'round.change': (payload) => sendSocketIoEvent('update.round', mapper(payload, {
-			data: ['data', forgerResponse],
-			meta: metaResponse,
-		})),
-		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, {
-			data: ['data', forgerResponse],
-			meta: metaResponse,
-		})),
-		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
+		'block.change': (payload) => sendSocketIoEvent('update.block', mapper(payload, blocksDefinition)),
+		'transactions.new': (payload) => sendSocketIoEvent('update.transactions', mapper(payload, transactionsDefinition)),
+		'round.change': (payload) => sendSocketIoEvent('update.round', mapper(payload, forgersDefinition)),
+		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, forgersDefinition)),
+		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},
 });

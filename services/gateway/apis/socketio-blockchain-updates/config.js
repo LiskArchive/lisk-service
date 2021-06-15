@@ -64,14 +64,14 @@ module.exports = {
 			},
 		},
 		{
-			name: 'update.transactions.confirmed',
+			name: 'update.transactions',
 			type: 'event',
 			cache: false,
 			source: {
 				endpoint: 'moleculer',
-				event: 'transactions.confirmed',
+				event: 'transactions.new',
 				mapper: {
-					data: ['data', require('./mappers/socketConfirmedTransactions')],
+					data: ['data', require('./mappers/socketNewTransactions')],
 					meta: {},
 				},
 			},
