@@ -13,15 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const CoreService = require('../../../shared/core');
+const coreService = require('../../../shared/core');
 
-const getEstimateFeeByte = async () => {
-	const response = await CoreService.getEstimateFeeByte();
-
-	if (response.data && response.data.error) return { status: response.status, data: response.data };
-
-	return response;
-};
+const getEstimateFeeByte = () => coreService.getEstimateFeeByte();
 
 module.exports = {
 	getEstimateFeeByte,
