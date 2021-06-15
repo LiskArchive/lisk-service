@@ -19,15 +19,19 @@ module.exports = {
 	params: {},
 	definition: {
 		data: {
-			feeEstimatePerByte: '=',
-			baseFeeById: '=',
-			baseFeeByName: '=',
+			feeEstimatePerByte: {
+				low: '=,number',
+				medium: 'med,number',
+				high: '=,number',
+			},
+			baseFeeById: 'baseFeeByModuleAssetId',
+			baseFeeByName: 'baseFeeByModuleAssetName',
 			minFeePerByte: '=',
 		},
 		meta: {
-			lastUpdate: 'meta.updated,number',
-			lastBlockHeight: 'meta.blockHeight,number',
-			lastBlockId: 'meta.blockId,string',
+			lastUpdate: 'updated,number',
+			lastBlockHeight: 'blockHeight,number',
+			lastBlockId: 'blockId,string',
 		},
 		links: {},
 	},

@@ -21,7 +21,9 @@ const {
 } = require('../../../helpers/socketIoSubscribe');
 
 const {
-	feeEstimateEventSchema,
+	feeEstimateSchema,
+	goodRequestSchema,
+	metaSchema,
 } = require('../../../schemas/api_v2/fees.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
@@ -29,7 +31,9 @@ const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 describe('Test subscribe API fees estimates event', () => {
 	it('event update.fee_estimates', async () => {
 		const response = await subscribeAndReturn(endpoint, 'update.fee_estimates');
-		expect(response).toMap(feeEstimateEventSchema);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toMap(feeEstimateSchema);
+		expect(response.meta).toMap(metaSchema);
 	});
 	afterAll(done => {
 		closeAllConnections();

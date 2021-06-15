@@ -36,18 +36,6 @@ const feeEstimateSchema = {
 	minFeePerByte: Joi.number().integer().required(),
 };
 
-const feeEstimateEventSchema = {
-	low: Joi.number().min(0).required(),
-	med: Joi.number().min(0).required(),
-	high: Joi.number().min(0).required(),
-	updated: Joi.number().integer().min(1).required(),
-	blockHeight: Joi.number().integer().min(1).required(),
-	blockId: Joi.string().required(),
-	baseFeeByModuleAssetId: baseFeeByIdObject,
-	baseFeeByModuleAssetName: baseFeeByNameObject,
-	minFeePerByte: Joi.number().integer().required(),
-};
-
 const metaSchema = {
 	lastUpdate: Joi.number().integer().min(1).required(),
 	lastBlockHeight: Joi.number().integer().min(1).required(),
@@ -61,7 +49,6 @@ const goodRequestSchema = {
 };
 
 module.exports = {
-	feeEstimateEventSchema: Joi.object(feeEstimateEventSchema).required(),
 	feeEstimateSchema: Joi.object(feeEstimateSchema).required(),
 	metaSchema: Joi.object(metaSchema).required(),
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),

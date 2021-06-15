@@ -20,23 +20,7 @@ const getEstimateFeeByte = async () => {
 
 	if (response.data && response.data.error) return { status: response.status, data: response.data };
 
-	const result = { feeEstimatePerByte: {} };
-	result.feeEstimatePerByte.low = response.low;
-	result.feeEstimatePerByte.medium = response.med;
-	result.feeEstimatePerByte.high = response.high;
-	result.baseFeeById = response.baseFeeByModuleAssetId;
-	result.baseFeeByName = response.baseFeeByModuleAssetName;
-	result.minFeePerByte = response.minFeePerByte;
-
-	const meta = {};
-	meta.updated = response.updated;
-	meta.blockHeight = response.blockHeight;
-	meta.blockId = response.blockId;
-
-	return {
-		data: result,
-		meta,
-	};
+	return response;
 };
 
 module.exports = {

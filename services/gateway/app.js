@@ -37,6 +37,7 @@ const { genDocs } = require('./shared/generateDocs');
 const mapper = require('./shared/customMapper');
 const metaResponse = require('./sources/meta');
 const blockResponse = require('./sources/version2/mappings/block');
+const feeResponse = require('./sources/version2/fees');
 const forgerResponse = require('./sources/version2/mappings/forgers');
 const transactionResponse = require('./sources/version2/mappings/transaction');
 
@@ -148,7 +149,9 @@ broker.createService({
 			data: ['data', forgerResponse],
 			meta: metaResponse,
 		})),
-		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
+		'update.fee_estimates': (payload) => {
+			sendSocketIoEvent('update.fee_estimates', mapper(payload, feeResponse.definition));
+		},
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},
 });
