@@ -149,9 +149,7 @@ broker.createService({
 			data: ['data', forgerResponse],
 			meta: metaResponse,
 		})),
-		'update.fee_estimates': (payload) => {
-			sendSocketIoEvent('update.fee_estimates', mapper(payload, feeResponse.definition));
-		},
+		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feeResponse.definition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},
 });
