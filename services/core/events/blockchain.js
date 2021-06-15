@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const {
 	Logger,
 	Signals,
@@ -42,6 +43,11 @@ module.exports = [
 					localPreviousBlockId = block.id;
 					core.reloadAllPendingTransactions();
 					callback(data);
+				} else {
+					logger.warn([
+						'Invalid payload received with the newBlock signal: ',
+						util.inspect(data),
+					].join('\n'));
 				}
 			});
 		},
@@ -58,6 +64,11 @@ module.exports = [
 						const transactionData = await core.getTransactionsByBlockId(block.id);
 						callback(transactionData);
 					}
+				} else {
+					logger.warn([
+						'Invalid payload received with the newBlock signal: ',
+						util.inspect(data),
+					].join('\n'));
 				}
 			});
 		},
