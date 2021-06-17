@@ -36,7 +36,7 @@ const logger = Logger();
 
 // Initialize Microservice framework
 const app = Microservice({
-	name: 'template',
+	name: 'newsfeed',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
@@ -45,7 +45,6 @@ const app = Microservice({
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
-app.addEvents(path.join(__dirname, 'events'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application

@@ -13,12 +13,11 @@ RUN npm ci
 
 FROM node:12-alpine
 
-RUN apk add --no-cache curl
 RUN adduser -D lisk
 
-COPY ./ /home/lisk/lisk-service/template/
-COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/template/node_modules/
+COPY ./ /home/lisk/lisk-service/newsfeed/
+COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/newsfeed/node_modules/
 
 USER lisk
-WORKDIR /home/lisk/lisk-service/template
+WORKDIR /home/lisk/lisk-service/newsfeed
 CMD ["node", "app.js"]
