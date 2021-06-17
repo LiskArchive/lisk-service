@@ -1,14 +1,17 @@
 /*
- * Lisk Cloud 2020 Lisk Foundation, Zug, Switzerland * All Rights Reserved. *
+ * LiskHQ/lisk-service
+ * Copyright © 2021 Lisk Foundation
  *
- * NOTICE:
- * All information contained herein is, and remains the property of Lisk Foundation.
- * The intellectual and technical concepts contained herein are proprietary to Lisk Foundation
- * and may be covered by patents, by the right to obtain a patent, and are protected by trade
- * secret or copyright law.
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
  *
- * Dissemination of this information or reproduction of this material is strictly forbidden
- * unless prior written permission is obtained from Lisk Foundation.
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
  */
 const Twitter = require('twitter');
 
