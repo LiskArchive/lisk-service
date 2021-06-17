@@ -56,3 +56,32 @@ app.run().then(() => {
 	logger.fatal(err.stack);
 	process.exit(1);
 });
+
+// ****************************************************************************************************
+// ****************************************************************************************************
+
+const postgres = require('./services/postgres');
+
+const request = {
+	twitter: require('./services/twitter'),
+};
+
+const MILLISECONDS_IN_SECOND = 1000;
+
+const moleculer = require('./services/moleculer');
+
+moleculer.init(config);
+
+// Postgres Database
+Object.keys(config.postgresTables).reduce((p, table) =>
+	p.then(() => postgres.initializeTable(table))
+	, Promise.resolve()).then(() => {
+		Object.values(config.sources).forEach(async (source) => {
+			if (source.enabled === true) {
+				await postgres.updateDataInDb(source, request[source.type]);
+				setInterval(() => {
+					postgres.updateDataInDb(source, request[source.type]);
+				}, (source.interval * MILLISECONDS_IN_SECOND));
+			}
+		});
+	});
