@@ -41,11 +41,13 @@ config.sources_enable = process.env.SERVICE_NEWSFEED_ENABLE_SOURCES || defaultSo
 config.sources = {
 	drupal_lisk_general: getDrupalConfig({
 		url: 'https://lisk.io/api/blog',
+		// TODO: Move filters to jobs
 		filter: item => item.category !== 'Announcement' && item.description !== '',
 		restrictLength: config.defaultNewsLength,
 	}),
 	drupal_lisk_announcements: getDrupalConfig({
 		url: 'https://lisk.io/api/blog/43',
+		// TODO: Move filters to jobs
 		filter: item => item.description !== '',
 		restrictLength: config.defaultNewsLength,
 	}),
