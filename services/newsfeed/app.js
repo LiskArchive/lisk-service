@@ -36,7 +36,7 @@ const logger = Logger();
 
 // Initialize Microservice framework
 const app = Microservice({
-	name: 'template',
+	name: 'newsfeed',
 	transporter: config.transporter,
 	timeout: config.brokerTimeout,
 	packageJson,
@@ -55,33 +55,4 @@ app.run().then(() => {
 	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 	logger.fatal(err.stack);
 	process.exit(1);
-});
-
-// *************************************************************************************************
-// *************************************************************************************************
-
-const postgres = require('./shared/postgres');
-
-const request = {
-	twitter: require('./shared/newsfeed/sources/twitter'),
-};
-
-const MILLISECONDS_IN_SECOND = 1000;
-
-const moleculer = require('./shared/moleculer');
-
-moleculer.init(config);
-
-// Postgres Database
-Object.keys(config.postgresTables).reduce(
-	(p, table) => p.then(() => postgres.initializeTable(table)),
-	Promise.resolve()).then(() => {
-	Object.values(config.sources).forEach(async (source) => {
-		if (source.enabled === true) {
-			await postgres.updateDataInDb(source, request[source.type]);
-			setInterval(() => {
-				postgres.updateDataInDb(source, request[source.type]);
-			}, (source.interval * MILLISECONDS_IN_SECOND));
-		}
-	});
 });
