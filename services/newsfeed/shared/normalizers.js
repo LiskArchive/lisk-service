@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { mapper } = require('lisk-service-framework');
 const htmlToText = require('html-to-text');
 const makeHash = require('object-hash');
 const moment = require('moment');
@@ -20,7 +21,7 @@ const HtmlEntities = require('html-entities').AllHtmlEntities;
 
 const htmlEntities = new HtmlEntities();
 
-const MapperService = require('./mapper');
+const MapperService = mapper;
 const config = require('../config');
 
 /*
