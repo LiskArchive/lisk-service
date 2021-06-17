@@ -38,9 +38,15 @@
     "node-cron": "=2.0.3",
     "html-entities": "^2.3.2",
     "html-to-text": "^1.2.1",
+    "await-to-js": "^3.0.0",
+    "debug": "^4.3.1",
+    "log4js": "^6.3.0",
+    "moleculer": "=0.13.12",
     "moment": "^2.29.1",
     "object-hash": "^2.2.0",
-    "stack-trace": "^1.0.0-pre1",
+    "pg-promise": "^10.10.2",
+    "require-all": "^3.0.0",
+    "stack-trace": "0.0.10",
     "twitter": "^1.7.1"
   },
   "devDependencies": {
