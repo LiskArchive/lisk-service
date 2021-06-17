@@ -15,10 +15,11 @@
  */
 module.exports = {
 	primaryKey: 'source_id',
+	charset: 'utf8mb4',
 	schema: {
 		author: { type: 'string' },
-		content_t: { type: 'string', null: false },
-		content_orig: { type: 'string', null: false },
+		content_t: { type: 'text', null: false },
+		content_orig: { type: 'text', null: false },
 		image_url: { type: 'string' },
 		source: { type: 'string', null: false },
 		source_id: { type: 'string' },

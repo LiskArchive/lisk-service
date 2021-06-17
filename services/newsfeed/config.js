@@ -13,7 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = {};
+const config = {
+	endpoints: {},
+};
+
+/**
+ * External endpoints
+ */
+config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 // Moleculer broker config
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
