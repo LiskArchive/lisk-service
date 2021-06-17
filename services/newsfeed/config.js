@@ -13,14 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = {
-	endpoints: {},
-};
-
-/**
- * External endpoints
- */
-config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4';
+const config = {};
 
 // Moleculer broker config
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
@@ -64,6 +57,7 @@ const sources = require('./config.sources');
  */
 config.endpoints = {};
 config.endpoints.postgres = process.env.SERVICE_MARKET_POSTGRES || 'postgres://localhost:5432/market';
+config.endpoints.mysql = process.env.SERVICE_NEWSFEED_MYSQL || 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4';
 config.sources = sources;
 
 // Request-based APIs

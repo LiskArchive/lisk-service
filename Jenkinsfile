@@ -111,6 +111,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./services/market') { sh "npm run test:functional" }
+					dir('./services/newsfeed') { sh "npm run test:functional" }
 					dir('./framework') { sh "npm run test:functional" }
 				}
 			}
@@ -134,6 +135,7 @@ pipeline {
 				sh 'pm2 logs lisk-service-gateway --lines=100  --nostream'
 				sh 'pm2 logs lisk-service-core --lines=100  --nostream'
 				sh 'pm2 logs lisk-service-market --lines=100  --nostream'
+				sh 'pm2 logs lisk-service-newsfeed --lines=100  --nostream'
 			}
 		}
 		cleanup {
