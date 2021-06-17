@@ -96,7 +96,7 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 config.moleculer = {
-	transporter: process.env.SERVICE_NATS || 'nats://localhost:4222',
+	transporter: process.env.SERVICE_BROKER || 'redis://localhost:6379/0',
 	requestTimeout: 5 * 1000,
 };
 

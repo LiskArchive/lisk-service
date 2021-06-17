@@ -54,18 +54,16 @@ const init = (config) => {
 		},
 	};
 
-	Object.keys(methods).forEach((methodGroup) => {
-		Array.isArray(methods[methodGroup])
-			&& methods[methodGroup].forEach((item) => {
-				moleculerConfig.actions[item.name] = async (ctx) => {
-					const response = await item.controller(ctx.params);
-					return response.status
-						? { status: response.status, ...response.data }
-						: response.data;
-				};
-				logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
-			});
-	});
+	Object.keys(methods).forEach((methodGroup) => Array.isArray(methods[methodGroup])
+		&& methods[methodGroup].forEach((item) => {
+			moleculerConfig.actions[item.name] = async (ctx) => {
+				const response = await item.controller(ctx.params);
+				return response.status
+					? { status: response.status, ...response.data }
+					: response.data;
+			};
+			logger.info(`Registered method ${moleculerConfig.name}.${item.name}`);
+		}));
 
 	// Create a service
 	broker.createService(moleculerConfig);
