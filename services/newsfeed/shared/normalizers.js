@@ -27,6 +27,7 @@ const config = require('../config');
 /*
  * Functions to convert original content
  */
+// TODO: Replace deprecated method fromString
 const textify = text => htmlToText.fromString(text, {
 	format: {
 		heading: (elem, fn, options) => {
