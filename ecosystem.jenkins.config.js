@@ -97,6 +97,6 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
 			},
-		},d
+		},
 	],
 };
