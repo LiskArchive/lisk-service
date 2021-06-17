@@ -93,6 +93,7 @@ pipeline {
 					dir('./framework') { sh "npm run test:unit" }
 					dir('./services/core') { sh "npm run test:unit" }
 					dir('./services/market') { sh "npm run test:unit" }
+					dir('./services/newsfeed') { sh "npm run test:unit" }
 				}
 			}
 		}
@@ -111,7 +112,6 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./services/market') { sh "npm run test:functional" }
-					dir('./services/newsfeed') { sh "npm run test:functional" }
 					dir('./framework') { sh "npm run test:functional" }
 				}
 			}

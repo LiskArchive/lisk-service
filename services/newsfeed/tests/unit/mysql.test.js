@@ -16,7 +16,7 @@
 const mysqlIndex = require('../../shared/indexdb/mysql');
 const schema = require('../../shared/schema/newsfeed');
 
-const getIndex = () => mysqlIndex('testSchema', schema);
+const getIndex = () => mysqlIndex('testSchemaNewsfeed', schema);
 
 const { newsfeeds } = require('../constants/newsfeed');
 
