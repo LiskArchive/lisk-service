@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const getDrupalConfig = require('./shared/newsfeed/sources/config_drupal');
-const getTwitterConfig = require('./shared/newsfeed/sources/config_twitter');
+const getDrupalConfig = require('./config_drupal');
+const getTwitterConfig = require('./config_twitter');
 
 module.exports = {
 	lisk_blog_rest_general: getDrupalConfig({
