@@ -13,62 +13,47 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('./config.global');
-const sources = require('./config.sources');
+const getDrupalConfig = require('./config_drupal');
+const getTwitterConfig = require('./config_twitter');
+
+const config = {};
 
 /**
  * CONFIGURATION
  */
+
+/**
+ * Inter-service message broker
+ */
+config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; // in seconds
+
+/**
+ * External endpoints
+ */
 config.endpoints = {};
-config.endpoints.postgres = process.env.SERVICE_MARKET_POSTGRES || 'postgres://localhost:5432/market';
-config.sources = sources;
+config.endpoints.mysql = process.env.SERVICE_NEWSFEED_MYSQL || 'mysql://lisk:password@localhost:3306/newsfeed';
 
-// Request-based APIs
-config.apis = {
-	http_rest: {
-		description: 'HTTP',
-		enabled: true,
-		apiPath: '/api',
-	},
-	socket_io_rpc: {
-		description: 'Socket.io API',
-		enabled: true,
-		apiPath: '/rpc',
-	},
-};
+config.defaultNewsLength = 600;
 
-config.newsContentLength = 600;
-
-config.postgresTables = {
-	newsfeed: {
-		query: {
-			createTable: `CREATE TABLE newsfeed (
-				id serial PRIMARY KEY,
-				source VARCHAR (40) NOT NULL,
-				source_id VARCHAR (40),
-				hash VARCHAR (40) NOT NULL,
-				title VARCHAR (255) NOT NULL,
-				content text NULL DEFAULT NULL,
-				url VARCHAR (2083) NOT NULL,
-				image_url VARCHAR (2083),
-				timestamp TIMESTAMP NOT NULL,
-				author VARCHAR (100),
-				UNIQUE(hash, source)
-			)`,
-		},
-	},
-	news_content: {
-		query: {
-			createTable: `CREATE TABLE news_content (
-				id serial PRIMARY KEY,
-				hash VARCHAR (40) NOT NULL,
-				content_short text NULL DEFAULT NULL
-			)`,
-		},
-	},
+const defaultSources = 'drupal_lisk_general,drupal_lisk_announcements,twitter_lisk';
+config.sources_enable = process.env.SERVICE_NEWSFEED_ENABLE_SOURCES || defaultSources;
+config.sources = {
+	drupal_lisk_general: getDrupalConfig({
+		url: 'https://lisk.io/api/blog',
+		filter: item => item.category !== 'Announcement' && item.description !== '',
+		restrictLength: config.defaultNewsLength,
+	}),
+	drupal_lisk_announcements: getDrupalConfig({
+		url: 'https://lisk.io/api/blog/43',
+		filter: item => item.description !== '',
+		restrictLength: config.defaultNewsLength,
+	}),
+	twitter_lisk: getTwitterConfig(),
 };
 
 // Logging
+config.log = {};
 /**
  * log.level - Limits the importance of log messages for console and stdout outputs
  *             One fo the following in that order:
@@ -94,10 +79,5 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
-
-config.moleculer = {
-	transporter: process.env.SERVICE_NATS || 'nats://localhost:4222',
-	requestTimeout: 5 * 1000,
-};
 
 module.exports = config;
