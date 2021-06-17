@@ -50,6 +50,8 @@ describe('Test mysql', () => {
 		const result = await db.find({ source: 'drupal_lisk_general' });
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
+
+		expect(result[0]).toMatchObject(newsfeeds.filter(acc => acc.source === 'drupal_lisk_general')[0]);
 	});
 
 	it('Row count', async () => {
