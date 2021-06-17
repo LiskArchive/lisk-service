@@ -57,7 +57,7 @@ const initializeTable = table => new Promise(async (resolve, reject) => {
 	}
 });
 
-const getNewItems = (data, source, table, dbHashList) => {
+const getNewItems = (data, dbHashList) => {
 	const newData = data.filter(item => (
 		dbHashList.indexOf(item.hash) < 0
 	));
@@ -80,7 +80,7 @@ const cropFlagsBeyondApiResponse = flagArray => (
  * Those are such rows, whose hashes are not in 3rd party API response,
  * but are not older than the oldest item in the API response
  */
-const getStaleHashes = (data, source, table, dbHashList) => {
+const getStaleHashes = (data, dbHashList) => {
 	const dataHashes = data.map(({ hash }) => hash);
 	let missingIndexFlagArray = dbHashList.map(hash => (dataHashes.indexOf(hash) < 0));
 
@@ -92,8 +92,8 @@ const getStaleHashes = (data, source, table, dbHashList) => {
 };
 
 const updateRows = async (data, source, table, dbHashList) => {
-	const staleHashes = getStaleHashes(data, source, table, dbHashList);
-	const newItems = getNewItems(data, source, table, dbHashList);
+	const staleHashes = getStaleHashes(data, dbHashList);
+	const newItems = getNewItems(data, dbHashList);
 
 	if (staleHashes.length > 0 || newItems.length > 0) {
 		logger.debug(`${newItems.length} to be added and ${staleHashes.length} rows to be removed  from '${source.name}'`);
