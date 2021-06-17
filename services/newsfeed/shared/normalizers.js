@@ -21,7 +21,6 @@ const HtmlEntities = require('html-entities').AllHtmlEntities;
 
 const htmlEntities = new HtmlEntities();
 
-const MapperService = mapper;
 const config = require('../config');
 
 /*
@@ -115,7 +114,7 @@ const normalizeData = (source, data, table) => {
 			source: source.name,
 			...addCustomMapper(item),
 		}))
-		.map(item => MapperService(item, source[table].mapper));
+		.map(item => mapper(item, source[table].mapper));
 
 	data.forEach((item) => {
 		item.hash = getHash(item);
