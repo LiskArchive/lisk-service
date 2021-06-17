@@ -17,34 +17,34 @@ const { retrieveDataFromDb } = require('../../shared/postgres');
 const sources = require('../../config.sources.js');
 
 const enabledSources = Object.values(sources)
-    .filter(({ enabled }) => enabled)
-    .map(({ name }) => name);
+	.filter(({ enabled }) => enabled)
+	.map(({ name }) => name);
 
 const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
-    const data = await retrieveDataFromDb(
-        `SELECT newsfeed.id, newsfeed.hash, newsfeed.source, newsfeed.title, news_content.content_short, newsfeed.url, newsfeed.timestamp, newsfeed.author, newsfeed.image_url
+	const data = await retrieveDataFromDb(
+		`SELECT newsfeed.id, newsfeed.hash, newsfeed.source, newsfeed.title, news_content.content_short, newsfeed.url, newsfeed.timestamp, newsfeed.author, newsfeed.image_url
 		FROM newsfeed 
 		LEFT JOIN news_content ON newsfeed.hash = news_content.hash
 		WHERE source IN ($<source:csv>)
 		ORDER BY timestamp DESC
 		LIMIT $<limit>
 		OFFSET $<offset>`,
-        { limit, offset, source });
+		{ limit, offset, source });
 
-    return {
-        data: {
-            data,
-            meta: {
-                count: data.length,
-                limit,
-                offset,
-                source,
-            },
-            links: {},
-        },
-    };
+	return {
+		data: {
+			data,
+			meta: {
+				count: data.length,
+				limit,
+				offset,
+				source,
+			},
+			links: {},
+		},
+	};
 };
 
 module.exports = {
-    getNewsfeed,
+	getNewsfeed,
 };

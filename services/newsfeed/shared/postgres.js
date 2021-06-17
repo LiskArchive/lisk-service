@@ -14,14 +14,14 @@
  *
  */
 const to = require('await-to-js').default;
-const logger = require('./logger')();
-const { normalizeData } = require('./normalizers');
-const config = require('../config');
 const pgPromise = require('pg-promise')({
 	capSQL: true,
 	promiseLib: Promise,
 	noLocking: false,
 });
+const logger = require('./logger')();
+const { normalizeData } = require('./normalizers');
+const config = require('../config');
 
 const connPool = {};
 
@@ -42,6 +42,7 @@ const dbTx = (list, query) => (
 	})
 );
 
+// eslint-disable-next-line no-async-promise-executor
 const initializeTable = table => new Promise(async (resolve, reject) => {
 	const tableExists = await db.any('SELECT to_regclass($1)', table);
 	if (!tableExists[0].to_regclass) {

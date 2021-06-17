@@ -48,8 +48,8 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 
-// ****************************************************************************************************
-// ****************************************************************************************************
+// *************************************************************************************************
+// *************************************************************************************************
 const sources = require('./config.sources');
 
 /**
@@ -61,24 +61,24 @@ config.sources = sources;
 
 // Request-based APIs
 config.apis = {
-    http_rest: {
-        description: 'HTTP',
-        enabled: true,
-        apiPath: '/api',
-    },
-    socket_io_rpc: {
-        description: 'Socket.io API',
-        enabled: true,
-        apiPath: '/rpc',
-    },
+	http_rest: {
+		description: 'HTTP',
+		enabled: true,
+		apiPath: '/api',
+	},
+	socket_io_rpc: {
+		description: 'Socket.io API',
+		enabled: true,
+		apiPath: '/rpc',
+	},
 };
 
 config.newsContentLength = 600;
 
 config.postgresTables = {
-    newsfeed: {
-        query: {
-            createTable: `CREATE TABLE newsfeed (
+	newsfeed: {
+		query: {
+			createTable: `CREATE TABLE newsfeed (
 				id serial PRIMARY KEY,
 				source VARCHAR (40) NOT NULL,
 				source_id VARCHAR (40),
@@ -91,17 +91,17 @@ config.postgresTables = {
 				author VARCHAR (100),
 				UNIQUE(hash, source)
 			)`,
-        },
-    },
-    news_content: {
-        query: {
-            createTable: `CREATE TABLE news_content (
+		},
+	},
+	news_content: {
+		query: {
+			createTable: `CREATE TABLE news_content (
 				id serial PRIMARY KEY,
 				hash VARCHAR (40) NOT NULL,
 				content_short text NULL DEFAULT NULL
 			)`,
-        },
-    },
+		},
+	},
 };
 
 // Logging
@@ -132,8 +132,8 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 config.moleculer = {
-    transporter: process.env.SERVICE_NATS || 'nats://localhost:4222',
-    requestTimeout: 5 * 1000,
+	transporter: process.env.SERVICE_NATS || 'nats://localhost:4222',
+	requestTimeout: 5 * 1000,
 };
 
 module.exports = config;

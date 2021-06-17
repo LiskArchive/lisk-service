@@ -66,4 +66,3 @@ const getData = (request, data) => new Promise((resolve, reject) => {
 
 
 module.exports = getData;
-
