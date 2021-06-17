@@ -1,7 +1,7 @@
 {
-  "name": "lisk-service-template-moleculer",
+  "name": "lisk-service-newsfeed",
   "version": "0.4.0-beta.0",
-  "description": "Lisk Service Template Component",
+  "description": "Lisk Service Newsfeed",
   "keywords": [
     "lisk",
     "blockchain"
@@ -30,6 +30,8 @@
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {
+    "bluebird": "^3.7.2",
+    "knex": "^0.95.4",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/0ba4de1b8dc37fd35f38ce122321345284f35771/framework/dist/lisk-service-framework-1.2.1.tgz",
     "node-cron": "=2.0.3"
   },
