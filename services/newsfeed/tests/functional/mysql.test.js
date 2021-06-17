@@ -43,7 +43,7 @@ describe('Test mysql', () => {
 		await db.upsert(newsfeeds);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
-		expect(result.length).toBe(1);
+		expect(result.length).toBe(2);
 	});
 
 	it('Fetch rows', async () => {
@@ -54,6 +54,6 @@ describe('Test mysql', () => {
 
 	it('Row count', async () => {
 		const count = await db.count();
-		expect(count).toBe(1);
+		expect(count).toBe(2);
 	});
 });

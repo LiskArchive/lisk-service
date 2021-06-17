@@ -26,6 +26,18 @@ const newsfeeds = [
 		author: 'Lisk',
 		image_url: 'https://lisk.io/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-02/financial-update-january-2021-Blog%402x.png?itok=W-6nunXO',
 	},
+	{
+		content_orig: 'RT @devpost: The modular design of the Lisk SDK enables you to realize any kind\nof #blockchain technology use-case. What can you build? Jo…',
+		content_t: 'RT @devpost: The modular design of the Lisk SDK enables you to realize any kind\nof #blockchain technology use-case. What can you build? Jo…',
+		source: 'twitter_lisk',
+		title: '',
+		source_id: '82f381efdf90f422129cccc52091b461dc4c3200',
+		ctime: 1623924505,
+		mtime: 1612965420,
+		url: 'https://t.co/gDbz03FbKD',
+		author: 'LiskHQ',
+		image_url: null,
+	},
 ];
 
 module.exports = {
