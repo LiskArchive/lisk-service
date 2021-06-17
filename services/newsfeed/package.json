@@ -36,7 +36,7 @@
     "html-to-text": "^1.2.1",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/0ba4de1b8dc37fd35f38ce122321345284f35771/framework/dist/lisk-service-framework-1.2.1.tgz",
     "log4js": "^6.3.0",
-    "moleculer": "^0.14.13",
+    "moleculer": "=0.13.12",
     "moment": "^2.29.1",
     "node-cron": "=2.0.3",
     "object-hash": "^2.2.0",
