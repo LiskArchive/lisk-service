@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { mapper } = require('lisk-service-framework');
 const htmlToText = require('html-to-text');
 const makeHash = require('object-hash');
 const moment = require('moment');
@@ -20,12 +21,12 @@ const HtmlEntities = require('html-entities').AllHtmlEntities;
 
 const htmlEntities = new HtmlEntities();
 
-const MapperService = require('./mapper');
 const config = require('../config');
 
 /*
  * Functions to convert original content
  */
+// TODO: Replace deprecated method fromString
 const textify = text => htmlToText.fromString(text, {
 	format: {
 		heading: (elem, fn, options) => {
@@ -113,7 +114,7 @@ const normalizeData = (source, data, table) => {
 			source: source.name,
 			...addCustomMapper(item),
 		}))
-		.map(item => MapperService(item, source[table].mapper));
+		.map(item => mapper(item, source[table].mapper));
 
 	data.forEach((item) => {
 		item.hash = getHash(item);

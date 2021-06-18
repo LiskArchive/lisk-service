@@ -13,31 +13,45 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const postgres = require('./shared/postgres');
+const path = require('path');
+const {
+	Microservice,
+	LoggerConfig,
+	Logger,
+} = require('lisk-service-framework');
 
-const request = {
-	twitter: require('./shared/newsfeed/sources/twitter'),
+const config = require('./config');
+const packageJson = require('./package.json');
+
+// Configure logger
+const loggerConf = {
+	...config.log,
+	name: packageJson.name,
+	version: packageJson.version,
 };
 
-const MILLISECONDS_IN_SECOND = 1000;
+LoggerConfig(loggerConf);
 
-// Configuration
-const config = require('./config');
+const logger = Logger();
 
-const moleculer = require('./shared/moleculer');
+// Initialize Microservice framework
+const app = Microservice({
+	name: 'newsfeed',
+	transporter: config.transporter,
+	timeout: config.brokerTimeout,
+	packageJson,
+	logger: loggerConf,
+});
 
-moleculer.init(config);
+// Add routes, events & jobs
+app.addMethods(path.join(__dirname, 'methods'));
+app.addJobs(path.join(__dirname, 'jobs'));
 
-// Postgres Database
-Object.keys(config.postgresTables)
-	.reduce((p, table) => p.then(() => postgres.initializeTable(table)), Promise.resolve())
-	.then(() => {
-		Object.values(config.sources).forEach(async (source) => {
-			if (source.enabled === true) {
-				await postgres.updateDataInDb(source, request[source.type]);
-				setInterval(() => {
-					postgres.updateDataInDb(source, request[source.type]);
-				}, (source.interval * MILLISECONDS_IN_SECOND));
-			}
-		});
-	});
+// Run the application
+app.run().then(() => {
+	logger.info(`Service started ${packageJson.name}`);
+}).catch(err => {
+	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+	logger.fatal(err.stack);
+	process.exit(1);
+});

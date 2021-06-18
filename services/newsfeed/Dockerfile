@@ -1,6 +1,6 @@
-FROM node:10-alpine AS builder
+FROM node:12-alpine AS builder
 
-RUN apk add --no-cache alpine-sdk python2
+RUN apk add --no-cache alpine-sdk python2 git
 RUN adduser -D builder
 
 USER builder
@@ -11,14 +11,13 @@ COPY ./package-lock.json ./package.json ./
 RUN npm ci
 
 
-FROM node:10-alpine
+FROM node:12-alpine
 
 RUN adduser -D lisk
 
-COPY ./ /home/lisk/lisk-service
-COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/node_modules/
+COPY ./ /home/lisk/lisk-service/newsfeed/
+COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/newsfeed/node_modules/
 
 USER lisk
-WORKDIR /home/lisk/lisk-service
+WORKDIR /home/lisk/lisk-service/newsfeed
 CMD ["node", "app.js"]
-EXPOSE 9907
