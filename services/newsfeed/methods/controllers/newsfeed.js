@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const sources = require('../../config.sources.js');
+const config = require('../../config.js');
 
-const enabledSources = Object.values(sources)
+const enabledSources = Object.values(config.sources)
 	.filter(({ enabled }) => enabled)
 	.map(({ name }) => name);
 

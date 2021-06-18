@@ -13,10 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const getTwitterConfig = ({ enabled, name }) => ({
-	name,
+const getTwitterConfig = () => ({
 	type: 'twitter',
-	enabled,
 	interval: 5 * 60, // seconds
 	url: 'statuses/user_timeline',
 	requestOptions: {
@@ -37,7 +35,7 @@ const getTwitterConfig = ({ enabled, name }) => ({
 		customMapper: [['timestamp', 'convertTime', 'created_at']],
 		query: {
 			insert: 'INSERT INTO newsfeed(source, source_id, hash, title, content, url, timestamp, author, image_url) VALUES($1, $2, $3, \'\', $4, $5, $6, $7, $8) RETURNING id',
-			select: `SELECT hash FROM newsfeed WHERE source='${name}' LIMIT 200`,
+			select: 'SELECT hash FROM newsfeed WHERE source=twitter_lisk LIMIT 200',
 			delete: 'DELETE FROM newsfeed WHERE hash=$1',
 		},
 	},
