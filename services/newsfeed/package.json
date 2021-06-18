@@ -35,19 +35,13 @@
     "knex": "^0.95.4",
     "mysql": "^2.18.1",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/0ba4de1b8dc37fd35f38ce122321345284f35771/framework/dist/lisk-service-framework-1.2.1.tgz",
-    "node-cron": "=2.0.3",
-    "html-entities": "^2.3.2",
-    "html-to-text": "^1.2.1",
-    "await-to-js": "^3.0.0",
-    "debug": "^4.3.1",
-    "log4js": "^6.3.0",
-    "moleculer": "=0.13.12",
     "moment": "^2.29.1",
+    "moleculer": "^0.14.13",
     "object-hash": "^2.2.0",
-    "pg-promise": "^10.10.2",
-    "require-all": "^3.0.0",
     "stack-trace": "0.0.10",
-    "twitter": "^1.7.1"
+    "twitter": "^1.7.1",
+    "html-entities": "^2.3.2",
+    "html-to-text": "^1.2.1"
   },
   "devDependencies": {
     "jest": "^26.6.3"

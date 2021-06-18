@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const newsfeeds = [
+const news = [
 	{
 		content_orig: 'Every month the Lisk Foundation provides a financial report in which monthly expenditures are transparently broken down into different categories. In the first part of the report, you can check up on all fiat currency and cryptocurrency assets currently in possession of the Foundation. In the expenditures section of the Financial Update, you can see how much the Foundation has spent on various aspects of the Lisk&#039;s growth.',
 		content_t: 'Every month the Lisk Foundation provides a financial report in which monthly expenditures are transparently broken down into different categories. In the first part of the report, you can check up on all fiat currency and cryptocurrency assets currently in possession of the Foundation. In the expenditures section of the Financial Update, you can see how much the Foundation has spent on various aspects of the Lisk&#039;s growth.',
@@ -41,5 +41,5 @@ const newsfeeds = [
 ];
 
 module.exports = {
-	newsfeeds,
+	news,
 };

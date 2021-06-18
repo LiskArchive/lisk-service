@@ -18,7 +18,7 @@ const schema = require('../../shared/schema/newsfeed');
 
 const getIndex = () => mysqlIndex('testSchemaNewsfeed', schema);
 
-const { newsfeeds } = require('../constants/newsfeed');
+const { news } = require('../constants/newsfeed');
 
 describe('Test mysql', () => {
 	let db;
@@ -40,7 +40,7 @@ describe('Test mysql', () => {
 	});
 
 	it('Insert row', async () => {
-		await db.upsert(newsfeeds);
+		await db.upsert(news);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(2);
@@ -51,7 +51,7 @@ describe('Test mysql', () => {
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
 
-		expect(result[0]).toMatchObject(newsfeeds.filter(acc => acc.source === 'drupal_lisk_general')[0]);
+		expect(result[0]).toMatchObject(news.filter(acc => acc.source === 'drupal_lisk_general')[0]);
 	});
 
 	it('Row count', async () => {
