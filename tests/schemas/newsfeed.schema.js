@@ -21,7 +21,7 @@ const newsfeedSchema = {
 	imageUrl: Joi.string().optional(),
 	sourceName: Joi.string().required(),
 	sourceId: Joi.string().required(),
-	timestamp: Joi.number().integer().required(),
+	timestamp: Joi.number().integer().optional(),
 	ctime: Joi.number().integer().required(),
 	mtime: Joi.number().integer().required(),
 	title: Joi.string().optional(),

@@ -31,7 +31,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
 const endpoint = `${baseUrlV2}/newsfeed`;
 
-xdescribe('Newsfeed API', () => {
+describe('Newsfeed API', () => {
 	describe('Retrieve news/blog posts', () => {
 		it('returns news or 503 SERVICE UNAVAILABLE', async () => {
 			try {
@@ -39,9 +39,9 @@ xdescribe('Newsfeed API', () => {
 				expect(response).toMap(goodRequestSchema);
 				expect(response.data).toBeInstanceOf(Array);
 				expect(response.data.length).toBeGreaterThanOrEqual(1);
-				response.data.forEach(account => expect(account).toMap(newsfeedSchema));
+				response.data.forEach(news => expect(news).toMap(newsfeedSchema));
 				expect(response.meta).toMap(metaSchema);
-			} catch (_) {
+			} catch (err) {
 				const expectedResponseCode = 503;
 				const response = await api.get(`${endpoint}`, expectedResponseCode);
 				expect(response).toMap(serviceUnavailableSchema);

@@ -28,28 +28,28 @@ const {
 } = require('../../../schemas/newsfeed.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
-const getMarketPrices = async params => request(wsRpcUrl, 'get.newsfeed.articles', params);
+const getNewsfeed = async params => request(wsRpcUrl, 'get.newsfeed.articles', params);
 
-xdescribe('Method get.newsfeed.articles', () => {
+describe('Method get.newsfeed.articles', () => {
 	describe('is able to retrieve news/blog posts', () => {
 		it('returns news', async () => {
 			try {
-				const response = await getMarketPrices({});
+				const response = await getNewsfeed({});
 				expect(response).toMap(jsonRpcEnvelopeSchema);
 				const { result } = response;
 				expect(result.data).toBeInstanceOf(Array);
 				expect(result.data.length).toBeGreaterThanOrEqual(1);
 				expect(result.data.length).toBeLessThanOrEqual(10);
-				result.data.forEach(account => expect(account).toMap(newsfeedSchema));
+				result.data.forEach(news => expect(news).toMap(newsfeedSchema));
 				expect(result.meta).toMap(metaSchema);
 			} catch (_) {
-				const response = await getMarketPrices({}).catch(e => e);
+				const response = await getNewsfeed({}).catch(e => e);
 				expect(response).toMap(serviceUnavailableSchema);
 			}
 		});
 
 		it('error when invalid params', async () => {
-			const response = await getMarketPrices({ sourceId: 10 });
+			const response = await getNewsfeed({ sourceId: 10 });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
