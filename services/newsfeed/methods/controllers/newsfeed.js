@@ -20,19 +20,32 @@ const enabledSources = Object.values(config.sources)
 	.map(({ name }) => name);
 
 const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
-	const data = [];
+	// Replace it once done with implementation
+	const data = [
+		{
+			author: 'LiskHQ',
+			content: 'RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA',
+			imageUrl: 'https://t.co/QpZOkBfrgA.jpg',
+			sourceName: 'twitter_lisk',
+			sourceId: '4584a7d2db15920e130eeaf1014f87c99b5af329',
+			timestamp: 1623053809,
+			ctime: 1623053809,
+			mtime: 1623053809,
+			title: 'Financial Update for January 2021',
+			url: 'https://t.co/QpZOkBfrgA',
+			image_url: 'https://t.co/QpZOkBfrgA.jpg', // for compatiblity
+		},
+	];
 
 	return {
-		data: {
-			data,
-			meta: {
-				count: data.length,
-				limit,
-				offset,
-				source,
-			},
-			links: {},
+		data,
+		meta: {
+			count: data.length,
+			limit,
+			offset,
+			source,
 		},
+		links: {},
 	};
 };
 
