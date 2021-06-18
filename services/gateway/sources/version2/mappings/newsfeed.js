@@ -13,16 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNewsfeed } = require('./controllers/newsfeed');
-
-module.exports = [
-	{
-		name: 'articles',
-		controller: getNewsfeed,
-		params: {
-			source: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
-	},
-];
+module.exports = {
+	sources: '=',
+	author: '=,string',
+	content: '=,string',
+	imageUrl: '=,string',
+	sourceName: '=,string',
+	sourceId: '=,string',
+	timestamp: ' =,number',
+	ctime: '=,number',
+	mtime: '=,number',
+	title: '=,string',
+	url: '=,string',
+	image_url: '=,string',
+};
