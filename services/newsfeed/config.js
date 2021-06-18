@@ -32,7 +32,7 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; 
  * External endpoints
  */
 config.endpoints = {};
-config.endpoints.mysql = process.env.SERVICE_NEWSFEED_MYSQL || 'mysql://lisk:password@localhost:3306/newsfeed';
+config.endpoints.mysql = process.env.SERVICE_NEWSFEED_MYSQL || 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4';
 
 config.defaultNewsLength = 600;
 
