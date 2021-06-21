@@ -56,7 +56,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
 
-const genesisHeight = 0;
+const { genesisHeight } = config;
 let finalizedHeight;
 
 const getGenesisHeight = () => genesisHeight;
