@@ -41,7 +41,7 @@ const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
 		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
 		if (status) return { status, data: { error: err.message } };
 		throw err;
-	};
+	}
 };
 
 module.exports = {

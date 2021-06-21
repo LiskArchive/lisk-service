@@ -13,35 +13,38 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const getNewsfeedArticles = async ({ offset, limit, source: sources }) => {
-    // TODO: Perform DB Ops based on the request params
-    const data = [
-        {
-            "author": "LiskHQ",
-            "content_t": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
-            "image_url": null,
-            "source": "twitter_lisk",
-            "source_id": "4584a7d2db15920e130eeaf1014f87c99b5af329",
-            "ctime": 1623053809,
-            "mtime": 1623053809,
-            "title": "",
-            "url": "https://t.co/QpZOkBfrgA",
-        }
-    ].slice(offset, offset + limit);
+	// TODO: Perform DB Ops based on the request params
+	const data = [
+		{
+			author: 'LiskHQ',
+			content_t: 'RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA',
+			image_url: null,
+			source: 'twitter_lisk',
+			source_id: '4584a7d2db15920e130eeaf1014f87c99b5af329',
+			ctime: 1623053809,
+			mtime: 1623053809,
+			title: '',
+			url: 'https://t.co/QpZOkBfrgA',
+		},
+	].slice(offset, offset + limit);
 
-    // Send 'Service Unavailable' when no data is available
-    if (!data.length) throw new ServiceUnavailableException('Service not available');
+	// Send 'Service Unavailable' when no data is available
+	if (!data.length) throw new ServiceUnavailableException('Service not available');
 
-    return {
-        data,
-        meta: {
-            count: data.length,
-            limit,
-            offset,
-            source: sources,
-        },
-    };
+	return {
+		data,
+		meta: {
+			count: data.length,
+			limit,
+			offset,
+			source: sources,
+		},
+	};
 };
 
 module.exports = { getNewsfeedArticles };
