@@ -36,7 +36,7 @@ const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
 				source_id: '4584a7d2db15920e130eeaf1014f87c99b5af329',
 				ctime: 1623053809,
 				mtime: 1623053809,
-				title: '',
+				title: 'Financial Update for January 2021',
 				url: 'https://t.co/QpZOkBfrgA',
 			},
 		];
