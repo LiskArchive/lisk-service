@@ -142,10 +142,13 @@ const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) =>
 
 const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	const transactionsDB = await getTransactionsIndex();
+	const { defaultStartBlockHeight, genesisHeight } = config.feeEstimates;
+
+	// Use incrementation to skip the genesis block - it is not needed
+	const calculationHeight = Math.max(defaultStartBlockHeight, genesisHeight + 1);
 
 	// Check if the starting height is permitted by config or adjust acc.
-	fromHeight = config.feeEstimates.defaultStartBlockHeight > fromHeight
-		? config.feeEstimates.defaultStartBlockHeight : fromHeight;
+	fromHeight = Math.max(calculationHeight, fromHeight);
 
 	const cachedFeeEstimate = await cacheRedisFees.get(cacheKey);
 
