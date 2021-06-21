@@ -17,16 +17,15 @@ import Joi from 'joi';
 
 const newsfeedSchema = {
 	author: Joi.string().required(),
-	content: Joi.string().optional(),
-	imageUrl: Joi.string().optional(),
-	sourceName: Joi.string().required(),
-	sourceId: Joi.string().required(),
-	timestamp: Joi.number().integer().optional(),
-	ctime: Joi.number().integer().required(),
-	mtime: Joi.number().integer().required(),
-	title: Joi.string().optional(),
-	url: Joi.string().optional(),
-	image_url: Joi.string().optional(),
+	content_t: Joi.string().required(),
+	image_url: Joi.string().required(),
+	source: Joi.string().pattern(/^\b[a-z]+_[a-z]+\b$/).required(),
+	source_id: Joi.string().required(),
+	ctime: Joi.number().integer().positive().required(),
+	mtime: Joi.number().integer().positive().required(),
+	title: Joi.string().required(),
+	imageUrl: Joi.string().required(),
+	url: Joi.string().required(),
 };
 
 module.exports = {
