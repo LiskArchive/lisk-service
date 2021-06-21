@@ -18,37 +18,29 @@ const {
 } = require('lisk-service-framework');
 
 const config = require('../../config.js');
+const { getNewsfeedArticles } = require('../../shared/newsfeed.js');
 
 const enabledSources = Object.values(config.sources)
 	.filter(({ enabled }) => enabled)
 	.map(({ name }) => name);
 
 const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
-	const newsArticles = [
-		{
-			"author": "LiskHQ",
-			"content_t": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
-			"image_url": null,
-			"source": "twitter_lisk",
-			"source_id": "4584a7d2db15920e130eeaf1014f87c99b5af329",
-			"ctime": 1623053809,
-			"mtime": 1623053809,
-			"title": "",
-			"url": "https://t.co/QpZOkBfrgA",
-		}
-	];
+	const news = {
+		data: [],
+		meta: {},
+	};
 
-	if (!newsArticles.length) throw new ServiceUnavailableException('Service not available');
+	try {
+		const response = await getNewsfeedArticles({ limit, offset, source });
+		if (response.data) news.data = response.data;
+		if (response.meta) news.meta = response.meta;
 
-	return {
-		data: newsArticles,
-		meta: {
-			count: data.length,
-			limit,
-			offset,
-			source,
-		},
-		links: {},
+		return news;
+	} catch (err) {
+		let status;
+		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
 	};
 };
 
