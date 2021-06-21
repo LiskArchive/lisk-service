@@ -71,6 +71,7 @@ build-local:
 	cd ./framework && npm ci
 	cd ./services/core && npm ci
 	cd ./services/market && npm ci
+	cd ./services/newsfeed && npm ci
 	cd ./services/gateway && npm ci
 	cd ./services/template && npm ci
 	cd ./tests && npm ci
