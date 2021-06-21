@@ -38,5 +38,7 @@
     "stack-trace": "^1.0.0-pre1",
     "twitter": "^1.7.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "joi": "^17.4.0"
+  }
 }
