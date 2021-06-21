@@ -166,8 +166,11 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	do {
 		/* eslint-disable no-await-in-loop */
 		const idealEMABatchSize = config.feeEstimates.emaBatchSize;
-		const finalEMABatchSize = idealEMABatchSize > (prevFeeEstPerByte.blockHeight - genesisHeight)
-			? (prevFeeEstPerByte.blockHeight - genesisHeight + 1) : idealEMABatchSize;
+		const finalEMABatchSize = (() => {
+			const maxEmaBasedOnHeight = prevFeeEstPerByte.blockHeight - genesisHeight;
+			if (idealEMABatchSize > maxEmaBasedOnHeight) return maxEmaBasedOnHeight + 1;
+			return idealEMABatchSize;
+		})();
 
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
