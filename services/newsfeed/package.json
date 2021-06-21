@@ -39,6 +39,7 @@
     "twitter": "^1.7.1"
   },
   "devDependencies": {
-    "joi": "^17.4.0"
+    "joi": "^17.4.0",
+    "moleculer": "^0.14.13"
   }
 }
