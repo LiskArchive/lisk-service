@@ -28,8 +28,8 @@ const {
 } = require('../../../schemas/newsfeed.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV2 = `${baseUrl}/api/v2`;
-const endpoint = `${baseUrlV2}/newsfeed`;
+const baseUrlV2 = `${baseUrl}/api/v1`;
+const endpoint = `${baseUrlV2}/market/newsfeed`;
 
 describe('Newsfeed API', () => {
 	describe('Retrieve news/blog posts', () => {

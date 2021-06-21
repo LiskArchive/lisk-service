@@ -27,7 +27,7 @@ const {
 	newsfeedSchema,
 } = require('../../../schemas/newsfeed.schema');
 
-const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v1`;
 const getNewsfeed = async params => request(wsRpcUrl, 'get.newsfeed.articles', params);
 
 describe('Method get.newsfeed.articles', () => {
