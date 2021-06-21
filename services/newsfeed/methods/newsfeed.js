@@ -17,12 +17,12 @@ const { getNewsfeed } = require('./controllers/newsfeed');
 
 module.exports = [
 	{
-		name: 'newsfeed.articles',
+		name: 'articles',
 		controller: getNewsfeed,
 		params: {
-			limit: {},
-			offset: {},
-			source: {},
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
+			source: { optional: true, type: 'any' },
 		},
 	},
 ];
