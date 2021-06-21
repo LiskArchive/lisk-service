@@ -17,7 +17,7 @@ const { getNewsfeed } = require('./controllers/newsfeed');
 
 module.exports = [
 	{
-		name: 'newsfeed',
+		name: 'newsfeed.articles',
 		controller: getNewsfeed,
 		params: {
 			limit: {},

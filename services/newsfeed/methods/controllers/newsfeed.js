@@ -13,6 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
+
 const config = require('../../config.js');
 
 const enabledSources = Object.values(config.sources)
@@ -20,19 +24,31 @@ const enabledSources = Object.values(config.sources)
 	.map(({ name }) => name);
 
 const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
-	const data = [];
+	const newsArticles = [
+		{
+			"author": "LiskHQ",
+			"content_t": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
+			"image_url": null,
+			"source": "twitter_lisk",
+			"source_id": "4584a7d2db15920e130eeaf1014f87c99b5af329",
+			"ctime": 1623053809,
+			"mtime": 1623053809,
+			"title": "",
+			"url": "https://t.co/QpZOkBfrgA",
+		}
+	];
+
+	if (!newsArticles.length) throw new ServiceUnavailableException('Service not available');
 
 	return {
-		data: {
-			data,
-			meta: {
-				count: data.length,
-				limit,
-				offset,
-				source,
-			},
-			links: {},
+		data: newsArticles,
+		meta: {
+			count: data.length,
+			limit,
+			offset,
+			source,
 		},
+		links: {},
 	};
 };
 
