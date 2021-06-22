@@ -41,7 +41,7 @@
     "aggregate": {
         "name": "aggregate",
         "in": "query",
-        "description": "Returns votes as aggregates",
+        "description": "Returns aggregated votes",
         "type": "boolean",
         "default": false
     }
