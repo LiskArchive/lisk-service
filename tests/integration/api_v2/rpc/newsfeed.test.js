@@ -19,12 +19,12 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-	metaSchema,
 	serviceUnavailableSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
 	newsfeedSchema,
+	metaSchema,
 } = require('../../../schemas/newsfeed.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;

@@ -19,11 +19,11 @@ const { api } = require('../../../helpers/api');
 const {
 	goodRequestSchema,
 	badRequestSchema,
-	metaSchema,
 	serviceUnavailableSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
+	metaSchema,
 	newsfeedSchema,
 } = require('../../../schemas/newsfeed.schema');
 

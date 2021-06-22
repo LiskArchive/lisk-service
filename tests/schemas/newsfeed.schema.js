@@ -28,6 +28,13 @@ const newsfeedSchema = {
 	url: Joi.string().required(),
 };
 
+const metaSchema = {
+	count: Joi.number().required(),
+	limit: Joi.number().required(),
+	offset: Joi.number().required(),
+};
+
 module.exports = {
 	newsfeedSchema: Joi.object(newsfeedSchema).required(),
+	metaSchema: Joi.object(metaSchema).required(),
 };
