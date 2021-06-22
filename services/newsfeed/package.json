@@ -28,7 +28,8 @@
     "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
     "clean": "rm -rf ./node_modules",
     "watch": "supervisor -w . -i ./node_modules app.js",
-    "test:unit": "./node_modules/.bin/jest --config=jest.config.unit.js --detectOpenHandles --forceExit"
+    "test:unit": "./node_modules/.bin/jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
+    "test:functional": "./node_modules/.bin/jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
@@ -42,6 +43,8 @@
     "twitter": "^1.7.1"
   },
   "devDependencies": {
-    "jest": "^26.6.3"
+    "jest": "^27.0.4",
+    "joi": "^17.4.0",
+    "moleculer": "^0.14.13"
   }
 }

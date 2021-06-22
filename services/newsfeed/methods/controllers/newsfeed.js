@@ -17,40 +17,20 @@ const {
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
 
-const config = require('../../config.js');
+const { getNewsfeedArticles } = require('../../shared/newsfeed.js');
 
-const enabledSources = Object.values(config.sources)
-	.filter(({ enabled }) => enabled)
-	.map(({ name }) => name);
+const getNewsfeed = async params => {
+	const news = {
+		data: [],
+		meta: {},
+	};
 
-const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
 	try {
-		// Replace it once done with implementation
-		const data = [
-			{
-				author: 'LiskHQ',
-				content_t: 'RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA',
-				imageUrl: 'https://t.co/QpZOkBfrgA.jpg',
-				image_url: 'https://t.co/QpZOkBfrgA.jpg',
-				source: 'twitter_lisk',
-				source_id: '4584a7d2db15920e130eeaf1014f87c99b5af329',
-				ctime: 1623053809,
-				mtime: 1623053809,
-				title: 'Financial Update for January 2021',
-				url: 'https://t.co/QpZOkBfrgA',
-			},
-		];
+		const response = await getNewsfeedArticles(params);
+		if (response.data) news.data = response.data;
+		if (response.meta) news.meta = response.meta;
 
-		return {
-			data,
-			meta: {
-				count: data.length,
-				limit,
-				offset,
-				source,
-			},
-			links: {},
-		};
+		return news;
 	} catch (err) {
 		let status;
 		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';

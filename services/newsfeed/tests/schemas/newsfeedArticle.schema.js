@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
+const Joi = require('joi');
 
 const newsfeedArticleSchema = {
 	author: Joi.string().required(),
@@ -27,13 +27,6 @@ const newsfeedArticleSchema = {
 	url: Joi.string().required(),
 };
 
-const metaSchema = {
-	count: Joi.number().required(),
-	limit: Joi.number().required(),
-	offset: Joi.number().required(),
-};
-
 module.exports = {
-	newsfeedSchema: Joi.object(newsfeedArticleSchema).required(),
-	metaSchema: Joi.object(metaSchema).required(),
+	newsfeedArticleSchema: Joi.object(newsfeedArticleSchema).required(),
 };

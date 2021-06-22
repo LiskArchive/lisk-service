@@ -13,6 +13,7 @@ RUN npm ci
 
 FROM node:12-alpine
 
+RUN apk add --no-cache curl
 RUN adduser -D lisk
 
 COPY ./ /home/lisk/lisk-service/newsfeed/
