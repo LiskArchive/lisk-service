@@ -37,5 +37,12 @@
         "type": "string",
         "format": "publicKey",
         "minLength": 1
+    },
+    "aggregate": {
+        "name": "aggregate",
+        "in": "query",
+        "description": "Returns aggregated votes",
+        "type": "boolean",
+        "default": false
     }
 }

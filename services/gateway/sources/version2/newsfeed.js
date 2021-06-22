@@ -13,16 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNewsfeed } = require('./controllers/newsfeed');
+const newsfeed = require('./mappings/newsfeed');
 
-module.exports = [
-	{
-		name: 'articles',
-		controller: getNewsfeed,
-		params: {
-			source: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
+module.exports = {
+	type: 'moleculer',
+	method: 'newsfeed.articles',
+	params: {
+		source: '=,string',
+		offset: '=,number',
+		limit: '=,number',
 	},
-];
+	definition: {
+		data: ['data', newsfeed],
+		meta: {
+			count: '=,number',
+			limit: '=,number',
+			offset: '=,number',
+		},
+		links: {},
+	},
+};
