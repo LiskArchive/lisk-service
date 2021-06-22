@@ -468,7 +468,7 @@ const checkIndexReadiness = async () => {
 			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
 			`\ncurrentChainHeight: ${currentChainHeight}`,
 		);
-		if (numBlocksIndexed >= currentChainHeight
+		if (numBlocksIndexed >= currentChainHeight - genesisHeight
 			&& lastIndexedBlock.height >= currentChainHeight - 1) {
 			setIndexReadyStatus(true);
 			logger.info('Blocks index is now ready');
