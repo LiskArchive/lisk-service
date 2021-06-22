@@ -15,16 +15,15 @@
  */
 import Joi from 'joi';
 
-const newsfeedSchema = {
+const newsfeedArticleSchema = {
 	author: Joi.string().required(),
 	content_t: Joi.string().required(),
-	image_url: Joi.string().required(),
-	source: Joi.string().pattern(/^\b[a-z]+_[a-z]+\b$/).required(),
+	image_url: Joi.string().allow(null).required(),
+	source: Joi.string().pattern(/^\b[a-z]+(?:_[a-z]+){1,2}\b$/).required(),
 	source_id: Joi.string().required(),
 	ctime: Joi.number().integer().positive().required(),
 	mtime: Joi.number().integer().positive().required(),
-	title: Joi.string().required(),
-	imageUrl: Joi.string().required(),
+	title: Joi.string().allow('').required(),
 	url: Joi.string().required(),
 };
 
@@ -35,6 +34,6 @@ const metaSchema = {
 };
 
 module.exports = {
-	newsfeedSchema: Joi.object(newsfeedSchema).required(),
+	newsfeedSchema: Joi.object(newsfeedArticleSchema).required(),
 	metaSchema: Joi.object(metaSchema).required(),
 };
