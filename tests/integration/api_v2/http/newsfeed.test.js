@@ -50,7 +50,7 @@ describe('Newsfeed API', () => {
 
 		it('returns 400 BAD REQUEST with invalid params', async () => {
 			const expectedResponseCode = 400;
-			const response = await api.get(`${endpoint}?sourceId=4584a7d2db15920e130eeaf1014f87c99b5af329`, expectedResponseCode);
+			const response = await api.get(`${endpoint}?invalidParam=4584a7d2db15920e130eeaf1014f87c99b5af329`, expectedResponseCode);
 			expect(response).toMap(badRequestSchema);
 		});
 	});

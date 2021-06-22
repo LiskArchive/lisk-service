@@ -49,7 +49,7 @@ describe('Method get.newsfeed.articles', () => {
 		});
 
 		it('error when invalid params', async () => {
-			const response = await getNewsfeed({ sourceId: '4584a7d2db15920e130eeaf1014f87c99b5af329' });
+			const response = await getNewsfeed({ invalidParam: '4584a7d2db15920e130eeaf1014f87c99b5af329' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});

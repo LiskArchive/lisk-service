@@ -23,7 +23,7 @@ module.exports = {
 	rpcMethod: 'get.newsfeed.articles',
 	tags: ['Newsfeed'],
 	params: {
-		source: { optional: true, type: 'string', min: 1, pattern: /^\b[a-z]+_[a-z]+\b$/ },
+		source: { optional: true, type: 'string', min: 1, pattern: /^(?:\b(?:[a-z]+_[a-z]+)\b|\b(?:[a-z]+_[a-z]+|,){3,}\b){1}$/ },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
 		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
 	},
@@ -42,7 +42,7 @@ module.exports = {
 		});
 		newsfeedSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of news',
+				description: 'array of newsfeed articles',
 				schema: {
 					$ref: '#/definitions/NewsfeedWithEnvelope',
 				},
