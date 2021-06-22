@@ -17,7 +17,15 @@ const {
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
 
-const getNewsfeedArticles = async ({ offset, limit, source: sources }) => {
+const config = require('../config');
+
+const enabledSources = Object.values(config.sources)
+	.filter(({ enabled }) => enabled)
+	.map(({ name }) => name).join(',');
+
+const getNewsfeedArticles = async params => {
+	const { offset, limit, source: sources = enabledSources } = params;
+
 	// TODO: Perform DB Ops based on the request params
 	const data = [
 		{

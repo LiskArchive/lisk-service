@@ -17,21 +17,16 @@ const {
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
 
-const config = require('../../config.js');
 const { getNewsfeedArticles } = require('../../shared/newsfeed.js');
 
-const enabledSources = Object.values(config.sources)
-	.filter(({ enabled }) => enabled)
-	.map(({ name }) => name);
-
-const getNewsfeed = async ({ limit, offset, source = enabledSources }) => {
+const getNewsfeed = async params => {
 	const news = {
 		data: [],
 		meta: {},
 	};
 
 	try {
-		const response = await getNewsfeedArticles({ limit, offset, source });
+		const response = await getNewsfeedArticles(params);
 		if (response.data) news.data = response.data;
 		if (response.meta) news.meta = response.meta;
 
