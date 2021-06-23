@@ -56,7 +56,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
 
-const genesisHeight = 0;
+const { genesisHeight } = config;
 let finalizedHeight;
 
 const getGenesisHeight = () => genesisHeight;
@@ -468,7 +468,7 @@ const checkIndexReadiness = async () => {
 			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
 			`\ncurrentChainHeight: ${currentChainHeight}`,
 		);
-		if (numBlocksIndexed >= currentChainHeight
+		if (numBlocksIndexed >= currentChainHeight - genesisHeight
 			&& lastIndexedBlock.height >= currentChainHeight - 1) {
 			setIndexReadyStatus(true);
 			logger.info('Blocks index is now ready');
