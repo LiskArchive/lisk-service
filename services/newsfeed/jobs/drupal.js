@@ -13,8 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const reloadNewsFromDrupal = () => null;
+const logger = require('lisk-service-framework').Logger();
+const { reloadNewsFromDrupal } = require('../shared/drupal');
 
-module.exports = {
-	reloadNewsFromDrupal,
-};
+module.exports = [
+	{
+		name: 'newsfeed.retrieve.drupal',
+		description: 'Retrieves data from Drupal',
+		schedule: '* * * * *',
+		init: async () => {
+			logger.debug('Initializing data from Drupal');
+			await reloadNewsFromDrupal();
+		},
+		controller: async () => {
+			logger.debug('Job scheduled to update data from Drupal');
+			await reloadNewsFromDrupal();
+		},
+	},
+];
