@@ -28,11 +28,11 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 			content: 'description,string',
 			url: 'link,string',
 			image_url: '=,string',
-			timestamp: '=',
+			ctime: '=',
 			author: '=,string',
 		},
 		customMapper: [
-			['timestamp', 'drupalDate', 'created'],
+			['ctime', 'drupalDate', 'created'],
 			['author', 'authorParser', 'author'],
 			['link', 'drupalDomainPrefixer', 'link'],
 			['image_url', 'drupalDomainPrefixer', 'image'],
