@@ -17,9 +17,7 @@ const { mapper } = require('lisk-service-framework');
 const htmlToText = require('html-to-text');
 const makeHash = require('object-hash');
 const moment = require('moment');
-const HtmlEntities = require('html-entities').AllHtmlEntities;
-
-const htmlEntities = new HtmlEntities();
+const htmlEntities = require('html-entities');
 
 const config = require('../config');
 
