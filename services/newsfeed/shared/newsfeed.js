@@ -19,27 +19,20 @@ const {
 
 const config = require('../config');
 
+const mysqlIndex = require('./indexdb/mysql');
+const newsfeedIndexSchema = require('./schema/newsfeed');
+
+const getnewsfeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
+
 const enabledSources = Object.values(config.sources)
 	.filter(({ enabled }) => enabled)
 	.map(({ name }) => name).join(',');
 
 const getNewsfeedArticles = async params => {
 	const { offset, limit, source: sources = enabledSources } = params;
+	const newsfeedDB = await getnewsfeedIndex();
 
-	// TODO: Perform DB Ops based on the request params
-	const data = [
-		{
-			author: 'LiskHQ',
-			content_t: 'RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA',
-			image_url: null,
-			source: 'twitter_lisk',
-			source_id: '4584a7d2db15920e130eeaf1014f87c99b5af329',
-			ctime: 1623053809,
-			mtime: 1623053809,
-			title: '',
-			url: 'https://t.co/QpZOkBfrgA',
-		},
-	].slice(offset, offset + limit);
+	const data = await newsfeedDB.find(params);
 
 	// Send 'Service Unavailable' when no data is available
 	if (!data.length) throw new ServiceUnavailableException('Service not available');
