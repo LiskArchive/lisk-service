@@ -39,4 +39,9 @@ describe('Test normalizers', () => {
 			.drupalDomainPrefixer(drupalData[0].link, config.sources.drupal_lisk_announcements);
 		expect(result).toBe('https://lisk.io/blog/announcement/introducing-lisk-community-squad');
 	});
+
+	it('Test textifyForShort', async () => {
+		const result = await normalizeFunctions.textifyForShort(drupalData[0].description);
+		expect(result.length).toBeLessThanOrEqual(config.defaultNewsLength);
+	});
 });

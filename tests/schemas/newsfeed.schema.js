@@ -22,7 +22,7 @@ const newsfeedArticleSchema = {
 	source: Joi.string().pattern(/^\b[a-z]+(?:_[a-z]+){1,2}\b$/).required(),
 	source_id: Joi.string().required(),
 	ctime: Joi.number().integer().positive().required(),
-	mtime: Joi.number().integer().positive().required(),
+	mtime: Joi.number().integer().positive().allow(null).required(),
 	title: Joi.string().allow('').required(),
 	url: Joi.string().required(),
 };

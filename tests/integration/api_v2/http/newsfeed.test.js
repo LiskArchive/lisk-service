@@ -38,7 +38,7 @@ describe('Newsfeed API', () => {
 				const response = await api.get(`${endpoint}`);
 				expect(response).toMap(goodRequestSchema);
 				expect(response.data).toBeInstanceOf(Array);
-				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeGreaterThanOrEqual(10);
 				response.data.forEach(news => expect(news).toMap(newsfeedSchema));
 				expect(response.meta).toMap(metaSchema);
 			} catch (err) {
