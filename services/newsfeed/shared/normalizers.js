@@ -110,6 +110,7 @@ const normalizeData = (source, data, table) => {
 		.map(item => ({
 			...item,
 			source: source.name,
+			ctime: Math.floor((moment.unix(Date.now()).unix()) / 1000),
 			...addCustomMapper(item),
 		}))
 		.map(item => mapper(item, source[table].mapper));

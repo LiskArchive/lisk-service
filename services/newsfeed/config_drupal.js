@@ -25,20 +25,21 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 			source_id: 'nid,string',
 			hash: '=,string',
 			title: '=,string',
-			content: 'description,string',
+			content_orig: 'content,string',
+			content_t: 'description,string',
 			url: 'link,string',
 			image_url: '=,string',
 			ctime: '=',
+			mtime: '=',
 			author: '=,string',
 		},
 		customMapper: [
-			['ctime', 'drupalDate', 'created'],
 			['author', 'authorParser', 'author'],
 			['link', 'drupalDomainPrefixer', 'link'],
 			['image_url', 'drupalDomainPrefixer', 'image'],
 		],
 		query: {
-			insert: `INSERT INTO newsfeed(source, source_id, hash, title, content, url, image_url, timestamp, author) 
+			insert: `INSERT INTO newsfeed(source, source_id, hash, title, content, url, image_url, timestamp, author)
 					   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
 			select: `SELECT hash FROM newsfeed WHERE source='${name}' LIMIT 200`,
 			delete: 'DELETE FROM newsfeed WHERE hash=$1',

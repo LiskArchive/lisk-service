@@ -27,24 +27,14 @@ const getnewsfeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
 const reloadDrupalAnnouncements = async (url) => {
 	const newsfeedDB = await getnewsfeedIndex();
 	const response = await requestLib(url);
-	let normalizedData = normalizeData(config.sources.drupal_lisk_announcements, response.data, 'newsfeed');
-	normalizedData = normalizedData.map(acc => {
-		acc.content_orig = acc.content;
-		acc.content_t = `${acc.content.substring(0, 10)}...`;
-		return acc;
-	});
+	const normalizedData = normalizeData(config.sources.drupal_lisk_announcements, response.data, 'newsfeed');
 	await newsfeedDB.upsert(normalizedData);
 };
 
 const reloadDrupalGeneral = async (url) => {
 	const newsfeedDB = await getnewsfeedIndex();
 	const response = await requestLib(url);
-	let normalizedData = normalizeData(config.sources.drupal_lisk_general, response.data, 'newsfeed');
-	normalizedData = normalizedData.map(acc => {
-		acc.content_orig = acc.content;
-		acc.content_t = `${acc.content.substring(0, 10)}...`;
-		return acc;
-	});
+	const normalizedData = normalizeData(config.sources.drupal_lisk_general, response.data, 'newsfeed');
 	await newsfeedDB.upsert(normalizedData);
 };
 
