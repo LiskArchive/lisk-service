@@ -19,7 +19,6 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 	enabled,
 	url,
 	table: 'newsfeed',
-	interval: 5 * 60, // seconds
 	newsfeed: {
 		mapper: {
 			source: '=,string',
@@ -41,29 +40,29 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 			['image_url', 'drupalDomainPrefixer', 'image'],
 		],
 		query: {
-			insert: `INSERT INTO newsfeed(source, source_id, hash, title, content, url, image_url, timestamp, author) 
+			insert: `INSERT INTO newsfeed(source, source_id, hash, title, content, url, image_url, timestamp, author)
 					   VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
 			select: `SELECT hash FROM newsfeed WHERE source='${name}' LIMIT 200`,
 			delete: 'DELETE FROM newsfeed WHERE hash=$1',
 		},
 	},
-	news_content: {
-		mapper: {
-			hash: '=,string',
-			content: 'description,string',
-			source: '=,string', // to calculate hash
-			source_id: 'nid,string', // to calculate hash
-			url: 'link,string', // to calculate hash
-		},
-		customMapper: [
-			['link', 'drupalDomainPrefixer', 'link'], // to calculate hash
-		],
-		query: {
-			insert: 'INSERT INTO news_content(hash, content_short) VALUES($1, $2) RETURNING id',
-			select: 'SELECT hash FROM news_content',
-			delete: 'DELETE FROM news_content WHERE hash=$1',
-		},
-	},
+	// news_content: {
+	// 	mapper: {
+	// 		hash: '=,string',
+	// 		content: 'description,string',
+	// 		source: '=,string', // to calculate hash
+	// 		source_id: 'nid,string', // to calculate hash
+	// 		url: 'link,string', // to calculate hash
+	// 	},
+	// 	customMapper: [
+	// 		['link', 'drupalDomainPrefixer', 'link'], // to calculate hash
+	// 	],
+	// 	query: {
+	// 		insert: 'INSERT INTO news_content(hash, content_short) VALUES($1, $2) RETURNING id',
+	// 		select: 'SELECT hash FROM news_content',
+	// 		delete: 'DELETE FROM news_content WHERE hash=$1',
+	// 	},
+	// },
 	filter,
 });
 

@@ -15,6 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 const { reloadNewsFromDrupal } = require('../shared/drupal');
+const config = require('../config');
 
 module.exports = [
 	{
@@ -23,11 +24,17 @@ module.exports = [
 		schedule: '* * * * *',
 		init: async () => {
 			logger.debug('Initializing data from Drupal');
-			await reloadNewsFromDrupal();
+			await reloadNewsFromDrupal([
+				config.sources.drupal_lisk_announcements,
+				config.sources.drupal_lisk_general,
+			]);
 		},
 		controller: async () => {
 			logger.debug('Job scheduled to update data from Drupal');
-			await reloadNewsFromDrupal();
+			await reloadNewsFromDrupal([
+				config.sources.drupal_lisk_announcements,
+				config.sources.drupal_lisk_general,
+			]);
 		},
 	},
 ];

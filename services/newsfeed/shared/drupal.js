@@ -16,7 +16,6 @@
 const { HTTP } = require('lisk-service-framework');
 
 const requestLib = HTTP.request;
-const config = require('../config');
 const { normalizeData } = require('./normalizers');
 
 const mysqlIndex = require('./indexdb/mysql');
@@ -24,23 +23,13 @@ const newsfeedIndexSchema = require('./schema/newsfeed');
 
 const getnewsfeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
 
-const reloadDrupalAnnouncements = async (url) => {
+const reloadNewsFromDrupal = async drupalSources => {
 	const newsfeedDB = await getnewsfeedIndex();
-	const response = await requestLib(url);
-	const normalizedData = normalizeData(config.sources.drupal_lisk_announcements, response.data);
-	await newsfeedDB.upsert(normalizedData);
-};
-
-const reloadDrupalGeneral = async (url) => {
-	const newsfeedDB = await getnewsfeedIndex();
-	const response = await requestLib(url);
-	const normalizedData = normalizeData(config.sources.drupal_lisk_general, response.data);
-	await newsfeedDB.upsert(normalizedData);
-};
-
-const reloadNewsFromDrupal = async () => {
-	await reloadDrupalAnnouncements(config.endpoints.drupal_lisk_announcements);
-	await reloadDrupalGeneral(config.endpoints.drupal_lisk_general);
+	drupalSources.forEach(async source => {
+		const response = await requestLib(source.url);
+		const normalizedData = normalizeData(source, response.data);
+		await newsfeedDB.upsert(normalizedData);
+	});
 };
 
 module.exports = {

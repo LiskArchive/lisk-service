@@ -33,8 +33,6 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; 
  */
 config.endpoints = {};
 config.endpoints.mysql = process.env.SERVICE_NEWSFEED_MYSQL || 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4';
-config.endpoints.drupal_lisk_announcements = 'https://lisk.io/api/blog/43';
-config.endpoints.drupal_lisk_general = 'https://lisk.io/api/blog';
 
 config.defaultNewsLength = 600;
 
