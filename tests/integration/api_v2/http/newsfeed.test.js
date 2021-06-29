@@ -48,6 +48,30 @@ describe('Newsfeed API', () => {
 			}
 		});
 
+		it('retrieve news by param', async () => {
+			const response = await api.get(`${endpoint}?source=drupal_lisk_general`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(news => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toEqual('drupal_lisk_general');
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		xit('retrieve news by multiple params', async () => {
+			const response = await api.get(`${endpoint}?source=drupal_lisk_general,drupal_lisk_announcements`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach(news => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|),?)+\b$/);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
 		it('returns 400 BAD REQUEST with invalid params', async () => {
 			const expectedResponseCode = 400;
 			const response = await api.get(`${endpoint}?invalidParam=4584a7d2db15920e130eeaf1014f87c99b5af329`, expectedResponseCode);
