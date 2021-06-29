@@ -33,4 +33,3 @@ volumes:
 
 networks:
   newsfeed_network:
-    

@@ -28,8 +28,8 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 			content_t: '=,string',
 			url: 'link,string',
 			image_url: '=,string',
-			ctime: '=',
-			mtime: '=',
+			ctime: '=,number',
+			mtime: 'ctime,number',
 			author: '=,string',
 		},
 		customMapper: [
