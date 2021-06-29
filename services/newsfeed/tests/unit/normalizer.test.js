@@ -26,11 +26,6 @@ describe('Test normalizers', () => {
 		result.forEach(article => newsfeedArticleSchema.validate(article));
 	});
 
-	it('Returns drupalUnixTimestamp', async () => {
-		const result = await normalizeFunctions.drupalUnixTimestamp(drupalData[0].created);
-		expect(result).toBe(1624348320);
-	});
-
 	it('Test authorParser', async () => {
 		let result = await normalizeFunctions.authorParser(drupalData[0].author);
 		expect(result).toBe('Lisk');
