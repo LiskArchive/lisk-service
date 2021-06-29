@@ -66,6 +66,8 @@ const removePathFromUrl = url => url.split('/').slice(0, 3).join('/');
 
 const drupalDomainPrefixer = (url, source) => (`${removePathFromUrl(source.url)}${url}`);
 
+const drupalUnixTimestamp = date => moment(date, 'MM/DD/YYYY - HH:mm').unix();
+
 const normalizeFunctions = {
 	shortenContent,
 	textifyForShort,
@@ -75,6 +77,7 @@ const normalizeFunctions = {
 	htmlEntitiesDecode,
 	authorParser,
 	drupalDomainPrefixer,
+	drupalUnixTimestamp,
 };
 
 /**
@@ -83,8 +86,8 @@ const normalizeFunctions = {
  * Each array must have three items which are databse colum, function name,
  * key in source data that is put as the function argument
  */
-const normalizeData = (source, data, table) => {
-	const customMapper = source[table].customMapper || [];
+const normalizeData = (source, data) => {
+	const customMapper = source[source.table].customMapper || [];
 	data = source.transformSourceData ? source.transformSourceData(data) : data;
 
 	const addCustomMapper = item => (
@@ -113,7 +116,7 @@ const normalizeData = (source, data, table) => {
 			ctime: Math.floor((moment.unix(Date.now()).unix()) / 1000),
 			...addCustomMapper(item),
 		}))
-		.map(item => mapper(item, source[table].mapper));
+		.map(item => mapper(item, source[source.table].mapper));
 
 	data.forEach((item) => {
 		item.hash = getHash(item);
