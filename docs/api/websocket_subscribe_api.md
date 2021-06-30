@@ -9,7 +9,6 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 ## Table of Contents
 
 - [Lisk Service Subscribe API Documentation](#lisk-service-subscribe-api-documentation)
-  - [Table of Contents](#table-of-contents)
   - [Access paths and compatibility](#access-paths-and-compatibility)
   - [Endpoint Logic](#endpoint-logic)
   - [Responses](#responses)
@@ -23,8 +22,10 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
     - [Response](#response-1)
   - [`update.forgers`](#updateforgers)
     - [Response](#response-2)
-  - [`update.transactions.confirmed`](#updatetransactionsconfirmed)
+  - [`update.transactions`](#updatetransactions)
     - [Response](#response-3)
+  - [`update.fee_estimates`](#updatefee_estimates)
+    - [Response](#response-4)
 
 ## Access paths and compatibility
 
@@ -83,32 +84,32 @@ Updates about a newly forged block with its all data.
 {
   "data": [
     {
-      "id": "6258354802676165798",
-      "height": 8344448,
-      "version": 0,
-      "timestamp": 85944650,
-      "generatorAddress": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu",
-      "generatorPublicKey": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
-      "generatorUsername": "genesis_13",
-      "transactionRoot": "4e4d91be041e09a2e54bb7dd38f1f2a02ee7432ec9f169ba63cd1f193a733dd2",
-      "signature": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
-      "previousBlockId": "15918760246746894806",
-      "numberOfTransactions": 15,
-      "totalFee": "15000000",
-      "reward": "50000000",
-      "totalForged": "65000000",
-      "totalBurnt": "10000000",
-      "isFinal": true,
-      "maxHeightPreviouslyForged": 68636,
-      "maxHeightPrevoted": 68707,
-      "seedReveal": "4021e5048af4c9f64ff2e12780af21f4"
+      "id": "64829af74cdeaa696e4fdef3d7a498b816c8c2e088ecd6a4b59df1df8370c650",
+      "height": 12464,
+      "version": 2,
+      "timestamp": 1622816707,
+      "generatorAddress": "lskq847deet5ohzujm6s5t9adeotvmdo7pq4y36nz",
+      "generatorPublicKey": "09bafa700435af1b77ad1743e1e9df4157019dccca2fae0986e8e9431ed3e074",
+      "generatorUsername": "genesis_45",
+      "transactionRoot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "signature": "db2331a34dc93ca87762732108c67d8fe3bf725cf6f5c73290495d5f3a73a80227df36f291e259b7ae720fc0c7d27a213c5faa7cb5524e2c77ee8881ffdb1309",
+      "previousBlockId": "940c71fed31d45e5087ad63d494224d3417e32f44ddef6c182dfd0258994e3ea",
+      "numberOfTransactions": 0,
+      "totalForged": "500000000",
+      "totalBurnt": "0",
+      "totalFee": "0",
+      "reward": "500000000",
+      "isFinal": false,
+      "maxHeightPreviouslyForged": 12458,
+      "maxHeightPrevoted": 12395,
+      "seedReveal": "de2646e55ae279b17980823c8917078d"
     }
   ],
   "meta": {
-    "count": 100,
-    "offset": 25,
-    "total": 43749
-  },
+    "count": 1,
+    "offset": 0,
+    "total": 12464
+  }
 }
 ```
 
@@ -148,23 +149,24 @@ Updates the current forgers' list, so the current forger is on the first positio
 {
   "data": [
     {
-      "username": "genesis_51",
-      "totalVotesReceived": "1006000000000",
-      "address": "c6d076ed541ca20869a1398a9d28c645ac8a8719",
-      "minActiveHeight": 27605,
+      "username": "genesis_45",
+      "totalVotesReceived": "1000000000000",
+      "address": "lskq847deet5ohzujm6s5t9adeotvmdo7pq4y36nz",
+      "minActiveHeight": 1,
       "isConsensusParticipant": true,
-      "nextForgingTime": 1607521557
+      "nextForgingTime": 1622816707
     },
+    // ...
   ],
   "meta": {
-    "count": 10,
-    "offset": 20,
+    "count": 25,
+    "offset": 0,
     "total": 103
-  },
+  }
 }
 ```
 
-## `update.transactions.confirmed`
+## `update.transactions`
 
 Updates about transactions from the last block.
 
@@ -209,5 +211,35 @@ Updates about transactions from the last block.
     "offset": 25,
     "total": 43749
   },
+}
+```
+
+## `update.fee_estimates`
+
+Updates about recent fee estimates.
+
+### Response
+
+```jsonc
+{
+  "data": {
+    "feeEstimatePerByte": {
+      "low": 0,
+      "medium": 0,
+      "high": 0
+    },
+    "baseFeeById": {
+      "5:0": "1000000000"
+    },
+    "baseFeeByName": {
+      "dpos:registerDelegate": "1000000000"
+    },
+    "minFeePerByte": 1000
+  },
+  "meta": {
+    "lastUpdate": 1623755357,
+    "lastBlockHeight": 4996,
+    "lastBlockId": "03237f191c8acd0077fc897213973c25ed086c1b5e78dccb4cc1c4dd83a00e21"
+  }
 }
 ```

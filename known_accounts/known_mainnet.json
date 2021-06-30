@@ -12,10 +12,13 @@
 	"13892601275403076526L": { "owner": "BitBay",          "description": "Cold Wallet" },
 	"2797034409072178585L":  { "owner": "BitBay",          "description": "Hot Wallet" },
 	"11737606468871099380L": { "owner": "Changelly",       "description": "Hot Wallet" },
-  	"15441526754256992144L": { "owner": "HitBTC",          "description": "Hot Wallet" },
+	"15441526754256992144L": { "owner": "HitBTC",          "description": "Hot Wallet" },
 	"15610359283786884938L": { "owner": "Binance",         "description": "Hot Wallet" },
+	"5037006598898191401L":  { "owner": "Binance",         "description": "Hot Wallet" },
 	"3645487307206542645L":  { "owner": "Binance",         "description": "Cold Wallet" },
 	"3040783849904107057L":  { "owner": "Coincheck",       "description": "Hot Wallet" },
 	"16293716040102736949L": { "owner": "Coincheck",       "description": "Cold Wallet" },
-	"15277797432305784465L": { "owner": "Coincheck",       "description": "Hot Wallet" }
+	"15277797432305784465L": { "owner": "Coincheck",       "description": "Hot Wallet" },
+	"3150492547915446148L":  { "owner": "UPbit",           "description": "Hot Wallet" },
+	"2206820005532287757L":  { "owner": "UPbit",           "description": "Cold Wallet" }
 }

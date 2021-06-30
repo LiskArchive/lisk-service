@@ -13,9 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 const util = require('util');
+const {
+	Logger,
+	Signals,
+	Exceptions: { ValidationException, NotFoundException },
+} = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
@@ -44,9 +48,6 @@ const {
 
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const { ValidationException, NotFoundException } = require('../../../exceptions');
-
-const signals = require('../../../signals');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
@@ -55,7 +56,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
 
-const genesisHeight = 0;
+const { genesisHeight } = config;
 let finalizedHeight;
 
 const getGenesisHeight = () => genesisHeight;
@@ -467,11 +468,11 @@ const checkIndexReadiness = async () => {
 			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
 			`\ncurrentChainHeight: ${currentChainHeight}`,
 		);
-		if (numBlocksIndexed >= currentChainHeight
+		if (numBlocksIndexed >= currentChainHeight - genesisHeight
 			&& lastIndexedBlock.height >= currentChainHeight - 1) {
 			setIndexReadyStatus(true);
 			logger.info('Blocks index is now ready');
-			signals.get('blockIndexReady').dispatch(true);
+			Signals.get('blockIndexReady').dispatch(true);
 		} else {
 			logger.debug('Blocks index is not yet ready');
 		}
@@ -481,12 +482,12 @@ const checkIndexReadiness = async () => {
 
 const indexNewBlock = async (newBlock) => {
 	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
-	await indexNewBlocks({ data: [newBlock] });
+	await indexNewBlocks(newBlock);
 };
 
 const init = async () => {
 	// Index every new incoming block
-	signals.get('newBlock').add(indexNewBlock);
+	Signals.get('newBlock').add(indexNewBlock);
 
 	// Check state of index and perform update
 	try {
@@ -498,7 +499,7 @@ const init = async () => {
 	}
 
 	// Check and update index readiness status
-	signals.get('newBlock').add(checkIndexReadiness);
+	Signals.get('newBlock').add(checkIndexReadiness);
 };
 
 module.exports = {

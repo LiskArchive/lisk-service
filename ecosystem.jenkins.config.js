@@ -63,5 +63,22 @@ module.exports = {
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
 			},
 		},
+		{
+			name: 'lisk-service-market',
+			script: 'app.js',
+			cwd: './services/market',
+			pid_file: './pids/service_market.pid',
+			out_file: './logs/service_market.log',
+			error_file: './logs/service_market.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '512M',
+			instances: 1,
+			autorestart: true,
+			env: {
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+			},
+		},
 	],
 };

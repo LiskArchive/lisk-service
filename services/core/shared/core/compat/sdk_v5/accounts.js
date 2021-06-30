@@ -14,6 +14,9 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const {
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
 
 const {
 	validatePublicKey,
@@ -46,15 +49,17 @@ const coreApi = require('./coreApi');
 const mysqlIndex = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
+const blocksIndexSchema = require('./schema/blocks');
 const transactionsIndexSchema = require('./schema/transactions');
 
-const { ValidationException } = require('../../../exceptions');
-
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
+const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
 const genesisAccounts = {};
+
+const isItGenesisAccount = address => genesisAccounts[address] || false;
 
 const indexAccounts = async job => {
 	const { accounts } = job.data;
@@ -146,19 +151,14 @@ const resolveDelegateInfo = async accounts => {
 		accounts,
 		async account => {
 			if (account.isDelegate) {
+				const blocksDB = await getBlocksIndex();
+				const transactionsDB = await getTransactionsIndex();
+				const delegateRegTxModuleAssetId = '5:0';
+
 				account.account = {
 					address: account.address,
 					publicKey: account.publicKey,
 				};
-
-				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const {
-						rewards,
-						producedBlocks,
-					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					account.rewards = rewards;
-					account.producedBlocks = producedBlocks;
-				}
 
 				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
 				const totalVotes = account.dpos.sentVotes.reduce(adder, BigInt(0));
@@ -176,6 +176,32 @@ const resolveDelegateInfo = async accounts => {
 				account.pomHeights = account.dpos.delegate.pomHeights
 					.sort((a, b) => b - a).slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentHeight }));
+
+				const [lastForgedBlock = {}] = await blocksDB.find({
+					generatorPublicKey: account.publicKey,
+					limit: 1,
+				});
+				account.dpos.delegate.lastForgedHeight = lastForgedBlock.height || null;
+
+				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
+				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
+					const {
+						rewards,
+						producedBlocks,
+					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					account.rewards = rewards || 0;
+					account.producedBlocks = producedBlocks || 0;
+
+					// Check for the delegate registration transaction
+					const [delegateRegTx = {}] = await transactionsDB.find({
+						senderPublicKey: account.publicKey,
+						moduleAssetId: delegateRegTxModuleAssetId,
+					});
+					const genesisHeight = 0; // Local declaration to avoid circular dependency
+					account.dpos.delegate.registrationHeight = delegateRegTx.height
+						? delegateRegTx.height
+						: isItGenesisAccount(account.address) && genesisHeight;
+				}
 			}
 			return account;
 		},
@@ -203,7 +229,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 						property: 'address',
 						value: getBase32AddressFromPublicKey(accountInfo.publicKey),
 					},
-				});
+				}, account);
 			}
 			return account;
 		},
@@ -338,8 +364,8 @@ const getAccounts = async params => {
 			}
 
 			if (account.publicKey) {
-				if (genesisAccounts[account.address]) {
-					account.isMigrated = genesisAccounts[account.address];
+				if (isItGenesisAccount(account.address)) {
+					account.isMigrated = isItGenesisAccount(account.address);
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
 					// Use only dynamically computed legacyAccount information, ignore the hardcoded info

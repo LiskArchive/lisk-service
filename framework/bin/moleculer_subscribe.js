@@ -14,7 +14,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
+/* eslint-disable no-console */
 
 const { ServiceBroker } = require('moleculer');
 
@@ -23,9 +23,9 @@ if (process.argv.length < 0) {
 	process.exit(1);
 }
 
-const cliProcedureName = process.argv[2];
-const cliParams = process.argv[3] ? JSON.parse(process.argv[3]) : undefined;
-const TIMEOUT = 15 * 1000;
+// const cliProcedureName = process.argv[2];
+// const cliParams = process.argv[3] ? JSON.parse(process.argv[3]) : undefined;
+// const TIMEOUT = 15 * 1000;
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379',

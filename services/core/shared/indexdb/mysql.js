@@ -318,12 +318,26 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return resultSet;
 	};
 
-	const increment = async params => knex.transaction(
-		trx => trx(tableName)
-			.where(params.where.property, '=', params.where.value)
-			.increment(params.increment)
-			.transacting(trx),
-	);
+	const increment = async (params, row) => {
+		let result;
+		try {
+			[result] = await knex.transaction(
+				trx => trx(tableName)
+					.insert(row)
+					.transacting(trx),
+			);
+			// always return number of rows affected
+			result = result === 0 ? 1 : 0;
+		} catch (error) {
+			result = await knex.transaction(
+				trx => trx(tableName)
+					.where(params.where.property, '=', params.where.value)
+					.increment(params.increment)
+					.transacting(trx),
+			);
+		}
+		return result;
+	};
 
 	return {
 		upsert,

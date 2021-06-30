@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable quotes, quote-props, comma-dangle */
 const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 

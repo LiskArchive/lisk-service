@@ -54,6 +54,7 @@
 			}
 		],
 		"mocha/max-top-level-suites": ["warn", {"limit": 6}],
-		"mocha/no-skipped-tests": "off"
+		"mocha/no-skipped-tests": "off",
+		"indent": ["error", "tab"]
 	}
 }

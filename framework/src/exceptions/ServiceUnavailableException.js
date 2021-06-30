@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ValidationException extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'ValidationException';
-    }
+class ServiceUnavailableException extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'ServiceUnavailableException';
+	}
 }
 
-module.exports = ValidationException;
+module.exports = ServiceUnavailableException;

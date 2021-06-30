@@ -13,8 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const ValidationException = require('./ValidationException');
+class TooManyRequestsException extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'TooManyRequestsException';
+	}
+}
 
-module.exports = {
-    ValidationException,
-};
+module.exports = TooManyRequestsException;

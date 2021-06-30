@@ -15,7 +15,7 @@
  */
 const {
 	Utils,
-	Constants: { JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST } },
+	Constants: { JSON_RPC: { INVALID_PARAMS, INVALID_REQUEST, SERVICE_UNAVAILABLE } },
 } = require('lisk-service-framework');
 
 const { MoleculerClientError } = require('moleculer').Errors;
@@ -177,6 +177,7 @@ const registerApi = (apiNames, config) => {
 				onAfterCall: async (ctx, socket, req, data) => {
 					if (data.data && data.status) {
 						if (data.status === 'INVALID_PARAMS') throw new MoleculerClientError({ code: INVALID_PARAMS[0], message: data.data.error });
+						if (data.status === 'SERVICE_UNAVAILABLE') throw new MoleculerClientError({ code: SERVICE_UNAVAILABLE[0], message: data.data.error });
 					}
 
 					return transformResponse(req.method, data);

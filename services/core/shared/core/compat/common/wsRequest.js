@@ -20,21 +20,21 @@ const liskAddress = config.endpoints.liskWs;
 let clientCache;
 
 const getApiClient = async () => {
-    try {
-        if (!clientCache || !clientCache._channel.isAlive) {
-            clientCache = await createWSClient(`${liskAddress}/ws`);
-        }
-        return clientCache;
-    } catch (err) {
-        if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node');
+	try {
+		if (!clientCache || !clientCache._channel.isAlive) {
+			clientCache = await createWSClient(`${liskAddress}/ws`);
+		}
+		return clientCache;
+	} catch (err) {
+		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node');
 
-        return {
-            data: { error: 'Action not supported' },
-            status: 'METHOD_NOT_ALLOWED',
-        };
-    }
+		return {
+			data: { error: 'Action not supported' },
+			status: 'METHOD_NOT_ALLOWED',
+		};
+	}
 };
 
 module.exports = {
-    getApiClient,
+	getApiClient,
 };

@@ -32,6 +32,7 @@ const delegateSchema = {
 	isBanned: Joi.boolean().optional(),
 	status: Joi.string().valid(...validDelegateStatuses).optional(),
 	pomHeights: Joi.array().items(pomHeightSchema).optional(),
+	registrationHeight: Joi.number().integer().min(0).optional(),
 	lastForgedHeight: Joi.number().integer().min(0).optional(),
 	consecutiveMissedBlocks: Joi.number().integer().optional(),
 };

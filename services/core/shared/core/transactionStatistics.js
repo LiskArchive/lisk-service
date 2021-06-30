@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
@@ -21,7 +21,6 @@ const config = require('../../config');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
-const signals = require('../signals');
 const requestAll = require('../requestAll');
 
 const logger = Logger();
@@ -94,8 +93,8 @@ const computeTransactionStats = transactions => transactions.reduce((acc, tx) =>
 		...acc[tx.type],
 		[getRange(tx)]: {
 			count: getWithFallback(acc, tx.type, getRange(tx)).count + 1,
-			volume: BigNumber(getWithFallback(acc, tx.type,
-				getRange(tx)).volume).add(getTxValue(tx)),
+			volume: BigNumber(getWithFallback(acc, tx.type, getRange(tx)).volume)
+				.add(getTxValue(tx)),
 		},
 	},
 }), getInitialValueToEnsureEachDayHasAtLeastOneEntry());
@@ -125,7 +124,9 @@ const insertToDb = async (statsList, date) => {
 
 	statsList.map(statistic => {
 		Object.assign(statistic, { date, amount_range: statistic.range });
-		statistic.id = String(statistic.date).concat('-').concat(statistic.amount_range);
+		statistic.id = String(statistic.date)
+			.concat('-', statistic.type)
+			.concat('-', statistic.amount_range);
 		delete statistic.range;
 		return statistic;
 	});
@@ -247,9 +248,9 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 };
 
 const init = async historyLengthDays => {
-	signals.get('blockIndexReady').add(async () => {
-		await fetchTransactionsForPastNDays(historyLengthDays);
-		signals.get('transactionStatsReady').dispatch(historyLengthDays);
+	Signals.get('blockIndexReady').add(async () => {
+		await fetchTransactionsForPastNDays(historyLengthDays, true);
+		Signals.get('transactionStatsReady').dispatch(historyLengthDays);
 	});
 };
 

@@ -1,4 +1,3 @@
-/* eslint-disable quote-props */
 /*
  * LiskHQ/lisk-service
  * Copyright © 2021 Lisk Foundation

@@ -18,6 +18,7 @@ const {
 	Logger,
 	LoggerConfig,
 	Libs,
+	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
 const SocketIOService = require('./shared/moleculer-io');
@@ -29,13 +30,15 @@ const config = require('./config');
 const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
-const { ValidationException } = require('./shared/exceptions');
 const { getStatus } = require('./shared/status');
 const { getReady, updateSvcStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
-const delegateResponse = require('./apis/socketio-blockchain-updates/mappers/socketDelegate');
+const { definition: blocksDefinition } = require('./sources/version2/blocks');
+const { definition: feesDefinition } = require('./sources/version2/fees');
+const { definition: forgersDefinition } = require('./sources/version2/forgers');
+const { definition: transactionsDefinition } = require('./sources/version2/transactions');
 
 const { host, port } = config;
 
@@ -77,6 +80,7 @@ broker.createService({
 		host,
 		port,
 		path: '/api',
+		etag: 'strong',
 		use: [],
 
 		cors: {
@@ -128,19 +132,16 @@ broker.createService({
 	},
 	methods,
 	events: {
-		'block.change': (payload) => sendSocketIoEvent('update.block', payload),
-		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
-		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, {
-			data: ['data', delegateResponse],
-			meta: {},
-		})),
-		'transactions.confirmed': (payload) => sendSocketIoEvent('update.transactions.confirmed', payload),
-		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', payload),
+		'block.change': (payload) => sendSocketIoEvent('update.block', mapper(payload, blocksDefinition)),
+		'transactions.new': (payload) => sendSocketIoEvent('update.transactions', mapper(payload, transactionsDefinition)),
+		'round.change': (payload) => sendSocketIoEvent('update.round', mapper(payload, forgersDefinition)),
+		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, forgersDefinition)),
+		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},
 });
 
-broker.waitForServices('core');
+broker.waitForServices(['core', 'market']);
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);

@@ -13,11 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class InvalidParamsException extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'InvalidParamsException';
-    }
-}
+const Joi = require('joi');
 
-module.exports = InvalidParamsException;
+const marketPriceItemSchema = {
+	code: Joi.string().pattern(/^[A-Z]{3,4}_[A-Z]{3,4}$/).required(),
+	from: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+	to: Joi.string().pattern(/^[A-Z]{3,4}$/).required(),
+	rate: Joi.string().required(),
+	updateTimestamp: Joi.number().integer().positive().required(),
+	sources: Joi.array().items(Joi.string().required()).required(),
+};
+
+module.exports = {
+	marketPriceItemSchema: Joi.object(marketPriceItemSchema).required(),
+};

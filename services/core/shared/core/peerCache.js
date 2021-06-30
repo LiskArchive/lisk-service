@@ -13,14 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 
 const coreApi = require('./compat');
 const requestAll = require('../requestAll');
 
 const { peerStates } = require('./compat');
-
-const signals = require('../signals');
 
 const logger = Logger();
 
@@ -99,7 +97,7 @@ const reload = async () => {
 	peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
 	peerStore.statistics = await refreshStatistics();
 	logger.debug('Updated peer cache.');
-	signals.get('peerReload').dispatch(peerStore.peers);
+	Signals.get('peerReload').dispatch(peerStore.peers);
 };
 
 module.exports = {

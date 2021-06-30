@@ -14,7 +14,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-/* eslint-disable no-console,no-multi-spaces,key-spacing,no-unused-vars */
+/* eslint-disable no-console */
 
 const io = require('socket.io-client');
 const colorize = require('json-colorizer');
@@ -49,5 +49,5 @@ const subscribe = event => {
 subscribe('update.block');
 subscribe('update.round');
 subscribe('update.forgers');
-subscribe('update.transactions.confirmed');
+subscribe('update.transactions');
 subscribe('update.fee_estimates');

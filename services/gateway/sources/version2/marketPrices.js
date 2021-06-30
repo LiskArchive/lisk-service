@@ -13,11 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-class ValidationException extends Error {
-    constructor(message) {
-        super(message);
-        this.name = 'ValidationException';
-    }
-}
+const marketPrice = require('./mappings/marketPrice');
 
-module.exports = ValidationException;
+module.exports = {
+	type: 'moleculer',
+	method: 'market.prices',
+	params: {},
+	definition: {
+		data: ['data', marketPrice],
+		meta: {
+			count: '=,number',
+		},
+		links: {},
+	},
+};

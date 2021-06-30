@@ -294,6 +294,7 @@ https://service.lisk.io/api/v2/votes_sent?address=lsk24cd35u4jdq8szo3pnsqe5dsxwr
 | address   | String | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`       | *(empty)* | Resolves only new address system |
 | publicKey | String | `/^([A-Fa-f0-9]{2}){32}$/`                              | *(empty)* |
 | username  | String | `/^[a-z0-9!@$&_.]{1,20}$/`                              | *(empty)* |
+| aggregate | Boolean |                                                        | false     |
 | limit     | Number | `<1;100>`                                               | 10        |
 | offset    | Number | `<0;+Inf>`                                              | 0         |
 
@@ -638,7 +639,7 @@ https://service.lisk.io/api/v2/transactions?recipientAddress=lsk24cd35u4jdq8szo3
 
 ### Transaction broadcast
 
-Retrieves network transactions by criteria defined by params.
+Sends encoded transaction to the network node.
 
 #### Endpoints
 

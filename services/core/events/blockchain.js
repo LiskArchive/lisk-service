@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const util = require('util');
+const {
+	Logger,
+	Signals,
+} = require('lisk-service-framework');
 
 const core = require('../shared/core');
-const signals = require('../shared/signals');
+
+const logger = Logger();
 
 let localPreviousBlockId;
 
@@ -25,32 +30,40 @@ module.exports = [
 		name: 'block.change',
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
-			signals.get('newBlock').add(async data => {
-				logger.debug(`New block arrived (${data.id})...`);
-
-				// Fork detection
-				if (localPreviousBlockId) {
-					if (localPreviousBlockId !== data.previousBlockId) {
-						logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+			Signals.get('newBlock').add(async data => {
+				if (data && Array.isArray(data.data)) {
+					const [block] = data.data;
+					logger.debug(`New block arrived (${block.id})...`);
+					// Fork detection
+					if (localPreviousBlockId) {
+						if (localPreviousBlockId !== block.previousBlockId) {
+							logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+						}
 					}
+					localPreviousBlockId = block.id;
+					core.reloadAllPendingTransactions();
+					callback(data);
+				} else {
+					logger.warn([
+						'Invalid payload received with the newBlock signal: ',
+						util.inspect(data),
+					].join('\n'));
 				}
-
-				localPreviousBlockId = data.id;
-
-				core.reloadAllPendingTransactions();
-				callback(data);
 			});
 		},
 	},
 	{
-		name: 'transactions.confirmed',
-		description: 'Keep confirmed transaction list up-to-date',
+		name: 'transactions.new',
+		description: 'Keep newly added transactions list up-to-date',
 		controller: callback => {
-			signals.get('newBlock').add(async (block) => {
-				if (block.numberOfTransactions > 0) {
-					logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
-					const transactionData = await core.getTransactionsByBlockId(block.id);
-					callback(transactionData);
+			Signals.get('newBlock').add(async (data) => {
+				if (data && Array.isArray(data.data)) {
+					const [block] = data.data;
+					if (block.numberOfTransactions > 0) {
+						logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
+						const transactionData = await core.getTransactionsByBlockId(block.id);
+						callback(transactionData);
+					}
 				}
 			});
 		},
@@ -59,10 +72,10 @@ module.exports = [
 		name: 'forgers.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			signals.get('newBlock').add(async () => {
+			Signals.get('newBlock').add(async () => {
 				await core.reloadDelegateCache();
 				await core.reloadNextForgersCache();
-				const forgers = await core.getNextForgers({ limit: 25 });
+				const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
 				callback(forgers);
 			});
 		},
@@ -71,7 +84,7 @@ module.exports = [
 		name: 'round.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			signals.get('newRound').add(async data => {
+			Signals.get('newRound').add(async data => {
 				logger.debug('New round, updating delegates...');
 				core.reloadDelegateCache();
 				core.reloadNextForgersCache();
@@ -84,7 +97,7 @@ module.exports = [
 		name: 'update.fee_estimates',
 		description: 'Keep the fee estimates up-to-date',
 		controller: callback => {
-			signals.get('newFeeEstimate').add(async () => {
+			Signals.get('newFeeEstimate').add(async () => {
 				logger.debug('Returning latest fee_estimates to the socket.io client...');
 				const restData = await core.getEstimateFeeByte();
 				callback(restData);
@@ -95,7 +108,7 @@ module.exports = [
 		name: 'update.height_finalized',
 		description: 'Keep the block finality height up-to-date',
 		controller: callback => {
-			signals.get('newBlock').add(async () => {
+			Signals.get('newBlock').add(async () => {
 				logger.debug('Returning latest heightFinalized to the socket.io client...');
 				const restData = await core.updateFinalizedHeight();
 				callback(restData ? restData.data : null);
