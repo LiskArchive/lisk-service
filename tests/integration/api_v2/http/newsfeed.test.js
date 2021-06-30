@@ -60,7 +60,7 @@ describe('Newsfeed API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		xit('retrieve news by multiple params', async () => {
+		it('retrieve news by multiple params', async () => {
 			const response = await api.get(`${endpoint}?source=drupal_lisk_general,drupal_lisk_announcements`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);

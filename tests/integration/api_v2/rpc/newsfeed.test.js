@@ -48,6 +48,34 @@ describe('Method get.newsfeed.articles', () => {
 			}
 		});
 
+		it('retrieve news by param', async () => {
+			const response = await getNewsfeed({ source: 'drupal_lisk_general' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(news => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toEqual('drupal_lisk_general');
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('retrieve news by multiple sources', async () => {
+			const response = await getNewsfeed({ source: 'drupal_lisk_general,drupal_lisk_announcements' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(news => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|),?)+\b$/);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
 		it('error when invalid params', async () => {
 			const response = await getNewsfeed({ invalidParam: '4584a7d2db15920e130eeaf1014f87c99b5af329' });
 			expect(response).toMap(invalidParamsSchema);
