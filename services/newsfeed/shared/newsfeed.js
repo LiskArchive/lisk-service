@@ -32,6 +32,11 @@ const getNewsfeedArticles = async params => {
 	const { offset, limit, source: sources = enabledSources } = params;
 	const newsfeedDB = await getnewsfeedIndex();
 
+	if (params.source) params = {
+		...params,
+		orWhereIn: { property: 'source', values: params.source.split(',') },
+	};
+
 	const data = await newsfeedDB.find(params);
 
 	// Send 'Service Unavailable' when no data is available
