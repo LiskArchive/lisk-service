@@ -14,45 +14,35 @@
  *
  */
 const getTwitterConfig = () => ({
+	name: 'twitter_lisk',
+	table: 'newsfeed',
 	type: 'twitter',
 	interval: 5 * 60, // seconds
 	url: 'statuses/user_timeline',
 	requestOptions: {
 		screen_name: 'liskHQ',
-		count: 20,
+		count: 30,
+		exclude_replies: true,
+		include_rts: true,
 	},
 	newsfeed: {
 		mapper: {
+			hash: '=,string',
+			author: '=,string',
+			content_orig: 'text,string',
+			content_t: 'text,string',
+			image_url: '=,string',
 			source: '=,string',
 			source_id: 'id,string',
-			hash: '=,string',
-			content: 'text,string',
+			ctime: '=,number',
+			mtime: '=,number',
+			title: '=,string',
 			url: '=,string',
-			timestamp: '=',
-			author: '=,string',
-			image_url: '=,string',
 		},
-		customMapper: [['timestamp', 'convertTime', 'created_at']],
-		query: {
-			insert: 'INSERT INTO newsfeed(source, source_id, hash, title, content, url, timestamp, author, image_url) VALUES($1, $2, $3, \'\', $4, $5, $6, $7, $8) RETURNING id',
-			select: 'SELECT hash FROM newsfeed WHERE source=twitter_lisk LIMIT 200',
-			delete: 'DELETE FROM newsfeed WHERE hash=$1',
-		},
-	},
-	news_content: {
-		mapper: {
-			hash: '=,string',
-			content: '=,string',
-			source: '=,string', // to calculate hash
-			source_id: 'id,string', // to calculate hash
-			url: '=,string', // to calculate hash
-		},
-		customMapper: [['content', 'textifyForShort', 'text']],
-		query: {
-			insert: 'INSERT INTO news_content(hash, content_short) VALUES($1, $2) RETURNING id',
-			select: 'SELECT hash FROM news_content',
-			delete: 'DELETE FROM news_content WHERE hash=$1',
-		},
+		customMapper: [
+			['ctime', 'twitterUnixTimestamp', 'created_at'],
+			['mtime', 'twitterUnixTimestamp', 'created_at'],
+		],
 	},
 });
 

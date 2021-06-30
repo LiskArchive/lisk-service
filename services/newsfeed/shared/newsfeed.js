@@ -29,7 +29,7 @@ const enabledSources = Object.values(config.sources)
 	.map(({ name }) => name).join(',');
 
 const getNewsfeedArticles = async params => {
-	const { offset, limit, source: sources = enabledSources } = params;
+	const { offset, limit, source = enabledSources } = params;
 	const newsfeedDB = await getnewsfeedIndex();
 
 	if (params.source) params = {
@@ -48,7 +48,7 @@ const getNewsfeedArticles = async params => {
 			count: data.length,
 			limit,
 			offset,
-			source: sources,
+			source,
 		},
 	};
 };
