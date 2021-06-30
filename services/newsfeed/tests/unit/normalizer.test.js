@@ -22,16 +22,16 @@ describe('Test normalizers', () => {
 	it('Test normalizeData', async () => {
 		const result = await normalizeData(config.sources.drupal_lisk_announcements, drupalData);
 		expect(result).toBeInstanceOf(Array);
-		expect(result.length).toBe(2);
+		expect(result.length).toBe(drupalData.length);
 		result.forEach(article => newsfeedArticleSchema.validate(article));
 	});
 
 	it('Test authorParser', async () => {
 		let result = await normalizeFunctions.authorParser(drupalData[0].author);
-		expect(result).toBe('Lisk');
+		expect(['Lisk', drupalData[0].author]).toContain(result);
 
 		result = await normalizeFunctions.authorParser('admin');
-		expect(result).toBe('Lisk');
+		expect(['Lisk', drupalData[0].author]).toContain(result);
 	});
 
 	it('Test drupalDomainPrefixer', async () => {

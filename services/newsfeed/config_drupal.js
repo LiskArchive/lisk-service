@@ -17,6 +17,7 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 	name,
 	enabled,
 	url,
+	interval: 5 * 60, // seconds
 	table: 'newsfeed',
 	newsfeed: {
 		mapper: {
@@ -29,11 +30,12 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 			url: 'link,string',
 			image_url: '=,string',
 			ctime: '=,number',
-			mtime: 'ctime,number',
+			mtime: '=,number',
 			author: '=,string',
 		},
 		customMapper: [
 			['ctime', 'drupalUnixTimestamp', 'created'],
+			['mtime', 'drupalUnixTimestamp', 'created'],
 			['content_t', 'textifyForShort', 'description'],
 			['author', 'authorParser', 'author'],
 			['link', 'drupalDomainPrefixer', 'link'],

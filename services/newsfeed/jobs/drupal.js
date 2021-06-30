@@ -21,7 +21,7 @@ module.exports = [
 	{
 		name: 'newsfeed.retrieve.drupal',
 		description: 'Retrieves data from Drupal',
-		schedule: '* * * * *',
+		interval: config.sources.drupal_lisk_general.interval,
 		init: async () => {
 			logger.debug('Initializing data from Drupal');
 			await reloadNewsFromDrupal([

@@ -38,7 +38,8 @@ describe('Newsfeed API', () => {
 				const response = await api.get(`${endpoint}`);
 				expect(response).toMap(goodRequestSchema);
 				expect(response.data).toBeInstanceOf(Array);
-				expect(response.data.length).toBeGreaterThanOrEqual(10);
+				expect(response.data.length).toBeGreaterThanOrEqual(1);
+				expect(response.data.length).toBeLessThanOrEqual(10);
 				response.data.forEach(news => expect(news).toMap(newsfeedSchema));
 				expect(response.meta).toMap(metaSchema);
 			} catch (err) {
@@ -67,7 +68,7 @@ describe('Newsfeed API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			response.data.forEach(news => {
 				expect(news).toMap(newsfeedSchema);
-				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|),?)+\b$/);
+				expect(news.source).toMatch(/^\bdrupal_lisk(?:_general|_announcements)\b$/);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
