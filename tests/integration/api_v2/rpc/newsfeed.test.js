@@ -62,7 +62,7 @@ describe('Method get.newsfeed.articles', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('retrieve news by param: twitter_lisk', async () => {
+		xit('retrieve news by param: twitter_lisk', async () => {
 			const response = await getNewsfeed({ source: 'twitter_lisk' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -94,7 +94,7 @@ describe('Method get.newsfeed.articles', () => {
 			const limit = 5;
 			const offset = 1;
 			const response = await getNewsfeed({
-				source: 'twitter_lisk',
+				source: 'drupal_lisk_general',
 				limit,
 				offset,
 			});
@@ -105,7 +105,7 @@ describe('Method get.newsfeed.articles', () => {
 			expect(result.data.length).toBeLessThanOrEqual(limit);
 			result.data.forEach(news => {
 				expect(news).toMap(newsfeedSchema);
-				expect(news.source).toEqual('twitter_lisk');
+				expect(news.source).toEqual('drupal_lisk_general');
 			});
 			expect(result.meta).toMap(metaSchema);
 			expect(result.meta.offset).toEqual(offset);
