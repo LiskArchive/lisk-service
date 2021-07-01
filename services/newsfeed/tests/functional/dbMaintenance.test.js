@@ -18,12 +18,12 @@ const moment = require('moment');
 const mysqlIndex = require('../../shared/indexdb/mysql');
 const schema = require('../../shared/schema/newsfeed');
 
-const getIndex = () => mysqlIndex('testSchema', schema);
+const getIndex = () => mysqlIndex('newsfeedTestSchema', schema);
 
 const { normalizedTwitterData } = require('../constants/newsfeed');
 const { prune } = require('../../shared/dbMaintenance');
 
-describe('Test mysql', () => {
+describe('Test DB Maintenance', () => {
 	let db;
 	beforeAll(async () => {
 		// Create table & insert raw data
@@ -51,7 +51,7 @@ describe('Test mysql', () => {
 		expect(orgEntries.length).toBe(normalizedTwitterData.length);
 
 		// Test the Pruning logic
-		await prune(source, 'testSchema', expiryInDays);
+		await prune(source, 'newsfeedTestSchema', expiryInDays);
 
 		const postPruneEntries = await db.find({ source, propBetweens });
 		expect(postPruneEntries.length).toBe(0);
