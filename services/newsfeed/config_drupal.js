@@ -35,6 +35,7 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 		},
 		customMapper: [
 			['ctime', 'drupalUnixTimestamp', 'created'],
+			// Update mtime implementation in case modified/updated time exists in response
 			['mtime', 'drupalUnixTimestamp', 'created'],
 			['content_t', 'textifyForShort', 'description'],
 			['author', 'authorParser', 'author'],
