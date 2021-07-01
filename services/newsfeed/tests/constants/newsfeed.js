@@ -77,43 +77,43 @@ const normalizedTwitterData = [
 		ctime: 1619881551,
 		mtime: 1619881551,
 		title: undefined,
-		url: 'https://twitter.com/i/web/status/1410182648325046278'
+		url: 'https://twitter.com/i/web/status/1410182648325046278',
 	},
 	{
 		hash: 'cf1aad50574079f0fd591192a575f76ea726e775',
 		author: 'LiskHQ',
-		content_orig: 'RT @ManuGowda_Ns: Solve real world problems in 3 simple steps using #lisksdk @LiskHQ.\n' +
-			'\n' +
-			'1. Bootstrap blockchain application\n' +
-			'2. Add your bloc…',
-		content_t: 'RT @ManuGowda_Ns: Solve real world problems in 3 simple steps using #lisksdk @LiskHQ.\n' +
-			'\n' +
-			'1. Bootstrap blockchain application\n' +
-			'2. Add your bloc…',
+		content_orig: 'RT @ManuGowda_Ns: Solve real world problems in 3 simple steps using #lisksdk @LiskHQ.\n'
+			+ '\n'
+			+ '1. Bootstrap blockchain application\n'
+			+ '2. Add your bloc…',
+		content_t: 'RT @ManuGowda_Ns: Solve real world problems in 3 simple steps using #lisksdk @LiskHQ.\n'
+			+ '\n'
+			+ '1. Bootstrap blockchain application\n'
+			+ '2. Add your bloc…',
 		image_url: undefined,
 		source: 'twitter_lisk',
 		source_id: '1410177519282798600',
 		ctime: 1619047495,
 		mtime: 1619047495,
 		title: undefined,
-		url: 'https://t.co/oyheDOWV8v'
+		url: 'https://t.co/oyheDOWV8v',
 	},
 	{
 		hash: '2e868417c5347d26d8f77e502b48480ae9d63745',
 		author: 'LiskHQ',
-		content_orig: 'Attention #developers. 🧑‍💻\n' +
-			'\n' +
-			'Want to build your own blockchain application using #JavaScript? Use the @LiskHQ #SDK.… https://t.co/8JtbRkSgO5',
-		content_t: 'Attention #developers. 🧑‍💻\n' +
-			'\n' +
-			'Want to build your own blockchain application using #JavaScript? Use the @LiskHQ #SDK.… https://t.co/8JtbRkSgO5',
+		content_orig: 'Attention #developers. 🧑‍💻\n'
+			+ '\n'
+			+ 'Want to build your own blockchain application using #JavaScript? Use the @LiskHQ #SDK.… https://t.co/8JtbRkSgO5',
+		content_t: 'Attention #developers. 🧑‍💻\n'
+			+ '\n'
+			+ 'Want to build your own blockchain application using #JavaScript? Use the @LiskHQ #SDK.… https://t.co/8JtbRkSgO5',
 		image_url: undefined,
 		source: 'twitter_lisk',
 		source_id: '1410171102182219800',
 		ctime: 1619045965,
 		mtime: 1619045965,
 		title: undefined,
-		url: 'https://t.co/8JtbRkSgO5'
+		url: 'https://t.co/8JtbRkSgO5',
 	},
 ];
 
