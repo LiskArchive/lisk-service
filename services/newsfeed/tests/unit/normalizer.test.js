@@ -31,7 +31,7 @@ describe('Test normalizers', () => {
 		expect(['Lisk', drupalData[0].author]).toContain(result);
 
 		result = await normalizeFunctions.authorParser('admin');
-		expect(['Lisk', drupalData[0].author]).toContain(result);
+		expect(result).toEqual('Lisk');
 	});
 
 	it('Test drupalDomainPrefixer', async () => {

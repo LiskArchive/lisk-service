@@ -54,6 +54,7 @@ describe('Newsfeed API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(news => {
 				expect(news).toMap(newsfeedSchema);
 				expect(news.source).toEqual('drupal_lisk_general');
@@ -66,6 +67,7 @@ describe('Newsfeed API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(news => {
 				expect(news).toMap(newsfeedSchema);
 				expect(news.source).toMatch(/^\bdrupal_lisk(?:_general|_announcements)\b$/);
