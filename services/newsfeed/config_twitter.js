@@ -18,6 +18,7 @@ const getTwitterConfig = () => ({
 	table: 'newsfeed',
 	type: 'twitter',
 	interval: 5 * 60, // seconds
+	expiryInDays: Number(process.env.NEWSFEED_DB_EXPIRY_DAYS || 30),
 	url: 'statuses/user_timeline',
 	requestOptions: {
 		screen_name: 'liskHQ',

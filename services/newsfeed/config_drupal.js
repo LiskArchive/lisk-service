@@ -17,6 +17,7 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 	name,
 	enabled,
 	url,
+	expiryInDays: Number(process.env.NEWSFEED_DB_EXPIRY_DAYS || 30),
 	table: 'newsfeed',
 	newsfeed: {
 		mapper: {
