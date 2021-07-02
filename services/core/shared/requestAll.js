@@ -30,21 +30,16 @@ const requestAll = async (fn, params, limit) => {
 		: firstRequest.meta.total;
 
 	if (maxAmount > oneRequestLimit) {
-		const pages = [...Array(Math.ceil(maxAmount / oneRequestLimit)).keys()];
-		pages.shift();
-
-		const collection = await pages.reduce((promise, page) => promise.then(() => fn(
-			{
+		for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
+			const result = await fn({
 				...params,
 				...{
 					limit: oneRequestLimit,
 					offset: oneRequestLimit * page,
 				},
-			})).then((result) => {
-			result.data.forEach((item) => { data.push(item); });
-			return data;
-		}), Promise.resolve());
-		return collection;
+			});
+			data.push(...result.data);
+		};
 	}
 	return data;
 };
