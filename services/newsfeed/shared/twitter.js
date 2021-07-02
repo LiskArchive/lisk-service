@@ -15,6 +15,14 @@
  */
 const Twitter = require('twitter');
 
+const config = require('../config');
+const { normalizeData } = require('./normalizers');
+
+const mysqlIndex = require('./indexdb/mysql');
+const newsfeedIndexSchema = require('./schema/newsfeed');
+
+const getNewsfeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
+
 const client = new Twitter({
 	consumer_key: process.env.TWITTER_CONSUMER_KEY,
 	consumer_secret: process.env.TWITTER_CONSUMER_SECRET,
@@ -24,7 +32,6 @@ const client = new Twitter({
 
 const safeRef = (obj, path) => {
 	try {
-		// eslint-disable-next-line
 		return path.split('.').reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, obj);
 	} catch (e) {
 		return null;
@@ -57,15 +64,28 @@ const tweetMapper = o => ({
 	author: safeRef(o, 'user.screen_name'),
 });
 
-const getData = (request, data) => new Promise((resolve, reject) => {
-	client.get(request, data, (error, tweets) => {
+const getData = () => new Promise((resolve, reject) => {
+	const { url, requestOptions } = config.sources.twitter_lisk;
+
+	client.get(url, requestOptions, (error, tweets) => {
 		if (error) {
 			return reject(error);
 		}
 
-		return resolve(tweets.map(tweetMapper));
+		return resolve(
+			tweets
+				.filter(o => o.in_reply_to_status_id === null)
+				.map(tweetMapper),
+		);
 	});
 });
 
+const refreshData = async () => {
+	const newsfeedDB = await getNewsfeedIndex();
 
-module.exports = getData;
+	const response = await getData();
+	const normalizedData = normalizeData(config.sources.twitter_lisk, response);
+	await newsfeedDB.upsert(normalizedData);
+};
+
+module.exports = refreshData;

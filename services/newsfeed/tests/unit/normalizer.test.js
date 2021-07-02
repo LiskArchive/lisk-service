@@ -44,4 +44,14 @@ describe('Test normalizers', () => {
 		const result = await normalizeFunctions.textifyForShort(drupalData[0].description);
 		expect(result.length).toBeLessThanOrEqual(config.defaultNewsLength);
 	});
+
+	it('Test drupalUnixTimestamp', async () => {
+		const result = normalizeFunctions.drupalUnixTimestamp('06/30/2021 - 10:04');
+		expect(result).toEqual(1625047440);
+	});
+
+	it('Test twitterUnixTimestamp', async () => {
+		const result = normalizeFunctions.twitterUnixTimestamp('Wed Jun 30 10:04:55 +0000 2021');
+		expect(result).toEqual(1625047495);
+	});
 });

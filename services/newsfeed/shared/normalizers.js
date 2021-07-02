@@ -68,6 +68,8 @@ const drupalDomainPrefixer = (url, source) => (`${removePathFromUrl(source.url)}
 
 const drupalUnixTimestamp = date => moment(date, 'MM/DD/YYYY - HH:mm').unix();
 
+const twitterUnixTimestamp = date => moment(Date.parse(date)).unix();
+
 const normalizeFunctions = {
 	shortenContent,
 	textifyForShort,
@@ -78,10 +80,11 @@ const normalizeFunctions = {
 	authorParser,
 	drupalDomainPrefixer,
 	drupalUnixTimestamp,
+	twitterUnixTimestamp,
 };
 
 /**
- * normalizeData - Function to normalize source data to insert database
+ * normalizeData - Function to normalize source data to insert into the database
  * @param {array} customMapper -> Array that contain custom mappers for each data source.
  * Each array must have three items which are databse colum, function name,
  * key in source data that is put as the function argument

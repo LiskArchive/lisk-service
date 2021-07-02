@@ -48,7 +48,7 @@ describe('Method get.newsfeed.articles', () => {
 			}
 		});
 
-		it('retrieve news by param', async () => {
+		it('retrieve news by param: drupal_lisk_general', async () => {
 			const response = await getNewsfeed({ source: 'drupal_lisk_general' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -58,6 +58,20 @@ describe('Method get.newsfeed.articles', () => {
 			result.data.forEach(news => {
 				expect(news).toMap(newsfeedSchema);
 				expect(news.source).toEqual('drupal_lisk_general');
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		xit('retrieve news by param: twitter_lisk', async () => {
+			const response = await getNewsfeed({ source: 'twitter_lisk' });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach(news => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toEqual('twitter_lisk');
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
@@ -74,6 +88,48 @@ describe('Method get.newsfeed.articles', () => {
 				expect(news.source).toMatch(/^\bdrupal_lisk(?:_general|_announcements)\b$/);
 			});
 			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('retrieve news with limit & offset', async () => {
+			const limit = 5;
+			const offset = 1;
+			const response = await getNewsfeed({
+				source: 'drupal_lisk_general',
+				limit,
+				offset,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(limit);
+			result.data.forEach(news => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toEqual('drupal_lisk_general');
+			});
+			expect(result.meta).toMap(metaSchema);
+			expect(result.meta.offset).toEqual(offset);
+		});
+
+		it('retrieve news by multiple params with limit & offset', async () => {
+			const limit = 5;
+			const offset = 1;
+			const response = await getNewsfeed({
+				source: 'drupal_lisk_general,drupal_lisk_announcements',
+				limit,
+				offset,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(limit);
+			result.data.forEach(news => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|),?)+\b$/);
+			});
+			expect(result.meta).toMap(metaSchema);
+			expect(result.meta.offset).toEqual(offset);
 		});
 
 		it('error when invalid params', async () => {
