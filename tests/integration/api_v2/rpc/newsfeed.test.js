@@ -85,7 +85,7 @@ describe('Method get.newsfeed.articles', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach(news => {
 				expect(news).toMap(newsfeedSchema);
-				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|),?)+\b$/);
+				expect(news.source).toMatch(/^\bdrupal_lisk(?:_general|_announcements)\b$/);
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
