@@ -49,6 +49,7 @@ pipeline {
 					dir('./') {
 						sh 'make down'
 						sh 'make up-custom-core3-cd'
+						sh 'make print-config'
 					}
 				}
 			}
