@@ -13,4 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = {};
+const { HTTP } = require('lisk-service-framework');
+
+const requestLib = HTTP.request;
+const { normalizeData } = require('./normalizers');
+
+const mysqlIndex = require('./indexdb/mysql');
+const newsfeedIndexSchema = require('./schema/newsfeed');
+
+const getnewsfeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
+
+const reloadNewsFromDrupal = async drupalSources => {
+	const newsfeedDB = await getnewsfeedIndex();
+	drupalSources.forEach(async source => {
+		const response = await requestLib(source.url);
+		const normalizedData = normalizeData(source, response.data);
+		await newsfeedDB.upsert(normalizedData);
+	});
+};
+
+module.exports = {
+	reloadNewsFromDrupal,
+};

@@ -17,6 +17,7 @@ module.exports = {
 	primaryKey: 'source_id',
 	charset: 'utf8mb4',
 	schema: {
+		hash: { type: 'string' },
 		author: { type: 'string' },
 		content_t: { type: 'text', null: false },
 		content_orig: { type: 'text', null: false },

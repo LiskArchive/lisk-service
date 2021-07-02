@@ -40,6 +40,32 @@ const news = [
 	},
 ];
 
+const drupalData = [
+	{
+		title: 'Introducing the Lisk Community Squad',
+		category: 'Announcement',
+		created: '06/22/2021 - 09:52',
+		link: '/blog/announcement/introducing-lisk-community-squad',
+		author: 'Lisk',
+		description: 'As a consequence of Lisk’s growth, development, and expansion we felt the need to encourage and include core community members even further by giving them a chance to make a difference in our community and ecosystem. We called them the Lisk Community Squad, and they are the voice of our community. This blog post provides further information as to what led to the creation of the squad, the actual roles, and responsibilities of the current team members as well as an insight on how to join.',
+		image: '/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-06/introducing-the-community-squad-SOCIAL%402x%20%281%29.png?itok=rARrqicl',
+		nid: '1090',
+		content: '\n      \n\n\n  \n\n      As a consequence of Lisk’s growth, development, and expansion we felt the need to encourage and include core community members even further by giving them a chance to make a difference in our community and ecosystem. We called them the Lisk Community Squad, and they are the voice of our community. This blog post provides further information as to what led to the creation of the squad, the actual roles, and responsibilities of the current team members as well as an insight on how to join.\n\n \n\nThe Squad\n\nAt the moment, the Lisk Community Squad is composed of 11 individuals…, \n  \n  \n  \n\n\n\n\n      \n                \n\n\n            \n\n  \n\n      \n\n\n    \n      \n    \n    \n, \n      \n\n\n  \n\n      Join the Lisk Community Squad\n\nAs aforementioned, being part of the Lisk Community Squad allows for each member to actively participate and see their efforts coming into fruition with the goal in mind to make the Lisk community a welcoming and engaging environment for existing community members and newcomers.\n\n \n\nThe Lisk Community Squad is the face and voice of our community, which we value immensely, therefore, the group is often included in internal discussions and brainstorming sessions. In addition to this, the group has an exclusive communication channel on our…, \n  \n  \n  \n\n\n\n\n      \n                \n\n\n            \n\n  \n\n      \n\n\n    \n      \n    \n        \n              Our Lisk Mascot cannot contain his excitement for the Lisk Center Berlin to open again and to welcome you all here. \n\n                  \n\n  \n          Zoom in\n      \n\n          \n  \n',
+	},
+	{
+		title: 'Achievements of May 2021',
+		category: 'Announcement',
+		created: '06/03/2021 - 14:04',
+		link: '/blog/announcement/achievements-may-2021',
+		author: 'Lisk',
+		description: 'At Lisk, we are incredibly proud of our achievements, so at the end of each month, we summarize our latest news, updates, and progress in a single blog post to keep everyone informed and up to date. Help us spread the word by retweeting all our highlights to enable more people to discover what we are working on.',
+		image: '/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-06/achievements-of-may-2021-Main%402x.png?itok=2Zqbp4ob',
+		nid: '1081',
+		content: '\n      \n\n\n  \n\n      At Lisk, we are incredibly proud of our achievements, so at the end of each month, we summarize our latest news, updates, and progress in a single blog post to keep everyone informed and up to date. Help us spread the word by retweeting all our highlights to enable more people to discover what we are working on.\n\n \n\nLisk SDK Releases\n\nLisk SDK 5.0.5 \n\nIn May we released the Lisk SDK 5.0.5. This release fixes a number of bugs in peer-to-peer, Cryptography, and Framework. More details about this release can be found on GitHub.\n\nHelp us spread the word!\n\n \n\nLisk SDK 5.1.0 …',
+	},
+];
+
 module.exports = {
 	news,
+	drupalData,
 };

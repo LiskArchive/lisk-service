@@ -40,12 +40,14 @@ const defaultSources = 'drupal_lisk_general,drupal_lisk_announcements,twitter_li
 config.sources_enable = process.env.SERVICE_NEWSFEED_ENABLE_SOURCES || defaultSources;
 config.sources = {
 	drupal_lisk_general: getDrupalConfig({
+		name: 'drupal_lisk_general',
 		url: 'https://lisk.io/api/blog',
 		// TODO: Move filters to jobs
 		filter: item => item.category !== 'Announcement' && item.description !== '',
 		restrictLength: config.defaultNewsLength,
 	}),
 	drupal_lisk_announcements: getDrupalConfig({
+		name: 'drupal_lisk_announcements',
 		url: 'https://lisk.io/api/blog/43',
 		// TODO: Move filters to jobs
 		filter: item => item.description !== '',
