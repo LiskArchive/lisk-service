@@ -73,7 +73,6 @@ module.exports = [
 		description: 'Track round change updates',
 		controller: callback => {
 			Signals.get('newBlock').add(async () => {
-				await core.reloadDelegateCache();
 				await core.reloadNextForgersCache();
 				const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
 				callback(forgers);
