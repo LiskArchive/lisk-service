@@ -14,6 +14,7 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
+
 const { reloadDelegateCache } = require('../shared/core/delegates');
 
 module.exports = [
@@ -21,6 +22,10 @@ module.exports = [
 		name: 'reload.delegates',
 		description: 'Keep the delegate list up-to-date',
 		schedule: '*/2 * * * *', // Every 2 min
+		init: async () => {
+			logger.debug('Initializing delegate list...');
+			await reloadDelegateCache();
+		},
 		controller: async () => {
 			logger.debug('Reloading delegate list...');
 			await reloadDelegateCache();
