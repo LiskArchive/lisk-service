@@ -23,7 +23,7 @@ module.exports = {
 	rpcMethod: 'get.transactions.schemas',
 	tags: ['Transactions'],
 	params: {
-		moduleAssetId: { optional: true, type: 'string', min: 3, max: 21, pattern: /^\d+:\d+$/ },
+		moduleAssetId: { optional: true, type: 'string', min: 3, pattern: /[0-9]+:[0-9]+/ },
 		moduleAssetName: { optional: true, type: 'string', min: 3, pattern: /[a-z]+:[a-z]+/ },
 	},
 	paramsRequired: false,
