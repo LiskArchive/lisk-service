@@ -114,7 +114,7 @@ describe('Newsfeed API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(limit);
 			response.data.forEach(news => {
 				expect(news).toMap(newsfeedSchema);
-				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|),?)+\b$/);
+				expect(news.source).toMatch(/^\bdrupal_lisk(?:_general|_announcements)\b$/);
 			});
 			expect(response.meta).toMap(metaSchema);
 			expect(response.meta.offset).toEqual(offset);
