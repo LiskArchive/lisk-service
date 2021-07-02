@@ -187,6 +187,7 @@ const resolveDelegateInfo = async accounts => {
 
 				const [lastForgedBlock = {}] = await blocksDB.find({
 					generatorPublicKey: account.publicKey,
+					sort: 'height:desc',
 					limit: 1,
 				});
 				account.dpos.delegate.lastForgedHeight = lastForgedBlock.height || null;
