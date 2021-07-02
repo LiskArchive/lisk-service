@@ -31,6 +31,7 @@ const requestAll = async (fn, params, limit) => {
 
 	if (maxAmount > oneRequestLimit) {
 		for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
+			/* eslint-disable no-await-in-loop */
 			const result = await fn({
 				...params,
 				...{
@@ -39,7 +40,8 @@ const requestAll = async (fn, params, limit) => {
 				},
 			});
 			data.push(...result.data);
-		};
+			/* eslint-enable no-await-in-loop */
+		}
 	}
 	return data;
 };
