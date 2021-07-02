@@ -122,7 +122,15 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 		},
 		{ concurrency: addressesToIndex.length },
 	);
-	await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', { accounts: accountsToIndex });
+
+	const PAGE_SIZE = 100;
+	const NUM_PAGES = Math.ceil(accountsToIndex.length / PAGE_SIZE);
+	for (let i = 0; i < NUM_PAGES; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', {
+			accounts: accountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+		});
+	}
 };
 
 const resolveAccountsInfo = async accounts => {
@@ -235,7 +243,15 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 		},
 		{ concurrency: accountInfoArray.length },
 	);
-	await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', { accounts: accountsToIndex });
+
+	const PAGE_SIZE = 100;
+	const NUM_PAGES = Math.ceil(accountsToIndex.length / PAGE_SIZE);
+	for (let i = 0; i < NUM_PAGES; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', {
+			accounts: accountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+		});
+	}
 };
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
