@@ -33,11 +33,13 @@ const getDelegates = async params => request(wsRpcUrl, 'get.accounts', params);
 describe('Method get.delegates', () => {
 	let refDelegate;
 	beforeAll(async () => {
+		let offset = 0;
 		let response;
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			response = await getDelegates({ isDelegate: true, limit: 1 });
-		} while (!response.result);
+			response = await getDelegates({ isDelegate: true, limit: 1, offset });
+			offset++;
+		} while (!response.result && response.result.data[0].summary.publicKey);
 		[refDelegate] = response.result.data;
 	});
 

@@ -221,8 +221,8 @@ const loadAllNextForgers = async () => {
 	if (sdkVersion <= 4) {
 		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
 	} else {
-		rawNextForgers = (await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length }))
-			.data;
+		const { data } = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
+		rawNextForgers = data;
 	}
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };

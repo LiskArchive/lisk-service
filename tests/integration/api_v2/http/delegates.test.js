@@ -35,11 +35,13 @@ const endpoint = `${baseUrlV2}/accounts`;
 describe('Delegates API', () => {
 	let refDelegate;
 	beforeAll(async () => {
+		let offset = 0;
 		let response;
 		do {
 			// eslint-disable-next-line no-await-in-loop
-			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1`);
-		} while (!response.data);
+			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1&offset=${offset}`);
+			offset++;
+		} while (!response.data && response.result.data[0].summary.publicKey);
 		[refDelegate] = response.data;
 	});
 
