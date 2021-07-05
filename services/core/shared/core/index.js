@@ -52,7 +52,6 @@ const {
 } = require('./accountUtils');
 
 const {
-	initDelegateCache,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
@@ -140,7 +139,6 @@ module.exports = {
 	getVotes,
 	getVoters,
 	getDelegates,
-	initDelegateCache,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getForgingStats,
