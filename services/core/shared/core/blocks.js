@@ -62,14 +62,14 @@ const getBlocksFromServer = async params => {
 };
 
 const getBlocks = async (params = {}) => {
-	let blocks = {
+	const blocks = {
 		data: [],
 		meta: {},
 	};
 
-	if (blocks.data.length === 0) {
-		blocks = await getBlocksFromServer(params);
-	}
+	const response = await getBlocksFromServer(params);
+	if (response.data) blocks.data = response.data;
+	if (response.meta) blocks.meta = response.meta;
 
 	await Promise.all(blocks.data.map(async block => {
 		block.generatorUsername = await getUsernameByAddress(block.generatorAddress);
@@ -101,7 +101,7 @@ const getBlocks = async (params = {}) => {
 		meta: {
 			count: blocks.data.length,
 			offset: parseInt(params.offset, 10) || 0,
-			total,
+			total: blocks.meta.total || total,
 		},
 	};
 };
@@ -127,11 +127,10 @@ const preloadBlocksByPage = async (n) => {
 
 const reloadBlocks = async (n) => preloadBlocksByPage(n);
 
-const performLastBlockUpdate = async () => {
+const performLastBlockUpdate = (newBlock) => {
 	try {
-		const block = await getBlocks({ limit: 1 });
-		setLastBlock(block.data[0]);
-		logger.debug(`Current block height: ${block.data[0].height}  (id=${block.data[0].id})`);
+		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
+		setLastBlock(newBlock);
 	} catch (err) {
 		logger.error(err);
 	}
@@ -142,7 +141,8 @@ const deleteBlock = async (block) => coreApi.deleteBlock(block);
 const initBlocks = (async () => {
 	await coreApi.updateFinalizedHeight();
 
-	performLastBlockUpdate();
+	const { data: [lastBlock] } = await getBlocks({ limit: 1 });
+	performLastBlockUpdate(lastBlock);
 })();
 
 module.exports = {

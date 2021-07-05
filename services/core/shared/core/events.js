@@ -37,9 +37,13 @@ const config = require('../../config.js');
 const logger = Logger();
 
 const events = {
-	newBlock: async () => {
-		await performLastBlockUpdate();
-		Signals.get('newBlock').dispatch(await getBlocks({ limit: 1 }));
+	newBlock: async (newBlock) => {
+		logger.debug(`New block arrived: ${newBlock.id} at height ${newBlock.height}`);
+		performLastBlockUpdate(newBlock);
+
+		logger.debug(`============== Dispatching block to index: ${newBlock.id} at height ${newBlock.height} ==============`);
+		const response = await getBlocks({ limit: 1 });
+		Signals.get('newBlock').dispatch(response);
 	},
 	deleteBlock: async (block) => {
 		await deleteBlock(block);
@@ -75,5 +79,8 @@ const init = () => {
 };
 
 init();
+
+// Re-subscribe to the events whenever a new client is instantiated
+Signals.get('newApiClient').add(() => { init(); });
 
 module.exports = { init };

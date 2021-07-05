@@ -201,6 +201,8 @@ const indexNewBlocks = async blocks => {
 	const blocksDB = await getBlocksIndex();
 	if (blocks.data.length === 1) {
 		const [block] = blocks.data;
+		logger.info(`============== Indexing new block: ${block.id} at height ${block.height} ==============`);
+
 		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
@@ -490,14 +492,9 @@ const checkIndexReadiness = async () => {
 	return getIndexReadyStatus();
 };
 
-const indexNewBlock = async (newBlock) => {
-	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
-	await indexNewBlocks(newBlock);
-};
-
 const init = async () => {
 	// Index every new incoming block
-	Signals.get('newBlock').add(indexNewBlock);
+	Signals.get('newBlock').add(async data => { await indexNewBlocks(data); });
 
 	// Check state of index and perform update
 	try {
