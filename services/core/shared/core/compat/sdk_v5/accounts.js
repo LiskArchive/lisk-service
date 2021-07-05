@@ -66,6 +66,7 @@ const indexAccounts = async job => {
 	const accountsDB = await getAccountsIndex();
 	accounts.forEach(account => {
 		account.username = account.dpos.delegate.username || null;
+		account.totalVotesReceived = account.dpos.delegate.totalVotesReceived || null;
 		account.balance = account.token.balance;
 		return account;
 	});

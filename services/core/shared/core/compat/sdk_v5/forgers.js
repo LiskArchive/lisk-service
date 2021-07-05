@@ -14,7 +14,7 @@
  *
  */
 const { Utils } = require('lisk-service-framework');
-const { getAccounts } = require('./accounts');
+const { getIndexedAccountInfo } = require('./accountUtils');
 const { getBase32AddressFromHex } = require('./accountUtils');
 
 const coreApi = require('./coreApi');
@@ -29,17 +29,15 @@ const getForgers = async params => {
 			...forger,
 			address: getBase32AddressFromHex(forger.address),
 		}));
-	const forgerAddresses = forgers.data.map(forger => forger.address);
-	const forgerAccounts = await getAccounts({
-		addresses: forgerAddresses,
-		limit: forgerAddresses.length,
-	});
-	forgers.data = forgers.data.map(forger => {
-		const [filteredAcc] = forgerAccounts.data.filter(account => account.address === forger.address);
-		if (filteredAcc) {
-			forger.username = filteredAcc.dpos.delegate.username;
-			forger.totalVotesReceived = Number(filteredAcc.dpos.delegate.totalVotesReceived);
-		}
+
+	forgers.data = forgers.data.map(async forger => {
+		const account = await getIndexedAccountInfo({ address: forger.address });
+		forger.username = account && account.username
+			? account.username
+			: undefined;
+		forger.totalVotesReceived = account && account.totalVotesReceived
+			? Number(account.totalVotesReceived)
+			: undefined;
 		return forger;
 	});
 	return isProperObject(forgers) && Array.isArray(forgers.data) ? forgers : [];
