@@ -249,7 +249,10 @@ const reload = async () => {
 	await computeDelegateStatus();
 };
 
+const initDelegateCache = (async () => { reload() })();
+
 module.exports = {
+	initDelegateCache,
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
