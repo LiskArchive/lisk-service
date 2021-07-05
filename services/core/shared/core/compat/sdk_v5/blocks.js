@@ -201,7 +201,7 @@ const indexNewBlocks = async blocks => {
 	const blocksDB = await getBlocksIndex();
 	if (blocks.data.length === 1) {
 		const [block] = blocks.data;
-		logger.info(`============== Indexing new block: ${block.id} at height ${block.height} ==============`);
+		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
