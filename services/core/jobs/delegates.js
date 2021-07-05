@@ -23,11 +23,11 @@ module.exports = [
 		description: 'Keep the delegate list up-to-date',
 		schedule: '*/2 * * * *', // Every 2 min
 		init: async () => {
-			logger.debug('Initializing delegate list...');
+			logger.debug('Initializing delegate cache...');
 			await reloadDelegateCache();
 		},
 		controller: async () => {
-			logger.debug('Reloading delegate list...');
+			logger.debug('Reloading delegate cache...');
 			await reloadDelegateCache();
 		},
 	},
