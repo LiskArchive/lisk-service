@@ -70,7 +70,9 @@ describe('Blocks API', () => {
 			expect(response.data.length).toEqual(1);
 			expect(response.data[0].height).toEqual(refBlock.height);
 			expect(response.data[0]).toEqual(refBlock);
-			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5, { height: refBlock.height }));
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5, { height: refBlock.height });
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
