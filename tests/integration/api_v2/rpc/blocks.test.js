@@ -123,7 +123,7 @@ describe('Method get.blocks', () => {
 
 	describe('is able to retireve block details by height', () => {
 		it('known block by height -> ok', async () => {
-			const response = await getBlocks({ height: refBlock.height });
+			const response = await getBlocks({ height: `${refBlock.height}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
