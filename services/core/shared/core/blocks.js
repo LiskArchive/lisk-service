@@ -141,8 +141,8 @@ const deleteBlock = async (block) => coreApi.deleteBlock(block);
 const initBlocks = (async () => {
 	await coreApi.updateFinalizedHeight();
 
-	const { data: [lastBlock] } = await getBlocks({ limit: 1 });
-	performLastBlockUpdate(lastBlock);
+	const { data: [newBlock] } = await getBlocks({ limit: 1 });
+	performLastBlockUpdate(newBlock);
 })();
 
 module.exports = {
