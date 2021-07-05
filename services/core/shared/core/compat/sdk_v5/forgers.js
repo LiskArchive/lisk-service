@@ -43,7 +43,7 @@ const getForgers = async params => {
 				: undefined;
 			return forger;
 		},
-		{ concurrency: forgers.data },
+		{ concurrency: forgers.data.length },
 	);
 	return isProperObject(forgers) && Array.isArray(forgers.data) ? forgers : [];
 };
