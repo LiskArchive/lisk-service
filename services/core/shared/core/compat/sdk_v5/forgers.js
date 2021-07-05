@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const { Utils } = require('lisk-service-framework');
 const { getIndexedAccountInfo } = require('./accountUtils');
 const { getBase32AddressFromHex } = require('./accountUtils');
@@ -30,16 +31,20 @@ const getForgers = async params => {
 			address: getBase32AddressFromHex(forger.address),
 		}));
 
-	forgers.data = forgers.data.map(async forger => {
-		const account = await getIndexedAccountInfo({ address: forger.address });
-		forger.username = account && account.username
-			? account.username
-			: undefined;
-		forger.totalVotesReceived = account && account.totalVotesReceived
-			? Number(account.totalVotesReceived)
-			: undefined;
-		return forger;
-	});
+	forgers.data = await BluebirdPromise.map(
+		forgers.data,
+		async forger => {
+			const account = await getIndexedAccountInfo({ address: forger.address });
+			forger.username = account && account.username
+				? account.username
+				: undefined;
+			forger.totalVotesReceived = account && account.totalVotesReceived
+				? Number(account.totalVotesReceived)
+				: undefined;
+			return forger;
+		},
+		{ concurrency: forgers.data },
+	);
 	return isProperObject(forgers) && Array.isArray(forgers.data) ? forgers : [];
 };
 
