@@ -347,12 +347,12 @@ const deleteBlock = async (block) => {
 
 const indexGenesisBlock = async () => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
-	const accountAddressesToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length > 16) // To filter out reclaim accounts
-		.map(account => account.address);
-	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
 
-	const PAGE_SIZE = 100;
+	const accountAddressesToIndex = genesisBlock.asset.accounts
+		.filter(account => account.address.length > 16) // Filter out reclaim accounts
+		.map(account => account.address);
+
+	const PAGE_SIZE = 50;
 	const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
 	for (let i = 0; i < NUM_PAGES; i++) {
 		// eslint-disable-next-line no-await-in-loop
@@ -362,6 +362,7 @@ const indexGenesisBlock = async () => {
 		);
 	}
 	await indexTransactions([genesisBlock]);
+	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
 };
 
 const buildIndex = async (from, to) => {
