@@ -39,6 +39,7 @@ const requestAll = async (fn, params, limit) => {
 					offset: oneRequestLimit * page,
 				},
 			});
+			if (!result.data.length) break;
 			data.push(...result.data);
 			/* eslint-enable no-await-in-loop */
 		}
