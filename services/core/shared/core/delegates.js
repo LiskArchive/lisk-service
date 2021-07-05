@@ -249,7 +249,7 @@ const reload = async () => {
 	await computeDelegateStatus();
 };
 
-const initDelegateCache = (async () => { reload() })();
+const initDelegateCache = (async () => { reload(); })();
 
 module.exports = {
 	initDelegateCache,
