@@ -41,7 +41,7 @@ describe('Delegates API', () => {
 			// eslint-disable-next-line no-await-in-loop
 			response = await api.get(`${baseUrlV2}/accounts?isDelegate=true&limit=1&offset=${offset}`);
 			offset++;
-		} while (!response.data || !response.result.data[0].summary.publicKey);
+		} while (!response.result || response.result && !response.result.data[0].summary.publicKey);
 		[refDelegate] = response.data;
 	});
 
