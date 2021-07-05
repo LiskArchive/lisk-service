@@ -127,7 +127,7 @@ describe('Method get.blocks', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
-			expect(result.data[0]).toMap(blockSchemaVersion5, { height: refBlock.height });
+			expect(result.data[0]).toMap(blockSchemaVersion5, { height: `${refBlock.height}` });
 		});
 
 		it('height = 0 -> -32602', async () => {
