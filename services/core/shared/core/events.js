@@ -79,7 +79,7 @@ const events = {
 
 const init = () => {
 	core.events.register(events);
-	Object.keys(events).forEach((eventName) => Signals.register(eventName));
+	Object.keys(events).forEach((eventName) => Signals.get(eventName));
 };
 
 init();
