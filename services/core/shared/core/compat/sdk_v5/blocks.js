@@ -58,12 +58,17 @@ const logger = Logger();
 
 const { genesisHeight } = config;
 let finalizedHeight;
+let indexStartHeight;
 
 const getGenesisHeight = () => genesisHeight;
 
 const setFinalizedHeight = (height) => finalizedHeight = height;
 
 const getFinalizedHeight = () => finalizedHeight;
+
+const setIndexStartHeight = (height) => indexStartHeight = height;
+
+const getIndexStartHeight = () => indexStartHeight;
 
 const updateFinalizedHeight = async () => {
 	const result = await coreApi.getNetworkStatus();
@@ -201,6 +206,8 @@ const indexNewBlocks = async blocks => {
 	const blocksDB = await getBlocksIndex();
 	if (blocks.data.length === 1) {
 		const [block] = blocks.data;
+		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
+
 		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
@@ -454,6 +461,9 @@ const indexPastBlocks = async () => {
 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
 
+	// Store the value for the missing blocks job
+	setIndexStartHeight(blockIndexLowerRange);
+
 	// Highest block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
 	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
@@ -482,6 +492,7 @@ const checkIndexReadiness = async () => {
 			&& lastIndexedBlock.height >= currentChainHeight - 1) {
 			setIndexReadyStatus(true);
 			logger.info('Blocks index is now ready');
+			logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
 			Signals.get('blockIndexReady').dispatch(true);
 		} else {
 			logger.debug('Blocks index is not yet ready');
@@ -490,14 +501,9 @@ const checkIndexReadiness = async () => {
 	return getIndexReadyStatus();
 };
 
-const indexNewBlock = async (newBlock) => {
-	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
-	await indexNewBlocks(newBlock);
-};
-
 const init = async () => {
 	// Index every new incoming block
-	Signals.get('newBlock').add(indexNewBlock);
+	Signals.get('newBlock').add(async data => { await indexNewBlocks(data); });
 
 	// Check state of index and perform update
 	try {
@@ -517,6 +523,7 @@ module.exports = {
 	getBlocks,
 	deleteBlock,
 	getGenesisHeight,
+	getIndexStartHeight,
 	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
