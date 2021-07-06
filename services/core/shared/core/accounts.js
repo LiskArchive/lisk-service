@@ -46,7 +46,7 @@ const getAccounts = async params => {
 			if (account.isDelegate === true) {
 				const delegate = await getDelegates({ address: account.address });
 				const delegateOrigProps = account.delegate;
-				const delegateExtraProps = delegate.data[0];
+				const [delegateExtraProps = {}] = delegate.data;
 				const delegateAccount = {
 					...account,
 					rank: delegateExtraProps.rank,
