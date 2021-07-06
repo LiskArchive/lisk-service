@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const { createWSClient } = require('@liskhq/lisk-api-client');
 const config = require('../../../../config');
+
+const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
 let clientCache;

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
 
@@ -49,6 +49,8 @@ const {
 } = require('./transactionUtils');
 
 const events = require('./events');
+
+const logger = Logger();
 
 const numOfActiveDelegates = 101;
 
