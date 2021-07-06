@@ -85,7 +85,7 @@ const getBlocks = async (params = {}) => {
 		|| (params.timestamp && params.timestamp.includes(':'))) {
 		total = blocks.meta.total;
 	} else {
-		total = (getLastBlock()).height;
+		total = (getLastBlock()).height - coreApi.getGenesisHeight() + 1;
 	}
 
 	if (coreApi.getFinalizedHeight) {
@@ -101,7 +101,7 @@ const getBlocks = async (params = {}) => {
 		meta: {
 			count: blocks.data.length,
 			offset: parseInt(params.offset, 10) || 0,
-			total: blocks.meta.total || total,
+			total,
 		},
 	};
 };
