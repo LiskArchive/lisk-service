@@ -28,7 +28,9 @@ module.exports = [
 				const indexStartHeight = core.getIndexStartHeight();
 				const toHeight = (await core.getNetworkStatus()).data.height;
 				const fromHeight = config.jobs.missingBlocks.range > 0
-					? toHeight - config.jobs.missingBlocks.range : indexStartHeight;
+					// fromHeight should not be lower then indexStartHeight
+					? Math.max(toHeight - config.jobs.missingBlocks.range, indexStartHeight)
+					: indexStartHeight;
 				await core.indexMissingBlocks(fromHeight, toHeight);
 			}
 		},
