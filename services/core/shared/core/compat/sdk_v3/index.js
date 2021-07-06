@@ -31,6 +31,7 @@ const events = require('./events');
 const { getNetworkStatus } = require('./network');
 
 const init = () => {
+	logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
 	Signals.get('blockIndexReady').dispatch(true);
 };
 

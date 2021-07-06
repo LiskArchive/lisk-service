@@ -492,6 +492,7 @@ const checkIndexReadiness = async () => {
 			&& lastIndexedBlock.height >= currentChainHeight - 1) {
 			setIndexReadyStatus(true);
 			logger.info('Blocks index is now ready');
+			logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
 			Signals.get('blockIndexReady').dispatch(true);
 		} else {
 			logger.debug('Blocks index is not yet ready');

@@ -26,6 +26,7 @@ const getApiClient = async () => {
 			clientCache = await createWSClient(`${liskAddress}/ws`);
 
 			// Inform listeners about the newly created ApiClient
+			logger.debug(`============== 'newApiClient' signal: ${Signals.get('newApiClient')} ==============`);
 			Signals.get('newApiClient').dispatch();
 		}
 		return clientCache;

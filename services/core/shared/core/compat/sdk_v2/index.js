@@ -77,6 +77,7 @@ const getForgingStats = async address => {
 };
 
 const init = () => {
+	logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
 	Signals.get('blockIndexReady').dispatch(true);
 };
 
