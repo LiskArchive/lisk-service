@@ -91,6 +91,7 @@ module.exports = {
 	getAccounts,
 	getBlocks,
 	getGenesisHeight,
+	getIndexStartHeight: nop,
 	deleteBlock: nop,
 	indexMissingBlocks: nop,
 	getMultisignatureGroups,

@@ -58,12 +58,17 @@ const logger = Logger();
 
 const { genesisHeight } = config;
 let finalizedHeight;
+let indexStartHeight;
 
 const getGenesisHeight = () => genesisHeight;
 
 const setFinalizedHeight = (height) => finalizedHeight = height;
 
 const getFinalizedHeight = () => finalizedHeight;
+
+const setIndexStartHeight = (height) => indexStartHeight = height;
+
+const getIndexStartHeight = () => indexStartHeight;
 
 const updateFinalizedHeight = async () => {
 	const result = await coreApi.getNetworkStatus();
@@ -456,6 +461,9 @@ const indexPastBlocks = async () => {
 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
 
+	// Store the value for the missing blocks job
+	setIndexStartHeight(blockIndexLowerRange);
+
 	// Highest block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
 	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
@@ -514,6 +522,7 @@ module.exports = {
 	getBlocks,
 	deleteBlock,
 	getGenesisHeight,
+	getIndexStartHeight,
 	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
