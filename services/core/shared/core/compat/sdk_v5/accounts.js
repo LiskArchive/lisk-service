@@ -195,12 +195,13 @@ const resolveDelegateInfo = async accounts => {
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const {
-						rewards,
-						producedBlocks,
-					} = await getIndexedAccountInfo({ publicKey: account.publicKey });
-					account.rewards = rewards || 0;
-					account.producedBlocks = producedBlocks || 0;
+					const accountInfo = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					account.rewards = accountInfo && accountInfo.rewards
+						? accountInfo.rewards
+						: 0;
+					account.producedBlocks = accountInfo && accountInfo.producedBlocks
+						? accountInfo.producedBlocks
+						: 0;
 
 					// Check for the delegate registration transaction
 					const [delegateRegTx = {}] = await transactionsDB.find({

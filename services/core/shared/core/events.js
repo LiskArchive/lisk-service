@@ -24,6 +24,7 @@ const {
 
 const {
 	reloadNextForgersCache,
+	reloadDelegateCache,
 	getNextForgers,
 } = require('./delegates');
 
@@ -52,6 +53,7 @@ const events = {
 		Signals.get('deleteBlock').dispatch(block);
 	},
 	newRound: async () => {
+		await reloadDelegateCache();
 		await reloadNextForgersCache();
 		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
 		const nextForgers = await getNextForgers({ limit, offset: 0 });
