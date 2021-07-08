@@ -84,9 +84,7 @@ module.exports = [
 		description: 'Track round change updates',
 		controller: callback => {
 			Signals.get('newRound').add(async data => {
-				logger.debug('New round, updating delegates...');
-				core.reloadDelegateCache();
-				core.reloadNextForgersCache();
+				logger.debug('Returning all forgers for the new round...');
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
 			});
