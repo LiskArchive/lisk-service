@@ -44,6 +44,7 @@ pipeline {
 				LISK_CORE_WS='ws://host.docker.internal:8080'
 				GENESIS_HEIGHT='14075260'
 				FEE_EST_DEFAULT_START_BLOCK_HEIGHT='14075260'
+				TRANSACTION_STATS_HISTORY_LENGTH_DAYS='366'
 			}
 			steps {
 				ansiColor('xterm') {
