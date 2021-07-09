@@ -353,6 +353,7 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisBlock = async () => {
+	logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
 
 	const accountAddressesToIndex = genesisBlock.asset.accounts
