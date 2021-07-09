@@ -430,20 +430,24 @@ const getMultisignatureGroups = async account => {
 		await BluebirdPromise.map(
 			account.keys.mandatoryKeys,
 			async publicKey => {
-				const [accountByPublicKey = {}] = (await getAccounts({ publicKey })).data;
-				accountByPublicKey.publicKey = publicKey;
-				accountByPublicKey.isMandatory = true;
-				multisignatureAccount.members.push(accountByPublicKey);
+				const mandatoryAccount = {
+					address: getBase32AddressFromPublicKey(publicKey),
+					publicKey,
+					isMandatory: true,
+				};
+				multisignatureAccount.members.push(mandatoryAccount);
 			},
 			{ concurrency: account.keys.mandatoryKeys.length },
 		);
 		await BluebirdPromise.map(
 			account.keys.optionalKeys,
 			async publicKey => {
-				const [accountByPublicKey = {}] = (await getAccounts({ publicKey })).data;
-				accountByPublicKey.publicKey = publicKey;
-				accountByPublicKey.isMandatory = false;
-				multisignatureAccount.members.push(accountByPublicKey);
+				const optionalAccount = {
+					address: getBase32AddressFromPublicKey(publicKey),
+					publicKey,
+					isMandatory: false,
+				};
+				multisignatureAccount.members.push(optionalAccount);
 			},
 			{ concurrency: account.keys.optionalKeys.length },
 		);
