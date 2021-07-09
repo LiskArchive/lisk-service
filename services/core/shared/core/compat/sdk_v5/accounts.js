@@ -423,6 +423,8 @@ const getDelegates = async params => getAccounts({ ...params, isDelegate: true }
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
 	if (account.keys && account.keys.numberOfSignatures) {
+		const publicKeysToIndex = [];
+
 		multisignatureAccount.isMultisignature = true;
 		multisignatureAccount.numberOfReqSignatures = account.keys.numberOfSignatures;
 		multisignatureAccount.members = [];
@@ -436,9 +438,11 @@ const getMultisignatureGroups = async account => {
 					isMandatory: true,
 				};
 				multisignatureAccount.members.push(mandatoryAccount);
+				publicKeysToIndex.push({ publicKey });
 			},
 			{ concurrency: account.keys.mandatoryKeys.length },
 		);
+
 		await BluebirdPromise.map(
 			account.keys.optionalKeys,
 			async publicKey => {
@@ -448,9 +452,13 @@ const getMultisignatureGroups = async account => {
 					isMandatory: false,
 				};
 				multisignatureAccount.members.push(optionalAccount);
+				publicKeysToIndex.push({ publicKey });
 			},
 			{ concurrency: account.keys.optionalKeys.length },
 		);
+
+		// Index any missing publicKey that we come across
+		await indexAccountsbyPublicKey(publicKeysToIndex);
 	} else multisignatureAccount.isMultisignature = false;
 	return multisignatureAccount;
 };
