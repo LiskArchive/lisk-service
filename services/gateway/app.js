@@ -141,7 +141,7 @@ broker.createService({
 	},
 });
 
-broker.waitForServices(['core', 'market']);
+broker.waitForServices(['core', 'market', 'newsfeed']);
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);
