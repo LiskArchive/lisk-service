@@ -188,7 +188,8 @@ const registerApi = (apiName, config) => {
 		},
 
 		async onAfterCall(ctx, route, req, res, data) {
-			// TODO: Add support for ETag
+			// Set 'Cache-Control' to assist response caching
+			ctx.meta.$responseHeaders = { 'Cache-Control': 'public, max-age=10' };
 
 			if (data.data && data.status) {
 				if (data.status === 'INVALID_PARAMS') data.status = 'BAD_REQUEST';
