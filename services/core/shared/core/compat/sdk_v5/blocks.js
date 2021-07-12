@@ -189,7 +189,10 @@ const getLastBlock = async () => {
 const isQueryFromIndex = params => {
 	const paramProps = Object.getOwnPropertyNames(params);
 
-	const isDirectQuery = ['id', 'height', 'heightBetween'].some(prop => paramProps.includes(prop));
+	const directQueryParams = ['id', 'height', 'heightBetween'];
+	const defaultQueryParams = ['limit', 'offset', 'sort'];
+	const isDirectQuery = directQueryParams.some(prop => paramProps.includes(prop))
+		&& paramProps.every(prop => directQueryParams.concat(defaultQueryParams).includes(prop));
 
 	const sortOrder = params.sort ? params.sort.split(':')[1] : undefined;
 	const isLatestBlockFetch = (paramProps.length === 1 && params.limit === 1)
@@ -307,11 +310,11 @@ const getBlocks = async params => {
 	}
 
 	try {
-		if (params.id) {
+		if (params.ids) {
+			blocks.data = await getBlocksByIDs(params.ids);
+		} else if (params.id) {
 			blocks.data = await getBlockByID(params.id);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} else if (params.ids) {
-			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.height) {
 			blocks.data = await getBlockByHeight(params.height);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
