@@ -469,6 +469,30 @@ describe('Method get.blocks', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
+		it('returns empty response when queried with blockId and wrong height', async () => {
+			const height = String(refBlock.height - 10);
+			const response = await getBlocks({ blockId: refBlock.id, height }).catch(e => e);
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('returns empty response when queried with blockId and wrong timestamp', async () => {
+			const timestamp = String(moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix());
+			const response = await getBlocks({ blockId: refBlock.id, timestamp }).catch(e => e);
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('returns empty response when queried with blockId and wrong generatorUsername', async () => {
+			const generatorUsername = 'genesis_test';
+			const response = await getBlocks({ blockId: refBlock.id, generatorUsername }).catch(e => e);
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
 		it('returns empty response when queried with blockId and non-zero offset', async () => {
 			const response = await getBlocks({ blockId: refBlock.id, offset: 1 }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
