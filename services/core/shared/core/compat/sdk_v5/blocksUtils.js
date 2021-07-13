@@ -14,7 +14,9 @@
  *
  */
 const fs = require('fs');
+const https = require('https');
 const path = require('path');
+const tar = require('tar');
 
 const {
 	Logger,
@@ -27,7 +29,7 @@ const logger = Logger();
 
 const genesisBlockURL = config.endpoints.genesisBlock;
 
-const genesisBlockFilePath = './shared/core/compat/sdk_v5/static/genesis.json';
+const genesisBlockFilePath = './shared/core/compat/sdk_v5/static/genesis_block.json';
 
 let genesisBlockId;
 
@@ -39,18 +41,27 @@ const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath);
 
-	const genesisBlock = await new Promise((resolve, reject) => {
-		request(genesisBlockURL)
-			.then(response => {
-				const body = typeof response === 'string' ? JSON.parse(response) : response;
-				return resolve(body.data);
-			})
-			.catch(err => reject(err));
+	return new Promise((resolve, reject) => {
+		if (genesisBlockURL.endsWith('.tar.gz')) {
+			https.get(genesisBlockURL, (response) => {
+				response.pipe(tar.extract({ cwd: directoryPath }));
+				response.on('error', async (err) => reject(err));
+				response.on('end', async () => {
+					const genesisBlock = fs.readFileSync(genesisBlockFilePath);
+					fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
+					resolve();
+				});
+			});
+		} else {
+			request(genesisBlockURL)
+				.then(async response => {
+					const genesisBlock = typeof response === 'string' ? JSON.parse(response).data : response.data;
+					fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
+					resolve();
+				})
+				.catch(err => reject(err));
+		}
 	});
-
-	setGenesisBlockId(genesisBlock.header.id);
-
-	fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
 };
 
 const getGenesisBlockFromFS = async () => {
@@ -62,10 +73,12 @@ const getGenesisBlockFromFS = async () => {
 				logger.error(err);
 				return reject(err);
 			}
-			return resolve(JSON.parse(data));
+			const parsedGenesisBlock = JSON.parse(data.toString());
+			return resolve(parsedGenesisBlock);
 		});
 	});
 
+	if (!getGenesisBlockId()) setGenesisBlockId(genesisBlock.header.id);
 	return genesisBlock;
 };
 
