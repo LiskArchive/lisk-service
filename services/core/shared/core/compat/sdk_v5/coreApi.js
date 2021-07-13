@@ -17,7 +17,11 @@ const {
 	Logger,
 	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
+
+const { getGenesisBlockFromFS } = require('./blocksUtils');
 const { getApiClient } = require('../common/wsRequest');
+
+const { genesisHeight } = require('../../../../config');
 
 const logger = Logger();
 const timeoutMessage = 'Response not received in';
@@ -69,6 +73,8 @@ const getBlockByHeight = async height => {
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			// eslint-disable-next-line max-len
+			if (Number(height) === Number(genesisHeight)) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
 		}
 		throw err;
@@ -83,6 +89,11 @@ const getBlocksByHeightBetween = async (from, to) => {
 		return { data: blocks };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			if (Number(from) === Number(genesisHeight)) {
+				const { data: [genesisBlock] } = await getBlockByHeight(from);
+				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween(from + 1, to);
+				return { data: [genesisBlock, ...remainingBlocks] };
+			}
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
 		}
 		throw err;

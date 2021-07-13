@@ -31,18 +31,16 @@ const genesisBlockFilePath = './shared/core/compat/sdk_v5/static/genesis.json';
 
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
-
-	// Create directory if not exists
 	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath);
 
-	const genesisBlock = await new Promise((resolve, reject) =>
+	const genesisBlock = await new Promise((resolve, reject) => {
 		request(genesisBlockURL)
-			.then(body => {
-				const genesisBlock = typeof body === 'string' ? JSON.parse(body) : body;
-				return resolve(genesisBlock);
+			.then(response => {
+				const body = typeof response === 'string' ? JSON.parse(response) : response;
+				return resolve(body.data);
 			})
-			.catch(err => reject(err)),
-	);
+			.catch(err => reject(err));
+	});
 
 	fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
 };
@@ -50,15 +48,15 @@ const downloadGenesisBlock = async () => {
 const getGenesisBlockFromFS = async () => {
 	if (!fs.existsSync(genesisBlockFilePath)) await downloadGenesisBlock();
 
-	const genesisBlock = await new Promise((resolve, reject) =>
+	const genesisBlock = await new Promise((resolve, reject) => {
 		fs.readFile(genesisBlockFilePath, (err, data) => {
 			if (err) {
 				logger.error(err);
 				return reject(err);
 			}
 			return resolve(JSON.parse(data));
-		})
-	);
+		});
+	});
 
 	return genesisBlock;
 };
