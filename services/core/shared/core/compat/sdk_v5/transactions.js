@@ -30,15 +30,17 @@ const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	indexMultisignatureInfo,
+	resolveMultisignatureInfo,
 } = require('./accounts');
 
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 const mysqlIndex = require('../../../indexdb/mysql');
+const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
+const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const availableLiskModuleAssets = getRegisteredModuleAssets();
@@ -62,6 +64,8 @@ const resolveModuleAsset = (moduleAssetVal) => {
 
 const indexTransactions = async blocks => {
 	const transactionsDB = await getTransactionsIndex();
+	const multisignatureDB = await getMultisignatureIndex();
+	let multisignatureInfoToIndex = [];
 	const publicKeysToIndex = [];
 	const recipientAddressesToIndex = [];
 	const txnMultiArray = blocks.map(block => {
@@ -79,18 +83,17 @@ const indexTransactions = async blocks => {
 				recipientAddressesToIndex.push(tx.asset.recipientAddress);
 			}
 			if (tx.senderPublicKey) publicKeysToIndex.push({ publicKey: tx.senderPublicKey });
+			if (tx.moduleAssetId === '4:0') multisignatureInfoToIndex = resolveMultisignatureInfo(tx);
 			return tx;
 		});
 		return transactions;
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	if (allTransactions.length) {
-		await transactionsDB.upsert(allTransactions);
-		await indexMultisignatureInfo(allTransactions);
-	}
+	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
 	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(recipientAddressesToIndex);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
+	if (multisignatureInfoToIndex.length) await multisignatureDB.upsert(multisignatureInfoToIndex);
 };
 
 const removeTransactionsByBlockIDs = async blockIDs => {

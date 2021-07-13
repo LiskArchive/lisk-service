@@ -456,38 +456,29 @@ const getMultisignatureMemberships = async account => {
 	return multisignatureMemberships;
 };
 
-const indexMultisignatureInfo = async transactions => {
-	const multisignatureDB = await getMultisignatureIndex();
+const resolveMultisignatureInfo = tx => {
 	const multisignatureInfoToIndex = [];
-	await BluebirdPromise.map(
-		transactions,
-		async tx => {
-			if (tx.moduleAssetId === '4:0') {
-				tx.asset.mandatoryKeys.forEach(key => {
-					const members = {
-						id: getBase32AddressFromPublicKey(tx.senderPublicKey)
-							.concat('_', getBase32AddressFromPublicKey(key)),
-						memberAddress: getBase32AddressFromPublicKey(key),
-						groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
-						isMandatory: true,
-					};
-					multisignatureInfoToIndex.push(members);
-				});
-				tx.asset.optionalKeys.forEach(key => {
-					const members = {
-						id: getBase32AddressFromPublicKey(tx.senderPublicKey)
-							.concat('_', getBase32AddressFromPublicKey(key)),
-						memberAddress: getBase32AddressFromPublicKey(key),
-						groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
-						isMandatory: false,
-					};
-					multisignatureInfoToIndex.push(members);
-				});
-			}
-		},
-		{ concurrency: transactions.length },
-	);
-	await multisignatureDB.upsert(multisignatureInfoToIndex);
+	tx.asset.mandatoryKeys.forEach(key => {
+		const members = {
+			id: getBase32AddressFromPublicKey(tx.senderPublicKey)
+				.concat('_', getBase32AddressFromPublicKey(key)),
+			memberAddress: getBase32AddressFromPublicKey(key),
+			groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
+			isMandatory: true,
+		};
+		multisignatureInfoToIndex.push(members);
+	});
+	tx.asset.optionalKeys.forEach(key => {
+		const members = {
+			id: getBase32AddressFromPublicKey(tx.senderPublicKey)
+				.concat('_', getBase32AddressFromPublicKey(key)),
+			memberAddress: getBase32AddressFromPublicKey(key),
+			groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
+			isMandatory: false,
+		};
+		multisignatureInfoToIndex.push(members);
+	});
+	return multisignatureInfoToIndex;
 };
 
 module.exports = {
@@ -500,5 +491,5 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	indexMultisignatureInfo,
+	resolveMultisignatureInfo,
 };
