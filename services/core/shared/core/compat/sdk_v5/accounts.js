@@ -434,7 +434,27 @@ const getMultisignatureGroups = async account => {
 	return multisignatureAccount;
 };
 
-const getMultisignatureMemberships = async () => []; // TODO
+const getMultisignatureMemberships = async account => {
+	const multisignatureMemberships = {};
+	const multisignatureDB = await getMultisignatureIndex();
+	const memberInfo = await multisignatureDB.find({ memberAddress: account.address });
+	if (Array.isArray(memberInfo) && memberInfo.length) {
+		multisignatureMemberships.memberships = [];
+		await BluebirdPromise.map(
+			memberInfo,
+			async member => {
+				const result = await getIndexedAccountInfo({ address: member.groupAddress });
+				if (result) multisignatureMemberships.memberships.push({
+					address: result.address,
+					username: result.username,
+					publicKey: result.publicKey,
+				});
+			},
+			{ concurrency: memberInfo.length },
+		);
+	}
+	return multisignatureMemberships;
+};
 
 const indexMultisignatureInfo = async transactions => {
 	const multisignatureDB = await getMultisignatureIndex();
