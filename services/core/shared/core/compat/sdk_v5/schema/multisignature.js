@@ -19,13 +19,11 @@ module.exports = {
 		id: { type: 'string' },
 		groupAddress: { type: 'string' },
 		memberAddress: { type: 'string' },
-		isMandatory: { type: 'boolean' },
 	},
 	indexes: {
 		id: { type: 'key' },
 		groupAddress: { type: 'key' },
 		memberAddress: { type: 'key' },
-		isMandatory: { type: 'key' },
 	},
 	purge: {},
 };

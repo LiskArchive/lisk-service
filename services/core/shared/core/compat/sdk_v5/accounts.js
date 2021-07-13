@@ -464,7 +464,6 @@ const resolveMultisignatureInfo = tx => {
 				.concat('_', getBase32AddressFromPublicKey(key)),
 			memberAddress: getBase32AddressFromPublicKey(key),
 			groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
-			isMandatory: true,
 		};
 		multisignatureInfoToIndex.push(members);
 	});
@@ -474,7 +473,6 @@ const resolveMultisignatureInfo = tx => {
 				.concat('_', getBase32AddressFromPublicKey(key)),
 			memberAddress: getBase32AddressFromPublicKey(key),
 			groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
-			isMandatory: false,
 		};
 		multisignatureInfoToIndex.push(members);
 	});
