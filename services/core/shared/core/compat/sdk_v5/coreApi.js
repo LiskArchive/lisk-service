@@ -67,9 +67,13 @@ const getBlocksByIDs = async ids => {
 			const genesisBlockId = getGenesisBlockId();
 			if (ids.includes(genesisBlockId)) {
 				const remainingIds = ids.filter(id => id !== genesisBlockId);
-				const { data: [genesisBlock] } = await getBlockByID(genesisBlockId);
-				const { data: [...remainingBlocks] } = await getBlocksByIDs(remainingIds);
-				return { data: [genesisBlock, ...remainingBlocks] };
+				const genesisBlockResult = await getBlockByID(genesisBlockId);
+				if (remainingIds.length) {
+					const { data: [genesisBlock] } = genesisBlockResult;
+					const { data: [...remainingBlocks] } = await getBlocksByIDs(remainingIds);
+					return { data: [genesisBlock, ...remainingBlocks] };
+				}
+				return genesisBlockResult;
 			}
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}`);
 		}
@@ -101,9 +105,13 @@ const getBlocksByHeightBetween = async (from, to) => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			if (Number(from) === Number(genesisHeight)) {
-				const { data: [genesisBlock] } = await getBlockByHeight(from);
-				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween(from + 1, to);
-				return { data: [genesisBlock, ...remainingBlocks] };
+				const genesisBlockResult = await getBlockByHeight(from);
+				if (from < to) {
+					const { data: [genesisBlock] } = genesisBlockResult;
+					const { data: [...remainingBlocks] } = await getBlocksByHeightBetween(from + 1, to);
+					return { data: [genesisBlock, ...remainingBlocks] };
+				}
+				return genesisBlockResult;
 			}
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
 		}
