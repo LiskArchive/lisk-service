@@ -315,10 +315,10 @@ const getBlocks = async params => {
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.id) {
 			blocks.data = await getBlockByID(params.id);
-			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
+			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Block ID ${params.id} not found.`);
 		} else if (params.height) {
 			blocks.data = await getBlockByHeight(params.height);
-			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
+			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Height ${params.height} not found.`);
 		} else if (params.heightBetween) {
 			const { from, to } = params.heightBetween;
 			blocks.data = await getBlocksByHeightBetween(from, to);
