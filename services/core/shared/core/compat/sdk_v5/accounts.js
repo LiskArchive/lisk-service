@@ -466,7 +466,7 @@ const indexMultisignatureInfo = async transactions => {
 				tx.asset.mandatoryKeys.forEach(key => {
 					const members = {
 						id: getBase32AddressFromPublicKey(tx.senderPublicKey)
-							.concat(getBase32AddressFromPublicKey(key)),
+							.concat('_', getBase32AddressFromPublicKey(key)),
 						memberAddress: getBase32AddressFromPublicKey(key),
 						groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
 						isMandatory: true,
@@ -476,7 +476,7 @@ const indexMultisignatureInfo = async transactions => {
 				tx.asset.optionalKeys.forEach(key => {
 					const members = {
 						id: getBase32AddressFromPublicKey(tx.senderPublicKey)
-							.concat(getBase32AddressFromPublicKey(key)),
+							.concat('_', getBase32AddressFromPublicKey(key)),
 						memberAddress: getBase32AddressFromPublicKey(key),
 						groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
 						isMandatory: false,
