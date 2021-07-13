@@ -29,6 +29,12 @@ const genesisBlockURL = config.endpoints.genesisBlock;
 
 const genesisBlockFilePath = './shared/core/compat/sdk_v5/static/genesis.json';
 
+let genesisBlockId;
+
+const setGenesisBlockId = (id) => genesisBlockId = id;
+
+const getGenesisBlockId = () => genesisBlockId;
+
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath);
@@ -41,6 +47,8 @@ const downloadGenesisBlock = async () => {
 			})
 			.catch(err => reject(err));
 	});
+
+	setGenesisBlockId(genesisBlock.header.id);
 
 	fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
 };
@@ -62,5 +70,6 @@ const getGenesisBlockFromFS = async () => {
 };
 
 module.exports = {
+	getGenesisBlockId,
 	getGenesisBlockFromFS,
 };

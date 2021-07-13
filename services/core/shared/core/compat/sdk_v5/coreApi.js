@@ -18,7 +18,10 @@ const {
 	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
 
-const { getGenesisBlockFromFS } = require('./blocksUtils');
+const {
+	getGenesisBlockId,
+	getGenesisBlockFromFS,
+} = require('./blocksUtils');
 const { getApiClient } = require('../common/wsRequest');
 
 const { genesisHeight } = require('../../../../config');
@@ -46,6 +49,7 @@ const getBlockByID = async id => {
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			if (id === getGenesisBlockId()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByID' for ID: ${id}`);
 		}
 		throw err;
@@ -60,6 +64,13 @@ const getBlocksByIDs = async ids => {
 		return { data: blocks };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			const genesisBlockId = getGenesisBlockId();
+			if (ids.includes(genesisBlockId)) {
+				const remainingIds = ids.filter(id => id !== genesisBlockId);
+				const { data: [genesisBlock] } = await getBlockByID(genesisBlockId);
+				const { data: [...remainingBlocks] } = await getBlocksByIDs(remainingIds);
+				return { data: [genesisBlock, ...remainingBlocks] };
+			}
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}`);
 		}
 		throw err;
