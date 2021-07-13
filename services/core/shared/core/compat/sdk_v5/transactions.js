@@ -30,6 +30,7 @@ const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
+	indexMultisignatureInfo,
 } = require('./accounts');
 
 const { removeVotesByTransactionIDs } = require('./voters');
@@ -84,7 +85,10 @@ const indexTransactions = async blocks => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
+	if (allTransactions.length) {
+		await transactionsDB.upsert(allTransactions);
+		await indexMultisignatureInfo(allTransactions);
+	}
 	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(recipientAddressesToIndex);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
 };

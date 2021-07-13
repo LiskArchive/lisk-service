@@ -50,10 +50,12 @@ const mysqlIndex = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
 const blocksIndexSchema = require('./schema/blocks');
+const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
@@ -434,6 +436,40 @@ const getMultisignatureGroups = async account => {
 
 const getMultisignatureMemberships = async () => []; // TODO
 
+const indexMultisignatureInfo = async transactions => {
+	const multisignatureDB = await getMultisignatureIndex();
+	const multisignatureInfoToIndex = [];
+	await BluebirdPromise.map(
+		transactions,
+		async tx => {
+			if (tx.moduleAssetId === '4:0') {
+				tx.asset.mandatoryKeys.forEach(key => {
+					const members = {
+						id: getBase32AddressFromPublicKey(tx.senderPublicKey)
+							.concat(getBase32AddressFromPublicKey(key)),
+						memberAddress: getBase32AddressFromPublicKey(key),
+						groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
+						isMandatory: true,
+					};
+					multisignatureInfoToIndex.push(members);
+				});
+				tx.asset.optionalKeys.forEach(key => {
+					const members = {
+						id: getBase32AddressFromPublicKey(tx.senderPublicKey)
+							.concat(getBase32AddressFromPublicKey(key)),
+						memberAddress: getBase32AddressFromPublicKey(key),
+						groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
+						isMandatory: false,
+					};
+					multisignatureInfoToIndex.push(members);
+				});
+			}
+		},
+		{ concurrency: transactions.length },
+	);
+	await multisignatureDB.upsert(multisignatureInfoToIndex);
+};
+
 module.exports = {
 	confirmPublicKey,
 	getAccounts,
@@ -444,4 +480,5 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
+	indexMultisignatureInfo,
 };
