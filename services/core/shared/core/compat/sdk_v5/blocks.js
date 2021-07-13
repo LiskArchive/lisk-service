@@ -18,7 +18,7 @@ const util = require('util');
 const {
 	Logger,
 	Signals,
-	Exceptions: { ValidationException, NotFoundException },
+	Exceptions: { TimeoutException, ValidationException, NotFoundException },
 } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
@@ -29,6 +29,10 @@ const {
 	getIndexedAccountInfo,
 	indexAccountsbyAddress,
 } = require('./accounts');
+
+const {
+	getGenesisBlockFromFS,
+} = require('./blocksUtils');
 
 const {
 	indexVotes,
@@ -354,7 +358,14 @@ const deleteBlock = async (block) => {
 
 const indexGenesisBlock = async () => {
 	logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
-	const [genesisBlock] = await getBlockByHeight(genesisHeight);
+	let genesisBlock;
+	try {
+		const [block] = await getBlockByHeight(genesisHeight);
+		genesisBlock = block;
+	} catch (err) {
+		if (err instanceof TimeoutException) genesisBlock = await getGenesisBlockFromFS();
+		else { throw err; }
+	}
 
 	const accountAddressesToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length > 16) // Filter out reclaim accounts
