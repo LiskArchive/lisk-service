@@ -382,7 +382,7 @@ const buildIndex = async (from, to) => {
 		return;
 	}
 
-	const MAX_BLOCKS_LIMIT_PP = 100;
+	const MAX_BLOCKS_LIMIT_PP = 50;
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {

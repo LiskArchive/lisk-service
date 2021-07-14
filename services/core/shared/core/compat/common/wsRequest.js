@@ -33,7 +33,7 @@ const getApiClient = async () => {
 		}
 		return clientCache;
 	} catch (err) {
-		logger.error(`Error instanstiating WS client on ${liskAddress}`);
+		logger.error(`Error instantiating WS client to ${liskAddress}`);
 		logger.error(err.message);
 		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node');
 
