@@ -46,11 +46,7 @@ const downloadGenesisBlock = async () => {
 			https.get(genesisBlockURL, (response) => {
 				response.pipe(tar.extract({ cwd: directoryPath }));
 				response.on('error', async (err) => reject(err));
-				response.on('end', async () => {
-					const genesisBlock = fs.readFileSync(genesisBlockFilePath);
-					fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
-					resolve();
-				});
+				response.on('end', async () => setTimeout(resolve, 500));
 			});
 		} else {
 			request(genesisBlockURL)
