@@ -354,7 +354,6 @@ const deleteBlock = async (block) => {
 
 const indexGenesisBlock = async () => {
 	logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
-
 	const [genesisBlock] = await getBlockByHeight(genesisHeight);
 
 	const accountAddressesToIndex = genesisBlock.asset.accounts
@@ -372,6 +371,7 @@ const indexGenesisBlock = async () => {
 	}
 	await indexTransactions([genesisBlock]);
 	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
+	logger.info('Finished indexing the genesis block');
 };
 
 const buildIndex = async (from, to) => {
