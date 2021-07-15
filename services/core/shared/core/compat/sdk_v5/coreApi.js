@@ -36,6 +36,7 @@ const getNetworkStatus = async () => {
 		return { data: result };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException('Request timed out when calling \'getNetworkStatus\'');
 		}
 		throw err;
@@ -49,6 +50,8 @@ const getBlockByID = async id => {
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
+			// File based Genesis block handling
 			if (id === getGenesisBlockId()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByID' for ID: ${id}`);
 		}
@@ -64,7 +67,9 @@ const getBlocksByIDs = async ids => {
 		return { data: blocks };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			const genesisBlockId = getGenesisBlockId();
+			// File based Genesis block handling
 			if (ids.includes(genesisBlockId)) {
 				const remainingIds = ids.filter(id => id !== genesisBlockId);
 				const genesisBlockResult = await getBlockByID(genesisBlockId);
@@ -88,6 +93,8 @@ const getBlockByHeight = async height => {
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
+			// File based Genesis block handling
 			// eslint-disable-next-line max-len
 			if (Number(height) === Number(genesisHeight)) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
@@ -104,6 +111,8 @@ const getBlocksByHeightBetween = async (from, to) => {
 		return { data: blocks };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
+			// File based Genesis block handling
 			if (Number(from) === Number(genesisHeight)) {
 				const genesisBlockResult = await getBlockByHeight(from);
 				if (from < to) {
@@ -127,6 +136,7 @@ const getLastBlock = async () => {
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException('Request timed out when calling \'getLastBlock\'');
 		}
 		throw err;
@@ -140,6 +150,7 @@ const getTransactionByID = async id => {
 		return { data: [transaction] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException(`Request timed out when calling 'getTransactionByID' for ID: ${id}`);
 		}
 		throw err;
@@ -154,6 +165,7 @@ const getTransactionsByIDs = async ids => {
 		return { data: transactions };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException(`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}`);
 		}
 		throw err;
@@ -167,6 +179,7 @@ const getAccountByAddress = async address => {
 		return { data: [account] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException(`Request timed out when calling 'getAccountByAddress' for address: ${address}`);
 		}
 		logger.warn(`Unable to currently fetch account information for address: ${address}. The network synchronization process might still be in progress for the Lisk Core node or the requested account has not been migrated yet.`);
@@ -182,6 +195,7 @@ const getAccountsByAddresses = async addresses => {
 		return { data: accounts };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException(`Request timed out when calling 'getAccountsByAddresses' for addresses: ${addresses}`);
 		}
 		throw err;
@@ -195,6 +209,7 @@ const getLegacyAccountInfo = async publicKey => {
 		return legacyAccountInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException(`Request timed out when calling 'getLegacyAccountInfo' for publicKey: ${publicKey}`);
 		}
 		throw err;
@@ -211,6 +226,7 @@ const getPeers = async (state = 'connected') => {
 		return { data: peers };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException(`Request timed out when calling 'getPeers' for state: ${state}`);
 		}
 		throw err;
@@ -224,6 +240,7 @@ const getForgers = async () => {
 		return { data: forgers };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException('Request timed out when calling \'getForgers\'');
 		}
 		throw err;
@@ -238,6 +255,7 @@ const getPendingTransactions = async () => {
 		return { data: transactions };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException('Request timed out when calling \'getPendingTransactions\'');
 		}
 		throw err;
@@ -251,6 +269,7 @@ const postTransaction = async transaction => {
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException(`Request timed out when calling 'postTransaction' with transaction: ${transaction}`);
 		}
 		throw err;
@@ -263,6 +282,7 @@ const getTransactionsSchemas = async () => {
 		return apiClient.schemas;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
 			throw new TimeoutException('Request timed out when calling \'getTransactionsSchemas\'');
 		}
 		throw err;
