@@ -25,6 +25,7 @@ let clientCache;
 const getApiClient = async () => {
 	try {
 		if (!clientCache || !clientCache._channel.isAlive) {
+			if (clientCache) await clientCache.disconnect();
 			clientCache = await createWSClient(`${liskAddress}/ws`);
 
 			// Inform listeners about the newly created ApiClient
