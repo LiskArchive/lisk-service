@@ -41,6 +41,8 @@ const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath);
 
+	logger.info(`Downloading the genesis block to the filesystem from: ${genesisBlockURL}`);
+
 	return new Promise((resolve, reject) => {
 		if (genesisBlockURL.endsWith('.tar.gz')) {
 			https.get(genesisBlockURL, (response) => {
