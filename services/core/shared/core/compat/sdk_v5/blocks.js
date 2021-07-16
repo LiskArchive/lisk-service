@@ -482,9 +482,14 @@ const indexPastBlocks = async () => {
 	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
 		? lastIndexedHeight : blockIndexLowerRange;
 
-	// Start building the block index
-	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
-	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+	try {
+		// Start building the block index
+		await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+		await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+	} catch (_) {
+		// Make sure indexMissingBlocks is invoked
+		indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+	}
 };
 
 const checkIndexReadiness = async () => {
