@@ -221,11 +221,17 @@ const resolveDelegateInfo = async accounts => {
 
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
-	const accountsToIndex = await BluebirdPromise.map(
-		accountInfoArray,
-		async accountInfo => {
-			const address = getHexAddressFromPublicKey(accountInfo.publicKey);
-			const account = (await getAccountsFromCore({ address })).data[0];
+
+	const { data: accountsToIndex } = await getAccountsFromCore({
+		addresses: accountInfoArray
+			.map(accountInfo => getBase32AddressFromPublicKey(accountInfo.publicKey)),
+	});
+
+	const finalAccountsToIndex = await BluebirdPromise.map(
+		accountsToIndex,
+		async account => {
+			const [accountInfo] = accountInfoArray
+				.filter(accInfo => getHexAddressFromPublicKey(accInfo.publicKey) === account.address);
 			account.publicKey = accountInfo.publicKey;
 			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
 				accountsDB.increment({
@@ -235,21 +241,21 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 					},
 					where: {
 						property: 'address',
-						value: getBase32AddressFromPublicKey(accountInfo.publicKey),
+						value: account.address,
 					},
 				}, account);
 			}
 			return account;
 		},
-		{ concurrency: 50 },
+		{ concurrency: accountsToIndex.length },
 	);
 
 	const PAGE_SIZE = 100;
-	const NUM_PAGES = Math.ceil(accountsToIndex.length / PAGE_SIZE);
+	const NUM_PAGES = Math.ceil(finalAccountsToIndex.length / PAGE_SIZE);
 	for (let i = 0; i < NUM_PAGES; i++) {
 		// eslint-disable-next-line no-await-in-loop
 		await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', {
-			accounts: accountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
 		});
 	}
 };
