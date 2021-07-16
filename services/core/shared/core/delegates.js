@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, CacheRedis } = require('lisk-service-framework');
+const { Logger, CacheRedis, Signals } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
@@ -248,6 +248,32 @@ const reload = async () => {
 	await computeDelegateRank();
 	await computeDelegateStatus();
 };
+
+Signals.get('newBlock').add(async data => {
+	const updatedDelegateAddresses = [];
+	const [block] = data.data;
+	const dposModuleId = 5;
+	const voteDelegateAssetId = 1;
+	block.payload.forEach(tx => {
+		if (tx.moduleID === dposModuleId && tx.assetID === voteDelegateAssetId) {
+			tx.asset.votes.forEach(vote => updatedDelegateAddresses
+				.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
+		}
+	});
+	const { data: updatedDelegateAccounts } = await coreApi
+		.getAccounts({ addresses: updatedDelegateAddresses });
+	updatedDelegateAccounts.forEach(delegate => {
+		const index = delegateList.findIndex(acc => acc.address === delegate.address);
+		// index = -1 ? delegateList.push(delegate) : delegateList[index] = delegate;
+		if (index === -1) {
+			delegateList.push(delegate);
+		} else {
+			delegateList[index] = delegate;
+		}
+	});
+	await computeDelegateRank();
+	await computeDelegateStatus();
+});
 
 module.exports = {
 	reloadDelegateCache: reload,
