@@ -381,8 +381,6 @@ const indexGenesisBlock = async () => {
 
 const buildIndex = async (from, to) => {
 	try {
-		logger.info('Building index of blocks');
-
 		if (from > to) {
 			logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
 			return;
@@ -465,6 +463,7 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 };
 
 const indexPastBlocks = async () => {
+	logger.info('Building index of blocks');
 	const blocksDB = await getBlocksIndex();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
