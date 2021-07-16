@@ -364,7 +364,7 @@ const indexGenesisBlock = async () => {
 		.filter(account => account.address.length > 16) // Filter out reclaim accounts
 		.map(account => account.address);
 
-	const PAGE_SIZE = 20;
+	const PAGE_SIZE = 100;
 	const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
 	for (let i = 0; i < NUM_PAGES; i++) {
 		// eslint-disable-next-line no-await-in-loop

@@ -108,28 +108,25 @@ const getAccountsFromCore = async (params) => {
 };
 
 const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
-	const accountsToIndex = await BluebirdPromise.map(
-		addressesToIndex.filter((v, i, a) => a.findIndex(t => (t === v)) === i),
-		async address => {
+	const { data: accountsToIndex } = await getAccountsFromCore({ addresses: addressesToIndex });
+	const finalAccountsToIndex = await BluebirdPromise.map(
+		accountsToIndex,
+		async account => {
 			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) genesisAccounts[getBase32AddressFromHex(address)] = true;
-
-			const account = (await getAccountsFromCore({ address })).data[0];
-			const accountFromDB = await getIndexedAccountInfo({
-				address: getBase32AddressFromHex(address),
-			});
+			if (isGenesisBlockAccount) genesisAccounts[account.address] = true;
+			const accountFromDB = await getIndexedAccountInfo({ address: account.address });
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
-		{ concurrency: 50 },
+		{ concurrency: accountsToIndex.length },
 	);
 
-	const PAGE_SIZE = 50;
-	const NUM_PAGES = Math.ceil(accountsToIndex.length / PAGE_SIZE);
+	const PAGE_SIZE = 100;
+	const NUM_PAGES = Math.ceil(finalAccountsToIndex.length / PAGE_SIZE);
 	for (let i = 0; i < NUM_PAGES; i++) {
 		// eslint-disable-next-line no-await-in-loop
 		await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', {
-			accounts: accountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
 		});
 	}
 };
@@ -247,7 +244,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 		{ concurrency: 50 },
 	);
 
-	const PAGE_SIZE = 50;
+	const PAGE_SIZE = 100;
 	const NUM_PAGES = Math.ceil(accountsToIndex.length / PAGE_SIZE);
 	for (let i = 0; i < NUM_PAGES; i++) {
 		// eslint-disable-next-line no-await-in-loop
