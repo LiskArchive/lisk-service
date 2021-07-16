@@ -35,6 +35,10 @@ const {
 } = require('./accounts');
 
 const {
+	getBase32AddressFromHex,
+} = require('./accountUtils');
+
+const {
 	getNetworkStatus,
 } = require('./network');
 
@@ -101,6 +105,7 @@ module.exports = {
 	getFinalizedHeight,
 
 	getAccounts,
+	getBase32AddressFromHex,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	validateAddress,
