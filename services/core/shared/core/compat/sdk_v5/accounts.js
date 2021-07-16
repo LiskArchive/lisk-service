@@ -467,5 +467,4 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	normalizeAccount,
 };
