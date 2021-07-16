@@ -264,7 +264,6 @@ Signals.get('newBlock').add(async data => {
 		.getAccounts({ addresses: updatedDelegateAddresses });
 	updatedDelegateAccounts.forEach(delegate => {
 		const index = delegateList.findIndex(acc => acc.address === delegate.address);
-		// index = -1 ? delegateList.push(delegate) : delegateList[index] = delegate;
 		if (index === -1) {
 			delegateList.push(delegate);
 		} else {
