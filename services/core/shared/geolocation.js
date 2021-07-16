@@ -52,7 +52,7 @@ const requestData = async requestedIp => {
 	const key = `geoip:${requestedIp}`;
 
 	const refreshData = ip => getFromHttp(ip).then(data => {
-		cacheRedis.set(key, data.data, GEOIP_TTL);
+		if (data) cacheRedis.set(key, data.data, GEOIP_TTL);
 		logger.debug(`Fetched geolocation data from online service for IP ${ip}`);
 		refreshSchedule.push(setTimeout(
 			() => refreshData(ip),
