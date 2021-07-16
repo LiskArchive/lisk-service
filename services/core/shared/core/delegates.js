@@ -254,24 +254,27 @@ Signals.get('newBlock').add(async data => {
 	const [block] = data.data;
 	const dposModuleId = 5;
 	const voteDelegateAssetId = 1;
-	block.payload.forEach(tx => {
-		if (tx.moduleID === dposModuleId && tx.assetID === voteDelegateAssetId) {
-			tx.asset.votes.forEach(vote => updatedDelegateAddresses
-				.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
-		}
-	});
-	const { data: updatedDelegateAccounts } = await coreApi
-		.getAccounts({ addresses: updatedDelegateAddresses });
-	updatedDelegateAccounts.forEach(delegate => {
-		const index = delegateList.findIndex(acc => acc.address === delegate.address);
-		if (index === -1) {
-			delegateList.push(delegate);
-		} else {
-			delegateList[index] = delegate;
-		}
-	});
-	await computeDelegateRank();
-	await computeDelegateStatus();
+	// to support old versions
+	if (block && block.payload) {
+		block.payload.forEach(tx => {
+			if (tx.moduleID === dposModuleId && tx.assetID === voteDelegateAssetId) {
+				tx.asset.votes.forEach(vote => updatedDelegateAddresses
+					.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
+			}
+		});
+		const { data: updatedDelegateAccounts } = await coreApi
+			.getAccounts({ addresses: updatedDelegateAddresses });
+		updatedDelegateAccounts.forEach(delegate => {
+			const indexOfDelegate = delegateList.findIndex(acc => acc.address === delegate.address);
+			if (indexOfDelegate === -1) {
+				delegateList.push(delegate);
+			} else {
+				delegateList[indexOfDelegate] = delegate;
+			}
+		});
+		await computeDelegateRank();
+		await computeDelegateStatus();
+	}
 });
 
 module.exports = {
