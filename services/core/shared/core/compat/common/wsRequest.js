@@ -25,6 +25,7 @@ const liskAddress = config.endpoints.liskWs;
 let clientCache;
 let isInstantiating = false;
 
+// eslint-disable-next-line consistent-return
 const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
