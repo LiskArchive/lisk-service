@@ -380,34 +380,38 @@ const indexGenesisBlock = async () => {
 };
 
 const buildIndex = async (from, to) => {
-	logger.info('Building index of blocks');
+	try {
+		if (from > to) {
+			logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
+			return;
+		}
 
-	if (from > to) {
-		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
-		return;
+		const MAX_BLOCKS_LIMIT_PP = 50;
+		const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+
+		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+			/* eslint-disable no-await-in-loop */
+			const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+			const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+			const batchFromHeight = offset + 1;
+			const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
+				? (offset + MAX_BLOCKS_LIMIT_PP) : to;
+			logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
+
+			let blocks;
+			do {
+				blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
+			} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
+
+			await indexBlocksQueue.add('indexBlocksQueue', { blocks });
+			/* eslint-enable no-await-in-loop */
+		}
+		logger.info(`Finished building block index (${from}-${to})`);
+	} catch (err) {
+		logger.warn('Indexing failed due to: ', err.message);
+		logger.info(`Retrying to build index for blocks ${from}-${to}`);
+		await buildIndex(from, to);
 	}
-
-	const MAX_BLOCKS_LIMIT_PP = 50;
-	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
-
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
-		const batchFromHeight = offset + 1;
-		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
-
-		let blocks;
-		do {
-			blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
-		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
-
-		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
-		/* eslint-enable no-await-in-loop */
-	}
-	logger.info(`Finished building block index (${from}-${to})`);
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
@@ -433,14 +437,14 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 		const indexedBlockCount = await blocksDB.count({ propBetweens });
 		if (indexedBlockCount < toHeight) {
 			const missingBlocksQueryStatement = `
-			SELECT
-				(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
-				(b1.height - 1) AS 'to'
-			FROM blocks b1
-			WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
-				AND b1.height != ${genesisHeight}
-				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
-		`;
+				SELECT
+					(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+					(b1.height - 1) AS 'to'
+				FROM blocks b1
+				WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
+					AND b1.height != ${genesisHeight}
+					AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
+			`;
 
 			logger.debug('propBetweens', util.inspect(propBetweens));
 			const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
@@ -459,6 +463,7 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 };
 
 const indexPastBlocks = async () => {
+	logger.info('Building index of blocks');
 	const blocksDB = await getBlocksIndex();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);

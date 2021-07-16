@@ -22,7 +22,7 @@ const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
 		try {
 			const result = await fn();
 			clearInterval(that);
-			resolve(result);
+			if (result !== undefined) resolve(result);
 		} catch (err) {
 			logger.debug(`Waiting ${intervalMs}...`);
 		}
