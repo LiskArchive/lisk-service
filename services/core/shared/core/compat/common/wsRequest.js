@@ -30,10 +30,8 @@ const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
 			if (!clientCache || !clientCache._channel.isAlive) {
-				if (clientCache) {
-					await clientCache.disconnect();
-					isInstantiating = true;
-				}
+				isInstantiating = true;
+				if (clientCache) await clientCache.disconnect();
 				clientCache = await createWSClient(`${liskAddress}/ws`);
 				isInstantiating = false;
 
