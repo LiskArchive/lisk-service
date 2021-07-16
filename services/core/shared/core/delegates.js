@@ -249,12 +249,12 @@ const reload = async () => {
 	await computeDelegateStatus();
 };
 
+// Keep the delegate cache up-to-date
 Signals.get('newBlock').add(async data => {
-	const updatedDelegateAddresses = [];
-	const [block] = data.data;
 	const dposModuleId = 5;
 	const voteDelegateAssetId = 1;
-	// to support old versions
+	const updatedDelegateAddresses = [];
+	const [block] = data.data;
 	if (block && block.payload) {
 		block.payload.forEach(tx => {
 			if (tx.moduleID === dposModuleId && tx.assetID === voteDelegateAssetId) {
@@ -265,15 +265,12 @@ Signals.get('newBlock').add(async data => {
 		const { data: updatedDelegateAccounts } = await coreApi
 			.getAccounts({ addresses: updatedDelegateAddresses });
 		updatedDelegateAccounts.forEach(delegate => {
-			const indexOfDelegate = delegateList.findIndex(acc => acc.address === delegate.address);
-			if (indexOfDelegate === -1) {
-				delegateList.push(delegate);
-			} else {
-				delegateList[indexOfDelegate] = delegate;
-			}
+			const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
+			if (delegateIndex === -1) delegateList.push(delegate);
+			else delegateList[delegateIndex] = delegate;
 		});
-		await computeDelegateRank();
-		await computeDelegateStatus();
+		// Rank is impacted only when a delegate gets (un-)voted
+		if (updatedDelegateAddresses.length) await computeDelegateRank();
 	}
 });
 
