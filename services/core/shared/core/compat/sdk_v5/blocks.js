@@ -126,7 +126,7 @@ const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
 const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', deleteIndexedBlocks);
 
-const normalizeBlocks = async blocks => {
+const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const apiClient = await getApiClient();
 
 	const normalizedBlocks = await BluebirdPromise.map(
@@ -155,6 +155,17 @@ const normalizeBlocks = async blocks => {
 				block.totalFee += Number(txn.fee) - txnMinFee;
 			});
 
+			if (isIgnoreGenesisAccounts) {
+				const {
+					accounts,
+					initRounds,
+					initDelegates,
+					...otherAssets,
+				} = block.asset;
+
+				block.asset = { ...otherAssets };
+			}
+
 			return parseToJSONCompatObj(block);
 		},
 		{ concurrency: blocks.length },
@@ -173,9 +184,9 @@ const getBlocksByIDs = async ids => {
 	return normalizeBlocks(response.data);
 };
 
-const getBlockByHeight = async height => {
+const getBlockByHeight = async (height, isIgnoreGenesisAccounts = true) => {
 	const response = await coreApi.getBlockByHeight(height);
-	return normalizeBlocks(response.data);
+	return normalizeBlocks(response.data, isIgnoreGenesisAccounts);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
@@ -356,7 +367,7 @@ const deleteBlock = async (block) => {
 
 const indexGenesisBlock = async () => {
 	logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
-	const [genesisBlock] = await getBlockByHeight(genesisHeight);
+	const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
 	// Index the genesis block transactions first
 	await indexTransactions([genesisBlock]);
