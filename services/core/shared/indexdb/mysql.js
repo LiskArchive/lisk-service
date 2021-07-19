@@ -115,7 +115,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	if (!connectionPool[connPoolKey]) {
 		logger.info(`Attempting to connect ${connEndpoint}...`);
-		connectionPool[connPoolKey] = await createDbConnection(`${connEndpoint}?charset=utf8mb4`);
+		const connString = connEndpoint.includes('?')
+			? connEndpoint
+			: `${connEndpoint}?charset=utf8mb4`;
+		connectionPool[connPoolKey] = await createDbConnection(connString);
 	}
 
 	const knex = connectionPool[connPoolKey];
