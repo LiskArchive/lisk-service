@@ -39,7 +39,7 @@ config.endpoints.genesisBlock = process.env.GENESIS_BLOCK_URL || 'https://downlo
 config.network = [
 	{
 		name: 'mainnet',
-		identifier: 'ed14889723f24ecc54871d058d98ce91ff2f973192075c0155ba2b7b70ad2511',
+		identifier: '022097430f51c10da3146920f4c82005900ce5da83bd5d92c04dec2645e54325',
 		genesisHeight: Number(process.env.GENESIS_HEIGHT || 0),
 		genesisBlockUrl: 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
 	},
