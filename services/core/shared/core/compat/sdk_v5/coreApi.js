@@ -77,6 +77,7 @@ const getBlockByID = async id => {
 const getBlocksByIDs = async ids => {
 	try {
 		// File based Genesis block handling
+		const genesisBlockId = getGenesisBlockId();
 		if (ids.includes(genesisBlockId)) {
 			const remainingIds = ids.filter(id => id !== genesisBlockId);
 			const genesisBlockResult = await getBlockByID(genesisBlockId);
@@ -95,7 +96,6 @@ const getBlocksByIDs = async ids => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
-			const genesisBlockId = getGenesisBlockId();
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}`);
 		}
 		throw err;
