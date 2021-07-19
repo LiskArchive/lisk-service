@@ -103,7 +103,6 @@ pipeline {
 				}
 				sleep(90)
 				waitForHttp('http://localhost:9901/api/ready')
-				sleep(60)
 				// waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
 			}
 		}
