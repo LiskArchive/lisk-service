@@ -108,7 +108,10 @@ const getAccountsFromCore = async (params) => {
 };
 
 const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
-	const { data: accountsToIndex } = await getAccountsFromCore({ addresses: addressesToIndex });
+	const { data: accountsToIndex } = await getAccountsFromCore({
+		addresses: addressesToIndex
+			.filter((v, i, a) => a.findIndex(t => (t === v)) === i), // Remove duplicates
+	});
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		accountsToIndex,
 		async account => {
@@ -224,7 +227,8 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 
 	const { data: accountsToIndex } = await getAccountsFromCore({
 		addresses: accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))
+			.filter((v, i, a) => a.findIndex(t => (t === v)) === i), // Remove duplicates
 	});
 
 	const finalAccountsToIndex = await BluebirdPromise.map(
