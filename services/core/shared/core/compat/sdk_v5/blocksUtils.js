@@ -15,6 +15,7 @@
  */
 const fs = require('fs');
 const https = require('https');
+const json = require('big-json');
 const path = require('path');
 const tar = require('tar');
 
@@ -31,17 +32,22 @@ const genesisBlockURL = config.endpoints.genesisBlock;
 
 const genesisBlockFilePath = './shared/core/compat/sdk_v5/static/genesis_block.json';
 
-let genesisBlockId;
+let readStream;
+let genesisBlock = { header: {} };
 
-const setGenesisBlockId = (id) => genesisBlockId = id;
+const parseStream = json.createParseStream();
 
-const getGenesisBlockId = () => genesisBlockId;
+const setGenesisBlock = (block) => genesisBlock = block;
+
+const getGenesisBlock = () => genesisBlock;
+
+const getGenesisBlockId = () => genesisBlock.header.id;
 
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath);
 
-	logger.info(`Persisting genesis block to the filesystem. Downloading from: ${genesisBlockURL}`);
+	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockURL}`);
 
 	return new Promise((resolve, reject) => {
 		if (genesisBlockURL.endsWith('.tar.gz')) {
@@ -62,22 +68,25 @@ const downloadGenesisBlock = async () => {
 };
 
 const getGenesisBlockFromFS = async () => {
-	if (!fs.existsSync(genesisBlockFilePath)) await downloadGenesisBlock();
+	if (!getGenesisBlockId()) {
+		if (!fs.existsSync(genesisBlockFilePath)) {
+			await downloadGenesisBlock();
+			readStream = fs.createReadStream(genesisBlockFilePath);
+		}
 
-	const genesisBlock = await new Promise((resolve, reject) => {
-		fs.readFile(genesisBlockFilePath, (err, data) => {
-			if (err) {
-				logger.error(err);
-				return reject(err);
-			}
-			const parsedGenesisBlock = JSON.parse(data.toString());
-			return resolve(parsedGenesisBlock);
+		const block = await new Promise((resolve, reject) => {
+			readStream.pipe(parseStream.on('data', (data) => resolve(data)));
+			parseStream.on('error', (err) => reject(err));
 		});
-	});
 
-	if (!getGenesisBlockId()) setGenesisBlockId(genesisBlock.header.id);
-	return genesisBlock;
+		if (!getGenesisBlockId()) setGenesisBlock(block);
+	}
+
+	return getGenesisBlock();
 };
+
+// If file exists, already create a read stream
+if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
 
 module.exports = {
 	getGenesisBlockId,
