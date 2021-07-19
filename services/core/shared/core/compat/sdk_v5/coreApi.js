@@ -105,7 +105,7 @@ const getBlocksByIDs = async ids => {
 const getBlockByHeight = async height => {
 	try {
 		// File based Genesis block handling
-		if (getGenesisBlockId() && Number(height) === getGenesisHeight()) {
+		if (getGenesisBlockId() && Number(height) === await getGenesisHeight()) {
 			return { data: [await getGenesisBlockFromFS()] };
 		}
 
@@ -116,7 +116,7 @@ const getBlockByHeight = async height => {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
 			// Download to the FS & return the genesis block
-			if (Number(height) === getGenesisHeight()) return { data: [await getGenesisBlockFromFS()] };
+			if (Number(height) === await getGenesisHeight()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
 		}
 		throw err;
@@ -126,7 +126,7 @@ const getBlockByHeight = async height => {
 const getBlocksByHeightBetween = async (from, to) => {
 	try {
 		// File based Genesis block handling
-		if (getGenesisBlockId() && Number(from) === getGenesisHeight()) {
+		if (getGenesisBlockId() && Number(from) === await getGenesisHeight()) {
 			const genesisBlockResult = await getBlockByHeight(from);
 			if (from < to) {
 				const { data: [genesisBlock] } = genesisBlockResult;
