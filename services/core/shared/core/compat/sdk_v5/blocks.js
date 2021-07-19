@@ -129,7 +129,7 @@ const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', del
 const normalizeBlocks = async blocks => {
 	const apiClient = await getApiClient();
 
-	const normalizedBlocks = BluebirdPromise.map(
+	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
@@ -362,9 +362,14 @@ const indexGenesisBlock = async () => {
 	await indexTransactions([genesisBlock]);
 
 	// Index the genesis block accounts next
-	const accountAddressesToIndex = genesisBlock.asset.accounts
+	const initDelegateAddresses = genesisBlock.asset.initDelegates;
+	const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length > 16) // Filter out reclaim accounts
 		.map(account => account.address);
+
+	const accountAddressesToIndex = initDelegateAddresses
+		.concat(nonDelegateAddressesToIndex)
+		.filter((v, i, a) => a.findIndex(t => (t === v)) === i); // Remove duplicates
 
 	const PAGE_SIZE = 20;
 	const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
