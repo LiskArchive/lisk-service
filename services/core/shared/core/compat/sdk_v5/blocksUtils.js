@@ -50,7 +50,7 @@ const loadConfig = async () => {
 	const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
 	genesisBlockURL = networkConfig.genesisBlockUrl;
 
-	genesisBlockFilePath = `./shared/core/compat/sdk_v5/static/${networkConfig.name}/genesis_block.json`;
+	genesisBlockFilePath = `./data/${networkConfig.name}/genesis_block.json`;
 
 	// If file exists, already create a read stream
 	if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
