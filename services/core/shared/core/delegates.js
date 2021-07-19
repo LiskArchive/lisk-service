@@ -258,13 +258,14 @@ Signals.get('newBlock').add(async data => {
 	const [block] = data.data;
 	if (block && block.payload) {
 		block.payload.forEach(tx => {
-			if (tx.moduleID === dposModuleId && tx.assetID === voteDelegateAssetId) {
-				tx.asset.votes.forEach(vote => updatedDelegateAddresses
-					.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
-			}
-
-			if (tx.moduleID === dposModuleId && tx.assetID === registerDelegateAssetId) {
-				updatedDelegateAddresses.push(coreApi.getBase32AddressFromPublicKey(tx.senderPublicKey));
+			if (tx.moduleID === dposModuleId) {
+				if (tx.assetID === registerDelegateAssetId) {
+					updatedDelegateAddresses
+						.push(coreApi.getBase32AddressFromPublicKey(tx.senderPublicKey));
+				} else if (tx.assetID === voteDelegateAssetId) {
+					tx.asset.votes.forEach(vote => updatedDelegateAddresses
+						.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
+				}
 			}
 		});
 		const { data: updatedDelegateAccounts } = await coreApi
