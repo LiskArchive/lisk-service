@@ -41,6 +41,10 @@ const {
 } = require('../../queue');
 
 const {
+	dropDuplicates,
+} = require('../../../arrayUtils');
+
+const {
 	parseToJSONCompatObj,
 } = require('../../../jsonTools');
 
@@ -109,8 +113,7 @@ const getAccountsFromCore = async (params) => {
 
 const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
 	const { data: accountsToIndex } = await getAccountsFromCore({
-		addresses: addressesToIndex
-			.filter((v, i, a) => a.findIndex(t => (t === v)) === i), // Remove duplicates
+		addresses: dropDuplicates(addressesToIndex),
 	});
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		accountsToIndex,
@@ -226,9 +229,8 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
 
 	const { data: accountsToIndex } = await getAccountsFromCore({
-		addresses: accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))
-			.filter((v, i, a) => a.findIndex(t => (t === v)) === i), // Remove duplicates
+		addresses: dropDuplicates(accountInfoArray
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
 	});
 
 	const finalAccountsToIndex = await BluebirdPromise.map(
