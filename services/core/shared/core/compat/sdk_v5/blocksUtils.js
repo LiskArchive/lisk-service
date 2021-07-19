@@ -25,7 +25,6 @@ const {
 	HTTP: { request },
 } = require('lisk-service-framework');
 
-const { getApiClient } = require('../common/wsRequest');
 const config = require('../../../../config');
 
 const logger = Logger();
