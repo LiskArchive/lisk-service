@@ -54,8 +54,7 @@ const downloadGenesisBlock = async () => {
 			request(genesisBlockURL)
 				.then(async response => {
 					const genesisBlock = typeof response === 'string' ? JSON.parse(response).data : response.data;
-					fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
-					resolve();
+					fs.writeFile(genesisBlockFilePath, JSON.stringify(genesisBlock), () => resolve());
 				})
 				.catch(err => reject(err));
 		}
