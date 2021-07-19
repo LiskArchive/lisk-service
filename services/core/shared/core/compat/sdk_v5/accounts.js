@@ -224,14 +224,14 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 
 	const { data: accountsToIndex } = await getAccountsFromCore({
 		addresses: accountInfoArray
-			.map(accountInfo => getBase32AddressFromPublicKey(accountInfo.publicKey)),
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
 	});
 
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		accountsToIndex,
 		async account => {
 			const [accountInfo] = accountInfoArray
-				.filter(accInfo => getHexAddressFromPublicKey(accInfo.publicKey) === account.address);
+				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
 			account.publicKey = accountInfo.publicKey;
 			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
 				accountsDB.increment({

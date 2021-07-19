@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, CacheRedis } = require('lisk-service-framework');
+const { Logger, CacheRedis, Signals } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
@@ -248,6 +248,40 @@ const reload = async () => {
 	await computeDelegateRank();
 	await computeDelegateStatus();
 };
+
+// Keep the delegate cache up-to-date
+Signals.get('newBlock').add(async data => {
+	const dposModuleId = 5;
+	const voteDelegateAssetId = 1;
+	const registerDelegateAssetId = 0;
+	const updatedDelegateAddresses = [];
+	const [block] = data.data;
+	if (block && block.payload) {
+		block.payload.forEach(tx => {
+			if (tx.moduleID === dposModuleId) {
+				if (tx.assetID === registerDelegateAssetId) {
+					updatedDelegateAddresses
+						.push(coreApi.getBase32AddressFromPublicKey(tx.senderPublicKey));
+				} else if (tx.assetID === voteDelegateAssetId) {
+					tx.asset.votes.forEach(vote => updatedDelegateAddresses
+						.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
+				}
+			}
+		});
+		const { data: updatedDelegateAccounts } = await coreApi
+			.getAccounts({ addresses: updatedDelegateAddresses });
+		updatedDelegateAccounts.forEach(delegate => {
+			const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
+			if (delegateIndex === -1) delegateList.push(delegate);
+			else delegateList[delegateIndex] = delegate;
+		});
+		// Rank is impacted only when a delegate gets (un-)voted
+		if (updatedDelegateAddresses.length) await computeDelegateRank();
+	}
+});
+
+// Reload the delegate cache when all the indexes are up-to-date
+Signals.get('blockIndexReady').add(() => reload());
 
 module.exports = {
 	reloadDelegateCache: reload,

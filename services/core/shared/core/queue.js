@@ -50,11 +50,6 @@ const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.
 	queue.on('failed', (job, err) => {
 		logger.warn(`${queueName} Job failed`, err.message);
 		logger.warn(`${queueName} Job failed`, err.stack);
-		let attempt = job.data.attempt || 0;
-		attempt += 1;
-		const delay = attempt * 5 * 60 * 1000; // Retry with a delay of 5, 10, 15 sec...
-		queue.add(queueName, { ...job.data, attempt }, { delay });
-		job.discard();
 	});
 
 	setInterval(async () => {
