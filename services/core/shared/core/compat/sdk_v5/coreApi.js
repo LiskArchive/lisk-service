@@ -24,8 +24,9 @@ const {
 } = require('./blocksUtils');
 const { getApiClient } = require('../common/wsRequest');
 
-const { genesisHeight } = require('../../../../config');
+const config = require('../../../../config');
 
+let genesisHeight;
 const logger = Logger();
 const timeoutMessage = 'Response not received in';
 
@@ -41,6 +42,16 @@ const getNetworkStatus = async () => {
 		}
 		throw err;
 	}
+};
+
+const getGenesisHeight = async () => {
+	if (!genesisHeight) {
+		// Determine genesis height
+		const { data: { networkIdentifier } } = await getNetworkStatus();
+		const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
+		genesisHeight = Number(networkConfig.genesisHeight);
+	}
+	return genesisHeight;
 };
 
 const getBlockByID = async id => {
@@ -95,8 +106,7 @@ const getBlockByHeight = async height => {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
 			// File based Genesis block handling
-			// eslint-disable-next-line max-len
-			if (Number(height) === Number(genesisHeight)) return { data: [await getGenesisBlockFromFS()] };
+			if (Number(height) === getGenesisHeight()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
 		}
 		throw err;
@@ -113,7 +123,7 @@ const getBlocksByHeightBetween = async (from, to) => {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
 			// File based Genesis block handling
-			if (Number(from) === Number(genesisHeight)) {
+			if (Number(from) === getGenesisHeight()) {
 				const genesisBlockResult = await getBlockByHeight(from);
 				if (from < to) {
 					const { data: [genesisBlock] } = genesisBlockResult;
@@ -290,6 +300,7 @@ const getTransactionsSchemas = async () => {
 };
 
 module.exports = {
+	getGenesisHeight,
 	getBlockByID,
 	getBlocksByIDs,
 	getBlockByHeight,

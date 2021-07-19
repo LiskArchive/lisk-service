@@ -521,10 +521,8 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
-		// Determine genesis height
-		const { data: { networkIdentifier } } = await coreApi.getNetworkStatus();
-		const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
-		setGenesisHeight(networkConfig.genesisHeight);
+		// Set the genesis height
+		setGenesisHeight(await coreApi.getGenesisHeight());
 
 		await indexGenesisBlock().catch(err => {
 			logger.error(err.message);
