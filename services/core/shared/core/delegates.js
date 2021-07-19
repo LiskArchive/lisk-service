@@ -253,6 +253,7 @@ const reload = async () => {
 Signals.get('newBlock').add(async data => {
 	const dposModuleId = 5;
 	const voteDelegateAssetId = 1;
+	const registerDelegateAssetId = 0;
 	const updatedDelegateAddresses = [];
 	const [block] = data.data;
 	if (block && block.payload) {
@@ -260,6 +261,10 @@ Signals.get('newBlock').add(async data => {
 			if (tx.moduleID === dposModuleId && tx.assetID === voteDelegateAssetId) {
 				tx.asset.votes.forEach(vote => updatedDelegateAddresses
 					.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
+			}
+
+			if (tx.moduleID === dposModuleId && tx.assetID === registerDelegateAssetId) {
+				updatedDelegateAddresses.push(coreApi.getBase32AddressFromPublicKey(tx.senderPublicKey));
 			}
 		});
 		const { data: updatedDelegateAccounts } = await coreApi
