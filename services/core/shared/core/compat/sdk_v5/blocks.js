@@ -160,7 +160,7 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 					accounts,
 					initRounds,
 					initDelegates,
-					...otherAssets,
+					...otherAssets
 				} = block.asset;
 
 				block.asset = { ...otherAssets };

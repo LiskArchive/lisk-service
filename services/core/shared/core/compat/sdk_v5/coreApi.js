@@ -116,6 +116,7 @@ const getBlockByHeight = async height => {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
 			// Download to the FS & return the genesis block
+			// eslint-disable-next-line max-len
 			if (Number(height) === await getGenesisHeight()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
 		}
