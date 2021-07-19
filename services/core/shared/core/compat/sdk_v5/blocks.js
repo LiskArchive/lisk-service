@@ -378,9 +378,7 @@ const indexGenesisBlock = async () => {
 		.filter(account => account.address.length > 16) // Filter out reclaim accounts
 		.map(account => account.address);
 
-	const accountAddressesToIndex = initDelegateAddresses
-		.concat(nonDelegateAddressesToIndex)
-		.filter((v, i, a) => a.findIndex(t => (t === v)) === i); // Remove duplicates
+	const accountAddressesToIndex = initDelegateAddresses.concat(nonDelegateAddressesToIndex);
 
 	const PAGE_SIZE = 20;
 	const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
