@@ -36,6 +36,21 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
 config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 config.endpoints.genesisBlock = process.env.GENESIS_BLOCK_URL || 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz';
 
+config.network = [
+	{
+		name: 'mainnet',
+		identifier: 'ed14889723f24ecc54871d058d98ce91ff2f973192075c0155ba2b7b70ad2511',
+		genesisHeight: Number(process.env.GENESIS_HEIGHT || 0),
+		genesisBlockUrl: 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
+	},
+	{
+		name: 'testnet',
+		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
+		genesisHeight: 14075260,
+		genesisBlockUrl: 'https://downloads.lisk.io/lisk/testnet/genesis_block.json.tar.gz',
+	},
+];
+
 /**
  * Indexing
  *
@@ -48,7 +63,6 @@ config.endpoints.genesisBlock = process.env.GENESIS_BLOCK_URL || 'https://downlo
  * such as transactions, accounts, votes etc.
  */
 config.indexNumOfBlocks = Number(process.env.INDEX_N_BLOCKS || 202);
-config.genesisHeight = Number(process.env.GENESIS_HEIGHT || 0);
 
 config.transactionStatistics = {
 	enabled: Boolean(String(process.env.ENABLE_TRANSACTION_STATS).toLowerCase() === 'true'),

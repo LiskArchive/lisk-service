@@ -56,9 +56,11 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
 
-const { genesisHeight } = config;
+let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
+
+const setGenesisHeight = (height) => genesisHeight = height;
 
 const getGenesisHeight = () => genesisHeight;
 
@@ -519,6 +521,11 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
+		// Determine genesis height
+		const { data: { networkIdentifier } } = await coreApi.getNetworkStatus();
+		const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
+		setGenesisHeight(networkConfig.genesisHeight);
+
 		await indexGenesisBlock().catch(err => {
 			logger.error(err.message);
 			logger.warn('Unable to index the Genesis block. Continuing with the remaining...');

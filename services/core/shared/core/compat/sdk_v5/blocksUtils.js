@@ -24,15 +24,14 @@ const {
 	HTTP: { request },
 } = require('lisk-service-framework');
 
+const { getApiClient } = require('../common/wsRequest');
 const config = require('../../../../config');
 
 const logger = Logger();
 
-const genesisBlockURL = config.endpoints.genesisBlock;
-
-const genesisBlockFilePath = './shared/core/compat/sdk_v5/static/genesis_block.json';
-
 let readStream;
+let genesisBlockURL;
+let genesisBlockFilePath;
 let genesisBlock = { header: {} };
 
 const parseStream = json.createParseStream();
@@ -43,9 +42,23 @@ const getGenesisBlock = () => genesisBlock;
 
 const getGenesisBlockId = () => genesisBlock.header.id;
 
+const loadConfig = async () => {
+	// Direct invocation of action necessary to avoid circular dependency
+	const apiClient = await getApiClient();
+	const { networkIdentifier } = await apiClient.node.getNodeInfo();
+
+	const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
+	genesisBlockURL = networkConfig.genesisBlockUrl;
+
+	genesisBlockFilePath = `./shared/core/compat/sdk_v5/static/${networkConfig.name}/genesis_block.json`;
+
+	// If file exists, already create a read stream
+	if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
+};
+
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
-	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath);
+	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath, { recursive: true });
 
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockURL}`);
 
@@ -68,6 +81,7 @@ const downloadGenesisBlock = async () => {
 };
 
 const getGenesisBlockFromFS = async () => {
+	if (!genesisBlockURL || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
 		if (!fs.existsSync(genesisBlockFilePath)) {
 			await downloadGenesisBlock();
@@ -84,9 +98,6 @@ const getGenesisBlockFromFS = async () => {
 
 	return getGenesisBlock();
 };
-
-// If file exists, already create a read stream
-if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
 
 module.exports = {
 	getGenesisBlockId,
