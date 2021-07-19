@@ -274,6 +274,9 @@ Signals.get('newBlock').add(async data => {
 	}
 });
 
+// Reload the delegate cache when all the indexes are up-to-date
+Signals.get('blockIndexReady').add(() => reload());
+
 module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
