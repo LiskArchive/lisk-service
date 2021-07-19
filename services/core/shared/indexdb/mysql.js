@@ -112,12 +112,16 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
 	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
+	const defaultCharset = 'utf8mb4';
 
 	if (!connectionPool[connPoolKey]) {
 		logger.info(`Attempting to connect ${connEndpoint}...`);
-		const connString = connEndpoint.includes('?')
-			? connEndpoint
-			: `${connEndpoint}?charset=utf8mb4`;
+		let connString = connEndpoint;
+		if (!connEndpoint.includes('charset')) {
+			connString = connEndpoint.includes('?')
+				? `${connEndpoint}&charset=${defaultCharset}`
+				: `${connEndpoint}?charset=${defaultCharset}`;
+		}
 		connectionPool[connPoolKey] = await createDbConnection(connString);
 	}
 
