@@ -13,13 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
+const { CacheRedis, Utils } = require('lisk-service-framework');
 
 const http = require('./httpRequest');
 const { getApiClient } = require('./wsRequest');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
+
+const config = require('../../../../config');
+
+const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
 let coreVersion = '1.0.0-alpha.0';
 let constants;
@@ -82,6 +86,7 @@ const getNetworkConstants = async () => {
 			}
 			if (!isProperObject(result)) return {};
 			constants = result;
+			await constantsCache.set('networkConstants', JSON.stringify(constants));
 		}
 		return constants;
 	} catch (_) {

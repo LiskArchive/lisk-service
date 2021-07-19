@@ -20,6 +20,7 @@ const path = require('path');
 const tar = require('tar');
 
 const {
+	CacheRedis,
 	Logger,
 	HTTP: { request },
 } = require('lisk-service-framework');
@@ -34,6 +35,8 @@ let genesisBlockURL;
 let genesisBlockFilePath;
 let genesisBlock = { header: {} };
 
+const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
+
 const parseStream = json.createParseStream();
 
 const setGenesisBlock = (block) => genesisBlock = block;
@@ -43,14 +46,14 @@ const getGenesisBlock = () => genesisBlock;
 const getGenesisBlockId = () => genesisBlock.header.id;
 
 const loadConfig = async () => {
-	// Direct invocation of action necessary to avoid circular dependency
-	const apiClient = await getApiClient();
-	const { networkIdentifier } = await apiClient.node.getNodeInfo();
+	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
 
 	const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
 	genesisBlockURL = networkConfig.genesisBlockUrl;
+	logger.debug(`genesisBlockURL set to ${genesisBlockURL}`);
 
 	genesisBlockFilePath = `./data/${networkConfig.name}/genesis_block.json`;
+	logger.debug(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
 
 	// If file exists, already create a read stream
 	if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
