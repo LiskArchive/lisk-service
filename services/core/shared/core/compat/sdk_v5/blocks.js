@@ -513,24 +513,28 @@ const indexPastBlocks = async () => {
 const checkIndexReadiness = async () => {
 	logger.debug('============== Checking blocks index ready status ==============');
 	if (!getIndexReadyStatus()) {
-		const blocksDB = await getBlocksIndex();
-		const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+		try {
+			const blocksDB = await getBlocksIndex();
+			const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
+			const numBlocksIndexed = await blocksDB.count();
+			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
-		logger.debug(
-			`\nnumBlocksIndexed: ${numBlocksIndexed}`,
-			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
-			`\ncurrentChainHeight: ${currentChainHeight}`,
-		);
-		if (numBlocksIndexed >= currentChainHeight - genesisHeight
-			&& lastIndexedBlock.height >= currentChainHeight - 1) {
-			setIndexReadyStatus(true);
-			logger.info('Blocks index is now ready');
-			logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
-			Signals.get('blockIndexReady').dispatch(true);
-		} else {
-			logger.debug('Blocks index is not yet ready');
+			logger.debug(
+				`\nnumBlocksIndexed: ${numBlocksIndexed}`,
+				`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
+				`\ncurrentChainHeight: ${currentChainHeight}`,
+			);
+			if (numBlocksIndexed >= currentChainHeight - genesisHeight
+				&& lastIndexedBlock.height >= currentChainHeight - 1) {
+				setIndexReadyStatus(true);
+				logger.info('Blocks index is now ready');
+				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
+				Signals.get('blockIndexReady').dispatch(true);
+			} else {
+				logger.debug('Blocks index is not yet ready');
+			}
+		} catch (err) {
+			logger.warn(`Error at checkIndexReadiness: ${err.message}`);
 		}
 	}
 	return getIndexReadyStatus();
