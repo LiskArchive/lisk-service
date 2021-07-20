@@ -23,6 +23,7 @@ const {
 	CacheRedis,
 	Logger,
 	HTTP: { request },
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
@@ -67,9 +68,16 @@ const downloadGenesisBlock = async () => {
 	return new Promise((resolve, reject) => {
 		if (genesisBlockURL.endsWith('.tar.gz')) {
 			https.get(genesisBlockURL, (response) => {
-				response.pipe(tar.extract({ cwd: directoryPath }));
-				response.on('error', async (err) => reject(err));
-				response.on('end', async () => setTimeout(resolve, 500));
+				if (response.statusCode === 200) {
+					response.pipe(tar.extract({ cwd: directoryPath }));
+					response.on('error', async (err) => reject(err));
+					response.on('end', async () => setTimeout(resolve, 500));
+				} else {
+					const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
+					logger.error(errMessage);
+					if (response.statusCode === 404) throw new NotFoundException(errMessage);
+					throw new Error(errMessage);
+				}
 			});
 		} else {
 			request(genesisBlockURL)
