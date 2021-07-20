@@ -36,11 +36,11 @@ const getAccountKnowledge = (address) => {
 const reloadKnowledge = async () => {
 	logger.debug('Reloading known accounts...');
 
-	await waitForLastBlock();
-	const netStatus = await getNetworkStatus();
-	const { nethash } = netStatus.data.constants;
-
 	try {
+		await waitForLastBlock();
+		const netStatus = await getNetworkStatus();
+		const { nethash } = netStatus.data.constants;
+
 		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`);
 		if (knownNetworks.data[nethash]) {
 			const knownAccounts = await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`);

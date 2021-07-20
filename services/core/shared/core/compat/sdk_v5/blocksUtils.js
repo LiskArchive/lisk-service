@@ -15,47 +15,75 @@
  */
 const fs = require('fs');
 const https = require('https');
+const json = require('big-json');
 const path = require('path');
 const tar = require('tar');
 
 const {
+	CacheRedis,
 	Logger,
 	HTTP: { request },
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const config = require('../../../../config');
 
 const logger = Logger();
 
-const genesisBlockURL = config.endpoints.genesisBlock;
+let readStream;
+let genesisBlockURL;
+let genesisBlockFilePath;
+let genesisBlock = { header: {} };
 
-const genesisBlockFilePath = './shared/core/compat/sdk_v5/static/genesis_block.json';
+const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
-let genesisBlockId;
+const parseStream = json.createParseStream();
 
-const setGenesisBlockId = (id) => genesisBlockId = id;
+const setGenesisBlock = (block) => genesisBlock = block;
 
-const getGenesisBlockId = () => genesisBlockId;
+const getGenesisBlock = () => genesisBlock;
+
+const getGenesisBlockId = () => genesisBlock.header.id;
+
+const loadConfig = async () => {
+	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
+
+	const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
+	genesisBlockURL = networkConfig.genesisBlockUrl;
+	logger.debug(`genesisBlockURL set to ${genesisBlockURL}`);
+
+	genesisBlockFilePath = `./data/${networkConfig.name}/genesis_block.json`;
+	logger.debug(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
+
+	// If file exists, already create a read stream
+	if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
+};
 
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
-	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath);
+	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath, { recursive: true });
 
-	logger.info(`Persisting genesis block to the filesystem. Downloading from: ${genesisBlockURL}`);
+	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockURL}`);
 
 	return new Promise((resolve, reject) => {
 		if (genesisBlockURL.endsWith('.tar.gz')) {
 			https.get(genesisBlockURL, (response) => {
-				response.pipe(tar.extract({ cwd: directoryPath }));
-				response.on('error', async (err) => reject(err));
-				response.on('end', async () => setTimeout(resolve, 500));
+				if (response.statusCode === 200) {
+					response.pipe(tar.extract({ cwd: directoryPath }));
+					response.on('error', async (err) => reject(err));
+					response.on('end', async () => setTimeout(resolve, 500));
+				} else {
+					const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
+					logger.error(errMessage);
+					if (response.statusCode === 404) throw new NotFoundException(errMessage);
+					throw new Error(errMessage);
+				}
 			});
 		} else {
 			request(genesisBlockURL)
 				.then(async response => {
-					const genesisBlock = typeof response === 'string' ? JSON.parse(response).data : response.data;
-					fs.writeFileSync(genesisBlockFilePath, JSON.stringify(genesisBlock));
-					resolve();
+					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
+					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => resolve());
 				})
 				.catch(err => reject(err));
 		}
@@ -63,21 +91,22 @@ const downloadGenesisBlock = async () => {
 };
 
 const getGenesisBlockFromFS = async () => {
-	if (!fs.existsSync(genesisBlockFilePath)) await downloadGenesisBlock();
+	if (!genesisBlockURL || !genesisBlockFilePath) await loadConfig();
+	if (!getGenesisBlockId()) {
+		if (!fs.existsSync(genesisBlockFilePath)) {
+			await downloadGenesisBlock();
+			readStream = fs.createReadStream(genesisBlockFilePath);
+		}
 
-	const genesisBlock = await new Promise((resolve, reject) => {
-		fs.readFile(genesisBlockFilePath, (err, data) => {
-			if (err) {
-				logger.error(err);
-				return reject(err);
-			}
-			const parsedGenesisBlock = JSON.parse(data.toString());
-			return resolve(parsedGenesisBlock);
+		const block = await new Promise((resolve, reject) => {
+			readStream.pipe(parseStream.on('data', (data) => resolve(data)));
+			parseStream.on('error', (err) => reject(err));
 		});
-	});
 
-	if (!getGenesisBlockId()) setGenesisBlockId(genesisBlock.header.id);
-	return genesisBlock;
+		if (!getGenesisBlockId()) setGenesisBlock(block);
+	}
+
+	return getGenesisBlock();
 };
 
 module.exports = {

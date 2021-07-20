@@ -56,9 +56,11 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
 
-const { genesisHeight } = config;
+let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
+
+const setGenesisHeight = (height) => genesisHeight = height;
 
 const getGenesisHeight = () => genesisHeight;
 
@@ -124,10 +126,10 @@ const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
 const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', deleteIndexedBlocks);
 
-const normalizeBlocks = async blocks => {
+const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const apiClient = await getApiClient();
 
-	const normalizedBlocks = BluebirdPromise.map(
+	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
@@ -153,6 +155,17 @@ const normalizeBlocks = async blocks => {
 				block.totalFee += Number(txn.fee) - txnMinFee;
 			});
 
+			if (isIgnoreGenesisAccounts) {
+				const {
+					accounts,
+					initRounds,
+					initDelegates,
+					...otherAssets
+				} = block.asset;
+
+				block.asset = { ...otherAssets };
+			}
+
 			return parseToJSONCompatObj(block);
 		},
 		{ concurrency: blocks.length },
@@ -171,9 +184,9 @@ const getBlocksByIDs = async ids => {
 	return normalizeBlocks(response.data);
 };
 
-const getBlockByHeight = async height => {
+const getBlockByHeight = async (height, isIgnoreGenesisAccounts = true) => {
 	const response = await coreApi.getBlockByHeight(height);
-	return normalizeBlocks(response.data);
+	return normalizeBlocks(response.data, isIgnoreGenesisAccounts);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
@@ -353,30 +366,40 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisBlock = async () => {
-	logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
-	const [genesisBlock] = await getBlockByHeight(genesisHeight);
+	const blocksDB = await getBlocksIndex();
+	const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
 
-	// Index the genesis block transactions first
-	await indexTransactions([genesisBlock]);
+	if (indexedGenesisBlock) {
+		logger.info(`Genesis block already indexed at height ${genesisHeight}`);
+	} else {
+		logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
+		const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-	// Index the genesis block accounts next
-	const accountAddressesToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length > 16) // Filter out reclaim accounts
-		.map(account => account.address);
+		// Index the genesis block transactions first
+		await indexTransactions([genesisBlock]);
 
-	const PAGE_SIZE = 20;
-	const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
-	for (let i = 0; i < NUM_PAGES; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsbyAddress(
-			accountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-			true,
-		);
+		// Index the genesis block accounts next
+		const initDelegateAddresses = genesisBlock.asset.initDelegates;
+		const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
+			.filter(account => account.address.length > 16) // Filter out reclaim accounts
+			.map(account => account.address);
+
+		const accountAddressesToIndex = initDelegateAddresses.concat(nonDelegateAddressesToIndex);
+
+		const PAGE_SIZE = 20;
+		const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
+		for (let i = 0; i < NUM_PAGES; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			await indexAccountsbyAddress(
+				accountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+				true,
+			);
+		}
+
+		// Finally index the genesis block itself
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
+		logger.info('Finished indexing the genesis block');
 	}
-
-	// Finally index the genesis block itself
-	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
-	logger.info('Finished indexing the genesis block');
 };
 
 const buildIndex = async (from, to) => {
@@ -463,7 +486,7 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 };
 
 const indexPastBlocks = async () => {
-	logger.info('Building index of blocks');
+	logger.info('Building the blocks index');
 	const blocksDB = await getBlocksIndex();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
@@ -485,29 +508,34 @@ const indexPastBlocks = async () => {
 	// Start building the block index
 	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
 	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+	logger.info('Finished building the blocks index');
 };
 
 const checkIndexReadiness = async () => {
 	logger.debug('============== Checking blocks index ready status ==============');
 	if (!getIndexReadyStatus()) {
-		const blocksDB = await getBlocksIndex();
-		const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+		try {
+			const blocksDB = await getBlocksIndex();
+			const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
+			const numBlocksIndexed = await blocksDB.count();
+			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
-		logger.debug(
-			`\nnumBlocksIndexed: ${numBlocksIndexed}`,
-			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
-			`\ncurrentChainHeight: ${currentChainHeight}`,
-		);
-		if (numBlocksIndexed >= currentChainHeight - genesisHeight
-			&& lastIndexedBlock.height >= currentChainHeight - 1) {
-			setIndexReadyStatus(true);
-			logger.info('Blocks index is now ready');
-			logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
-			Signals.get('blockIndexReady').dispatch(true);
-		} else {
-			logger.debug('Blocks index is not yet ready');
+			logger.debug(
+				`\nnumBlocksIndexed: ${numBlocksIndexed}`,
+				`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
+				`\ncurrentChainHeight: ${currentChainHeight}`,
+			);
+			if (numBlocksIndexed >= currentChainHeight - genesisHeight
+				&& lastIndexedBlock.height >= currentChainHeight - 1) {
+				setIndexReadyStatus(true);
+				logger.info('Blocks index is now ready');
+				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
+				Signals.get('blockIndexReady').dispatch(true);
+			} else {
+				logger.debug('Blocks index is not yet ready');
+			}
+		} catch (err) {
+			logger.warn(`Error while checking index readiness: ${err.message}`);
 		}
 	}
 	return getIndexReadyStatus();
@@ -519,6 +547,9 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
+		// Set the genesis height
+		setGenesisHeight(await coreApi.getGenesisHeight());
+
 		await indexGenesisBlock().catch(err => {
 			logger.error(err.message);
 			logger.warn('Unable to index the Genesis block. Continuing with the remaining...');

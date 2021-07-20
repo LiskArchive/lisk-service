@@ -22,10 +22,14 @@ const {
 	getGenesisBlockId,
 	getGenesisBlockFromFS,
 } = require('./blocksUtils');
-const { getApiClient } = require('../common/wsRequest');
 
-const { genesisHeight } = require('../../../../config');
+const {
+	getApiClient,
+} = require('../common/wsRequest');
 
+const config = require('../../../../config');
+
+let genesisHeight;
 const logger = Logger();
 const timeoutMessage = 'Response not received in';
 
@@ -43,16 +47,27 @@ const getNetworkStatus = async () => {
 	}
 };
 
+const getGenesisHeight = async () => {
+	if (!genesisHeight) {
+		// Determine genesis height
+		const { data: { networkIdentifier } } = await getNetworkStatus();
+		const [networkConfig = {}] = config.network.filter(c => c.identifier === networkIdentifier);
+		genesisHeight = Number(networkConfig.genesisHeight || 0);
+	}
+	return genesisHeight;
+};
+
 const getBlockByID = async id => {
 	try {
+		// File based Genesis block handling
+		if (id === getGenesisBlockId()) return { data: [await getGenesisBlockFromFS()] };
+
 		const apiClient = await getApiClient();
 		const block = await apiClient.block.get(id);
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
-			// File based Genesis block handling
-			if (id === getGenesisBlockId()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByID' for ID: ${id}`);
 		}
 		throw err;
@@ -61,6 +76,19 @@ const getBlockByID = async id => {
 
 const getBlocksByIDs = async ids => {
 	try {
+		// File based Genesis block handling
+		const genesisBlockId = getGenesisBlockId();
+		if (ids.includes(genesisBlockId)) {
+			const remainingIds = ids.filter(id => id !== genesisBlockId);
+			const genesisBlockResult = await getBlockByID(genesisBlockId);
+			if (remainingIds.length) {
+				const { data: [genesisBlock] } = genesisBlockResult;
+				const { data: [...remainingBlocks] } = await getBlocksByIDs(remainingIds);
+				return { data: [genesisBlock, ...remainingBlocks] };
+			}
+			return genesisBlockResult;
+		}
+
 		const apiClient = await getApiClient();
 		const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByIDs', { ids });
 		const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
@@ -68,18 +96,6 @@ const getBlocksByIDs = async ids => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
-			const genesisBlockId = getGenesisBlockId();
-			// File based Genesis block handling
-			if (ids.includes(genesisBlockId)) {
-				const remainingIds = ids.filter(id => id !== genesisBlockId);
-				const genesisBlockResult = await getBlockByID(genesisBlockId);
-				if (remainingIds.length) {
-					const { data: [genesisBlock] } = genesisBlockResult;
-					const { data: [...remainingBlocks] } = await getBlocksByIDs(remainingIds);
-					return { data: [genesisBlock, ...remainingBlocks] };
-				}
-				return genesisBlockResult;
-			}
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}`);
 		}
 		throw err;
@@ -88,15 +104,20 @@ const getBlocksByIDs = async ids => {
 
 const getBlockByHeight = async height => {
 	try {
+		// File based Genesis block handling
+		if (getGenesisBlockId() && Number(height) === await getGenesisHeight()) {
+			return { data: [await getGenesisBlockFromFS()] };
+		}
+
 		const apiClient = await getApiClient();
 		const block = await apiClient.block.getByHeight(height);
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
-			// File based Genesis block handling
+			// Download to the FS & return the genesis block
 			// eslint-disable-next-line max-len
-			if (Number(height) === Number(genesisHeight)) return { data: [await getGenesisBlockFromFS()] };
+			if (Number(height) === await getGenesisHeight()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
 		}
 		throw err;
@@ -105,6 +126,17 @@ const getBlockByHeight = async height => {
 
 const getBlocksByHeightBetween = async (from, to) => {
 	try {
+		// File based Genesis block handling
+		if (getGenesisBlockId() && Number(from) === await getGenesisHeight()) {
+			const genesisBlockResult = await getBlockByHeight(from);
+			if (from < to) {
+				const { data: [genesisBlock] } = genesisBlockResult;
+				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween(from + 1, to);
+				return { data: [genesisBlock, ...remainingBlocks] };
+			}
+			return genesisBlockResult;
+		}
+
 		const apiClient = await getApiClient();
 		const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', { from, to });
 		const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
@@ -112,16 +144,6 @@ const getBlocksByHeightBetween = async (from, to) => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			await getApiClient();
-			// File based Genesis block handling
-			if (Number(from) === Number(genesisHeight)) {
-				const genesisBlockResult = await getBlockByHeight(from);
-				if (from < to) {
-					const { data: [genesisBlock] } = genesisBlockResult;
-					const { data: [...remainingBlocks] } = await getBlocksByHeightBetween(from + 1, to);
-					return { data: [genesisBlock, ...remainingBlocks] };
-				}
-				return genesisBlockResult;
-			}
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
 		}
 		throw err;
@@ -290,6 +312,7 @@ const getTransactionsSchemas = async () => {
 };
 
 module.exports = {
+	getGenesisHeight,
 	getBlockByID,
 	getBlocksByIDs,
 	getBlockByHeight,
