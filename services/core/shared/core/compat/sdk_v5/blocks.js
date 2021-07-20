@@ -534,7 +534,7 @@ const checkIndexReadiness = async () => {
 				logger.debug('Blocks index is not yet ready');
 			}
 		} catch (err) {
-			logger.warn(`Error at checkIndexReadiness: ${err.message}`);
+			logger.warn(`Error while checking index readiness: ${err.message}`);
 		}
 	}
 	return getIndexReadyStatus();
