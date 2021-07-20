@@ -34,20 +34,19 @@ config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://localhost:63
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.io';
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
 config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
-config.endpoints.genesisBlock = process.env.GENESIS_BLOCK_URL || 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz';
 
 config.network = [
 	{
 		name: 'mainnet',
 		identifier: '022097430f51c10da3146920f4c82005900ce5da83bd5d92c04dec2645e54325',
 		genesisHeight: Number(process.env.GENESIS_HEIGHT || 0),
-		genesisBlockUrl: 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
+		genesisBlockUrl: process.env.GENESIS_BLOCK_URL || 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
 	},
 	{
 		name: 'testnet',
 		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisHeight: 14075260,
-		genesisBlockUrl: 'https://downloads.lisk.io/lisk/testnet/genesis_block.json.tar.gz',
+		genesisHeight: Number(process.env.GENESIS_HEIGHT || 14075260),
+		genesisBlockUrl: process.env.GENESIS_BLOCK_URL || 'https://downloads.lisk.io/lisk/testnet/genesis_block.json.tar.gz',
 	},
 ];
 
