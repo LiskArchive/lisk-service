@@ -41,7 +41,6 @@ const {
 
 const {
 	getApiClient,
-	getNetworkConstants,
 	getIndexReadyStatus,
 	setIndexReadyStatus,
 	setIsSyncFullBlockchain,
@@ -487,13 +486,13 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 };
 
 const indexPastBlocks = async () => {
-	logger.info('Building index of blocks');
+	logger.info('Building the blocks index');
 	const blocksDB = await getBlocksIndex();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
 	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = (await getNetworkConstants()).data.height;
+	const blockIndexHigherRange = (await coreApi.getNetworkStatus()).data.height;
 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
 
@@ -509,6 +508,7 @@ const indexPastBlocks = async () => {
 	// Start building the block index
 	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
 	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+	logger.info('Finished building the blocks index');
 };
 
 const checkIndexReadiness = async () => {
