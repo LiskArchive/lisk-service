@@ -366,33 +366,40 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisBlock = async () => {
-	logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
-	const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+	const blocksDB = await getBlocksIndex();
+	const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
 
-	// Index the genesis block transactions first
-	await indexTransactions([genesisBlock]);
+	if (indexedGenesisBlock !== undefined) {
+		logger.info(`Genesis block already indexed at height ${genesisHeight}`);
+	} else {
+		logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
+		const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-	// Index the genesis block accounts next
-	const initDelegateAddresses = genesisBlock.asset.initDelegates;
-	const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length > 16) // Filter out reclaim accounts
-		.map(account => account.address);
+		// Index the genesis block transactions first
+		await indexTransactions([genesisBlock]);
 
-	const accountAddressesToIndex = initDelegateAddresses.concat(nonDelegateAddressesToIndex);
+		// Index the genesis block accounts next
+		const initDelegateAddresses = genesisBlock.asset.initDelegates;
+		const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
+			.filter(account => account.address.length > 16) // Filter out reclaim accounts
+			.map(account => account.address);
 
-	const PAGE_SIZE = 20;
-	const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
-	for (let i = 0; i < NUM_PAGES; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsbyAddress(
-			accountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-			true,
-		);
+		const accountAddressesToIndex = initDelegateAddresses.concat(nonDelegateAddressesToIndex);
+
+		const PAGE_SIZE = 20;
+		const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
+		for (let i = 0; i < NUM_PAGES; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			await indexAccountsbyAddress(
+				accountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+				true,
+			);
+		}
+
+		// Finally index the genesis block itself
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
+		logger.info('Finished indexing the genesis block');
 	}
-
-	// Finally index the genesis block itself
-	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
-	logger.info('Finished indexing the genesis block');
 };
 
 const buildIndex = async (from, to) => {
