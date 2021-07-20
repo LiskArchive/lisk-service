@@ -369,7 +369,7 @@ const indexGenesisBlock = async () => {
 	const blocksDB = await getBlocksIndex();
 	const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
 
-	if (indexedGenesisBlock !== undefined) {
+	if (indexedGenesisBlock) {
 		logger.info(`Genesis block already indexed at height ${genesisHeight}`);
 	} else {
 		logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
