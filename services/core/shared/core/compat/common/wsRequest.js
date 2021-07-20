@@ -33,11 +33,11 @@ const instantiateClient = async () => {
 				isInstantiating = true;
 				if (clientCache) await clientCache.disconnect();
 				clientCache = await createWSClient(`${liskAddress}/ws`);
+				isInstantiating = false;
 
 				// Inform listeners about the newly created ApiClient
 				logger.debug(`============== 'newApiClient' signal: ${Signals.get('newApiClient')} ==============`);
 				Signals.get('newApiClient').dispatch();
-				isInstantiating = false;
 			}
 			return clientCache;
 		}
