@@ -447,10 +447,10 @@ const getMultisignatureMemberships = async account => {
 			remainingMember,
 			async member => {
 				const result = await getIndexedAccountInfo({ address: member.groupAddress });
-				if (result) multisignatureMemberships.memberships.push({
-					address: result.address,
-					username: result.username,
-					publicKey: result.publicKey,
+				multisignatureMemberships.memberships.push({
+					address: result && result.address ? result.address : undefined,
+					username: result && result.username ? result.username : undefined,
+					publicKey: result && result.publicKey ? result.publicKey : undefined,
 				});
 			},
 			{ concurrency: remainingMember.length },

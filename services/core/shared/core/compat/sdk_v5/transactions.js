@@ -37,6 +37,7 @@ const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 const mysqlIndex = require('../../../indexdb/mysql');
+
 const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
@@ -65,6 +66,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 const indexTransactions = async blocks => {
 	const transactionsDB = await getTransactionsIndex();
 	const multisignatureDB = await getMultisignatureIndex();
+	const multisignatureModuleAssetId = '4:0';
 	let multisignatureInfoToIndex = [];
 	const publicKeysToIndex = [];
 	const recipientAddressesToIndex = [];
@@ -83,7 +85,9 @@ const indexTransactions = async blocks => {
 				recipientAddressesToIndex.push(tx.asset.recipientAddress);
 			}
 			if (tx.senderPublicKey) publicKeysToIndex.push({ publicKey: tx.senderPublicKey });
-			if (tx.moduleAssetId === '4:0') multisignatureInfoToIndex = resolveMultisignatureInfo(tx);
+			if (tx.moduleAssetId === multisignatureModuleAssetId) {
+				multisignatureInfoToIndex = resolveMultisignatureInfo(tx);
+			}
 			return tx;
 		});
 		return transactions;
