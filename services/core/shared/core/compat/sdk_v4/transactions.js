@@ -137,7 +137,7 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-Signals.get('indexTransactions').add(async blockId => {
+const indexTransactionsListener = async (blockId) => {
 	const transactionIdx = await getTransactionIdx();
 	const blockResult = await transactionIdx.find({ blockId }, 'id');
 	if (blockResult.length > 0) return;
@@ -153,7 +153,8 @@ Signals.get('indexTransactions').add(async blockId => {
 		tx.unixTimestamp = unixTimestamp;
 	});
 	transactionIdx.upsert(transactions.data);
-});
+};
+if (!Signals.get('indexTransactions').has(indexTransactionsListener)) Signals.get('indexTransactions').add(indexTransactionsListener);
 
 const getPendingTransactionsFromCore = async params => {
 	const pendingTx = await coreApi.getPendingTransactions(params);

@@ -30,7 +30,7 @@ module.exports = [
 		name: 'block.change',
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
-			Signals.get('newBlock').add(async data => {
+			const newBlockListener = async data => {
 				if (data && Array.isArray(data.data)) {
 					const [block] = data.data;
 					logger.debug(`New block arrived (${block.id})...`);
@@ -49,14 +49,15 @@ module.exports = [
 						util.inspect(data),
 					].join('\n'));
 				}
-			});
+			};
+			if (!Signals.get('newBlock').has(newBlockListener)) Signals.get('newBlock').add(newBlockListener);
 		},
 	},
 	{
 		name: 'transactions.new',
 		description: 'Keep newly added transactions list up-to-date',
 		controller: callback => {
-			Signals.get('newBlock').add(async (data) => {
+			const newTransactionsListener = async (data) => {
 				if (data && Array.isArray(data.data)) {
 					const [block] = data.data;
 					if (block.numberOfTransactions > 0) {
@@ -65,51 +66,56 @@ module.exports = [
 						callback(transactionData);
 					}
 				}
-			});
+			};
+			if (!Signals.get('newBlock').has(newTransactionsListener)) Signals.get('newBlock').add(newTransactionsListener);
 		},
 	},
 	{
 		name: 'forgers.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			Signals.get('newBlock').add(async () => {
+			const forgersChangeListener = async () => {
 				await core.reloadNextForgersCache();
 				const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
 				callback(forgers);
-			});
+			};
+			if (!Signals.get('newBlock').has(forgersChangeListener)) Signals.get('newBlock').add(forgersChangeListener);
 		},
 	},
 	{
 		name: 'round.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			Signals.get('newRound').add(async data => {
+			const newRoundListener = async data => {
 				logger.debug('Returning all forgers for the new round...');
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
-			});
+			};
+			if (!Signals.get('newRound').has(newRoundListener)) Signals.get('newRound').add(newRoundListener);
 		},
 	},
 	{
 		name: 'update.fee_estimates',
 		description: 'Keep the fee estimates up-to-date',
 		controller: callback => {
-			Signals.get('newFeeEstimate').add(async () => {
+			const newFeeEstimateListener = async () => {
 				logger.debug('Returning latest fee_estimates to the socket.io client...');
 				const restData = await core.getEstimateFeeByte();
 				callback(restData);
-			});
+			};
+			if (!Signals.get('newFeeEstimate').has(newFeeEstimateListener)) Signals.get('newFeeEstimate').add(newFeeEstimateListener);
 		},
 	},
 	{
 		name: 'update.height_finalized',
 		description: 'Keep the block finality height up-to-date',
 		controller: callback => {
-			Signals.get('newBlock').add(async () => {
+			const updateFinalizedHeightListener = async () => {
 				logger.debug('Returning latest heightFinalized to the socket.io client...');
 				const restData = await core.updateFinalizedHeight();
 				callback(restData ? restData.data : null);
-			});
+			};
+			if (!Signals.get('newBlock').has(updateFinalizedHeightListener)) Signals.get('newBlock').add(updateFinalizedHeightListener);
 		},
 	},
 ];
