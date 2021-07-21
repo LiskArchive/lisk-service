@@ -40,7 +40,7 @@ def waitForHttp(url) {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
-		timeout(time: 8, unit: 'MINUTES')
+		timeout(time: 10, unit: 'MINUTES')
 	}
 	environment {
 		ENABLE_HTTP_API='http-status,http-test,http-version2'
@@ -103,6 +103,7 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
+				sleep(90)
 				waitForHttp('http://localhost:9901/api/ready')
 				// waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
 			}

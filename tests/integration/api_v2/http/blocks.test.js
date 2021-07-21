@@ -65,11 +65,14 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by height -> ok', async () => {
-			const response = await api.get(`${endpoint}?height=1`);
+			const response = await api.get(`${endpoint}?height=${refBlock.height}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data.length).toEqual(1);
-			expect(response.data[0].height).toEqual(1);
-			response.data.forEach(block => expect(block).toMap(blockSchemaVersion5, { height: 1 }));
+			expect(response.data[0].height).toEqual(refBlock.height);
+			expect(response.data[0]).toEqual(refBlock);
+			response.data.forEach(block => {
+				expect(block).toMap(blockSchemaVersion5, { height: refBlock.height });
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 

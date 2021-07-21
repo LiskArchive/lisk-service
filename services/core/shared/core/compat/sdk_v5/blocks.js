@@ -56,14 +56,21 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
 const logger = Logger();
 
-const genesisHeight = 0;
+let genesisHeight;
 let finalizedHeight;
+let indexStartHeight;
+
+const setGenesisHeight = (height) => genesisHeight = height;
 
 const getGenesisHeight = () => genesisHeight;
 
 const setFinalizedHeight = (height) => finalizedHeight = height;
 
 const getFinalizedHeight = () => finalizedHeight;
+
+const setIndexStartHeight = (height) => indexStartHeight = height;
+
+const getIndexStartHeight = () => indexStartHeight;
 
 const updateFinalizedHeight = async () => {
 	const result = await coreApi.getNetworkStatus();
@@ -119,10 +126,10 @@ const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
 const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', deleteIndexedBlocks);
 
-const normalizeBlocks = async blocks => {
+const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const apiClient = await getApiClient();
 
-	const normalizedBlocks = BluebirdPromise.map(
+	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
@@ -148,6 +155,17 @@ const normalizeBlocks = async blocks => {
 				block.totalFee += Number(txn.fee) - txnMinFee;
 			});
 
+			if (isIgnoreGenesisAccounts) {
+				const {
+					accounts,
+					initRounds,
+					initDelegates,
+					...otherAssets
+				} = block.asset;
+
+				block.asset = { ...otherAssets };
+			}
+
 			return parseToJSONCompatObj(block);
 		},
 		{ concurrency: blocks.length },
@@ -166,9 +184,9 @@ const getBlocksByIDs = async ids => {
 	return normalizeBlocks(response.data);
 };
 
-const getBlockByHeight = async height => {
+const getBlockByHeight = async (height, isIgnoreGenesisAccounts = true) => {
 	const response = await coreApi.getBlockByHeight(height);
-	return normalizeBlocks(response.data);
+	return normalizeBlocks(response.data, isIgnoreGenesisAccounts);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
@@ -201,6 +219,8 @@ const indexNewBlocks = async blocks => {
 	const blocksDB = await getBlocksIndex();
 	if (blocks.data.length === 1) {
 		const [block] = blocks.data;
+		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
+
 		const [blockInfo] = await blocksDB.find({ height: block.height });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
@@ -346,44 +366,75 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisBlock = async () => {
-	const [genesisBlock] = await getBlockByHeight(genesisHeight);
-	const accountAddressesToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length > 16) // To filter out reclaim accounts
-		.map(account => account.address);
-	await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
-	await indexAccountsbyAddress(accountAddressesToIndex, true);
-	await indexTransactions([genesisBlock]);
+	const blocksDB = await getBlocksIndex();
+	const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
+
+	if (indexedGenesisBlock) {
+		logger.info(`Genesis block already indexed at height ${genesisHeight}`);
+	} else {
+		logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
+		const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+
+		// Index the genesis block transactions first
+		await indexTransactions([genesisBlock]);
+
+		// Index the genesis block accounts next
+		const initDelegateAddresses = genesisBlock.asset.initDelegates;
+		const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
+			.filter(account => account.address.length > 16) // Filter out reclaim accounts
+			.map(account => account.address);
+
+		const accountAddressesToIndex = initDelegateAddresses.concat(nonDelegateAddressesToIndex);
+
+		const PAGE_SIZE = 20;
+		const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
+		for (let i = 0; i < NUM_PAGES; i++) {
+			// eslint-disable-next-line no-await-in-loop
+			await indexAccountsbyAddress(
+				accountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+				true,
+			);
+		}
+
+		// Finally index the genesis block itself
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
+		logger.info('Finished indexing the genesis block');
+	}
 };
 
 const buildIndex = async (from, to) => {
-	logger.info('Building index of blocks');
+	try {
+		if (from > to) {
+			logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
+			return;
+		}
 
-	if (from > to) {
-		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
-		return;
+		const MAX_BLOCKS_LIMIT_PP = 50;
+		const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+
+		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+			/* eslint-disable no-await-in-loop */
+			const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+			const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+			const batchFromHeight = offset + 1;
+			const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
+				? (offset + MAX_BLOCKS_LIMIT_PP) : to;
+			logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
+
+			let blocks;
+			do {
+				blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
+			} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
+
+			await indexBlocksQueue.add('indexBlocksQueue', { blocks });
+			/* eslint-enable no-await-in-loop */
+		}
+		logger.info(`Finished building block index (${from}-${to})`);
+	} catch (err) {
+		logger.warn('Indexing failed due to: ', err.message);
+		logger.info(`Retrying to build index for blocks ${from}-${to}`);
+		await buildIndex(from, to);
 	}
-
-	const MAX_BLOCKS_LIMIT_PP = 100;
-	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
-
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
-		const batchFromHeight = offset + 1;
-		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
-
-		let blocks;
-		do {
-			blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
-		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
-
-		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
-		/* eslint-enable no-await-in-loop */
-	}
-	logger.info(`Finished building block index (${from}-${to})`);
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
@@ -409,14 +460,14 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 		const indexedBlockCount = await blocksDB.count({ propBetweens });
 		if (indexedBlockCount < toHeight) {
 			const missingBlocksQueryStatement = `
-			SELECT
-				(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
-				(b1.height - 1) AS 'to'
-			FROM blocks b1
-			WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
-				AND b1.height != ${genesisHeight}
-				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
-		`;
+				SELECT
+					(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+					(b1.height - 1) AS 'to'
+				FROM blocks b1
+				WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
+					AND b1.height != ${genesisHeight}
+					AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
+			`;
 
 			logger.debug('propBetweens', util.inspect(propBetweens));
 			const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
@@ -435,6 +486,7 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 };
 
 const indexPastBlocks = async () => {
+	logger.info('Building the blocks index');
 	const blocksDB = await getBlocksIndex();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
@@ -443,6 +495,9 @@ const indexPastBlocks = async () => {
 	const blockIndexHigherRange = (await coreApi.getNetworkStatus()).data.height;
 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
+
+	// Store the value for the missing blocks job
+	setIndexStartHeight(blockIndexLowerRange);
 
 	// Highest block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
@@ -453,45 +508,52 @@ const indexPastBlocks = async () => {
 	// Start building the block index
 	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
 	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
+	logger.info('Finished building the blocks index');
 };
 
 const checkIndexReadiness = async () => {
 	logger.debug('============== Checking blocks index ready status ==============');
 	if (!getIndexReadyStatus()) {
-		const blocksDB = await getBlocksIndex();
-		const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
-		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+		try {
+			const blocksDB = await getBlocksIndex();
+			const currentChainHeight = (await coreApi.getNetworkStatus()).data.height;
+			const numBlocksIndexed = await blocksDB.count();
+			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 
-		logger.debug(
-			`\nnumBlocksIndexed: ${numBlocksIndexed}`,
-			`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
-			`\ncurrentChainHeight: ${currentChainHeight}`,
-		);
-		if (numBlocksIndexed >= currentChainHeight
-			&& lastIndexedBlock.height >= currentChainHeight - 1) {
-			setIndexReadyStatus(true);
-			logger.info('Blocks index is now ready');
-			Signals.get('blockIndexReady').dispatch(true);
-		} else {
-			logger.debug('Blocks index is not yet ready');
+			logger.debug(
+				`\nnumBlocksIndexed: ${numBlocksIndexed}`,
+				`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
+				`\ncurrentChainHeight: ${currentChainHeight}`,
+			);
+			if (numBlocksIndexed >= currentChainHeight - genesisHeight
+				&& lastIndexedBlock.height >= currentChainHeight - 1) {
+				setIndexReadyStatus(true);
+				logger.info('Blocks index is now ready');
+				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
+				Signals.get('blockIndexReady').dispatch(true);
+			} else {
+				logger.debug('Blocks index is not yet ready');
+			}
+		} catch (err) {
+			logger.warn(`Error while checking index readiness: ${err.message}`);
 		}
 	}
 	return getIndexReadyStatus();
 };
 
-const indexNewBlock = async (newBlock) => {
-	logger.debug(`============== Indexing newBlock arriving at height ${newBlock.height} ==============`);
-	await indexNewBlocks(newBlock);
-};
-
 const init = async () => {
 	// Index every new incoming block
-	Signals.get('newBlock').add(indexNewBlock);
+	Signals.get('newBlock').add(async data => { await indexNewBlocks(data); });
 
 	// Check state of index and perform update
 	try {
-		await indexGenesisBlock();
+		// Set the genesis height
+		setGenesisHeight(await coreApi.getGenesisHeight());
+
+		await indexGenesisBlock().catch(err => {
+			logger.error(err.message);
+			logger.warn('Unable to index the Genesis block. Continuing with the remaining...');
+		});
 		await indexPastBlocks();
 	} catch (err) {
 		logger.warn('Unable to update block index');
@@ -507,6 +569,7 @@ module.exports = {
 	getBlocks,
 	deleteBlock,
 	getGenesisHeight,
+	getIndexStartHeight,
 	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,

@@ -20,6 +20,7 @@ const {
 	getBlocks,
 	deleteBlock,
 	getGenesisHeight,
+	getIndexStartHeight,
 	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
@@ -32,6 +33,11 @@ const {
 	getMultisignatureMemberships,
 	validateAddress,
 } = require('./accounts');
+
+const {
+	getBase32AddressFromHex,
+	getBase32AddressFromPublicKey,
+} = require('./accountUtils');
 
 const {
 	getNetworkStatus,
@@ -94,11 +100,14 @@ module.exports = {
 	getBlocks,
 	deleteBlock,
 	getGenesisHeight,
+	getIndexStartHeight,
 	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 
 	getAccounts,
+	getBase32AddressFromHex,
+	getBase32AddressFromPublicKey,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	validateAddress,
