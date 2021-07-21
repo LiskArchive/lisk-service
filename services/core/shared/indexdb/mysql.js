@@ -112,10 +112,17 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
 	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
+	const defaultCharset = 'utf8mb4';
 
 	if (!connectionPool[connPoolKey]) {
 		logger.info(`Attempting to connect ${connEndpoint}...`);
-		connectionPool[connPoolKey] = await createDbConnection(connEndpoint);
+		let connString = connEndpoint;
+		if (!connEndpoint.includes('charset')) {
+			connString = connEndpoint.includes('?')
+				? `${connEndpoint}&charset=${defaultCharset}`
+				: `${connEndpoint}?charset=${defaultCharset}`;
+		}
+		connectionPool[connPoolKey] = await createDbConnection(connString);
 	}
 
 	const knex = connectionPool[connPoolKey];
@@ -208,6 +215,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				propBetween => {
 					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
 					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
+					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 
@@ -277,6 +286,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				propBetween => {
 					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
 					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
+					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 

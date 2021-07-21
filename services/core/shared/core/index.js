@@ -59,11 +59,6 @@ const {
 	getNextForgers,
 } = require('./delegates');
 
-// const {
-// getUsernameByAddress,
-// getAddressByUsername,
-// } = require('./delegateUtils');
-
 const {
 	getPeers,
 	getConnectedPeers,
@@ -106,6 +101,7 @@ const {
 	init,
 	indexMissingBlocks,
 	getGenesisHeight,
+	getIndexStartHeight,
 } = require('./compat');
 
 const events = require('./events');
@@ -172,4 +168,5 @@ module.exports = {
 	init,
 	indexMissingBlocks,
 	getGenesisHeight,
+	getIndexStartHeight,
 };

@@ -13,19 +13,37 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger, Signals } = require('lisk-service-framework');
 const { createWSClient } = require('@liskhq/lisk-api-client');
+
+const waitForIt = require('../../../waitForIt');
 const config = require('../../../../config');
+
+const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
 let clientCache;
+let isInstantiating = false;
 
-const getApiClient = async () => {
+// eslint-disable-next-line consistent-return
+const instantiateClient = async () => {
 	try {
-		if (!clientCache || !clientCache._channel.isAlive) {
-			clientCache = await createWSClient(`${liskAddress}/ws`);
+		if (!isInstantiating) {
+			if (!clientCache || !clientCache._channel.isAlive) {
+				isInstantiating = true;
+				if (clientCache) await clientCache.disconnect();
+				clientCache = await createWSClient(`${liskAddress}/ws`);
+				isInstantiating = false;
+
+				// Inform listeners about the newly created ApiClient
+				logger.debug(`============== 'newApiClient' signal: ${Signals.get('newApiClient')} ==============`);
+				Signals.get('newApiClient').dispatch();
+			}
+			return clientCache;
 		}
-		return clientCache;
 	} catch (err) {
+		logger.error(`Error instantiating WS client to ${liskAddress}`);
+		logger.error(err.message);
 		if (err.code === 'ECONNREFUSED') throw new Error('ECONNREFUSED: Unable to reach a network node');
 
 		return {
@@ -34,6 +52,10 @@ const getApiClient = async () => {
 		};
 	}
 };
+
+const RETRY_INTERVAL = 50; // ms
+
+const getApiClient = () => waitForIt(instantiateClient, RETRY_INTERVAL);
 
 module.exports = {
 	getApiClient,

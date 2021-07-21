@@ -119,7 +119,9 @@ const normalizeTransaction = async txs => {
 					.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
 			}
 			return tx;
-		}, { concurrency: txs.length });
+		},
+		{ concurrency: txs.length },
+	);
 	return normalizedTransactions;
 };
 
@@ -228,7 +230,7 @@ const validateParams = async params => {
 			accounts,
 			async account => {
 				const accountInfo = await getIndexedAccountInfo({ address: account.address });
-				publicKeys.push(accountInfo.publicKey);
+				if (accountInfo && accountInfo.publicKey) publicKeys.push(accountInfo.publicKey);
 				return account.address;
 			},
 			{ concurrency: accounts.length },
