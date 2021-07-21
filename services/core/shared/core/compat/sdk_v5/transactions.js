@@ -30,7 +30,7 @@ const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	resolveMultisignatureInfo,
+	resolveMultisignatureMemberships,
 } = require('./accounts');
 
 const { removeVotesByTransactionIDs } = require('./voters');
@@ -86,7 +86,7 @@ const indexTransactions = async blocks => {
 			}
 			if (tx.senderPublicKey) publicKeysToIndex.push({ publicKey: tx.senderPublicKey });
 			if (tx.moduleAssetId === multisignatureModuleAssetId) {
-				multisignatureInfoToIndex = resolveMultisignatureInfo(tx);
+				multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
 			}
 			return tx;
 		});

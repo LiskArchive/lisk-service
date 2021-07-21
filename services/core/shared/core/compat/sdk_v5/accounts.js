@@ -438,13 +438,11 @@ const getMultisignatureMemberships = async account => {
 	const multisignatureMemberships = {};
 	const multisignatureDB = await getMultisignatureIndex();
 	const memberInfo = await multisignatureDB.find({ memberAddress: account.address });
-	// Filter out the group address itself
-	const remainingMember = memberInfo.filter(acc => acc.groupAddress !== account.address);
 
 	if (Array.isArray(memberInfo) && memberInfo.length) {
 		multisignatureMemberships.memberships = [];
 		await BluebirdPromise.map(
-			remainingMember,
+			memberInfo,
 			async member => {
 				const result = await getIndexedAccountInfo({ address: member.groupAddress });
 				multisignatureMemberships.memberships.push({
@@ -453,13 +451,13 @@ const getMultisignatureMemberships = async account => {
 					publicKey: result && result.publicKey ? result.publicKey : undefined,
 				});
 			},
-			{ concurrency: remainingMember.length },
+			{ concurrency: memberInfo.length },
 		);
 	}
 	return multisignatureMemberships;
 };
 
-const resolveMultisignatureInfo = tx => {
+const resolveMultisignatureMemberships = tx => {
 	const multisignatureInfoToIndex = [];
 	tx.asset.mandatoryKeys.forEach(key => {
 		const members = {
@@ -492,5 +490,5 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
-	resolveMultisignatureInfo,
+	resolveMultisignatureMemberships,
 };
