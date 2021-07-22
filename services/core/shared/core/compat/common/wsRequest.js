@@ -16,31 +16,24 @@
 const { Logger, Signals } = require('lisk-service-framework');
 const { createWSClient } = require('@liskhq/lisk-api-client');
 
-const waitForIt = require('../../../waitForIt');
 const config = require('../../../../config');
 
 const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
 let clientCache;
-let isInstantiating = false;
 
-// eslint-disable-next-line consistent-return
-const instantiateClient = async () => {
+const getApiClient = async () => {
 	try {
-		if (!isInstantiating) {
-			if (!clientCache || !clientCache._channel.isAlive) {
-				isInstantiating = true;
-				if (clientCache) await clientCache.disconnect();
-				clientCache = await createWSClient(`${liskAddress}/ws`);
-				isInstantiating = false;
+		if (!clientCache || !clientCache._channel.isAlive) {
+			if (clientCache) await clientCache.disconnect();
+			clientCache = await createWSClient(`${liskAddress}/ws`);
 
-				// Inform listeners about the newly created ApiClient
-				logger.debug(`============== 'newApiClient' signal: ${Signals.get('newApiClient')} ==============`);
-				Signals.get('newApiClient').dispatch();
-			}
-			return clientCache;
+			// Inform listeners about the newly created ApiClient
+			logger.debug(`============== 'newApiClient' signal: ${Signals.get('newApiClient')} ==============`);
+			Signals.get('newApiClient').dispatch();
 		}
+		return clientCache;
 	} catch (err) {
 		logger.error(`Error instantiating WS client to ${liskAddress}`);
 		logger.error(err.message);
@@ -52,10 +45,6 @@ const instantiateClient = async () => {
 		};
 	}
 };
-
-const RETRY_INTERVAL = 50; // ms
-
-const getApiClient = () => waitForIt(instantiateClient, RETRY_INTERVAL);
 
 module.exports = {
 	getApiClient,
