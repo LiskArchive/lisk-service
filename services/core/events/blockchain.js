@@ -50,7 +50,11 @@ module.exports = [
 					].join('\n'));
 				}
 			};
-			if (!Signals.get('newBlock').has(newBlockListener)) Signals.get('newBlock').add(newBlockListener);
+			if (!Signals.get('newBlock').has(newBlockListener)) {
+				logger.debug('newBlock has newBlockListener: ', Signals.get('newBlock').has(newBlockListener));
+				Signals.get('newBlock').add(newBlockListener);
+				logger.debug('newBlock has now registered newBlockListener: ', Signals.get('newBlock').has(newBlockListener));
+			}
 		},
 	},
 	{
@@ -67,7 +71,11 @@ module.exports = [
 					}
 				}
 			};
-			if (!Signals.get('newBlock').has(newTransactionsListener)) Signals.get('newBlock').add(newTransactionsListener);
+			if (!Signals.get('newBlock').has(newTransactionsListener)) {
+				logger.debug('newBlock has newTransactionsListener: ', Signals.get('newBlock').has(newTransactionsListener));
+				Signals.get('newBlock').add(newTransactionsListener);
+				logger.debug('newBlock has now registered newTransactionsListener: ', Signals.get('newBlock').has(newTransactionsListener));
+			}
 		},
 	},
 	{
@@ -79,7 +87,11 @@ module.exports = [
 				const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
 				callback(forgers);
 			};
-			if (!Signals.get('newBlock').has(forgersChangeListener)) Signals.get('newBlock').add(forgersChangeListener);
+			if (!Signals.get('newBlock').has(forgersChangeListener)) {
+				logger.debug('newBlock has forgersChangeListener: ', Signals.get('newBlock').has(forgersChangeListener));
+				Signals.get('newBlock').add(forgersChangeListener);
+				logger.debug('newBlock has now registered forgersChangeListener: ', Signals.get('newBlock').has(forgersChangeListener));
+			}
 		},
 	},
 	{
@@ -91,7 +103,11 @@ module.exports = [
 				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 				callback(data);
 			};
-			if (!Signals.get('newRound').has(newRoundListener)) Signals.get('newRound').add(newRoundListener);
+			if (!Signals.get('newRound').has(newRoundListener)) {
+				logger.debug('newRound has newRoundListener: ', Signals.get('newRound').has(newRoundListener));
+				Signals.get('newRound').add(newRoundListener);
+				logger.debug('newRound has now registered newRoundListener: ', Signals.get('newRound').has(newRoundListener));
+			}
 		},
 	},
 	{
@@ -103,7 +119,11 @@ module.exports = [
 				const restData = await core.getEstimateFeeByte();
 				callback(restData);
 			};
-			if (!Signals.get('newFeeEstimate').has(newFeeEstimateListener)) Signals.get('newFeeEstimate').add(newFeeEstimateListener);
+			if (!Signals.get('newFeeEstimate').has(newFeeEstimateListener)) {
+				logger.debug('newFeeEstimate has newFeeEstimateListener: ', Signals.get('newFeeEstimate').has(newFeeEstimateListener));
+				Signals.get('newFeeEstimate').add(newFeeEstimateListener);
+				logger.debug('newFeeEstimate has now registered newFeeEstimateListener: ', Signals.get('newFeeEstimate').has(newFeeEstimateListener));
+			}
 		},
 	},
 	{
@@ -115,7 +135,11 @@ module.exports = [
 				const restData = await core.updateFinalizedHeight();
 				callback(restData ? restData.data : null);
 			};
-			if (!Signals.get('newBlock').has(updateFinalizedHeightListener)) Signals.get('newBlock').add(updateFinalizedHeightListener);
+			if (!Signals.get('newBlock').has(updateFinalizedHeightListener)) {
+				logger.debug('newBlock has updateFinalizedHeightListener: ', Signals.get('newBlock').has(updateFinalizedHeightListener));
+				Signals.get('newBlock').add(updateFinalizedHeightListener);
+				logger.debug('newBlock has now registered updateFinalizedHeightListener: ', Signals.get('newBlock').has(updateFinalizedHeightListener));
+			}
 		},
 	},
 ];

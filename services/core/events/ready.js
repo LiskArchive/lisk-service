@@ -32,7 +32,11 @@ module.exports = [
 				const coreStatus = await getCurrentStatus();
 				callback(coreStatus);
 			};
-			if (!Signals.get('coreServiceReady').has(coreServiceReadyListener)) Signals.get('coreServiceReady').add(coreServiceReadyListener);
+			if (!Signals.get('coreServiceReady').has(coreServiceReadyListener)) {
+				logger.debug('coreServiceReady has coreServiceReadyListener: ', Signals.get('coreServiceReady').has(coreServiceReadyListener));
+				Signals.get('coreServiceReady').add(coreServiceReadyListener);
+				logger.debug('coreServiceReady has now registered coreServiceReadyListener: ', Signals.get('coreServiceReady').has(coreServiceReadyListener));
+			}
 		},
 	},
 ];

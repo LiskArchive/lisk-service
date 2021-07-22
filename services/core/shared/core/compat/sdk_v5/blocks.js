@@ -544,7 +544,11 @@ const checkIndexReadiness = async () => {
 const init = async () => {
 	// Index every new incoming block
 	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
-	if (!Signals.get('newBlock').has(indexNewBlocksListener)) Signals.get('newBlock').add(indexNewBlocksListener);
+	if (!Signals.get('newBlock').has(indexNewBlocksListener)) {
+		logger.debug('newBlock has indexNewBlocksListener: ', Signals.get('newBlock').has(indexNewBlocksListener));
+		Signals.get('newBlock').add(indexNewBlocksListener);
+		logger.debug('newBlock has now registered indexNewBlocksListener: ', Signals.get('newBlock').has(indexNewBlocksListener));
+	}
 
 	// Check state of index and perform update
 	try {
@@ -562,7 +566,11 @@ const init = async () => {
 	}
 
 	// Check and update index readiness status
-	if (!Signals.get('newBlock').has(checkIndexReadiness)) Signals.get('newBlock').add(checkIndexReadiness);
+	if (!Signals.get('newBlock').has(checkIndexReadiness)) {
+		logger.debug('newBlock has checkIndexReadiness: ', Signals.get('newBlock').has(checkIndexReadiness));
+		Signals.get('newBlock').add(checkIndexReadiness);
+		logger.debug('newBlock has now registered checkIndexReadiness: ', Signals.get('newBlock').has(checkIndexReadiness));
+	}
 };
 
 module.exports = {
