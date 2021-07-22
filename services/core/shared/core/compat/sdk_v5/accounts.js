@@ -435,31 +435,31 @@ const getMultisignatureGroups = async account => {
 };
 
 const getMultisignatureMemberships = async account => {
-	const multisignatureMemberships = {};
+	const multisignatureMemberships = { memberships: [] };
 	const multisignatureDB = await getMultisignatureIndex();
-	const memberInfo = await multisignatureDB.find({ memberAddress: account.address });
+	const membershipInfo = await multisignatureDB.find({ memberAddress: account.address });
 
-	if (Array.isArray(memberInfo) && memberInfo.length) {
-		multisignatureMemberships.memberships = [];
-		await BluebirdPromise.map(
-			memberInfo,
-			async member => {
-				const result = await getIndexedAccountInfo({ address: member.groupAddress });
-				multisignatureMemberships.memberships.push({
-					address: result && result.address ? result.address : undefined,
-					username: result && result.username ? result.username : undefined,
-					publicKey: result && result.publicKey ? result.publicKey : undefined,
-				});
-			},
-			{ concurrency: memberInfo.length },
-		);
-	}
+	await BluebirdPromise.map(
+		membershipInfo,
+		async membership => {
+			const result = await getIndexedAccountInfo({ address: membership.groupAddress });
+			multisignatureMemberships.memberships.push({
+				address: result && result.address ? result.address : undefined,
+				username: result && result.username ? result.username : undefined,
+				publicKey: result && result.publicKey ? result.publicKey : undefined,
+			});
+		},
+		{ concurrency: membershipInfo.length },
+	);
+
 	return multisignatureMemberships;
 };
 
 const resolveMultisignatureMemberships = tx => {
 	const multisignatureInfoToIndex = [];
-	tx.asset.mandatoryKeys.forEach(key => {
+	const allKeys = tx.asset.mandatoryKeys.concat(tx.asset.optionalKeys);
+
+	allKeys.forEach(key => {
 		const members = {
 			id: getBase32AddressFromPublicKey(tx.senderPublicKey)
 				.concat('_', getBase32AddressFromPublicKey(key)),
@@ -468,15 +468,7 @@ const resolveMultisignatureMemberships = tx => {
 		};
 		multisignatureInfoToIndex.push(members);
 	});
-	tx.asset.optionalKeys.forEach(key => {
-		const members = {
-			id: getBase32AddressFromPublicKey(tx.senderPublicKey)
-				.concat('_', getBase32AddressFromPublicKey(key)),
-			memberAddress: getBase32AddressFromPublicKey(key),
-			groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
-		};
-		multisignatureInfoToIndex.push(members);
-	});
+
 	return multisignatureInfoToIndex;
 };
 
