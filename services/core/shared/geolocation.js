@@ -33,22 +33,26 @@ const cacheRedis = CacheRedis('geodata', config.endpoints.redis);
 const refreshSchedule = [];
 const getRandInt = max => Math.ceil(Math.random() * max);
 
+const httpTest = new RegExp('http:*');
+
 const getFromHttp = ip => new Promise((resolve, reject) => {
-	requestLib(`${freegeoAddress}/${ip}`).then(body => {
-		let jsonContent;
-		if (typeof body === 'string') jsonContent = JSON.parse(body);
-		else jsonContent = body;
-		return resolve(jsonContent);
-	}).catch(err => {
-		reject(err);
-	});
+	if (httpTest.test(freegeoAddress)) {
+		requestLib(`${freegeoAddress}/${ip}`).then(body => {
+			let jsonContent;
+			if (typeof body === 'string') jsonContent = JSON.parse(body);
+			else jsonContent = body;
+			return resolve(jsonContent);
+		}).catch(err => {
+			reject(err);
+		});
+	}
 });
 
 const requestData = async requestedIp => {
 	const key = `geoip:${requestedIp}`;
 
 	const refreshData = ip => getFromHttp(ip).then(data => {
-		cacheRedis.set(key, data.data, GEOIP_TTL);
+		if (data) cacheRedis.set(key, data.data, GEOIP_TTL);
 		logger.debug(`Fetched geolocation data from online service for IP ${ip}`);
 		refreshSchedule.push(setTimeout(
 			() => refreshData(ip),

@@ -88,16 +88,21 @@ const getStatistics = () => peerStore.statistics;
 
 const reload = async () => {
 	logger.debug('Refreshing peer cache...');
-	if (sdkVersion <= 4) {
-		peerStore.peers = await requestAll(coreApi.getPeers, {});
-	} else {
-		peerStore.peers = (await coreApi.getPeers()).data;
+	try {
+		if (sdkVersion <= 4) {
+			peerStore.peers = await requestAll(coreApi.getPeers, {});
+		} else {
+			peerStore.peers = (await coreApi.getPeers()).data;
+		}
+		peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
+		peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
+		peerStore.statistics = await refreshStatistics();
+		logger.debug('Updated peer cache.');
+		logger.debug(`============== 'peerReload' signal: ${Signals.get('peerReload')} ==============`);
+		Signals.get('peerReload').dispatch(peerStore.peers);
+	} catch (err) {
+		logger.debug(`Unable to reload peer cache: ${err.message}`);
 	}
-	peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
-	peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
-	peerStore.statistics = await refreshStatistics();
-	logger.debug('Updated peer cache.');
-	Signals.get('peerReload').dispatch(peerStore.peers);
 };
 
 module.exports = {

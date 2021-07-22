@@ -64,3 +64,6 @@ db_data
 
 # Benchmark directory
 benchmark
+
+# Data download directory
+data
