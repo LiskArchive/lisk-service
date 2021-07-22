@@ -13,22 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+class TimeoutException extends Error {
+	constructor(message) {
+		super(message);
+		this.name = 'TimeoutException';
+	}
+}
 
-const { reloadDelegateCache } = require('../shared/core/delegates');
-
-module.exports = [
-	{
-		name: 'reload.delegates',
-		description: 'Keep the delegate list up-to-date',
-		schedule: '*/5 * * * *', // Every 5 min
-		init: async () => {
-			logger.debug('Initializing delegate cache...');
-			await reloadDelegateCache();
-		},
-		controller: async () => {
-			logger.debug('Reloading delegate cache...');
-			await reloadDelegateCache();
-		},
-	},
-];
+module.exports = TimeoutException;
