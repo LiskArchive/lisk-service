@@ -208,7 +208,11 @@ const isQueryFromIndex = params => {
 
 	const directQueryParams = ['id', 'height', 'heightBetween'];
 	const defaultQueryParams = ['limit', 'offset', 'sort'];
-	const isDirectQuery = directQueryParams.some(prop => paramProps.includes(prop))
+
+	// For 'isDirectQuery' to be 'true', the request params should contain
+	// exactly one of 'directQueryParams' and all of them must be contained
+	// within 'directQueryParams' or 'defaultQueryParams'
+	const isDirectQuery = (paramProps.filter(prop => directQueryParams.includes(prop))).length === 1
 		&& paramProps.every(prop => directQueryParams.concat(defaultQueryParams).includes(prop));
 
 	const sortOrder = params.sort ? params.sort.split(':')[1] : undefined;
