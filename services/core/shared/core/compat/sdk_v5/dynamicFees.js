@@ -16,7 +16,7 @@
 const BluebirdPromise = require('bluebird');
 const { CacheRedis, Logger } = require('lisk-service-framework');
 
-const { getBlocks } = require('./blocks');
+const { getBlocks, getGenesisHeight } = require('./blocks');
 const { getApiClient } = require('../common');
 const { calcAvgFeeByteModes, EMAcalc } = require('../common/dynamicFees');
 
@@ -144,7 +144,7 @@ const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) =>
 
 const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	const transactionsDB = await getTransactionsIndex();
-	const { genesisHeight } = config;
+	const genesisHeight = getGenesisHeight();
 	const { defaultStartBlockHeight } = config.feeEstimates;
 
 	// Check if the starting height is permitted by config or adjust acc.

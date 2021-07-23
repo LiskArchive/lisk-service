@@ -16,6 +16,7 @@
 const BluebirdPromise = require('bluebird');
 const util = require('util');
 const {
+	CacheRedis,
 	Logger,
 	Exceptions: { ValidationException, NotFoundException },
 } = require('lisk-service-framework');
@@ -54,6 +55,8 @@ const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+
+const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
 const logger = Logger();
 
@@ -493,7 +496,7 @@ const indexPastBlocks = async () => {
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
 	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = (await coreApi.getNetworkStatus()).data.height;
+	const blockIndexHigherRange = JSON.parse(await constantsCache.get('networkConstants')).data.height;
 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
 
