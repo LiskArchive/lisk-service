@@ -8,8 +8,8 @@
             "sourceName",
             "sourceId",
             "timestamp",
-            "ctime",
-            "mtime",
+            "createdAt",
+            "modifiedAt",
             "title",
             "url",
             "image_url"
@@ -45,12 +45,12 @@
                 "example": 1623053809,
                 "description": "Last modified timestamp."
             },
-            "ctime": {
+            "createdAt": {
                 "type": "integer",
                 "example": 1623053809,
                 "description": "Creation time."
             },
-            "mtime": {
+            "modifiedAt": {
                 "type": "integer",
                 "format": "hex",
                 "example": 1623053809,

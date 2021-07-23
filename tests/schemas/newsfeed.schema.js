@@ -21,8 +21,8 @@ const newsfeedArticleSchema = {
 	image_url: Joi.string().allow(null).required(),
 	source: Joi.string().pattern(/^\b[a-z]+(?:_[a-z]+){1,2}\b$/).required(),
 	source_id: Joi.string().required(),
-	ctime: Joi.number().integer().positive().required(),
-	mtime: Joi.number().integer().positive().required(),
+	createdAt: Joi.number().integer().positive().required(),
+	modifiedAt: Joi.number().integer().positive().required(),
 	title: Joi.string().allow('').required(),
 	url: Joi.string().required(),
 };
