@@ -16,15 +16,16 @@ Each service is an independent part of the repository and is placed in a separat
 
 | Service                  | Description                                                                                                       |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| [Gateway](services/gateway) | The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides users with a central point of data access that never breaks existing application compatibility.|
-| [Lisk](services/core) | The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
-| [Market](services/market) |  |
+| [Gateway](services/gateway) | The Gateway provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides users with a central point of data access that never breaks existing application compatibility.|
+| [Lisk](services/core) | The Lisk Core service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
+| [Market](services/market) | The Market service allows price data retrieval. It supports multiple sources to keep current Lisk token price up-to-date and available to the clients. |
 | [Template](services/template) | The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing. |
 
 **Remarks**
 
-- Lisk Service is configured to connect [Lisk mainnet network](https://explorer.lisk.io/) by default.
+- Lisk Service is configured to connect a local node on port 4000 by default.
 - The default installation method is based on Docker.
+- Some token conversion rates in the market service require own API keys.
 
 ## API documentation
 
@@ -76,24 +77,29 @@ make build
 
 ## Configuration
 
-The default configuration is sufficient to run Lisk Service against the [mainnet network](https://explorer.lisk.io/).
+The default configuration is sufficient to run Lisk Service against the local node.
 
 Before running the application set the required environment variables:
 
 ```
 ## Required
 # The local Lisk Core node WebSocket API port
-export LISK_CORE_WS="ws://localhost:5000"
+export LISK_CORE_WS="ws://localhost:4000"
 
 ## Optional
 # To index all blocks in the blockchain (might take a while)
 export INDEX_N_BLOCKS="0"
 
-# To enable transaction statistics
+# Enable transaction statistics
 export ENABLE_TRANSACTION_STATS="true"
 export TRANSACTION_STATS_HISTORY_LENGTH_DAYS="366"
 export TRANSACTION_STATS_UPDATE_INTERVAL="3600"
+
+# Enable fee estimator
+export ENABLE_FEE_ESTIMATOR_QUICK="true"
 ```
+
+
 
 Configuration options are described [in this document](./docs/config_options.md).
 
