@@ -284,21 +284,13 @@ const updateDelegateListEveryBlock = () => {
 			if (updatedDelegateAddresses.length) await computeDelegateRank();
 		}
 	};
-	if (!Signals.get('newBlock').has(updateDelegateCacheListener)) {
-		logger.debug('newBlock has updateDelegateCacheListener: ', Signals.get('newBlock').has(updateDelegateCacheListener));
-		Signals.get('newBlock').add(updateDelegateCacheListener);
-		logger.debug('newBlock has now registered updateDelegateCacheListener: ', Signals.get('newBlock').has(updateDelegateCacheListener));
-	}
+	if (!Signals.get('newBlock').has(updateDelegateCacheListener)) Signals.get('newBlock').add(updateDelegateCacheListener);
 };
 
 // Reload the delegate cache when all the indexes are up-to-date
 const refreshDelegateListOnIndexReady = () => {
 	const reloadDelegateCacheListener = () => reload();
-	if (!Signals.get('blockIndexReady').has(reloadDelegateCacheListener)) {
-		logger.debug('blockIndexReady has reloadDelegateCacheListener: ', Signals.get('blockIndexReady').has(reloadDelegateCacheListener));
-		Signals.get('blockIndexReady').add(reloadDelegateCacheListener);
-		logger.debug('blockIndexReady has now registered reloadDelegateCacheListener: ', Signals.get('blockIndexReady').has(reloadDelegateCacheListener));
-	}
+	if (!Signals.get('blockIndexReady').has(reloadDelegateCacheListener)) Signals.get('blockIndexReady').add(reloadDelegateCacheListener);
 };
 
 updateDelegateListEveryBlock();

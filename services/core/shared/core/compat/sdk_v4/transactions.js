@@ -154,11 +154,7 @@ const indexTransactionsListener = async (blockId) => {
 	});
 	transactionIdx.upsert(transactions.data);
 };
-if (!Signals.get('indexTransactions').has(indexTransactionsListener)) {
-	logger.debug('indexTransactions has indexTransactionsListener: ', Signals.get('indexTransactions').has(indexTransactionsListener));
-	Signals.get('indexTransactions').add(indexTransactionsListener);
-	logger.debug('indexTransactions has now registered indexTransactionsListener: ', Signals.get('indexTransactions').has(indexTransactionsListener));
-}
+if (!Signals.get('indexTransactions').has(indexTransactionsListener)) Signals.get('indexTransactions').add(indexTransactionsListener);
 
 const getPendingTransactionsFromCore = async params => {
 	const pendingTx = await coreApi.getPendingTransactions(params);

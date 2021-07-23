@@ -37,22 +37,14 @@ const blockIndexReadyListener = () => {
 	logger.debug('Indexing finished');
 	features.isIndexReady = true;
 };
-if (!Signals.get('blockIndexReady').has(blockIndexReadyListener)) {
-	logger.debug('blockIndexReady has blockIndexReadyListener: ', Signals.get('blockIndexReady').has(blockIndexReadyListener));
-	Signals.get('blockIndexReady').add(blockIndexReadyListener);
-	logger.debug('blockIndexReady has now registered blockIndexReadyListener: ', Signals.get('blockIndexReady').has(blockIndexReadyListener));
-}
+if (!Signals.get('blockIndexReady').has(blockIndexReadyListener)) Signals.get('blockIndexReady').add(blockIndexReadyListener);
 
 // Check if transaction stats are built
 const transactionStatsReadyListener = (days) => {
 	logger.debug('Transaction stats calculated for:', `${days}days`);
 	features.isTransactionStatsReady = true;
 };
-if (!Signals.get('transactionStatsReady').has(transactionStatsReadyListener)) {
-	logger.debug('transactionStatsReady has transactionStatsReadyListener: ', Signals.get('transactionStatsReady').has(transactionStatsReadyListener));
-	Signals.get('transactionStatsReady').add(transactionStatsReadyListener);
-	logger.debug('transactionStatsReady has now registered transactionStatsReadyListener: ', Signals.get('transactionStatsReady').has(transactionStatsReadyListener));
-}
+if (!Signals.get('transactionStatsReady').has(transactionStatsReadyListener)) Signals.get('transactionStatsReady').add(transactionStatsReadyListener);
 
 const newBlockListener = async () => {
 	if (!isCoreReady()) {
@@ -73,11 +65,7 @@ const newBlockListener = async () => {
 	logger.debug(`============== 'coreServiceReady' signal: ${Signals.get('coreServiceReady')} ==============`);
 	if (isCoreReady()) Signals.get('coreServiceReady').dispatch(true);
 };
-if (!Signals.get('newBlock').has(newBlockListener)) {
-	logger.debug('newBlock has newBlockListener: ', Signals.get('newBlock').has(newBlockListener));
-	Signals.get('newBlock').add(newBlockListener);
-	logger.debug('newBlock has now registered newBlockListener: ', Signals.get('newBlock').has(newBlockListener));
-}
+if (!Signals.get('newBlock').has(newBlockListener)) Signals.get('newBlock').add(newBlockListener);
 
 const getCurrentStatus = async () => features;
 

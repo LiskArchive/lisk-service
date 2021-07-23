@@ -253,11 +253,7 @@ const init = async historyLengthDays => {
 		logger.debug(`============== 'transactionStatsReady' signal: ${Signals.get('transactionStatsReady')} ==============`);
 		Signals.get('transactionStatsReady').dispatch(historyLengthDays);
 	};
-	if (!Signals.get('blockIndexReady').has(transactionStatsListener)) {
-		logger.debug('blockIndexReady has transactionStatsListener: ', Signals.get('blockIndexReady').has(transactionStatsListener));
-		Signals.get('blockIndexReady').add(transactionStatsListener);
-		logger.debug('blockIndexReady has now registered transactionStatsListener: ', Signals.get('blockIndexReady').has(transactionStatsListener));
-	}
+	if (!Signals.get('blockIndexReady').has(transactionStatsListener)) Signals.get('blockIndexReady').add(transactionStatsListener);
 };
 
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);
