@@ -27,12 +27,11 @@ module.exports = [
 		name: 'coreService.Ready',
 		description: 'Returns current readiness status of Lisk Core service',
 		controller: async callback => {
-			const coreServiceReadyListener = async () => {
+			Signals.get('coreServiceReady').add(async () => {
 				logger.debug('Returns current readiness status of the Lisk Core service');
 				const coreStatus = await getCurrentStatus();
 				callback(coreStatus);
-			};
-			if (!Signals.get('coreServiceReady').has(coreServiceReadyListener)) Signals.get('coreServiceReady').add(coreServiceReadyListener);
+			});
 		},
 	},
 ];

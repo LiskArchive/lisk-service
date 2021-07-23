@@ -248,12 +248,11 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 };
 
 const init = async historyLengthDays => {
-	const transactionStatsListener = async () => {
+	Signals.get('blockIndexReady').add(async () => {
 		await fetchTransactionsForPastNDays(historyLengthDays, true);
 		logger.debug(`============== 'transactionStatsReady' signal: ${Signals.get('transactionStatsReady')} ==============`);
 		Signals.get('transactionStatsReady').dispatch(historyLengthDays);
-	};
-	if (!Signals.get('blockIndexReady').has(transactionStatsListener)) Signals.get('blockIndexReady').add(transactionStatsListener);
+	});
 };
 
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);
