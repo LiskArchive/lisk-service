@@ -67,5 +67,27 @@ module.exports = {
 				FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
 			},
 		},
+		{
+			name: 'lisk-service-market',
+			script: 'app.js',
+			cwd: './services/market',
+			pid_file: './pids/service_market.pid',
+			out_file: './logs/service_market.log',
+			error_file: './logs/service_market.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '512M',
+			instances: 1,
+			autorestart: true,
+			env: {
+				// --- Remember to set the properties below
+				// SERVICE_BROKER: 'redis://localhost:6379/0',
+				// SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
+				// SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
+				// SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
+				// EXCHANGERATESAPI_IO_API_KEY: ''
+			},
+		},
 	],
 };
