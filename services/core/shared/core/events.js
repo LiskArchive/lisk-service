@@ -88,6 +88,6 @@ const init = () => {
 init();
 
 // Re-subscribe to the events whenever a new client is instantiated
-Signals.get('newApiClient').add(() => { init(); });
+Signals.get('newApiClient').add(init);
 
 module.exports = { init };

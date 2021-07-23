@@ -139,24 +139,6 @@ const getTransactions = async params => {
 	return transactions;
 };
 
-Signals.get('indexTransactions').add(async blockId => {
-	const transactionIdx = await getTransactionIdx();
-	const blockResult = await transactionIdx.find({ blockId }, 'id');
-	if (blockResult.length > 0) return;
-
-	const transactions = await getTransactionsByBlockId(blockId);
-	const blockIdx = await getBlockIdx();
-	const blockRes = await blockIdx.find({ id: blockId }, ['timestamp', 'unixTimestamp']);
-	if (blockRes.length !== 1) return;
-
-	const { timestamp, unixTimestamp } = blockRes[0];
-	transactions.data.forEach(tx => {
-		tx.timestamp = timestamp;
-		tx.unixTimestamp = unixTimestamp;
-	});
-	transactionIdx.upsert(transactions.data);
-});
-
 const getPendingTransactionsFromCore = async params => {
 	const pendingTx = await coreApi.getPendingTransactions(params);
 	return pendingTx;
@@ -186,10 +168,28 @@ const getPendingTransactions = async params => {
 	return pendingTransactions;
 };
 
-const init = async () => {
-	// Initialize the database
-	await getTransactionIdx();
+const indexTransactionsListener = async (blockId) => {
+	const transactionIdx = await getTransactionIdx();
+	const blockResult = await transactionIdx.find({ blockId }, 'id');
+	if (blockResult.length > 0) return;
+
+	const transactions = await getTransactionsByBlockId(blockId);
+	const blockIdx = await getBlockIdx();
+	const blockRes = await blockIdx.find({ id: blockId }, ['timestamp', 'unixTimestamp']);
+	if (blockRes.length !== 1) return;
+
+	const { timestamp, unixTimestamp } = blockRes[0];
+	transactions.data.forEach(tx => {
+		tx.timestamp = timestamp;
+		tx.unixTimestamp = unixTimestamp;
+	});
+	transactionIdx.upsert(transactions.data);
 };
+
+Signals.get('indexTransactions').add(indexTransactionsListener);
+
+// Initialize the database
+const init = async () => { await getTransactionIdx(); };
 
 module.exports = {
 	getTransactions,
