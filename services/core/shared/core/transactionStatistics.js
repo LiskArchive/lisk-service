@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
+
+const Signals = require('../signals');
 
 const config = require('../../config');
 const { getTransactions } = require('./transactions');

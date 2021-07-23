@@ -14,11 +14,9 @@
  *
  */
 const util = require('util');
-const {
-	Logger,
-	Signals,
-} = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 
+const Signals = require('../shared/signals');
 const core = require('../shared/core');
 
 const logger = Logger();

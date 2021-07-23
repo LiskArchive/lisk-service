@@ -17,9 +17,10 @@ const BluebirdPromise = require('bluebird');
 const util = require('util');
 const {
 	Logger,
-	Signals,
 	Exceptions: { ValidationException, NotFoundException },
 } = require('lisk-service-framework');
+
+const Signals = require('../../../signals');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');

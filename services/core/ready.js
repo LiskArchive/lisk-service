@@ -13,13 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-	Signals,
-} = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 
 const core = require('./shared/core');
 const config = require('./config');
+const Signals = require('./shared/signals');
 
 const logger = Logger();
 

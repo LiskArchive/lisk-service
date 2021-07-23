@@ -13,9 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, CacheRedis, Signals } = require('lisk-service-framework');
+const { Logger, CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
+const Signals = require('../signals');
 const config = require('../../config');
 
 const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
