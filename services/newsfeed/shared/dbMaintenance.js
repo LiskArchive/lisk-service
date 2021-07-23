@@ -25,7 +25,7 @@ const prune = async (source, table, expiryInDays) => {
 	const db = await getIndex(table);
 
 	const propBetweens = [{
-		property: 'mtime',
+		property: 'modifiedAt',
 		to: moment().subtract(expiryInDays, 'days').unix(),
 	}];
 

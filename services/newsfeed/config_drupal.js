@@ -30,14 +30,14 @@ const getDrupalConfig = ({ enabled, name, url, filter }) => ({
 			content_t: '=,string',
 			url: 'link,string',
 			image_url: '=,string',
-			ctime: '=,number',
-			mtime: '=,number',
+			createdAt: '=,number',
+			modifiedAt: '=,number',
 			author: '=,string',
 		},
 		customMapper: [
-			['ctime', 'drupalUnixTimestamp', 'created'],
-			// Update mtime implementation in case modified/updated time exists in response
-			['mtime', 'drupalUnixTimestamp', 'created'],
+			['createdAt', 'drupalUnixTimestamp', 'created'],
+			// Update modifiedAt implementation in case modified/updated time exists in response
+			['modifiedAt', 'drupalUnixTimestamp', 'created'],
 			['content_t', 'textifyForShort', 'description'],
 			['author', 'authorParser', 'author'],
 			['link', 'drupalDomainPrefixer', 'link'],
