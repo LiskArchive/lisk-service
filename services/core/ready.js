@@ -50,7 +50,7 @@ const newBlockListener = async () => {
 		// Check for fee estimates
 		logger.debug('Check if fee estmates are ready');
 		const fees = await core.getEstimateFeeByte();
-		if (Object.getOwnPropertyNames(fees).length) features.isFeeEstimatesReady = true;
+		if (Object.getOwnPropertyNames(fees).length && fees.status !== 'SERVICE_UNAVAILABLE') features.isFeeEstimatesReady = true;
 
 		// Check if delegates list is ready
 		const delegatesList = await core.getDelegates({});
