@@ -502,7 +502,7 @@ const indexPastBlocks = async () => {
 	// Store the value for the missing blocks job
 	setIndexStartHeight(blockIndexLowerRange);
 
-	// Highest block available within the index
+	// Highest finalized block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
 	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1, isFinal: true });
 	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
