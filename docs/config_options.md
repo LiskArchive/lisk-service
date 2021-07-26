@@ -61,7 +61,7 @@ JSON_RPC_STRICT_MODE=false
 ### Node settings
 
 ```bash
-LISK_CORE_WS=ws://localhost:5000       # Lisk Core WebSocket RPC API
+LISK_CORE_WS=ws://localhost:4000       # Lisk Core WebSocket RPC API
 LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
 ```
 

@@ -49,7 +49,7 @@ The `ecosystem.mainnet.config.js` contains a sample configuration, which refers 
 ### Start Lisk Service
 
 ```bash
-pm2 start ecosystem.mainnet.config.js
+pm2 start ecosystem.core3.config.js
 
 # or
 
@@ -68,7 +68,7 @@ pm2 list
 ### Stop Lisk Service
 
 ```bash
-pm2 stop ecosystem.mainnet.config.js
+pm2 stop ecosystem.core3.config.js
 ```
 
 ### Restart Lisk Service
@@ -76,13 +76,13 @@ pm2 stop ecosystem.mainnet.config.js
 Restart all components of Lisk Service simultaneously.
 
 ```bash
-pm2 restart ecosystem.mainnet.config.js
+pm2 restart ecosystem.core3.config.js
 ```
 
 ### Remove all processes from PM2 list
 
 ```bash
-pm2 delete ecosystem.mainnet.config.js
+pm2 delete ecosystem.core3.config.js
 
 # or
 
@@ -103,7 +103,7 @@ Once the application is running it is now possible to run automated tests.
 
 Unit tests are implemented in the framework part of the project. They are designed to test the most fundamental, product-independent logic that is used to build a micro-service on top of the framework.
 
-```
+```bash
 cd framework
 npm test
 ```
@@ -114,23 +114,35 @@ Functional tests ensure that a project build on the top of the framework is able
 
 In order to run them successfully, they need to have the template component running alongside.
 
-```
+```bash
 cd service/template
 node app.js
 ```
 
 When the template micro-service and the gateway are running, it is possible to run the functional tests from the `tests/` directory:
 
-```
+```bash
 cd tests
 npm run test:functional
 ```
 
 ### Integration tests
 
-Integration tests work in a similar manner to functional tests. In this case the real blockchain data coming from the testnet network is used. Please ensure that the API gateway and Lisk micro-service are running.
+Integration tests work in a similar manner to functional tests. In this case the real blockchain data coming from a custom test blockchain is used. Please ensure that Lisk Core and all microservices are running.
 
+To run Lisk Core with custom blockchain:
+```bash
+cd jenkins/lisk-core
+make up
 ```
+
+To run Lisk Service with PM2
+```bash
+pm2 start ecosystem.core3.config.js
+```
+
+To run instegration tests:
+```bash
 cd tests
 npm run test:integration
 ```
