@@ -136,8 +136,8 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
 			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
-			block.generatorAddress = account && account.address ? account.address : undefined;
-			block.generatorUsername = account && account.username ? account.username : undefined;
+			block.generatorAddress = account && account.address ? account.address : null;
+			block.generatorUsername = account && account.username ? account.username : null;
 			block.isFinal = block.height <= getFinalizedHeight();
 			block.numberOfTransactions = block.payload.length;
 
