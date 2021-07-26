@@ -101,7 +101,7 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
-				sleep(180)
+				sleep(90)
 				waitForHttp('http://localhost:9901/api/ready')
 				// waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
 			}
