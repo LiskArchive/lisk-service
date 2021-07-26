@@ -25,7 +25,7 @@ module.exports = {
 		source: { type: 'string', null: false },
 		source_id: { type: 'string' },
 		createdAt: { type: 'integer', null: false },
-		modifiedAt: { type: 'integer' },
+		modifiedAt: { type: 'integer', null: false },
 		title: { type: 'string' },
 		url: { type: 'string', null: false },
 	},
