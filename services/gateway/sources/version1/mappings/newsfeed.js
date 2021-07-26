@@ -15,12 +15,11 @@
  */
 module.exports = {
 	author: '=,string',
-	content_t: '=,string',
+	content: 'content_t,string',
 	imageUrl: '=,string',
 	source: '=,string',
-	source_id: '=,string',
-	createdAt: '=,number',
-	modifiedAt: '=,number',
+	sourceId: 'source_id,string',
+	timestamp: 'createdAt,number',
 	title: '=,string',
 	image_url: '=,string',
 	url: '=,string',
