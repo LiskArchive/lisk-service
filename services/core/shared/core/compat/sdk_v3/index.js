@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 
 const {
 	getBlocks,
@@ -29,6 +29,8 @@ const { getVotes } = require('./votes');
 const { getVoters } = require('./voters');
 const events = require('./events');
 const { getNetworkStatus } = require('./network');
+
+const Signals = require('../../../signals');
 
 const logger = Logger();
 

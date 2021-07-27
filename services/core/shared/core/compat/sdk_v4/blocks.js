@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { CacheRedis, Logger, Signals } = require('lisk-service-framework');
+const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
+
+const Signals = require('../../../signals');
 
 const config = require('../../../../config');
 const { initializeQueue } = require('../../queue');
