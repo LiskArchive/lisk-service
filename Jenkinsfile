@@ -71,7 +71,6 @@ pipeline {
 					dir('./framework') { sh 'npm ci' }
 					dir('./services/core') { sh 'npm ci' }
 					dir('./services/market') { sh 'npm ci' }
-					dir('./services/newsfeed') { sh 'npm ci' }
 					dir('./services/gateway') { sh 'npm ci' }
 					dir('./services/template') { sh 'npm ci' }
 					dir('./tests') { sh "npm ci" }
@@ -93,7 +92,6 @@ pipeline {
 					dir('./framework') { sh "npm run test:unit" }
 					dir('./services/core') { sh "npm run test:unit" }
 					dir('./services/market') { sh "npm run test:unit" }
-					dir('./services/newsfeed') { sh "npm run test:unit" }
 				}
 			}
 		}
@@ -113,7 +111,6 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./services/market') { sh "npm run test:functional" }
-					dir('./services/newsfeed') { sh "npm run test:functional" }
 					dir('./framework') { sh "npm run test:functional" }
 				}
 			}
@@ -137,7 +134,6 @@ pipeline {
 				sh 'pm2 logs lisk-service-gateway --lines=100  --nostream'
 				sh 'pm2 logs lisk-service-core --lines=100  --nostream'
 				sh 'pm2 logs lisk-service-market --lines=100  --nostream'
-				sh 'pm2 logs lisk-service-newsfeed --lines=100  --nostream'
 			}
 		}
 		cleanup {
