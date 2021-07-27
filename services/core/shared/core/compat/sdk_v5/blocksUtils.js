@@ -48,7 +48,7 @@ const getGenesisBlockId = () => genesisBlock.header.id;
 const loadConfig = async () => {
 	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
 
-	const [networkConfig] = config.network.filter(c => c.identifier === networkIdentifier);
+	const [networkConfig] = config.network.filter(c => [networkIdentifier, 'default'].includes(c.identifier));
 	genesisBlockURL = networkConfig.genesisBlockUrl;
 	logger.debug(`genesisBlockURL set to ${genesisBlockURL}`);
 

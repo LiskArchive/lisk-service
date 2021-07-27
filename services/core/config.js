@@ -48,6 +48,12 @@ config.network = [
 		genesisHeight: Number(process.env.GENESIS_HEIGHT || 14075260),
 		genesisBlockUrl: process.env.GENESIS_BLOCK_URL || 'https://downloads.lisk.io/lisk/testnet/genesis_block.json.tar.gz',
 	},
+	{
+		name: 'default',
+		identifier: 'default',
+		genesisHeight: Number(process.env.GENESIS_HEIGHT || 0),
+		genesisBlockUrl: process.env.GENESIS_BLOCK_URL,
+	},
 ];
 
 /**
