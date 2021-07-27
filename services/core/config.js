@@ -38,7 +38,7 @@ config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:passwor
 config.network = [
 	{
 		name: 'mainnet',
-		identifier: '022097430f51c10da3146920f4c82005900ce5da83bd5d92c04dec2645e54325',
+		identifier: 'update_after_migration',
 		genesisHeight: Number(process.env.GENESIS_HEIGHT || 16301502),
 		genesisBlockUrl: process.env.GENESIS_BLOCK_URL || 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
 	},
