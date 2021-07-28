@@ -23,7 +23,7 @@ const exists = async (path) => {
 	try {
 		await fs.promises.access(path);
 		return true;
-	} catch {
+	} catch (_) {
 		return false;
 	}
 };
