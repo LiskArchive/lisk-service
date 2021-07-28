@@ -71,10 +71,9 @@ const loadConfig = async () => {
 
 			genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
 			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
-		}
-		else {
+		} else {
 			logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
-			return
+			return;
 		}
 	}
 
