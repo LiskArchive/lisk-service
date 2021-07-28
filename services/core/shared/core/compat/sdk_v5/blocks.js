@@ -18,9 +18,10 @@ const util = require('util');
 const {
 	CacheRedis,
 	Logger,
-	Signals,
 	Exceptions: { ValidationException, NotFoundException },
 } = require('lisk-service-framework');
+
+const Signals = require('../../../signals');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
@@ -546,7 +547,8 @@ const checkIndexReadiness = async () => {
 
 const init = async () => {
 	// Index every new incoming block
-	Signals.get('newBlock').add(async data => { await indexNewBlocks(data); });
+	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
+	Signals.get('newBlock').add(indexNewBlocksListener);
 
 	// Check state of index and perform update
 	try {
