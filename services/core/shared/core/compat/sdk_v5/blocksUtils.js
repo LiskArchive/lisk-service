@@ -26,6 +26,11 @@ const {
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
+const {
+	exists,
+	mkdir,
+} = require('../../../fsUtils');
+
 const config = require('../../../../config');
 
 const logger = Logger();
@@ -75,7 +80,7 @@ const loadConfig = async () => {
 
 	if (genesisBlockUrl) {
 		// If file exists, already create a read stream
-		if (fs.existsSync(genesisBlockFilePath)) {
+		if (await exists(genesisBlockFilePath)) {
 			readStream = fs.createReadStream(genesisBlockFilePath);
 		}
 	}
@@ -83,7 +88,7 @@ const loadConfig = async () => {
 
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
-	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath, { recursive: true });
+	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
 
@@ -93,7 +98,10 @@ const downloadGenesisBlock = async () => {
 				if (response.statusCode === 200) {
 					response.pipe(tar.extract({ cwd: directoryPath }));
 					response.on('error', async (err) => reject(err));
-					response.on('end', async () => setTimeout(resolve, 500));
+					response.on('end', async () => {
+						logger.info('Genesis block download successful');
+						return setTimeout(resolve, 500);
+					});
 				} else {
 					const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
 					logger.error(errMessage);
@@ -105,7 +113,10 @@ const downloadGenesisBlock = async () => {
 			request(genesisBlockUrl)
 				.then(async response => {
 					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
-					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => resolve());
+					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => {
+						logger.info('Genesis block download successful');
+						return resolve();
+					});
 				})
 				.catch(err => reject(err));
 		}
@@ -115,7 +126,7 @@ const downloadGenesisBlock = async () => {
 const getGenesisBlockFromFS = async () => {
 	if (!genesisBlockUrl || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
-		if (!fs.existsSync(genesisBlockFilePath)) {
+		if (!(await exists(genesisBlockFilePath))) {
 			await downloadGenesisBlock();
 			readStream = fs.createReadStream(genesisBlockFilePath);
 		}

@@ -18,9 +18,10 @@ const util = require('util');
 const {
 	CacheRedis,
 	Logger,
-	Signals,
 	Exceptions: { ValidationException, NotFoundException },
 } = require('lisk-service-framework');
+
+const Signals = require('../../../signals');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
@@ -205,7 +206,14 @@ const getLastBlock = async () => {
 const isQueryFromIndex = params => {
 	const paramProps = Object.getOwnPropertyNames(params);
 
-	const isDirectQuery = ['id', 'height', 'heightBetween'].some(prop => paramProps.includes(prop));
+	const directQueryParams = ['id', 'height', 'heightBetween'];
+	const defaultQueryParams = ['limit', 'offset', 'sort'];
+
+	// For 'isDirectQuery' to be 'true', the request params should contain
+	// exactly one of 'directQueryParams' and all of them must be contained
+	// within 'directQueryParams' or 'defaultQueryParams'
+	const isDirectQuery = (paramProps.filter(prop => directQueryParams.includes(prop))).length === 1
+		&& paramProps.every(prop => directQueryParams.concat(defaultQueryParams).includes(prop));
 
 	const sortOrder = params.sort ? params.sort.split(':')[1] : undefined;
 	const isLatestBlockFetch = (paramProps.length === 1 && params.limit === 1)
@@ -323,13 +331,15 @@ const getBlocks = async params => {
 	}
 
 	try {
-		if (params.id) {
-			blocks.data = await getBlockByID(params.id);
-			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
-		} else if (params.ids) {
+		if (params.ids) {
 			blocks.data = await getBlocksByIDs(params.ids);
+		} else if (params.id) {
+			blocks.data = await getBlockByID(params.id);
+			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Block ID ${params.id} not found.`);
+			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.height) {
 			blocks.data = await getBlockByHeight(params.height);
+			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Height ${params.height} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.heightBetween) {
 			const { from, to } = params.heightBetween;
@@ -546,7 +556,8 @@ const checkIndexReadiness = async () => {
 
 const init = async () => {
 	// Index every new incoming block
-	Signals.get('newBlock').add(async data => { await indexNewBlocks(data); });
+	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
+	Signals.get('newBlock').add(indexNewBlocksListener);
 
 	// Check state of index and perform update
 	try {
