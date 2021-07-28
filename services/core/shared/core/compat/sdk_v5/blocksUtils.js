@@ -26,6 +26,7 @@ const {
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
+const { exists } = require('../../../fsUtils');
 const config = require('../../../../config');
 
 const logger = Logger();
@@ -56,12 +57,12 @@ const loadConfig = async () => {
 	logger.debug(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
 
 	// If file exists, already create a read stream
-	if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
+	if (await exists(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
 };
 
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
-	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath, { recursive: true });
+	if (!(await exists(directoryPath))) fs.mkdirSync(directoryPath, { recursive: true });
 
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockURL}`);
 
@@ -99,7 +100,7 @@ const downloadGenesisBlock = async () => {
 const getGenesisBlockFromFS = async () => {
 	if (!genesisBlockURL || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
-		if (!fs.existsSync(genesisBlockFilePath)) {
+		if (!(await exists(genesisBlockFilePath))) {
 			await downloadGenesisBlock();
 			readStream = fs.createReadStream(genesisBlockFilePath);
 		}
