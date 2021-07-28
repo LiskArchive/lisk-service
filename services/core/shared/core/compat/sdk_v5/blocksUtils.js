@@ -71,7 +71,10 @@ const downloadGenesisBlock = async () => {
 				if (response.statusCode === 200) {
 					response.pipe(tar.extract({ cwd: directoryPath }));
 					response.on('error', async (err) => reject(err));
-					response.on('end', async () => setTimeout(resolve, 500));
+					response.on('end', async () => {
+						logger.info('Genesis block download successful');
+						return setTimeout(resolve, 500);
+					});
 				} else {
 					const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
 					logger.error(errMessage);
@@ -83,7 +86,10 @@ const downloadGenesisBlock = async () => {
 			request(genesisBlockURL)
 				.then(async response => {
 					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
-					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => resolve());
+					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => {
+						logger.info('Genesis block download successful');
+						return resolve();
+					});
 				})
 				.catch(err => reject(err));
 		}
