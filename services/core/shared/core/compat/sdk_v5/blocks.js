@@ -379,74 +379,73 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisBlock = async () => {
-	const blocksDB = await getBlocksIndex();
-	const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
+	try {
+		const blocksDB = await getBlocksIndex();
+		const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
 
-	if (indexedGenesisBlock) {
-		logger.info(`Genesis block already indexed at height ${genesisHeight}`);
-	} else {
-		logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
-		const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+		if (indexedGenesisBlock) {
+			logger.info(`Genesis block already indexed at height ${genesisHeight}`);
+		} else {
+			logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
+			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-		// Index the genesis block transactions first
-		await indexTransactions([genesisBlock]);
+			// Index the genesis block transactions first
+			await indexTransactions([genesisBlock]);
 
-		// Index the genesis block accounts next
-		const initDelegateAddresses = genesisBlock.asset.initDelegates;
-		const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
-			.filter(account => account.address.length > 16) // Filter out reclaim accounts
-			.map(account => account.address);
+			// Index the genesis block accounts next
+			const initDelegateAddresses = genesisBlock.asset.initDelegates;
+			const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
+				.filter(account => account.address.length > 16) // Filter out reclaim accounts
+				.map(account => account.address);
 
-		await indexAccountsbyAddress(initDelegateAddresses, true);
+			await indexAccountsbyAddress(initDelegateAddresses, true);
 
-		const PAGE_SIZE = 20;
-		const NUM_PAGES = Math.ceil(nonDelegateAddressesToIndex.length / PAGE_SIZE);
-		for (let i = 0; i < NUM_PAGES; i++) {
-			// eslint-disable-next-line no-await-in-loop
-			await indexAccountsbyAddress(
-				nonDelegateAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-				true,
-			);
+			const PAGE_SIZE = 20;
+			const NUM_PAGES = Math.ceil(nonDelegateAddressesToIndex.length / PAGE_SIZE);
+			for (let i = 0; i < NUM_PAGES; i++) {
+				// eslint-disable-next-line no-await-in-loop
+				await indexAccountsbyAddress(
+					nonDelegateAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+					true,
+				);
+			}
+
+			// Finally index the genesis block itself
+			await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
+			logger.info('Finished indexing the genesis block');
 		}
-
-		// Finally index the genesis block itself
-		await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
-		logger.info('Finished indexing the genesis block');
+	} catch (err) {
+		logger.warn(`Unable to index the Genesis block: ${err.message}`);
 	}
 };
 
 const buildIndex = async (from, to) => {
-	try {
-		if (from > to) {
-			logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
-			return;
-		}
-
-		const MAX_BLOCKS_LIMIT_PP = 100;
-		const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
-
-		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-			/* eslint-disable no-await-in-loop */
-			const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-			const offset = pseudoOffset > from ? pseudoOffset : from - 1;
-			const batchFromHeight = offset + 1;
-			const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-				? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-			logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
-
-			let blocks;
-			do {
-				blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
-			} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
-
-			await indexBlocksQueue.add('indexBlocksQueue', { blocks });
-			/* eslint-enable no-await-in-loop */
-		}
-		logger.info(`Finished building block index (${from}-${to})`);
-	} catch (err) {
-		logger.warn(`Indexing failed due to: ${err.message}`);
-		throw err;
+	if (from > to) {
+		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
+		return;
 	}
+
+	const MAX_BLOCKS_LIMIT_PP = 100;
+	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+
+	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		/* eslint-disable no-await-in-loop */
+		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		const batchFromHeight = offset + 1;
+		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
+			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
+		logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
+
+		let blocks;
+		do {
+			blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
+		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
+
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
+		/* eslint-enable no-await-in-loop */
+	}
+	logger.info(`Finished building block index (${from}-${to})`);
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
@@ -523,7 +522,9 @@ const indexPastBlocks = async () => {
 		? lastIndexedHeight : blockIndexLowerRange;
 
 	// Start building the block index
-	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(e => e);
+	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(err => {
+		logger.warn(`Indexing failed due to: ${err.message}`);
+	});
 	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
 	logger.info('Finished building the blocks index');
 };
@@ -568,10 +569,7 @@ const init = async () => {
 		// Set the genesis height
 		setGenesisHeight(await coreApi.getGenesisHeight());
 
-		await indexGenesisBlock().catch(err => {
-			logger.error(err.message);
-			logger.warn('Unable to index the Genesis block. Continuing with the remaining...');
-		});
+		await indexGenesisBlock();
 		await indexPastBlocks();
 	} catch (err) {
 		logger.warn('Unable to update block index');
