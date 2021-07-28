@@ -15,6 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
+	CacheRedis,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
@@ -49,6 +50,7 @@ const {
 } = require('../../../jsonTools');
 
 const coreApi = require('./coreApi');
+const config = require('../../../../config');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
@@ -61,9 +63,9 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
-const genesisAccounts = {};
+const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
 
-const isItGenesisAccount = address => genesisAccounts[address] || false;
+const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
 const indexAccounts = async job => {
 	const { accounts } = job.data;
@@ -119,7 +121,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 		accountsToIndex,
 		async account => {
 			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) genesisAccounts[account.address] = true;
+			if (isGenesisBlockAccount) await isGenesisAccountCache.set(account.address, true);
 			const accountFromDB = await getIndexedAccountInfo({ address: account.address });
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
@@ -214,7 +216,7 @@ const resolveDelegateInfo = async accounts => {
 					const genesisHeight = 0; // Local declaration to avoid circular dependency
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
-						: isItGenesisAccount(account.address) && genesisHeight;
+						: (await isItGenesisAccount(account.address)) && genesisHeight;
 				}
 			}
 			return account;
@@ -392,8 +394,9 @@ const getAccounts = async params => {
 			}
 
 			if (account.publicKey) {
-				if (isItGenesisAccount(account.address)) {
-					account.isMigrated = isItGenesisAccount(account.address);
+				const isGenesisAccount = await isItGenesisAccount(account.address);
+				if (isGenesisAccount) {
+					account.isMigrated = isGenesisAccount;
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
 					// Use only dynamically computed legacyAccount information, ignore the hardcoded info
