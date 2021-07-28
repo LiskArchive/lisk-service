@@ -397,14 +397,14 @@ const indexGenesisBlock = async () => {
 			.filter(account => account.address.length > 16) // Filter out reclaim accounts
 			.map(account => account.address);
 
-		const accountAddressesToIndex = initDelegateAddresses.concat(nonDelegateAddressesToIndex);
+		await indexAccountsbyAddress(initDelegateAddresses, true);
 
 		const PAGE_SIZE = 20;
-		const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
+		const NUM_PAGES = Math.ceil(nonDelegateAddressesToIndex.length / PAGE_SIZE);
 		for (let i = 0; i < NUM_PAGES; i++) {
 			// eslint-disable-next-line no-await-in-loop
 			await indexAccountsbyAddress(
-				accountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+				nonDelegateAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
 				true,
 			);
 		}
