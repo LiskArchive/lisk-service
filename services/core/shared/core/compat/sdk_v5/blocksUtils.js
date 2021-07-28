@@ -31,7 +31,7 @@ const config = require('../../../../config');
 const logger = Logger();
 
 let readStream;
-let genesisBlockURL;
+let genesisBlockUrl;
 let genesisBlockFilePath;
 let genesisBlock = { header: {} };
 
@@ -48,26 +48,48 @@ const getGenesisBlockId = () => genesisBlock.header.id;
 const loadConfig = async () => {
 	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
 
-	const [networkConfig] = config.network.filter(c => [networkIdentifier, 'default'].includes(c.identifier));
-	genesisBlockURL = networkConfig.genesisBlockUrl;
-	logger.debug(`genesisBlockURL set to ${genesisBlockURL}`);
+	if (process.env.GENESIS_BLOCK_URL) {
+		logger.info('Genesis block URL is defined by environment variable (GENESIS_BLOCK_URL)');
 
-	genesisBlockFilePath = `./data/${networkConfig.name}/genesis_block.json`;
-	logger.debug(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
+		genesisBlockUrl = config.genesisBlockUrl;
+		logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
 
-	// If file exists, already create a read stream
-	if (fs.existsSync(genesisBlockFilePath)) readStream = fs.createReadStream(genesisBlockFilePath);
+		genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
+		logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
+	} else {
+		const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+		if (networkConfig) {
+			logger.info(`Found config for ${networkConfig.mainnet} (${networkIdentifier})`);
+
+			genesisBlockUrl = networkConfig.genesisBlockUrl;
+			logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
+
+			genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
+			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
+		}
+		else {
+			logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
+			return
+		}
+	}
+
+	if (genesisBlockUrl) {
+		// If file exists, already create a read stream
+		if (fs.existsSync(genesisBlockFilePath)) {
+			readStream = fs.createReadStream(genesisBlockFilePath);
+		}
+	}
 };
 
 const downloadGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	if (!fs.existsSync(directoryPath)) fs.mkdirSync(directoryPath, { recursive: true });
 
-	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockURL}`);
+	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
 
 	return new Promise((resolve, reject) => {
-		if (genesisBlockURL.endsWith('.tar.gz')) {
-			https.get(genesisBlockURL, (response) => {
+		if (genesisBlockUrl.endsWith('.tar.gz')) {
+			https.get(genesisBlockUrl, (response) => {
 				if (response.statusCode === 200) {
 					response.pipe(tar.extract({ cwd: directoryPath }));
 					response.on('error', async (err) => reject(err));
@@ -80,7 +102,7 @@ const downloadGenesisBlock = async () => {
 				}
 			});
 		} else {
-			request(genesisBlockURL)
+			request(genesisBlockUrl)
 				.then(async response => {
 					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
 					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => resolve());
@@ -91,7 +113,7 @@ const downloadGenesisBlock = async () => {
 };
 
 const getGenesisBlockFromFS = async () => {
-	if (!genesisBlockURL || !genesisBlockFilePath) await loadConfig();
+	if (!genesisBlockUrl || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
 		if (!fs.existsSync(genesisBlockFilePath)) {
 			await downloadGenesisBlock();

@@ -51,8 +51,13 @@ const getGenesisHeight = async () => {
 	if (!genesisHeight) {
 		// Determine genesis height
 		const { data: { networkIdentifier } } = await getNetworkStatus();
-		const [networkConfig] = config.network.filter(c => [networkIdentifier, 'default'].includes(c.identifier));
-		genesisHeight = networkConfig.genesisHeight;
+
+		if (process.env.GENESIS_HEIGHT) genesisHeight = config.genesisHeight;
+		else {
+			const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+			if (networkConfig) genesisHeight = networkConfig.genesisHeight;
+			else genesisHeight = 0;
+		}
 	}
 	return genesisHeight;
 };
