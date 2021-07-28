@@ -15,6 +15,10 @@
  */
 const fs = require('fs');
 
+const { Logger } = require('lisk-service-framework');
+
+const logger = Logger();
+
 const exists = async (path) => {
 	try {
 		await fs.promises.access(path);
@@ -24,6 +28,19 @@ const exists = async (path) => {
 	}
 };
 
+const mkdir = async (directoryPath, options = { recursive: true, mode: '0o777' }) => {
+	logger.debug(`Creating directory: ${directoryPath}`);
+	await fs.mkdir(
+		directoryPath,
+		options,
+		(err) => {
+			if (err) logger.error(`Error when creating directory: ${directoryPath}\n`, err.message);
+			else logger.debug(`Successfully created directory: ${directoryPath}`);
+		},
+	);
+};
+
 module.exports = {
 	exists,
+	mkdir,
 };
