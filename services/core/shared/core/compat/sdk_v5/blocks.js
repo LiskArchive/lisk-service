@@ -422,7 +422,7 @@ const buildIndex = async (from, to) => {
 			return;
 		}
 
-		const MAX_BLOCKS_LIMIT_PP = 50;
+		const MAX_BLOCKS_LIMIT_PP = 100;
 		const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
@@ -444,57 +444,61 @@ const buildIndex = async (from, to) => {
 		}
 		logger.info(`Finished building block index (${from}-${to})`);
 	} catch (err) {
-		logger.warn('Indexing failed due to: ', err.message);
-		logger.info(`Retrying to build index for blocks ${from}-${to}`);
-		await buildIndex(from, to);
+		logger.warn(`Indexing failed due to: ${err.message}`);
+		throw err;
 	}
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
-	// startHeight can never be lower than genesisHeight
-	if (startHeight < genesisHeight) startHeight = genesisHeight;
+	try {
+		// startHeight can never be lower than genesisHeight
+		if (startHeight < genesisHeight) startHeight = genesisHeight;
 
-	const PAGE_SIZE = 100000;
-	const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const toHeight = endHeight - (PAGE_SIZE * pageNum);
-		const fromHeight = (toHeight - PAGE_SIZE) > startHeight
-			? (toHeight - PAGE_SIZE) : startHeight;
+		const PAGE_SIZE = 100000;
+		const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
+		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+			/* eslint-disable no-await-in-loop */
+			const toHeight = endHeight - (PAGE_SIZE * pageNum);
+			const fromHeight = (toHeight - PAGE_SIZE) > startHeight
+				? (toHeight - PAGE_SIZE) : startHeight;
 
-		logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
+			logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
 
-		const blocksDB = await getBlocksIndex();
-		const propBetweens = [{
-			property: 'height',
-			from: fromHeight,
-			to: toHeight,
-		}];
-		const indexedBlockCount = await blocksDB.count({ propBetweens });
-		if (indexedBlockCount < toHeight) {
-			const missingBlocksQueryStatement = `
-				SELECT
-					(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
-					(b1.height - 1) AS 'to'
-				FROM blocks b1
-				WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
-					AND b1.height != ${genesisHeight}
-					AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
-			`;
+			const blocksDB = await getBlocksIndex();
+			const propBetweens = [{
+				property: 'height',
+				from: fromHeight,
+				to: toHeight,
+			}];
+			const indexedBlockCount = await blocksDB.count({ propBetweens });
+			if (indexedBlockCount < toHeight) {
+				const missingBlocksQueryStatement = `
+					SELECT
+						(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+						(b1.height - 1) AS 'to'
+					FROM blocks b1
+					WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
+						AND b1.height != ${genesisHeight}
+						AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
+				`;
 
-			logger.debug('propBetweens', util.inspect(propBetweens));
-			const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
-			logger.debug('missingBlocksRanges', util.inspect(missingBlocksRanges));
-			for (let i = 0; i < missingBlocksRanges.length; i++) {
-				const { from, to } = missingBlocksRanges[i];
+				logger.debug('propBetweens', util.inspect(propBetweens));
+				const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
+				logger.debug('missingBlocksRanges', util.inspect(missingBlocksRanges));
+				for (let i = 0; i < missingBlocksRanges.length; i++) {
+					const { from, to } = missingBlocksRanges[i];
 
-				logger.info(`Attempting to cache missing blocks ${from}-${to}`);
+					logger.info(`Attempting to cache missing blocks ${from}-${to}`);
 
-				if (from === genesisHeight) await indexGenesisBlock();
-				await buildIndex(from, to);
+					if (from === genesisHeight) await indexGenesisBlock();
+					await buildIndex(from, to);
+				}
 			}
+			/* eslint-enable no-await-in-loop */
 		}
-		/* eslint-enable no-await-in-loop */
+	} catch (err) {
+		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
+		await indexMissingBlocks(startHeight, endHeight);
 	}
 };
 
@@ -519,7 +523,7 @@ const indexPastBlocks = async () => {
 		? lastIndexedHeight : blockIndexLowerRange;
 
 	// Start building the block index
-	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(e => e);
 	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
 	logger.info('Finished building the blocks index');
 };
