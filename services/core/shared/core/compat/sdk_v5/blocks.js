@@ -569,6 +569,10 @@ const init = async () => {
 		// Set the genesis height
 		setGenesisHeight(await coreApi.getGenesisHeight());
 
+		// First download the genesis block, if applicable
+		await getBlocks({ height: genesisHeight });
+
+		// Start the indexing process
 		await indexGenesisBlock();
 		await indexPastBlocks();
 	} catch (err) {
