@@ -397,7 +397,7 @@ const indexGenesisAccounts = async () => {
 			if (numAccountsIndexed >= genesisAccountAddressesToIndex.length) {
 				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
 			} else {
-				logger.info(`Ìndexing genesis block accounts from height ${genesisHeight}`);
+				logger.info(`Indexing genesis block accounts from height ${genesisHeight}`);
 				// Index the genesis block accounts
 				const initDelegateAddresses = genesisBlock.asset.initDelegates;
 				await indexAccountsbyAddress(initDelegateAddresses, true);
