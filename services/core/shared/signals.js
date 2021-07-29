@@ -32,6 +32,7 @@ const get = name => {
 	return {
 		dispatch: signal.dispatch,
 		add: (listener) => { if (!signal.has(listener)) signal.add(listener); },
+		toString: () => signal.toString(),
 	};
 };
 
