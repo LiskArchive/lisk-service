@@ -53,8 +53,10 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
+const accountsIndexSchema = require('./schema/accounts');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
@@ -378,44 +380,49 @@ const deleteBlock = async (block) => {
 	return block;
 };
 
-const indexGenesisBlock = async () => {
+const indexGenesisAccounts = async () => {
+	let isInProgress = false;
 	try {
-		const blocksDB = await getBlocksIndex();
-		const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
-
-		if (indexedGenesisBlock) {
-			logger.info(`Genesis block already indexed at height ${genesisHeight}`);
-		} else {
-			logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
+		if (!isInProgress) {
+			isInProgress = true;
+			const accountsDB = await getAccountsIndex();
+			const numAccountsIndexed = await accountsDB.count();
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-			// Index the genesis block transactions first
-			await indexTransactions([genesisBlock]);
-
-			// Index the genesis block accounts next
-			const initDelegateAddresses = genesisBlock.asset.initDelegates;
-			const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
+			const genesisAccountAddressesToIndex = genesisBlock.asset.accounts
 				.filter(account => account.address.length > 16) // Filter out reclaim accounts
 				.map(account => account.address);
 
-			await indexAccountsbyAddress(initDelegateAddresses, true);
+			if (numAccountsIndexed >= genesisAccountAddressesToIndex.length) {
+				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
+			} else {
+				logger.info(`Ìndexing genesis block accounts from height ${genesisHeight}`);
+				const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-			const PAGE_SIZE = 20;
-			const NUM_PAGES = Math.ceil(nonDelegateAddressesToIndex.length / PAGE_SIZE);
-			for (let i = 0; i < NUM_PAGES; i++) {
-				// eslint-disable-next-line no-await-in-loop
-				await indexAccountsbyAddress(
-					nonDelegateAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-					true,
-				);
+				// Index the genesis block accounts
+				const initDelegateAddresses = genesisBlock.asset.initDelegates;
+				await indexAccountsbyAddress(initDelegateAddresses, true);
+
+				const PAGE_SIZE = 20;
+				const NUM_PAGES = Math.ceil(genesisAccountAddressesToIndex.length / PAGE_SIZE);
+				for (let i = 0; i < NUM_PAGES; i++) {
+					// eslint-disable-next-line no-await-in-loop
+					await indexAccountsbyAddress(
+						genesisAccountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+						true,
+					);
+				}
+
+				logger.info('Finished indexing the genesis block accounts');
+
+				// Stop retrying genesis account indexing on success
+				Signals.get('newBlock').remove(indexGenesisAccountsListener);
 			}
-
-			// Finally index the genesis block itself
-			await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
-			logger.info('Finished indexing the genesis block');
 		}
 	} catch (err) {
-		logger.warn(`Unable to index the Genesis block: ${err.message}`);
+		logger.warn(`Unable to index the Genesis block accounts: ${err.message}`);
+	} finally {
+		isInProgress = false;
 	}
 };
 
@@ -559,6 +566,8 @@ const checkIndexReadiness = async () => {
 	return getIndexReadyStatus();
 };
 
+const indexGenesisAccountsListener = async ({ data: [block] }) => block.height % 20 === 0 && await indexGenesisAccounts();
+
 const init = async () => {
 	// Index every new incoming block
 	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
@@ -573,8 +582,8 @@ const init = async () => {
 		await getBlocks({ height: genesisHeight });
 
 		// Start the indexing process
-		await indexGenesisBlock();
 		await indexPastBlocks();
+		await indexGenesisAccounts();
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
@@ -582,6 +591,7 @@ const init = async () => {
 
 	// Check and update index readiness status
 	Signals.get('newBlock').add(checkIndexReadiness);
+	Signals.get('newBlock').add(indexGenesisAccountsListener);
 };
 
 module.exports = {
