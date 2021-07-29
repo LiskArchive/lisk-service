@@ -31,7 +31,7 @@ const get = name => {
 	const signal = signals[name] ? signals[name] : register(name);
 	return {
 		dispatch: signal.dispatch,
-		add: (listener) => { if (!signal.has(listener, signal)) return signal.add(listener, signal); },
+		add: (listener) => (!signal.has(listener, signal)) ? signal.add(listener, signal) : false,
 		remove: (listener) => signal.remove(listener, signal),
 		toString: () => signal.toString(),
 	};

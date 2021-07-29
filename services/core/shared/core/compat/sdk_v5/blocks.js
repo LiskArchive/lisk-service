@@ -65,6 +65,7 @@ const logger = Logger();
 let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
+let isGenesisAccountsIndexingInProgress = false;
 
 const setGenesisHeight = (height) => genesisHeight = height;
 
@@ -381,10 +382,10 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisAccounts = async () => {
-	let isInProgress = false;
 	try {
-		if (!isInProgress) {
-			isInProgress = true;
+		if (!isGenesisAccountsIndexingInProgress) {
+			isGenesisAccountsIndexingInProgress = true;
+
 			const accountsDB = await getAccountsIndex();
 			const numAccountsIndexed = await accountsDB.count();
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
@@ -397,8 +398,6 @@ const indexGenesisAccounts = async () => {
 				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
 			} else {
 				logger.info(`Ìndexing genesis block accounts from height ${genesisHeight}`);
-				const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
-
 				// Index the genesis block accounts
 				const initDelegateAddresses = genesisBlock.asset.initDelegates;
 				await indexAccountsbyAddress(initDelegateAddresses, true);
@@ -416,14 +415,20 @@ const indexGenesisAccounts = async () => {
 				logger.info('Finished indexing the genesis block accounts');
 
 				// Stop retrying genesis account indexing on success
+				// eslint-disable-next-line no-use-before-define
 				Signals.get('newBlock').remove(indexGenesisAccountsListener);
 			}
 		}
 	} catch (err) {
 		logger.warn(`Unable to index the Genesis block accounts: ${err.message}`);
 	} finally {
-		isInProgress = false;
+		isGenesisAccountsIndexingInProgress = false;
 	}
+};
+
+const indexGenesisAccountsListener = async payload => {
+	const { data: [newBlock] } = payload;
+	if (newBlock.height % 20 === 0) await indexGenesisAccounts();
 };
 
 const buildIndex = async (from, to) => {
@@ -495,8 +500,6 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 					const { from, to } = missingBlocksRanges[i];
 
 					logger.info(`Attempting to cache missing blocks ${from}-${to}`);
-
-					if (from === genesisHeight) await indexGenesisBlock();
 					await buildIndex(from, to);
 				}
 			}
@@ -565,8 +568,6 @@ const checkIndexReadiness = async () => {
 	}
 	return getIndexReadyStatus();
 };
-
-const indexGenesisAccountsListener = async ({ data: [block] }) => block.height % 20 === 0 && await indexGenesisAccounts();
 
 const init = async () => {
 	// Index every new incoming block
