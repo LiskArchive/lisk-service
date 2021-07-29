@@ -114,19 +114,18 @@ const getAccountsFromCore = async (params) => {
 };
 
 const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
-	const { data: accountsToIndex } = await getAccountsFromCore({
-		addresses: dropDuplicates(addressesToIndex),
-	});
 	const finalAccountsToIndex = await BluebirdPromise.map(
-		accountsToIndex,
-		async account => {
+		dropDuplicates(addressesToIndex),
+		async address => {
+			const { data: [account] } = await getAccountsFromCore({ address });
+
 			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) await isGenesisAccountCache.set(account.address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address: account.address });
+			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
+			const accountFromDB = await getIndexedAccountInfo({ address });
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
-		{ concurrency: accountsToIndex.length },
+		{ concurrency: 10 },
 	);
 
 	const PAGE_SIZE = 100;
@@ -229,15 +228,11 @@ const resolveDelegateInfo = async accounts => {
 
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
-
-	const { data: accountsToIndex } = await getAccountsFromCore({
-		addresses: dropDuplicates(accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
-	});
-
 	const finalAccountsToIndex = await BluebirdPromise.map(
-		accountsToIndex,
-		async account => {
+		dropDuplicates(accountInfoArray
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
+		async address => {
+			const { data: [account] } = await getAccountsFromCore({ address });
 			const [accountInfo] = accountInfoArray
 				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
 			account.publicKey = accountInfo.publicKey;
@@ -255,7 +250,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			}
 			return account;
 		},
-		{ concurrency: accountsToIndex.length },
+		{ concurrency: 10 },
 	);
 
 	const PAGE_SIZE = 100;
@@ -372,8 +367,17 @@ const getAccounts = async params => {
 
 	if ((params.addresses && params.addresses.length) || params.address) {
 		try {
-			const response = await getAccountsFromCore(params);
-			if (response.data) accounts.data = response.data;
+			const response = {};
+			const addresses = params.addresses || [params.address];
+			response.data = await BluebirdPromise.map(
+				addresses,
+				async address => {
+					const { data: [account] } = await getAccountsFromCore({ address });
+					return account;
+				},
+				{ concurrency: 10 },
+			);
+			if (response.data.length) accounts.data = response.data;
 			if (params.address && 'offset' in params && params.limit) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
 			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);

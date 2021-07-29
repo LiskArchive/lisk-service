@@ -98,7 +98,7 @@ const downloadGenesisBlock = async () => {
 					response.pipe(tar.extract({ cwd: directoryPath }));
 					response.on('error', async (err) => reject(err));
 					response.on('end', async () => {
-						logger.info('Genesis block download successful');
+						logger.info('Genesis block downloaded successfully');
 						return setTimeout(resolve, 500);
 					});
 				} else {
@@ -113,7 +113,7 @@ const downloadGenesisBlock = async () => {
 				.then(async response => {
 					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
 					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => {
-						logger.info('Genesis block download successful');
+						logger.info('Genesis block downloaded successfully');
 						return resolve();
 					});
 				})
