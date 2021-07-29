@@ -394,6 +394,8 @@ const indexGenesisAccounts = async () => {
 				.filter(account => account.address.length > 16) // Filter out reclaim accounts
 				.map(account => account.address);
 
+			logger.debug(`numAccountsIndexed: ${numAccountsIndexed}, numGenesisAccounts: ${genesisAccountAddressesToIndex.length}`);
+
 			if (numAccountsIndexed >= genesisAccountAddressesToIndex.length) {
 				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
 			} else {
@@ -413,11 +415,10 @@ const indexGenesisAccounts = async () => {
 				}
 
 				logger.info('Finished indexing the genesis block accounts');
-
-				// Stop retrying genesis account indexing on success
-				// eslint-disable-next-line no-use-before-define
-				Signals.get('newBlock').remove(indexGenesisAccountsListener);
 			}
+			// Stop retrying genesis account indexing on success or if already indexed
+			// eslint-disable-next-line no-use-before-define
+			Signals.get('newBlock').remove(indexGenesisAccountsListener);
 		}
 	} catch (err) {
 		logger.warn(`Unable to index the Genesis block accounts: ${err.message}`);

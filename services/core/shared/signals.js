@@ -31,8 +31,20 @@ const get = name => {
 	const signal = signals[name] ? signals[name] : register(name);
 	return {
 		dispatch: signal.dispatch,
-		add: (listener) => (!signal.has(listener, signal)) ? signal.add(listener, signal) : false,
-		remove: (listener) => signal.remove(listener, signal),
+		add: (listener) => {
+			const isListenerAdded = signal.has(listener);
+			if (!isListenerAdded) {
+				logger.info(`Adding listener: '${listener.name}' to signal: '${name}'`);
+				const binding = signal.add(listener);
+				return binding;
+			}
+			return false;
+		},
+		remove: (listener) => {
+			const removedListener = signal.remove(listener);
+			logger.info(`Removed listener: '${removedListener.name}' from signal: '${name}'`);
+			return removedListener;
+		},
 		toString: () => signal.toString(),
 	};
 };
