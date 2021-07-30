@@ -452,6 +452,7 @@ const indexAllDelegateAccounts = async () => {
 	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
 	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
+		// eslint-disable-next-line no-await-in-loop
 		await indexAccountsbyAddress(allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
 	}
 	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
