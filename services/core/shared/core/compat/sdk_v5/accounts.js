@@ -313,26 +313,32 @@ const getAccounts = async params => {
 		data: [],
 		meta: {},
 	};
+
 	let paramPublicKey;
 	let addressFromParamPublicKey;
 	const accountsDB = await getAccountsIndex();
+
 	if (params.sort && params.sort.includes('rank')) {
 		throw new ValidationException('Rank based sorting is supported only for delegates');
 	}
+
 	if (params.search) {
 		params.search = {
 			property: 'username',
 			pattern: params.search,
 		};
 	}
+
 	if (params.id) {
 		const { id, ...remParams } = params;
 		params = remParams;
 		params.address = id;
 	}
+
 	if (params.address && typeof params.address === 'string') {
 		if (!(await confirmAddress(params.address))) return {};
 	}
+
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey)) return {};
 
@@ -344,6 +350,7 @@ const getAccounts = async params => {
 			address: addressFromParamPublicKey,
 		};
 	}
+
 	if (params.addresses) {
 		const { addresses, ...remParams } = params;
 		params = remParams;

@@ -48,14 +48,21 @@ const getNetworkStatus = async () => {
 
 const getGenesisHeight = async () => {
 	if (!genesisHeight) {
-		// Determine genesis height
-		const { data: { networkIdentifier } } = await getNetworkStatus();
+		try {
+			// Determine genesis height
+			const { data: { networkIdentifier } } = await getNetworkStatus();
 
-		if (process.env.GENESIS_HEIGHT) genesisHeight = config.genesisHeight;
-		else {
-			const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
-			if (networkConfig) genesisHeight = networkConfig.genesisHeight;
-			else genesisHeight = 0;
+			if (process.env.GENESIS_HEIGHT) {
+				genesisHeight = config.genesisHeight;
+			} else {
+				const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+				genesisHeight = networkConfig ? networkConfig.genesisHeight : 0;
+			}
+		} catch (err) {
+			if (err.message.includes(timeoutMessage)) {
+				throw new TimeoutException('Request timed out when calling \'getGenesisHeight\'');
+			}
+			throw err;
 		}
 	}
 	return genesisHeight;
