@@ -385,7 +385,7 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisAccounts = async () => {
-	const BATCH_SIZE = 5000;
+	const BATCH_SIZE = 1000;
 	try {
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
@@ -445,6 +445,16 @@ const indexGenesisAccounts = async () => {
 	} finally {
 		isGenesisAccountsIndexingInProgress = false;
 	}
+};
+
+const indexAllDelegateAccounts = async () => {
+	const allDelegatesInfo = await coreApi.getAllDelegates();
+	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
+	const PAGE_SIZE = 1000;
+	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
+		await indexAccountsbyAddress(allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+	}
+	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
 
 const buildIndex = async (from, to) => {
@@ -599,6 +609,7 @@ const init = async () => {
 		await getBlocks({ height: genesisHeight });
 
 		// Start the indexing process
+		await indexAllDelegateAccounts();
 		await indexPastBlocks();
 		await indexGenesisAccounts();
 	} catch (err) {
