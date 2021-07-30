@@ -65,6 +65,9 @@ const logger = Logger();
 let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
+
+let genesisAccountsToIndex;
+let genesisAccountIndexingBatchNum = -1;
 let isGenesisAccountsIndexingInProgress = false;
 
 const setGenesisHeight = (height) => genesisHeight = height;
@@ -382,27 +385,39 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisAccounts = async () => {
+	const BATCH_SIZE = 15000;
 	try {
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
+			genesisAccountIndexingBatchNum++;
+
+			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
 
 			const accountsDB = await getAccountsIndex();
 			const numAccountsIndexed = await accountsDB.count();
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-			const genesisAccountAddressesToIndex = genesisBlock.asset.accounts
-				.filter(account => account.address.length > 16) // Filter out reclaim accounts
+			if (!genesisAccountsToIndex) genesisAccountsToIndex = genesisBlock.asset.accounts
+				.filter(account => account.address.length > 16); // Filter out reclaim accounts
+			const genesisAccountAddressesToIndex = genesisAccountsToIndex
+				.slice(batchNum * BATCH_SIZE, (batchNum + 1) * BATCH_SIZE)
 				.map(account => account.address);
 
-			logger.debug(`numAccountsIndexed: ${numAccountsIndexed}, numGenesisAccounts: ${genesisAccountAddressesToIndex.length}`);
+			logger.debug(`numAccountsIndexed: ${numAccountsIndexed}, numGenesisAccounts: ${genesisAccountsToIndex.length}`);
 
-			if (numAccountsIndexed >= genesisAccountAddressesToIndex.length) {
+			if (batchNum === 0 && numAccountsIndexed >= genesisAccountsToIndex.length) {
 				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
+				Signals.get('newBlock').remove(indexGenesisAccounts);
 			} else {
-				logger.info(`Indexing genesis block accounts from height ${genesisHeight}`);
-				// Index the genesis block accounts
-				const initDelegateAddresses = genesisBlock.asset.initDelegates;
-				await indexAccountsbyAddress(initDelegateAddresses, true);
+				if (batchNum === 0) {
+					logger.info(`Starting indexing of genesis block accounts from height ${genesisHeight} in batches of ${BATCH_SIZE}`);
+
+					// Index the genesis block accounts
+					const initDelegateAddresses = genesisBlock.asset.initDelegates;
+					await indexAccountsbyAddress(initDelegateAddresses, true);
+				}
+
+				logger.info(`Indexing genesis account batch: ${batchNum}, ${Math.ceil(genesisAccountsToIndex.length / BATCH_SIZE) - batchNum - 1} to go`);
 
 				const PAGE_SIZE = 20;
 				const NUM_PAGES = Math.ceil(genesisAccountAddressesToIndex.length / PAGE_SIZE);
@@ -414,22 +429,22 @@ const indexGenesisAccounts = async () => {
 					);
 				}
 
-				logger.info('Finished indexing the genesis block accounts');
+				if (genesisAccountAddressesToIndex.length < BATCH_SIZE) {
+					// Stop retrying genesis account indexing on successful completion
+					Signals.get('newBlock').remove(indexGenesisAccounts);
+					logger.info('Finished indexing the genesis block accounts');
+
+					// Reset global variables and free memory
+					genesisAccountIndexingBatchNum = -1;
+					genesisAccountsToIndex = undefined;
+				}
 			}
-			// Stop retrying genesis account indexing on success or if already indexed
-			// eslint-disable-next-line no-use-before-define
-			Signals.get('newBlock').remove(indexGenesisAccountsListener);
 		}
 	} catch (err) {
 		logger.warn(`Unable to index the Genesis block accounts: ${err.message}`);
 	} finally {
 		isGenesisAccountsIndexingInProgress = false;
 	}
-};
-
-const indexGenesisAccountsListener = async payload => {
-	const { data: [newBlock] } = payload;
-	if (newBlock.height % 20 === 0) await indexGenesisAccounts();
 };
 
 const buildIndex = async (from, to) => {
@@ -593,7 +608,7 @@ const init = async () => {
 
 	// Check and update index readiness status
 	Signals.get('newBlock').add(checkIndexReadiness);
-	Signals.get('newBlock').add(indexGenesisAccountsListener);
+	Signals.get('newBlock').add(indexGenesisAccounts);
 };
 
 module.exports = {
