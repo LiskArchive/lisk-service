@@ -443,6 +443,36 @@ const getAccounts = async params => {
 
 const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
 
+const getAllDelegates = async () => {
+	// TODO: Currently times out, requires optimization
+	const allDelegates = {
+		data: [],
+		meta: {},
+	};
+
+	const allDelegateInfo = await coreApi.getAllDelegates();
+
+	const PAGE_SIZE = 10;
+	for (let i = 0; i < Math.ceil(allDelegateInfo.data.length / PAGE_SIZE); i++) {
+		// eslint-disable-next-line no-await-in-loop
+		await BluebirdPromise.map(
+			allDelegateInfo.data
+				.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE)
+				.map(({ address }) => getBase32AddressFromHex(address)),
+			async address => {
+				const response = await getAccounts({ address });
+				if (response.data) {
+					const [delegate] = response.data;
+					if (delegate) allDelegates.data.push(delegate);
+				}
+			},
+			{ concurrency: 10 },
+		);
+	}
+
+	return allDelegates;
+};
+
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
 	if (account.keys && account.keys.numberOfSignatures) {
@@ -484,6 +514,7 @@ module.exports = {
 	confirmPublicKey,
 	getAccounts,
 	getDelegates,
+	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountsbyAddress,
