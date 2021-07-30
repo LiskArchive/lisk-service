@@ -385,7 +385,7 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisAccounts = async () => {
-	const BATCH_SIZE = 15000;
+	const BATCH_SIZE = 5000;
 	try {
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
