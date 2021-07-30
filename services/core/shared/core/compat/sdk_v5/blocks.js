@@ -442,6 +442,7 @@ const indexGenesisAccounts = async () => {
 		}
 	} catch (err) {
 		logger.warn(`Unable to index the Genesis block accounts: ${err.message}`);
+		genesisAccountIndexingBatchNum--; // Re-index the batch when errored
 	} finally {
 		isGenesisAccountsIndexingInProgress = false;
 	}
