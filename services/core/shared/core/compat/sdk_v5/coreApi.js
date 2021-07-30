@@ -243,6 +243,20 @@ const getLegacyAccountInfo = async publicKey => {
 	}
 };
 
+const getAllDelegates = async () => {
+	try {
+		const apiClient = await getApiClient();
+		const allDelegates = await apiClient._channel.invoke('dpos:getAllDelegates');
+		return { data: allDelegates };
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			await getApiClient();
+			throw new TimeoutException('Request timed out when calling \'getAllDelegates\'');
+		}
+		throw err;
+	}
+};
+
 const getPeers = async (state = 'connected') => {
 	try {
 		const apiClient = await getApiClient();
@@ -326,6 +340,7 @@ module.exports = {
 	getAccountByAddress,
 	getAccountsByAddresses,
 	getLegacyAccountInfo,
+	getAllDelegates,
 	getNetworkStatus,
 	getPeers,
 	getForgers,
