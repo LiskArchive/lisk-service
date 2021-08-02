@@ -21,16 +21,15 @@ const parseToJSONCompatObj = obj => {
 	if (typeof obj === 'bigint') return String(obj);
 	if (typeof obj === 'object' && Array.isArray(obj)) return obj.map(o => parseToJSONCompatObj(o));
 
-	const result = {};
 	Object.entries(obj)
 		.forEach(([k, v]) => {
-			if (v instanceof Buffer) result[k] = Buffer.from(v).toString('hex');
-			else if (typeof v === 'bigint') result[k] = String(v);
-			else if (typeof v === 'object' && Array.isArray(v)) result[k] = v.map(o => parseToJSONCompatObj(o));
-			else if (typeof v === 'object' && v !== null) result[k] = parseToJSONCompatObj(v);
-			else result[k] = v;
+			if (v instanceof Buffer) obj[k] = Buffer.from(v).toString('hex');
+			else if (typeof v === 'bigint') obj[k] = String(v);
+			else if (typeof v === 'object' && Array.isArray(v)) obj[k] = v.map(o => parseToJSONCompatObj(o));
+			else if (typeof v === 'object' && v !== null) obj[k] = parseToJSONCompatObj(v);
+			else obj[k] = v;
 		});
-	return result;
+	return obj;
 };
 
 module.exports = {
