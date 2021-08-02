@@ -53,8 +53,10 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
+const accountsIndexSchema = require('./schema/accounts');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
@@ -63,6 +65,10 @@ const logger = Logger();
 let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
+
+let genesisAccountsToIndex;
+let genesisAccountIndexingBatchNum = -1;
+let isGenesisAccountsIndexingInProgress = false;
 
 const setGenesisHeight = (height) => genesisHeight = height;
 
@@ -378,123 +384,158 @@ const deleteBlock = async (block) => {
 	return block;
 };
 
-const indexGenesisBlock = async () => {
-	const blocksDB = await getBlocksIndex();
-	const [indexedGenesisBlock] = await blocksDB.find({ height: genesisHeight });
+const indexGenesisAccounts = async () => {
+	const BATCH_SIZE = 10000;
+	try {
+		if (!isGenesisAccountsIndexingInProgress) {
+			isGenesisAccountsIndexingInProgress = true;
+			genesisAccountIndexingBatchNum++;
 
-	if (indexedGenesisBlock) {
-		logger.info(`Genesis block already indexed at height ${genesisHeight}`);
-	} else {
-		logger.info(`Ìndexing genesis block at height ${genesisHeight}`);
-		const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
 
-		// Index the genesis block transactions first
-		await indexTransactions([genesisBlock]);
+			const accountsDB = await getAccountsIndex();
+			const numAccountsIndexed = await accountsDB.count();
+			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-		// Index the genesis block accounts next
-		const initDelegateAddresses = genesisBlock.asset.initDelegates;
-		const nonDelegateAddressesToIndex = genesisBlock.asset.accounts
-			.filter(account => account.address.length > 16) // Filter out reclaim accounts
-			.map(account => account.address);
+			if (!genesisAccountsToIndex) genesisAccountsToIndex = genesisBlock.asset.accounts
+				.filter(account => account.address.length > 16); // Filter out reclaim accounts
+			const genesisAccountAddressesToIndex = genesisAccountsToIndex
+				.slice(batchNum * BATCH_SIZE, (batchNum + 1) * BATCH_SIZE)
+				.map(account => account.address);
 
-		const accountAddressesToIndex = initDelegateAddresses.concat(nonDelegateAddressesToIndex);
+			logger.debug(`numAccountsIndexed: ${numAccountsIndexed}, numGenesisAccounts: ${genesisAccountsToIndex.length}`);
 
-		const PAGE_SIZE = 20;
-		const NUM_PAGES = Math.ceil(accountAddressesToIndex.length / PAGE_SIZE);
-		for (let i = 0; i < NUM_PAGES; i++) {
-			// eslint-disable-next-line no-await-in-loop
-			await indexAccountsbyAddress(
-				accountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-				true,
-			);
+			if (batchNum === 0 && numAccountsIndexed >= genesisAccountsToIndex.length) {
+				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
+				Signals.get('newBlock').remove(indexGenesisAccounts);
+			} else {
+				if (batchNum === 0) {
+					logger.info(`Starting indexing of genesis block accounts from height ${genesisHeight} in batches of ${BATCH_SIZE}`);
+
+					// Index the genesis block accounts
+					const initDelegateAddresses = genesisBlock.asset.initDelegates;
+					await indexAccountsbyAddress(initDelegateAddresses, true);
+				}
+
+				logger.info(`Indexing genesis account batch: ${batchNum}, ${Math.ceil(genesisAccountsToIndex.length / BATCH_SIZE) - batchNum - 1} to go`);
+
+				const PAGE_SIZE = 20;
+				const NUM_PAGES = Math.ceil(genesisAccountAddressesToIndex.length / PAGE_SIZE);
+				for (let i = 0; i < NUM_PAGES; i++) {
+					// eslint-disable-next-line no-await-in-loop
+					await indexAccountsbyAddress(
+						genesisAccountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+						true,
+					);
+				}
+
+				if (genesisAccountAddressesToIndex.length < BATCH_SIZE) {
+					// Stop retrying genesis account indexing on successful completion
+					Signals.get('newBlock').remove(indexGenesisAccounts);
+					logger.info('Finished indexing the genesis block accounts');
+
+					// Reset global variables and free memory
+					genesisAccountIndexingBatchNum = -1;
+					genesisAccountsToIndex = undefined;
+				}
+			}
 		}
-
-		// Finally index the genesis block itself
-		await indexBlocksQueue.add('indexBlocksQueue', { blocks: [genesisBlock] });
-		logger.info('Finished indexing the genesis block');
+	} catch (err) {
+		genesisAccountIndexingBatchNum--;
+		logger.warn(`Unable to index the Genesis block accounts due to: ${err}`);
+	} finally {
+		isGenesisAccountsIndexingInProgress = false;
 	}
+};
+
+const indexAllDelegateAccounts = async () => {
+	const allDelegatesInfo = await coreApi.getAllDelegates();
+	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
+	const PAGE_SIZE = 1000;
+	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
+		// eslint-disable-next-line no-await-in-loop
+		await indexAccountsbyAddress(allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+	}
+	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
 
 const buildIndex = async (from, to) => {
-	try {
-		if (from > to) {
-			logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
-			return;
-		}
-
-		const MAX_BLOCKS_LIMIT_PP = 50;
-		const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
-
-		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-			/* eslint-disable no-await-in-loop */
-			const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-			const offset = pseudoOffset > from ? pseudoOffset : from - 1;
-			const batchFromHeight = offset + 1;
-			const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-				? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-			logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
-
-			let blocks;
-			do {
-				blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
-			} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
-
-			await indexBlocksQueue.add('indexBlocksQueue', { blocks });
-			/* eslint-enable no-await-in-loop */
-		}
-		logger.info(`Finished building block index (${from}-${to})`);
-	} catch (err) {
-		logger.warn('Indexing failed due to: ', err.message);
-		logger.info(`Retrying to build index for blocks ${from}-${to}`);
-		await buildIndex(from, to);
+	if (from > to) {
+		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
+		return;
 	}
+
+	const MAX_BLOCKS_LIMIT_PP = 100;
+	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+
+	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+		/* eslint-disable no-await-in-loop */
+		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
+		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		const batchFromHeight = offset + 1;
+		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
+			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
+		logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
+
+		let blocks;
+		do {
+			blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
+		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
+
+		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
+		/* eslint-enable no-await-in-loop */
+	}
+	logger.info(`Finished building block index (${from}-${to})`);
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
-	// startHeight can never be lower than genesisHeight
-	if (startHeight < genesisHeight) startHeight = genesisHeight;
+	try {
+		// startHeight can never be lower than genesisHeight
+		if (startHeight < genesisHeight) startHeight = genesisHeight;
 
-	const PAGE_SIZE = 100000;
-	const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const toHeight = endHeight - (PAGE_SIZE * pageNum);
-		const fromHeight = (toHeight - PAGE_SIZE) > startHeight
-			? (toHeight - PAGE_SIZE) : startHeight;
+		const PAGE_SIZE = 100000;
+		const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
+		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
+			/* eslint-disable no-await-in-loop */
+			const toHeight = endHeight - (PAGE_SIZE * pageNum);
+			const fromHeight = (toHeight - PAGE_SIZE) > startHeight
+				? (toHeight - PAGE_SIZE) : startHeight;
 
-		logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
+			logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
 
-		const blocksDB = await getBlocksIndex();
-		const propBetweens = [{
-			property: 'height',
-			from: fromHeight,
-			to: toHeight,
-		}];
-		const indexedBlockCount = await blocksDB.count({ propBetweens });
-		if (indexedBlockCount < toHeight) {
-			const missingBlocksQueryStatement = `
-				SELECT
-					(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
-					(b1.height - 1) AS 'to'
-				FROM blocks b1
-				WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
-					AND b1.height != ${genesisHeight}
-					AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
-			`;
+			const blocksDB = await getBlocksIndex();
+			const propBetweens = [{
+				property: 'height',
+				from: fromHeight,
+				to: toHeight,
+			}];
+			const indexedBlockCount = await blocksDB.count({ propBetweens });
+			if (indexedBlockCount < toHeight) {
+				const missingBlocksQueryStatement = `
+					SELECT
+						(SELECT COALESCE(MAX(b0.height)+1, ${genesisHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+						(b1.height - 1) AS 'to'
+					FROM blocks b1
+					WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
+						AND b1.height != ${genesisHeight}
+						AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
+				`;
 
-			logger.debug('propBetweens', util.inspect(propBetweens));
-			const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
-			logger.debug('missingBlocksRanges', util.inspect(missingBlocksRanges));
-			for (let i = 0; i < missingBlocksRanges.length; i++) {
-				const { from, to } = missingBlocksRanges[i];
+				logger.debug('propBetweens', util.inspect(propBetweens));
+				const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
+				logger.debug('missingBlocksRanges', util.inspect(missingBlocksRanges));
+				for (let i = 0; i < missingBlocksRanges.length; i++) {
+					const { from, to } = missingBlocksRanges[i];
 
-				logger.info(`Attempting to cache missing blocks ${from}-${to}`);
-
-				if (from === genesisHeight) await indexGenesisBlock();
-				await buildIndex(from, to);
+					logger.info(`Attempting to cache missing blocks ${from}-${to}`);
+					await buildIndex(from, to);
+				}
 			}
+			/* eslint-enable no-await-in-loop */
 		}
-		/* eslint-enable no-await-in-loop */
+	} catch (err) {
+		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
+		await indexMissingBlocks(startHeight, endHeight);
 	}
 };
 
@@ -519,7 +560,9 @@ const indexPastBlocks = async () => {
 		? lastIndexedHeight : blockIndexLowerRange;
 
 	// Start building the block index
-	await buildIndex(highestIndexedHeight, blockIndexHigherRange);
+	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(err => {
+		logger.warn(`Indexing failed due to: ${err.message}`);
+	});
 	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
 	logger.info('Finished building the blocks index');
 };
@@ -564,11 +607,13 @@ const init = async () => {
 		// Set the genesis height
 		setGenesisHeight(await coreApi.getGenesisHeight());
 
-		await indexGenesisBlock().catch(err => {
-			logger.error(err.message);
-			logger.warn('Unable to index the Genesis block. Continuing with the remaining...');
-		});
+		// First download the genesis block, if applicable
+		await getBlocks({ height: genesisHeight });
+
+		// Start the indexing process
+		await indexAllDelegateAccounts();
 		await indexPastBlocks();
+		await indexGenesisAccounts();
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
@@ -576,6 +621,7 @@ const init = async () => {
 
 	// Check and update index readiness status
 	Signals.get('newBlock').add(checkIndexReadiness);
+	Signals.get('newBlock').add(indexGenesisAccounts);
 };
 
 module.exports = {

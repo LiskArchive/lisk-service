@@ -180,22 +180,26 @@ const getDelegates = async params => {
 };
 
 const loadAllDelegates = async () => {
-	const maxCount = 10000;
-	delegateList = await requestAll(coreApi.getDelegates, { limit: 50 }, maxCount);
-	await BluebirdPromise.map(
-		delegateList,
-		async delegate => {
-			delegate.address = delegate.account.address;
-			delegate.publicKey = delegate.account.publicKey;
-			await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
-			await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
-			return delegate;
-		},
-		{ concurrency: delegateList.length },
-	);
+	try {
+		const maxCount = 10000;
+		delegateList = await requestAll(coreApi.getDelegates, { limit: 10 }, maxCount);
+		await BluebirdPromise.map(
+			delegateList,
+			async delegate => {
+				delegate.address = delegate.account.address;
+				delegate.publicKey = delegate.account.publicKey;
+				await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
+				await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
+				return delegate;
+			},
+			{ concurrency: delegateList.length },
+		);
 
-	if (delegateList.length) {
-		logger.info(`Updated delegate list with ${delegateList.length} delegates.`);
+		if (delegateList.length) {
+			logger.info(`Updated delegate list with ${delegateList.length} delegates`);
+		}
+	} catch (err) {
+		logger.warn(`Failed to load all delegates due to: ${err.message}`);
 	}
 };
 

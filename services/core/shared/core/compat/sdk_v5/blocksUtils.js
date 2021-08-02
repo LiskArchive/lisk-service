@@ -71,10 +71,9 @@ const loadConfig = async () => {
 
 			genesisBlockFilePath = `./data/${networkIdentifier}/genesis_block.json`;
 			logger.info(`genesisBlockFilePath set to ${genesisBlockFilePath}`);
-		}
-		else {
+		} else {
 			logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
-			return
+			return;
 		}
 	}
 
@@ -99,7 +98,7 @@ const downloadGenesisBlock = async () => {
 					response.pipe(tar.extract({ cwd: directoryPath }));
 					response.on('error', async (err) => reject(err));
 					response.on('end', async () => {
-						logger.info('Genesis block download successful');
+						logger.info('Genesis block downloaded successfully');
 						return setTimeout(resolve, 500);
 					});
 				} else {
@@ -114,7 +113,7 @@ const downloadGenesisBlock = async () => {
 				.then(async response => {
 					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
 					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => {
-						logger.info('Genesis block download successful');
+						logger.info('Genesis block downloaded successfully');
 						return resolve();
 					});
 				})
