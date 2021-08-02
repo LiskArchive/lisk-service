@@ -19,13 +19,13 @@ const parseToJSONCompatObj = obj => {
 	if (['string', 'number'].includes(typeof obj)) return obj;
 	if (obj instanceof Buffer) return Buffer.from(obj).toString('hex');
 	if (typeof obj === 'bigint') return String(obj);
-	if (typeof obj === 'object' && Array.isArray(obj)) return (() => { obj.forEach(o => parseToJSONCompatObj(o)); return obj; })();
+	if (typeof obj === 'object' && Array.isArray(obj)) return obj.map(o => parseToJSONCompatObj(o));
 
 	Object.entries(obj)
 		.forEach(([k, v]) => {
 			if (v instanceof Buffer) obj[k] = Buffer.from(v).toString('hex');
 			else if (typeof v === 'bigint') obj[k] = String(v);
-			else if (typeof v === 'object' && Array.isArray(v)) obj[k].forEach(o => parseToJSONCompatObj(o));
+			else if (typeof v === 'object' && Array.isArray(v)) obj[k] = v.map(o => parseToJSONCompatObj(o));
 			else if (typeof v === 'object' && v !== null) obj[k] = parseToJSONCompatObj(v);
 			else obj[k] = v;
 		});
