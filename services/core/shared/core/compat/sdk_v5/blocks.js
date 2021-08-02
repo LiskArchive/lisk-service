@@ -385,7 +385,7 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisAccounts = async () => {
-	const BATCH_SIZE = 1000;
+	const BATCH_SIZE = 20000;
 	try {
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
@@ -441,7 +441,8 @@ const indexGenesisAccounts = async () => {
 			}
 		}
 	} catch (err) {
-		logger.warn(`Unable to index the Genesis block accounts: ${err.message}`);
+		genesisAccountIndexingBatchNum--;
+		logger.warn(`Unable to index the Genesis block accounts due to: ${err}`);
 	} finally {
 		isGenesisAccountsIndexingInProgress = false;
 	}
