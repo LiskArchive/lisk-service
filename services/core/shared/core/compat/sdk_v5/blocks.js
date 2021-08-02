@@ -385,7 +385,7 @@ const deleteBlock = async (block) => {
 };
 
 const indexGenesisAccounts = async () => {
-	const BATCH_SIZE = 1000;
+	const BATCH_SIZE = 50000;
 	try {
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
@@ -433,6 +433,7 @@ const indexGenesisAccounts = async () => {
 					// Stop retrying genesis account indexing on successful completion
 					Signals.get('newBlock').remove(indexGenesisAccounts);
 					logger.info('Finished indexing the genesis block accounts');
+					Signals.get('readyForStats').dispatch(true);
 
 					// Reset global variables and free memory
 					genesisAccountIndexingBatchNum = -1;
@@ -612,7 +613,6 @@ const init = async () => {
 		// Start the indexing process
 		await indexAllDelegateAccounts();
 		await indexPastBlocks();
-		await indexGenesisAccounts();
 	} catch (err) {
 		logger.warn('Unable to update block index');
 		logger.warn(err.message);
@@ -622,6 +622,10 @@ const init = async () => {
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('newBlock').add(indexGenesisAccounts);
 };
+
+Signals.get('blockIndexReady').add(async () => {
+	await indexGenesisAccounts();
+});
 
 module.exports = {
 	init,
