@@ -212,10 +212,9 @@ const resolveDelegateInfo = async accounts => {
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
 					});
-					const genesisHeight = 0; // Local declaration to avoid circular dependency
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
-						: (await isItGenesisAccount(account.address)) && genesisHeight;
+						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
 				}
 			}
 			return account;
