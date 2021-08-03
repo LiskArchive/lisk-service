@@ -100,7 +100,7 @@ export TRANSACTION_STATS_UPDATE_INTERVAL="3600"
 export ENABLE_FEE_ESTIMATOR_QUICK="true"
 ```
 
-TODO: Mention accessing local core instance from Docker on Linux and MacOS
+When running a local instance of Lisk Core and Lisk Service is run by Docker the following path needs to be set: `LISK_CORE_WS="ws://host.docker.internal:4000"`.
 
 Configuration options are described [in this document](./docs/config_options.md).
 
