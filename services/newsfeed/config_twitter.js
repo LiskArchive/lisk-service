@@ -35,14 +35,14 @@ const getTwitterConfig = () => ({
 			image_url: '=,string',
 			source: '=,string',
 			source_id: 'id,string',
-			createdAt: '=,number',
-			modifiedAt: '=,number',
+			created_at: '=,number',
+			modified_at: '=,number',
 			title: '=,string',
 			url: '=,string',
 		},
 		customMapper: [
-			['createdAt', 'twitterUnixTimestamp', 'created_at'],
-			['modifiedAt', 'twitterUnixTimestamp', 'created_at'],
+			['created_at', 'twitterUnixTimestamp', 'created_at'],
+			['modified_at', 'twitterUnixTimestamp', 'created_at'],
 		],
 	},
 });
