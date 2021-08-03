@@ -78,7 +78,8 @@ curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
 
 # APT-based dependencies
 sudo apt update
-sudo apt install build-essential git-core make redis-server nodejs
+sudo apt install -y build-essential git make redis-server nodejs mysql-server
+sudo mysql_secure_installation
 
 # NPM-based dependencies
 npm install -g pm2

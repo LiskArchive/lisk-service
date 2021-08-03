@@ -47,6 +47,19 @@ ENABLE_WS_API=blockchain,rpc-v2
 
 Note: Since the SDK version 5 the HTTP APIs `http-version1,http-version1-compat` and WebSocket APIs `rpc,rpc-v1` are considered deprecated. Please use only `version2` APIs when connecting to the SDKv5-based node.
 
+### Caching
+
+```bash
+# To enable response caching, the ENABLE_HTTP_CACHE_CONTROL environment 
+# variable is required to be true. This would include the Cache-Control
+# header within the responses.
+ENABLE_HTTP_CACHE_CONTROL=true
+
+# The `Cache-Control` directives can be overridden with the `HTTP_CACHE_CONTROL_DIRECTIVES` 
+# environment variable and currently defaults to `public, max-age=10`.
+HTTP_CACHE_CONTROL_DIRECTIVES='public, max-age=10'
+```
+
 ### Compatibility settings
 
 ```bash
@@ -61,7 +74,7 @@ JSON_RPC_STRICT_MODE=false
 ### Node settings
 
 ```bash
-LISK_CORE_WS=ws://localhost:5000       # Lisk Core WebSocket RPC API
+LISK_CORE_WS=ws://localhost:8080       # Lisk Core WebSocket RPC API
 LISK_CORE_CLIENT_TIMEOUT=30            # Lisk Core client timeout (in seconds)
 ```
 
