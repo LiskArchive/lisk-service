@@ -52,7 +52,7 @@ module.exports = {
 			env: {
 				// --- Remember to set the properties below
 				// SERVICE_BROKER: 'redis://localhost:6379/0',
-				// LISK_CORE_WS: 'ws://localhost:4002',
+				// LISK_CORE_WS: 'ws://localhost:8080',
 				// SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
 				// SERVICE_CORE_MYSQL: 'mysql://root@localhost:3306/sdk_v5_betanet',
 				LISK_STATIC: 'https://static-data.lisk.io',

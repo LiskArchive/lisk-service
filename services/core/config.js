@@ -28,7 +28,7 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
 /**
  * External endpoints
  */
-config.endpoints.liskHttp = `${(process.env.LISK_CORE_HTTP || 'http://127.0.0.1:4000')}/api`;
+config.endpoints.liskHttp = `${(process.env.LISK_CORE_HTTP || 'http://127.0.0.1:8080')}/api`;
 config.endpoints.liskWs = process.env.LISK_CORE_WS || config.endpoints.liskHttp.replace('http', 'ws').replace('/api', '');
 config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://localhost:6379/1';
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.io';

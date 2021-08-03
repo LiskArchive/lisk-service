@@ -85,7 +85,7 @@ Before running the application set the required environment variables:
 ```
 ## Required
 # The local Lisk Core node WebSocket API port
-export LISK_CORE_WS="ws://localhost:4000"
+export LISK_CORE_WS="ws://localhost:8080"
 
 ## Optional
 # To index all blocks in the blockchain (might take a while)
@@ -100,7 +100,7 @@ export TRANSACTION_STATS_UPDATE_INTERVAL="3600"
 export ENABLE_FEE_ESTIMATOR_QUICK="true"
 ```
 
-When running a local instance of Lisk Core and Lisk Service is run by Docker the following path needs to be set: `LISK_CORE_WS="ws://host.docker.internal:4000"`.
+When running a local instance of Lisk Core and Lisk Service is run by Docker the following variable needs to be set: `LISK_CORE_WS="ws://host.docker.internal:8080"`.
 
 Configuration options are described [in this document](./docs/config_options.md).
 
