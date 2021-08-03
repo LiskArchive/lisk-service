@@ -82,7 +82,7 @@ Deprecated settings
 
 ```
 # This setting is required only for SDK version 4 or lower.
-LISK_CORE_HTTP=https://mainnet.lisk.io # Lisk Core HTTP URL
+LISK_CORE_HTTP=https://mainnet.lisk.com # Lisk Core HTTP URL
 ```
 
 ### Internal cache & persistence
@@ -108,7 +108,7 @@ MYSQL_PASSWORD=password
 
 ```bash
 # Lisk static assets, ie. known account lists
-LISK_STATIC=https://static-data.lisk.io
+LISK_STATIC=https://static-data.lisk.com
 
 # Lisk Service geolocation backend
 GEOIP_JSON=https://geoip.lisk.io/json
