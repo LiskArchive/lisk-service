@@ -1,5 +1,4 @@
 {
     "address"               : { "owner" : "owner", "description" : "description" },
-    "16313739661670634666L" : { "owner" : "Genesis Account", "description" : "Initial supply" },
-    "13795892230918963229L" : { "owner" : "Top Account", "description" : "from Testnet" }
+    "lskckzngagcs4d5gvsgxmgnabyfyj8pz266gv8s8t" : { "owner" : "Top Account", "description" : "from Testnet" }
 }

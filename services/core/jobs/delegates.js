@@ -24,11 +24,20 @@ module.exports = [
 		schedule: '*/5 * * * *', // Every 5 min
 		init: async () => {
 			logger.debug('Initializing delegate cache...');
-			await reloadDelegateCache();
+			try {
+				await reloadDelegateCache();
+				logger.info('Successfully initialized delegate cache');
+			} catch (err) {
+				logger.warn(`Initializing delegate cache failed due to: ${err.message}`);
+			}
 		},
 		controller: async () => {
 			logger.debug('Reloading delegate cache...');
-			await reloadDelegateCache();
+			try {
+				await reloadDelegateCache();
+			} catch (err) {
+				logger.warn(`Reloading delegate cache failed due to: ${err.message}`);
+			}
 		},
 	},
 ];
