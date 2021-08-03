@@ -112,7 +112,7 @@ npm test
 
 Functional tests ensure that a project build on the top of the framework is able to process requests and collect responses involving the API gateway.
 
-In order to run them successfully, they need to have the template component running alongside.
+In order to run them successfully, it is necessary to have the template component running alongside.
 
 ```bash
 cd service/template
@@ -130,7 +130,7 @@ npm run test:functional
 
 Integration tests work in a similar manner to functional tests. In this case the real blockchain data coming from a custom test blockchain is used. Please ensure that Lisk Core and all microservices are running.
 
-To run Lisk Core with custom blockchain:
+To run Lisk Core with a custom blockchain:
 ```bash
 cd jenkins/lisk-core
 make up
@@ -141,7 +141,7 @@ To run Lisk Service with PM2
 pm2 start ecosystem.core3.config.js
 ```
 
-To run instegration tests:
+To run the integration tests:
 ```bash
 cd tests
 npm run test:integration
