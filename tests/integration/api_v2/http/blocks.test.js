@@ -419,6 +419,27 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('returns 404 NOT FOUND when queried with invalid combination: blockId and wrong height', async () => {
+			const expectedStatus = 404;
+			const height = refBlock.height - 10;
+			const response = await api.get(`${endpoint}?blockId=${refBlock.id}&height=${height}`, expectedStatus);
+			expect(response).toMap(notFoundSchema);
+		});
+
+		it('returns 404 NOT FOUND when queried with invalid combination: blockId and wrong timestamp', async () => {
+			const expectedStatus = 404;
+			const timestamp = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const response = await api.get(`${endpoint}?blockId=${refBlock.id}&timestamp=${timestamp}`, expectedStatus);
+			expect(response).toMap(notFoundSchema);
+		});
+
+		it('returns 404 NOT FOUND when queried with invalid combination: blockId and wrong generatorUsername', async () => {
+			const expectedStatus = 404;
+			const generatorUsername = 'genesis_test';
+			const response = await api.get(`${endpoint}?blockId=${refBlock.id}&generatorUsername=${generatorUsername}`, expectedStatus);
+			expect(response).toMap(notFoundSchema);
+		});
+
 		it('returns 404 NOT FOUND when queried with blockId and non-zero offset', async () => {
 			const expectedStatus = 404;
 			const response = await api.get(`${endpoint}?blockId=${refBlock.id}&offset=1`, expectedStatus);
