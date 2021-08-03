@@ -4,12 +4,9 @@
         "required": [
             "author",
             "content",
-            "imageUrl",
-            "sourceName",
+            "source",
             "sourceId",
             "timestamp",
-            "createdAt",
-            "modifiedAt",
             "title",
             "url",
             "image_url"
@@ -25,12 +22,7 @@
                 "example": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
                 "description": "Blog post text."
             },
-            "imageUrl": {
-                "type": "string",
-                "example": "https://t.co/QpZOkBfrgA.jpg",
-                "description": "Main picture URL"
-            },
-            "sourceName": {
+            "source": {
                 "type": "string",
                 "example": "twitter_lisk",
                 "description": "Source name"
@@ -44,17 +36,6 @@
                 "type": "integer",
                 "example": 1623053809,
                 "description": "Last modified timestamp."
-            },
-            "createdAt": {
-                "type": "integer",
-                "example": 1623053809,
-                "description": "Creation time."
-            },
-            "modifiedAt": {
-                "type": "integer",
-                "format": "hex",
-                "example": 1623053809,
-                "description": "Modification time."
             },
             "title": {
                 "type": "string",

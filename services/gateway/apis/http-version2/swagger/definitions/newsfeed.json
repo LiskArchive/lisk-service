@@ -4,10 +4,8 @@
         "required": [
             "author",
             "content",
-            "imageUrl",
-            "sourceName",
+            "source",
             "sourceId",
-            "timestamp",
             "createdAt",
             "modifiedAt",
             "title",
@@ -20,30 +18,20 @@
                 "example": "LiskHQ",
                 "description": "Blog post author."
             },
-            "content": {
+            "content_t": {
                 "type": "string",
                 "example": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
                 "description": "Blog post text."
             },
-            "imageUrl": {
-                "type": "string",
-                "example": "https://t.co/QpZOkBfrgA.jpg",
-                "description": "Main picture URL"
-            },
-            "sourceName": {
+            "source": {
                 "type": "string",
                 "example": "twitter_lisk",
                 "description": "Source name"
             },
-            "sourceId": {
+            "source_id": {
                 "type": "string",
                 "example": "4584a7d2db15920e130eeaf1014f87c99b5af329",
                 "description": "External ID of the blog post."
-            },
-            "timestamp": {
-                "type": "integer",
-                "example": 1623053809,
-                "description": "Last modified timestamp."
             },
             "createdAt": {
                 "type": "integer",
