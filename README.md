@@ -25,7 +25,7 @@ Each service is an independent part of the repository and is placed in a separat
 
 **Remarks**
 
-- Lisk Service is configured to connect a local node on port 4000 by default.
+- Lisk Service is configured to connect a local node via WebSocket on port 8080 by default.
 - The default installation method is based on Docker.
 - Some token conversion rates in the market service require their own API keys.
 
