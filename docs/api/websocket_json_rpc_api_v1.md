@@ -2,7 +2,7 @@
 
 The Lisk Service is a web application that interacts with the whole Lisk ecosystem in various aspects: by accessing blockchain data, storing users' private data, retrieving and storing market data and interacting with social media.
 
-> The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public WebSocket-based JSON-RPC API. For RESTful API visit the [documentation page](http://lisk.io/docs).
+> The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public WebSocket-based JSON-RPC API. For RESTful API visit the [documentation page](http://lisk.com/docs).
 
 ## Table of Contents
 
@@ -40,9 +40,9 @@ The Lisk Service is a web application that interacts with the whole Lisk ecosyst
 
 ## Access paths and compatibility
 
-The WebSocket API can be accessed by the `wss://service.lisk.io/rpc-v1`.
+The WebSocket API can be accessed by the `wss://service.lisk.com/rpc-v1`.
 
-You can also access the testnet network by `wss://testnet-service.lisk.io/rpc-v1`.
+You can also access the testnet network by `wss://testnet-service.lisk.com/rpc-v1`.
 
 The Lisk Service WebSocket API uses the `socket.io` library and it is compatible with JSON-RPC 2.0 standard. The specification below contains numerous examples how to use the API in practice.
 

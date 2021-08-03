@@ -28,7 +28,7 @@ propose changes to this document in a pull request.
 This project and everyone participating in it is governed by the
 [Lisk Service Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are
 expected to uphold this code. Please report unacceptable behavior to
-[info@lisk.io](mailto:info@lisk.io).
+[info@lisk.com](mailto:info@lisk.com).
 
 ## Project License
 
@@ -41,7 +41,7 @@ Lisk is an open-source decentralized project, there are many ways and platforms
 to get help. These are some of them:
 
 * [Discuss and Ask on Reddit](https://www.reddit.com/r/Lisk/)
-* [Lisk FAQ](https://docs.lisk.io/docs/faq)
+* [Lisk FAQ](https://docs.lisk.com/docs/faq)
 
 If you prefer to chat with LiskHQ and other developers directly:
 
@@ -120,7 +120,7 @@ helps us resolve issues faster.
 
 #### Before Submitting A Bug Report
 
-* **Check the [FAQs](https://docs.lisk.io/docs/faq)** for a list of common
+* **Check the [FAQs](https://docs.lisk.com/docs/faq)** for a list of common
 	questions and problems.
 * **Determine
 	[which repository the problem should be reported in](https://github.com/LiskHQ)**.
