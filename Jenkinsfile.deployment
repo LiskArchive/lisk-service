@@ -2,30 +2,6 @@
 pipeline {
 	agent none
 	stages {
-		// stage('Build docker images (testnet)') {
-		// 	agent { node { label 'lisk-service-dev' } }
-		// 	when { branch 'development' }
-		// 	steps {
-		// 		sh 'make build-core'
-		// 		sh 'make build-gateway'
-		// 	}
-		// }
-		// stage('Deploy lisk-service (testnet)') {
-		// 	agent { node { label 'lisk-service-dev' } }
-		// 	when { branch 'development' }
-		// 	environment {
-		// 		ENABLE_HTTP_API='http-version1,http-version1-compat,http-status'
-		// 		ENABLE_WS_API='rpc,rpc-v1,blockchain'
-		// 	}
-		// 	steps {
-		// 		ansiColor('xterm') {
-		// 			dir('docker') {
-		// 				sh 'make down'
-		// 				sh 'make up-core2-testnet'
-		// 			}
-		// 		}
-		// 	}
-		// }
 		stage('Build docker images (betanet)') {
 			agent { node { label 'lisk-service-dev-v4' } }
 			when { branch 'development' }

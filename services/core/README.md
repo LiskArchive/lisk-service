@@ -39,7 +39,7 @@ A list of the most commonly used environment variables can be seen below:
 The variables listed above can be overridden globally by using global variables.
 
 ```bash
-export LISK_CORE_HTTP="http://localhost:4000" # Set Lisk node port to the given URL globally
+export LISK_CORE_WS="http://localhost:8080" # Set Lisk node port to the given URL globally
 ```
 
 ### Example
@@ -47,7 +47,7 @@ export LISK_CORE_HTTP="http://localhost:4000" # Set Lisk node port to the given 
 ```bash
 # Run a local instance with a local core node, MySQL and Redis
 # This also enables the transaction statistics for the previous 40 days
-LISK_CORE_WS="ws://localhost:4001" \
+LISK_CORE_WS="ws://localhost:8080" \
 SERVICE_CORE_MYSQL="mysql://lisk:password@localhost:3306/lisk" \
 SERVICE_CORE_REDIS="redis://localhost:6379/7" \
 ENABLE_TRANSACTION_STATS="true" \
