@@ -50,8 +50,8 @@ Note: Since the SDK version 5 the HTTP APIs `http-version1,http-version1-compat`
 ### Caching
 
 ```bash
-# To enable caching of the responses, the `ENABLE_HTTP_CACHE_CONTROL` environment 
-# variable is required to be set to `true`. This would include the `Cache-Control` 
+# To enable response caching, the ENABLE_HTTP_CACHE_CONTROL environment 
+# variable is required to be true. This would include the Cache-Control
 # header within the responses.
 ENABLE_HTTP_CACHE_CONTROL=true
 
