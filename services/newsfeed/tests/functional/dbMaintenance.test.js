@@ -42,7 +42,7 @@ describe('Test DB Maintenance', () => {
 
 		const source = 'twitter_lisk';
 		const propBetweens = [{
-			property: 'mtime',
+			property: 'modified_at',
 			to: moment().subtract(expiryInDays, 'days').unix(),
 		}];
 
