@@ -262,8 +262,8 @@ const init = async historyLengthDays => {
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);
 
 const updateTransactionStatistics = async historyLengthDays => {
-	const dateTo = moment().utc().endOf('month').subtract(0, 'day');
-	const dateFrom = moment(dateTo).startOf('month').subtract(historyLengthDays, 'day');
+	const dateTo = moment().utc().endOf('day').subtract(0, 'day');
+	const dateFrom = moment(dateTo).startOf('day').subtract(historyLengthDays, 'day');
 
 	const params = {
 		dateFormat: 'YYYY-MM-DD',
