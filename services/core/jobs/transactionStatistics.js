@@ -38,4 +38,16 @@ module.exports = [
 			}
 		},
 	},
+	{
+		name: 'verify.transaction.statistics',
+		description: 'Keep the transaction statistics up-to-date',
+		schedule: '15 */3 * * *', // Every 3 hours at 15th minute
+		controller: async () => {
+			if (config.transactionStatistics.enabled) {
+				logger.debug('Update transaction stats...');
+				await transactionStatistics
+					.updateTransactionStatistics(config.transactionStatistics.historyLengthDays);
+			}
+		},
+	},
 ];
