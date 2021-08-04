@@ -4,27 +4,30 @@
 
 Lisk Service is a web application that allows interaction with various blockchain networks based on Lisk and Bitcoin protocols.
 
-The main focus of Lisk Service is to provide data to the UI clients such as Lisk Desktop and Lisk Mobile. Lisk Service makes it possible to access all blockchain live data in a similar way to the regular Lisk SDK API, and in addition provides users with much more details and endpoints, such as geolocation and various statistics about network usage.
+The main focus of Lisk Service is to provide data to the UI clients such as Lisk Desktop and Lisk Mobile. Lisk Service makes it possible to access all live blockchain data in a similar manner to the regular Lisk SDK API. 
+In addition, Lisk Service also provides users with much more detailed information and endpoints, such as geolocation and various statistics about network usage, etc.
 
 The project implementation is based on Microservices. The technical stack is designed to deliver several micro-services, and each of them provides one particular functionality. The data is served in JSON format and exposed by a public RESTful API.
+
 ## Available Services
 
-Lisk Service consists of several separate modules, that can be run independently from the others. Gateway is required to expose the APIs provided by particular services.
+Lisk Service consists of several separate modules, that can be run independently from the others. The Gateway is required to expose the APIs provided by the specific services.
 
 Each service is an independent part of the repository and is placed in a separate directory in the `./services/` directory. Each of them contains its own `package.json` and `Dockerfile` that are needed to run the module.
 
 
 | Service                  | Description                                                                                                       |
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| [Gateway](services/gateway) | The Gateway service provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides users with a central point of data access that never breaks existing application compatibility.|
-| [Lisk](services/core) | The REST client service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
-| [Market](services/market) |  |
+| [Gateway](services/gateway) | The Gateway provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never breaks existing application compatibility.|
+| [Lisk](services/core) | The Lisk Core service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
+| [Market](services/market) | The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients. |
 | [Template](services/template) | The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing. |
 
 **Remarks**
 
-- Lisk Service is configured to connect [Lisk mainnet network](https://explorer.lisk.io/) by default.
+- Lisk Service is configured to connect a local node via WebSocket on port 8080 by default.
 - The default installation method is based on Docker.
+- Some token conversion rates in the market service require their own API keys.
 
 ## API documentation
 
@@ -39,7 +42,7 @@ The Gateway service provides the following APIs, which all users of Lisk Service
 ## Installation
 
 The default port for REST API requests and Socket.io-based communication is `9901`, it is possible to access it through the URL http://localhost:9901/. The REST API can be accessed by any HTTP client such as [Postman](https://www.postman.com/), [cURL](https://curl.haxx.se/) and [HTTPie](https://httpie.org/).
- 
+
 WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
 
 To continue the installation ensure that you have the following dependencies installed:
@@ -76,24 +79,29 @@ make build
 
 ## Configuration
 
-The default configuration is sufficient to run Lisk Service against the [mainnet network](https://explorer.lisk.io/).
+The default configuration is sufficient to run Lisk Service against the local node.
 
 Before running the application set the required environment variables:
 
 ```
 ## Required
 # The local Lisk Core node WebSocket API port
-export LISK_CORE_WS="ws://localhost:5000"
+export LISK_CORE_WS="ws://localhost:8080"
 
 ## Optional
 # To index all blocks in the blockchain (might take a while)
 export INDEX_N_BLOCKS="0"
 
-# To enable transaction statistics
+# Enable transaction statistics
 export ENABLE_TRANSACTION_STATS="true"
 export TRANSACTION_STATS_HISTORY_LENGTH_DAYS="366"
 export TRANSACTION_STATS_UPDATE_INTERVAL="3600"
+
+# Enable fee estimator
+export ENABLE_FEE_ESTIMATOR_QUICK="true"
 ```
+
+When running a local instance of Lisk Core and Lisk Service that is run by Docker, then the following variable needs to be set: `LISK_CORE_WS="ws://host.docker.internal:8080"`.
 
 Configuration options are described [in this document](./docs/config_options.md).
 
@@ -137,4 +145,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-[lisk documentation site]: https://lisk.io/documentation
+[lisk documentation site]: https://lisk.com/documentation

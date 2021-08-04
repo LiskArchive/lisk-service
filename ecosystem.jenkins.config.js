@@ -53,7 +53,7 @@ module.exports = {
 				LISK_CORE_WS: 'ws://localhost:5001',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
 				SERVICE_CORE_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
-				LISK_STATIC: 'https://static-data.lisk.io',
+				LISK_STATIC: 'https://static-data.lisk.com',
 				GEOIP_JSON: 'https://geoip.lisk.io/json',
 				ENABLE_TRANSACTION_STATS: 'true',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '40',

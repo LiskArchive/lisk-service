@@ -15,6 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
+	CacheRedis,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
@@ -49,6 +50,7 @@ const {
 } = require('../../../jsonTools');
 
 const coreApi = require('./coreApi');
+const config = require('../../../../config');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
@@ -63,9 +65,9 @@ const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignature
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
-const genesisAccounts = {};
+const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
 
-const isItGenesisAccount = address => genesisAccounts[address] || false;
+const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
 const indexAccounts = async job => {
 	const { accounts } = job.data;
@@ -114,19 +116,18 @@ const getAccountsFromCore = async (params) => {
 };
 
 const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
-	const { data: accountsToIndex } = await getAccountsFromCore({
-		addresses: dropDuplicates(addressesToIndex),
-	});
 	const finalAccountsToIndex = await BluebirdPromise.map(
-		accountsToIndex,
-		async account => {
+		dropDuplicates(addressesToIndex),
+		async address => {
+			const { data: [account] } = await getAccountsFromCore({ address });
+
 			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) genesisAccounts[account.address] = true;
-			const accountFromDB = await getIndexedAccountInfo({ address: account.address });
+			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
+			const accountFromDB = await getIndexedAccountInfo({ address });
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
-		{ concurrency: accountsToIndex.length },
+		{ concurrency: 10 },
 	);
 
 	const PAGE_SIZE = 100;
@@ -213,10 +214,9 @@ const resolveDelegateInfo = async accounts => {
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
 					});
-					const genesisHeight = 0; // Local declaration to avoid circular dependency
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
-						: isItGenesisAccount(account.address) && genesisHeight;
+						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
 				}
 			}
 			return account;
@@ -229,15 +229,11 @@ const resolveDelegateInfo = async accounts => {
 
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
-
-	const { data: accountsToIndex } = await getAccountsFromCore({
-		addresses: dropDuplicates(accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
-	});
-
 	const finalAccountsToIndex = await BluebirdPromise.map(
-		accountsToIndex,
-		async account => {
+		dropDuplicates(accountInfoArray
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
+		async address => {
+			const { data: [account] } = await getAccountsFromCore({ address });
 			const [accountInfo] = accountInfoArray
 				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
 			account.publicKey = accountInfo.publicKey;
@@ -255,7 +251,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			}
 			return account;
 		},
-		{ concurrency: accountsToIndex.length },
+		{ concurrency: 10 },
 	);
 
 	const PAGE_SIZE = 100;
@@ -318,26 +314,32 @@ const getAccounts = async params => {
 		data: [],
 		meta: {},
 	};
+
 	let paramPublicKey;
 	let addressFromParamPublicKey;
 	const accountsDB = await getAccountsIndex();
+
 	if (params.sort && params.sort.includes('rank')) {
 		throw new ValidationException('Rank based sorting is supported only for delegates');
 	}
+
 	if (params.search) {
 		params.search = {
 			property: 'username',
 			pattern: params.search,
 		};
 	}
+
 	if (params.id) {
 		const { id, ...remParams } = params;
 		params = remParams;
 		params.address = id;
 	}
+
 	if (params.address && typeof params.address === 'string') {
 		if (!(await confirmAddress(params.address))) return {};
 	}
+
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey)) return {};
 
@@ -349,6 +351,7 @@ const getAccounts = async params => {
 			address: addressFromParamPublicKey,
 		};
 	}
+
 	if (params.addresses) {
 		const { addresses, ...remParams } = params;
 		params = remParams;
@@ -372,8 +375,17 @@ const getAccounts = async params => {
 
 	if ((params.addresses && params.addresses.length) || params.address) {
 		try {
-			const response = await getAccountsFromCore(params);
-			if (response.data) accounts.data = response.data;
+			const response = {};
+			const addresses = params.addresses || [params.address];
+			response.data = await BluebirdPromise.map(
+				addresses,
+				async address => {
+					const { data: [account] } = await getAccountsFromCore({ address });
+					return account;
+				},
+				{ concurrency: 10 },
+			);
+			if (response.data.length) accounts.data = response.data;
 			if (params.address && 'offset' in params && params.limit) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
 			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
@@ -394,8 +406,9 @@ const getAccounts = async params => {
 			}
 
 			if (account.publicKey) {
-				if (isItGenesisAccount(account.address)) {
-					account.isMigrated = isItGenesisAccount(account.address);
+				const isGenesisAccount = await isItGenesisAccount(account.address);
+				if (isGenesisAccount) {
+					account.isMigrated = isGenesisAccount;
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
 					// Use only dynamically computed legacyAccount information, ignore the hardcoded info

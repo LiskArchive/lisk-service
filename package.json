@@ -16,7 +16,7 @@
     "url": "https://github.com/LiskHQ/lisk-service/issues"
   },
   "private": true,
-  "author": "Lisk Foundation <admin@lisk.io>, lightcurve GmbH <admin@lightcurve.io>",
+  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
@@ -26,8 +26,6 @@
   "scripts": {
     "start": "pm2 start ecosystem.core3.config.js",
     "stop": "pm2 delete ecosystem.core3.config.js",
-    "start:testnet": "pm2 start ecosystem.testnet.config.js",
-    "stop:testnet": "pm2 delete ecosystem.testnet.config.js",
     "eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
     "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\""
   },

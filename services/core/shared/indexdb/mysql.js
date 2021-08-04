@@ -134,10 +134,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const { primaryKey, schema } = tableConfig;
 
-	const upsert = async (inputRows) => {
-		let rawRows = inputRows;
-		if (!Array.isArray(rawRows)) rawRows = [inputRows];
-
+	const mapRows = (rawRows) => {
 		const rows = [];
 		rawRows.forEach(item => {
 			const row = {};
@@ -147,6 +144,14 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			});
 			rows.push(row);
 		});
+		return rows;
+	};
+
+	const upsert = async (inputRows) => {
+		let rawRows = inputRows;
+		if (!Array.isArray(rawRows)) rawRows = [inputRows];
+
+		const rows = mapRows(rawRows);
 
 		try {
 			const chunkSize = 1000;

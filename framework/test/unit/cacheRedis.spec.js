@@ -49,7 +49,7 @@ test('store value with a long key', async () => {
 });
 
 test('store value with a key with special chars', async () => {
-	const key = 'https://service.lisk.io/api/v1/blocks:{"serialized":"JSON"}';
+	const key = 'https://service.lisk.com/api/v1/blocks:{"serialized":"JSON"}';
 	const cache = Cache();
 	const originalData = testData[0];
 	await cache.set(key, originalData);
