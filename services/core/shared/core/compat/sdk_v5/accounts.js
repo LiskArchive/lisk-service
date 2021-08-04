@@ -173,15 +173,15 @@ const resolveDelegateInfo = async accounts => {
 					publicKey: account.publicKey,
 				};
 
-				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
-				const totalVotes = account.dpos.sentVotes.reduce(adder, BigInt(0));
 				const selfVote = account.dpos.sentVotes
 					.find(vote => vote.delegateAddress === account.address);
 				const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
 				const cap = selfVoteAmount * BigInt(10);
 
 				account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
-				const voteWeight = BigInt(totalVotes) > cap ? cap : account.totalVotesReceived;
+				const voteWeight = BigInt(account.totalVotesReceived) > cap
+					? cap
+					: account.totalVotesReceived;
 
 				account.delegateWeight = voteWeight;
 				account.username = account.dpos.delegate.username;
