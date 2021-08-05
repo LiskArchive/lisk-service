@@ -62,6 +62,8 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+
 // A boolean mapping against the genesis account addresses to indicate migration status
 const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
 
@@ -264,42 +266,52 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
-	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
-	if (accountInfo) {
-		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
-		const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
+
+	// Check if the account was already migrated
+	const reclaimTxModuleAssetId = '1000:0';
+	const transactionsDB = await getTransactionsIndex();
+	const [reclaimTx] = await transactionsDB.find({
+		senderPublicKey: publicKey,
+		moduleAssetId: reclaimTxModuleAssetId,
+	});
+
+	if (reclaimTx) {
 		Object.assign(
 			legacyAccountInfo,
 			{
-				address: getBase32AddressFromPublicKey(publicKey),
 				legacyAddress: getLegacyAddressFromPublicKey(publicKey),
-				publicKey,
-				// The account hasn't migrated/reclaimed yet
-				// So, has no outgoing transactions/registrations on the (legacy) blockchain
-				isMigrated: false,
-				isDelegate: false,
-				isMultisignature: false,
-				token: { balance: BigInt('0') },
-				legacy: {
-					...accountInfo,
-					address: legacyAddress,
-				},
+				isMigrated: true,
 			},
 		);
 	} else {
-		// Check if the account was already migrated
-		const reclaimTxModuleAssetId = '1000:0';
-		const transactionsDB = await getTransactionsIndex();
-		const [reclaimTx] = await transactionsDB.find({
-			senderPublicKey: publicKey,
-			moduleAssetId: reclaimTxModuleAssetId,
-		});
-		if (reclaimTx) {
+		const cachedAccountInfoStr = await legacyAccountCache.get(publicKey);
+		const accountInfo = cachedAccountInfoStr
+			? JSON.parse(cachedAccountInfoStr)
+			: await coreApi.getLegacyAccountInfo(publicKey);
+
+		if (accountInfo) {
+			if (!cachedAccountInfoStr) {
+				await legacyAccountCache.set(publicKey, JSON.stringify(accountInfo));
+			}
+
+			const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
+			const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
 			Object.assign(
 				legacyAccountInfo,
 				{
+					address: getBase32AddressFromPublicKey(publicKey),
 					legacyAddress: getLegacyAddressFromPublicKey(publicKey),
-					isMigrated: true,
+					publicKey,
+					// The account hasn't migrated/reclaimed yet
+					// So, has no outgoing transactions/registrations on the (legacy) blockchain
+					isMigrated: false,
+					isDelegate: false,
+					isMultisignature: false,
+					token: { balance: BigInt('0') },
+					legacy: {
+						...accountInfo,
+						address: legacyAddress,
+					},
 				},
 			);
 		}
