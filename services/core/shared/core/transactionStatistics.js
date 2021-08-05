@@ -285,8 +285,8 @@ const validateTransactionStatistics = async historyLengthDays => {
 		{ concurrency: Object.keys(distributionByType).length },
 	);
 
-	const isStatisticsBuilt = verifyStatistics.every(isPresent => isPresent === true);
-	if (!isStatisticsBuilt) await fetchTransactionsForPastNDays(historyLengthDays, true);
+	const isStatsProperlyBuilt = verifyStatistics.every(isVerified => isVerified);
+	if (!isStatsProperlyBuilt) await fetchTransactionsForPastNDays(historyLengthDays, true);
 };
 
 module.exports = {
