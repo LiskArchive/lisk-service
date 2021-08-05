@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-core",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Lisk Serivce Core Component",
   "keywords": [
     "lisk",
@@ -54,7 +54,7 @@
     "sqlite3": "^5.0.2",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.4",
-    "tar": "^6.1.0"
+    "tar": "^6.1.2"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",
