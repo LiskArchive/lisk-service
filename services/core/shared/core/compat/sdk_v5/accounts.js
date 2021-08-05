@@ -418,10 +418,9 @@ const getAccounts = async params => {
 					Object.assign(account, { isMigrated, legacy, legacyAddress });
 				}
 			}
-
 			return account;
 		},
-		{ concurrency: accounts.data.length },
+		{ concurrency: 10 },
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
