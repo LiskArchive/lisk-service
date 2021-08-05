@@ -29,9 +29,9 @@ Lisk Service leverages the two-way communication approach by utilizing the WebSo
 
 ## Access paths and compatibility
 
-The blockchain update API can be accessed by the following path `https://service.lisk.io/blockchain`.
+The blockchain update API can be accessed by the following path `https://service.lisk.com/blockchain`.
 
-You might also be interested in accessing the `testnet` network by using the `https://testnet-service.lisk.io/blockchain` endpoint.
+You might also be interested in accessing the `testnet` network by using the `https://testnet-service.lisk.com/blockchain` endpoint.
 
 **Important:** The Lisk Service WebSocket API uses the `socket.io` library. This implementation is compatible with the version 2.0 of `socket.io` library. Using the wrong major version might result in a broken connection and messages not being passed.
 
@@ -68,7 +68,7 @@ On the contrary to the original Lisk Core API, all timestamps used by the Lisk S
 
 ```javascript
 const io = require('socket.io-client');
-const connection = io.connect('https://service.lisk.io/blockchain', { transports: ['websocket'] });
+const connection = io.connect('https://service.lisk.com/blockchain', { transports: ['websocket'] });
 connection.on('update.block', (block) => { (...) });
 ```
 

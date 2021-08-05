@@ -12,5 +12,7 @@ services:
     environment:
       - ENABLE_HTTP_API=${ENABLE_HTTP_API}
       - ENABLE_WS_API=${ENABLE_WS_API}
+      - ENABLE_HTTP_CACHE_CONTROL=${ENABLE_HTTP_CACHE_CONTROL}
+      - HTTP_CACHE_CONTROL_DIRECTIVES=${HTTP_CACHE_CONTROL_DIRECTIVES}
     healthcheck:
       test: curl --fail http://gateway:9901/api/v1/transactions
