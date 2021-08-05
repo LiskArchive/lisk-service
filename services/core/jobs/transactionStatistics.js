@@ -28,7 +28,7 @@ module.exports = [
 		init: () => {
 			try {
 				if (config.transactionStatistics.enabled) {
-					logger.debug('Initiating transaction statistics computation.');
+					logger.debug('Initiating transaction statistics computation');
 					transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 				}
 			} catch (err) {
@@ -38,7 +38,7 @@ module.exports = [
 		controller: async () => {
 			try {
 				if (config.transactionStatistics.enabled) {
-					logger.debug('Job scheduled to update transaction statistics.');
+					logger.debug('Job scheduled to update transaction statistics');
 					transactionStatistics.updateTodayStats();
 				}
 			} catch (err) {
