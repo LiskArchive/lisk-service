@@ -32,7 +32,7 @@ module.exports = [
 					transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 				}
 			} catch (err) {
-				logger.warn(`Refreshing transaction statistics failed due to: ${err.message}`);
+				logger.warn(`Initiating transaction statistics failed due to: ${err.message}`);
 			}
 		},
 		controller: async () => {
@@ -49,11 +49,11 @@ module.exports = [
 	{
 		name: 'verify.transaction.statistics',
 		description: 'Verify the accuracy and rebuild the transaction statistics, if necessary',
-		schedule: '15 */3 * * *', // Every 3 hours at 15th minute
+		schedule: '15 */3 * * *', // Every 3 hours at the 15th minute
 		controller: async () => {
 			try {
 				if (config.transactionStatistics.enabled) {
-					logger.debug('Update transaction stats...');
+					logger.debug('Verifying the transaction stats...');
 					await transactionStatistics
 						.validateTransactionStatistics(config.transactionStatistics.historyLengthDays);
 				}
