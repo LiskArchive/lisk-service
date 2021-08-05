@@ -26,27 +26,39 @@ module.exports = [
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
 		init: () => {
-			if (config.transactionStatistics.enabled) {
-				logger.debug('Initiating transaction statistics computation.');
-				transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+			try {
+				if (config.transactionStatistics.enabled) {
+					logger.debug('Initiating transaction statistics computation.');
+					transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+				}
+			} catch (err) {
+				logger.warn(`Refreshing transaction statistics failed due to: ${err.message}`);
 			}
 		},
 		controller: async () => {
-			if (config.transactionStatistics.enabled) {
-				logger.debug('Job scheduled to update transaction statistics.');
-				transactionStatistics.updateTodayStats();
+			try {
+				if (config.transactionStatistics.enabled) {
+					logger.debug('Job scheduled to update transaction statistics.');
+					transactionStatistics.updateTodayStats();
+				}
+			} catch (err) {
+				logger.warn(`Updating transaction statistics failed due to: ${err.message}`);
 			}
 		},
 	},
 	{
 		name: 'verify.transaction.statistics',
-		description: 'Keep the transaction statistics up-to-date',
+		description: 'Verify the accuracy and rebuild the transaction statistics, if necessary',
 		schedule: '15 */3 * * *', // Every 3 hours at 15th minute
 		controller: async () => {
-			if (config.transactionStatistics.enabled) {
-				logger.debug('Update transaction stats...');
-				await transactionStatistics
-					.updateTransactionStatistics(config.transactionStatistics.historyLengthDays);
+			try {
+				if (config.transactionStatistics.enabled) {
+					logger.debug('Update transaction stats...');
+					await transactionStatistics
+						.validateTransactionStatistics(config.transactionStatistics.historyLengthDays);
+				}
+			} catch (err) {
+				logger.warn(`Verifying transaction statistics failed due to: ${err.message}`);
 			}
 		},
 	},

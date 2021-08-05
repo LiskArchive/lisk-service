@@ -261,10 +261,9 @@ const init = async historyLengthDays => {
 
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);
 
-const updateTransactionStatistics = async historyLengthDays => {
+const validateTransactionStatistics = async historyLengthDays => {
 	const dateTo = moment().utc().endOf('day').subtract(0, 'day');
 	const dateFrom = moment(dateTo).startOf('day').subtract(historyLengthDays, 'day');
-
 	const params = {
 		dateFormat: 'YYYY-MM-DD',
 		dateTo,
@@ -276,18 +275,17 @@ const updateTransactionStatistics = async historyLengthDays => {
 	const verifyStatistics = await BluebirdPromise.map(
 		Object.keys(distributionByType),
 		async type => {
-			const txCount = (await getTransactions({
+			const { meta: { total } } = await getTransactions({
 				moduleAssetId: type,
 				fromTimestamp: (moment.unix(dateFrom).unix()) / 1000,
 				toTimestamp: (moment.unix(dateTo).unix()) / 1000,
-			})).meta.total;
-			const result = txCount === distributionByType[type];
-			return result;
+			});
+			return total === distributionByType[type];
 		},
 		{ concurrency: Object.keys(distributionByType).length },
 	);
 
-	const isStatisticsBuilt = !verifyStatistics.some(acc => acc === false);
+	const isStatisticsBuilt = verifyStatistics.every(isPresent => isPresent === true);
 	if (!isStatisticsBuilt) await fetchTransactionsForPastNDays(historyLengthDays, true);
 };
 
@@ -297,5 +295,5 @@ module.exports = {
 	getDistributionByAmount,
 	init,
 	updateTodayStats,
-	updateTransactionStatistics,
+	validateTransactionStatistics,
 };
