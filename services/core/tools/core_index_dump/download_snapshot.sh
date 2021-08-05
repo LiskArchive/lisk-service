@@ -13,7 +13,7 @@ GZIP_CMD=$(which gzip)
 if [ -z $WGET_CMD ]; then echo 'ERROR: The command wget is not installed in the system'; exit 1; fi
 if [ -z $GZIP_CMD ]; then echo 'ERROR: The command gzip is not installed in the system'; exit 1; fi
 
-STATIC_URL=https://static-data.lisk.io
+STATIC_URL=https://static-data.lisk.com
 DUMP_FILE_PREFIX=index_snapshot
 FILENAME_PREFIX="${DUMP_FILE_PREFIX}-${VERSION}-${NETWORK}"
 

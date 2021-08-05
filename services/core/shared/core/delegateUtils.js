@@ -19,14 +19,18 @@ const config = require('../../config');
 const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
 
 const getUsernameByAddress = async (address) => {
-	const delegate = await cacheRedisDelegates.get(address);
-	if (delegate) return delegate.username;
+	if (address) {
+		const delegate = await cacheRedisDelegates.get(address);
+		if (delegate) return delegate.username;
+	}
 	return null;
 };
 
 const getAddressByUsername = async (username) => {
-	const delegate = await cacheRedisDelegates.get(username);
-	if (delegate) return delegate.account.address;
+	if (username) {
+		const delegate = await cacheRedisDelegates.get(username);
+		if (delegate) return delegate.account.address;
+	}
 	return null;
 };
 

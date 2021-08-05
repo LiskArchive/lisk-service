@@ -13,9 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
+
+const Signals = require('../signals');
 
 const config = require('../../config');
 const { getTransactions } = require('./transactions');
@@ -248,11 +250,12 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 };
 
 const init = async historyLengthDays => {
-	Signals.get('blockIndexReady').add(async () => {
+	const transactionStatsListener = async () => {
 		await fetchTransactionsForPastNDays(historyLengthDays, true);
 		logger.debug(`============== 'transactionStatsReady' signal: ${Signals.get('transactionStatsReady')} ==============`);
 		Signals.get('transactionStatsReady').dispatch(historyLengthDays);
-	});
+	};
+	Signals.get('blockIndexReady').add(transactionStatsListener);
 };
 
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);

@@ -81,7 +81,8 @@ sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc
 
 # APT-based dependencies
 sudo apt update
-sudo apt install -y build-essential git make redis-server postgresql-10 nodejs
+sudo apt install -y build-essential git make redis-server nodejs mysql-server
+sudo mysql_secure_installation
 
 # NPM-based dependencies
 npm install -g pm2

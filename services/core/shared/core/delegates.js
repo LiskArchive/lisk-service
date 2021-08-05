@@ -13,9 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, CacheRedis, Signals } = require('lisk-service-framework');
+const { Logger, CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
+const Signals = require('../signals');
 const config = require('../../config');
 
 const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
@@ -179,22 +180,26 @@ const getDelegates = async params => {
 };
 
 const loadAllDelegates = async () => {
-	const maxCount = 10000;
-	delegateList = await requestAll(coreApi.getDelegates, { limit: 50 }, maxCount);
-	await BluebirdPromise.map(
-		delegateList,
-		async delegate => {
-			delegate.address = delegate.account.address;
-			delegate.publicKey = delegate.account.publicKey;
-			await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
-			await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
-			return delegate;
-		},
-		{ concurrency: delegateList.length },
-	);
+	try {
+		const maxCount = 10000;
+		delegateList = await requestAll(coreApi.getDelegates, { limit: 10 }, maxCount);
+		await BluebirdPromise.map(
+			delegateList,
+			async delegate => {
+				delegate.address = delegate.account.address;
+				delegate.publicKey = delegate.account.publicKey;
+				await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
+				await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
+				return delegate;
+			},
+			{ concurrency: delegateList.length },
+		);
 
-	if (delegateList.length) {
-		logger.info(`Updated delegate list with ${delegateList.length} delegates.`);
+		if (delegateList.length) {
+			logger.info(`Updated delegate list with ${delegateList.length} delegates`);
+		}
+	} catch (err) {
+		logger.warn(`Failed to load all delegates due to: ${err.message}`);
 	}
 };
 
@@ -250,42 +255,49 @@ const reload = async () => {
 };
 
 // Keep the delegate cache up-to-date
-const updateDelegateListEveryBlock = () => Signals.get('newBlock').add(async data => {
-	const dposModuleId = 5;
-	const registerDelegateAssetId = 0;
-	const voteDelegateAssetId = 1;
+const updateDelegateListEveryBlock = () => {
+	const updateDelegateCacheListener = async (data) => {
+		const dposModuleId = 5;
+		const registerDelegateAssetId = 0;
+		const voteDelegateAssetId = 1;
 
-	const updatedDelegateAddresses = [];
-	const [block] = data.data;
-	if (block && block.payload) {
-		block.payload.forEach(tx => {
-			if (tx.moduleID === dposModuleId) {
-				if (tx.assetID === registerDelegateAssetId) {
-					updatedDelegateAddresses
-						.push(coreApi.getBase32AddressFromPublicKey(tx.senderPublicKey));
-				} else if (tx.assetID === voteDelegateAssetId) {
-					tx.asset.votes.forEach(vote => updatedDelegateAddresses
-						.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
+		const updatedDelegateAddresses = [];
+		const [block] = data.data;
+		if (block && block.payload) {
+			block.payload.forEach(tx => {
+				if (tx.moduleID === dposModuleId) {
+					if (tx.assetID === registerDelegateAssetId) {
+						updatedDelegateAddresses
+							.push(coreApi.getBase32AddressFromPublicKey(tx.senderPublicKey));
+					} else if (tx.assetID === voteDelegateAssetId) {
+						tx.asset.votes.forEach(vote => updatedDelegateAddresses
+							.push(coreApi.getBase32AddressFromHex(vote.delegateAddress)));
+					}
 				}
-			}
-		});
+			});
 
-		const { data: updatedDelegateAccounts } = await coreApi
-			.getAccounts({ addresses: updatedDelegateAddresses });
+			const { data: updatedDelegateAccounts } = await coreApi
+				.getAccounts({ addresses: updatedDelegateAddresses });
 
-		updatedDelegateAccounts.forEach(delegate => {
-			const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-			if (delegateIndex === -1) delegateList.push(delegate);
-			else delegateList[delegateIndex] = delegate;
-		});
+			updatedDelegateAccounts.forEach(delegate => {
+				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
+				if (delegateIndex === -1) delegateList.push(delegate);
+				else delegateList[delegateIndex] = delegate;
+			});
 
-		// Rank is impacted only when a delegate gets (un-)voted
-		if (updatedDelegateAddresses.length) await computeDelegateRank();
-	}
-});
+			// Rank is impacted only when a delegate gets (un-)voted
+			if (updatedDelegateAddresses.length) await computeDelegateRank();
+		}
+	};
+
+	Signals.get('newBlock').add(updateDelegateCacheListener);
+};
 
 // Reload the delegate cache when all the indexes are up-to-date
-const refreshDelegateListOnIndexReady = () => Signals.get('blockIndexReady').add(() => reload());
+const refreshDelegateListOnIndexReady = () => {
+	const reloadDelegateCacheListener = () => reload();
+	Signals.get('blockIndexReady').add(reloadDelegateCacheListener);
+};
 
 updateDelegateListEveryBlock();
 refreshDelegateListOnIndexReady();
