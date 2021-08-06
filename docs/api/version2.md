@@ -6,9 +6,9 @@ The main focus of this project is to provide data to Lisk blockchain users by se
 
 As a pure backend project, it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.
 
-The API can be accessed at `https://service.lisk.io`.
+The API can be accessed at `https://service.lisk.com`.
 
-It is also possible to access the `testnet` network at `https://testnet-service.lisk.io`.
+It is also possible to access the `testnet` network at `https://testnet-service.lisk.com`.
 
 The Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.
 
@@ -198,12 +198,12 @@ Make the version 2 API able to retrieve data by those criteria.
 
 Get address with certain Lisk account ID
 ```
-https://service.lisk.io/api/v2/accounts?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
+https://service.lisk.com/api/v2/accounts?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
 
 Get all delegates
 ```
-https://service.lisk.io/api/v2/accounts?isDelegate=true
+https://service.lisk.com/api/v2/accounts?isDelegate=true
 ```
 
 
@@ -277,7 +277,7 @@ Make the version 2 API able to retrieve data by those criteria.
 #### Examples
 
 ```
-https://service.lisk.io/api/v2/votes_sent?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
+https://service.lisk.com/api/v2/votes_sent?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
 
 ### Received votes
@@ -350,7 +350,7 @@ Make the version 2 API able to retrieve data by those criteria.
 #### Examples
 
 ```
-https://service.lisk.io/api/v2/votes_received?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
+https://service.lisk.com/api/v2/votes_received?address=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
 
 
@@ -415,7 +415,7 @@ Make the version 2 API able to retrieve data by those criteria.
 Get 20 items, skip first 50
 
 ```
-https://service.lisk.io/api/v2/forgers?limit=20&offset=50
+https://service.lisk.com/api/v2/forgers?limit=20&offset=50
 ```
 
 ## Blocks
@@ -505,12 +505,12 @@ Make the version 2 API able to retrieve data by those criteria.
 
 Get blocks by block ID
 ```
-https://service.lisk.io/api/v2/blocks?blockId=1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e
+https://service.lisk.com/api/v2/blocks?blockId=1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e
 ```
 
 Get blocks by height
 ```
-https://service.lisk.io/api/v2/blocks?height=9
+https://service.lisk.com/api/v2/blocks?height=9
 ```
 
 ## Transactions
@@ -627,14 +627,14 @@ Make the version 2 API able to retrieve data by those criteria.
 Get transaction by transaction ID
 
 ```
-https://service.lisk.io/api/v2/transactions?transactionId=222675625422353767
+https://service.lisk.com/api/v2/transactions?transactionId=222675625422353767
 ```
 
 Get last 25 transactions for account `lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu`
 
 ```
-https://service.lisk.io/api/v2/transactions?senderAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
-https://service.lisk.io/api/v2/transactions?recipientAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
+https://service.lisk.com/api/v2/transactions?senderAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
+https://service.lisk.com/api/v2/transactions?recipientAddress=lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu
 ```
 
 ### Transaction broadcast
@@ -760,13 +760,13 @@ _Supports pagination._
 Get transaction statistics for the past 7 days.
 
 ```
-https://service.lisk.io/api/v2/transactions​/statistics​/days&limit=7`
+https://service.lisk.com/api/v2/transactions​/statistics​/days&limit=7`
 ```
 
 Get transaction statistics for the past 12 months.
 
 ```
-https://service.lisk.io/api/v2/transactions​/statistics​/months&limit=12`
+https://service.lisk.com/api/v2/transactions​/statistics​/months&limit=12`
 ```
 
 ### Transaction schema
@@ -835,9 +835,9 @@ Make the version 2 API able to retrieve data by those criteria.
 Get transaction schema for the transfer transaction type.
 
 ```
-https://service.lisk.io/api/v2/transactions​/schemas?moduleAssetId=2:0`
+https://service.lisk.com/api/v2/transactions​/schemas?moduleAssetId=2:0`
 
-https://service.lisk.io/api/v2/transactions​/schemas?moduleAssetName=token:transfer`
+https://service.lisk.com/api/v2/transactions​/schemas?moduleAssetName=token:transfer`
 ```
 
 ### Dynamic fees
@@ -895,7 +895,7 @@ No params required.
 #### Examples
 
 ```
-https://service.lisk.io/api/v2/fees
+https://service.lisk.com/api/v2/fees
 ```
 
 
@@ -982,7 +982,7 @@ _Supports pagination._
 Get hosts with certain IP
 
 ```
-https://service.lisk.io/api/v2/peers?ip=210.239.23.62
+https://service.lisk.com/api/v2/peers?ip=210.239.23.62
 ```
 
 ### Network status
@@ -1045,7 +1045,7 @@ No params required.
 #### Examples
 
 ```
-https://service.lisk.io/api/v2/network/status`
+https://service.lisk.com/api/v2/network/status`
 ```
 
 ### Network statistics
@@ -1098,5 +1098,5 @@ No params required.
 #### Examples
 
 ```
-https://service.lisk.io/api/v2/network/statistics`
+https://service.lisk.com/api/v2/network/statistics`
 ```
