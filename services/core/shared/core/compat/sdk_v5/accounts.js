@@ -228,8 +228,8 @@ const resolveDelegateInfo = async accounts => {
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
 	const finalAccountsToIndex = await BluebirdPromise.map(
-		dropDuplicates(accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
+		accountInfoArray
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
 			const [accountInfo] = accountInfoArray
