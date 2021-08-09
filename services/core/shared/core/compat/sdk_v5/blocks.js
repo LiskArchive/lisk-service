@@ -408,7 +408,7 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const indexGenesisAccounts = async () => {
-	const BATCH_SIZE = 5000;
+	const BATCH_SIZE = 10000;
 	try {
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
