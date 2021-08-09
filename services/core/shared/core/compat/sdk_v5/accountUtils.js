@@ -14,6 +14,8 @@
  *
  */
 const {
+	hash,
+	getFirstEightBytesReversed,
 	getAddressFromPublicKey,
 	getBase32AddressFromAddress,
 	getAddressFromBase32Address,
@@ -67,6 +69,12 @@ const getLegacyFormatAddressFromPublicKey = publicKey => {
 	return legacyAddress;
 };
 
+const getLegacyHexAddressFromPublicKey = publicKey => {
+	const getLegacyBytes = publicKey => getFirstEightBytesReversed(hash(Buffer.from(publicKey, 'hex')));
+	const legacyHexAddress = getLegacyBytes(publicKey).toString('hex');
+	return legacyHexAddress;
+};
+
 const getHexAddressFromPublicKey = publicKey => {
 	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
 	return binaryAddress.toString('hex');
@@ -95,6 +103,7 @@ module.exports = {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
+	getLegacyHexAddressFromPublicKey,
 	getHexAddressFromPublicKey,
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
