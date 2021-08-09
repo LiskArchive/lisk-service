@@ -285,15 +285,15 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			},
 		);
 	} else {
-		const legacyAddress = getLegacyHexAddressFromPublicKey(publicKey);
-		const cachedAccountInfoStr = await legacyAccountCache.get(legacyAddress);
+		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
+		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
 		const accountInfo = cachedAccountInfoStr
 			? JSON.parse(cachedAccountInfoStr)
 			: await coreApi.getLegacyAccountInfo(publicKey);
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
-				await legacyAccountCache.set(legacyAddress, JSON.stringify(accountInfo));
+				await legacyAccountCache.set(legacyHexAddress, JSON.stringify(accountInfo));
 			}
 
 			const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
@@ -318,7 +318,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			);
 		} else if (!cachedAccountInfoStr) {
 			// Cache empty object for accounts for which core returns 'undefined'
-			await legacyAccountCache.set(legacyAddress, JSON.stringify(legacyAccountInfo));
+			await legacyAccountCache.set(legacyHexAddress, JSON.stringify(legacyAccountInfo));
 		}
 	}
 	return legacyAccountInfo;

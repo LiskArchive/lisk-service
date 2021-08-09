@@ -70,7 +70,7 @@ const getLegacyFormatAddressFromPublicKey = publicKey => {
 };
 
 const getLegacyHexAddressFromPublicKey = publicKey => {
-	const getLegacyBytes = publicKey => getFirstEightBytesReversed(hash(Buffer.from(publicKey, 'hex')));
+	const getLegacyBytes = pk => getFirstEightBytesReversed(hash(Buffer.from(pk, 'hex')));
 	const legacyHexAddress = getLegacyBytes(publicKey).toString('hex');
 	return legacyHexAddress;
 };
