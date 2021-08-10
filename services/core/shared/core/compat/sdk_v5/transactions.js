@@ -126,12 +126,12 @@ const normalizeTransaction = async txs => {
 };
 
 const getTransactionByID = async id => {
-	const response = await coreApi.getTransactionByID(id);
+	const response = await coreApi.requestWithRetries(coreApi.getTransactionByID, id);
 	return normalizeTransaction(response.data);
 };
 
 const getTransactionsByIDs = async ids => {
-	const response = await coreApi.getTransactionsByIDs(ids);
+	const response = await coreApi.requestWithRetries(coreApi.getTransactionsByIDs, ids);
 	return normalizeTransaction(response.data);
 };
 
@@ -327,7 +327,7 @@ const getTransactions = async params => {
 };
 
 const getTransactionsByBlockId = async blockId => {
-	const [block] = (await coreApi.getBlockByID(blockId)).data;
+	const [block] = (await coreApi.requestWithRetries(coreApi.getBlockByID, blockId)).data;
 	const transactions = await BluebirdPromise.map(
 		block.payload,
 		async transaction => {

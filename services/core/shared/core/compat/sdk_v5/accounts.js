@@ -106,8 +106,8 @@ const getAccountsFromCore = async (params) => {
 		meta: {},
 	};
 	const response = params.addresses
-		? await coreApi.getAccountsByAddresses(params.addresses)
-		: await coreApi.getAccountByAddress(params.address);
+		? await coreApi.requestWithRetries(coreApi.getAccountsByAddresses, params.addresses)
+		: await coreApi.requestWithRetries(coreApi.getAccountByAddress, params.address);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
@@ -264,7 +264,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
-	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
+	const accountInfo = await coreApi.requestWithRetries(coreApi.getLegacyAccountInfo, publicKey);
 	if (accountInfo) {
 		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
 		const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;

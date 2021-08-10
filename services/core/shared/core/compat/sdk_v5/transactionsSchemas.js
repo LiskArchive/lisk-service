@@ -21,7 +21,7 @@ const getTransactionsSchemas = async params => {
 		meta: {},
 	};
 
-	const response = await coreApi.getTransactionsSchemas();
+	const response = await coreApi.requestWithRetries(coreApi.getTransactionsSchemas);
 
 	const allTransactionSchemas = response.transactionsAssets.map(txAsset => {
 		const formattedTxAsset = {};

@@ -41,7 +41,7 @@ const normalizeTransaction = tx => {
 };
 
 const getPendingTransactionsFromCore = async () => {
-	const response = await coreApi.getPendingTransactions();
+	const response = await coreApi.requestWithRetries(coreApi.getPendingTransactions);
 	let pendingTx = response.data.map(tx => normalizeTransaction(tx));
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,

@@ -17,7 +17,7 @@ const coreApi = require('./coreApi');
 const { resolvemoduleAssets } = require('../common/constants');
 
 const getNetworkStatus = async () => {
-	const status = await coreApi.getNetworkStatus();
+	const status = await coreApi.requestWithRetries(coreApi.getNetworkStatus);
 	const { offset } = status.data.genesisConfig.rewards;
 	const { distance } = status.data.genesisConfig.rewards;
 	status.data.moduleAssets = await resolvemoduleAssets(status.data.registeredModules);
