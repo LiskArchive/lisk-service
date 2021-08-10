@@ -256,7 +256,7 @@ const reload = async () => {
 
 // Keep the delegate cache up-to-date
 const updateDelegateListEveryBlock = () => {
-	const updateDelegateCacheListener = async (data) => {
+	const updateDelegateCacheListener = async (eventType, data) => {
 		const dposModuleId = 5;
 		const registerDelegateAssetId = 0;
 		const voteDelegateAssetId = 1;
@@ -287,10 +287,22 @@ const updateDelegateListEveryBlock = () => {
 
 			// Rank is impacted only when a delegate gets (un-)voted
 			if (updatedDelegateAddresses.length) await computeDelegateRank();
+
+			// Update producedBlocks and rewards
+			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
+			if (delegateList[delegateIndex]) {
+				delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
+					? delegateList[delegateIndex].producedBlocks + 1
+					: delegateList[delegateIndex].producedBlocks - 1;
+				delegateList[delegateIndex].rewards = eventType === 'newBlock'
+					? BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)
+					: BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward);
+			}
 		}
 	};
 
-	Signals.get('newBlock').add(updateDelegateCacheListener);
+	Signals.get('newBlock').add(newBlock => { updateDelegateCacheListener('newBlock', newBlock); });
+	Signals.get('deleteBlock').add(newBlock => { updateDelegateCacheListener('deleteBlock', newBlock); });
 };
 
 // Reload the delegate cache when all the indexes are up-to-date
