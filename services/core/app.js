@@ -38,7 +38,7 @@ const logger = Logger();
 const app = Microservice({
 	name: 'core',
 	transporter: config.transporter,
-	timeout: config.brokerTimeout * 1000, // ms
+	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 });
 
