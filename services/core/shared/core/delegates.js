@@ -290,7 +290,8 @@ const updateDelegateListEveryBlock = () => {
 
 			// Update producedBlocks and rewards
 			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
-			if (delegateList[delegateIndex] && Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
+			if (delegateList[delegateIndex]
+				&& Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
 				if (delegateList[delegateIndex].producedBlocks && delegateList[delegateIndex].rewards) {
 					delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
 						? delegateList[delegateIndex].producedBlocks + 1
