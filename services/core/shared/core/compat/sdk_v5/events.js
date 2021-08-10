@@ -32,7 +32,7 @@ const register = async (events) => {
 			events.newBlock(newBlock);
 			events.calculateFeeEstimate();
 		} catch (err) {
-			logger.error(err.message);
+			logger.error(`Error while processing the 'app:block:new' event:\n${err.stack}`);
 		}
 	});
 
@@ -43,13 +43,17 @@ const register = async (events) => {
 			logger.debug(`Block deleted: ${deletedBlock.id} at height ${deletedBlock.height}`);
 			events.deleteBlock(deletedBlock);
 		} catch (err) {
-			logger.error(err.message);
+			logger.error(`Error while processing the 'app:block:delete' event:\n${err.stack}`);
 		}
 	});
 
 	apiClient.subscribe('app:chain:validators:change', data => {
-		logger.debug(`Chain validators updated: ${data}`);
-		events.newRound(data);
+		try {
+			logger.debug(`Chain validators updated: ${data}`);
+			events.newRound(data);
+		} catch (err) {
+			logger.error(`Error while processing the 'app:chain:validators:change' event:\n${err.stack}`);
+		}
 	});
 };
 
