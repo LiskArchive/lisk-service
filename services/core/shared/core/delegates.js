@@ -290,19 +290,25 @@ const updateDelegateListEveryBlock = () => {
 
 			// Update producedBlocks and rewards
 			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
-			if (delegateList[delegateIndex]) {
-				delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
-					? delegateList[delegateIndex].producedBlocks + 1
-					: delegateList[delegateIndex].producedBlocks - 1;
-				delegateList[delegateIndex].rewards = eventType === 'newBlock'
-					? BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)
-					: BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward);
+			if (delegateList[delegateIndex] && Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
+				if (delegateList[delegateIndex].producedBlocks && delegateList[delegateIndex].rewards) {
+					delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
+						? delegateList[delegateIndex].producedBlocks + 1
+						: delegateList[delegateIndex].producedBlocks - 1;
+
+					delegateList[delegateIndex].rewards = eventType === 'newBlock'
+						? (BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)).toString()
+						: (BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward)).toString();
+				}
 			}
 		}
 	};
 
-	Signals.get('newBlock').add(newBlock => { updateDelegateCacheListener('newBlock', newBlock); });
-	Signals.get('deleteBlock').add(newBlock => { updateDelegateCacheListener('deleteBlock', newBlock); });
+	const updateDelegateCacheOnNewBlockListener = (block) => updateDelegateCacheListener('newBlock', block);
+	const updateDelegateCacheOnDeleteBlockListener = (block) => updateDelegateCacheListener('deleteBlock', block);
+
+	Signals.get('newBlock').add(updateDelegateCacheOnNewBlockListener);
+	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
 
 // Reload the delegate cache when all the indexes are up-to-date
