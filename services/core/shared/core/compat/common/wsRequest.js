@@ -56,7 +56,12 @@ const instantiateClient = async () => {
 
 const RETRY_INTERVAL = 50; // ms
 
-const getApiClient = () => waitForIt(instantiateClient, RETRY_INTERVAL);
+const getApiClient = async () => {
+	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
+	return (apiClient && apiClient._channel && apiClient._channel.invoke)
+		? apiClient
+		: await getApiClient();
+};
 
 module.exports = {
 	getApiClient,
