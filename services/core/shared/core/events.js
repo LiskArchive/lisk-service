@@ -21,6 +21,7 @@ const {
 	performLastBlockUpdate,
 	getBlocks,
 	deleteBlock,
+	getTotalNumberOfBlocks,
 } = require('./blocks');
 
 const {
@@ -45,7 +46,16 @@ const events = {
 			performLastBlockUpdate(newBlock);
 
 			logger.debug(`============== Dispatching block to index: ${newBlock.id} at height ${newBlock.height} ==============`);
-			const response = await getBlocks({ limit: 1 });
+			let response;
+			try {
+				response = await getBlocks({ height: newBlock.height });
+			} catch (_) {
+				response = {
+					data: [newBlock],
+					meta: { count: 1, offset: 0, total: getTotalNumberOfBlocks() },
+				};
+			}
+
 			logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
 			Signals.get('newBlock').dispatch(response);
 		} catch (err) {
