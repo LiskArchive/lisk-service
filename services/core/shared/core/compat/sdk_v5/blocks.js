@@ -589,7 +589,6 @@ const checkIndexReadiness = async () => {
 				Signals.get('blockIndexReady').dispatch(true);
 			} else {
 				logger.debug('Blocks index is not yet ready');
-				await indexMissingBlocks(getIndexStartHeight(), currentChainHeight);
 			}
 		} catch (err) {
 			logger.warn(`Error while checking index readiness: ${err.message}`);
