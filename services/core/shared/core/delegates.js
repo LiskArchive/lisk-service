@@ -288,7 +288,7 @@ const updateDelegateListEveryBlock = () => {
 			// Rank is impacted only when a delegate gets (un-)voted
 			if (updatedDelegateAddresses.length) await computeDelegateRank();
 
-			// Update producedBlocks and rewards
+			// Update delegate cache with producedBlocks and rewards
 			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
 			if (delegateList[delegateIndex]
 				&& Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
