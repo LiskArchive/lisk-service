@@ -60,7 +60,7 @@ const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
 	return (apiClient && apiClient._channel && apiClient._channel.invoke)
 		? apiClient
-		: await getApiClient();
+		: getApiClient();
 };
 
 module.exports = {
