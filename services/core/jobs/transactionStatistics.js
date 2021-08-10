@@ -26,23 +26,15 @@ module.exports = [
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
 		init: () => {
-			try {
-				if (config.transactionStatistics.enabled) {
-					logger.debug('Initiating transaction statistics computation.');
-					transactionStatistics.init(config.transactionStatistics.historyLengthDays);
-				}
-			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
+			if (config.transactionStatistics.enabled) {
+				logger.debug('Initiating transaction statistics computation.');
+				transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 			}
 		},
 		controller: async () => {
-			try {
-				if (config.transactionStatistics.enabled) {
-					logger.debug('Job scheduled to update transaction statistics.');
-					transactionStatistics.updateTodayStats();
-				}
-			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
+			if (config.transactionStatistics.enabled) {
+				logger.debug('Job scheduled to update transaction statistics.');
+				transactionStatistics.updateTodayStats();
 			}
 		},
 	},

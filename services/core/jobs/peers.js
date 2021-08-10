@@ -23,20 +23,12 @@ module.exports = [
 		description: 'Keep the peer list up-to-date',
 		interval: 90, // seconds
 		init: () => {
-			try {
-				logger.debug('Initializing peer list...');
-				peerCache.reload();
-			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.peers' job:\n${err.stack}`);
-			}
+			logger.debug('Initializing peer list...');
+			peerCache.reload();
 		},
 		controller: () => {
-			try {
-				logger.debug('Scheduling peer list reload...');
-				peerCache.reload();
-			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.peers' job:\n${err.stack}`);
-			}
+			logger.debug('Scheduling peer list reload...');
+			peerCache.reload();
 		},
 	},
 ];
