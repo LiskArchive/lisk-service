@@ -321,9 +321,11 @@ const getTransactionsSchemas = async () => {
 	}
 };
 
+// eslint-disable-next-line consistent-return
 const requestWithRetries = async (fn, params, numRetries = 5) => {
 	let retries = numRetries;
 	do {
+		/* eslint-disable no-await-in-loop */
 		try {
 			const response = await fn(params);
 			return response;
@@ -331,6 +333,7 @@ const requestWithRetries = async (fn, params, numRetries = 5) => {
 			if (retries && err instanceof TimeoutException) await delay(10);
 			else throw err;
 		}
+		/* eslint-enable no-await-in-loop */
 	} while (retries--);
 };
 

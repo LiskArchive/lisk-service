@@ -572,7 +572,8 @@ const checkIndexReadiness = async () => {
 	if (!getIndexReadyStatus()) {
 		try {
 			const blocksDB = await getBlocksIndex();
-			const currentChainHeight = (await coreApi.requestWithRetries(coreApi.getNetworkStatus)).data.height;
+			const networkStatus = await coreApi.requestWithRetries(coreApi.getNetworkStatus);
+			const currentChainHeight = networkStatus.data.height;
 			const numBlocksIndexed = await blocksDB.count();
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
 

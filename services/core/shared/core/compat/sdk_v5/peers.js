@@ -29,12 +29,16 @@ const refactorPeer = (orgPeer, state) => {
 };
 
 const getPeers = async () => {
-	const connectedPeers = await coreApi.requestWithRetries(coreApi.getPeers, peerStates.CONNECTED);
+	const connectedPeers = await coreApi
+		.requestWithRetries(coreApi.getPeers, peerStates.CONNECTED);
 	connectedPeers.data = connectedPeers.data
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
-	const disconnectedPeers = await coreApi.requestWithRetries(coreApi.getPeers, peerStates.DISCONNECTED);
+
+	const disconnectedPeers = await coreApi
+		.requestWithRetries(coreApi.getPeers, peerStates.DISCONNECTED);
 	disconnectedPeers.data = disconnectedPeers.data
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
+
 	const data = [
 		...connectedPeers.data,
 		...disconnectedPeers.data,
