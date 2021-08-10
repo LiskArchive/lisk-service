@@ -27,7 +27,6 @@ const setLastBlock = block => {
 	if (block && block.height && block.height > lastBlock.height) lastBlock = block;
 	else if (!lastBlock.height) lastBlock = block;
 };
-
 const getLastBlock = () => lastBlock;
 const waitForLastBlock = () => new Promise((resolve) => {
 	const checkLastBlock = (interval) => {
@@ -133,7 +132,7 @@ const performLastBlockUpdate = (newBlock) => {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
 		setLastBlock(newBlock);
 	} catch (err) {
-		logger.error(`Error occured when performing last block update:\n${err.stack}`);
+		logger.error(err);
 	}
 };
 

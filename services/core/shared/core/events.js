@@ -49,7 +49,7 @@ const events = {
 			logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
 			Signals.get('newBlock').dispatch(response);
 		} catch (err) {
-			logger.error(`Error occured when processing \'newBlock\' event:\n${err.stack}`);
+			logger.error('Error occured when processing \'newBlock\' event:\n', err.stack);
 		}
 	},
 	deleteBlock: async (block) => {
@@ -58,7 +58,7 @@ const events = {
 			logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
 			Signals.get('deleteBlock').dispatch(block);
 		} catch (err) {
-			logger.error(`Error occured when processing \'deleteBlock\' event:\n${err.stack}`);
+			logger.error('Error occured when processing \'deleteBlock\' event:\n', err.stack);
 		}
 	},
 	newRound: async () => {
@@ -71,7 +71,7 @@ const events = {
 			logger.debug(`============== 'newRound' signal: ${Signals.get('newRound')} ==============`);
 			Signals.get('newRound').dispatch(response);
 		} catch (err) {
-			logger.error(`Error occured when processing \'newRound\' event:\n${err.stack}`);
+			logger.error('Error occured when processing \'newRound\' event:\n', err.stack);
 		}
 	},
 	calculateFeeEstimate: async () => {
@@ -90,7 +90,7 @@ const events = {
 					Signals.get('newFeeEstimate').dispatch(feeEstimate);
 				}
 			} catch (err) {
-				logger.error(`Error occured when processing \'calculateFeeEstimate\' event:\n${err.stack}`);
+				logger.error('Error occured when processing \'calculateFeeEstimate\' event:\n', err.stack);
 			}
 		}
 	},

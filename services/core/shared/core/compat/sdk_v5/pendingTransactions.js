@@ -58,12 +58,8 @@ const getPendingTransactionsFromCore = async () => {
 };
 
 const loadAllPendingTransactions = async () => {
-	try {
-		pendingTransactionsList = await getPendingTransactionsFromCore();
-		logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
-	} catch (err) {
-		logger.error(`Failed to update the 'pendingTransactionsList' due to:\n${err.stack}`);
-	}
+	pendingTransactionsList = await getPendingTransactionsFromCore();
+	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
 };
 
 const validateParams = async params => {
