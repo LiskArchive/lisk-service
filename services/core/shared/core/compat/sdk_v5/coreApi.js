@@ -27,6 +27,7 @@ const {
 	getApiClient,
 } = require('../common/wsRequest');
 
+const delay = require('../../../delay');
 const config = require('../../../../config');
 
 let genesisHeight;
@@ -132,7 +133,7 @@ const getBlockByHeight = async height => {
 	}
 };
 
-const getBlocksByHeightBetween = async (from, to) => {
+const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
 		// File based Genesis block handling
 		if (getGenesisBlockId() && Number(from) === await getGenesisHeight()) {
@@ -320,6 +321,19 @@ const getTransactionsSchemas = async () => {
 	}
 };
 
+const requestWithRetries = async (fn, params, numRetries = 5) => {
+	let retries = numRetries;
+	do {
+		try {
+			const response = await fn(params);
+			return response;
+		} catch (err) {
+			if (retries && err instanceof TimeoutException) await delay(10);
+			else throw err;
+		}
+	} while (retries--);
+};
+
 module.exports = {
 	getGenesisHeight,
 	getBlockByID,
@@ -339,4 +353,5 @@ module.exports = {
 	getTransactionsSchemas,
 	getTransactionsByIDs,
 	getTransactionByID,
+	requestWithRetries,
 };
