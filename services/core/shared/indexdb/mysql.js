@@ -336,7 +336,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const increment = async (params, rawRow) => {
 		let result;
-		const [row] = mapRows([rawRow]);
+		const [row] = mapRows([rawRow || {}]);
 		try {
 			[result] = await knex.transaction(
 				trx => trx(tableName)
