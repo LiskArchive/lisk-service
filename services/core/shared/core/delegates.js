@@ -263,7 +263,7 @@ const updateDelegateListEveryBlock = () => {
 
 		const updatedDelegateAddresses = [];
 		const [block] = data.data;
-		if (block && block.payload) {
+		if (block && block.payload && Array.isArray(block.payload)) {
 			block.payload.forEach(tx => {
 				if (tx.moduleID === dposModuleId) {
 					if (tx.assetID === registerDelegateAssetId) {
@@ -281,8 +281,14 @@ const updateDelegateListEveryBlock = () => {
 
 			updatedDelegateAccounts.forEach(delegate => {
 				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-				if (delegateIndex === -1) delegateList.push(delegate);
-				else delegateList[delegateIndex] = delegate;
+				// Update delegate list on newBlock event
+				if (delegate.isDelegate) {
+					if (delegateIndex === -1) delegateList.push(delegate);
+					else delegateList[delegateIndex] = delegate;
+				// Remove delegate from list when deleteBlock event contains delegate registration tx
+				} else if (delegateIndex !== -1) {
+					delegateList.splice(delegateIndex, 1);
+				}
 			});
 
 			// Rank is impacted only when a delegate gets (un-)voted
