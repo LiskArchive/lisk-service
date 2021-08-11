@@ -45,7 +45,7 @@ config.networks = [
 	{
 		name: 'mainnet',
 		identifier: 'update_after_migration',
-		genesisHeight: 16301502,
+		genesisHeight: 16270293,
 		genesisBlockUrl: 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
 	},
 	{
