@@ -50,8 +50,9 @@ const events = {
 			try {
 				response = await getBlocks({ height: newBlock.height });
 			} catch (_) {
+				const { asset, payload, ...remainingBlockProp } = newBlock;
 				response = {
-					data: [newBlock],
+					data: [{ ...asset, ...remainingBlockProp }],
 					meta: { count: 1, offset: 0, total: getTotalNumberOfBlocks() },
 				};
 			}
