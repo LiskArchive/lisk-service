@@ -245,7 +245,14 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 						property: 'address',
 						value: account.address,
 					},
-				}, account);
+				}, {
+					...account,
+					balance: account.token.balance,
+					username: account.dpos.delegate.username,
+					rewards: accountInfo.reward,
+					producedBlocks: 1,
+					totalVotesReceived: account.dpos.delegate.totalVotesReceived,
+				});
 			}
 			return account;
 		},
