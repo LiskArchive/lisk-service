@@ -140,7 +140,8 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 			const genesisBlockResult = await getBlockByHeight(from);
 			if (from < to) {
 				const { data: [genesisBlock] } = genesisBlockResult;
-				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween(from + 1, to);
+				// eslint-disable-next-line max-len
+				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween({ from: from + 1, to });
 				return { data: [genesisBlock, ...remainingBlocks] };
 			}
 			return genesisBlockResult;
