@@ -15,6 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
+	CacheLRU,
 	CacheRedis,
 	Exceptions: { TimeoutException, ValidationException },
 	Logger,
@@ -66,6 +67,9 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
+const CACHE_MAX_ITEMS = 2048;
+const CACHE_TTL = 10000; // in milliseconds
+const accountsCache = CacheLRU('accounts', { max: CACHE_MAX_ITEMS, ttl: CACHE_TTL });
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
@@ -114,8 +118,37 @@ const getAccountsFromCore = async (params) => {
 	const response = params.addresses
 		? await coreApi.getAccountsByAddresses(params.addresses)
 		: await coreApi.getAccountByAddress(params.address);
-	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
+
+	if (response.data) {
+		accounts.data = response.data.map(account => normalizeAccount(account));
+		await BluebirdPromise.map(
+			accounts.data,
+			async account => accountsCache.set(account.address, JSON.stringify(account)),
+			{ concurrency: accounts.data.length },
+		);
+	}
 	if (response.meta) accounts.meta = response.meta;
+	return accounts;
+};
+
+const getAccountsFromCache = async (params) => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+
+	const addresses = params.addresses || [params.address];
+	accounts.data = await BluebirdPromise.map(
+		addresses,
+		async (address) => {
+			const accountString = await accountsCache.get(getBase32AddressFromHex(address));
+			if (accountString) return JSON.parse(accountString);
+
+			const { data: [account] } = await getAccountsFromCore({ address });
+			return account;
+		},
+		{ concurrency: 10 },
+	);
 	return accounts;
 };
 
@@ -410,7 +443,7 @@ const getAccounts = async params => {
 			response.data = await BluebirdPromise.map(
 				addresses,
 				async address => {
-					const { data: [account] } = await getAccountsFromCore({ address });
+					const { data: [account] } = await getAccountsFromCache({ address });
 					return account;
 				},
 				{ concurrency: 10 },
