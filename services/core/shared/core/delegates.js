@@ -257,14 +257,14 @@ const getDelegates = async params => {
 
 // Keep the delegate cache up-to-date
 const updateDelegateListEveryBlock = () => {
-	const updateDelegateCacheListener = async (data) => {
+	const updateDelegateCacheListener = async (eventType, data) => {
 		const dposModuleId = 5;
 		const registerDelegateAssetId = 0;
 		const voteDelegateAssetId = 1;
 
 		const updatedDelegateAddresses = [];
 		const [block] = data.data;
-		if (block && block.payload) {
+		if (block && block.payload && Array.isArray(block.payload)) {
 			block.payload.forEach(tx => {
 				if (tx.moduleID === dposModuleId) {
 					if (tx.assetID === registerDelegateAssetId) {
@@ -282,16 +282,41 @@ const updateDelegateListEveryBlock = () => {
 
 			updatedDelegateAccounts.forEach(delegate => {
 				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-				if (delegateIndex === -1) delegateList.push(delegate);
-				else delegateList[delegateIndex] = delegate;
+				// Update delegate list on newBlock event
+				if (delegate.isDelegate) {
+					if (delegateIndex === -1) delegateList.push(delegate);
+					else delegateList[delegateIndex] = delegate;
+				// Remove delegate from list when deleteBlock event contains delegate registration tx
+				} else if (delegateIndex !== -1) {
+					delegateList.splice(delegateIndex, 1);
+				}
 			});
 
 			// Rank is impacted only when a delegate gets (un-)voted
 			if (updatedDelegateAddresses.length) await computeDelegateRank();
+
+			// Update delegate cache with producedBlocks and rewards
+			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
+			if (delegateList[delegateIndex]
+				&& Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
+				if (delegateList[delegateIndex].producedBlocks && delegateList[delegateIndex].rewards) {
+					delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
+						? delegateList[delegateIndex].producedBlocks + 1
+						: delegateList[delegateIndex].producedBlocks - 1;
+
+					delegateList[delegateIndex].rewards = eventType === 'newBlock'
+						? (BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)).toString()
+						: (BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward)).toString();
+				}
+			}
 		}
 	};
 
-	Signals.get('newBlock').add(updateDelegateCacheListener);
+	const updateDelegateCacheOnNewBlockListener = (block) => updateDelegateCacheListener('newBlock', block);
+	const updateDelegateCacheOnDeleteBlockListener = (block) => updateDelegateCacheListener('deleteBlock', block);
+
+	Signals.get('newBlock').add(updateDelegateCacheOnNewBlockListener);
+	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
 
 // Reload the delegate cache when all the indexes are up-to-date
