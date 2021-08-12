@@ -273,7 +273,12 @@ const getTransactions = async params => {
 	params.ids = resultSet.map(row => row.id);
 
 	if (params.ids.length) {
-		transactions.data = await getTransactionsByIDs(params.ids);
+		const BATCH_SIZE = 10;
+		for (let i = 0; i < Math.ceil(params.ids.length / BATCH_SIZE); i++) {
+			transactions.data = transactions.data
+				// eslint-disable-next-line no-await-in-loop
+				.concat(await getTransactionsByIDs(params.ids.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)));
+		}
 	} else if (params.id) {
 		transactions.data = await getTransactionByID(params.id);
 		if ('offset' in params && params.limit) transactions.data = transactions.data.slice(params.offset, params.offset + params.limit);

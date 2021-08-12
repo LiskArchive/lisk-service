@@ -66,7 +66,7 @@ const events = {
 		try {
 			await deleteBlock(block);
 			logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
-			Signals.get('deleteBlock').dispatch(block);
+			Signals.get('deleteBlock').dispatch({ data: [block] });
 		} catch (err) {
 			logger.error(`Error occured when processing 'deleteBlock' event:\n${err.stack}`);
 		}
