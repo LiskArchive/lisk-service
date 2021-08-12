@@ -121,6 +121,8 @@ const getAccountsFromCore = async (params) => {
 
 	if (response.data) {
 		accounts.data = response.data.map(account => normalizeAccount(account));
+
+		// Cache the latest account information for 'CACHE_TTL' duration
 		await BluebirdPromise.map(
 			accounts.data,
 			async account => accountsCache.set(account.address, JSON.stringify(account), CACHE_TTL),
@@ -144,6 +146,7 @@ const getAccountsFromCache = async (params) => {
 			const accountString = await accountsCache.get(getBase32AddressFromHex(address));
 			if (accountString) return JSON.parse(accountString);
 
+			// Fetch account information from Core, if not present in cache
 			const { data: [account] } = await getAccountsFromCore({ address });
 			return account;
 		},
