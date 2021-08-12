@@ -52,6 +52,7 @@ const {
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
+const Signals = require('../../../signals');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
@@ -495,6 +496,27 @@ const getMultisignatureGroups = async account => {
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
+
+const removeReclaimedLegacyAccountInfoFromCache = () => {
+	// Clear the legacyAccount cache when a reclaim transaction has been made
+	const removeReclaimedAccountFromCacheListener = async (eventPayload) => {
+		const reclaimTxModuleId = 1000;
+		const reclaimTxAssetId = 0;
+
+		const [block] = eventPayload.data;
+		if (block && block.payload && Array.isArray(block.payload)) {
+			await block.payload.forEach(async tx => {
+				if (tx.moduleID === reclaimTxModuleId && tx.assetID === reclaimTxAssetId) {
+					const legacyHexAddress = getLegacyHexAddressFromPublicKey(tx.senderPublicKey);
+					await legacyAccountCache.delete(legacyHexAddress);
+				}
+			});
+		}
+	};
+	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
+};
+
+removeReclaimedLegacyAccountInfoFromCache();
 
 module.exports = {
 	confirmPublicKey,
