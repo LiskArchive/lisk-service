@@ -16,8 +16,7 @@
 const BluebirdPromise = require('bluebird');
 const {
 	CacheRedis,
-	Exceptions: { TimeoutException, ValidationException },
-	Logger,
+	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
 const {
@@ -59,8 +58,6 @@ const mysqlIndex = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
 const blocksIndexSchema = require('./schema/blocks');
 const transactionsIndexSchema = require('./schema/transactions');
-
-const logger = Logger();
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
@@ -288,23 +285,11 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			},
 		);
 	} else {
-		let accountInfo;
-		let cachedAccountInfoStr;
-
 		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
-
-		// Fetch legacy account info from core, on timeout try querying the cache
-		try {
-			accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
-		} catch (err) {
-			if (err instanceof TimeoutException) {
-				cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
-				if (cachedAccountInfoStr) accountInfo = JSON.parse(cachedAccountInfoStr);
-			} else {
-				logger.warn(err.message);
-				throw err;
-			}
-		}
+		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
+		const accountInfo = cachedAccountInfoStr
+			? JSON.parse(cachedAccountInfoStr)
+			: await coreApi.getLegacyAccountInfo(publicKey);
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
