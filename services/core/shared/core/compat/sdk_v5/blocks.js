@@ -59,6 +59,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 const logger = Logger();
 
@@ -384,6 +385,28 @@ const deleteBlock = async (block) => {
 	return block;
 };
 
+const cacheLegacyAccountInfo = async () => {
+	// Cache the legacy account reclaim balance information
+	const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+	const unregisteredAccounts = genesisBlock.asset.accounts
+		.filter(account => account.address.length !== 40);
+
+	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
+	logger.info('Starting to cache legacy account reclaim balance information');
+	await BluebirdPromise.map(
+		unregisteredAccounts,
+		async account => {
+			const legacyAccountInfo = {
+				address: account.address,
+				balance: account.token.balance,
+			};
+			await legacyAccountCache.set(account.address, JSON.stringify(legacyAccountInfo));
+		},
+		{ concurrency: 1000 },
+	);
+	logger.info('Finished caching legacy account reclaim balance information');
+};
+
 const indexGenesisAccounts = async () => {
 	const BATCH_SIZE = 10000;
 	try {
@@ -397,8 +420,12 @@ const indexGenesisAccounts = async () => {
 			const numAccountsIndexed = await accountsDB.count();
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
-			if (!genesisAccountsToIndex) genesisAccountsToIndex = genesisBlock.asset.accounts
-				.filter(account => account.address.length > 16); // Filter out reclaim accounts
+			if (!genesisAccountsToIndex) {
+				genesisAccountsToIndex = genesisBlock.asset.accounts
+					.filter(account => account.address.length === 40);
+				logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
+			}
+
 			const genesisAccountAddressesToIndex = genesisAccountsToIndex
 				.slice(batchNum * BATCH_SIZE, (batchNum + 1) * BATCH_SIZE)
 				.map(account => account.address);
@@ -613,6 +640,7 @@ const init = async () => {
 
 		// Start the indexing process
 		await indexAllDelegateAccounts();
+		await cacheLegacyAccountInfo();
 		await indexPastBlocks();
 		await indexGenesisAccounts();
 	} catch (err) {
