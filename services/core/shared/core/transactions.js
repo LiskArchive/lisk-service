@@ -43,7 +43,9 @@ const mergeTransactions = async (params) => {
 
 	allTransactions.meta.count = allTransactions.data.length;
 	allTransactions.meta.offset = offset;
-	allTransactions.meta.total = (transactions.meta.total + pendingTxs.meta.total);
+	allTransactions.meta.total = pendingTxs.data.length
+		? (transactions.meta.total + pendingTxs.meta.total)
+		: transactions.meta.total;
 
 	return allTransactions;
 };
