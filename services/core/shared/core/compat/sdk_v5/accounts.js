@@ -67,8 +67,8 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
-const CACHE_MAX_ITEMS = 2048;
-const CACHE_TTL = 10000; // in milliseconds
+const CACHE_MAX_ITEMS = 4096;
+const CACHE_TTL = 15 * 1000; // in milliseconds
 const accountsCache = CacheLRU('accounts', { max: CACHE_MAX_ITEMS, ttl: CACHE_TTL });
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
@@ -123,7 +123,7 @@ const getAccountsFromCore = async (params) => {
 		accounts.data = response.data.map(account => normalizeAccount(account));
 		await BluebirdPromise.map(
 			accounts.data,
-			async account => accountsCache.set(account.address, JSON.stringify(account)),
+			async account => accountsCache.set(account.address, JSON.stringify(account), CACHE_TTL),
 			{ concurrency: accounts.data.length },
 		);
 	}
