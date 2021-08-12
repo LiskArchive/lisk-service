@@ -285,6 +285,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			},
 		);
 	} else {
+		// Fetch legacy account info from the cache, query Core when unavailable
 		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
 		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
 		const accountInfo = cachedAccountInfoStr
