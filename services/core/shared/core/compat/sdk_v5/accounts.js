@@ -25,6 +25,7 @@ const {
 	confirmPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
+	getLegacyHexAddressFromPublicKey,
 	getLegacyAddressFromPublicKey,
 	getHexAddressFromPublicKey,
 	getBase32AddressFromHex,
@@ -51,6 +52,7 @@ const {
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
+const Signals = require('../../../signals');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
@@ -61,6 +63,8 @@ const transactionsIndexSchema = require('./schema/transactions');
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
+
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
 const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
@@ -264,44 +268,59 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
-	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
-	if (accountInfo) {
-		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
-		const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
+
+	// Check if the account was already migrated
+	const reclaimTxModuleAssetId = '1000:0';
+	const transactionsDB = await getTransactionsIndex();
+	const [reclaimTx] = await transactionsDB.find({
+		senderPublicKey: publicKey,
+		moduleAssetId: reclaimTxModuleAssetId,
+	});
+
+	if (reclaimTx) {
 		Object.assign(
 			legacyAccountInfo,
 			{
-				address: getBase32AddressFromPublicKey(publicKey),
 				legacyAddress: getLegacyAddressFromPublicKey(publicKey),
-				publicKey,
-				// The account hasn't migrated/reclaimed yet
-				// So, has no outgoing transactions/registrations on the (legacy) blockchain
-				isMigrated: false,
-				isDelegate: false,
-				isMultisignature: false,
-				token: { balance: BigInt('0') },
-				legacy: {
-					...accountInfo,
-					address: legacyAddress,
-				},
+				isMigrated: true,
 			},
 		);
 	} else {
-		// Check if the account was already migrated
-		const reclaimTxModuleAssetId = '1000:0';
-		const transactionsDB = await getTransactionsIndex();
-		const [reclaimTx] = await transactionsDB.find({
-			senderPublicKey: publicKey,
-			moduleAssetId: reclaimTxModuleAssetId,
-		});
-		if (reclaimTx) {
+		// Fetch legacy account info from the cache, query Core when unavailable
+		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
+		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
+		const accountInfo = cachedAccountInfoStr
+			? JSON.parse(cachedAccountInfoStr)
+			: await coreApi.getLegacyAccountInfo(publicKey);
+
+		if (accountInfo && Object.keys(accountInfo).length) {
+			if (!cachedAccountInfoStr) {
+				await legacyAccountCache.set(legacyHexAddress, JSON.stringify(accountInfo));
+			}
+
+			const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
+			const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
 			Object.assign(
 				legacyAccountInfo,
 				{
+					address: getBase32AddressFromPublicKey(publicKey),
 					legacyAddress: getLegacyAddressFromPublicKey(publicKey),
-					isMigrated: true,
+					publicKey,
+					// The account hasn't migrated/reclaimed yet
+					// So, has no outgoing transactions/registrations on the (legacy) blockchain
+					isMigrated: false,
+					isDelegate: false,
+					isMultisignature: false,
+					token: { balance: BigInt('0') },
+					legacy: {
+						...accountInfo,
+						address: legacyAddress,
+					},
 				},
 			);
+		} else if (!cachedAccountInfoStr) {
+			// Cache empty object for accounts for which core returns 'undefined'
+			await legacyAccountCache.set(legacyHexAddress, JSON.stringify(legacyAccountInfo));
 		}
 	}
 	return legacyAccountInfo;
@@ -418,10 +437,9 @@ const getAccounts = async params => {
 					Object.assign(account, { isMigrated, legacy, legacyAddress });
 				}
 			}
-
 			return account;
 		},
-		{ concurrency: accounts.data.length },
+		{ concurrency: 10 },
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
@@ -478,6 +496,27 @@ const getMultisignatureGroups = async account => {
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
+
+const removeReclaimedLegacyAccountInfoFromCache = () => {
+	// Clear the legacyAccount cache when a reclaim transaction has been made
+	const removeReclaimedAccountFromCacheListener = async (eventPayload) => {
+		const reclaimTxModuleId = 1000;
+		const reclaimTxAssetId = 0;
+
+		const [block] = eventPayload.data;
+		if (block && block.payload && Array.isArray(block.payload)) {
+			await block.payload.forEach(async tx => {
+				if (tx.moduleID === reclaimTxModuleId && tx.assetID === reclaimTxAssetId) {
+					const legacyHexAddress = getLegacyHexAddressFromPublicKey(tx.senderPublicKey);
+					await legacyAccountCache.delete(legacyHexAddress);
+				}
+			});
+		}
+	};
+	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
+};
+
+removeReclaimedLegacyAccountInfoFromCache();
 
 module.exports = {
 	confirmPublicKey,
