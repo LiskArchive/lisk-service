@@ -17,8 +17,7 @@ const BluebirdPromise = require('bluebird');
 const {
 	CacheLRU,
 	CacheRedis,
-	Exceptions: { TimeoutException, ValidationException },
-	Logger,
+	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
 const {
@@ -54,14 +53,13 @@ const {
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
+const Signals = require('../../../signals');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
 const blocksIndexSchema = require('./schema/blocks');
 const transactionsIndexSchema = require('./schema/transactions');
-
-const logger = Logger();
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
@@ -215,15 +213,15 @@ const resolveDelegateInfo = async accounts => {
 					publicKey: account.publicKey,
 				};
 
-				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
-				const totalVotes = account.dpos.sentVotes.reduce(adder, BigInt(0));
 				const selfVote = account.dpos.sentVotes
 					.find(vote => vote.delegateAddress === account.address);
 				const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
 				const cap = selfVoteAmount * BigInt(10);
 
 				account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
-				const voteWeight = BigInt(totalVotes) > cap ? cap : account.totalVotesReceived;
+				const voteWeight = BigInt(account.totalVotesReceived) > cap
+					? cap
+					: account.totalVotesReceived;
 
 				account.delegateWeight = voteWeight;
 				account.username = account.dpos.delegate.username;
@@ -270,8 +268,8 @@ const resolveDelegateInfo = async accounts => {
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
 	const finalAccountsToIndex = await BluebirdPromise.map(
-		dropDuplicates(accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
+		accountInfoArray
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
 			const [accountInfo] = accountInfoArray
@@ -287,7 +285,14 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 						property: 'address',
 						value: account.address,
 					},
-				}, account);
+				}, {
+					...account,
+					balance: account.token.balance,
+					username: account.dpos.delegate.username,
+					rewards: accountInfo.reward,
+					producedBlocks: 1,
+					totalVotesReceived: account.dpos.delegate.totalVotesReceived,
+				});
 			}
 			return account;
 		},
@@ -324,23 +329,12 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			},
 		);
 	} else {
-		let accountInfo;
-		let cachedAccountInfoStr;
-
+		// Fetch legacy account info from the cache, query Core when unavailable
 		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
-
-		// Fetch legacy account info from core, on timeout try querying the cache
-		try {
-			accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
-		} catch (err) {
-			if (err instanceof TimeoutException) {
-				cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
-				if (cachedAccountInfoStr) accountInfo = JSON.parse(cachedAccountInfoStr);
-			} else {
-				logger.warn(err.message);
-				throw err;
-			}
-		}
+		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
+		const accountInfo = cachedAccountInfoStr
+			? JSON.parse(cachedAccountInfoStr)
+			: await coreApi.getLegacyAccountInfo(publicKey);
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
@@ -545,6 +539,27 @@ const getMultisignatureGroups = async account => {
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
+
+const removeReclaimedLegacyAccountInfoFromCache = () => {
+	// Clear the legacyAccount cache when a reclaim transaction has been made
+	const removeReclaimedAccountFromCacheListener = async (eventPayload) => {
+		const reclaimTxModuleId = 1000;
+		const reclaimTxAssetId = 0;
+
+		const [block] = eventPayload.data;
+		if (block && block.payload && Array.isArray(block.payload)) {
+			await block.payload.forEach(async tx => {
+				if (tx.moduleID === reclaimTxModuleId && tx.assetID === reclaimTxAssetId) {
+					const legacyHexAddress = getLegacyHexAddressFromPublicKey(tx.senderPublicKey);
+					await legacyAccountCache.delete(legacyHexAddress);
+				}
+			});
+		}
+	};
+	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
+};
+
+removeReclaimedLegacyAccountInfoFromCache();
 
 module.exports = {
 	confirmPublicKey,

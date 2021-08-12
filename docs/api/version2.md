@@ -141,6 +141,7 @@ Make the version 2 API able to retrieve data by those criteria.
         "consecutiveMissedBlocks": 0,
         "lastForgedHeight": 68115,
         "isBanned": false,
+        "voteWeight": "201000000000",
         "totalVotesReceived": "201000000000",
       },
       "sentVotes": [

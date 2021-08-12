@@ -51,7 +51,7 @@ const events = {
 	deleteBlock: async (block) => {
 		await deleteBlock(block);
 		logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
-		Signals.get('deleteBlock').dispatch(block);
+		Signals.get('deleteBlock').dispatch({ data: [block] });
 	},
 	newRound: async () => {
 		await reloadDelegateCache();
