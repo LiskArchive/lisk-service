@@ -21,6 +21,7 @@ const {
 	performLastBlockUpdate,
 	getBlocks,
 	deleteBlock,
+	getTotalNumberOfBlocks,
 } = require('./blocks');
 
 const {
@@ -40,41 +41,66 @@ const logger = Logger();
 
 const events = {
 	newBlock: async (newBlock) => {
-		logger.debug(`New block arrived: ${newBlock.id} at height ${newBlock.height}`);
-		performLastBlockUpdate(newBlock);
+		try {
+			logger.debug(`New block arrived: ${newBlock.id} at height ${newBlock.height}`);
+			performLastBlockUpdate(newBlock);
 
-		logger.debug(`============== Dispatching block to index: ${newBlock.id} at height ${newBlock.height} ==============`);
-		const response = await getBlocks({ limit: 1 });
-		logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
-		Signals.get('newBlock').dispatch(response);
+			logger.debug(`============== Dispatching block to index: ${newBlock.id} at height ${newBlock.height} ==============`);
+			let response;
+			try {
+				response = await getBlocks({ height: newBlock.height });
+			} catch (_) {
+				response = {
+					data: [newBlock],
+					meta: { count: 1, offset: 0, total: getTotalNumberOfBlocks() },
+				};
+			}
+
+			logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
+			Signals.get('newBlock').dispatch(response);
+		} catch (err) {
+			logger.error(`Error occured when processing 'newBlock' event:\n${err.stack}`);
+		}
 	},
 	deleteBlock: async (block) => {
-		await deleteBlock(block);
-		logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
-		Signals.get('deleteBlock').dispatch({ data: [block] });
+		try {
+			await deleteBlock(block);
+			logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
+			Signals.get('deleteBlock').dispatch({ data: [block] });
+		} catch (err) {
+			logger.error(`Error occured when processing 'deleteBlock' event:\n${err.stack}`);
+		}
 	},
 	newRound: async () => {
-		await reloadDelegateCache();
-		await reloadNextForgersCache();
-		const limit = core.getSDKVersion() >= 4 ? 103 : 101;
-		const nextForgers = await getNextForgers({ limit, offset: 0 });
-		const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
-		logger.debug(`============== 'newRound' signal: ${Signals.get('newRound')} ==============`);
-		Signals.get('newRound').dispatch(response);
+		try {
+			await reloadDelegateCache();
+			await reloadNextForgersCache();
+			const limit = core.getSDKVersion() >= 4 ? 103 : 101;
+			const nextForgers = await getNextForgers({ limit, offset: 0 });
+			const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+			logger.debug(`============== 'newRound' signal: ${Signals.get('newRound')} ==============`);
+			Signals.get('newRound').dispatch(response);
+		} catch (err) {
+			logger.error(`Error occured when processing 'newRound' event:\n${err.stack}`);
+		}
 	},
 	calculateFeeEstimate: async () => {
 		if (core.getSDKVersion() >= 4) {
-			if (config.feeEstimates.fullAlgorithmEnabled) {
-				logger.debug('Initiate the dynamic fee estimates computation (full computation)');
-				calculateEstimateFeeByteNormal();
-			}
-			if (config.feeEstimates.quickAlgorithmEnabled) {
-				logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
-				const feeEstimate = await calculateEstimateFeeByteQuick();
+			try {
+				if (config.feeEstimates.fullAlgorithmEnabled) {
+					logger.debug('Initiate the dynamic fee estimates computation (full computation)');
+					calculateEstimateFeeByteNormal();
+				}
+				if (config.feeEstimates.quickAlgorithmEnabled) {
+					logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
+					const feeEstimate = await calculateEstimateFeeByteQuick();
 
-				// TODO: Make a better control over the estimate process
-				logger.debug(`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============`);
-				Signals.get('newFeeEstimate').dispatch(feeEstimate);
+					// TODO: Make a better control over the estimate process
+					logger.debug(`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============`);
+					Signals.get('newFeeEstimate').dispatch(feeEstimate);
+				}
+			} catch (err) {
+				logger.error(`Error occured when processing 'calculateFeeEstimate' event:\n${err.stack}`);
 			}
 		}
 	},
