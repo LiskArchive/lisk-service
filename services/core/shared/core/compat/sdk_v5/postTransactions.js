@@ -15,9 +15,11 @@
  */
 const coreApi = require('./coreApi');
 
+const requestApi = coreApi.requestRetry;
+
 const postTransactions = async params => {
 	const signedTxBinary = params.transaction;
-	const response = await coreApi.requestWithRetries(coreApi.postTransaction, signedTxBinary);
+	const response = await requestApi(coreApi.postTransaction, signedTxBinary);
 	return response;
 };
 

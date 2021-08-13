@@ -20,11 +20,13 @@ const { getBase32AddressFromHex } = require('./accountUtils');
 
 const coreApi = require('./coreApi');
 
+const requestApi = coreApi.requestRetry;
+
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
 const getForgers = async params => {
-	const forgers = await coreApi.requestWithRetries(coreApi.getForgers, params);
+	const forgers = await requestApi(coreApi.getForgers, params);
 	forgers.data = forgers.data
 		.map(forger => ({
 			...forger,

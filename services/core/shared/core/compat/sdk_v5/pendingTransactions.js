@@ -28,6 +28,8 @@ const {
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
+const requestApi = coreApi.requestRetry;
+
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 let pendingTransactionsList = [];
 
@@ -41,7 +43,7 @@ const normalizeTransaction = tx => {
 };
 
 const getPendingTransactionsFromCore = async () => {
-	const response = await coreApi.requestWithRetries(coreApi.getPendingTransactions);
+	const response = await requestApi(coreApi.getPendingTransactions);
 	let pendingTx = response.data.map(tx => normalizeTransaction(tx));
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,

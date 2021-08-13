@@ -323,7 +323,7 @@ const getTransactionsSchemas = async () => {
 };
 
 // eslint-disable-next-line consistent-return
-const requestWithRetries = async (fn, params, numRetries = 5) => {
+const requestRetry = async (fn, params, numRetries = 5) => {
 	let retries = numRetries;
 	do {
 		/* eslint-disable no-await-in-loop */
@@ -357,5 +357,5 @@ module.exports = {
 	getTransactionsSchemas,
 	getTransactionsByIDs,
 	getTransactionByID,
-	requestWithRetries,
+	requestRetry,
 };

@@ -63,6 +63,8 @@ const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 const logger = Logger();
 
+const requestApi = coreApi.requestRetry;
+
 let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
@@ -84,7 +86,7 @@ const setIndexStartHeight = (height) => indexStartHeight = height;
 const getIndexStartHeight = () => indexStartHeight;
 
 const updateFinalizedHeight = async () => {
-	const result = await coreApi.requestWithRetries(coreApi.getNetworkStatus);
+	const result = await requestApi(coreApi.getNetworkStatus);
 	setFinalizedHeight(result.data.finalizedHeight);
 	return result;
 };
@@ -186,27 +188,27 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 };
 
 const getBlockByID = async id => {
-	const response = await coreApi.requestWithRetries(coreApi.getBlockByID, id);
+	const response = await requestApi(coreApi.getBlockByID, id);
 	return normalizeBlocks(response.data);
 };
 
 const getBlocksByIDs = async ids => {
-	const response = await coreApi.requestWithRetries(coreApi.getBlocksByIDs, ids);
+	const response = await requestApi(coreApi.getBlocksByIDs, ids);
 	return normalizeBlocks(response.data);
 };
 
 const getBlockByHeight = async (height, isIgnoreGenesisAccounts = true) => {
-	const response = await coreApi.requestWithRetries(coreApi.getBlockByHeight, height);
+	const response = await requestApi(coreApi.getBlockByHeight, height);
 	return normalizeBlocks(response.data, isIgnoreGenesisAccounts);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
-	const response = await coreApi.requestWithRetries(coreApi.getBlocksByHeightBetween, { from, to });
+	const response = await requestApi(coreApi.getBlocksByHeightBetween, { from, to });
 	return normalizeBlocks(response.data);
 };
 
 const getLastBlock = async () => {
-	const response = await coreApi.requestWithRetries(coreApi.getLastBlock);
+	const response = await requestApi(coreApi.getLastBlock);
 	return normalizeBlocks(response.data);
 };
 
@@ -476,7 +478,7 @@ const indexGenesisAccounts = async () => {
 };
 
 const indexAllDelegateAccounts = async () => {
-	const allDelegatesInfo = await coreApi.requestWithRetries(coreApi.getAllDelegates);
+	const allDelegatesInfo = await requestApi(coreApi.getAllDelegates);
 	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
 	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
@@ -599,7 +601,7 @@ const checkIndexReadiness = async () => {
 	if (!getIndexReadyStatus()) {
 		try {
 			const blocksDB = await getBlocksIndex();
-			const networkStatus = await coreApi.requestWithRetries(coreApi.getNetworkStatus);
+			const networkStatus = await requestApi(coreApi.getNetworkStatus);
 			const currentChainHeight = networkStatus.data.height;
 			const numBlocksIndexed = await blocksDB.count();
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });

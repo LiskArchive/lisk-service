@@ -69,6 +69,8 @@ const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 // A boolean mapping against the genesis account addresses to indicate migration status
 const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
 
+const requestApi = coreApi.requestRetry;
+
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
 const indexAccounts = async job => {
@@ -110,8 +112,8 @@ const getAccountsFromCore = async (params) => {
 		meta: {},
 	};
 	const response = params.addresses
-		? await coreApi.requestWithRetries(coreApi.getAccountsByAddresses, params.addresses)
-		: await coreApi.requestWithRetries(coreApi.getAccountByAddress, params.address);
+		? await requestApi(coreApi.getAccountsByAddresses, params.addresses)
+		: await requestApi(coreApi.getAccountByAddress, params.address);
 	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
@@ -298,7 +300,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
 		const accountInfo = cachedAccountInfoStr
 			? JSON.parse(cachedAccountInfoStr)
-			: await coreApi.requestWithRetries(coreApi.getLegacyAccountInfo, publicKey);
+			: await requestApi(coreApi.getLegacyAccountInfo, publicKey);
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
