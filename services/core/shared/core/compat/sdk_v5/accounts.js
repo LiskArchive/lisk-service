@@ -118,7 +118,7 @@ const getAccountsFromCore = async (params) => {
 	if (response.data) {
 		accounts.data = response.data.map(account => normalizeAccount(account));
 
-		// Cache the latest account information for 'CACHE_TTL' duration
+		// Cache the latest account information for 'ACCOUNTS_CACHE_TTL' duration
 		await BluebirdPromise.map(
 			accounts.data,
 			async account => accountsCache
