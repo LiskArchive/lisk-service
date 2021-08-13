@@ -15,7 +15,6 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
-	CacheLRU,
 	CacheRedis,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
@@ -65,9 +64,8 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
-const CACHE_MAX_ITEMS = 4096;
-const CACHE_TTL = 15 * 1000; // in milliseconds
-const accountsCache = CacheLRU('accounts', { max: CACHE_MAX_ITEMS, ttl: CACHE_TTL });
+const ACCOUNTS_CACHE_TTL = 15 * 1000; // in milliseconds
+const accountsCache = CacheRedis('accounts', config.endpoints.redis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
@@ -123,7 +121,8 @@ const getAccountsFromCore = async (params) => {
 		// Cache the latest account information for 'CACHE_TTL' duration
 		await BluebirdPromise.map(
 			accounts.data,
-			async account => accountsCache.set(account.address, JSON.stringify(account), CACHE_TTL),
+			async account => accountsCache
+				.set(account.address, JSON.stringify(account), ACCOUNTS_CACHE_TTL),
 			{ concurrency: accounts.data.length },
 		);
 	}
