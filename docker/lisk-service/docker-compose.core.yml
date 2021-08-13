@@ -6,6 +6,7 @@ services:
     depends_on:
       - redis_common
       - redis_core
+      - redis_core_volatile
       - mysql_core
     networks:
       - services_network
