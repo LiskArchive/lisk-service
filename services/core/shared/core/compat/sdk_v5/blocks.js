@@ -68,6 +68,7 @@ const requestApi = coreApi.requestRetry;
 let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
+let indexVerifiedHeight; // Height below which there are no missing blocks in the index
 
 let genesisAccountsToIndex;
 let genesisAccountIndexingBatchNum = -1;
@@ -520,9 +521,12 @@ const buildIndex = async (from, to) => {
 const indexMissingBlocks = async (startHeight, endHeight) => {
 	try {
 		// startHeight can never be lower than genesisHeight
-		if (startHeight < genesisHeight) startHeight = genesisHeight;
+		// and, do not search the index below the indexVerifiedHeight
+		// endHeight can not be lower than startHeight or indexVerifiedHeight
+		startHeight = Math.max(startHeight, genesisHeight, indexVerifiedHeight);
+		endHeight = Math.max(startHeight, endHeight, indexVerifiedHeight);
 
-		const PAGE_SIZE = 100000;
+		const PAGE_SIZE = 10000;
 		const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
 		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 			/* eslint-disable no-await-in-loop */
@@ -553,11 +557,17 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 				logger.debug('propBetweens', util.inspect(propBetweens));
 				const missingBlocksRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
 				logger.debug('missingBlocksRanges', util.inspect(missingBlocksRanges));
-				for (let i = 0; i < missingBlocksRanges.length; i++) {
-					const { from, to } = missingBlocksRanges[i];
 
-					logger.info(`Attempting to cache missing blocks ${from}-${to}`);
-					await buildIndex(from, to);
+				if (missingBlocksRanges.length === 0) {
+					// Update 'indexVerifiedHeight' when no missing blocks are found
+					indexVerifiedHeight = Math.max(indexVerifiedHeight, toHeight);
+				} else {
+					for (let i = 0; i < missingBlocksRanges.length; i++) {
+						const { from, to } = missingBlocksRanges[i];
+
+						logger.info(`Attempting to cache missing blocks ${from}-${to}`);
+						await buildIndex(from, to);
+					}
 				}
 			}
 			/* eslint-enable no-await-in-loop */
@@ -636,6 +646,7 @@ const init = async () => {
 	try {
 		// Set the genesis height
 		setGenesisHeight(await coreApi.getGenesisHeight());
+		indexVerifiedHeight = getGenesisHeight() - 1;
 
 		// First download the genesis block, if applicable
 		await getBlocks({ height: genesisHeight });
