@@ -65,7 +65,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const ACCOUNTS_CACHE_TTL = 15 * 1000; // in milliseconds
-const accountsCache = CacheRedis('accounts', config.endpoints.redis);
+const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
