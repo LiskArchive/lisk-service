@@ -22,7 +22,7 @@ const config = {
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
-config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; // in seconds
+config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in seconds
 
 /**
@@ -45,7 +45,7 @@ config.networks = [
 	{
 		name: 'mainnet',
 		identifier: 'update_after_migration',
-		genesisHeight: 16301502,
+		genesisHeight: 16270293,
 		genesisBlockUrl: 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
 	},
 	{
