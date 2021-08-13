@@ -646,8 +646,7 @@ const init = async () => {
 		await indexPastBlocks();
 		await indexGenesisAccounts();
 	} catch (err) {
-		logger.warn('Unable to update block index');
-		logger.warn(err.message);
+		logger.warn(`Unable to update block index:\n${err.stack}`);
 	}
 
 	// Check and update index readiness status
