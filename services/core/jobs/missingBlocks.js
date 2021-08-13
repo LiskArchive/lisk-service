@@ -21,7 +21,7 @@ module.exports = [
 	{
 		name: 'index.missing.blocks',
 		description: 'Keep the blocks index up-to-date',
-		schedule: '*/15 * * * *', // 15-minute interval
+		schedule: '45 * * * *', // 1 hour interval
 		controller: async () => {
 			if (config.jobs.missingBlocks.enabled) {
 				logger.debug('Checking for missing blocks in index...');
