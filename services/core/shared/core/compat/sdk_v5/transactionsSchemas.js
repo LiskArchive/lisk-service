@@ -15,13 +15,15 @@
  */
 const coreApi = require('./coreApi');
 
+const requestApi = coreApi.requestRetry;
+
 const getTransactionsSchemas = async params => {
 	const transactionsSchemas = {
 		data: [],
 		meta: {},
 	};
 
-	const response = await coreApi.getTransactionsSchemas();
+	const response = await requestApi(coreApi.getTransactionsSchemas);
 
 	const allTransactionSchemas = response.transactionsAssets.map(txAsset => {
 		const formattedTxAsset = {};
