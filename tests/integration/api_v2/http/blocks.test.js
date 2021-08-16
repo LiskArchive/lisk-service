@@ -107,7 +107,7 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by timestamp -> ok', async () => {
-			const timestamp = 1615917187;
+			const timestamp = 1629113206;
 			const response = await api.get(`${endpoint}?timestamp=${timestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {

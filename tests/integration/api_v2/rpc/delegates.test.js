@@ -314,7 +314,7 @@ describe('Method get.delegates', () => {
 					const prevAccount = result.data[i - 1];
 					const currAccount = result.data[i];
 					expect(BigInt(prevAccount.summary.balance))
-						.toBeGreaterThan(BigInt(currAccount.summary.balance));
+						.toBeGreaterThanOrEqual(BigInt(currAccount.summary.balance));
 				}
 			}
 			expect(result.meta).toMap(metaSchema);
