@@ -27,6 +27,7 @@ const {
 	getApiClient,
 } = require('../common/wsRequest');
 
+const delay = require('../../../delay');
 const config = require('../../../../config');
 
 let genesisHeight;
@@ -132,14 +133,15 @@ const getBlockByHeight = async height => {
 	}
 };
 
-const getBlocksByHeightBetween = async (from, to) => {
+const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
 		// File based Genesis block handling
 		if (getGenesisBlockId() && Number(from) === await getGenesisHeight()) {
 			const genesisBlockResult = await getBlockByHeight(from);
 			if (from < to) {
 				const { data: [genesisBlock] } = genesisBlockResult;
-				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween(from + 1, to);
+				// eslint-disable-next-line max-len
+				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween({ from: from + 1, to });
 				return { data: [genesisBlock, ...remainingBlocks] };
 			}
 			return genesisBlockResult;
@@ -320,6 +322,22 @@ const getTransactionsSchemas = async () => {
 	}
 };
 
+// eslint-disable-next-line consistent-return
+const requestRetry = async (fn, params, numRetries = 5) => {
+	let retries = numRetries;
+	do {
+		/* eslint-disable no-await-in-loop */
+		try {
+			const response = await fn(params);
+			return response;
+		} catch (err) {
+			if (retries && err instanceof TimeoutException) await delay(10);
+			else throw err;
+		}
+		/* eslint-enable no-await-in-loop */
+	} while (retries--);
+};
+
 module.exports = {
 	getGenesisHeight,
 	getBlockByID,
@@ -339,4 +357,5 @@ module.exports = {
 	getTransactionsSchemas,
 	getTransactionsByIDs,
 	getTransactionByID,
+	requestRetry,
 };
