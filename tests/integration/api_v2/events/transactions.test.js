@@ -41,7 +41,7 @@ describe('Test subscribe API transaction event', () => {
 		// Post signed transaction to lisk-core (test blockchain CI)
 		const postTransaction = await api.post(
 			`${baseUrlV2}/transactions`,
-			{ transaction: '0802100018c5012080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a32270880c2d72f1214ab0041a7d3f7b2c290b5b834d46bdc7b7eb858151a0a73656e6420746f6b656e3a40e9e1af605cf2e562a525b9785d30d02e91be18d02f35050b1265156fb468ad2a0ad794b96feabae51222a50826b2eaf4d730e7cde4f94badc6b09f15a51a090d' },
+			{ transaction: '080210001884012080c2d72f2a200fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a322b0880c2d72f1214df0e187bb3895806261c87cf66e1772566ee8e581a0e746f6b656e207472616e736665723a406a61964c4040f168ff2b0390a336347163aaf50db32eba4878a8c9b3f09da0b3489592d6738ce4658a835187d2428bad5aa5bf3b9552880f5678d83530c91707' },
 		);
 		expect(postTransaction).toMap(postTransactionSchema);
 
