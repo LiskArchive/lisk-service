@@ -62,6 +62,14 @@ const events = {
 			logger.error(`Error occured when processing 'newBlock' event:\n${err.stack}`);
 		}
 	},
+	updateAccountsByAddress: async (addresses) => {
+		try {
+			logger.debug(`============== 'updateAccountsByAddress' signal: ${Signals.get('updateAccountsByAddress')} ==============`);
+			Signals.get('updateAccountsByAddress').dispatch(addresses);
+		} catch (err) {
+			logger.error(`Error occured when processing 'newBlock' event:\n${err.stack}`);
+		}
+	},
 	deleteBlock: async (block) => {
 		try {
 			await deleteBlock(block);

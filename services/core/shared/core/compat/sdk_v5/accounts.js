@@ -64,7 +64,6 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
-const ACCOUNTS_CACHE_TTL = 15 * 1000; // in milliseconds
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
@@ -118,11 +117,9 @@ const getAccountsFromCore = async (params) => {
 	if (response.data) {
 		accounts.data = response.data.map(account => normalizeAccount(account));
 
-		// Cache the latest account information for 'ACCOUNTS_CACHE_TTL' duration
 		await BluebirdPromise.map(
 			accounts.data,
-			async account => accountsCache
-				.set(account.address, JSON.stringify(account), ACCOUNTS_CACHE_TTL),
+			async account => accountsCache.set(account.address, JSON.stringify(account)),
 			{ concurrency: accounts.data.length },
 		);
 	}
@@ -558,7 +555,13 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
 };
 
+const keepAccountsCacheUpdated = () => {
+	const updateAccountsCacheListener = indexAccountsbyAddress;
+	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
+};
+
 removeReclaimedLegacyAccountInfoFromCache();
+keepAccountsCacheUpdated();
 
 module.exports = {
 	confirmPublicKey,
