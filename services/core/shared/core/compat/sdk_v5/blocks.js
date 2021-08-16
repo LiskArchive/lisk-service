@@ -58,7 +58,6 @@ const accountsIndexSchema = require('./schema/accounts');
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
-const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 const logger = Logger();
@@ -585,7 +584,7 @@ const indexPastBlocks = async () => {
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
 	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = JSON.parse(await constantsCache.get('networkConstants')).data.height;
+	const blockIndexHigherRange = (await requestApi(coreApi.getNetworkStatus)).data.height;
 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
 
