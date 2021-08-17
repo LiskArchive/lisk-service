@@ -44,6 +44,8 @@ const transactionsIndexSchema = require('./schema/transactions');
 const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
+const requestApi = coreApi.requestRetry;
+
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 
 const resolveModuleAsset = (moduleAssetVal) => {
@@ -137,12 +139,12 @@ const normalizeTransaction = async txs => {
 };
 
 const getTransactionByID = async id => {
-	const response = await coreApi.getTransactionByID(id);
+	const response = await requestApi(coreApi.getTransactionByID, id);
 	return normalizeTransaction(response.data);
 };
 
 const getTransactionsByIDs = async ids => {
-	const response = await coreApi.getTransactionsByIDs(ids);
+	const response = await requestApi(coreApi.getTransactionsByIDs, ids);
 	return normalizeTransaction(response.data);
 };
 
@@ -343,7 +345,7 @@ const getTransactions = async params => {
 };
 
 const getTransactionsByBlockId = async blockId => {
-	const [block] = (await coreApi.getBlockByID(blockId)).data;
+	const [block] = (await requestApi(coreApi.getBlockByID, blockId)).data;
 	const transactions = await BluebirdPromise.map(
 		block.payload,
 		async transaction => {

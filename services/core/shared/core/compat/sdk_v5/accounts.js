@@ -66,10 +66,13 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
+const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
 const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
+
+const requestApi = coreApi.requestRetry;
 
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
@@ -112,10 +115,41 @@ const getAccountsFromCore = async (params) => {
 		meta: {},
 	};
 	const response = params.addresses
-		? await coreApi.getAccountsByAddresses(params.addresses)
-		: await coreApi.getAccountByAddress(params.address);
-	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
+		? await requestApi(coreApi.getAccountsByAddresses, params.addresses)
+		: await requestApi(coreApi.getAccountByAddress, params.address);
+
+	if (response.data) {
+		accounts.data = response.data.map(account => normalizeAccount(account));
+
+		await BluebirdPromise.map(
+			accounts.data,
+			async account => accountsCache.set(account.address, JSON.stringify(account)),
+			{ concurrency: accounts.data.length },
+		);
+	}
 	if (response.meta) accounts.meta = response.meta;
+	return accounts;
+};
+
+const getAccountsFromCache = async (params) => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+
+	const addresses = params.addresses || [params.address];
+	accounts.data = await BluebirdPromise.map(
+		addresses,
+		async (address) => {
+			const accountString = await accountsCache.get(getBase32AddressFromHex(address));
+			if (accountString) return JSON.parse(accountString);
+
+			// Fetch account information from Core, if not present in cache
+			const { data: [account] } = await getAccountsFromCore({ address });
+			return account;
+		},
+		{ concurrency: 10 },
+	);
 	return accounts;
 };
 
@@ -295,12 +329,12 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			},
 		);
 	} else {
-		// Fetch legacy account info from the cache, query Core when unavailable
+		// Fetch legacy account info from the cache or query Core if unavailable
 		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
 		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
 		const accountInfo = cachedAccountInfoStr
 			? JSON.parse(cachedAccountInfoStr)
-			: await coreApi.getLegacyAccountInfo(publicKey);
+			: await requestApi(coreApi.getLegacyAccountInfo, publicKey);
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
@@ -406,7 +440,7 @@ const getAccounts = async params => {
 			response.data = await BluebirdPromise.map(
 				addresses,
 				async address => {
-					const { data: [account] } = await getAccountsFromCore({ address });
+					const { data: [account] } = await getAccountsFromCache({ address });
 					return account;
 				},
 				{ concurrency: 10 },
@@ -561,7 +595,13 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
 };
 
+const keepAccountsCacheUpdated = () => {
+	const updateAccountsCacheListener = indexAccountsbyAddress;
+	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
+};
+
 removeReclaimedLegacyAccountInfoFromCache();
+keepAccountsCacheUpdated();
 
 module.exports = {
 	confirmPublicKey,
