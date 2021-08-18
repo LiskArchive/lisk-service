@@ -51,7 +51,6 @@
     "semver": "^7.3.5",
     "signals": "^1.0.0",
     "split": "^1.0.1",
-    "sqlite3": "^5.0.2",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.4",
     "tar": "^6.1.2"
