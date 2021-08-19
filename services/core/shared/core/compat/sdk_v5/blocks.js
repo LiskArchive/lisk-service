@@ -152,9 +152,9 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 			block.numberOfTransactions = block.payload.length;
 
 			block.size = 0;
-			block.totalForged = Number(block.reward);
-			block.totalBurnt = 0;
-			block.totalFee = 0;
+			block.totalForged = BigInt(block.reward);
+			block.totalBurnt = BigInt('0');
+			block.totalFee = BigInt('0');
 
 			block.payload.forEach(txn => {
 				txn.size = apiClient.transaction.encode(txn).length;
@@ -162,10 +162,10 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 
 				block.size += txn.size;
 
-				const txnMinFee = Number(txn.minFee);
-				block.totalForged += Number(txn.fee);
+				const txnMinFee = BigInt(txn.minFee);
+				block.totalForged += BigInt(txn.fee);
 				block.totalBurnt += txnMinFee;
-				block.totalFee += Number(txn.fee) - txnMinFee;
+				block.totalFee += BigInt(txn.fee) - txnMinFee;
 			});
 
 			if (isIgnoreGenesisAccounts) {
