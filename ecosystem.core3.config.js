@@ -33,6 +33,10 @@ module.exports = {
 				PORT: '9901',
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+				// ENABLE_HTTP_API: 'http-status,http-version2',
+				// ENABLE_WS_API: 'blockchain,rpc-v2',
+				// HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
+				// ENABLE_HTTP_CACHE_CONTROL: 'true'
 			},
 		},
 		{
