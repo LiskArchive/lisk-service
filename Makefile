@@ -48,7 +48,7 @@ logs-%:
 print-config:
 	cd ./docker && $(compose) config
 
-build: build-core build-market build-newsfeed build-gateway
+build: build-core build-market build-newsfeed build-transaction build-gateway
 
 build-all: build-core build-market build-newsfeed build-gateway build-template build-tests
 
@@ -60,6 +60,9 @@ build-market:
 	
 build-newsfeed:
 	cd ./services/newsfeed && docker build --tag=lisk/service_newsfeed ./
+
+build-transaction:
+	cd ./services/transaction && docker build --tag=lisk/service_transaction ./
 
 build-gateway:
 	cd ./services/gateway && docker build --tag=lisk/service_gateway ./
@@ -76,6 +79,7 @@ build-local:
 	cd ./services/core && npm ci
 	cd ./services/market && npm ci
 	cd ./services/newsfeed && npm ci
+	cd ./services/transaction && npm ci
 	cd ./services/gateway && npm ci
 	cd ./services/template && npm ci
 	cd ./tests && npm ci
@@ -86,6 +90,7 @@ clean:
 	cd ./services/core && rm -rf node_modules
 	cd ./services/market && rm -rf node_modules
 	cd ./services/newsfeed && rm -rf node_modules
+	cd ./services/transaction && rm -rf node_modules
 	cd ./services/gateway && rm -rf node_modules
 	cd ./services/template && rm -rf node_modules
 	cd ./tests && rm -rf node_modules
