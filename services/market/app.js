@@ -38,7 +38,7 @@ const logger = Logger();
 const app = Microservice({
 	name: 'market',
 	transporter: config.transporter,
-	timeout: config.brokerTimeout,
+	brokerTimeout: config.brokerTimeout,
 	packageJson,
 	logger: loggerConf,
 });

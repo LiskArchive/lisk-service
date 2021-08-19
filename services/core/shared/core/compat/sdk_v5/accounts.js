@@ -25,6 +25,7 @@ const {
 	confirmPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
+	getLegacyHexAddressFromPublicKey,
 	getLegacyAddressFromPublicKey,
 	getHexAddressFromPublicKey,
 	getBase32AddressFromHex,
@@ -51,6 +52,7 @@ const {
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
+const Signals = require('../../../signals');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 
@@ -62,8 +64,13 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
+const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+
 // A boolean mapping against the genesis account addresses to indicate migration status
 const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
+
+const requestApi = coreApi.requestRetry;
 
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
@@ -106,10 +113,41 @@ const getAccountsFromCore = async (params) => {
 		meta: {},
 	};
 	const response = params.addresses
-		? await coreApi.getAccountsByAddresses(params.addresses)
-		: await coreApi.getAccountByAddress(params.address);
-	if (response.data) accounts.data = response.data.map(account => normalizeAccount(account));
+		? await requestApi(coreApi.getAccountsByAddresses, params.addresses)
+		: await requestApi(coreApi.getAccountByAddress, params.address);
+
+	if (response.data) {
+		accounts.data = response.data.map(account => normalizeAccount(account));
+
+		await BluebirdPromise.map(
+			accounts.data,
+			async account => accountsCache.set(account.address, JSON.stringify(account)),
+			{ concurrency: accounts.data.length },
+		);
+	}
 	if (response.meta) accounts.meta = response.meta;
+	return accounts;
+};
+
+const getAccountsFromCache = async (params) => {
+	const accounts = {
+		data: [],
+		meta: {},
+	};
+
+	const addresses = params.addresses || [params.address];
+	accounts.data = await BluebirdPromise.map(
+		addresses,
+		async (address) => {
+			const accountString = await accountsCache.get(getBase32AddressFromHex(address));
+			if (accountString) return JSON.parse(accountString);
+
+			// Fetch account information from Core, if not present in cache
+			const { data: [account] } = await getAccountsFromCore({ address });
+			return account;
+		},
+		{ concurrency: 10 },
+	);
 	return accounts;
 };
 
@@ -173,15 +211,15 @@ const resolveDelegateInfo = async accounts => {
 					publicKey: account.publicKey,
 				};
 
-				const adder = (acc, curr) => BigInt(acc) + BigInt(curr.amount);
-				const totalVotes = account.dpos.sentVotes.reduce(adder, BigInt(0));
 				const selfVote = account.dpos.sentVotes
 					.find(vote => vote.delegateAddress === account.address);
 				const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
 				const cap = selfVoteAmount * BigInt(10);
 
 				account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
-				const voteWeight = BigInt(totalVotes) > cap ? cap : account.totalVotesReceived;
+				const voteWeight = BigInt(account.totalVotesReceived) > cap
+					? cap
+					: account.totalVotesReceived;
 
 				account.delegateWeight = voteWeight;
 				account.username = account.dpos.delegate.username;
@@ -228,8 +266,8 @@ const resolveDelegateInfo = async accounts => {
 const indexAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
 	const finalAccountsToIndex = await BluebirdPromise.map(
-		dropDuplicates(accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey))),
+		accountInfoArray
+			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
 			const [accountInfo] = accountInfoArray
@@ -245,7 +283,14 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 						property: 'address',
 						value: account.address,
 					},
-				}, account);
+				}, {
+					...account,
+					balance: account.token.balance,
+					username: account.dpos.delegate.username,
+					rewards: accountInfo.reward,
+					producedBlocks: 1,
+					totalVotesReceived: account.dpos.delegate.totalVotesReceived,
+				});
 			}
 			return account;
 		},
@@ -264,44 +309,59 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
-	const accountInfo = await coreApi.getLegacyAccountInfo(publicKey);
-	if (accountInfo) {
-		const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
-		const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
+
+	// Check if the account was already migrated
+	const reclaimTxModuleAssetId = '1000:0';
+	const transactionsDB = await getTransactionsIndex();
+	const [reclaimTx] = await transactionsDB.find({
+		senderPublicKey: publicKey,
+		moduleAssetId: reclaimTxModuleAssetId,
+	});
+
+	if (reclaimTx) {
 		Object.assign(
 			legacyAccountInfo,
 			{
-				address: getBase32AddressFromPublicKey(publicKey),
 				legacyAddress: getLegacyAddressFromPublicKey(publicKey),
-				publicKey,
-				// The account hasn't migrated/reclaimed yet
-				// So, has no outgoing transactions/registrations on the (legacy) blockchain
-				isMigrated: false,
-				isDelegate: false,
-				isMultisignature: false,
-				token: { balance: BigInt('0') },
-				legacy: {
-					...accountInfo,
-					address: legacyAddress,
-				},
+				isMigrated: true,
 			},
 		);
 	} else {
-		// Check if the account was already migrated
-		const reclaimTxModuleAssetId = '1000:0';
-		const transactionsDB = await getTransactionsIndex();
-		const [reclaimTx] = await transactionsDB.find({
-			senderPublicKey: publicKey,
-			moduleAssetId: reclaimTxModuleAssetId,
-		});
-		if (reclaimTx) {
+		// Fetch legacy account info from the cache or query Core if unavailable
+		const legacyHexAddress = getLegacyHexAddressFromPublicKey(publicKey);
+		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
+		const accountInfo = cachedAccountInfoStr
+			? JSON.parse(cachedAccountInfoStr)
+			: await requestApi(coreApi.getLegacyAccountInfo, publicKey);
+
+		if (accountInfo && Object.keys(accountInfo).length) {
+			if (!cachedAccountInfoStr) {
+				await legacyAccountCache.set(legacyHexAddress, JSON.stringify(accountInfo));
+			}
+
+			const legacyAddressBuffer = Buffer.from(accountInfo.address, 'hex');
+			const legacyAddress = `${legacyAddressBuffer.readBigUInt64BE().toString()}L`;
 			Object.assign(
 				legacyAccountInfo,
 				{
+					address: getBase32AddressFromPublicKey(publicKey),
 					legacyAddress: getLegacyAddressFromPublicKey(publicKey),
-					isMigrated: true,
+					publicKey,
+					// The account hasn't migrated/reclaimed yet
+					// So, has no outgoing transactions/registrations on the (legacy) blockchain
+					isMigrated: false,
+					isDelegate: false,
+					isMultisignature: false,
+					token: { balance: BigInt('0') },
+					legacy: {
+						...accountInfo,
+						address: legacyAddress,
+					},
 				},
 			);
+		} else if (!cachedAccountInfoStr) {
+			// Cache empty object for accounts for which core returns 'undefined'
+			await legacyAccountCache.set(legacyHexAddress, JSON.stringify(legacyAccountInfo));
 		}
 	}
 	return legacyAccountInfo;
@@ -378,7 +438,7 @@ const getAccounts = async params => {
 			response.data = await BluebirdPromise.map(
 				addresses,
 				async address => {
-					const { data: [account] } = await getAccountsFromCore({ address });
+					const { data: [account] } = await getAccountsFromCache({ address });
 					return account;
 				},
 				{ concurrency: 10 },
@@ -418,10 +478,9 @@ const getAccounts = async params => {
 					Object.assign(account, { isMigrated, legacy, legacyAddress });
 				}
 			}
-
 			return account;
 		},
-		{ concurrency: accounts.data.length },
+		{ concurrency: 10 },
 	);
 	accounts.data = await resolveAccountsInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
@@ -478,6 +537,33 @@ const getMultisignatureGroups = async account => {
 };
 
 const getMultisignatureMemberships = async () => []; // TODO
+
+const removeReclaimedLegacyAccountInfoFromCache = () => {
+	// Clear the legacyAccount cache when a reclaim transaction has been made
+	const removeReclaimedAccountFromCacheListener = async (eventPayload) => {
+		const reclaimTxModuleId = 1000;
+		const reclaimTxAssetId = 0;
+
+		const [block] = eventPayload.data;
+		if (block && block.payload && Array.isArray(block.payload)) {
+			await block.payload.forEach(async tx => {
+				if (tx.moduleID === reclaimTxModuleId && tx.assetID === reclaimTxAssetId) {
+					const legacyHexAddress = getLegacyHexAddressFromPublicKey(tx.senderPublicKey);
+					await legacyAccountCache.delete(legacyHexAddress);
+				}
+			});
+		}
+	};
+	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
+};
+
+const keepAccountsCacheUpdated = () => {
+	const updateAccountsCacheListener = indexAccountsbyAddress;
+	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
+};
+
+removeReclaimedLegacyAccountInfoFromCache();
+keepAccountsCacheUpdated();
 
 module.exports = {
 	confirmPublicKey,

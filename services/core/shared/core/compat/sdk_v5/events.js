@@ -28,11 +28,17 @@ const register = async (events) => {
 		try {
 			const incomingBlock = apiClient.block.decode(Buffer.from(data.block, 'hex'));
 			const [newBlock] = await normalizeBlocks([incomingBlock]);
+			const affectedAccountAddresses = data.accounts.map(acc => {
+				const account = apiClient.account.decode(Buffer.from(acc, 'hex'));
+				const accountAddressHex = account.address.toString('hex');
+				return accountAddressHex;
+			});
 			logger.debug(`New block forged: ${newBlock.id} at height ${newBlock.height}`);
 			events.newBlock(newBlock);
+			events.updateAccountsByAddress(affectedAccountAddresses);
 			events.calculateFeeEstimate();
 		} catch (err) {
-			logger.error(err.message);
+			logger.error(`Error while processing the 'app:block:new' event:\n${err.stack}`);
 		}
 	});
 
@@ -43,13 +49,17 @@ const register = async (events) => {
 			logger.debug(`Block deleted: ${deletedBlock.id} at height ${deletedBlock.height}`);
 			events.deleteBlock(deletedBlock);
 		} catch (err) {
-			logger.error(err.message);
+			logger.error(`Error while processing the 'app:block:delete' event:\n${err.stack}`);
 		}
 	});
 
 	apiClient.subscribe('app:chain:validators:change', data => {
-		logger.debug(`Chain validators updated: ${data}`);
-		events.newRound(data);
+		try {
+			logger.debug(`Chain validators updated: ${data}`);
+			events.newRound(data);
+		} catch (err) {
+			logger.error(`Error while processing the 'app:chain:validators:change' event:\n${err.stack}`);
+		}
 	});
 };
 
