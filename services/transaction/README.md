@@ -1,6 +1,4 @@
-# Lisk Service Template
-
-The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
+# Lisk Service Transaction
 
 > Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
@@ -16,20 +14,20 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/services/template # move into template component folder
+cd lisk-service/services/transaction # move into transaction component folder
 npm install # install required Node.js modules
 ```
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations. The template service does not use any of them by default.
+To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations. The transaction service does not use any of them by default.
 
 ## Management
 
 ### Start
 
 ```bash
-cd lisk-service/services/template # move into root folder of the template component
+cd lisk-service/services/transaction # move into root folder of the transaction component
 npm start # start the component
 ```
 
@@ -47,7 +45,7 @@ https://github.com/LiskHQ/lisk-service/graphs/contributors
 
 ## License
 
-Copyright 2016-2019 Lisk Foundation
+Copyright 2016-2021 Lisk Foundation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
