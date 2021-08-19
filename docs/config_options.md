@@ -96,7 +96,7 @@ LISK_CORE_HTTP=https://mainnet.lisk.com # Lisk Core HTTP URL
 SERVICE_CORE_REDIS=redis://localhost:6379/1
 
 # Local Redis LRU cache for Core microservice
-# This should be a different instance on production
+# This should be a separate instance in the production
 # Refer to the /docker/redis/redis.volatile.conf for more details
 SERVICE_CORE_REDIS_VOLATILE=redis://localhost:6379/2
 
