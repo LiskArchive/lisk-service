@@ -51,20 +51,19 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				// SERVICE_BROKER: 'redis://localhost:6379/0',
-				// LISK_CORE_WS: 'ws://localhost:8080',
-				// SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
-				// SERVICE_CORE_MYSQL: 'mysql://root@localhost:3306/sdk_v5_betanet',
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				LISK_CORE_WS: 'ws://localhost:4000',
+				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
+				SERVICE_CORE_REDIS_VOLATILE: "redis://localhost:6379/8",
+				SERVICE_CORE_MYSQL: 'mysql://root@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
-				GEOIP_JSON: 'https://geoip.lisk.io/json',
+				GEOIP_JSON: 'false',
+				INDEX_N_BLOCKS: '0',
 				ENABLE_TRANSACTION_STATS: 'true',
-				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '40',
+				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
-				INDEX_N_BLOCKS: '12000',
-				ENABLE_FEE_ESTIMATOR_QUICK: 'false',
+				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
-				FEE_EST_COLD_START_BATCH_SIZE: '1',
-				FEE_EST_DEFAULT_START_BLOCK_HEIGHT: '1',
 			},
 		},
 		{
@@ -82,8 +81,8 @@ module.exports = {
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
-				// SERVICE_BROKER: 'redis://localhost:6379/0',
-				// SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_MARKET_REDIS: 'redis://localhost:6379/2',
 				// SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
 				// SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
 				// EXCHANGERATESAPI_IO_API_KEY: ''
