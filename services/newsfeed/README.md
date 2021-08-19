@@ -25,7 +25,7 @@ npm install # install required Node.js modules
 To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations. A list of the most commonly used environment variables can be seen below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis)
-- `SERVICE_CORE_MYSQL`: URL of the local Lisk Service Core database
+- `SERVICE_NEWSFEED_MYSQL`: URL of the local Lisk Service Core database
 
 ## Management
 
