@@ -31,9 +31,8 @@ module.exports = {
 			autorestart: true,
 			env: {
 				PORT: '9901',
-
 				// --- Remember to set the properties below
-				// SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_BROKER: 'redis://localhost:6379/0',
 			},
 		},
 		{
