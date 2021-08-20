@@ -1,6 +1,6 @@
 # Lisk Service Newsfeed
 
-The news feed service is a one-purpose microservice that polls the content sharing platforms and shares collected data with UI clients such as Lisk Desktop
+The Newsfeed service is a single-purpose microservice that polls the content sharing platforms and shares collected data with UI clients such as Lisk Desktop
 
 > Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 

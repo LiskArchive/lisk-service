@@ -1,6 +1,6 @@
 # Lisk Service Transaction
 
-The Transaction service is a proxy between all participants before the multisignature transaction is ready to broadcast
+The Transaction service is a proxy between all participants before a multisignature transaction is ready to be broadcast to the blockchain
 
 > Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.com/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
