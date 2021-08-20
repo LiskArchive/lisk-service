@@ -47,23 +47,6 @@ const delegateComparator = (a, b) => {
 	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
 };
 
-const getAllDelegates = () => new Promise((resolve) => {
-	resolve(delegateList);
-});
-
-const getTotalNumberOfDelegates = async (params = {}) => {
-	const allDelegates = await getAllDelegates();
-	const relevantDelegates = allDelegates.filter(delegate => (
-		(!params.search || delegate.username.includes(params.search))
-		&& (!params.username || delegate.username === params.username)
-		&& (!params.address || delegate.account.address === params.address)
-		&& (!params.publickey || delegate.account.publicKey === params.publickey)
-		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
-		&& (!params.status || params.status.includes(delegate.status))
-	));
-	return relevantDelegates.length;
-};
-
 const computeDelegateRank = async () => {
 	if (sdkVersion >= 4) {
 		delegateList.sort(delegateComparator);
@@ -107,6 +90,99 @@ const computeDelegateStatus = async () => {
 		return delegate;
 	});
 	return delegateList;
+};
+
+const loadAllDelegates = async () => {
+	try {
+		const maxCount = 10000;
+		delegateList = await requestAll(coreApi.getDelegates, { limit: 10 }, maxCount);
+		await BluebirdPromise.map(
+			delegateList,
+			async delegate => {
+				delegate.address = delegate.account.address;
+				delegate.publicKey = delegate.account.publicKey;
+				await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
+				await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
+				return delegate;
+			},
+			{ concurrency: delegateList.length },
+		);
+
+		if (delegateList.length) {
+			logger.info(`Updated delegate list with ${delegateList.length} delegates`);
+		}
+	} catch (err) {
+		logger.warn(`Failed to load all delegates due to: ${err.message}`);
+	}
+};
+
+const loadAllNextForgers = async () => {
+	// TODO: These feature should be handled by the compatibility layer
+	const maxCount = (sdkVersion < 4) ? 101 : 103;
+	if (sdkVersion <= 4) {
+		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
+	} else {
+		const { data } = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
+		rawNextForgers = data;
+	}
+	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
+};
+
+const resolveNextForgers = async () => {
+	nextForgers = await BluebirdPromise.map(
+		rawNextForgers,
+		async forger => sdkVersion <= 4
+			? delegateList.find(o => o.address === forger.address)
+			: forger,
+	);
+	logger.debug('Finished collecting delegates');
+};
+
+const reloadNextForgersCache = async () => {
+	await loadAllNextForgers();
+	await resolveNextForgers();
+};
+
+const reload = async () => {
+	await loadAllDelegates();
+	await loadAllNextForgers();
+	await computeDelegateRank();
+	await computeDelegateStatus();
+};
+
+const getAllDelegates = async () => {
+	if (delegateList.length === 0) await reload();
+	return delegateList;
+};
+
+const getTotalNumberOfDelegates = async (params = {}) => {
+	const allDelegates = await getAllDelegates();
+	const relevantDelegates = allDelegates.filter(delegate => (
+		(!params.search || delegate.username.includes(params.search))
+		&& (!params.username || delegate.username === params.username)
+		&& (!params.address || delegate.account.address === params.address)
+		&& (!params.publickey || delegate.account.publicKey === params.publickey)
+		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
+		&& (!params.status || params.status.includes(delegate.status))
+	));
+	return relevantDelegates.length;
+};
+
+const getNextForgers = async params => {
+	const forgers = {
+		data: [],
+		meta: {},
+	};
+
+	const { offset, limit } = params;
+
+	forgers.data = nextForgers.slice(offset, offset + limit);
+
+	forgers.meta.count = forgers.data.length;
+	forgers.meta.offset = offset;
+	forgers.meta.total = nextForgers.length;
+
+	return parseToJSONCompatObj(forgers);
 };
 
 const getDelegates = async params => {
@@ -179,91 +255,16 @@ const getDelegates = async params => {
 	return parseToJSONCompatObj(delegates);
 };
 
-const loadAllDelegates = async () => {
-	try {
-		const maxCount = 10000;
-		delegateList = await requestAll(coreApi.getDelegates, { limit: 10 }, maxCount);
-		await BluebirdPromise.map(
-			delegateList,
-			async delegate => {
-				delegate.address = delegate.account.address;
-				delegate.publicKey = delegate.account.publicKey;
-				await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
-				await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
-				return delegate;
-			},
-			{ concurrency: delegateList.length },
-		);
-
-		if (delegateList.length) {
-			logger.info(`Updated delegate list with ${delegateList.length} delegates`);
-		}
-	} catch (err) {
-		logger.warn(`Failed to load all delegates due to: ${err.message}`);
-	}
-};
-
-const getNextForgers = async params => {
-	const forgers = {
-		data: [],
-		meta: {},
-	};
-
-	const { offset, limit } = params;
-
-	forgers.data = nextForgers.slice(offset, offset + limit);
-
-	forgers.meta.count = forgers.data.length;
-	forgers.meta.offset = offset;
-	forgers.meta.total = nextForgers.length;
-
-	return parseToJSONCompatObj(forgers);
-};
-
-const loadAllNextForgers = async () => {
-	// TODO: These feature should be handled by the compatibility layer
-	const maxCount = (sdkVersion < 4) ? 101 : 103;
-	if (sdkVersion <= 4) {
-		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
-	} else {
-		const { data } = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
-		rawNextForgers = data;
-	}
-	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
-};
-
-const resolveNextForgers = async () => {
-	nextForgers = await BluebirdPromise.map(
-		rawNextForgers,
-		async forger => sdkVersion <= 4
-			? delegateList.find(o => o.address === forger.address)
-			: forger,
-	);
-	logger.debug('Finished collecting delegates');
-};
-
-const reloadNextForgersCache = async () => {
-	await loadAllNextForgers();
-	await resolveNextForgers();
-};
-
-const reload = async () => {
-	await loadAllDelegates();
-	await loadAllNextForgers();
-	await computeDelegateRank();
-	await computeDelegateStatus();
-};
-
 // Keep the delegate cache up-to-date
 const updateDelegateListEveryBlock = () => {
-	const updateDelegateCacheListener = async (data) => {
+	const updateDelegateCacheListener = async (eventType, data) => {
 		const dposModuleId = 5;
 		const registerDelegateAssetId = 0;
 		const voteDelegateAssetId = 1;
 
 		const updatedDelegateAddresses = [];
 		const [block] = data.data;
-		if (block && block.payload) {
+		if (block && block.payload && Array.isArray(block.payload)) {
 			block.payload.forEach(tx => {
 				if (tx.moduleID === dposModuleId) {
 					if (tx.assetID === registerDelegateAssetId) {
@@ -281,16 +282,41 @@ const updateDelegateListEveryBlock = () => {
 
 			updatedDelegateAccounts.forEach(delegate => {
 				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-				if (delegateIndex === -1) delegateList.push(delegate);
-				else delegateList[delegateIndex] = delegate;
+				// Update delegate list on newBlock event
+				if (delegate.isDelegate) {
+					if (delegateIndex === -1) delegateList.push(delegate);
+					else delegateList[delegateIndex] = delegate;
+				// Remove delegate from list when deleteBlock event contains delegate registration tx
+				} else if (delegateIndex !== -1) {
+					delegateList.splice(delegateIndex, 1);
+				}
 			});
 
 			// Rank is impacted only when a delegate gets (un-)voted
 			if (updatedDelegateAddresses.length) await computeDelegateRank();
+
+			// Update delegate cache with producedBlocks and rewards
+			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
+			if (delegateList[delegateIndex]
+				&& Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
+				if (delegateList[delegateIndex].producedBlocks && delegateList[delegateIndex].rewards) {
+					delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
+						? delegateList[delegateIndex].producedBlocks + 1
+						: delegateList[delegateIndex].producedBlocks - 1;
+
+					delegateList[delegateIndex].rewards = eventType === 'newBlock'
+						? (BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)).toString()
+						: (BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward)).toString();
+				}
+			}
 		}
 	};
 
-	Signals.get('newBlock').add(updateDelegateCacheListener);
+	const updateDelegateCacheOnNewBlockListener = (block) => updateDelegateCacheListener('newBlock', block);
+	const updateDelegateCacheOnDeleteBlockListener = (block) => updateDelegateCacheListener('deleteBlock', block);
+
+	Signals.get('newBlock').add(updateDelegateCacheOnNewBlockListener);
+	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
 
 // Reload the delegate cache when all the indexes are up-to-date

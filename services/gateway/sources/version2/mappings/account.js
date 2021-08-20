@@ -60,6 +60,7 @@ module.exports = {
 			registrationHeight: '=,number',
 			lastForgedHeight: '=,number',
 			isBanned: '=,boolean',
+			voteWeight: 'delegateWeight,string',
 			totalVotesReceived: '=,string',
 			missedBlocks: '=,number',
 			producedBlocks: 'producedBlocks,number',

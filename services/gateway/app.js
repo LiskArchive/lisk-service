@@ -55,7 +55,7 @@ const logger = Logger();
 const broker = Microservice({
 	name: 'gateway',
 	transporter: config.transporter,
-	timeout: config.brokerTimeout * 1000, // ms
+	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 }).getBroker();
 
