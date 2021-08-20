@@ -21,6 +21,7 @@ Each service is an independent part of the repository and is placed in a separat
 | [Gateway](services/gateway) | The Gateway provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never breaks existing application compatibility.|
 | [Lisk](services/core) | The Lisk Core service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
 | [Market](services/market) | The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients. |
+| [Newsfeed](services/newsfeed) | The Newsfeed service is a single-purpose microservice that polls the content sharing platforms and shares collected data with UI clients such as Lisk Desktop |
 | [Template](services/template) | The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing. |
 
 **Remarks**
@@ -102,6 +103,8 @@ export ENABLE_FEE_ESTIMATOR_QUICK="true"
 ```
 
 When running a local instance of Lisk Core and Lisk Service that is run by Docker, then the following variable needs to be set: `LISK_CORE_WS="ws://host.docker.internal:8080"`.
+
+It is strongly recommended that you synchronize your Lisk Core node with the network **before** starting the Lisk Service.
 
 Configuration options are described [in this document](./docs/config_options.md).
 
