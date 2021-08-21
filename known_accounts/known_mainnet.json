@@ -1,6 +1,5 @@
 {
     "address":                                   { "owner": "owner",           "description": "description" },
-    "6566229458323231555L":                      { "owner": "Genesis Account", "description": "" },
     "lskeqjd8qhzhayd6yykg82xqzvd7fzg74ghxxmnoe": { "owner": "Oliver",          "description": "Personal Assets" },
     "lsko4uo4fgkv53wvon82697asfy5hojw7yzs9ptjg": { "owner": "Max",             "description": "Personal Assets" },
     "lsk759gxzh3zp2h9otfmbxc7fp66jpbdyjbr7am8k": { "owner": "Lisk Foundation", "description": "Bounty Assets" },
