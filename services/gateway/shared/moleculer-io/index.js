@@ -176,7 +176,7 @@ module.exports = {
 						res = JSON.parse(getResponseFromCache);
 					} else {
 						res = await ctx.call(action, request.params, opts);
-						rpcCache.set(JSON.stringify(request.params), JSON.stringify(res), expireMiliseconds);
+						if (res.data.length) rpcCache.set(JSON.stringify(request.params), JSON.stringify(res), expireMiliseconds);
 					}
 				} else {
 					res = await ctx.call(action, request.params, opts);

@@ -28,7 +28,7 @@ beforeEach(() => {
 
 const url = 'https://service.lisk.com/api/v1/blocks';
 
-describe('HTTP library is able to send GET request', () => {
+xdescribe('HTTP library is able to send GET request', () => {
 	test('with default parameters', async () => {
 		const response = await http.request(url);
 		expect(response).toHaveProperty('data');
