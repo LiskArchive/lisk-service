@@ -19,5 +19,6 @@
     "lskbqdbu354hz87mnc7pddk8ywef33jnuqc5odhbp": { "owner": "Coincheck",       "description": "Cold Wallet" },
     "lskrp589yeykovh47stbf8woj5banujdfsz9oapcf": { "owner": "Coincheck",       "description": "Hot Wallet" },
     "lskutsunurnarjve65ufeon4bu2c2ywhdvrbmxvuv": { "owner": "UPbit",           "description": "Hot Wallet" },
-    "lskxqxgkkzdb7uxjqkj9gxtpogsd4kgm4kkb883fj": { "owner": "UPbit",           "description": "Cold Wallet" }
+    "lskxqxgkkzdb7uxjqkj9gxtpogsd4kgm4kkb883fj": { "owner": "UPbit",           "description": "Cold Wallet" },
+    "lskhysxtgcjjen7tsn8su64y3fs85knymvugw3wyt": { "owner": "Kraken",          "description": "Hot Wallet" }
 }
