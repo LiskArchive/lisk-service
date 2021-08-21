@@ -13,12 +13,12 @@ const BluebirdPromise = require('bluebird');
 const {
 	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
 	Utils,
-	CacheRedis,
+	CacheLRU,
 } = require('lisk-service-framework');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
 
-const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
+const rpcCache = CacheLRU('rpcCache', config.volatileRedis);
 const expireMiliseconds = config.rpcCache.ttl;
 
 module.exports = {
@@ -171,12 +171,12 @@ module.exports = {
 				}
 				let res;
 				if (config.rpcCache.enable) {
-					const getResponseFromCache = await rpcCache.get(JSON.stringify(request.params));
+					const getResponseFromCache = await rpcCache.get(`${JSON.stringify(request.params)}:${request.method}`);
 					if (getResponseFromCache) {
 						res = JSON.parse(getResponseFromCache);
 					} else {
 						res = await ctx.call(action, request.params, opts);
-						if (res.data.length) rpcCache.set(JSON.stringify(request.params), JSON.stringify(res), expireMiliseconds);
+						if (res.data.length) rpcCache.set(`${JSON.stringify(request.params)}:${request.method}`, JSON.stringify(res), expireMiliseconds);
 					}
 				} else {
 					res = await ctx.call(action, request.params, opts);
@@ -294,7 +294,7 @@ module.exports = {
 			return respond(errObj);
 		},
 		socketJoinRooms(socket, rooms) {
-			this.logger.debug(`socket ${socket.id} join room:`, rooms);
+			this.logger.debug(`socket ${socket.id} join room: `, rooms);
 			return new Promise(((resolve, reject) => {
 				socket.join(rooms, err => {
 					if (err) {
@@ -335,7 +335,7 @@ function checkOrigin(origin, settings) {
 
 		if (settings.indexOf('*') !== -1) {
 			// Based on: https://github.com/hapijs/hapi
-			const wildcard = new RegExp(`^${_.escapeRegExp(settings).replace(/\\\*/g, '.*').replace(/\\\?/g, '.')}$`);
+			const wildcard = new RegExp(`^ ${_.escapeRegExp(settings).replace(/\\\*/g, '.*').replace(/\\\?/g, '.')}$`);
 			return origin.match(wildcard);
 		}
 	} else if (Array.isArray(settings)) {
@@ -394,7 +394,7 @@ function makeHandler(svc, handlerItem) {
 	return async function (requests, respond) {
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
 			if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
-				const message = `The given data is not a proper JSON-RPC 2.0 request: ${util.inspect(jsonRpcInput)}`;
+				const message = `The given data is not a proper JSON - RPC 2.0 request: ${util.inspect(jsonRpcInput)}`;
 				svc.logger.debug(message);
 				return addErrorEnvelope(id, INVALID_REQUEST[0], `Client input error: ${message}`);
 			}
@@ -413,7 +413,7 @@ function makeHandler(svc, handlerItem) {
 					params = null;
 				}
 				const res = await svc.actions.call({ socket: this, action, params: jsonRpcInput, handlerItem });
-				svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action}`);
+				svc.logger.info(`   <= ${chalk.green.bold('Success')} ${action} `);
 				return addJsonRpcEnvelope(id, res);
 			} catch (err) {
 				if (svc.settings.log4XXResponses || Utils.isProperObject(err) && !_.inRange(err.code, 400, 500)) {
@@ -421,7 +421,7 @@ function makeHandler(svc, handlerItem) {
 				}
 				if (typeof err.message === 'string') {
 					if (!err.code || err.code === 500) {
-						return addErrorEnvelope(id, translateHttpToRpcCode(err.code), `Server error: ${err.message}`);
+						return addErrorEnvelope(id, translateHttpToRpcCode(err.code), `Server error: ${err.message} `);
 					}
 					return addErrorEnvelope(id, translateHttpToRpcCode(err.code), err.message);
 				}
@@ -441,9 +441,9 @@ function makeHandler(svc, handlerItem) {
 			const responses = await BluebirdPromise.map(requests, async (request) => {
 				const id = request.id || (requests.indexOf(request)) + 1;
 				const response = await performClientRequest(request, id);
-				svc.logger.debug(`Requested ${request.method} with params ${JSON.stringify(request.params)}`);
+				svc.logger.debug(`Requested ${request.method} with params ${JSON.stringify(request.params)} `);
 				if (response.error) {
-					svc.logger.warn(`${response.error.code} ${response.error.message}`);
+					svc.logger.warn(`${response.error.code} ${response.error.message} `);
 				}
 				return response;
 			}, { concurrency: MULTI_REQUEST_CONCURRENCY });
@@ -451,7 +451,7 @@ function makeHandler(svc, handlerItem) {
 			if (singleResponse) respond(responses[0]);
 			else respond(responses);
 		} catch (err) {
-			svc.socketOnError(addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message}`), respond);
+			svc.socketOnError(addErrorEnvelope(null, translateHttpToRpcCode(err.code), `Server error: ${err.message} `), respond);
 		}
 	};
 }
