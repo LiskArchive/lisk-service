@@ -19,7 +19,7 @@ const config = require('../../config');
 const { BadRequestError } = require('./errors');
 
 const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
-const expireMiliseconds = config.ttl.rpcCache;
+const expireMiliseconds = config.rpcCache.ttl;
 
 module.exports = {
 	name: 'io',
@@ -170,12 +170,16 @@ module.exports = {
 					await handlerItem.onBeforeCall.call(this, ctx, socket, request, opts);
 				}
 				let res;
-				const getResponseFromCache = await rpcCache.get(JSON.stringify(request.params));
-				if (getResponseFromCache) {
-					res = JSON.parse(getResponseFromCache);
+				if (config.rpcCache.enable) {
+					const getResponseFromCache = await rpcCache.get(JSON.stringify(request.params));
+					if (getResponseFromCache) {
+						res = JSON.parse(getResponseFromCache);
+					} else {
+						res = await ctx.call(action, request.params, opts);
+						rpcCache.set(JSON.stringify(request.params), JSON.stringify(res), expireMiliseconds);
+					}
 				} else {
 					res = await ctx.call(action, request.params, opts);
-					rpcCache.set(JSON.stringify(request.params), JSON.stringify(res), expireMiliseconds);
 				}
 				if (handlerItem.onAfterCall) {
 					res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;

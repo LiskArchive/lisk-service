@@ -76,9 +76,10 @@ config.api.enableHttpCacheControl = Boolean(String(process.env.ENABLE_HTTP_CACHE
 // Unless STRICT_READINESS_CHECK env. variable is set false, includeCoreReadiness evaluates to true
 config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
 
-// Expiry time for redis
-config.ttl = {
-	rpcCache: 10 * 1000, // miliseconds
+// Gateway RPC cache settings
+config.rpcCache = {
+	ttl: 10 * 1000, // miliseconds
+	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
 };
 
 module.exports = config;
