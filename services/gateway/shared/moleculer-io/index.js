@@ -13,9 +13,13 @@ const BluebirdPromise = require('bluebird');
 const {
 	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
 	Utils,
+	CacheRedis,
 } = require('lisk-service-framework');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
+
+const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
+const expireMiliseconds = config.ttl.rpcCache;
 
 module.exports = {
 	name: 'io',
@@ -165,7 +169,14 @@ module.exports = {
 				if (handlerItem.onBeforeCall) {
 					await handlerItem.onBeforeCall.call(this, ctx, socket, request, opts);
 				}
-				let res = await ctx.call(action, request.params, opts);
+				let res;
+				const getResponseFromCache = await rpcCache.get(JSON.stringify(request.params));
+				if (getResponseFromCache) {
+					res = JSON.parse(getResponseFromCache);
+				} else {
+					res = await ctx.call(action, request.params, opts);
+					rpcCache.set(JSON.stringify(request.params), JSON.stringify(res), expireMiliseconds);
+				}
 				if (handlerItem.onAfterCall) {
 					res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
 				}
