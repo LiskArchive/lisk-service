@@ -13,12 +13,12 @@ const BluebirdPromise = require('bluebird');
 const {
 	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
 	Utils,
-	CacheLRU,
+	CacheRedis,
 } = require('lisk-service-framework');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
 
-const rpcCache = CacheLRU('rpcCache', config.volatileRedis);
+const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
 const expireMiliseconds = config.rpcCache.ttl;
 
 module.exports = {
@@ -171,12 +171,13 @@ module.exports = {
 				}
 				let res;
 				if (config.rpcCache.enable) {
-					const getResponseFromCache = await rpcCache.get(`${JSON.stringify(request.params)}:${request.method}`);
-					if (getResponseFromCache) {
-						res = JSON.parse(getResponseFromCache);
+					const rpcRequestCacheKey = `${request.method}:${JSON.stringify(request.params)}`;
+					const cachedResponse = await rpcCache.get(rpcRequestCacheKey);
+					if (cachedResponse) {
+						res = JSON.parse(cachedResponse);
 					} else {
 						res = await ctx.call(action, request.params, opts);
-						if (res.data.length) rpcCache.set(`${JSON.stringify(request.params)}:${request.method}`, JSON.stringify(res), expireMiliseconds);
+						if (res.data.length) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMiliseconds);
 					}
 				} else {
 					res = await ctx.call(action, request.params, opts);
