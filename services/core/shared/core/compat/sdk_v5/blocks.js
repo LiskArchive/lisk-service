@@ -145,7 +145,7 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
-			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
+			const account = block.generatorPublicKey ? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') }) : {};
 			block.generatorAddress = account && account.address ? account.address : null;
 			block.generatorUsername = account && account.username ? account.username : null;
 			block.isFinal = block.height <= getFinalizedHeight();
@@ -434,7 +434,7 @@ const indexGenesisAccounts = async () => {
 
 			logger.debug(`numAccountsIndexed: ${numAccountsIndexed}, numGenesisAccounts: ${genesisAccountsToIndex.length}`);
 
-			if (batchNum === 0 && numAccountsIndexed >= genesisAccountsToIndex.length) {
+			if (numAccountsIndexed >= genesisAccountsToIndex.length) {
 				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
 				Signals.get('newBlock').remove(indexGenesisAccounts);
 			} else {
