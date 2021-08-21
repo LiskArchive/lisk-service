@@ -46,7 +46,7 @@ xdescribe('HTTP library is able to send GET request', () => {
 	});
 });
 
-describe('HTTP library with caching enabled', () => {
+xdescribe('HTTP library with caching enabled', () => {
 	test('supports plain GET request cache', async () => {
 		const ttl = 50000;
 		const timestamps = [];
