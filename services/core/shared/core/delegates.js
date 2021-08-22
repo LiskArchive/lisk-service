@@ -282,12 +282,12 @@ const updateDelegateListEveryBlock = () => {
 
 			updatedDelegateAccounts.forEach(delegate => {
 				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-				// Update delegate list on newBlock event
 				if (delegate.isDelegate) {
+					// Update delegate list on newBlock event
 					if (delegateIndex === -1) delegateList.push(delegate);
 					else delegateList[delegateIndex] = delegate;
-				// Remove delegate from list when deleteBlock event contains delegate registration tx
 				} else if (delegateIndex !== -1) {
+					// Remove delegate from list when deleteBlock event contains delegate registration tx
 					delegateList.splice(delegateIndex, 1);
 				}
 			});

@@ -33,6 +33,11 @@ const {
 	getBase32AddressFromPublicKey,
 } = require('./accountUtils');
 
+// const {
+// 	getLastStoredBlock,
+// 	getLastBlock,
+// } = require('./blocks');
+
 const {
 	getIsSyncFullBlockchain,
 	getIndexReadyStatus,
@@ -196,6 +201,14 @@ const resolveAccountsInfo = async accounts => {
 	return accounts;
 };
 
+// const verifyIfPunished = async delegate => {
+// 	const lastestBlock = getLastStoredBlock() || await getLastBlock();
+// 	const isPunished = delegate.pomHeights
+// 		.some(pomHeight => pomHeight.start <= lastestBlock.height
+// 			&& lastestBlock.height <= pomHeight.end);
+// 	return isPunished;
+// };
+
 const resolveDelegateInfo = async accounts => {
 	const punishmentHeight = 780000;
 	accounts = await BluebirdPromise.map(
@@ -211,22 +224,28 @@ const resolveDelegateInfo = async accounts => {
 					publicKey: account.publicKey,
 				};
 
-				const selfVote = account.dpos.sentVotes
-					.find(vote => vote.delegateAddress === account.address);
-				const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
-				const cap = selfVoteAmount * BigInt(10);
-
-				account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
-				const voteWeight = BigInt(account.totalVotesReceived) > cap
-					? cap
-					: account.totalVotesReceived;
-
-				account.delegateWeight = voteWeight;
 				account.username = account.dpos.delegate.username;
 				account.balance = account.token.balance;
 				account.pomHeights = account.dpos.delegate.pomHeights
 					.sort((a, b) => b - a).slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentHeight }));
+
+				// if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
+				if (account.dpos.delegate.isBanned) {
+					account.delegateWeight = BigInt('0');
+				} else {
+					const selfVote = account.dpos.sentVotes
+						.find(vote => vote.delegateAddress === account.address);
+					const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
+					const cap = selfVoteAmount * BigInt(10);
+
+					account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
+					const voteWeight = BigInt(account.totalVotesReceived) > cap
+						? cap
+						: account.totalVotesReceived;
+
+					account.delegateWeight = voteWeight;
+				}
 
 				const [lastForgedBlock = {}] = await blocksDB.find({
 					generatorPublicKey: account.publicKey,
@@ -237,7 +256,7 @@ const resolveDelegateInfo = async accounts => {
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const accountInfo = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					const accountInfo = account.publicKey ? await getIndexedAccountInfo({ publicKey: account.publicKey }) : {};
 					account.rewards = accountInfo && accountInfo.rewards
 						? accountInfo.rewards
 						: 0;
