@@ -45,7 +45,7 @@ config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL || '';
 config.networks = [
 	{
 		name: 'mainnet',
-		identifier: 'update_after_migration',
+		identifier: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99',
 		genesisHeight: 16270293,
 		genesisBlockUrl: 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
 	},
