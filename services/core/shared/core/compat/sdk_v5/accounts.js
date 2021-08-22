@@ -33,11 +33,6 @@ const {
 	getBase32AddressFromPublicKey,
 } = require('./accountUtils');
 
-// const {
-// 	getLastStoredBlock,
-// 	getLastBlock,
-// } = require('./blocks');
-
 const {
 	getIsSyncFullBlockchain,
 	getIndexReadyStatus,
@@ -71,6 +66,7 @@ const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexS
 
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
 const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
@@ -201,13 +197,14 @@ const resolveAccountsInfo = async accounts => {
 	return accounts;
 };
 
-// const verifyIfPunished = async delegate => {
-// 	const lastestBlock = getLastStoredBlock() || await getLastBlock();
-// 	const isPunished = delegate.pomHeights
-// 		.some(pomHeight => pomHeight.start <= lastestBlock.height
-// 			&& lastestBlock.height <= pomHeight.end);
-// 	return isPunished;
-// };
+const verifyIfPunished = async delegate => {
+	const lastestBlockString = await latestBlockCache.get('latestBlock');
+	const lastestBlock = JSON.parse(lastestBlockString);
+	const isPunished = delegate.pomHeights
+		.some(pomHeight => pomHeight.start <= lastestBlock.height
+			&& lastestBlock.height <= pomHeight.end);
+	return isPunished;
+};
 
 const resolveDelegateInfo = async accounts => {
 	const punishmentHeight = 780000;
@@ -230,8 +227,7 @@ const resolveDelegateInfo = async accounts => {
 					.sort((a, b) => b - a).slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentHeight }));
 
-				// if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
-				if (account.dpos.delegate.isBanned) {
+				if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
 					account.delegateWeight = BigInt('0');
 				} else {
 					const selfVote = account.dpos.sentVotes
@@ -256,7 +252,9 @@ const resolveDelegateInfo = async accounts => {
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const accountInfo = account.publicKey ? await getIndexedAccountInfo({ publicKey: account.publicKey }) : {};
+					const accountInfo = account.publicKey
+						? await getIndexedAccountInfo({ publicKey: account.publicKey })
+						: {};
 					account.rewards = accountInfo && accountInfo.rewards
 						? accountInfo.rewards
 						: 0;
