@@ -410,16 +410,17 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const indexGenesisAccounts = async () => {
+	let numAccountsIndexed;
 	const BATCH_SIZE = 10000;
 	try {
+		const accountsDB = await getAccountsIndex();
+		numAccountsIndexed = await accountsDB.count();
+
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
 			genesisAccountIndexingBatchNum++;
 
 			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
-
-			const accountsDB = await getAccountsIndex();
-			const numAccountsIndexed = await accountsDB.count();
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
 
 			if (!genesisAccountsToIndex) {
@@ -448,7 +449,7 @@ const indexGenesisAccounts = async () => {
 
 				logger.info(`Indexing genesis account batch: ${batchNum}, ${Math.ceil(genesisAccountsToIndex.length / BATCH_SIZE) - batchNum - 1} to go`);
 
-				const PAGE_SIZE = 20;
+				const PAGE_SIZE = 1000;
 				const NUM_PAGES = Math.ceil(genesisAccountAddressesToIndex.length / PAGE_SIZE);
 				for (let i = 0; i < NUM_PAGES; i++) {
 					// eslint-disable-next-line no-await-in-loop
@@ -473,7 +474,9 @@ const indexGenesisAccounts = async () => {
 		logger.warn(`Unable to index Genesis block accounts batch ${genesisAccountIndexingBatchNum}, will retry again: ${err}`);
 		genesisAccountIndexingBatchNum--;
 	} finally {
-		isGenesisAccountsIndexingInProgress = false;
+		if (numAccountsIndexed >= BATCH_SIZE * (genesisAccountIndexingBatchNum + 1)) {
+			isGenesisAccountsIndexingInProgress = false;
+		}
 	}
 };
 
@@ -661,7 +664,11 @@ const init = async () => {
 
 	// Check and update index readiness status
 	Signals.get('newBlock').add(checkIndexReadiness);
-	Signals.get('newBlock').add(indexGenesisAccounts);
+
+	const indexGenesisAccountsListener = async ({ data: [newBlock] }) => {
+		if (newBlock.height % 10 === 0) await indexGenesisAccounts();
+	};
+	Signals.get('newBlock').add(indexGenesisAccountsListener);
 };
 
 module.exports = {
