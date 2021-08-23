@@ -17,6 +17,7 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
+const { isValidResponse } = require('../utils');
 
 const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
 const expireMiliseconds = config.rpcCache.ttl;
@@ -177,13 +178,17 @@ module.exports = {
 						res = JSON.parse(cachedResponse);
 					} else {
 						res = await ctx.call(action, request.params, opts);
-						if (res.data.length) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMiliseconds);
+						if (handlerItem.onAfterCall) {
+							res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
+						}
+						// Store tranformed response in redis cache
+						if (isValidResponse(res)) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMiliseconds);
 					}
 				} else {
 					res = await ctx.call(action, request.params, opts);
-				}
-				if (handlerItem.onAfterCall) {
-					res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
+					if (handlerItem.onAfterCall) {
+						res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
+					}
 				}
 				this.socketSaveMeta(socket, ctx);
 				if (ctx.meta.$join) {
