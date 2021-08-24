@@ -93,7 +93,7 @@ const requireAllJson = apiName => {
 
 const getSwaggerDescription = params => `${params.description}\n RPC => ${params.rpcMethod}`;
 
-const isValidResponse = res => {
+const isValidNonEmptyResponse = res => {
 	if (Array.isArray(res.data) && res.data.length) return true;
 	if ((res.data && res.data.constructor.name === 'Object') && Object.getOwnPropertyNames(res.data).length) return true;
 	return false;
@@ -104,5 +104,5 @@ module.exports = {
 	response,
 	requireAllJson,
 	getSwaggerDescription,
-	isValidResponse,
+	isValidNonEmptyResponse,
 };
