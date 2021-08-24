@@ -59,6 +59,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
 
 const logger = Logger();
 
@@ -420,15 +421,29 @@ const indexGenesisAccounts = async () => {
 			isGenesisAccountsIndexingInProgress = true;
 			genesisAccountIndexingBatchNum++;
 
-			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
-
 			if (!genesisAccountsToIndex) {
 				genesisAccountsToIndex = genesisBlock.asset.accounts
 					.filter(account => account.address.length === 40);
 				logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 			}
 
+			// If the cache doesn't contain information, it'll be updated later on successful completion
+			const indexedTillBatch = await genesisAccountsCache.get('indexedTillBatch');
+			if (indexedTillBatch !== undefined && numAccountsIndexed < ((indexedTillBatch + 1) * BATCH_SIZE)) {
+				// Resume indexing starting from the batch that was last indexed
+				genesisAccountIndexingBatchNum = indexedTillBatch;
+				logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
+			} else {
+				// Calculate number of batches that already have been indexed and continue
+				const prevGenesisAccountIndexingBatchNum = genesisAccountIndexingBatchNum;
+				genesisAccountIndexingBatchNum = Math.floor(numAccountsIndexed / BATCH_SIZE);
+				if (indexedTillBatch === undefined || prevGenesisAccountIndexingBatchNum === 0) {
+					logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
+				}
+			}
+
+			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
 			const genesisAccountAddressesToIndex = genesisAccountsToIndex
 				.slice(batchNum * BATCH_SIZE, (batchNum + 1) * BATCH_SIZE)
 				.map(account => account.address);
@@ -469,10 +484,14 @@ const indexGenesisAccounts = async () => {
 					genesisAccountsToIndex = undefined;
 				}
 			}
+
+			// On success, update the cache with the batch number
+			await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
 		}
 	} catch (err) {
 		logger.warn(`Unable to index Genesis block accounts batch ${genesisAccountIndexingBatchNum}, will retry again: ${err}`);
 		genesisAccountIndexingBatchNum--;
+		await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
 	} finally {
 		if (numAccountsIndexed >= BATCH_SIZE * (genesisAccountIndexingBatchNum + 1)) {
 			isGenesisAccountsIndexingInProgress = false;
