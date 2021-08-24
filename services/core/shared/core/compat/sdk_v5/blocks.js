@@ -430,7 +430,10 @@ const indexGenesisAccounts = async () => {
 
 			// If the cache doesn't contain information, it'll be updated later on successful completion
 			const indexedTillBatch = await genesisAccountsCache.get('indexedTillBatch');
-			if (indexedTillBatch !== undefined && numAccountsIndexed < ((indexedTillBatch + 1) * BATCH_SIZE)) {
+			if (
+				indexedTillBatch !== undefined
+				&& numAccountsIndexed < ((indexedTillBatch + 1) * BATCH_SIZE)
+			) {
 				// Resume indexing starting from the batch that was last indexed
 				genesisAccountIndexingBatchNum = indexedTillBatch;
 				logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
