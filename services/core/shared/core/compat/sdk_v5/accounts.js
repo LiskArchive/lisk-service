@@ -123,7 +123,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 
 			// A genesis block account is considered migrated
 			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address });
+			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 });
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
@@ -201,7 +201,7 @@ const resolveDelegateInfo = async accounts => {
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const accountInfo = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					const accountInfo = await getIndexedAccountInfo({ publicKey: account.publicKey, limit: 1 });
 					account.rewards = accountInfo && accountInfo.rewards
 						? accountInfo.rewards
 						: 0;
@@ -213,6 +213,7 @@ const resolveDelegateInfo = async accounts => {
 					const [delegateRegTx = {}] = await transactionsDB.find({
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
+						limit: 1
 					});
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
@@ -295,6 +296,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 		const [reclaimTx] = await transactionsDB.find({
 			senderPublicKey: publicKey,
 			moduleAssetId: reclaimTxModuleAssetId,
+			limit: 1
 		});
 		if (reclaimTx) {
 			Object.assign(
@@ -487,7 +489,7 @@ const getMultisignatureMemberships = async account => {
 	await BluebirdPromise.map(
 		membershipInfo,
 		async membership => {
-			const result = await getIndexedAccountInfo({ address: membership.groupAddress });
+			const result = await getIndexedAccountInfo({ address: membership.groupAddress, limit: 1 });
 			multisignatureMemberships.memberships.push({
 				address: result && result.address ? result.address : undefined,
 				username: result && result.username ? result.username : undefined,

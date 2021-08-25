@@ -111,7 +111,7 @@ const indexBlocks = async job => {
 	const generatorPkInfoArray = [];
 	blocks.forEach(async block => {
 		if (block.generatorPublicKey) {
-			const [blockInfo] = await blocksDB.find({ id: block.id });
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 });
 			generatorPkInfoArray.push({
 				publicKey: block.generatorPublicKey,
 				reward: block.reward,
@@ -142,7 +142,7 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
-			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') });
+			const account = await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex'), limit: 1 });
 			block.generatorAddress = account && account.address ? account.address : null;
 			block.generatorUsername = account && account.username ? account.username : null;
 			block.isFinal = block.height <= getFinalizedHeight();
@@ -238,7 +238,7 @@ const indexNewBlocks = async blocks => {
 		const [block] = blocks.data;
 		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
-		const [blockInfo] = await blocksDB.find({ height: block.height });
+		const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 });
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
 			await indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
@@ -292,12 +292,12 @@ const getBlocks = async params => {
 	if (params.address) {
 		const { address, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ address });
+		accountInfo = await getIndexedAccountInfo({ address, limit: 1 });
 	}
 	if (params.username) {
 		const { username, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ username });
+		accountInfo = await getIndexedAccountInfo({ username, limit: 1 });
 	}
 
 	if (accountInfo && accountInfo.publicKey) {

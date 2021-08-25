@@ -34,7 +34,7 @@ const getForgers = async params => {
 	forgers.data = await BluebirdPromise.map(
 		forgers.data,
 		async forger => {
-			const account = await getIndexedAccountInfo({ address: forger.address });
+			const account = await getIndexedAccountInfo({ address: forger.address, limit: 1 });
 			forger.username = account && account.username
 				? account.username
 				: undefined;

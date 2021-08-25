@@ -46,7 +46,7 @@ const getPendingTransactionsFromCore = async () => {
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,
 		async transaction => {
-			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey, limit: 1 });
 			transaction.senderId = account && account.address ? account.address : undefined;
 			transaction.username = account && account.username ? account.username : undefined;
 			transaction.isPending = true;
@@ -69,7 +69,7 @@ const validateParams = async params => {
 	}
 
 	if (params.username) {
-		const accountInfo = await getIndexedAccountInfo({ username: params.username });
+		const accountInfo = await getIndexedAccountInfo({ username: params.username, limit: 1 });
 		if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.username} does not exist`);
 		requestParams.senderPublicKey = accountInfo.publicKey;
 	}
@@ -80,7 +80,7 @@ const validateParams = async params => {
 	}
 
 	if (params.senderId) {
-		const account = await getIndexedAccountInfo({ address: params.senderId });
+		const account = await getIndexedAccountInfo({ address: params.senderId, limit: 1 });
 		requestParams.senderPublicKey = account.publicKey;
 	}
 

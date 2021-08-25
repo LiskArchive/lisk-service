@@ -276,17 +276,19 @@ const updateDelegateListEveryBlock = () => {
 				}
 			});
 
-			const { data: updatedDelegateAccounts } = await coreApi
-				.getAccounts({ addresses: updatedDelegateAddresses });
+			if (updatedDelegateAddresses.length) {
+				const { data: updatedDelegateAccounts } = await coreApi
+					.getAccounts({ addresses: updatedDelegateAddresses });
 
-			updatedDelegateAccounts.forEach(delegate => {
-				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-				if (delegateIndex === -1) delegateList.push(delegate);
-				else delegateList[delegateIndex] = delegate;
-			});
+				updatedDelegateAccounts.forEach(delegate => {
+					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
+					if (delegateIndex === -1) delegateList.push(delegate);
+					else delegateList[delegateIndex] = delegate;
+				});
 
-			// Rank is impacted only when a delegate gets (un-)voted
-			if (updatedDelegateAddresses.length) await computeDelegateRank();
+				// Rank is impacted only when a delegate gets (un-)voted
+				if (updatedDelegateAddresses.length) await computeDelegateRank();
+			}
 		}
 	};
 
