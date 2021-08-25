@@ -16,9 +16,9 @@
 module.exports = {
 	primaryKey: 'id',
 	schema: {
-		id: { type: 'string' },
-		groupAddress: { type: 'string' },
-		memberAddress: { type: 'string' },
+		id: { type: 'string', defaultColumn: true },
+		groupAddress: { type: 'string', defaultColumn: true },
+		memberAddress: { type: 'string', defaultColumn: true },
 	},
 	indexes: {
 		id: { type: 'key' },

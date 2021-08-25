@@ -22,6 +22,7 @@ const logger = Logger();
 
 const connectionPool = {};
 const tablePool = {};
+const defaultColumns = {};
 
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
@@ -36,6 +37,10 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
 				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
+				if ('defaultColumn' in schema[p]) {
+					defaultColumns[tableName] = defaultColumns[tableName] ? defaultColumns[tableName] : [];
+					defaultColumns[tableName].push(p);
+				}
 				if (p === primaryKey) kProp.primary();
 				if (indexes[p]) kProp.index();
 
@@ -272,7 +277,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
 		if (!columns) {
-			logger.warn('No columns are provided');
+			logger.warn('No columns are provided, setting up default columns');
+			columns = defaultColumns[tableName];
 		}
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
