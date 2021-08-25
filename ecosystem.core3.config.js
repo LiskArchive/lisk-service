@@ -49,7 +49,7 @@ module.exports = {
 			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
 			watch: false,
 			kill_timeout: 10000,
-			max_memory_restart: '512M',
+			max_memory_restart: '1G',
 			instances: 1,
 			autorestart: true,
 			env: {
@@ -57,7 +57,7 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_CORE_WS: 'ws://localhost:8080',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
-				SERVICE_CORE_REDIS_VOLATILE: "redis://localhost:6379/8",
+				SERVICE_CORE_REDIS_VOLATILE: 'redis://localhost:6379/8',
 				SERVICE_CORE_MYSQL: 'mysql://root:password@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
 				GEOIP_JSON: '',
