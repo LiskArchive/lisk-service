@@ -44,9 +44,9 @@ const confirmPublicKey = async publicKey => {
 	return (account && account.publicKey === publicKey);
 };
 
-const getIndexedAccountInfo = async params => {
+const getIndexedAccountInfo = async (params, columns) => {
 	const accountsDB = await getAccountsIndex();
-	const [account] = await accountsDB.find(params);
+	const [account] = await accountsDB.find(params, columns);
 	return account;
 };
 
