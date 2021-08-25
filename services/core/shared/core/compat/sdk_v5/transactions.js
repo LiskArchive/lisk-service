@@ -199,7 +199,7 @@ const validateParams = async params => {
 		const { senderAddress, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ address: senderAddress, limit: 1 });
+		const account = await getIndexedAccountInfo({ address: senderAddress, limit: 1 }, 'publicKey');
 		if (!account) throw new NotFoundException(`Account ${senderAddress} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
@@ -208,7 +208,7 @@ const validateParams = async params => {
 		const { senderUsername, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ username: senderUsername, limit: 1 });
+		const account = await getIndexedAccountInfo({ username: senderUsername, limit: 1 }, 'publicKey');
 		if (!account) throw new NotFoundException(`Account ${senderUsername} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
@@ -217,7 +217,7 @@ const validateParams = async params => {
 		const { recipientPublicKey, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey });
+		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey }, 'address');
 		if (!account) throw new NotFoundException(`Account ${recipientPublicKey} not found.`);
 		params.recipientId = account.address;
 	}
@@ -226,7 +226,7 @@ const validateParams = async params => {
 		const { recipientUsername, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ username: recipientUsername, limit: 1 });
+		const account = await getIndexedAccountInfo({ username: recipientUsername, limit: 1 }, 'address');
 		if (!account) throw new NotFoundException(`Account ${recipientUsername} not found.`);
 		params.recipientId = account.address;
 	}
@@ -240,7 +240,7 @@ const validateParams = async params => {
 		const addresses = await BluebirdPromise.map(
 			accounts,
 			async account => {
-				const accountInfo = await getIndexedAccountInfo({ address: account.address, limit: 1 });
+				const accountInfo = await getIndexedAccountInfo({ address: account.address, limit: 1 }, 'publicKey');
 				if (accountInfo && accountInfo.publicKey) publicKeys.push(accountInfo.publicKey);
 				return account.address;
 			},
@@ -302,7 +302,7 @@ const getTransactions = async params => {
 			const account = await getIndexedAccountInfo({
 				publicKey: transaction.senderPublicKey,
 				limit: 1,
-			});
+			}, ['address', 'username']);
 			transaction.senderId = account && account.address ? account.address
 				: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
 			transaction.username = account && account.username ? account.username : undefined;
@@ -314,7 +314,7 @@ const getTransactions = async params => {
 				const recipientInfo = await getIndexedAccountInfo({
 					address: recipientAddress,
 					limit: 1,
-				});
+				}, ['address', 'publicKey', 'username']);
 				transaction.asset = asset;
 				transaction.asset.recipient = {};
 				transaction.asset.recipient = {
@@ -352,7 +352,7 @@ const getTransactionsByBlockId = async blockId => {
 			const account = await getIndexedAccountInfo({
 				publicKey: transaction.senderPublicKey,
 				limit: 1,
-			});
+			}, ['address', 'publicKey', 'username']);
 			transaction.senderId = account && account.address
 				? account.address
 				: getHexAddressFromPublicKey(transaction.senderPublicKey);
