@@ -58,6 +58,7 @@ module.exports = {
 				LISK_STATIC: 'https://static-data.lisk.com',
 				GEOIP_JSON: 'https://geoip.lisk.io/json',
 				ENABLE_TRANSACTION_STATS: 'true',
+				ENABLE_JOB_MISSING_BLOCKS: 'true',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '40',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
 				INDEX_N_BLOCKS: '12000',
