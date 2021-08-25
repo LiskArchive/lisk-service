@@ -52,6 +52,7 @@ const indexVotes = async blocks => {
 					const [row] = await votesDB.find({
 						id: tx.id,
 						receivedAddress: voteEntry.receivedAddress,
+						limit: 1,
 					}, 'isAggregated');
 					if (!row || !row.isAggregated) {
 						// indexing aggregated votes per account
