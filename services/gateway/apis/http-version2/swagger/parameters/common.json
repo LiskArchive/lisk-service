@@ -21,7 +21,7 @@
     "height": {
         "name": "height",
         "in": "query",
-        "description": "Current height of the network",
+        "description": "Query by block height or by height range fromHeight:toHeight",
         "type": "integer",
         "format": "int32",
         "minimum": 1
