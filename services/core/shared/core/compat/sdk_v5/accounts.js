@@ -123,7 +123,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 
 			// A genesis block account is considered migrated
 			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 });
+			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, 'publicKey');
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
@@ -204,7 +204,7 @@ const resolveDelegateInfo = async accounts => {
 					const accountInfo = await getIndexedAccountInfo({
 						publicKey: account.publicKey,
 						limit: 1,
-					});
+					}, ['rewards', 'producedBlocks']);
 					account.rewards = accountInfo && accountInfo.rewards
 						? accountInfo.rewards
 						: 0;
@@ -217,7 +217,7 @@ const resolveDelegateInfo = async accounts => {
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
 						limit: 1,
-					});
+					}, 'height');
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
 						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
@@ -300,7 +300,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			senderPublicKey: publicKey,
 			moduleAssetId: reclaimTxModuleAssetId,
 			limit: 1,
-		});
+		}, 'id');
 		if (reclaimTx) {
 			Object.assign(
 				legacyAccountInfo,
@@ -366,7 +366,7 @@ const getAccounts = async params => {
 		};
 	}
 
-	const resultSet = await accountsDB.find(params);
+	const resultSet = await accountsDB.find(params, ['address', 'publicKey', 'username']);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
 
@@ -492,7 +492,10 @@ const getMultisignatureMemberships = async account => {
 	await BluebirdPromise.map(
 		membershipInfo,
 		async membership => {
-			const result = await getIndexedAccountInfo({ address: membership.groupAddress, limit: 1 });
+			const result = await getIndexedAccountInfo(
+				{ address: membership.groupAddress, limit: 1 },
+				['address', 'username', 'publicKey'],
+			);
 			multisignatureMemberships.memberships.push({
 				address: result && result.address ? result.address : undefined,
 				username: result && result.username ? result.username : undefined,
