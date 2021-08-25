@@ -31,12 +31,12 @@ const logger = Logger();
 const tableConfig = {
 	primaryKey: 'id',
 	schema: {
-		amount_range: { type: 'string', defaultColumn: true },
-		count: { type: 'integer', defaultColumn: true },
+		amount_range: { type: 'string' },
+		count: { type: 'integer' },
 		date: { type: 'integer', defaultColumn: true },
 		id: { type: 'string', defaultColumn: true },
-		type: { type: 'string', defaultColumn: true },
-		volume: { type: 'bigInteger', defaultColumn: true },
+		type: { type: 'string' },
+		volume: { type: 'bigInteger' },
 	},
 	indexes: {
 		date: { type: 'range' },
@@ -118,7 +118,7 @@ const insertToDb = async (statsList, date) => {
 	const db = await getDbInstance();
 
 	try {
-		const [{ id }] = db.find({ date });
+		const [{ id }] = db.find({ date, limit: 1 }, 'id');
 		await db.deleteIds([id]);
 		logger.debug(`Removed the following date from the database: ${date}`);
 	} catch (err) {
@@ -169,7 +169,7 @@ const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOpt
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();
 
-	const result = await db.find(getSelector(params));
+	const result = await db.find(getSelector(params), ['date', 'count', 'volume']);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -196,7 +196,7 @@ const getStatsTimeline = async params => {
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
+	const result = (await db.find(getSelector(params), ['amount_range', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -214,7 +214,7 @@ const getDistributionByAmount = async params => {
 const getDistributionByType = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
+	const result = (await db.find(getSelector(params), ['type', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -235,7 +235,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
-		const shouldUpdate = i === 0 || !((await db.find({ date })).length);
+		const shouldUpdate = i === 0 || !((await db.find({ date }, 'id')).length);
 
 		if (shouldUpdate || forceReload) {
 			let attempt = 0;
