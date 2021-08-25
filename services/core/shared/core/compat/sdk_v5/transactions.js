@@ -299,7 +299,10 @@ const getTransactions = async params => {
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
 			}
-			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey, limit: 1 });
+			const account = await getIndexedAccountInfo({
+				publicKey: transaction.senderPublicKey,
+				limit: 1,
+			});
 			transaction.senderId = account && account.address ? account.address
 				: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
 			transaction.username = account && account.username ? account.username : undefined;
@@ -346,7 +349,10 @@ const getTransactionsByBlockId = async blockId => {
 			transaction.unixTimestamp = block.header.timestamp;
 			transaction.height = block.header.height;
 			transaction.blockId = block.header.id;
-			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey, limit: 1 });
+			const account = await getIndexedAccountInfo({
+				publicKey: transaction.senderPublicKey,
+				limit: 1,
+			});
 			transaction.senderId = account && account.address
 				? account.address
 				: getHexAddressFromPublicKey(transaction.senderPublicKey);

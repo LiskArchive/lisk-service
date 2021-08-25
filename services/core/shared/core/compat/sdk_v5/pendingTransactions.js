@@ -46,7 +46,10 @@ const getPendingTransactionsFromCore = async () => {
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,
 		async transaction => {
-			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey, limit: 1 });
+			const account = await getIndexedAccountInfo({
+				publicKey: transaction.senderPublicKey,
+				limit: 1,
+			});
 			transaction.senderId = account && account.address ? account.address : undefined;
 			transaction.username = account && account.username ? account.username : undefined;
 			transaction.isPending = true;

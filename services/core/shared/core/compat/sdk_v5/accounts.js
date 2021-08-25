@@ -201,7 +201,10 @@ const resolveDelegateInfo = async accounts => {
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const accountInfo = await getIndexedAccountInfo({ publicKey: account.publicKey, limit: 1 });
+					const accountInfo = await getIndexedAccountInfo({
+						publicKey: account.publicKey,
+						limit: 1,
+					});
 					account.rewards = accountInfo && accountInfo.rewards
 						? accountInfo.rewards
 						: 0;
@@ -213,7 +216,7 @@ const resolveDelegateInfo = async accounts => {
 					const [delegateRegTx = {}] = await transactionsDB.find({
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
-						limit: 1
+						limit: 1,
 					});
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
@@ -296,7 +299,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 		const [reclaimTx] = await transactionsDB.find({
 			senderPublicKey: publicKey,
 			moduleAssetId: reclaimTxModuleAssetId,
-			limit: 1
+			limit: 1,
 		});
 		if (reclaimTx) {
 			Object.assign(

@@ -260,7 +260,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 
 		if (params.limit) {
-			query.limit(Number(params.limit))
+			query.limit(Number(params.limit));
 		} else {
 			logger.warn('No default limit provided for the given query', query.toString());
 		}
