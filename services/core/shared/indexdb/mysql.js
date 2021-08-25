@@ -259,7 +259,12 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(queryParams).sum(`${params.aggregate} as total`);
 		}
 
-		if (params.limit) query.limit(Number(params.limit));
+		if (params.limit) {
+			query.limit(Number(params.limit))
+		} else {
+			logger.warn('No default limit provided for the given query', query.toString());
+		}
+
 		if (params.offset) query.offset(Number(params.offset));
 
 		return query;
