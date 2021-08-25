@@ -31,12 +31,12 @@ const logger = Logger();
 const tableConfig = {
 	primaryKey: 'id',
 	schema: {
-		amount_range: { type: 'string' },
-		count: { type: 'integer' },
-		date: { type: 'integer' },
-		id: { type: 'string' },
-		type: { type: 'string' },
-		volume: { type: 'bigInteger' },
+		amount_range: { type: 'string', defaultColumn: true },
+		count: { type: 'integer', defaultColumn: true },
+		date: { type: 'integer', defaultColumn: true },
+		id: { type: 'string', defaultColumn: true },
+		type: { type: 'string', defaultColumn: true },
+		volume: { type: 'bigInteger', defaultColumn: true },
 	},
 	indexes: {
 		date: { type: 'range' },

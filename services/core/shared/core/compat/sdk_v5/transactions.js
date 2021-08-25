@@ -279,7 +279,7 @@ const getTransactions = async params => {
 
 	params = await validateParams(params);
 
-	const resultSet = await transactionsDB.find(params);
+	const resultSet = await transactionsDB.find(params, ['id', 'timestamp', 'height', 'blockId']);
 	const total = await transactionsDB.count(params);
 	params.ids = resultSet.map(row => row.id);
 

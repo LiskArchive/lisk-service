@@ -22,7 +22,7 @@ module.exports = {
 		moduleAssetId: { type: 'string' },
 		nonce: { type: 'integer' },
 		blockId: { type: 'string', defaultColumn: true },
-		timestamp: { type: 'integer', defaultColumn: true },
+		timestamp: { type: 'integer' },
 		senderPublicKey: { type: 'string', defaultColumn: true },
 		recipientId: { type: 'string' },
 		amount: { type: 'bigInteger' },
