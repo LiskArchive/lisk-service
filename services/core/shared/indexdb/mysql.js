@@ -271,6 +271,9 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	};
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
+		if (!columns) {
+			logger.warn('No columns are provided');
+		}
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);

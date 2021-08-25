@@ -196,7 +196,7 @@ const resolveDelegateInfo = async accounts => {
 					generatorPublicKey: account.publicKey,
 					sort: 'height:desc',
 					limit: 1,
-				});
+				}, 'height');
 				account.dpos.delegate.lastForgedHeight = lastForgedBlock.height || null;
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
