@@ -16,11 +16,11 @@
 module.exports = {
 	primaryKey: 'address',
 	schema: {
-		address: { type: 'string', defaultColumn: true },
-		publicKey: { type: 'string', defaultColumn: true },
+		address: { type: 'string', isDefaultColumn: true },
+		publicKey: { type: 'string', isDefaultColumn: true },
 		isDelegate: { type: 'boolean', null: false, defaultValue: false },
 		balance: { type: 'bigInteger' },
-		username: { type: 'string', defaultColumn: true },
+		username: { type: 'string', isDefaultColumn: true },
 		rewards: { type: 'bigInteger', defaultValue: 0 },
 		producedBlocks: { type: 'integer', defaultValue: 0 },
 		totalVotesReceived: { type: 'string' },

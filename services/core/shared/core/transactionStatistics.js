@@ -33,8 +33,8 @@ const tableConfig = {
 	schema: {
 		amount_range: { type: 'string' },
 		count: { type: 'integer' },
-		date: { type: 'integer', defaultColumn: true },
-		id: { type: 'string', defaultColumn: true },
+		date: { type: 'integer', isDefaultColumn: true },
+		id: { type: 'string', isDefaultColumn: true },
 		type: { type: 'string' },
 		volume: { type: 'bigInteger' },
 	},

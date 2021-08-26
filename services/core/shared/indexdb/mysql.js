@@ -37,7 +37,7 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
 				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
-				if ('defaultColumn' in schema[p]) {
+				if ('isDefaultColumn' in schema[p]) {
 					defaultColumns[tableName] = defaultColumns[tableName] ? defaultColumns[tableName] : [];
 					defaultColumns[tableName].push(p);
 				}
