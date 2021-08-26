@@ -30,14 +30,18 @@ const {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
+	resolveMultisignatureMemberships,
 } = require('./accounts');
 
 const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 const mysqlIndex = require('../../../indexdb/mysql');
+
+const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
+const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const requestApi = coreApi.requestRetry;
@@ -63,6 +67,9 @@ const resolveModuleAsset = (moduleAssetVal) => {
 
 const indexTransactions = async blocks => {
 	const transactionsDB = await getTransactionsIndex();
+	const multisignatureDB = await getMultisignatureIndex();
+	const multisignatureModuleAssetId = '4:0';
+	let multisignatureInfoToIndex = [];
 	const publicKeysToIndex = [];
 	const recipientAddressesToIndex = [];
 	const txnMultiArray = blocks.map(block => {
@@ -80,6 +87,9 @@ const indexTransactions = async blocks => {
 				recipientAddressesToIndex.push(tx.asset.recipientAddress);
 			}
 			if (tx.senderPublicKey) publicKeysToIndex.push({ publicKey: tx.senderPublicKey });
+			if (tx.moduleAssetId === multisignatureModuleAssetId) {
+				multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
+			}
 			return tx;
 		});
 		return transactions;
@@ -89,6 +99,7 @@ const indexTransactions = async blocks => {
 	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
 	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(recipientAddressesToIndex);
 	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
+	if (multisignatureInfoToIndex.length) await multisignatureDB.upsert(multisignatureInfoToIndex);
 };
 
 const removeTransactionsByBlockIDs = async blockIDs => {
