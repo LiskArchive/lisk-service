@@ -276,19 +276,39 @@ const updateDelegateListEveryBlock = () => {
 					}
 				}
 			});
-
 			if (updatedDelegateAddresses.length) {
 				const { data: updatedDelegateAccounts } = await coreApi
 					.getAccounts({ addresses: updatedDelegateAddresses });
 
 				updatedDelegateAccounts.forEach(delegate => {
 					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-					if (delegateIndex === -1) delegateList.push(delegate);
-					else delegateList[delegateIndex] = delegate;
+					// Update delegate list on newBlock event
+					if (delegate.isDelegate) {
+						if (delegateIndex === -1) delegateList.push(delegate);
+						else delegateList[delegateIndex] = delegate;
+						// Remove delegate from list when deleteBlock event contains delegate registration tx
+					} else if (delegateIndex !== -1) {
+						delegateList.splice(delegateIndex, 1);
+					}
 				});
 
 				// Rank is impacted only when a delegate gets (un-)voted
-				if (updatedDelegateAddresses.length) await computeDelegateRank();
+				await computeDelegateRank();
+			}
+
+			// Update delegate cache with producedBlocks and rewards
+			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
+			if (delegateList[delegateIndex]
+				&& Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
+				if (delegateList[delegateIndex].producedBlocks && delegateList[delegateIndex].rewards) {
+					delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
+						? delegateList[delegateIndex].producedBlocks + 1
+						: delegateList[delegateIndex].producedBlocks - 1;
+
+					delegateList[delegateIndex].rewards = eventType === 'newBlock'
+						? (BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)).toString()
+						: (BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward)).toString();
+				}
 			}
 		}
 	};
