@@ -13,16 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const coreApi = require('./coreApi');
+const delay = (val, ms = 100) => new Promise(resolve => setTimeout(resolve.bind(null, val), ms));
 
-const requestApi = coreApi.requestRetry;
-
-const postTransactions = async params => {
-	const signedTxBinary = params.transaction;
-	const response = await requestApi(coreApi.postTransaction, signedTxBinary);
-	return response;
-};
-
-module.exports = {
-	postTransactions,
-};
+module.exports = delay;

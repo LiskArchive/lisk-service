@@ -158,7 +158,7 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		? cachedFeeEstimate.blockHeight : 0; // 0 implies does not exist
 
 	const prevFeeEstPerByte = fromHeight > cachedFeeEstimateHeight
-		? { blockHeight: fromHeight - 1 } : cachedFeeEstimate;
+		? { blockHeight: fromHeight - 1, low: 0, med: 0, high: 0 } : cachedFeeEstimate;
 
 	const range = size => Array(size).fill().map((_, index) => index);
 	const feeEstPerByte = {};

@@ -22,7 +22,7 @@ const config = {
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
-config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 30 * 1000; // in seconds
+config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in seconds
 
 /**
@@ -31,6 +31,7 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
 config.endpoints.liskHttp = `${(process.env.LISK_CORE_HTTP || 'http://127.0.0.1:8080')}/api`;
 config.endpoints.liskWs = process.env.LISK_CORE_WS || config.endpoints.liskHttp.replace('http', 'ws').replace('/api', '');
 config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://localhost:6379/1';
+config.endpoints.volatileRedis = process.env.SERVICE_CORE_REDIS_VOLATILE || 'redis://localhost:6379/2';
 config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.io/json';
 config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
@@ -45,7 +46,7 @@ config.networks = [
 	{
 		name: 'mainnet',
 		identifier: 'update_after_migration',
-		genesisHeight: 16301502,
+		genesisHeight: 16270293,
 		genesisBlockUrl: 'https://downloads.lisk.io/lisk/mainnet/genesis_block.json.tar.gz',
 	},
 	{

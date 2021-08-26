@@ -14,6 +14,8 @@
  *
  */
 const {
+	hash,
+	getFirstEightBytesReversed,
 	getAddressFromPublicKey,
 	getBase32AddressFromAddress,
 	getAddressFromBase32Address,
@@ -45,9 +47,12 @@ const confirmPublicKey = async publicKey => {
 };
 
 const getIndexedAccountInfo = async (params, columns) => {
-	const accountsDB = await getAccountsIndex();
-	const [account] = await accountsDB.find(params, columns);
-	return account;
+	if (!('publicKey' in params) || params.publicKey) {
+		const accountsDB = await getAccountsIndex();
+		const [account] = await accountsDB.find(params, columns);
+		return account;
+	}
+	return {};
 };
 
 const getAccountsBySearch = async (searchProp, searchString) => {
@@ -65,6 +70,12 @@ const getAccountsBySearch = async (searchProp, searchString) => {
 const getLegacyFormatAddressFromPublicKey = publicKey => {
 	const legacyAddress = getLegacyAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
 	return legacyAddress;
+};
+
+const getLegacyHexAddressFromPublicKey = publicKey => {
+	const getLegacyBytes = pk => getFirstEightBytesReversed(hash(Buffer.from(pk, 'hex')));
+	const legacyHexAddress = getLegacyBytes(publicKey).toString('hex');
+	return legacyHexAddress;
 };
 
 const getHexAddressFromPublicKey = publicKey => {
@@ -95,6 +106,7 @@ module.exports = {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	getLegacyAddressFromPublicKey: getLegacyFormatAddressFromPublicKey,
+	getLegacyHexAddressFromPublicKey,
 	getHexAddressFromPublicKey,
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
