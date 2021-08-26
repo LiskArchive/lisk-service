@@ -6,6 +6,7 @@ services:
     depends_on:
       - redis_common
       - redis_core
+      - redis_core_volatile
       - mysql_core
     networks:
       - services_network
@@ -28,6 +29,17 @@ services:
     image: redis:5-alpine
     volumes:
       - ./redis/redis.persistent.conf:/etc/redis/redis.conf:ro
+    networks:
+      - core_network
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping
+
+  redis_core_volatile:
+    image: redis:5-alpine
+    volumes:
+      - ./redis/redis.volatile.conf:/etc/redis/redis.conf:ro
     networks:
       - core_network
     restart: always

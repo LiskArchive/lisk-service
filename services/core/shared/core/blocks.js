@@ -27,7 +27,11 @@ const setLastBlock = block => {
 	if (block && block.height && block.height > lastBlock.height) lastBlock = block;
 	else if (!lastBlock.height) lastBlock = block;
 };
+
 const getLastBlock = () => lastBlock;
+
+const getTotalNumberOfBlocks = () => (getLastBlock()).height - coreApi.getGenesisHeight() + 1;
+
 const waitForLastBlock = () => new Promise((resolve) => {
 	const checkLastBlock = (interval) => {
 		const block = getLastBlock();
@@ -85,7 +89,7 @@ const getBlocks = async (params = {}) => {
 		|| (params.timestamp && params.timestamp.includes(':'))) {
 		total = blocks.meta.total;
 	} else {
-		total = (getLastBlock()).height - coreApi.getGenesisHeight() + 1;
+		total = getTotalNumberOfBlocks();
 	}
 
 	if (coreApi.getFinalizedHeight) {
@@ -132,7 +136,7 @@ const performLastBlockUpdate = (newBlock) => {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
 		setLastBlock(newBlock);
 	} catch (err) {
-		logger.error(err);
+		logger.error(`Error occured when performing last block update:\n${err.stack}`);
 	}
 };
 
@@ -156,4 +160,5 @@ module.exports = {
 	reloadBlocks,
 	performLastBlockUpdate,
 	deleteBlock,
+	getTotalNumberOfBlocks,
 };

@@ -28,6 +28,8 @@ const {
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
+const requestApi = coreApi.requestRetry;
+
 const availableLiskModuleAssets = getRegisteredModuleAssets();
 let pendingTransactionsList = [];
 
@@ -41,7 +43,7 @@ const normalizeTransaction = tx => {
 };
 
 const getPendingTransactionsFromCore = async () => {
-	const response = await coreApi.getPendingTransactions();
+	const response = await requestApi(coreApi.getPendingTransactions);
 	let pendingTx = response.data.map(tx => normalizeTransaction(tx));
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,
@@ -58,8 +60,12 @@ const getPendingTransactionsFromCore = async () => {
 };
 
 const loadAllPendingTransactions = async () => {
-	pendingTransactionsList = await getPendingTransactionsFromCore();
-	logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
+	try {
+		pendingTransactionsList = await getPendingTransactionsFromCore();
+		logger.info(`Initialized/Updated pending transactions cache with ${pendingTransactionsList.length} transactions.`);
+	} catch (err) {
+		logger.error(`Failed to update the 'pendingTransactionsList' due to:\n${err.stack}`);
+	}
 };
 
 const validateParams = async params => {
