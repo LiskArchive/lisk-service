@@ -28,21 +28,21 @@ module.exports = [
 		init: () => {
 			try {
 				if (config.transactionStatistics.enabled) {
-					logger.debug('Initiating transaction statistics computation');
+					logger.debug('Initiating transaction statistics computation.');
 					transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 				}
 			} catch (err) {
-				logger.warn(`Initiating transaction statistics failed due to: ${err.message}`);
+				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
 			}
 		},
 		controller: async () => {
 			try {
 				if (config.transactionStatistics.enabled) {
-					logger.debug('Job scheduled to update transaction statistics');
+					logger.debug('Job scheduled to update transaction statistics.');
 					transactionStatistics.updateTodayStats();
 				}
 			} catch (err) {
-				logger.warn(`Updating transaction statistics failed due to: ${err.message}`);
+				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
 			}
 		},
 	},
