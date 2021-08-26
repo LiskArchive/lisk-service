@@ -267,7 +267,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.limit) {
 			query.limit(Number(params.limit));
 		} else {
-			logger.warn('No default limit provided for the given query', query.toString());
+			logger.warn('No default limit set for the given query', query.toString());
 		}
 
 		if (params.offset) query.offset(Number(params.offset));
@@ -277,7 +277,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
 		if (!columns) {
-			logger.warn(`No columns for the given query, using default columns to query ${tableName}`);
+			logger.warn(`No columns being passed for database query, using default columns to query ${tableName}`);
 			columns = defaultColumns[tableName];
 		}
 		const query = queryBuilder(params, columns);
