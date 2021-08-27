@@ -103,6 +103,8 @@ export ENABLE_FEE_ESTIMATOR_QUICK="true"
 
 When running a local instance of Lisk Core and Lisk Service that is run by Docker, then the following variable needs to be set: `LISK_CORE_WS="ws://host.docker.internal:8080"`.
 
+It is strongly recommended that you synchronize your Lisk Core node with the network **before** starting the Lisk Service.
+
 Configuration options are described [in this document](./docs/config_options.md).
 
 > Optional: Check your configuration with the command `make print-config`

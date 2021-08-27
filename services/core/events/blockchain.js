@@ -29,23 +29,27 @@ module.exports = [
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			const newBlockListener = async data => {
-				if (data && Array.isArray(data.data)) {
-					const [block] = data.data;
-					logger.debug(`New block arrived (${block.id})...`);
-					// Fork detection
-					if (localPreviousBlockId) {
-						if (localPreviousBlockId !== block.previousBlockId) {
-							logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+				try {
+					if (data && Array.isArray(data.data)) {
+						const [block] = data.data;
+						logger.debug(`New block arrived (${block.id})...`);
+						// Fork detection
+						if (localPreviousBlockId) {
+							if (localPreviousBlockId !== block.previousBlockId) {
+								logger.debug(`Fork detected at block height ${localPreviousBlockId}`);
+							}
 						}
+						localPreviousBlockId = block.id;
+						core.reloadAllPendingTransactions();
+						callback(data);
+					} else {
+						logger.warn([
+							'Invalid payload received with the newBlock signal: ',
+							util.inspect(data),
+						].join('\n'));
 					}
-					localPreviousBlockId = block.id;
-					core.reloadAllPendingTransactions();
-					callback(data);
-				} else {
-					logger.warn([
-						'Invalid payload received with the newBlock signal: ',
-						util.inspect(data),
-					].join('\n'));
+				} catch (err) {
+					logger.error(`Error occured when processing 'block.change' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(newBlockListener);
@@ -56,13 +60,17 @@ module.exports = [
 		description: 'Keep newly added transactions list up-to-date',
 		controller: callback => {
 			const newTransactionsListener = async (data) => {
-				if (data && Array.isArray(data.data)) {
-					const [block] = data.data;
-					if (block.numberOfTransactions > 0) {
-						logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
-						const transactionData = await core.getTransactionsByBlockId(block.id);
-						callback(transactionData);
+				try {
+					if (data && Array.isArray(data.data)) {
+						const [block] = data.data;
+						if (block.numberOfTransactions > 0) {
+							logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
+							const transactionData = await core.getTransactionsByBlockId(block.id);
+							callback(transactionData);
+						}
 					}
+				} catch (err) {
+					logger.error(`Error occured when processing 'transactions.new' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(newTransactionsListener);
@@ -73,9 +81,13 @@ module.exports = [
 		description: 'Track round change updates',
 		controller: callback => {
 			const forgersChangeListener = async () => {
-				await core.reloadNextForgersCache();
-				const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
-				callback(forgers);
+				try {
+					await core.reloadNextForgersCache();
+					const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
+					callback(forgers);
+				} catch (err) {
+					logger.error(`Error occured when processing 'forgers.change' event:\n${err.stack}`);
+				}
 			};
 			Signals.get('newBlock').add(forgersChangeListener);
 		},
@@ -85,9 +97,13 @@ module.exports = [
 		description: 'Track round change updates',
 		controller: callback => {
 			const newRoundListener = async data => {
-				logger.debug('Returning all forgers for the new round...');
-				if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
-				callback(data);
+				try {
+					logger.debug('Returning all forgers for the new round...');
+					if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
+					callback(data);
+				} catch (err) {
+					logger.error(`Error occured when processing 'round.change' event:\n${err.stack}`);
+				}
 			};
 			Signals.get('newRound').add(newRoundListener);
 		},
@@ -97,9 +113,13 @@ module.exports = [
 		description: 'Keep the fee estimates up-to-date',
 		controller: callback => {
 			const newFeeEstimateListener = async () => {
-				logger.debug('Returning latest fee_estimates to the socket.io client...');
-				const restData = await core.getEstimateFeeByte();
-				callback(restData);
+				try {
+					logger.debug('Returning latest fee_estimates to the socket.io client...');
+					const restData = await core.getEstimateFeeByte();
+					callback(restData);
+				} catch (err) {
+					logger.error(`Error occured when processing 'update.fee_estimates' event:\n${err.stack}`);
+				}
 			};
 			Signals.get('newFeeEstimate').add(newFeeEstimateListener);
 		},
@@ -109,9 +129,13 @@ module.exports = [
 		description: 'Keep the block finality height up-to-date',
 		controller: callback => {
 			const updateFinalizedHeightListener = async () => {
-				logger.debug('Returning latest heightFinalized to the socket.io client...');
-				const restData = await core.updateFinalizedHeight();
-				callback(restData ? restData.data : null);
+				try {
+					logger.debug('Returning latest heightFinalized to the socket.io client...');
+					const restData = await core.updateFinalizedHeight();
+					callback(restData ? restData.data : null);
+				} catch (err) {
+					logger.error(`Error occured when processing 'update.height_finalized' event:\n${err.stack}`);
+				}
 			};
 			Signals.get('newBlock').add(updateFinalizedHeightListener);
 		},
