@@ -1,7 +1,7 @@
 {
   "name": "lisk-service-gateway",
-  "version": "0.4.3",
-  "description": "Lisk Serivce Gateway",
+  "version": "0.4.4",
+  "description": "Lisk Service Gateway",
   "keywords": [
     "lisk",
     "blockchain"

@@ -160,7 +160,7 @@ if (config.rateLimit.connectionLimit > 0) {
 
 broker.createService(gatewayConfig);
 
-broker.waitForServices(['core', 'market']);
+broker.waitForServices(['core', 'market', 'newsfeed']);
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);
