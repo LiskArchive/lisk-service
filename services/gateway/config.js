@@ -37,7 +37,7 @@ config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
 
 config.rateLimit = {};
 config.rateLimit.window = Number(process.env.RATE_LIMIT_WINDOW) || 15 * 1000;
-config.rateLimit.connectionLimit = Number(process.env.RATE_LIMIT_CONNECTIONS) || 20;
+config.rateLimit.connectionLimit = Number(process.env.RATE_LIMIT_CONNECTIONS || 20);
 
 /**
  * LOGGING

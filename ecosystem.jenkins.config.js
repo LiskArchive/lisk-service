@@ -33,6 +33,7 @@ module.exports = {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				STRICT_READINESS_CHECK: true,
+				RATE_LIMIT_CONNECTIONS='0',
 			},
 		},
 		{
