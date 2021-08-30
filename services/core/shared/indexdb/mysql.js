@@ -272,7 +272,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
 		if (!columns) {
-			logger.warn(`No SELECT columns specified in the query, using the '${tableName}' table defaults:\n${tableConfig.primaryKey.join(', ')}`);
+			logger.warn(`No SELECT columns specified in the query, using the '${tableName}' table defaults:\n${tableConfig.primaryKey}`);
 			columns = tableConfig.primaryKey;
 		}
 		const query = queryBuilder(params, columns);

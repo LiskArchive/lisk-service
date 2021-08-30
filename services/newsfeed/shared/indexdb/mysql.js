@@ -22,7 +22,6 @@ const logger = Logger();
 
 const connectionPool = {};
 const tablePool = {};
-const defaultSelectColumns = {};
 
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
@@ -37,12 +36,6 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
 				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
-				if ('isDefaultSelect' in schema[p]) {
-					defaultSelectColumns[tableName] = defaultSelectColumns[tableName]
-						? defaultSelectColumns[tableName]
-						: [];
-					defaultSelectColumns[tableName].push(p);
-				}
 				if (p === primaryKey) kProp.primary();
 				if (indexes[p]) kProp.index();
 
@@ -279,8 +272,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
 		if (!columns) {
-			logger.warn(`No SELECT columns specified in the query, using the ${tableName} table defaults:\n${defaultSelectColumns[tableName].join(', ')}`);
-			columns = defaultSelectColumns[tableName];
+			logger.warn(`No SELECT columns specified in the query, using the ${tableName} table defaults:\n${tableConfig.primaryKey}`);
+			columns = tableConfig.primaryKey;
 		}
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
