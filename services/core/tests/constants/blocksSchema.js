@@ -18,7 +18,7 @@ module.exports = {
 	schema: {
 		id: { type: 'string', isDefaultSelect: true },
 		height: { type: 'integer', isDefaultSelect: true },
-		timestamp: { type: 'integer' },
+		timestamp: { type: 'integer', isDefaultSelect: true },
 		generatorPublicKey: { type: 'string', isDefaultSelect: true },
 		size: { type: 'integer' },
 		reward: { type: 'bigInteger' },
