@@ -20,7 +20,7 @@ module.exports = {
 		height: { type: 'integer', isDefaultSelect: true },
 		timestamp: { type: 'integer', isDefaultSelect: true },
 		generatorPublicKey: { type: 'string', isDefaultSelect: true },
-		size: { type: 'integer' },
+		size: { type: 'integer', isDefaultSelect: true },
 		reward: { type: 'bigInteger' },
 		isFinal: { type: 'boolean' },
 	},
