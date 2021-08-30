@@ -14,7 +14,7 @@
  *
  */
 const config = {
-    endpoints: {},
+	endpoints: {},
 };
 
 // Moleculer broker config
