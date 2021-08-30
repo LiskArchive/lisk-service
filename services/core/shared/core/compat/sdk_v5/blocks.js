@@ -248,7 +248,8 @@ const indexNewBlocks = async blocks => {
 
 			// Update block finality status
 			const finalizedBlockHeight = getFinalizedHeight();
-			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 });
+			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
+				Object.keys(blocksIndexSchema.schema));
 			await updateBlockIndexQueue.add('updateBlockIndexQueue', {
 				blocks: nonFinalBlocks
 					.filter(b => b.height <= finalizedBlockHeight)

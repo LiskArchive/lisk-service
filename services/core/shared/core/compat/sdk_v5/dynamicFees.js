@@ -179,7 +179,8 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 					height: prevFeeEstPerByte.blockHeight + 1 - i,
 				});
 				block.payload = block.numberOfTransactions
-					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions })
+					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions },
+						Object.keys(transactionsIndexSchema.schema))
 					: [];
 				return block;
 			},

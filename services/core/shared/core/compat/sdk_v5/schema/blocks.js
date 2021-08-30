@@ -16,10 +16,10 @@
 module.exports = {
 	primaryKey: 'height',
 	schema: {
-		id: { type: 'string', isDefaultSelect: true },
-		height: { type: 'integer', isDefaultSelect: true },
+		id: { type: 'string' },
+		height: { type: 'integer' },
 		timestamp: { type: 'integer' },
-		generatorPublicKey: { type: 'string', isDefaultSelect: true },
+		generatorPublicKey: { type: 'string' },
 		size: { type: 'integer' },
 		reward: { type: 'bigInteger' },
 		isFinal: { type: 'boolean' },

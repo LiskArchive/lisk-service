@@ -109,7 +109,7 @@ const removeTransactionsByBlockIDs = async blockIDs => {
 			property: 'blockId',
 			values: blockIDs,
 		},
-	});
+	}, ['id']);
 	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
 	await transactionsDB.deleteIds(forkedTransactionIDs);
 	await removeVotesByTransactionIDs(forkedTransactionIDs);
@@ -219,7 +219,7 @@ const validateParams = async params => {
 		const { recipientPublicKey, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey }, ['address']);
+		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey, limit: 1 }, ['address']);
 		if (!account) throw new NotFoundException(`Account ${recipientPublicKey} not found.`);
 		params.recipientId = account.address;
 	}

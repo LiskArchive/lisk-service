@@ -18,8 +18,8 @@ module.exports = {
 	schema: {
 		amount_range: { type: 'string' },
 		count: { type: 'integer' },
-		date: { type: 'integer', isDefaultSelect: true },
-		id: { type: 'string', isDefaultSelect: true },
+		date: { type: 'integer' },
+		id: { type: 'string' },
 		type: { type: 'string' },
 		volume: { type: 'bigInteger' },
 	},

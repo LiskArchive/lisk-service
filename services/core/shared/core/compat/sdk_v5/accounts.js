@@ -546,7 +546,7 @@ const getMultisignatureGroups = async account => {
 const getMultisignatureMemberships = async account => {
 	const multisignatureMemberships = { memberships: [] };
 	const multisignatureDB = await getMultisignatureIndex();
-	const membershipInfo = await multisignatureDB.find({ memberAddress: account.address });
+	const membershipInfo = await multisignatureDB.find({ memberAddress: account.address }, ['groupAddress', 'memberAddress']);
 
 	await BluebirdPromise.map(
 		membershipInfo,

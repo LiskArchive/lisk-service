@@ -16,11 +16,11 @@
 module.exports = {
 	primaryKey: 'id',
 	schema: {
-		id: { type: 'string', isDefaultSelect: true },
-		sentAddress: { type: 'string', isDefaultSelect: true },
-		receivedAddress: { type: 'string', isDefaultSelect: true },
-		amount: { type: 'bigInteger', defaultValue: 0, isDefaultSelect: true },
-		timestamp: { type: 'integer', isDefaultSelect: true },
+		id: { type: 'string' },
+		sentAddress: { type: 'string' },
+		receivedAddress: { type: 'string' },
+		amount: { type: 'bigInteger', defaultValue: 0 },
+		timestamp: { type: 'integer' },
 	},
 	indexes: {
 		sentAddress: { type: 'key' },

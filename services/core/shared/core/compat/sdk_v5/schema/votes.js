@@ -17,13 +17,13 @@ module.exports = {
 	primaryKey: 'tempId',
 	schema: {
 		// TODO: Remove 'tempId' after composite PK support is added
-		tempId: { type: 'string', isDefaultSelect: true }, // ['id', 'receivedAddress']
-		id: { type: 'string', isDefaultSelect: true },
-		sentAddress: { type: 'string', isDefaultSelect: true },
-		receivedAddress: { type: 'string', isDefaultSelect: true },
-		amount: { type: 'bigInteger', isDefaultSelect: true },
-		timestamp: { type: 'integer', isDefaultSelect: true },
-		isAggregated: { type: 'boolean', null: false, defaultValue: false, isDefaultSelect: true },
+		tempId: { type: 'string' }, // ['id', 'receivedAddress']
+		id: { type: 'string' },
+		sentAddress: { type: 'string' },
+		receivedAddress: { type: 'string' },
+		amount: { type: 'bigInteger' },
+		timestamp: { type: 'integer' },
+		isAggregated: { type: 'boolean', null: false, defaultValue: false },
 	},
 	indexes: {
 		id: { type: 'key' },

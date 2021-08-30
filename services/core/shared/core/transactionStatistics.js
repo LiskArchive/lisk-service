@@ -25,11 +25,11 @@ const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
 const requestAll = require('../requestAll');
-const tableConfig = require('./schemas/transactionStatistics');
+const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
 
 const logger = Logger();
 
-const getDbInstance = () => mysql('transaction_statistics', tableConfig);
+const getDbInstance = () => mysql('transaction_statistics', txStatisticsIndexSchema);
 
 const queueName = 'transactionStatisticsQueue';
 const queueOptions = config.queue[queueName];
@@ -104,7 +104,7 @@ const insertToDb = async (statsList, date) => {
 	const db = await getDbInstance();
 
 	try {
-		const [{ id }] = db.find({ date, limit: 1 }, 'id');
+		const [{ id }] = db.find({ date, limit: 1 }, ['id']);
 		await db.deleteIds([id]);
 		logger.debug(`Removed the following date from the database: ${date}`);
 	} catch (err) {
@@ -221,7 +221,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
-		const shouldUpdate = i === 0 || !((await db.find({ date }, 'id')).length);
+		const shouldUpdate = i === 0 || !((await db.find({ date }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
 			let attempt = 0;
