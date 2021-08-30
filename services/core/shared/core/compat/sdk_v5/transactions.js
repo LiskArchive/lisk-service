@@ -237,7 +237,7 @@ const validateParams = async params => {
 		const { search, ...remParams } = params;
 		params = remParams;
 
-		const accounts = await getAccountsBySearch('username', search);
+		const accounts = await getAccountsBySearch('username', search, ['address', 'publicKey']);
 		const publicKeys = accounts.map(account => account.publicKey);
 		const addresses = await BluebirdPromise.map(
 			accounts,
