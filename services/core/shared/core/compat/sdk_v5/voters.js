@@ -53,7 +53,7 @@ const indexVotes = async blocks => {
 						id: tx.id,
 						receivedAddress: voteEntry.receivedAddress,
 						limit: 1,
-					}, 'isAggregated');
+					}, ['isAggregated']);
 					if (!row || !row.isAggregated) {
 						// indexing aggregated votes per account
 						const numRowsAffected = await votesAggregateDB.increment({
@@ -118,7 +118,7 @@ const getVoters = async params => {
 		const { username, ...remParams } = params;
 		params = remParams;
 
-		const accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, 'address');
+		const accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['address']);
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
 		params.receivedAddress = accountInfo.address;
 	}
@@ -147,7 +147,7 @@ const getVoters = async params => {
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
 		async vote => {
-			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress, limit: 1 }, 'username');
+			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress, limit: 1 }, ['username']);
 			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
 			const { amount, sentAddress, username } = vote;
 			return { amount, address: sentAddress, username };
@@ -155,7 +155,7 @@ const getVoters = async params => {
 		{ concurrency: votes.data.votes.length },
 	);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress, limit: 1 }, 'username');
+	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress, limit: 1 }, ['username']);
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,

@@ -25,23 +25,9 @@ const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
 const mysql = require('../indexdb/mysql');
 const requestAll = require('../requestAll');
+const tableConfig = require('./schemas/transactionStatistics');
 
 const logger = Logger();
-
-const tableConfig = {
-	primaryKey: 'id',
-	schema: {
-		amount_range: { type: 'string' },
-		count: { type: 'integer' },
-		date: { type: 'integer', isDefaultColumn: true },
-		id: { type: 'string', isDefaultColumn: true },
-		type: { type: 'string' },
-		volume: { type: 'bigInteger' },
-	},
-	indexes: {
-		date: { type: 'range' },
-	},
-};
 
 const getDbInstance = () => mysql('transaction_statistics', tableConfig);
 

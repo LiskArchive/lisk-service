@@ -21,7 +21,7 @@
     "height": {
         "name": "height",
         "in": "query",
-        "description": "Query by block height or by height range fromHeight:toHeight",
+        "description": "Query for block(s) by height or a height range (fromHeight:toHeight, both inclusive)",
         "type": "integer",
         "format": "int32",
         "minimum": 1

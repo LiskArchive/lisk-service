@@ -36,7 +36,7 @@ const logger = Logger();
 const calculateBlockSize = async block => {
 	const blocksDB = await getBlocksIndex();
 
-	const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, 'size');
+	const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['size']);
 	if (blockInfo) return blockInfo.size;
 
 	// If information is unavailable, compute on-the-fly

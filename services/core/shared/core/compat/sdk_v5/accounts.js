@@ -161,7 +161,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 
 			// A genesis block account is considered migrated
 			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, 'publicKey');
+			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
@@ -234,7 +234,7 @@ const resolveDelegateInfo = async accounts => {
 					generatorPublicKey: account.publicKey,
 					sort: 'height:desc',
 					limit: 1,
-				}, 'height');
+				}, ['height']);
 				account.dpos.delegate.lastForgedHeight = lastForgedBlock.height || null;
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
@@ -255,7 +255,7 @@ const resolveDelegateInfo = async accounts => {
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
 						limit: 1,
-					}, 'height');
+					}, ['height']);
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
 						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
@@ -322,7 +322,8 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 	const [reclaimTx] = await transactionsDB.find({
 		senderPublicKey: publicKey,
 		moduleAssetId: reclaimTxModuleAssetId,
-	});
+		limit: 1,
+	}, ['id']);
 
 	if (reclaimTx) {
 		Object.assign(

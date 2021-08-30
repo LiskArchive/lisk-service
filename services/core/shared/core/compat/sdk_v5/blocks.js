@@ -114,7 +114,7 @@ const indexBlocks = async job => {
 	const generatorPkInfoArray = [];
 	blocks.forEach(async block => {
 		if (block.generatorPublicKey) {
-			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, 'id');
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
 			generatorPkInfoArray.push({
 				publicKey: block.generatorPublicKey,
 				reward: block.reward,
@@ -145,7 +145,7 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
-			const account = block.generatorPublicKey ? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') }) : {};
+			const account = block.generatorPublicKey ? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex'), limit: 1 }, ['address', 'username']) : {};
 			block.generatorAddress = account && account.address ? account.address : null;
 			block.generatorUsername = account && account.username ? account.username : null;
 			block.isFinal = block.height <= getFinalizedHeight();
@@ -258,7 +258,7 @@ const indexNewBlocks = async blocks => {
 			if (blockInfo && blockInfo.id !== block.id) {
 				// Fork detected
 
-				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, 'height');
+				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 				const blocksToRemove = await blocksDB.find({
 					propBetweens: [{
 						property: 'height',
@@ -266,7 +266,7 @@ const indexNewBlocks = async blocks => {
 						to: highestIndexedBlock.height,
 					}],
 					limit: highestIndexedBlock.height - block.height,
-				}, 'id');
+				}, ['id']);
 				const blockIDsToRemove = blocksToRemove.map(b => b.id);
 				await blocksDB.deleteIds(blockIDsToRemove);
 
@@ -295,12 +295,12 @@ const getBlocks = async params => {
 	if (params.address) {
 		const { address, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ address, limit: 1 }, 'publicKey');
+		accountInfo = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
 	}
 	if (params.username) {
 		const { username, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, 'publicKey');
+		accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['publicKey']);
 	}
 
 	if (accountInfo && accountInfo.publicKey) {
@@ -335,7 +335,7 @@ const getBlocks = async params => {
 
 	const total = await blocksDB.count(params);
 	if (isQueryFromIndex(params)) {
-		const resultSet = await blocksDB.find(params, 'id');
+		const resultSet = await blocksDB.find(params, ['id']);
 		params.ids = resultSet.map(row => row.id);
 	}
 
@@ -593,7 +593,7 @@ const indexPastBlocks = async () => {
 
 	// Highest finalized block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1, isFinal: true }, 'height');
+	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1, isFinal: true }, ['height']);
 	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
 		? lastIndexedHeight : blockIndexLowerRange;
 
@@ -613,7 +613,7 @@ const checkIndexReadiness = async () => {
 			const networkStatus = await requestApi(coreApi.getNetworkStatus);
 			const currentChainHeight = networkStatus.data.height;
 			const numBlocksIndexed = await blocksDB.count();
-			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, 'height');
+			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 
 			logger.debug(
 				`\nnumBlocksIndexed: ${numBlocksIndexed}`,

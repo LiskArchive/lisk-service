@@ -22,7 +22,7 @@ const logger = Logger();
 
 const connectionPool = {};
 const tablePool = {};
-const defaultColumns = {};
+const defaultSelectColumns = {};
 
 const loadSchema = async (knex, tableName, tableConfig) => {
 	const { primaryKey, charset, schema, indexes } = tableConfig;
@@ -37,9 +37,11 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
 				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
-				if ('isDefaultColumn' in schema[p]) {
-					defaultColumns[tableName] = defaultColumns[tableName] ? defaultColumns[tableName] : [];
-					defaultColumns[tableName].push(p);
+				if ('isDefaultSelect' in schema[p]) {
+					defaultSelectColumns[tableName] = defaultSelectColumns[tableName]
+						? defaultSelectColumns[tableName]
+						: [];
+					defaultSelectColumns[tableName].push(p);
 				}
 				if (p === primaryKey) kProp.primary();
 				if (indexes[p]) kProp.index();
@@ -267,7 +269,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		if (params.limit) {
 			query.limit(Number(params.limit));
 		} else {
-			logger.warn('No default limit set for the given query', query.toString());
+			logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
 		}
 
 		if (params.offset) query.offset(Number(params.offset));
@@ -277,8 +279,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
 		if (!columns) {
-			logger.warn(`No columns being passed for database query, using default columns to query ${tableName}`);
-			columns = defaultColumns[tableName];
+			logger.warn(`No SELECT columns specified in the query, using the ${tableName} table defaults:\n${defaultSelectColumns[tableName].join(', ')}`);
+			columns = defaultSelectColumns[tableName];
 		}
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();

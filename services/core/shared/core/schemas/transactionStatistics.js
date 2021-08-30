@@ -16,14 +16,14 @@
 module.exports = {
 	primaryKey: 'id',
 	schema: {
+		amount_range: { type: 'string' },
+		count: { type: 'integer' },
+		date: { type: 'integer', isDefaultSelect: true },
 		id: { type: 'string', isDefaultSelect: true },
-		groupAddress: { type: 'string', isDefaultSelect: true },
-		memberAddress: { type: 'string', isDefaultSelect: true },
+		type: { type: 'string' },
+		volume: { type: 'bigInteger' },
 	},
 	indexes: {
-		id: { type: 'key' },
-		groupAddress: { type: 'key' },
-		memberAddress: { type: 'key' },
+		date: { type: 'range' },
 	},
-	purge: {},
 };
