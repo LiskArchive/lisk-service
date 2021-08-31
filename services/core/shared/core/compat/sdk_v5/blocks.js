@@ -59,11 +59,13 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 const logger = Logger();
 
 const requestApi = coreApi.requestRetry;
 
+let latestBlock;
 let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
@@ -211,7 +213,9 @@ const getBlocksByHeightBetween = async (from, to) => {
 
 const getLastBlock = async () => {
 	const response = await requestApi(coreApi.getLastBlock);
-	return normalizeBlocks(response.data);
+	[latestBlock] = await normalizeBlocks(response.data);
+	if (latestBlock && latestBlock.id) await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
+	return [latestBlock];
 };
 
 const isQueryFromIndex = params => {
