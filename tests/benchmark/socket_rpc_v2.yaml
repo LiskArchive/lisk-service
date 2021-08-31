@@ -3,8 +3,8 @@ config:
   socketio:
     transports: ["websocket"]
   phases:
-    - duration: 5
-      arrivalRate: 100
+    - duration: 15
+      arrivalRate: 50
 scenarios:
   - name: "Transactions"
     engine: "socketio"
