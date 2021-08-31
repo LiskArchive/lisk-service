@@ -1,6 +1,6 @@
-# Lisk Service Template
+# Lisk Service Newsfeed
 
-The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing.
+The Newsfeed service is a single-purpose microservice that polls the content sharing platforms and shares collected data with UI clients such as Lisk Desktop
 
 > Note that this installation instruction is required only for the purpose of development activities. For a regular Lisk Service user, the official [documentation](https://lisk.io/documentation/lisk-service/) is sufficient to run their own instance. The global readme file present in the root directory describes how to run all microservices simultaneously.
 
@@ -16,20 +16,23 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/services/template # move into template component folder
+cd lisk-service/services/newsfeed # move into newsfeed component folder
 npm install # install required Node.js modules
 ```
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations. The template service does not use any of them by default.
+To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations. A list of the most commonly used environment variables can be seen below:
+
+- `SERVICE_BROKER`: URL of the microservice message broker (Redis)
+- `SERVICE_NEWSFEED_MYSQL`: URL of the local Lisk Service Core database
 
 ## Management
 
 ### Start
 
 ```bash
-cd lisk-service/services/template # move into root folder of the template component
+cd lisk-service/services/newsfeed # move into root folder of the newsfeed component
 npm start # start the component
 ```
 
