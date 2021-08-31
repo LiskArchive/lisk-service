@@ -52,6 +52,6 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 /**
  * External endpoints
  */
-config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+config.endpoints.mysql = process.env.SERVICE_TRANSACTION_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 module.exports = config;

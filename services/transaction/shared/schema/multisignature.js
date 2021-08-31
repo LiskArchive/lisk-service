@@ -13,6 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+const currentTimestamp = () => Math.floor(Date.now() / 1000);
+const yearInSeconds = 31556952;
+
 module.exports = {
 	primaryKey: 'serviceId',
 	charset: 'utf8mb4',
@@ -23,9 +27,9 @@ module.exports = {
 		asset: { type: 'text', null: true, defaultValue: '' },
 		moduleAssetId: { type: 'string' },
 		fee: { type: 'string', null: true, defaultValue: '' },
-		createdAt: { type: 'integer', null: false, defaultValue: Math.floor(Date.now() / 1000) },
-		modifiedAt: { type: 'integer', null: false, defaultValue: Math.floor(Date.now() / 1000) },
-		expiresAt: { type: 'integer', null: false, defaultValue: Math.floor(Date.now() / 1000) + 31556952 }, // +1 year
+		createdAt: { type: 'integer', null: false, defaultValue: currentTimestamp() },
+		modifiedAt: { type: 'integer', null: false, defaultValue: currentTimestamp() },
+		expiresAt: { type: 'integer', null: false, defaultValue: currentTimestamp() + yearInSeconds },
 		rejected: { type: 'boolean', null: true },
 	},
 	indexes: {},
