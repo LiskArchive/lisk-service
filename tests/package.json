@@ -30,6 +30,7 @@
     "test:integration:APIv1:SDKv4": "jest --config=jest.config.integration.apiv1.sdkv4.js",
     "test:integration:APIv2:SDKv5": "jest --config=jest.config.integration.apiv2.sdkv5.js",
     "test:functional": "jest --config=jest.config.functional.js",
+    "benchmark": "artillery run benchmark/socket_rpc_v2.yaml",
     "start": "node app.js"
   },
   "dependencies": {
@@ -55,6 +56,7 @@
     "@babel/plugin-transform-runtime": "^7.13.15",
     "@babel/preset-env": "^7.14.1",
     "@babel/runtime": "^7.14.0",
+    "artillery": "^1.7.8",
     "await-to-js": "=2.1.1",
     "axios": "^0.21.1",
     "babel-jest": "^24.1.0",

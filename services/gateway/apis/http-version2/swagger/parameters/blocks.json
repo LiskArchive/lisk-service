@@ -9,7 +9,7 @@
         "maxLength": 20
     },
     "generatorPublicKey": {
-        "name": "publickey",
+        "name": "generatorPublicKey",
         "in": "query",
         "description": "Public key to query",
         "type": "string",
@@ -17,7 +17,7 @@
         "minLength": 1
     },
     "generatorUsername": {
-        "name": "username",
+        "name": "generatorUsername",
         "in": "query",
         "description": "Delegate username to query",
         "type": "string",
@@ -26,7 +26,7 @@
         "maxLength": 20
     },
     "generatorAddress": {
-        "name": "address",
+        "name": "generatorAddress",
         "in": "query",
         "description": "Lisk account address",
         "type": "string",
