@@ -233,7 +233,7 @@ describe('Transactions API', () => {
 		});
 	});
 
-	describe('Retrieve transaction list by sender public key', () => {
+	describe('Retrieve transaction list by a public key', () => {
 		xit('existing sender public key -> ok', async () => {
 			const response = await api.get(`${endpoint}?senderPublicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
