@@ -13,7 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = {};
+const config = {
+	endpoints: {},
+};
 
 // Moleculer broker config
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
@@ -46,5 +48,10 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
+
+/**
+ * External endpoints
+ */
+config.endpoints.mysql = process.env.SERVICE_TRANSACTION_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 module.exports = config;
