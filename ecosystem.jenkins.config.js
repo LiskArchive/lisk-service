@@ -59,6 +59,7 @@ module.exports = {
 				INDEX_N_BLOCKS: '0',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
+				GENESIS_HEIGHT: '250'
 			},
 		},
 		{

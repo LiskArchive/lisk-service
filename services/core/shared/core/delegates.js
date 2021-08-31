@@ -276,24 +276,25 @@ const updateDelegateListEveryBlock = () => {
 					}
 				}
 			});
+			if (updatedDelegateAddresses.length) {
+				const { data: updatedDelegateAccounts } = await coreApi
+					.getAccounts({ addresses: updatedDelegateAddresses });
 
-			const { data: updatedDelegateAccounts } = await coreApi
-				.getAccounts({ addresses: updatedDelegateAddresses });
+				updatedDelegateAccounts.forEach(delegate => {
+					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
+					// Update delegate list on newBlock event
+					if (delegate.isDelegate) {
+						if (delegateIndex === -1) delegateList.push(delegate);
+						else delegateList[delegateIndex] = delegate;
+						// Remove delegate from list when deleteBlock event contains delegate registration tx
+					} else if (delegateIndex !== -1) {
+						delegateList.splice(delegateIndex, 1);
+					}
+				});
 
-			updatedDelegateAccounts.forEach(delegate => {
-				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-				// Update delegate list on newBlock event
-				if (delegate.isDelegate) {
-					if (delegateIndex === -1) delegateList.push(delegate);
-					else delegateList[delegateIndex] = delegate;
-				// Remove delegate from list when deleteBlock event contains delegate registration tx
-				} else if (delegateIndex !== -1) {
-					delegateList.splice(delegateIndex, 1);
-				}
-			});
-
-			// Rank is impacted only when a delegate gets (un-)voted
-			if (updatedDelegateAddresses.length) await computeDelegateRank();
+				// Rank is impacted only when a delegate gets (un-)voted
+				await computeDelegateRank();
+			}
 
 			// Update delegate cache with producedBlocks and rewards
 			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
