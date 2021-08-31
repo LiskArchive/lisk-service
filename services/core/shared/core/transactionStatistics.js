@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
@@ -260,10 +261,39 @@ const init = async historyLengthDays => {
 
 const updateTodayStats = async () => fetchTransactionsForPastNDays(1, true);
 
+const validateTransactionStatistics = async historyLengthDays => {
+	const dateTo = moment().utc().endOf('day').subtract(0, 'day');
+	const dateFrom = moment(dateTo).startOf('day').subtract(historyLengthDays, 'day');
+	const params = {
+		dateFormat: 'YYYY-MM-DD',
+		dateTo,
+		dateFrom,
+	};
+
+	const distributionByType = await getDistributionByType(params);
+
+	const verifyStatistics = await BluebirdPromise.map(
+		Object.keys(distributionByType),
+		async type => {
+			const { meta: { total } } = await getTransactions({
+				moduleAssetId: type,
+				fromTimestamp: (moment.unix(dateFrom).unix()) / 1000,
+				toTimestamp: (moment.unix(dateTo).unix()) / 1000,
+			});
+			return total === distributionByType[type];
+		},
+		{ concurrency: Object.keys(distributionByType).length },
+	);
+
+	const isStatsProperlyBuilt = verifyStatistics.every(isVerified => isVerified);
+	if (!isStatsProperlyBuilt) await fetchTransactionsForPastNDays(historyLengthDays, true);
+};
+
 module.exports = {
 	getStatsTimeline,
 	getDistributionByType,
 	getDistributionByAmount,
 	init,
 	updateTodayStats,
+	validateTransactionStatistics,
 };

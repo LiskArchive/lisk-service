@@ -107,11 +107,10 @@ describe('Blocks API', () => {
 		});
 
 		it('known block by timestamp -> ok', async () => {
-			const timestamp = 1615917187;
-			const response = await api.get(`${endpoint}?timestamp=${timestamp}`);
+			const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			response.data.forEach(block => {
-				expect(block).toMap(blockSchemaVersion5, { timestamp });
+				expect(block).toMap(blockSchemaVersion5, { timestamp: refBlock.timestamp });
 			});
 			expect(response.meta).toMap(metaSchema);
 		});

@@ -46,4 +46,20 @@ module.exports = [
 			}
 		},
 	},
+	{
+		name: 'verify.transaction.statistics',
+		description: 'Verify the accuracy and rebuild the transaction statistics, if necessary',
+		schedule: '15 */3 * * *', // Every 3 hours at the 15th minute
+		controller: async () => {
+			try {
+				if (config.transactionStatistics.enabled) {
+					logger.debug('Verifying the transaction stats...');
+					await transactionStatistics
+						.validateTransactionStatistics(config.transactionStatistics.historyLengthDays);
+				}
+			} catch (err) {
+				logger.warn(`Verifying transaction statistics failed due to: ${err.message}`);
+			}
+		},
+	},
 ];

@@ -1,7 +1,7 @@
 {
   "name": "lisk-service-template-moleculer",
   "version": "0.4.4",
-  "description": "Lisk Serivce Template Component",
+  "description": "Lisk Service Template",
   "keywords": [
     "lisk",
     "blockchain"
