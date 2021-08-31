@@ -33,10 +33,10 @@ scenarios:
     flow:
       - emit:
           channel: "request"
-          data: {"method": "get.delegates", "params": {"limit": 101}}
+          data: {"method": "get.accounts", "params": {"isDelegate": true, "limit": 100}}
       - emit:
           channel: "request"
-          data: {"method": "get.delegates", "params": {"limit": 30, "offset": 101}}
+          data: {"method": "get.accounts", "params": {"isDelegate": true, "limit": 30, "offset": 101}}
       - emit:
           channel: "request"
           data: {"method": "get.forgers", "params": {"limit": 101}}
