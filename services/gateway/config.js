@@ -75,4 +75,13 @@ config.api.enableHttpCacheControl = Boolean(String(process.env.ENABLE_HTTP_CACHE
 // Unless STRICT_READINESS_CHECK env. variable is set false, includeCoreReadiness evaluates to true
 config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
 
+// configuration for websocket rate limit
+config.websocket = {
+	enableRateLimit: Boolean(String(process.env.ENABLE_WEBSOCKET_RATELIMIT).toLowerCase() !== 'false'),
+	rateLimit: {
+		points: 1, // 5 points
+		duration: 10, // per second
+	},
+};
+
 module.exports = config;

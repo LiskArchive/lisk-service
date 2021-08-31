@@ -18,10 +18,7 @@ const {
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
 
-const rateLimiter = new RateLimiterMemory({
-	points: 5, // 5 points
-	duration: 1, // per second
-});
+const rateLimiter = new RateLimiterMemory(config.websocket.rateLimit);
 
 module.exports = {
 	name: 'io',
@@ -383,7 +380,7 @@ function translateHttpToRpcCode(code) {
 function makeHandler(svc, handlerItem) {
 	svc.logger.debug('makeHandler:', handlerItem);
 	return async function (requests, respond) {
-		await rateLimiter.consume(this.handshake.address);
+		if (config.websocket.enableRateLimit) await rateLimiter.consume(this.handshake.address);
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
 			if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
 				const message = `The given data is not a proper JSON-RPC 2.0 request: ${util.inspect(jsonRpcInput)}`;
