@@ -213,7 +213,7 @@ const getLastBlock = async () => {
 	const response = await requestApi(coreApi.getLastBlock);
 	[latestBlock] = await normalizeBlocks(response.data);
 	if (latestBlock && latestBlock.id) await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
-	return latestBlock;
+	return [latestBlock];
 };
 
 const isQueryFromIndex = params => {
