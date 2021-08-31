@@ -124,6 +124,15 @@ To stop the application execute the following command:
 make down
 ```
 
+## Benchmark
+
+Assuming lisk-service is running on localhost:9901, and you are in the root of this repo, you can run:
+
+```bash
+cd tests
+LISK_SERVICE_URL=http://localhost:9901 npm run benchmark
+```
+
 ## Further development
 
 The possibility to customize and build Lisk Service from a local source is described in the following document [Building Lisk Service from source](./docs/build_from_source.md). This may also be also useful for PM2-based installations.

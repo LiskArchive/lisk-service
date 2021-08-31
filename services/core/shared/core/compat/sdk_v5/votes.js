@@ -40,7 +40,7 @@ const getVotes = async params => {
 		const { username, ...remParams } = params;
 		params = remParams;
 
-		const accountInfo = await getIndexedAccountInfo({ username });
+		const accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['address']);
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
 		params.sentAddress = accountInfo.address;
 	}
@@ -59,7 +59,7 @@ const getVotes = async params => {
 	voter.data.votes = await BluebirdPromise.map(
 		voter.data.votes,
 		async vote => {
-			const accountInfo = await getIndexedAccountInfo({ address: vote.delegateAddress });
+			const accountInfo = await getIndexedAccountInfo({ address: vote.delegateAddress, limit: 1 }, ['username']);
 			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
 			const { amount, delegateAddress, username } = vote;
 			return { amount, address: delegateAddress, username };
@@ -67,7 +67,7 @@ const getVotes = async params => {
 		{ concurrency: voter.data.votes.length },
 	);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.sentAddress });
+	const accountInfo = await getIndexedAccountInfo({ address: params.sentAddress, limit: 1 }, ['username']);
 	voter.data.account = {
 		address: params.sentAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,

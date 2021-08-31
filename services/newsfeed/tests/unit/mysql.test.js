@@ -14,9 +14,9 @@
  *
  */
 const mysqlIndex = require('../../shared/indexdb/mysql');
-const schema = require('../../shared/schema/newsfeed');
+const testschema = require('../../shared/schema/newsfeed');
 
-const getIndex = () => mysqlIndex('testSchemaNewsfeed', schema);
+const getIndex = () => mysqlIndex('testSchemaNewsfeed', testschema);
 
 const { news } = require('../constants/newsfeed');
 
@@ -30,7 +30,7 @@ describe('Test mysql', () => {
 	afterAll(async () => {
 		// TODO: Drop table
 		const result = await db.find();
-		await db.deleteIds(result.map(r => r[`${schema.primaryKey}`]));
+		await db.deleteIds(result.map(r => r[`${testschema.primaryKey}`]));
 	});
 
 	it('DB exists', async () => {
@@ -47,7 +47,7 @@ describe('Test mysql', () => {
 	});
 
 	it('Fetch rows', async () => {
-		const result = await db.find({ source: 'drupal_lisk_general' });
+		const result = await db.find({ source: 'drupal_lisk_general' }, Object.keys(testschema.schema));
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
 

@@ -28,6 +28,7 @@ config.host = process.env.HOST || '0.0.0.0';
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/3';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
@@ -74,5 +75,11 @@ config.api.enableHttpCacheControl = Boolean(String(process.env.ENABLE_HTTP_CACHE
 
 // Unless STRICT_READINESS_CHECK env. variable is set false, includeCoreReadiness evaluates to true
 config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
+
+// Gateway RPC cache settings
+config.rpcCache = {
+	ttl: 10 * 1000, // miliseconds
+	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
+};
 
 module.exports = config;
