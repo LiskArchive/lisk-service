@@ -234,7 +234,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Retrieve transaction list by sender public key', () => {
-		it('existing sender public key -> ok', async () => {
+		xit('existing sender public key -> ok', async () => {
 			const response = await api.get(`${endpoint}?senderPublicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -246,7 +246,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('existing recipient public key -> ok', async () => {
+		xit('existing recipient public key -> ok', async () => {
 			const response = await api.get(`${endpoint}?recipientPublicKey=${refDelegate.summary.publicKey}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
