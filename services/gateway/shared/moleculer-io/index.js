@@ -9,6 +9,7 @@ const chalk = require('chalk');
 const util = require('util');
 
 const BluebirdPromise = require('bluebird');
+const { RateLimiterMemory } = require('rate-limiter-flexible');
 
 const {
 	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
@@ -16,6 +17,11 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
+
+const rateLimiter = new RateLimiterMemory({
+	points: 5, // 5 points
+	duration: 1, // per second
+});
 
 module.exports = {
 	name: 'io',
@@ -377,6 +383,7 @@ function translateHttpToRpcCode(code) {
 function makeHandler(svc, handlerItem) {
 	svc.logger.debug('makeHandler:', handlerItem);
 	return async function (requests, respond) {
+		await rateLimiter.consume(this.handshake.address);
 		const performClientRequest = async (jsonRpcInput, id = 1) => {
 			if (config.jsonRpcStrictMode === 'true' && (!jsonRpcInput.jsonrpc || jsonRpcInput.jsonrpc !== '2.0')) {
 				const message = `The given data is not a proper JSON-RPC 2.0 request: ${util.inspect(jsonRpcInput)}`;
@@ -423,15 +430,19 @@ function makeHandler(svc, handlerItem) {
 		}
 
 		try {
-			const responses = await BluebirdPromise.map(requests, async (request) => {
-				const id = request.id || (requests.indexOf(request)) + 1;
-				const response = await performClientRequest(request, id);
-				svc.logger.debug(`Requested ${request.method} with params ${JSON.stringify(request.params)}`);
-				if (response.error) {
-					svc.logger.warn(`${response.error.code} ${response.error.message}`);
-				}
-				return response;
-			}, { concurrency: MULTI_REQUEST_CONCURRENCY });
+			const responses = await BluebirdPromise.map(
+				requests,
+				async (request) => {
+					const id = request.id || (requests.indexOf(request)) + 1;
+					const response = await performClientRequest(request, id);
+					svc.logger.debug(`Requested ${request.method} with params ${JSON.stringify(request.params)}`);
+					if (response.error) {
+						svc.logger.warn(`${response.error.code} ${response.error.message}`);
+					}
+					return response;
+				},
+				{ concurrency: MULTI_REQUEST_CONCURRENCY },
+			);
 
 			if (singleResponse) respond(responses[0]);
 			else respond(responses);
