@@ -96,7 +96,7 @@ const removeVotesByTransactionIDs = async transactionIDs => {
 			property: 'id',
 			values: transactionIDs,
 		},
-	}, 'tempId');
+	}, ['tempId']);
 	await votesDB.deleteIds(forkedVotes.map(v => v.tempId));
 };
 
@@ -140,7 +140,11 @@ const getVoters = async params => {
 			}],
 		}, Object.keys(votesAggregateIndexSchema.schema));
 	} else {
-		resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress }, Object.keys(votesIndexSchema.schema));
+		resultSet = await votesDB.find({
+			sort: 'timestamp:desc',
+			receivedAddress: params.receivedAddress,
+		},
+		Object.keys(votesIndexSchema.schema));
 	}
 	if (resultSet.length) votes.data.votes = resultSet;
 

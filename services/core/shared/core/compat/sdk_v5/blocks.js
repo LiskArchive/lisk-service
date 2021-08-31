@@ -145,7 +145,9 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
-			const account = block.generatorPublicKey ? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex'), limit: 1 }, ['address', 'username']) : {};
+			const account = block.generatorPublicKey
+				? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex'), limit: 1 }, ['address', 'username'])
+				: {};
 			block.generatorAddress = account && account.address ? account.address : null;
 			block.generatorUsername = account && account.username ? account.username : null;
 			block.isFinal = block.height <= getFinalizedHeight();
@@ -594,7 +596,11 @@ const indexPastBlocks = async () => {
 
 	// Highest finalized block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1, isFinal: true }, ['height']);
+	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({
+		sort: 'height:desc',
+		limit: 1,
+		isFinal: true,
+	}, ['height']);
 	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
 		? lastIndexedHeight : blockIndexLowerRange;
 
