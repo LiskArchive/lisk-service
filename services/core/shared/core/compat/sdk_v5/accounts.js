@@ -198,11 +198,11 @@ const resolveAccountsInfo = async accounts => {
 };
 
 const verifyIfPunished = async delegate => {
-	const lastestBlockString = await latestBlockCache.get('latestBlock');
-	const lastestBlock = JSON.parse(lastestBlockString);
+	const latestBlockString = await latestBlockCache.get('latestBlock');
+	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
 	const isPunished = delegate.pomHeights
-		.some(pomHeight => pomHeight.start <= lastestBlock.height
-			&& lastestBlock.height <= pomHeight.end);
+		.some(pomHeight => pomHeight.start <= latestBlock.height
+			&& latestBlock.height <= pomHeight.end);
 	return isPunished;
 };
 
