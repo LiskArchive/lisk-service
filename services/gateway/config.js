@@ -79,8 +79,8 @@ config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK)
 config.websocket = {
 	enableRateLimit: Boolean(String(process.env.ENABLE_WEBSOCKET_RATELIMIT).toLowerCase() !== 'false'),
 	rateLimit: {
-		points: 1, // 5 points
-		duration: 10, // per second
+		points: 5, // 5 points
+		duration: 1, // per second
 	},
 };
 
