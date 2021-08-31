@@ -109,7 +109,7 @@ const removeTransactionsByBlockIDs = async blockIDs => {
 			property: 'blockId',
 			values: blockIDs,
 		},
-	});
+	}, ['id']);
 	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
 	await transactionsDB.deleteIds(forkedTransactionIDs);
 	await removeVotesByTransactionIDs(forkedTransactionIDs);
@@ -201,7 +201,7 @@ const validateParams = async params => {
 		const { senderAddress, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ address: senderAddress });
+		const account = await getIndexedAccountInfo({ address: senderAddress, limit: 1 }, ['publicKey']);
 		if (!account) throw new NotFoundException(`Account ${senderAddress} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
@@ -210,7 +210,7 @@ const validateParams = async params => {
 		const { senderUsername, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ username: senderUsername });
+		const account = await getIndexedAccountInfo({ username: senderUsername, limit: 1 }, ['publicKey']);
 		if (!account) throw new NotFoundException(`Account ${senderUsername} not found.`);
 		params.senderPublicKey = account.publicKey;
 	}
@@ -219,7 +219,7 @@ const validateParams = async params => {
 		const { recipientPublicKey, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey });
+		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey, limit: 1 }, ['address']);
 		if (!account) throw new NotFoundException(`Account ${recipientPublicKey} not found.`);
 		params.recipientId = account.address;
 	}
@@ -228,7 +228,7 @@ const validateParams = async params => {
 		const { recipientUsername, ...remParams } = params;
 		params = remParams;
 
-		const account = await getIndexedAccountInfo({ username: recipientUsername });
+		const account = await getIndexedAccountInfo({ username: recipientUsername, limit: 1 }, ['address']);
 		if (!account) throw new NotFoundException(`Account ${recipientUsername} not found.`);
 		params.recipientId = account.address;
 	}
@@ -237,12 +237,12 @@ const validateParams = async params => {
 		const { search, ...remParams } = params;
 		params = remParams;
 
-		const accounts = await getAccountsBySearch('username', search);
+		const accounts = await getAccountsBySearch('username', search, ['address', 'publicKey']);
 		const publicKeys = accounts.map(account => account.publicKey);
 		const addresses = await BluebirdPromise.map(
 			accounts,
 			async account => {
-				const accountInfo = await getIndexedAccountInfo({ address: account.address });
+				const accountInfo = await getIndexedAccountInfo({ address: account.address, limit: 1 }, ['publicKey']);
 				if (accountInfo && accountInfo.publicKey) publicKeys.push(accountInfo.publicKey);
 				return account.address;
 			},
@@ -281,7 +281,7 @@ const getTransactions = async params => {
 
 	params = await validateParams(params);
 
-	const resultSet = await transactionsDB.find(params);
+	const resultSet = await transactionsDB.find(params, ['id', 'timestamp', 'height', 'blockId']);
 	const total = await transactionsDB.count(params);
 	params.ids = resultSet.map(row => row.id);
 
@@ -306,7 +306,10 @@ const getTransactions = async params => {
 				transaction.height = indexedTxInfo.height;
 				transaction.blockId = indexedTxInfo.blockId;
 			}
-			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			const account = await getIndexedAccountInfo({
+				publicKey: transaction.senderPublicKey,
+				limit: 1,
+			}, ['address', 'username']);
 			transaction.senderId = account && account.address ? account.address
 				: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
 			transaction.username = account && account.username ? account.username : undefined;
@@ -317,7 +320,8 @@ const getTransactions = async params => {
 				const { recipientAddress, ...asset } = transaction.asset;
 				const recipientInfo = await getIndexedAccountInfo({
 					address: recipientAddress,
-				});
+					limit: 1,
+				}, ['address', 'publicKey', 'username']);
 				transaction.asset = asset;
 				transaction.asset.recipient = {};
 				transaction.asset.recipient = {
@@ -352,7 +356,10 @@ const getTransactionsByBlockId = async blockId => {
 			transaction.unixTimestamp = block.header.timestamp;
 			transaction.height = block.header.height;
 			transaction.blockId = block.header.id;
-			const account = await getIndexedAccountInfo({ publicKey: transaction.senderPublicKey });
+			const account = await getIndexedAccountInfo({
+				publicKey: transaction.senderPublicKey,
+				limit: 1,
+			}, ['address', 'publicKey', 'username']);
 			transaction.senderId = account && account.address
 				? account.address
 				: getHexAddressFromPublicKey(transaction.senderPublicKey);

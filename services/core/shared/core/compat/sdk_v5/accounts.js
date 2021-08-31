@@ -161,7 +161,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 
 			// A genesis block account is considered migrated
 			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address });
+			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
@@ -234,12 +234,15 @@ const resolveDelegateInfo = async accounts => {
 					generatorPublicKey: account.publicKey,
 					sort: 'height:desc',
 					limit: 1,
-				});
+				}, ['height']);
 				account.dpos.delegate.lastForgedHeight = lastForgedBlock.height || null;
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const accountInfo = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					const accountInfo = await getIndexedAccountInfo({
+						publicKey: account.publicKey,
+						limit: 1,
+					}, ['rewards', 'producedBlocks']);
 					account.rewards = accountInfo && accountInfo.rewards
 						? accountInfo.rewards
 						: 0;
@@ -251,7 +254,8 @@ const resolveDelegateInfo = async accounts => {
 					const [delegateRegTx = {}] = await transactionsDB.find({
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
-					});
+						limit: 1,
+					}, ['height']);
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
 						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
@@ -318,7 +322,8 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 	const [reclaimTx] = await transactionsDB.find({
 		senderPublicKey: publicKey,
 		moduleAssetId: reclaimTxModuleAssetId,
-	});
+		limit: 1,
+	}, ['id']);
 
 	if (reclaimTx) {
 		Object.assign(
@@ -421,7 +426,7 @@ const getAccounts = async params => {
 		};
 	}
 
-	const resultSet = await accountsDB.find(params);
+	const resultSet = await accountsDB.find(params, ['address', 'publicKey', 'username']);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
 
@@ -541,12 +546,15 @@ const getMultisignatureGroups = async account => {
 const getMultisignatureMemberships = async account => {
 	const multisignatureMemberships = { memberships: [] };
 	const multisignatureDB = await getMultisignatureIndex();
-	const membershipInfo = await multisignatureDB.find({ memberAddress: account.address });
+	const membershipInfo = await multisignatureDB.find({ memberAddress: account.address }, ['groupAddress', 'memberAddress']);
 
 	await BluebirdPromise.map(
 		membershipInfo,
 		async membership => {
-			const result = await getIndexedAccountInfo({ address: membership.groupAddress });
+			const result = await getIndexedAccountInfo(
+				{ address: membership.groupAddress, limit: 1 },
+				['address', 'username', 'publicKey'],
+			);
 			multisignatureMemberships.memberships.push({
 				address: result && result.address ? result.address : undefined,
 				username: result && result.username ? result.username : undefined,
