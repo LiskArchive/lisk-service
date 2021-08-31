@@ -259,13 +259,22 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(queryParams).sum(`${params.aggregate} as total`);
 		}
 
-		if (params.limit) query.limit(Number(params.limit));
+		if (params.limit) {
+			query.limit(Number(params.limit));
+		} else {
+			logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
+		}
+
 		if (params.offset) query.offset(Number(params.offset));
 
 		return query;
 	};
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
+		if (!columns) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			columns = [tableConfig.primaryKey];
+		}
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);

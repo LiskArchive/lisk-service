@@ -14,9 +14,14 @@ const { RateLimiterMemory } = require('rate-limiter-flexible');
 const {
 	Constants: { JSON_RPC: { INVALID_REQUEST, METHOD_NOT_FOUND, SERVER_ERROR } },
 	Utils,
+	CacheRedis,
 } = require('lisk-service-framework');
 const config = require('../../config');
 const { BadRequestError } = require('./errors');
+const { isValidNonEmptyResponse } = require('../utils');
+
+const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
+const expireMiliseconds = config.rpcCache.ttl;
 
 const rateLimiter = new RateLimiterMemory(config.websocket.rateLimit);
 
@@ -168,9 +173,25 @@ module.exports = {
 				if (handlerItem.onBeforeCall) {
 					await handlerItem.onBeforeCall.call(this, ctx, socket, request, opts);
 				}
-				let res = await ctx.call(action, request.params, opts);
-				if (handlerItem.onAfterCall) {
-					res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
+				let res;
+				if (config.rpcCache.enable) {
+					const rpcRequestCacheKey = `${request.method}:${JSON.stringify(request.params)}`;
+					const cachedResponse = await rpcCache.get(rpcRequestCacheKey);
+					if (cachedResponse) {
+						res = JSON.parse(cachedResponse);
+					} else {
+						res = await ctx.call(action, request.params, opts);
+						if (handlerItem.onAfterCall) {
+							res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
+						}
+						// Store tranformed response in redis cache
+						if (isValidNonEmptyResponse(res)) await rpcCache.set(rpcRequestCacheKey, JSON.stringify(res), expireMiliseconds);
+					}
+				} else {
+					res = await ctx.call(action, request.params, opts);
+					if (handlerItem.onAfterCall) {
+						res = (await handlerItem.onAfterCall.call(this, ctx, socket, request, res)) || res;
+					}
 				}
 				this.socketSaveMeta(socket, ctx);
 				if (ctx.meta.$join) {

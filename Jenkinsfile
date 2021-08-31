@@ -128,6 +128,16 @@ pipeline {
 				}
 			}
 		}
+		stage('Perform benchmark') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				ansiColor('xterm') {
+					nvm(getNodejsVersion()) {
+						dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
+					}
+				}
+			}
+		}
 	}
 	post {
 		failure {

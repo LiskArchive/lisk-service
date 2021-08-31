@@ -27,7 +27,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				PORT: '9901',
@@ -50,7 +49,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '1G',
-			instances: 1,
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -63,6 +61,7 @@ module.exports = {
 				GEOIP_JSON: '',
 				INDEX_N_BLOCKS: '0',
 				ENABLE_TRANSACTION_STATS: 'true',
+				ENABLE_JOB_MISSING_BLOCKS: 'true',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
@@ -80,7 +79,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below

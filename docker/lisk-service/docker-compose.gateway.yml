@@ -3,6 +3,8 @@ services:
 
   gateway:
     image: lisk/service_gateway
+    depends_on:
+      - redis_gateway_volatile
     networks:
       - services_network
     restart: always
@@ -16,3 +18,14 @@ services:
       - HTTP_CACHE_CONTROL_DIRECTIVES=${HTTP_CACHE_CONTROL_DIRECTIVES}
     healthcheck:
       test: curl --fail http://gateway:9901/api/v1/transactions
+
+  redis_gateway_volatile:
+    image: redis:5-alpine
+    volumes:
+      - ./redis/redis.volatile.conf:/etc/redis/redis.conf:ro
+    networks:
+      - services_network
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping

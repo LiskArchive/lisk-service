@@ -28,12 +28,17 @@ config.host = process.env.HOST || '0.0.0.0';
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/3';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
  * Compatibility
  */
 config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
+
+config.rateLimit = {};
+config.rateLimit.window = Number(process.env.RATE_LIMIT_WINDOW) || 15 * 1000;
+config.rateLimit.connectionLimit = Number(process.env.RATE_LIMIT_CONNECTIONS || 20);
 
 /**
  * LOGGING
@@ -82,6 +87,12 @@ config.websocket = {
 		points: 5, // 5 points
 		duration: 1, // per second
 	},
+};
+
+// Gateway RPC cache settings
+config.rpcCache = {
+	ttl: 10 * 1000, // miliseconds
+	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
 };
 
 module.exports = config;

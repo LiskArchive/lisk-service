@@ -27,13 +27,13 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				STRICT_READINESS_CHECK: true,
 				ENABLE_WEBSOCKET_RATELIMIT: false,
+				RATE_LIMIT_CONNECTIONS:'0',
 			},
 		},
 		{
@@ -47,7 +47,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
@@ -62,6 +61,7 @@ module.exports = {
 				INDEX_N_BLOCKS: '0',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
+				GENESIS_HEIGHT: '250'
 			},
 		},
 		{
@@ -75,7 +75,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
