@@ -34,8 +34,6 @@ module.exports = {
 				STRICT_READINESS_CHECK: true,
 				ENABLE_WS_RATELIMIT: false,
 				RATE_LIMIT_CONNECTIONS:'0',
-				WS_RATELIMIT_POINTS: '10',
-				WS_RATELIMIT_DURATION:'1',
 			},
 		},
 		{
