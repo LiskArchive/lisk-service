@@ -40,7 +40,7 @@ def waitForHttp(url) {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
-		timeout(time: 12, unit: 'MINUTES')
+		timeout(time: 10, unit: 'MINUTES')
 	}
 	environment {
 		ENABLE_HTTP_API='http-status,http-test,http-version2'
