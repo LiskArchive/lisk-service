@@ -19,14 +19,14 @@ const {
 
 const transactionService = require('../../shared/transaction');
 
-const createMultisigTransaction = async () => {
+const createMultisigTransaction = async params => {
 	const transaction = {
 		data: [],
 		meta: {},
 	};
 
 	try {
-		const response = await transactionService.createMultisigTransaction();
+		const response = await transactionService.createMultisigTransaction(params);
 		if (response.data) transaction.data = response.data;
 		if (response.meta) transaction.meta = response.meta;
 
