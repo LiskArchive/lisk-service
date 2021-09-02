@@ -85,7 +85,7 @@ config.websocket = {
 	enableRateLimit: Boolean(String(process.env.ENABLE_WS_RATELIMIT).toLowerCase() === 'true'),
 	rateLimit: {
 		points: Number(process.env.WS_RATELIMIT_POINTS || 5),
-		duration: Number(process.env.WS_RATELIMIT_DURATION || 1),
+		duration: Number(process.env.WS_RATELIMIT_DURATION || 1), // in seconds
 	},
 };
 
