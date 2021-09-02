@@ -33,7 +33,9 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				STRICT_READINESS_CHECK: true,
 				ENABLE_WS_RATELIMIT: false,
-				RATE_LIMIT_CONNECTIONS:'0',
+				WS_RATELIMIT_POINTS: 5,
+				WS_RATELIMIT_DURATION: 1, // in seconds
+				RATE_LIMIT_CONNECTIONS: '0',
 			},
 		},
 		{
