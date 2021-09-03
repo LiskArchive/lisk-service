@@ -21,22 +21,17 @@ const asset = {
 	optionalKeys: Joi.array().required(),
 };
 
-const signatures = {
-	publicKey: Joi.string().required(),
-	address: Joi.string().required(),
-	signature: Joi.string().required(),
-	accountRole: Joi.string().required(),
-};
-
 const transactionSchema = {
 	serviceId: Joi.string().required(),
 	nonce: Joi.string().required(),
 	senderPublicKey: Joi.string().required(),
 	asset: Joi.object(asset).required(),
-	updateTimestamp: Joi.number().integer().positive().required(),
 	moduleAssetId: Joi.array().items(Joi.string().required()).required(),
 	fee: Joi.string().required(),
-	signatures: Joi.object(signatures).required(),
+	createdAt: Joi.number().integer().positive().required(),
+	modifiedAt: Joi.number().integer().positive().required(),
+	expiresAt: Joi.number().integer().positive().required(),
+	rejected: Joi.boolean().required(),
 };
 
 module.exports = {
