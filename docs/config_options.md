@@ -76,7 +76,7 @@ WS_RATELIMIT_POINTS=5
 WS_RATELIMIT_POINTS=1
 ```
 
-### HTTP Rate limit settings
+### HTTP Requests rate limit settings
 
 ```bash
 # The `HTTP Rate limit` directives can be set using `RATE_LIMIT_WINDOW` and `RATE_LIMIT_CONNECTIONS` environment 
