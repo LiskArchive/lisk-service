@@ -32,7 +32,10 @@ module.exports = {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				STRICT_READINESS_CHECK: true,
-				RATE_LIMIT_CONNECTIONS:'0',
+				ENABLE_WS_RATELIMIT: false,
+				WS_RATELIMIT_POINTS: 5,
+				WS_RATELIMIT_DURATION: 1, // in seconds
+				RATE_LIMIT_CONNECTIONS: '0',
 			},
 		},
 		{
