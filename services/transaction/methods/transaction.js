@@ -14,13 +14,13 @@
  *
  */
 const {
-	createMultisigTransaction,
+	createMultisignatureTx,
 } = require('./controllers/transaction');
 
 module.exports = [
 	{
 		name: 'multisig.create',
-		controller: async () => createMultisigTransaction(),
+		controller: async () => createMultisignatureTx(),
 		params: {},
 	},
 ];

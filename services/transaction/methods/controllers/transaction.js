@@ -19,14 +19,14 @@ const {
 
 const transactionService = require('../../shared/transaction');
 
-const createMultisigTransaction = async params => {
+const createMultisignatureTx = async inputTransaction => {
 	const transaction = {
 		data: [],
 		meta: {},
 	};
 
 	try {
-		const response = await transactionService.createMultisigTransaction(params);
+		const response = await transactionService.createMultisignatureTx(inputTransaction);
 		if (response.data) transaction.data = response.data;
 		if (response.meta) transaction.meta = response.meta;
 
@@ -40,5 +40,5 @@ const createMultisigTransaction = async params => {
 };
 
 module.exports = {
-	createMultisigTransaction,
+	createMultisignatureTx,
 };
