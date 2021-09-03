@@ -51,11 +51,28 @@ describe('Test mysql', () => {
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
 
-		expect(result[0]).toMatchObject(transaction.filter(tx => tx.service === '22139cb8-d1d3-43ec-b7d3-9f1ed30e5957')[0]);
+		expect(result[0]).toMatchObject(transaction.filter(tx => tx.serviceId === '22139cb8-d1d3-43ec-b7d3-9f1ed30e5957')[0]);
+	});
+
+	it('Raw query', async () => {
+		const { serviceId } = transaction[0];
+		const rawQuery = `SELECT * FROM testSchemaTransaction WHERE serviceId = '${serviceId}'`;
+		const result = await db.rawQuery(rawQuery);
+		expect(result).toBeInstanceOf(Array);
+		expect(result.length).toBe(1);
+
+		expect(result[0]).toMatchObject(transaction.filter(tx => tx.serviceId === '22139cb8-d1d3-43ec-b7d3-9f1ed30e5957')[0]);
 	});
 
 	it('Row count', async () => {
 		const count = await db.count();
 		expect(count).toBe(2);
+	});
+
+	it('Delete row', async () => {
+		await db.deleteIds(['22139cb8-d1d3-43ec-b7d3-9f1ed30e5957']);
+		const result = await db.find();
+		expect(result).toBeInstanceOf(Array);
+		expect(result.length).toBe(1);
 	});
 });
