@@ -43,7 +43,6 @@ const createMultisignatureTx = async inputTransaction => {
 
 	transaction.data.push({ ...inputTransaction, serviceId: uuidv4() });
 	transaction.meta.count = transaction.data.length;
-	transaction.meta.offset = 0;
 	transaction.meta.total = await multisignatureTxDB.count();
 
 	await multisignatureTxDB.upsert(transaction.data);
