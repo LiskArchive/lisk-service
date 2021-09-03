@@ -176,30 +176,6 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 	}
 };
 
-const resolveAccountsInfo = async accounts => {
-	const balanceUnlockWaitPeriodSelf = 260000;
-	const balanceUnlockWaitPeriodDefault = 2000;
-
-	accounts = await BluebirdPromise.map(
-		accounts,
-		async account => {
-			account.dpos.unlocking = account.dpos.unlocking.map(item => {
-				item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
-				const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-					? balanceUnlockWaitPeriodSelf : balanceUnlockWaitPeriodDefault;
-				item.height = {
-					start: item.unvoteHeight,
-					end: item.unvoteHeight + balanceUnlockWaitHeight,
-				};
-				return item;
-			});
-			return account;
-		},
-		{ concurrency: accounts.length },
-	);
-	return accounts;
-};
-
 const resolveDelegateInfo = async accounts => {
 	const punishmentPeriod = 780000;
 	accounts = await BluebirdPromise.map(
@@ -264,6 +240,30 @@ const resolveDelegateInfo = async accounts => {
 		{ concurrency: accounts.length },
 	);
 
+	return accounts;
+};
+
+const resolveAccountsInfo = async accounts => {
+	const balanceUnlockWaitPeriodSelf = 260000;
+	const balanceUnlockWaitPeriodDefault = 2000;
+
+	accounts = await BluebirdPromise.map(
+		accounts,
+		async account => {
+			account.dpos.unlocking = account.dpos.unlocking.map(item => {
+				item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
+				const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+					? balanceUnlockWaitPeriodSelf : balanceUnlockWaitPeriodDefault;
+				item.height = {
+					start: item.unvoteHeight,
+					end: item.unvoteHeight + balanceUnlockWaitHeight,
+				};
+				return item;
+			});
+			return account;
+		},
+		{ concurrency: accounts.length },
+	);
 	return accounts;
 };
 
@@ -486,8 +486,8 @@ const getAccounts = async params => {
 		},
 		{ concurrency: 10 },
 	);
-	accounts.data = await resolveAccountsInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
+	accounts.data = await resolveAccountsInfo(accounts.data);
 
 	if (paramPublicKey && !accounts.data.length) {
 		// Check if reclaim information is available for the account
