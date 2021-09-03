@@ -177,27 +177,31 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 };
 
 const resolveAccountsInfo = async accounts => {
-	const balanceUnlockWaitHeightSelf = 260000;
-	const balanceUnlockWaitHeightDefault = 2000;
+	const balanceUnlockWaitPeriodSelf = 260000;
+	const balanceUnlockWaitPeriodDefault = 2000;
 
-	accounts.map(async account => {
-		account.dpos.unlocking = account.dpos.unlocking.map(item => {
-			item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
-			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
-			item.height = {
-				start: item.unvoteHeight,
-				end: item.unvoteHeight + balanceUnlockWaitHeight,
-			};
-			return item;
-		});
-		return account;
-	});
+	accounts = await BluebirdPromise.map(
+		accounts,
+		async account => {
+			account.dpos.unlocking = account.dpos.unlocking.map(item => {
+				item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
+				const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
+					? balanceUnlockWaitPeriodSelf : balanceUnlockWaitPeriodDefault;
+				item.height = {
+					start: item.unvoteHeight,
+					end: item.unvoteHeight + balanceUnlockWaitHeight,
+				};
+				return item;
+			});
+			return account;
+		},
+		{ concurrency: accounts.length },
+	);
 	return accounts;
 };
 
 const resolveDelegateInfo = async accounts => {
-	const punishmentHeight = 780000;
+	const punishmentPeriod = 780000;
 	accounts = await BluebirdPromise.map(
 		accounts,
 		async account => {
@@ -226,7 +230,7 @@ const resolveDelegateInfo = async accounts => {
 				account.balance = account.token.balance;
 				account.pomHeights = account.dpos.delegate.pomHeights
 					.sort((a, b) => b - a).slice(0, 5)
-					.map(height => ({ start: height, end: height + punishmentHeight }));
+					.map(height => ({ start: height, end: height + punishmentPeriod }));
 
 				const [lastForgedBlock = {}] = await blocksDB.find({
 					generatorPublicKey: account.publicKey,
