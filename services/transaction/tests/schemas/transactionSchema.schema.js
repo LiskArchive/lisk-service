@@ -24,13 +24,13 @@ const asset = {
 const transactionSchema = {
 	serviceId: Joi.string().required(),
 	nonce: Joi.string().required(),
-	senderPublicKey: Joi.string().required(),
+	senderPublicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).required(),
 	asset: Joi.object(asset).required(),
 	moduleAssetId: Joi.array().items(Joi.string().required()).required(),
 	fee: Joi.string().required(),
-	createdAt: Joi.number().integer().positive().required(),
-	modifiedAt: Joi.number().integer().positive().required(),
-	expiresAt: Joi.number().integer().positive().required(),
+	createdAt: Joi.number().integer().positive().pattern(/([0-9]+|[0-9]+:[0-9]+)/).required(),
+	modifiedAt: Joi.number().integer().positive().pattern(/([0-9]+|[0-9]+:[0-9]+)/).required(),
+	expiresAt: Joi.number().integer().positive().pattern(/([0-9]+|[0-9]+:[0-9]+)/).required(),
 	rejected: Joi.boolean().required(),
 };
 
