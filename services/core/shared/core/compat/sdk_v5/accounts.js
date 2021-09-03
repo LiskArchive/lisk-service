@@ -268,8 +268,9 @@ const resolveAccountsInfo = async accounts => {
 					// Re-calculate unlocking heights when the delegate is punished
 					let delegateAccount;
 					if (!isCurrDelegateThisAccount) {
-						const { data: [resultAccount] } = await getAccounts({ address: unlock.delegateAddress });
-						delegateAccount = resultAccount;
+						// eslint-disable-next-line no-use-before-define
+						const { data: [delegateAcc] } = await getAccounts({ address: unlock.delegateAddress });
+						delegateAccount = delegateAcc;
 					}
 
 					const unlockDelegateAccount = isCurrDelegateThisAccount ? account : delegateAccount;
