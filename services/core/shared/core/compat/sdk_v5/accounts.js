@@ -226,8 +226,22 @@ const resolveDelegateInfo = async accounts => {
 				account.username = account.dpos.delegate.username;
 				account.balance = account.token.balance;
 				account.pomHeights = account.dpos.delegate.pomHeights
-					.sort((a, b) => b - a).slice(0, 5)
+					.sort((a, b) => b - a)
+					.slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentHeight }));
+
+				// Re-calculate unlocking heights when the delegate is punished
+				if (account.pomHeights.length) {
+					account.dpos.unlocking = account.dpos.unlocking.map(unlockItem => {
+						const [pomHeight] = account.pomHeights
+							.filter(
+								pomItem => pomItem.start <= unlockItem.height.end
+									&& unlockItem.height.end <= pomItem.end,
+							);
+						if (pomHeight) unlockItem.height.end = pomHeight.end;
+						return unlockItem;
+					});
+				}
 
 				if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
 					account.delegateWeight = BigInt('0');
