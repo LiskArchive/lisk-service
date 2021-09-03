@@ -205,7 +205,8 @@ const resolveDelegateInfo = async accounts => {
 				account.username = account.dpos.delegate.username;
 				account.balance = account.token.balance;
 				account.pomHeights = account.dpos.delegate.pomHeights
-					.sort((a, b) => b - a).slice(0, 5)
+					.sort((a, b) => b - a)
+					.slice(0, 5)
 					.map(height => ({ start: height, end: height + punishmentPeriod }));
 
 				const [lastForgedBlock = {}] = await blocksDB.find({
@@ -250,16 +251,39 @@ const resolveAccountsInfo = async accounts => {
 	accounts = await BluebirdPromise.map(
 		accounts,
 		async account => {
-			account.dpos.unlocking = account.dpos.unlocking.map(item => {
-				item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
-				const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-					? balanceUnlockWaitPeriodSelf : balanceUnlockWaitPeriodDefault;
-				item.height = {
-					start: item.unvoteHeight,
-					end: item.unvoteHeight + balanceUnlockWaitHeight,
-				};
-				return item;
-			});
+			account.dpos.unlocking = await BluebirdPromise.map(
+				account.dpos.unlocking,
+				async unlock => {
+					unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
+
+					const isCurrDelegateThisAccount = unlock.delegateAddress === account.address;
+					const balanceUnlockWaitHeight = isCurrDelegateThisAccount
+						? balanceUnlockWaitPeriodSelf : balanceUnlockWaitPeriodDefault;
+
+					unlock.height = {
+						start: unlock.unvoteHeight,
+						end: unlock.unvoteHeight + balanceUnlockWaitHeight,
+					};
+
+					// Re-calculate unlocking heights when the delegate is punished
+					let delegateAccount;
+					if (!isCurrDelegateThisAccount) {
+						const { data: [resultAccount] } = await getAccounts({ address: unlock.delegateAddress });
+						delegateAccount = resultAccount;
+					}
+
+					const unlockDelegateAccount = isCurrDelegateThisAccount ? account : delegateAccount;
+					const [pomHeight] = unlockDelegateAccount.pomHeights
+						.filter(
+							pomItem => pomItem.start <= unlock.height.end
+								&& unlock.height.end <= pomItem.end,
+						);
+					if (pomHeight) unlock.height.end = pomHeight.end;
+
+					return unlock;
+				},
+				{ concurrency: 1 },
+			);
 			return account;
 		},
 		{ concurrency: accounts.length },
