@@ -1,0 +1,34 @@
+version: "3"
+services:
+  transaction:
+    image: lisk/service_transaction
+    depends_on:
+      - redis_common
+      - mysql_transaction
+    networks:
+      - services_network
+      - transaction_network
+    restart: always
+    env_file:
+      - ./lisk-service/env/common.env
+      - ./lisk-service/env/transaction.env
+
+  mysql_transaction:
+    image: mysql:5.7
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - transaction_network
+    env_file:
+      - ./lisk-service/env/mysql.env
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+volumes:
+  mysql-data:
+
+networks:
+  transaction_network:
