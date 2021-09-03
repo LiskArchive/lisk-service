@@ -80,10 +80,13 @@ describe('Test mysql', () => {
 				value: senderPublicKey,
 			},
 		}, transaction[0]);
+
 		const result = await db.find({ senderPublicKey });
+
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
-		expect(result[0].nonce).toEqual(transaction.filter(tx => tx.senderPublicKey === senderPublicKey)[0].nonce + 5);
+		expect(result[0].nonce).toEqual(transaction
+			.filter(tx => tx.senderPublicKey === senderPublicKey)[0].nonce + 5);
 	});
 
 	it('Delete row', async () => {
