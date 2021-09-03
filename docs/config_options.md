@@ -69,11 +69,11 @@ ENABLE_REQUEST_CACHING=true
 ```bash
 # To enable websocket rate limit, the `ENABLE_WS_RATELIMIT` environment variable is required to be true.
 # Number of connections per second can be set using 
-# `WS_RATELIMIT_POINTS` and `WS_RATELIMIT_POINTS` environment 
+# `WS_RATELIMIT_POINTS` and `WS_RATELIMIT_DURATION` environment 
 # variable. currently defaults to `5 connections per second`
 ENABLE_WS_RATELIMIT=true
 WS_RATELIMIT_POINTS=5
-WS_RATELIMIT_POINTS=1
+WS_RATELIMIT_DURATION=1
 ```
 
 ### HTTP Requests rate limit settings
