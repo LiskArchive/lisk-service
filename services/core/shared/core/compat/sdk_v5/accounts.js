@@ -256,8 +256,8 @@ const resolveAccountsInfo = async accounts => {
 				async unlock => {
 					unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
 
-					const isCurrDelegateThisAccount = unlock.delegateAddress === account.address;
-					const balanceUnlockWaitHeight = isCurrDelegateThisAccount
+					const isThisDelegateCurrentAccount = unlock.delegateAddress === account.address;
+					const balanceUnlockWaitHeight = isThisDelegateCurrentAccount
 						? balanceUnlockWaitPeriodSelf : balanceUnlockWaitPeriodDefault;
 
 					unlock.height = {
@@ -267,13 +267,13 @@ const resolveAccountsInfo = async accounts => {
 
 					// Re-calculate unlocking heights when the delegate is punished
 					let delegateAccount;
-					if (!isCurrDelegateThisAccount) {
+					if (!isThisDelegateCurrentAccount) {
 						// eslint-disable-next-line no-use-before-define
 						const { data: [delegateAcc] } = await getAccounts({ address: unlock.delegateAddress });
 						delegateAccount = delegateAcc;
 					}
 
-					const unlockDelegateAccount = isCurrDelegateThisAccount ? account : delegateAccount;
+					const unlockDelegateAccount = isThisDelegateCurrentAccount ? account : delegateAccount;
 					const [pomHeight] = unlockDelegateAccount.pomHeights
 						.filter(
 							pomItem => pomItem.start <= unlock.height.end
