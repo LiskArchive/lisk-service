@@ -16,12 +16,15 @@
 const BluebirdPromise = require('bluebird');
 const {
 	CacheRedis,
-	Exceptions: { ValidationException },
+	Exceptions: {
+		NotFoundException,
+		ValidationException,
+	},
 } = require('lisk-service-framework');
 
 const {
+	validateAddress,
 	validatePublicKey,
-	confirmAddress,
 	confirmPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
@@ -433,10 +436,6 @@ const getAccounts = async params => {
 		params.address = id;
 	}
 
-	if (params.address && typeof params.address === 'string') {
-		if (!(await confirmAddress(params.address))) return {};
-	}
-
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey)) return {};
 
@@ -447,6 +446,10 @@ const getAccounts = async params => {
 			...remParams,
 			address: addressFromParamPublicKey,
 		};
+	}
+
+	if (params.address && typeof params.address === 'string') {
+		if (!(await validateAddress(params.address))) return {};
 	}
 
 	if (params.addresses) {
@@ -485,7 +488,7 @@ const getAccounts = async params => {
 			if (response.data.length) accounts.data = response.data;
 			if (params.address && 'offset' in params && params.limit) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
-			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
+			if (!(paramPublicKey && (err instanceof NotFoundException || err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN'))) return err;
 		}
 	}
 
