@@ -38,8 +38,9 @@ describe('Test mysql', () => {
 
 	it('Valid schema', async () => {
 		const getValidIndex = () => mysqlIndex('ValidTestSchema', testschema);
-		expect(getValidIndex()).resolves.toBeInstanceOf(Object);
-		expect(getValidIndex()).resolves.toEqual(
+		const testDB = await getValidIndex();
+		expect(testDB).toBeInstanceOf(Object);
+		expect(testDB).toEqual(
 			expect.objectContaining({
 				upsert: expect.any(Function),
 				find: expect.any(Function),
