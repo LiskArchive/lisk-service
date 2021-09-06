@@ -15,10 +15,13 @@
  */
 const mysqlIndex = require('../../shared/indexdb/mysql');
 const testschema = require('../../shared/schema/newsfeed');
+const { invalidSchemaWithMissingType,
+	invalidSchemaWithoutPrimaryKey,
+} = require('../schemas/invalidSchemas');
 
 const getIndex = () => mysqlIndex('testSchemaNewsfeed', testschema);
 
-const { news } = require('../constants/newsfeed');
+const { news, drupalData } = require('../constants/newsfeed');
 
 describe('Test mysql', () => {
 	let db;
@@ -33,6 +36,43 @@ describe('Test mysql', () => {
 		await db.deleteIds(result.map(r => r[`${testschema.primaryKey}`]));
 	});
 
+	it('Valid schema', async () => {
+		const getValidIndex = () => mysqlIndex('ValidTestSchema', testschema);
+		expect(getValidIndex()).resolves.toBeInstanceOf(Object);
+		expect(getValidIndex()).resolves.toEqual(
+			expect.objectContaining({
+				upsert: expect.any(Function),
+				find: expect.any(Function),
+				count: expect.any(Function),
+				deleteIds: expect.any(Function),
+				rawQuery: expect.any(Function),
+				increment: expect.any(Function),
+			}),
+		);
+	});
+
+	it('Invalid schema: Missing primary key', async () => {
+		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutPrimaryKey', invalidSchemaWithoutPrimaryKey);
+		const testDB = await getInvalidIndex();
+		try {
+			await testDB.upsert(news);
+			await testDB.find();
+		} catch (err) {
+			expect(err).toBeInstanceOf(Error);
+		}
+	});
+
+	it('Invalid schema: Missing type defined', async () => {
+		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutType', invalidSchemaWithMissingType);
+		// expect(getInvalidIndex).rejects.toThrow();
+		try {
+			await getInvalidIndex();
+		} catch (err) {
+			expect(err).toBeInstanceOf(Error);
+			expect(err.message).toEqual('table[schema[p].type] is not a function');
+		}
+	});
+
 	it('DB exists', async () => {
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
@@ -40,10 +80,18 @@ describe('Test mysql', () => {
 	});
 
 	it('Upsert', async () => {
+		// Valid data based on schema
 		await db.upsert(news);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(2);
+
+		// invalid data
+		try {
+			await db.upsert(drupalData);
+		} catch (err) {
+			expect(err).toBeInstanceOf(Error);
+		}
 	});
 
 	it('Find', async () => {
