@@ -33,7 +33,7 @@ const textify = text => convert(text, {
 	},
 });
 
-const shortenContent = content => content.slice(0, config.newsContentLength);
+const shortenContent = content => content.slice(0, config.defaultNewsLength);
 
 const textifyForShort = content => shortenContent(textify(content));
 
