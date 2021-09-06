@@ -34,15 +34,20 @@ const textify = text => convert(text, {
 });
 
 const shortenContent = content => content.slice(0, config.newsContentLength);
+
 const textifyForShort = content => shortenContent(textify(content));
+
 const convertTime = time => new Date(Date.parse(time))
 	.toISOString()
 	.slice(0, 19)
 	.replace('T', ' ');
+
 const drupalDate = time => moment(time, 'MM/DD/YYYY - HH:mm') // '10/31/2019 - 09:28'
 	.toISOString()
 	.slice(0, 19)
 	.replace('T', ' ');
+
+const htmlEntitiesDecode = content => htmlEntities.decode(content);
 
 const drupalContentParser = (content) => {
 	content = content
@@ -52,12 +57,9 @@ const drupalContentParser = (content) => {
 		.replace(/^\n*/, '') // Trim new lines at the beginning
 		.replace(/\n*$/, ''); // Trim new lines at the end
 
-	content = htmlEntities.decode(content);
-
+	content = htmlEntitiesDecode(content);
 	return content;
 };
-
-const htmlEntitiesDecode = content => htmlEntities.decode(content);
 
 const authorParser = author => (author === 'admin' ? 'Lisk' : author);
 

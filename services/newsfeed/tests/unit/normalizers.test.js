@@ -18,6 +18,9 @@ const { drupalData } = require('../constants/newsfeed');
 const { newsfeedArticleSchema } = require('../schemas/newsfeedArticle.schema');
 const config = require('../../config');
 
+const encodedHtmlContent = 'Decode known &quot;HTML special characters&quot; with the htmlEntities&apos;s &lt;decode&gt; method &amp; test your implementation successfully.';
+const expectedDecodedOutput = 'Decode known "HTML special characters" with the htmlEntities\'s <decode> method & test your implementation successfully.';
+
 describe('Test normalizers', () => {
 	it('Test normalizeData', async () => {
 		const result = await normalizeData(config.sources.drupal_lisk_announcements, drupalData);
@@ -44,8 +47,17 @@ describe('Test normalizers', () => {
 		expect(convertedTime).toBe('1970-01-01 00:00:00');
 	});
 
-	xit('Test drupalContentParser', async () => {
+	it('Test htmlEntitiesDecode', async () => {
+		const decodedContent = normalizeFunctions.htmlEntitiesDecode(encodedHtmlContent);
+		expect(decodedContent).toBe(expectedDecodedOutput);
+	});
 
+	it('Test drupalContentParser', async () => {
+		const encodedContent = `\n\n\n\nPre-comment content. /** Drupal block comment */\n\n\n\n\n\n\nPost-comment content. Now, ${encodedHtmlContent}\n\n\n\n`;
+		const expectedOutput = `Pre-comment content. \n\nPost-comment content. Now, ${expectedDecodedOutput}`;
+
+		const parsedContent = normalizeFunctions.drupalContentParser(encodedContent);
+		expect(parsedContent).toBe(expectedOutput);
 	});
 
 	it('Test authorParser', async () => {
