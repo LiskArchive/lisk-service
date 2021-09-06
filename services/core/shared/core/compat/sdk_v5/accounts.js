@@ -176,8 +176,15 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 	}
 };
 
-const resolveDelegateInfo = async accounts => {
+const standardizePomHeights = async pomHeights => {
 	const punishmentPeriod = 780000;
+	return pomHeights
+		.sort((a, b) => b - a)
+		.slice(0, 5)
+		.map(height => ({ start: height, end: height + punishmentPeriod }));
+};
+
+const resolveDelegateInfo = async accounts => {
 	accounts = await BluebirdPromise.map(
 		accounts,
 		async account => {
@@ -204,10 +211,7 @@ const resolveDelegateInfo = async accounts => {
 				account.delegateWeight = voteWeight;
 				account.username = account.dpos.delegate.username;
 				account.balance = account.token.balance;
-				account.pomHeights = account.dpos.delegate.pomHeights
-					.sort((a, b) => b - a)
-					.slice(0, 5)
-					.map(height => ({ start: height, end: height + punishmentPeriod }));
+				account.pomHeights = await standardizePomHeights(account.dpos.delegate.pomHeights);
 
 				const [lastForgedBlock = {}] = await blocksDB.find({
 					generatorPublicKey: account.publicKey,
@@ -254,6 +258,7 @@ const resolveAccountsInfo = async accounts => {
 			account.dpos.unlocking = await BluebirdPromise.map(
 				account.dpos.unlocking,
 				async unlock => {
+					const delegateHexAddress = unlock.delegateAddress;
 					unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
 
 					const isThisDelegateCurrentAccount = unlock.delegateAddress === account.address;
@@ -269,8 +274,13 @@ const resolveAccountsInfo = async accounts => {
 					let delegateAccount;
 					if (!isThisDelegateCurrentAccount) {
 						// eslint-disable-next-line no-use-before-define
-						const { data: [delegateAcc] } = await getAccounts({ address: unlock.delegateAddress });
+						const {
+							data: [delegateAcc],
+						} = await getAccountsFromCache({ address: delegateHexAddress });
 						delegateAccount = delegateAcc;
+						delegateAccount.pomHeights = await standardizePomHeights(
+							delegateAccount.dpos.delegate.pomHeights,
+						);
 					}
 
 					const unlockDelegateAccount = isThisDelegateCurrentAccount ? account : delegateAccount;
