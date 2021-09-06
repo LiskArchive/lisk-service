@@ -14,7 +14,7 @@
  *
  */
 const { mapper } = require('lisk-service-framework');
-const htmlToText = require('html-to-text');
+const { convert } = require('html-to-text');
 const makeHash = require('object-hash');
 const moment = require('moment');
 const htmlEntities = require('html-entities');
@@ -24,8 +24,7 @@ const config = require('../config');
 /*
  * Functions to convert original content
  */
-// TODO: Replace deprecated method fromString
-const textify = text => htmlToText.fromString(text, {
+const textify = text => convert(text, {
 	format: {
 		heading: (elem, fn, options) => {
 			const h = fn(elem.children, options);
@@ -72,6 +71,7 @@ const twitterUnixTimestamp = date => moment(Date.parse(date)).unix();
 
 const normalizeFunctions = {
 	shortenContent,
+	textify,
 	textifyForShort,
 	convertTime,
 	drupalDate,

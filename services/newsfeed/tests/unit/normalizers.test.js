@@ -26,6 +26,28 @@ describe('Test normalizers', () => {
 		result.forEach(article => newsfeedArticleSchema.validate(article));
 	});
 
+	it('Test textify - 1', async () => {
+		const html = '<h1>Hello World</h1>';
+		const text = normalizeFunctions.textify(html);
+		expect(text).toBe('HELLO WORLD');
+	});
+
+	it('Test textify - 2', async () => {
+		const html = '<marquee>Hello World</marquee>';
+		const text = normalizeFunctions.textify(html);
+		expect(text).toBe('Hello World');
+	});
+
+	it('Test convertTime', async () => {
+		const unixTimeZero = '01 Jan 1970 00:00:00 GMT';
+		const convertedTime = normalizeFunctions.convertTime(unixTimeZero);
+		expect(convertedTime).toBe('1970-01-01 00:00:00');
+	});
+
+	xit('Test drupalContentParser', async () => {
+
+	});
+
 	it('Test authorParser', async () => {
 		let result = await normalizeFunctions.authorParser(drupalData[0].author);
 		expect(['Lisk', drupalData[0].author]).toContain(result);
