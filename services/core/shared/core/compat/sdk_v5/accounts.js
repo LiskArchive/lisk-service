@@ -449,7 +449,7 @@ const getAccounts = async params => {
 	}
 
 	if (params.address && typeof params.address === 'string') {
-		if (!(await validateAddress(params.address))) return {};
+		if (!validateAddress(params.address)) return {};
 	}
 
 	if (params.addresses) {
