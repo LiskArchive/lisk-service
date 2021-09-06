@@ -39,15 +39,24 @@ describe('Test mysql', () => {
 		expect(result.length).toBe(0);
 	});
 
-	it('Insert row', async () => {
+	it('Upsert', async () => {
 		await db.upsert(news);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(2);
 	});
 
-	it('Fetch rows', async () => {
+	it('Find', async () => {
 		const result = await db.find({ source: 'drupal_lisk_general' }, Object.keys(testschema.schema));
+		expect(result).toBeInstanceOf(Array);
+		expect(result.length).toBe(1);
+
+		expect(result[0]).toMatchObject(news.filter(acc => acc.source === 'drupal_lisk_general')[0]);
+	});
+
+	it('Raw query', async () => {
+		const rawQuery = 'SELECT * FROM testSchemaNewsfeed WHERE source = \'drupal_lisk_general\'';
+		const result = await db.rawQuery(rawQuery);
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
 
@@ -57,5 +66,32 @@ describe('Test mysql', () => {
 	it('Row count', async () => {
 		const count = await db.count();
 		expect(count).toBe(2);
+	});
+
+	it('Increment', async () => {
+		const { source } = news[0];
+		await db.increment({
+			increment: {
+				created_at: 10,
+			},
+			where: {
+				property: 'source',
+				value: source,
+			},
+		}, news[0]);
+
+		const result = await db.find({ source }, Object.keys(testschema.schema));
+
+		expect(result).toBeInstanceOf(Array);
+		expect(result.length).toBe(1);
+		expect(result[0].created_at).toEqual(news
+			.filter(acc => acc.source === source)[0].created_at + 10);
+	});
+
+	it('DeleteIds', async () => {
+		await db.deleteIds([news[0].source_id]);
+		const result = await db.find();
+		expect(result).toBeInstanceOf(Array);
+		expect(result.length).toBe(1);
 	});
 });
