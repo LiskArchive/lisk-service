@@ -55,23 +55,13 @@ describe('Test mysql', () => {
 	it('Invalid schema: Missing primary key', async () => {
 		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutPrimaryKey', invalidSchemaWithoutPrimaryKey);
 		const testDB = await getInvalidIndex();
-		try {
-			await testDB.upsert(news);
-			await testDB.find();
-		} catch (err) {
-			expect(err).toBeInstanceOf(Error);
-		}
+		await testDB.upsert(news);
+		expect(testDB.find()).rejects.toThrow();
 	});
 
 	it('Invalid schema: Missing type defined', async () => {
 		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutType', invalidSchemaWithMissingType);
-		// expect(getInvalidIndex).rejects.toThrow();
-		try {
-			await getInvalidIndex();
-		} catch (err) {
-			expect(err).toBeInstanceOf(Error);
-			expect(err.message).toEqual('table[schema[p].type] is not a function');
-		}
+		expect(getInvalidIndex()).rejects.toThrow();
 	});
 
 	it('DB exists', async () => {
@@ -88,11 +78,7 @@ describe('Test mysql', () => {
 		expect(result.length).toBe(2);
 
 		// invalid data
-		try {
-			await db.upsert(drupalData);
-		} catch (err) {
-			expect(err).toBeInstanceOf(Error);
-		}
+		expect(db.upsert(drupalData)).rejects.toThrow();
 	});
 
 	it('Find', async () => {
