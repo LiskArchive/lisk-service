@@ -15,7 +15,8 @@
  */
 const mysqlIndex = require('../../shared/indexdb/mysql');
 const testschema = require('../../shared/schema/newsfeed');
-const { invalidSchemaWithMissingType,
+const {
+	invalidSchemaWithMissingType,
 	invalidSchemaWithoutPrimaryKey,
 } = require('../schemas/invalidSchemas');
 
@@ -52,6 +53,7 @@ describe('Test mysql', () => {
 		);
 	});
 
+	// TODO: Update test case when proper error handling is implemented
 	it('Invalid schema: Missing primary key', async () => {
 		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutPrimaryKey', invalidSchemaWithoutPrimaryKey);
 		const testDB = await getInvalidIndex();
