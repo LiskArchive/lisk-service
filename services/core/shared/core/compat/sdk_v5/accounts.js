@@ -276,7 +276,6 @@ const resolveAccountsInfo = async accounts => {
 					// Re-calculate unlocking heights when the delegate is punished
 					let delegateAccount;
 					if (!isThisDelegateCurrentAccount) {
-						// eslint-disable-next-line no-use-before-define
 						const {
 							data: [delegateAcc],
 						} = await getAccountsFromCache({ address: delegateHexAddress });
