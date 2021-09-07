@@ -53,10 +53,8 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
 const blocksIndexSchema = require('./schema/blocks');
-const accountsIndexSchema = require('./schema/accounts');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
-const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
@@ -71,10 +69,6 @@ let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
 let indexVerifiedHeight; // Height below which there are no missing blocks in the index
-
-let genesisAccountsToIndex;
-let genesisAccountIndexingBatchNum = -1;
-let isGenesisAccountsIndexingInProgress = false;
 
 const setGenesisHeight = (height) => genesisHeight = height;
 
@@ -417,95 +411,43 @@ const cacheLegacyAccountInfo = async () => {
 	logger.info('Finished caching legacy account reclaim balance information');
 };
 
+const performGenesisAccountsIndexing = async () => {
+	const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+
+	const genesisAccountsToIndex = genesisBlock.asset.accounts;
+
+	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
+
+	const PAGE_SIZE = 1000;
+	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
+	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
+		const slicedAccounts = genesisAccountsToIndex.slice(
+			pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE);
+		const genesisAccountAddressesToIndex = slicedAccounts
+			.filter(account => account.address.length === 40)
+			.map(account => account.address);
+
+		// eslint-disable-next-line no-await-in-loop
+		await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+	}
+};
+
 const indexGenesisAccounts = async () => {
-	let numAccountsIndexed;
-	const BATCH_SIZE = 10000;
+	const isScheduled = await genesisAccountsCache.get('isGenesisAccountIndexingScheduled');
+
+	if (isScheduled === true) {
+		logger.info('Skipping genesis account index update (one-time operation, already indexed)');
+		return;
+	}
+
 	try {
-		const accountsDB = await getAccountsIndex();
-		numAccountsIndexed = await accountsDB.count();
-
-		if (!isGenesisAccountsIndexingInProgress) {
-			isGenesisAccountsIndexingInProgress = true;
-			genesisAccountIndexingBatchNum++;
-
-			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
-			if (!genesisAccountsToIndex) {
-				genesisAccountsToIndex = genesisBlock.asset.accounts
-					.filter(account => account.address.length === 40);
-				logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
-			}
-
-			// If the cache doesn't contain information, it'll be updated later on successful completion
-			const indexedTillBatch = await genesisAccountsCache.get('indexedTillBatch');
-			if (
-				indexedTillBatch !== undefined
-				&& numAccountsIndexed < ((indexedTillBatch + 1) * BATCH_SIZE)
-			) {
-				// Resume indexing starting from the batch that was last indexed
-				genesisAccountIndexingBatchNum = indexedTillBatch;
-				logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
-			} else {
-				// Calculate number of batches that already have been indexed and continue
-				const prevGenesisAccountIndexingBatchNum = genesisAccountIndexingBatchNum;
-				genesisAccountIndexingBatchNum = Math.floor(numAccountsIndexed / BATCH_SIZE);
-				if (indexedTillBatch === undefined || prevGenesisAccountIndexingBatchNum === 0) {
-					logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
-				}
-			}
-
-			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
-			const genesisAccountAddressesToIndex = genesisAccountsToIndex
-				.slice(batchNum * BATCH_SIZE, (batchNum + 1) * BATCH_SIZE)
-				.map(account => account.address);
-
-			logger.debug(`numAccountsIndexed: ${numAccountsIndexed}, numGenesisAccounts: ${genesisAccountsToIndex.length}`);
-
-			if (numAccountsIndexed >= genesisAccountsToIndex.length) {
-				logger.info(`Genesis block accounts already indexed from height ${genesisHeight}`);
-				Signals.get('newBlock').remove(indexGenesisAccounts);
-			} else {
-				if (batchNum === 0) {
-					logger.info(`Starting indexing of genesis block accounts from height ${genesisHeight} in batches of ${BATCH_SIZE}`);
-
-					// Index the genesis block accounts
-					const initDelegateAddresses = genesisBlock.asset.initDelegates;
-					await indexAccountsbyAddress(initDelegateAddresses, true);
-				}
-
-				logger.info(`Indexing genesis account batch: ${batchNum}, ${Math.ceil(genesisAccountsToIndex.length / BATCH_SIZE) - batchNum - 1} to go`);
-
-				const PAGE_SIZE = 1000;
-				const NUM_PAGES = Math.ceil(genesisAccountAddressesToIndex.length / PAGE_SIZE);
-				for (let i = 0; i < NUM_PAGES; i++) {
-					// eslint-disable-next-line no-await-in-loop
-					await indexAccountsbyAddress(
-						genesisAccountAddressesToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-						true,
-					);
-				}
-
-				if (genesisAccountAddressesToIndex.length < BATCH_SIZE) {
-					// Stop retrying genesis account indexing on successful completion
-					Signals.get('newBlock').remove(indexGenesisAccounts);
-					logger.info('Finished indexing the genesis block accounts');
-
-					// Reset global variables and free memory
-					genesisAccountIndexingBatchNum = -1;
-					genesisAccountsToIndex = undefined;
-				}
-			}
-
-			// On success, update the cache with the batch number
-			await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
-		}
+		logger.info('Attepmting to update genesis account index update (one-time operation)');
+		await performGenesisAccountsIndexing();
+		await genesisAccountsCache.set('isGenesisAccountIndexingScheduled', true);
 	} catch (err) {
-		logger.warn(`Unable to index Genesis block accounts batch ${genesisAccountIndexingBatchNum}, will retry again: ${err}`);
-		genesisAccountIndexingBatchNum--;
-		await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
-	} finally {
-		if (numAccountsIndexed >= BATCH_SIZE * (genesisAccountIndexingBatchNum + 1)) {
-			isGenesisAccountsIndexingInProgress = false;
-		}
+		logger.error('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
+		logger.error(err.message);
+		process.exit(1);
 	}
 };
 
