@@ -1,0 +1,31 @@
+config:
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/api/v2"
+  phases:
+    - duration: 15
+      arrivalRate: 50
+scenarios:
+  - name: "Transactions"
+    flow:
+      - get:
+          url: "/transactions"
+          qs:
+            limit: 20
+  - name: "Blocks"
+    flow:
+      - get:
+          url: "/blocks"
+          qs:
+            limit: 20 
+  - name: "Accounts"
+    flow:
+      - get:
+          url: "/accounts"
+          qs:
+            limit: 20
+  - name: "Delegates"
+    flow:
+      - get:
+          url: "/accounts"
+          qs:
+            limit: 20
+            isDelegate: true
