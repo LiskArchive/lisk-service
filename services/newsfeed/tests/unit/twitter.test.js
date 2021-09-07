@@ -24,6 +24,7 @@ const {
 	tweetObject,
 	retweetObject,
 	mediaTweetObject,
+	otherTweetObject,
 } = require('../constants/newsfeed');
 
 describe('Test normalizers', () => {
@@ -60,6 +61,11 @@ describe('Test normalizers', () => {
 		expect(url).toBe(mediaTweetObject.extended_entities.media[0].url);
 	});
 
+	it('Test tweetUrl - otherTweet', async () => {
+		const url = tweetUrl(otherTweetObject);
+		expect(url).toBe(`https://twitter.com/i/web/status/${otherTweetObject.id_str}`);
+	});
+
 	it('Test getImageUrl - tweet', async () => {
 		const url = getImageUrl(tweetObject);
 		expect(url).toBe(undefined);
@@ -73,6 +79,11 @@ describe('Test normalizers', () => {
 	it('Test getImageUrl - mediaTweet', async () => {
 		const url = getImageUrl(mediaTweetObject);
 		expect(url).toBe(mediaTweetObject.entities.media[0].media_url_https);
+	});
+
+	it('Test getImageUrl - otherTweet', async () => {
+		const url = getImageUrl(otherTweetObject);
+		expect(url).toBe(undefined);
 	});
 
 	it('Test tweetMapper - tweet', async () => {
@@ -112,6 +123,20 @@ describe('Test normalizers', () => {
 			expect.objectContaining({
 				url: expect.any(String),
 				image_url: expect.any(String),
+				author: expect.any(String),
+			}),
+		);
+	});
+
+	it('Test tweetMapper - otherTweet', async () => {
+		const mappedTweet = tweetMapper(otherTweetObject);
+		expect(mappedTweet).toHaveProperty('url');
+		expect(mappedTweet).toHaveProperty('image_url');
+		expect(mappedTweet).toHaveProperty('author');
+		expect(mappedTweet).toEqual(
+			expect.objectContaining({
+				url: expect.any(String),
+				image_url: undefined,
 				author: expect.any(String),
 			}),
 		);
