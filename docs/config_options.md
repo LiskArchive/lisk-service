@@ -58,6 +58,31 @@ ENABLE_HTTP_CACHE_CONTROL=true
 # The `Cache-Control` directives can be overridden with the `HTTP_CACHE_CONTROL_DIRECTIVES` 
 # environment variable and currently defaults to `public, max-age=10`.
 HTTP_CACHE_CONTROL_DIRECTIVES='public, max-age=10'
+
+# To enable RPC response caching, the `ENABLE_REQUEST_CACHING` environment 
+# variable is required to be true.
+ENABLE_REQUEST_CACHING=true
+```
+
+### Websocket settings
+
+```bash
+# To enable websocket rate limit, the `ENABLE_WS_RATELIMIT` environment variable is required to be true.
+# Number of connections per second can be set using 
+# `WS_RATELIMIT_POINTS` and `WS_RATELIMIT_DURATION` environment 
+# variable. currently defaults to `5 connections per second`
+ENABLE_WS_RATELIMIT=true
+WS_RATELIMIT_POINTS=5
+WS_RATELIMIT_DURATION=1
+```
+
+### HTTP Requests rate limit settings
+
+```bash
+# The `HTTP Rate limit` directives can be set using `RATE_LIMIT_WINDOW` and `RATE_LIMIT_CONNECTIONS` environment 
+# variable.
+RATE_LIMIT_WINDOW=15000 # To keep record of requests in memory (in milliseconds). Defaults to 15 seconds
+RATE_LIMIT_CONNECTIONS=20 # Max number of requests during window. Defaults to 20
 ```
 
 ### Compatibility settings

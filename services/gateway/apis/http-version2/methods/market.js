@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/market/prices',
 	rpcMethod: 'get.market.prices',
-	tags: ['Market', 'Prices'],
+	tags: ['Market'],
 	params: {},
 	get schema() {
 		const marketPricesSchema = {};
