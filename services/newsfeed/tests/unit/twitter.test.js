@@ -39,10 +39,10 @@ describe('Test normalizers', () => {
 		expect(result).toBe(retweetObject.retweeted_status.entities.urls[0].url);
 	});
 
-	xit('Test safeRef - mediaTweet', async () => {
-		const url = 'retweeted_status.entities.urls.0.url';
+	it('Test safeRef - mediaTweet', async () => {
+		const url = 'extended_entities.media.0.url';
 		const result = safeRef(mediaTweetObject, url);
-		expect(result).toBe(mediaTweetObject.retweeted_status.entities.urls[0].url);
+		expect(result).toBe(mediaTweetObject.extended_entities.media[0].url);
 	});
 
 	it('Test tweetUrl - tweet', async () => {
@@ -55,9 +55,9 @@ describe('Test normalizers', () => {
 		expect(url).toBe(retweetObject.retweeted_status.entities.urls[0].url);
 	});
 
-	xit('Test tweetUrl - mediaTweet', async () => {
+	it('Test tweetUrl - mediaTweet', async () => {
 		const url = tweetUrl(mediaTweetObject);
-		expect(url).toBe(mediaTweetObject.retweeted_status.entities.urls[0].url);
+		expect(url).toBe(mediaTweetObject.extended_entities.media[0].url);
 	});
 
 	it('Test getImageUrl - tweet', async () => {
@@ -70,7 +70,7 @@ describe('Test normalizers', () => {
 		expect(url).toBe(undefined);
 	});
 
-	xit('Test getImageUrl - mediaTweet', async () => {
+	it('Test getImageUrl - mediaTweet', async () => {
 		const url = getImageUrl(mediaTweetObject);
 		expect(url).toBe(mediaTweetObject.entities.media[0].media_url_https);
 	});
@@ -103,7 +103,7 @@ describe('Test normalizers', () => {
 		);
 	});
 
-	xit('Test tweetMapper - mediaTweet', async () => {
+	it('Test tweetMapper - mediaTweet', async () => {
 		const mappedTweet = tweetMapper(mediaTweetObject);
 		expect(mappedTweet).toHaveProperty('url');
 		expect(mappedTweet).toHaveProperty('image_url');
