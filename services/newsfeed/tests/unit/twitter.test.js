@@ -1,0 +1,119 @@
+/*
+ * LiskHQ/lisk-service
+ * Copyright © 2021 Lisk Foundation
+ *
+ * See the LICENSE file at the top-level directory of this distribution
+ * for licensing information.
+ *
+ * Unless otherwise agreed in a custom licensing agreement with the Lisk Foundation,
+ * no part of this software, including this file, may be copied, modified,
+ * propagated, or distributed except according to the terms contained in the
+ * LICENSE file.
+ *
+ * Removal or modification of this copyright notice is prohibited.
+ *
+ */
+const {
+	safeRef,
+	tweetUrl,
+	getImageUrl,
+	tweetMapper,
+} = require('../../shared/twitter');
+
+const {
+	tweetObject,
+	retweetObject,
+	mediaTweetObject,
+} = require('../constants/newsfeed');
+
+describe('Test normalizers', () => {
+	it('Test safeRef - tweet', async () => {
+		const url = 'entities.urls.0.url';
+		const result = safeRef(tweetObject, url);
+		expect(result).toBe(tweetObject.entities.urls[0].url);
+	});
+
+	it('Test safeRef - retweet', async () => {
+		const url = 'retweeted_status.entities.urls.0.url';
+		const result = safeRef(retweetObject, url);
+		expect(result).toBe(retweetObject.retweeted_status.entities.urls[0].url);
+	});
+
+	xit('Test safeRef - mediaTweet', async () => {
+		const url = 'retweeted_status.entities.urls.0.url';
+		const result = safeRef(mediaTweetObject, url);
+		expect(result).toBe(mediaTweetObject.retweeted_status.entities.urls[0].url);
+	});
+
+	it('Test tweetUrl - tweet', async () => {
+		const url = tweetUrl(tweetObject);
+		expect(url).toBe(tweetObject.entities.urls[0].url);
+	});
+
+	it('Test tweetUrl - retweet', async () => {
+		const url = tweetUrl(retweetObject);
+		expect(url).toBe(retweetObject.retweeted_status.entities.urls[0].url);
+	});
+
+	xit('Test tweetUrl - mediaTweet', async () => {
+		const url = tweetUrl(mediaTweetObject);
+		expect(url).toBe(mediaTweetObject.retweeted_status.entities.urls[0].url);
+	});
+
+	it('Test getImageUrl - tweet', async () => {
+		const url = getImageUrl(tweetObject);
+		expect(url).toBe(undefined);
+	});
+
+	it('Test getImageUrl - retweet', async () => {
+		const url = getImageUrl(tweetObject);
+		expect(url).toBe(undefined);
+	});
+
+	xit('Test getImageUrl - mediaTweet', async () => {
+		const url = getImageUrl(mediaTweetObject);
+		expect(url).toBe(mediaTweetObject.entities.media[0].media_url_https);
+	});
+
+	it('Test tweetMapper - tweet', async () => {
+		const mappedTweet = tweetMapper(tweetObject);
+		expect(mappedTweet).toHaveProperty('url');
+		expect(mappedTweet).toHaveProperty('image_url');
+		expect(mappedTweet).toHaveProperty('author');
+		expect(mappedTweet).toEqual(
+			expect.objectContaining({
+				url: expect.any(String),
+				image_url: undefined,
+				author: expect.any(String),
+			}),
+		);
+	});
+
+	it('Test tweetMapper - retweet', async () => {
+		const mappedTweet = tweetMapper(retweetObject);
+		expect(mappedTweet).toHaveProperty('url');
+		expect(mappedTweet).toHaveProperty('image_url');
+		expect(mappedTweet).toHaveProperty('author');
+		expect(mappedTweet).toEqual(
+			expect.objectContaining({
+				url: expect.any(String),
+				image_url: undefined,
+				author: expect.any(String),
+			}),
+		);
+	});
+
+	xit('Test tweetMapper - mediaTweet', async () => {
+		const mappedTweet = tweetMapper(mediaTweetObject);
+		expect(mappedTweet).toHaveProperty('url');
+		expect(mappedTweet).toHaveProperty('image_url');
+		expect(mappedTweet).toHaveProperty('author');
+		expect(mappedTweet).toEqual(
+			expect.objectContaining({
+				url: expect.any(String),
+				image_url: expect.any(String),
+				author: expect.any(String),
+			}),
+		);
+	});
+});

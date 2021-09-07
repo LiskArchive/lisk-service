@@ -16,7 +16,7 @@
 const logger = require('lisk-service-framework').Logger();
 
 const config = require('../config');
-const refreshTwitterData = require('../shared/twitter');
+const { refreshTwitterData } = require('../shared/twitter');
 
 module.exports = [
 	{

@@ -43,6 +43,7 @@ const tweetUrl = (o) => {
 	if (o.retweeted_status) {
 		url = safeRef(o, 'retweeted_status.entities.urls.0.url');
 	} else if (o.extended_entities) {
+		console.log(JSON.stringify(o));
 		url = safeRef(o, 'extended_entities.media.0.url');
 	} else if (o.entities) {
 		url = safeRef(o, 'entities.urls.0.url');
@@ -88,4 +89,10 @@ const refreshData = async () => {
 	await newsfeedDB.upsert(normalizedData);
 };
 
-module.exports = refreshData;
+module.exports = {
+	safeRef,
+	tweetUrl,
+	getImageUrl,
+	tweetMapper,
+	refreshTwitterData: refreshData,
+};
