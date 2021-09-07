@@ -101,6 +101,7 @@ tag-%:
 	npm version --no-git-tag-version $*
 	cd services/gateway && npm version --no-git-tag-version $*
 	cd services/core && npm version --no-git-tag-version $*
+	cd services/market && npm version --no-git-tag-version $*
 	cd services/template && npm version --no-git-tag-version $*
 	git add ./services/gateway/package*.json
 	git add ./services/core/package*.json
