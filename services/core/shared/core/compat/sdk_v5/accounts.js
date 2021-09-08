@@ -53,6 +53,13 @@ const {
 	parseToJSONCompatObj,
 } = require('../../../jsonTools');
 
+const {
+	WAIT_TIME_VOTE,
+	WAIT_TIME_SELF_VOTE,
+	VOTER_PUNISH_TIME,
+	SELF_VOTE_PUNISH_TIME,
+} = require('./constants');
+
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 const Signals = require('../../../signals');
@@ -180,11 +187,11 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 };
 
 const standardizePomHeights = async pomHeights => {
-	const punishmentPeriod = 780000;
+	const selfPunishmentPeriod = SELF_VOTE_PUNISH_TIME;
 	return pomHeights
 		.sort((a, b) => b - a)
 		.slice(0, 5)
-		.map(height => ({ start: height, end: height + punishmentPeriod }));
+		.map(height => ({ start: height, end: height + selfPunishmentPeriod }));
 };
 
 const resolveDelegateInfo = async accounts => {
@@ -252,8 +259,9 @@ const resolveDelegateInfo = async accounts => {
 };
 
 const resolveAccountsInfo = async accounts => {
-	const balanceUnlockWaitPeriodSelf = 260000;
-	const balanceUnlockWaitPeriodDefault = 2000;
+	const balanceUnlockWaitPeriodDefault = WAIT_TIME_VOTE;
+	const balanceUnlockWaitPeriodSelf = WAIT_TIME_SELF_VOTE;
+	const voterPunishmentPeriod = VOTER_PUNISH_TIME;
 
 	accounts = await BluebirdPromise.map(
 		accounts,
@@ -291,7 +299,7 @@ const resolveAccountsInfo = async accounts => {
 							pomItem => pomItem.start <= unlock.height.end
 								&& unlock.height.end <= pomItem.end,
 						);
-					if (pomHeight) unlock.height.end = pomHeight.end;
+					if (pomHeight) unlock.height.end = pomHeight.start + voterPunishmentPeriod;
 
 					return unlock;
 				},
