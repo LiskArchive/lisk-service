@@ -15,8 +15,8 @@
  *
  */
 const { ServiceBroker } = require('moleculer');
-const { transactionSchema } = require('../schemas/transactionSchema.schema');
-const { serviceUnavailableSchema } = require('../schemas/serviceUnavailable.schema');
+const { transactionSchema } = require('../schemas/api_v2/transactionSchema.schema');
+const { serviceUnavailableSchema } = require('../schemas/api_v2/serviceUnavailable.schema');
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',

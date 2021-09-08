@@ -16,7 +16,8 @@
 const mysqlIndex = require('../../shared/indexdb/mysql');
 const schema = require('../../shared/schema/multisignature');
 
-const getIndex = () => mysqlIndex('testSchemaTransaction', schema);
+const tableName = 'testSchemaTransaction';
+const getIndex = () => mysqlIndex(tableName, schema);
 
 const { transaction } = require('../constants/multisignature');
 
@@ -27,11 +28,7 @@ describe('Test mysql', () => {
 		db = await getIndex();
 	});
 
-	afterAll(async () => {
-		// TODO: Drop table
-		const result = await db.find();
-		await db.deleteIds(result.map(r => r[`${schema.primaryKey}`]));
-	});
+	afterAll(async () => db.rawQuery(`DROP TABLE IF EXISTS ${tableName} CASCADE`));
 
 	it('DB exists', async () => {
 		const result = await db.find();

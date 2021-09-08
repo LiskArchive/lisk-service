@@ -19,9 +19,9 @@ const {
 } = require('lisk-service-framework');
 
 const mysqlIndex = require('./indexdb/mysql');
-const MultisignatureTxIndexSchema = require('./schema/multisignature');
+const multisignatureTxIndexSchema = require('./schema/multisignature');
 
-const getMultiSignatureTxIndex = () => mysqlIndex('MultisignatureTx', MultisignatureTxIndexSchema);
+const getMultiSignatureTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
 
 const createMultisignatureTx = async inputTransaction => {
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
