@@ -13,10 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const { Logger } = require('lisk-service-framework');
 
+const { normalizeData } = require('../shared/normalizers');
+const { getData } = require('../shared/twitter');
+
+const mysqlIndex = require('../shared/indexdb/mysql');
+const newsfeedIndexSchema = require('../shared/schema/newsfeed');
 const config = require('../config');
-const { refreshTwitterData } = require('../shared/twitter');
+
+const logger = Logger();
+
+const getNewsfeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
+
+const refreshTwitterData = async () => {
+	const newsfeedDB = await getNewsfeedIndex();
+
+	const response = await getData();
+	const normalizedData = normalizeData(config.sources.twitter_lisk, response);
+	await newsfeedDB.upsert(normalizedData);
+};
 
 module.exports = [
 	{
