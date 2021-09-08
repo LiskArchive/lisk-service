@@ -20,7 +20,8 @@ const {
 	invalidSchemaWithoutPrimaryKey,
 } = require('../schemas/invalidSchemas');
 
-const getIndex = () => mysqlIndex('testSchemaNewsfeed', testschema);
+const tableName = 'testSchemaNewsfeed';
+const getIndex = () => mysqlIndex(tableName, testschema);
 
 const { news, drupalData } = require('../constants/newsfeed');
 
@@ -31,11 +32,7 @@ describe('Test mysql', () => {
 		db = await getIndex();
 	});
 
-	afterAll(async () => {
-		// TODO: Drop table
-		const result = await db.find();
-		await db.deleteIds(result.map(r => r[`${testschema.primaryKey}`]));
-	});
+	afterAll(async () => db.rawQuery(`DROP TABLE IF EXISTS ${tableName} CASCADE`));
 
 	it('Valid schema', async () => {
 		const getValidIndex = () => mysqlIndex('ValidTestSchema', testschema);
@@ -51,14 +48,17 @@ describe('Test mysql', () => {
 				increment: expect.any(Function),
 			}),
 		);
+		await testDB.rawQuery('DROP TABLE IF EXISTS ValidTestSchema CASCADE');
 	});
 
-	// TODO: Update test case when proper error handling is implemented
+	it.todo('Update test case when proper error handling is implemented');
+
 	it('Invalid schema: Missing primary key', async () => {
 		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutPrimaryKey', invalidSchemaWithoutPrimaryKey);
 		const testDB = await getInvalidIndex();
 		await testDB.upsert(news);
 		expect(testDB.find()).rejects.toThrow();
+		await testDB.rawQuery('DROP TABLE IF EXISTS TestSchemaWithoutPrimaryKey CASCADE');
 	});
 
 	it('Invalid schema: Missing type defined', async () => {
