@@ -1,5 +1,5 @@
 config:
-  target: "http://localhost:9901/api/v2"
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v2"
   http: 
     timeout: 10
   phases:
@@ -18,20 +18,12 @@ scenarios:
             limit: 20
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
       - get:
           url: "/transactions"
           qs:
             limit: 30
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
-      - get:
-          url: "/transactions"
-          qs:
-            limit: 100
   - name: "Blocks"
     flow:
       - get:
@@ -40,24 +32,18 @@ scenarios:
             limit: 20
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
       - get:
           url: "/blocks"
           qs:
             limit: 30
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
       - get:
           url: "/blocsks"
           qs:
             limit: 100
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
   - name: "Accounts"
     flow:
       - get:
@@ -66,24 +52,12 @@ scenarios:
             limit: 20
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
       - get:
           url: "/accounts"
           qs:
             limit: 30
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
-      - get:
-          url: "/accounts"
-          qs:
-            limit: 100
-          expect:
-            - statusCode: 200
-            - contentType: json
-            - hasProperty: data
   - name: "Delegates"
     flow:
       - get:
@@ -93,23 +67,10 @@ scenarios:
             isDelegate: true
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
       - get:
           url: "/accounts"
           qs:
-            limit: 30
+            limit: 103
             isDelegate: true
           expect:
             - statusCode: 200
-            - contentType: json
-            - hasProperty: data
-      - get:
-          url: "/accounts"
-          qs:
-            limit: 100
-            isDelegate: true
-          expect:
-            - statusCode: 200
-            - contentType: json
-            - hasProperty: data
