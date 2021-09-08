@@ -1,5 +1,5 @@
 config:
-  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v2"
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/v2"
   http: 
     timeout: 10
   phases:
