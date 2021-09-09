@@ -27,7 +27,7 @@ const {
 	otherTweetObject,
 } = require('../constants/newsfeed');
 
-describe('Test normalizers', () => {
+describe('Test twitter functions', () => {
 	it('Test safeRef - tweet', async () => {
 		const url = 'entities.urls.0.url';
 		const result = safeRef(tweetObject, url);
@@ -88,9 +88,6 @@ describe('Test normalizers', () => {
 
 	it('Test tweetMapper - tweet', async () => {
 		const mappedTweet = tweetMapper(tweetObject);
-		expect(mappedTweet).toHaveProperty('url');
-		expect(mappedTweet).toHaveProperty('image_url');
-		expect(mappedTweet).toHaveProperty('author');
 		expect(mappedTweet).toEqual(
 			expect.objectContaining({
 				url: expect.any(String),
@@ -102,9 +99,6 @@ describe('Test normalizers', () => {
 
 	it('Test tweetMapper - retweet', async () => {
 		const mappedTweet = tweetMapper(retweetObject);
-		expect(mappedTweet).toHaveProperty('url');
-		expect(mappedTweet).toHaveProperty('image_url');
-		expect(mappedTweet).toHaveProperty('author');
 		expect(mappedTweet).toEqual(
 			expect.objectContaining({
 				url: expect.any(String),
@@ -116,9 +110,6 @@ describe('Test normalizers', () => {
 
 	it('Test tweetMapper - mediaTweet', async () => {
 		const mappedTweet = tweetMapper(mediaTweetObject);
-		expect(mappedTweet).toHaveProperty('url');
-		expect(mappedTweet).toHaveProperty('image_url');
-		expect(mappedTweet).toHaveProperty('author');
 		expect(mappedTweet).toEqual(
 			expect.objectContaining({
 				url: expect.any(String),
@@ -130,9 +121,6 @@ describe('Test normalizers', () => {
 
 	it('Test tweetMapper - otherTweet', async () => {
 		const mappedTweet = tweetMapper(otherTweetObject);
-		expect(mappedTweet).toHaveProperty('url');
-		expect(mappedTweet).toHaveProperty('image_url');
-		expect(mappedTweet).toHaveProperty('author');
 		expect(mappedTweet).toEqual(
 			expect.objectContaining({
 				url: expect.any(String),
