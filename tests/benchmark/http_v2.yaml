@@ -1,7 +1,5 @@
 config:
-  target: "http://localhost:9901/api/v2"
-  http:
-    timeout: 10
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/api/v2"
   phases:
     - duration: 10
       arrivalRate: 20
