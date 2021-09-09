@@ -27,7 +27,7 @@ const standardizePomHeight = pomHeight => ({
 
 const findPomHeightForUnlock = (account, unlock) => {
 	// No PoMs when account is non-delegate
-	if (!account.isDelegate) return;
+	if (!account.isDelegate) return null;
 
 	const unlockWaitingPeriod = account.address === unlock.delegateAddress
 		? WAIT_TIME_SELF_VOTE
@@ -47,7 +47,7 @@ const findPomHeightForUnlock = (account, unlock) => {
 				&& height < unlock.unvoteHeight + unlockWaitingPeriod,
 		);
 
-	return pomHeight;
+	return pomHeight || null;
 };
 
 const calculateUnlockEndHeight = (unlock, account, delegateAcc) => {
