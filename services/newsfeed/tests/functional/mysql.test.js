@@ -21,6 +21,10 @@ const {
 } = require('../schemas/invalidSchemas');
 
 const tableName = 'testSchemaNewsfeed';
+const validTestSchema = 'validTestSchema';
+const testSchemaWithoutPrimaryKey = 'testSchemaWithoutPrimaryKey';
+const testSchemaWithoutType = 'testSchemaWithoutType';
+
 const getIndex = () => mysqlIndex(tableName, testschema);
 
 const { news, drupalData } = require('../constants/newsfeed');
@@ -32,10 +36,15 @@ describe('Test mysql', () => {
 		db = await getIndex();
 	});
 
-	afterAll(async () => db.rawQuery(`DROP TABLE IF EXISTS ${tableName} CASCADE`));
+	afterAll(async () => {
+		db.rawQuery(`DROP TABLE IF EXISTS ${tableName} CASCADE`);
+		db.rawQuery(`DROP TABLE IF EXISTS ${validTestSchema} CASCADE`);
+		db.rawQuery(`DROP TABLE IF EXISTS ${testSchemaWithoutPrimaryKey} CASCADE`);
+		db.rawQuery(`DROP TABLE IF EXISTS ${testSchemaWithoutType} CASCADE`);
+	});
 
 	it('Valid schema', async () => {
-		const getValidIndex = () => mysqlIndex('ValidTestSchema', testschema);
+		const getValidIndex = () => mysqlIndex(validTestSchema, testschema);
 		const testDB = await getValidIndex();
 		expect(testDB).toBeInstanceOf(Object);
 		expect(testDB).toEqual(
@@ -48,21 +57,21 @@ describe('Test mysql', () => {
 				increment: expect.any(Function),
 			}),
 		);
-		await testDB.rawQuery('DROP TABLE IF EXISTS ValidTestSchema CASCADE');
 	});
 
 	it.todo('Update test case when proper error handling is implemented');
 
 	it('Invalid schema: Missing primary key', async () => {
-		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutPrimaryKey', invalidSchemaWithoutPrimaryKey);
+		const getInvalidIndex = () => mysqlIndex(
+			testSchemaWithoutPrimaryKey,
+			invalidSchemaWithoutPrimaryKey);
 		const testDB = await getInvalidIndex();
 		await testDB.upsert(news);
 		expect(testDB.find()).rejects.toThrow();
-		await testDB.rawQuery('DROP TABLE IF EXISTS TestSchemaWithoutPrimaryKey CASCADE');
 	});
 
 	it('Invalid schema: Missing type defined', async () => {
-		const getInvalidIndex = () => mysqlIndex('TestSchemaWithoutType', invalidSchemaWithMissingType);
+		const getInvalidIndex = () => mysqlIndex(testSchemaWithoutType, invalidSchemaWithMissingType);
 		expect(getInvalidIndex()).rejects.toThrow();
 	});
 
