@@ -1,11 +1,11 @@
 config:
-  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/v2"
-  http: 
+  target: "http://localhost:9901/api/v2"
+  http:
     timeout: 10
   phases:
-    - duration: 15
-      arrivalRate: 60
-      name: "Sustained max load of 60 users for 15 seconds"
+    - duration: 10
+      arrivalRate: 20
+      name: "Sustained max load of 20 users for 10 seconds"
   defaults:
     headers:
       content-type: "application/json"
@@ -16,12 +16,20 @@ scenarios:
           url: "/transactions"
           qs:
             limit: 20
+          response:
+            match:
+              json: "$.meta.count"
+              value: 20
           expect:
             - statusCode: 200
       - get:
           url: "/transactions"
           qs:
             limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
           expect:
             - statusCode: 200
   - name: "Blocks"
@@ -30,18 +38,30 @@ scenarios:
           url: "/blocks"
           qs:
             limit: 20
+          response:
+            match:
+              json: "$.meta.count"
+              value: 20
           expect:
             - statusCode: 200
       - get:
           url: "/blocks"
           qs:
             limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
           expect:
             - statusCode: 200
       - get:
-          url: "/blocsks"
+          url: "/blocks"
           qs:
             limit: 100
+          response:
+            match:
+              json: "$.meta.count"
+              value: 100
           expect:
             - statusCode: 200
   - name: "Accounts"
@@ -50,12 +70,20 @@ scenarios:
           url: "/accounts"
           qs:
             limit: 20
+          response:
+            match:
+              json: "$.meta.count"
+              value: 20
           expect:
             - statusCode: 200
       - get:
           url: "/accounts"
           qs:
             limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
           expect:
             - statusCode: 200
   - name: "Delegates"
@@ -65,6 +93,10 @@ scenarios:
           qs:
             limit: 20
             isDelegate: true
+          response:
+            match:
+              json: "$.meta.count"
+              value: 20
           expect:
             - statusCode: 200
       - get:
@@ -72,5 +104,9 @@ scenarios:
           qs:
             limit: 103
             isDelegate: true
+          response:
+            match:
+              json: "$.meta.count"
+              value: 103
           expect:
             - statusCode: 200
