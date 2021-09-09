@@ -59,7 +59,7 @@ describe('Test mysql', () => {
 		);
 	});
 
-	it.todo('Update test case when proper error handling is implemented');
+	it.todo('Update invalid schema test cases when proper error handling is implemented');
 
 	it('Invalid schema: Missing primary key', async () => {
 		const getInvalidIndex = () => mysqlIndex(
