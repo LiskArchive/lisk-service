@@ -37,7 +37,7 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
 
 config.rateLimit = {};
-config.rateLimit.window = Number(process.env.RATE_LIMIT_WINDOW) || 15 * 1000;
+config.rateLimit.window = Number(process.env.RATE_LIMIT_WINDOW) || 15; // in seconds
 config.rateLimit.connectionLimit = Number(process.env.RATE_LIMIT_CONNECTIONS || 20);
 
 /**
@@ -91,7 +91,7 @@ config.websocket = {
 
 // Gateway RPC cache settings
 config.rpcCache = {
-	ttl: 10 * 1000, // miliseconds
+	ttl: 10, // in seconds
 	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
 };
 
