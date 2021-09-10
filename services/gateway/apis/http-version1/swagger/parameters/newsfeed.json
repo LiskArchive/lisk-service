@@ -1,0 +1,8 @@
+{
+    "source": {
+        "name": "source",
+        "in": "query",
+        "description": "Source name",
+        "type": "string"
+    }
+}
