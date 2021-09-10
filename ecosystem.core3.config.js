@@ -27,7 +27,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				PORT: '9901',
@@ -50,7 +49,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '1G',
-			instances: 1,
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
@@ -80,7 +78,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				// --- Remember to set the properties below
