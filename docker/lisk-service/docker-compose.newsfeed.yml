@@ -16,7 +16,7 @@ services:
   mysql_newsfeed:
     image: mysql:5.7
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql_newsfeed-data:/var/lib/mysql
     restart: always
     networks:
       - newsfeed_network
@@ -28,7 +28,7 @@ services:
       retries: 10
 
 volumes:
-  mysql-data:
+  mysql_newsfeed-data:
 
 networks:
   newsfeed_network:
