@@ -52,7 +52,8 @@ const indexVotes = async blocks => {
 					const [row] = await votesDB.find({
 						id: tx.id,
 						receivedAddress: voteEntry.receivedAddress,
-					});
+						limit: 1,
+					}, ['isAggregated']);
 					if (!row || !row.isAggregated) {
 						// indexing aggregated votes per account
 						const numRowsAffected = await votesAggregateDB.increment({
@@ -95,7 +96,7 @@ const removeVotesByTransactionIDs = async transactionIDs => {
 			property: 'id',
 			values: transactionIDs,
 		},
-	});
+	}, ['tempId']);
 	await votesDB.deleteIds(forkedVotes.map(v => v.tempId));
 };
 
@@ -117,7 +118,7 @@ const getVoters = async params => {
 		const { username, ...remParams } = params;
 		params = remParams;
 
-		const accountInfo = await getIndexedAccountInfo({ username });
+		const accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['address']);
 		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
 		params.receivedAddress = accountInfo.address;
 	}
@@ -137,16 +138,20 @@ const getVoters = async params => {
 				property: 'amount',
 				greaterThan: '0',
 			}],
-		});
+		}, Object.keys(votesAggregateIndexSchema.schema));
 	} else {
-		resultSet = await votesDB.find({ sort: 'timestamp:desc', receivedAddress: params.receivedAddress });
+		resultSet = await votesDB.find({
+			sort: 'timestamp:desc',
+			receivedAddress: params.receivedAddress,
+		},
+		Object.keys(votesIndexSchema.schema));
 	}
 	if (resultSet.length) votes.data.votes = resultSet;
 
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
 		async vote => {
-			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress });
+			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress, limit: 1 }, ['username']);
 			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
 			const { amount, sentAddress, username } = vote;
 			return { amount, address: sentAddress, username };
@@ -154,7 +159,7 @@ const getVoters = async params => {
 		{ concurrency: votes.data.votes.length },
 	);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress });
+	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress, limit: 1 }, ['username']);
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,

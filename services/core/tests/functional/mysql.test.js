@@ -47,7 +47,7 @@ describe('Test mysql', () => {
 	});
 
 	it('Fetch rows', async () => {
-		const result = await db.find({ id: emptyBlock.id });
+		const result = await db.find({ id: emptyBlock.id }, ['id']);
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
 
@@ -58,7 +58,7 @@ describe('Test mysql', () => {
 	it('Update row', async () => {
 		await db.upsert([{ ...emptyBlock, size: 50 }]);
 
-		const [retrievedBlock] = await db.find({ id: emptyBlock.id });
+		const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
 		expect(retrievedBlock.id).toBe(emptyBlock.id);
 		expect(retrievedBlock.size).toBe(50);
 	});
@@ -82,7 +82,7 @@ describe('Test mysql', () => {
 			},
 		});
 
-		const [retrievedBlock] = await db.find({ id: emptyBlock.id });
+		const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['timestamp']);
 		expect(retrievedBlock).toBeTruthy();
 		expect(retrievedBlock.timestamp).toBe(5 + emptyBlock.timestamp);
 	});
@@ -93,7 +93,7 @@ describe('Test mysql', () => {
 		const count = await db.deleteIds([existingBlockId]);
 		expect(count).toEqual(1);
 
-		const result = await db.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] });
+		const result = await db.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
 		expect(result.length).toBe(0);
 		expect(result.every(b => b.id !== existingBlock.id)).toBeTruthy();
 	});

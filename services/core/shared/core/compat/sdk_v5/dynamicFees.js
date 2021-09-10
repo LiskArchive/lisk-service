@@ -36,7 +36,7 @@ const logger = Logger();
 const calculateBlockSize = async block => {
 	const blocksDB = await getBlocksIndex();
 
-	const [blockInfo] = await blocksDB.find({ id: block.id });
+	const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['size']);
 	if (blockInfo) return blockInfo.size;
 
 	// If information is unavailable, compute on-the-fly
@@ -179,7 +179,8 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 					height: prevFeeEstPerByte.blockHeight + 1 - i,
 				});
 				block.payload = block.numberOfTransactions
-					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions })
+					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions },
+						Object.keys(transactionsIndexSchema.schema))
 					: [];
 				return block;
 			},
