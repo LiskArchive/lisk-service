@@ -37,9 +37,10 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
 
 config.rateLimit = {};
-config.rateLimit.enable = Boolean(String(process.env.RATE_LIMIT_ENABLE).toLowerCase() === 'true'),
+config.rateLimit.enable = Boolean(String(process.env.RATE_LIMIT_ENABLE).toLowerCase() === 'true');
 config.rateLimit.window = Number(process.env.RATE_LIMIT_WINDOW) || 10; // in seconds
-config.rateLimit.connectionLimit = Number(process.env.RATE_LIMIT_CONNECTIONS || 200); // Max number of requests during window
+// Max number of requests during window
+config.rateLimit.connectionLimit = Number(process.env.RATE_LIMIT_CONNECTIONS || 200);
 
 /**
  * LOGGING
