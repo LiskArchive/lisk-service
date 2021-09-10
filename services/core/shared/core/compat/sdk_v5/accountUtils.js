@@ -32,6 +32,8 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
 
+const validateAddress = address => (typeof address === 'string' && address.match(/^lsk[a-hjkm-z2-9]{38}$/g));
+
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
 const confirmAddress = async address => {
@@ -100,6 +102,7 @@ const getBase32AddressFromPublicKey = publicKey => {
 };
 
 module.exports = {
+	validateAddress,
 	validatePublicKey,
 	confirmAddress,
 	confirmPublicKey,
