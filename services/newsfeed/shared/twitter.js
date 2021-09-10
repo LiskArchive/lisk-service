@@ -16,12 +16,6 @@
 const Twitter = require('twitter');
 
 const config = require('../config');
-const { normalizeData } = require('./normalizers');
-
-const mysqlIndex = require('./indexdb/mysql');
-const newsfeedIndexSchema = require('./schema/newsfeed');
-
-const getNewsfeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
 
 const client = new Twitter({
 	consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -80,12 +74,10 @@ const getData = () => new Promise((resolve, reject) => {
 	});
 });
 
-const refreshData = async () => {
-	const newsfeedDB = await getNewsfeedIndex();
-
-	const response = await getData();
-	const normalizedData = normalizeData(config.sources.twitter_lisk, response);
-	await newsfeedDB.upsert(normalizedData);
+module.exports = {
+	safeRef,
+	tweetUrl,
+	getImageUrl,
+	tweetMapper,
+	getData,
 };
-
-module.exports = refreshData;

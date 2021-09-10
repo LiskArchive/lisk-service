@@ -59,6 +59,7 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 const logger = Logger();
@@ -417,24 +418,42 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const indexGenesisAccounts = async () => {
+	let numAccountsIndexed;
 	const BATCH_SIZE = 10000;
 	try {
+		const accountsDB = await getAccountsIndex();
+		numAccountsIndexed = await accountsDB.count();
+
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
 			genesisAccountIndexingBatchNum++;
 
-			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
-
-			const accountsDB = await getAccountsIndex();
-			const numAccountsIndexed = await accountsDB.count();
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
-
 			if (!genesisAccountsToIndex) {
 				genesisAccountsToIndex = genesisBlock.asset.accounts
 					.filter(account => account.address.length === 40);
 				logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 			}
 
+			// If the cache doesn't contain information, it'll be updated later on successful completion
+			const indexedTillBatch = await genesisAccountsCache.get('indexedTillBatch');
+			if (
+				indexedTillBatch !== undefined
+				&& numAccountsIndexed < ((indexedTillBatch + 1) * BATCH_SIZE)
+			) {
+				// Resume indexing starting from the batch that was last indexed
+				genesisAccountIndexingBatchNum = indexedTillBatch;
+				logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
+			} else {
+				// Calculate number of batches that already have been indexed and continue
+				const prevGenesisAccountIndexingBatchNum = genesisAccountIndexingBatchNum;
+				genesisAccountIndexingBatchNum = Math.floor(numAccountsIndexed / BATCH_SIZE);
+				if (indexedTillBatch === undefined || prevGenesisAccountIndexingBatchNum === 0) {
+					logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
+				}
+			}
+
+			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
 			const genesisAccountAddressesToIndex = genesisAccountsToIndex
 				.slice(batchNum * BATCH_SIZE, (batchNum + 1) * BATCH_SIZE)
 				.map(account => account.address);
@@ -455,7 +474,7 @@ const indexGenesisAccounts = async () => {
 
 				logger.info(`Indexing genesis account batch: ${batchNum}, ${Math.ceil(genesisAccountsToIndex.length / BATCH_SIZE) - batchNum - 1} to go`);
 
-				const PAGE_SIZE = 20;
+				const PAGE_SIZE = 1000;
 				const NUM_PAGES = Math.ceil(genesisAccountAddressesToIndex.length / PAGE_SIZE);
 				for (let i = 0; i < NUM_PAGES; i++) {
 					// eslint-disable-next-line no-await-in-loop
@@ -475,12 +494,18 @@ const indexGenesisAccounts = async () => {
 					genesisAccountsToIndex = undefined;
 				}
 			}
+
+			// On success, update the cache with the batch number
+			await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
 		}
 	} catch (err) {
 		logger.warn(`Unable to index Genesis block accounts batch ${genesisAccountIndexingBatchNum}, will retry again: ${err}`);
 		genesisAccountIndexingBatchNum--;
+		await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
 	} finally {
-		isGenesisAccountsIndexingInProgress = false;
+		if (numAccountsIndexed >= BATCH_SIZE * (genesisAccountIndexingBatchNum + 1)) {
+			isGenesisAccountsIndexingInProgress = false;
+		}
 	}
 };
 
@@ -672,7 +697,11 @@ const init = async () => {
 
 	// Check and update index readiness status
 	Signals.get('newBlock').add(checkIndexReadiness);
-	Signals.get('newBlock').add(indexGenesisAccounts);
+
+	const indexGenesisAccountsListener = async ({ data: [newBlock] }) => {
+		if (newBlock.height % 10 === 0) await indexGenesisAccounts();
+	};
+	Signals.get('newBlock').add(indexGenesisAccountsListener);
 };
 
 module.exports = {

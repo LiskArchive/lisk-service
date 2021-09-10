@@ -53,7 +53,7 @@
     "split": "^1.0.1",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.4",
-    "tar": "^6.1.2"
+    "tar": "^6.1.9"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",

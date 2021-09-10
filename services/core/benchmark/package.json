@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "dot-object": "^2.1.4",
     "faker": "^5.1.0",
     "ioredis": "^4.19.2",
