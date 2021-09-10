@@ -27,6 +27,7 @@ const logger = Logger();
 const getNewsfeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
 
 const refreshTwitterData = async () => {
+	logger.debug('Updating Twitter data...');
 	const newsfeedDB = await getNewsfeedIndex();
 
 	const response = await getData();
@@ -39,13 +40,7 @@ module.exports = [
 		name: 'newsfeed.retrieve.twitter',
 		description: 'Retrieves data from Twitter',
 		interval: config.sources.twitter_lisk.interval,
-		init: async () => {
-			logger.debug('Initializing data from Twitter');
-			await refreshTwitterData();
-		},
-		controller: async () => {
-			logger.debug('Job scheduled to update data from Twitter');
-			await refreshTwitterData();
-		},
+		init: refreshTwitterData,
+		controller: refreshTwitterData,
 	},
 ];

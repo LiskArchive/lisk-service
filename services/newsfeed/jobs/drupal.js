@@ -38,24 +38,20 @@ const reloadNewsFromDrupal = async drupalSources => {
 	});
 };
 
+const performUpdate = async () => {
+	logger.debug('Updating Drupal data...');
+	await reloadNewsFromDrupal([
+		config.sources.drupal_lisk_announcements,
+		config.sources.drupal_lisk_general,
+	]);
+};
+
 module.exports = [
 	{
 		name: 'newsfeed.retrieve.drupal',
 		description: 'Retrieves data from Drupal',
 		interval: config.sources.drupal_lisk_general.interval,
-		init: async () => {
-			logger.debug('Initializing data from Drupal');
-			await reloadNewsFromDrupal([
-				config.sources.drupal_lisk_announcements,
-				config.sources.drupal_lisk_general,
-			]);
-		},
-		controller: async () => {
-			logger.debug('Job scheduled to update data from Drupal');
-			await reloadNewsFromDrupal([
-				config.sources.drupal_lisk_announcements,
-				config.sources.drupal_lisk_general,
-			]);
-		},
+		init: performUpdate,
+		controller: performUpdate,
 	},
 ];
