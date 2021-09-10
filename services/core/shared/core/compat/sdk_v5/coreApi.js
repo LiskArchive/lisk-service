@@ -15,7 +15,10 @@
  */
 const {
 	Logger,
-	Exceptions: { TimeoutException },
+	Exceptions: {
+		NotFoundException,
+		TimeoutException,
+	},
 } = require('lisk-service-framework');
 
 const {
@@ -208,6 +211,8 @@ const getAccountByAddress = async address => {
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getAccountByAddress' for address: ${address}`);
+		} else if (err.message === `Specified key accounts:address:${address} does not exist`) {
+			throw new NotFoundException(`Account ${address} does not exist on the blockchain`);
 		}
 		logger.warn(`Unable to currently fetch account information for address: ${address}. The network synchronization process might still be in progress for the Lisk Core node or the requested account has not been migrated yet.`);
 		throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
