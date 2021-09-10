@@ -14,7 +14,7 @@
  *
  */
 const { mapper } = require('lisk-service-framework');
-const htmlToText = require('html-to-text');
+const { convert } = require('html-to-text');
 const makeHash = require('object-hash');
 const moment = require('moment');
 const htmlEntities = require('html-entities');
@@ -24,8 +24,7 @@ const config = require('../config');
 /*
  * Functions to convert original content
  */
-// TODO: Replace deprecated method fromString
-const textify = text => htmlToText.fromString(text, {
+const textify = text => convert(text, {
 	format: {
 		heading: (elem, fn, options) => {
 			const h = fn(elem.children, options);
@@ -34,16 +33,21 @@ const textify = text => htmlToText.fromString(text, {
 	},
 });
 
-const shortenContent = content => content.slice(0, config.newsContentLength);
+const shortenContent = content => content.slice(0, config.defaultNewsLength);
+
 const textifyForShort = content => shortenContent(textify(content));
+
 const convertTime = time => new Date(Date.parse(time))
 	.toISOString()
 	.slice(0, 19)
 	.replace('T', ' ');
+
 const drupalDate = time => moment(time, 'MM/DD/YYYY - HH:mm') // '10/31/2019 - 09:28'
 	.toISOString()
 	.slice(0, 19)
 	.replace('T', ' ');
+
+const htmlEntitiesDecode = content => htmlEntities.decode(content);
 
 const drupalContentParser = (content) => {
 	content = content
@@ -53,12 +57,9 @@ const drupalContentParser = (content) => {
 		.replace(/^\n*/, '') // Trim new lines at the beginning
 		.replace(/\n*$/, ''); // Trim new lines at the end
 
-	content = htmlEntities.decode(content);
-
+	content = htmlEntitiesDecode(content);
 	return content;
 };
-
-const htmlEntitiesDecode = content => htmlEntities.decode(content);
 
 const authorParser = author => (author === 'admin' ? 'Lisk' : author);
 
@@ -72,6 +73,7 @@ const twitterUnixTimestamp = date => moment(Date.parse(date)).unix();
 
 const normalizeFunctions = {
 	shortenContent,
+	textify,
 	textifyForShort,
 	convertTime,
 	drupalDate,

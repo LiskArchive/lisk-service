@@ -13,28 +13,45 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
-const { reloadNewsFromDrupal } = require('../shared/drupal');
+const {
+	HTTP: { request: requestLib },
+	Logger,
+} = require('lisk-service-framework');
+
+const { normalizeData } = require('../shared/normalizers');
+
+const mysqlIndex = require('../shared/indexdb/mysql');
+const newsfeedIndexSchema = require('../shared/schema/newsfeed');
 const config = require('../config');
+
+const logger = Logger();
+
+const getnewsfeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
+
+const reloadNewsFromDrupal = async drupalSources => {
+	const newsfeedDB = await getnewsfeedIndex();
+
+	drupalSources.forEach(async source => {
+		const response = await requestLib(source.url);
+		const normalizedData = normalizeData(source, response.data);
+		await newsfeedDB.upsert(normalizedData);
+	});
+};
+
+const performUpdate = async () => {
+	logger.debug('Updating Drupal data...');
+	await reloadNewsFromDrupal([
+		config.sources.drupal_lisk_announcements,
+		config.sources.drupal_lisk_general,
+	]);
+};
 
 module.exports = [
 	{
 		name: 'newsfeed.retrieve.drupal',
 		description: 'Retrieves data from Drupal',
 		interval: config.sources.drupal_lisk_general.interval,
-		init: async () => {
-			logger.debug('Initializing data from Drupal');
-			await reloadNewsFromDrupal([
-				config.sources.drupal_lisk_announcements,
-				config.sources.drupal_lisk_general,
-			]);
-		},
-		controller: async () => {
-			logger.debug('Job scheduled to update data from Drupal');
-			await reloadNewsFromDrupal([
-				config.sources.drupal_lisk_announcements,
-				config.sources.drupal_lisk_general,
-			]);
-		},
+		init: performUpdate,
+		controller: performUpdate,
 	},
 ];
