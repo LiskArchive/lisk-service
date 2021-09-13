@@ -37,7 +37,7 @@ module.exports = {
 				WS_RATELIMIT_DURATION: 1, // in seconds
 				RATE_LIMIT_ENABLE: true,
 				RATE_LIMIT_CONNECTIONS: 200,
-				RATE_LIMIT_WINDOW: 10,
+				RATE_LIMIT_WINDOW: 10, // in seconds
 			},
 		},
 		{

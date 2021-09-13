@@ -2,8 +2,8 @@ config:
   target: "{{ $processEnvironment.LISK_SERVICE_URL }}/api/v2"
   phases:
     - duration: 10
-      arrivalRate: 25
-      name: "Sustained max load of 25 users for 10 seconds"
+      arrivalRate: 15
+      name: "Sustained max load of 15 users for 10 seconds"
   defaults:
     headers:
       content-type: "application/json"
