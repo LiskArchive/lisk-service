@@ -39,6 +39,10 @@ const findPomHeightForUnlock = (account, unlock) => {
 
 	// Consider the PoM height iff the unvote happens before the punishment ends
 	// and punishment starts before the (unvote) unlock period ends
+	// """
+	//   This extended locking period also applies to tokens recently unvoted
+	//   and still in the mandatory locking period(see the “voting LIP”).
+	// """
 	// Refer: https://github.com/LiskHQ/lips/blob/master/proposals/lip-0024.md#update-to-validity-of-unlock-transaction
 	const [pomHeight] = account.dpos.delegate.pomHeights
 		.sort((a, b) => b - a)
