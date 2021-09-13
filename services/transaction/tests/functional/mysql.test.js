@@ -89,8 +89,8 @@ describe('Test mysql', () => {
 
 	it('Delete row', async () => {
 		await db.deleteIds([serviceId]);
-		const result = await db.find();
+		const result = await db.find({ serviceId });
 		expect(result).toBeInstanceOf(Array);
-		expect(result.length).toBe(1);
+		expect(result.length).toBe(0);
 	});
 });
