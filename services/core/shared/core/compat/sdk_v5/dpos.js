@@ -25,15 +25,15 @@ const standardizePomHeight = pomHeight => ({
 	end: calculatePomEndHeight(pomHeight),
 });
 
-const findPomHeightForUnlock = (account, unlock) => {
+const findPomHeightForUnlock = (unlock, account, isSelfVote) => {
 	// No PoMs when account is non-delegate
 	if (!account.isDelegate) return null;
 
-	const unlockWaitingPeriod = account.address === unlock.delegateAddress
+	const unlockWaitingPeriod = isSelfVote
 		? WAIT_TIME_SELF_VOTE
 		: WAIT_TIME_VOTER;
 
-	const pomWaitingPeriod = account.address === unlock.delegateAddress
+	const pomWaitingPeriod = isSelfVote
 		? PUNISH_TIME_SELF_VOTE
 		: PUNISH_TIME_VOTER;
 
@@ -56,13 +56,13 @@ const findPomHeightForUnlock = (account, unlock) => {
 
 const calculateUnlockEndHeight = (unlock, account, delegateAcc) => {
 	if (unlock.delegateAddress === account.address) { // self-unvote
-		const pomHeight = findPomHeightForUnlock(account, unlock);
+		const pomHeight = findPomHeightForUnlock(unlock, account, true);
 		return pomHeight
 			? pomHeight + PUNISH_TIME_SELF_VOTE
 			: unlock.unvoteHeight + WAIT_TIME_SELF_VOTE;
 	}
 
-	const pomHeight = findPomHeightForUnlock(delegateAcc, unlock);
+	const pomHeight = findPomHeightForUnlock(unlock, delegateAcc, false);
 	return pomHeight
 		? pomHeight + PUNISH_TIME_VOTER
 		: unlock.unvoteHeight + WAIT_TIME_VOTER;
@@ -74,6 +74,12 @@ const standardizeUnlockHeight = (unlock, account, delegateAcc) => ({
 });
 
 module.exports = {
+	constants: {
+		WAIT_TIME_VOTER,
+		WAIT_TIME_SELF_VOTE,
+		PUNISH_TIME_VOTER,
+		PUNISH_TIME_SELF_VOTE,
+	},
 	calculatePomEndHeight,
 	standardizePomHeight,
 	findPomHeightForUnlock,
