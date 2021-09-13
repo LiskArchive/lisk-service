@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transaction = [{
+const transactions = [{
 	serviceId: '22139cb8-d1d3-43ec-b7d3-9f1ed30e5957',
 	nonce: 1,
 	senderPublicKey: '3e50549cd4d98760064ff2fe51801afba4e5e8623335275cece0eeff8495a81b',
@@ -39,5 +39,5 @@ const transaction = [{
 
 
 module.exports = {
-	transaction,
+	transactions,
 };

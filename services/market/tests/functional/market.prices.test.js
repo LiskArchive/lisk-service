@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 /*
  * LiskHQ/lisk-service
  * Copyright © 2021 Lisk Foundation
@@ -21,7 +20,7 @@ const { serviceUnavailableSchema } = require('../schemas/serviceUnavailable.sche
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',
 	logLevel: 'warn',
-	requestTimeout: 15 * 1000,
+	requestTimeout: 15 * 1000, // in millisecs
 	logger: console,
 });
 
