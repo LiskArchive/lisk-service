@@ -13,17 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const packageJson = require('../package.json');
+const Joi = require('joi');
 
-module.exports = [
-	{
-		name: 'status',
-		description: 'Status',
-		params: {},
-		controller: async () => ({
-			status: 'OK',
-			service: packageJson.name,
-			version: packageJson.version,
-		}),
-	},
-];
+const serviceUnavailableSchema = {
+	status: Joi.string().valid('SERVICE_UNAVAILABLE').required(),
+	data: Joi.object().keys({
+		error: Joi.string().valid('Service is not ready yet').required(),
+	}).required(),
+};
+
+module.exports = {
+	serviceUnavailableSchema: Joi.object(serviceUnavailableSchema).required(),
+};

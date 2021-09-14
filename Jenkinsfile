@@ -115,6 +115,7 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					dir('./services/market') { sh "npm run test:functional" }
 					dir('./services/newsfeed') { sh "npm run test:functional" }
+					dir('./services/transaction') { sh "npm run test:functional" }
 					dir('./framework') { sh "npm run test:functional" }
 				}
 			}

@@ -14,8 +14,8 @@
  *
  */
 const { ServiceBroker } = require('moleculer');
-const { marketPriceItemSchema } = require('../schemas/marketPriceItem.schema');
-const { serviceUnavailableSchema } = require('../schemas/serviceUnavailable.schema');
+const { transactionSchema } = require('../schemas/api_v2/transactionSchema.schema');
+const { serviceUnavailableSchema } = require('../schemas/api_v2/serviceUnavailable.schema');
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',
@@ -24,20 +24,19 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
-describe('Test market prices', () => {
+describe('Test multsig.create', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
-	describe('Connect to client and retrieve market prices', () => {
-		it('call market.prices', async () => {
-			const result = await broker.call('market.prices', {});
+	describe('Connect to client and create multisignature transaction', () => {
+		it('call transaction.multisig.create', async () => {
+			const result = await broker.call('transaction.multisig.create', {});
 			if (result.data.error) {
 				serviceUnavailableSchema.validate(result);
 			} else {
 				expect(result.data).toBeInstanceOf(Array);
 				expect(result.data.length).toBeGreaterThanOrEqual(1);
-				result.data.forEach(price => marketPriceItemSchema.validate(price));
-				expect(result.meta).toHaveProperty('count');
+				result.data.forEach(tx => transactionSchema.validate(tx));
 			}
 		});
 	});

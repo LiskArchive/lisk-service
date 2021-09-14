@@ -27,14 +27,20 @@
     "eslint": "eslint ./api ./knowledge ./services ./test ./*.js",
     "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
     "clean": "rm -rf ./node_modules",
-    "watch": "supervisor -w . -i ./node_modules app.js"
+    "watch": "supervisor -w . -i ./node_modules app.js",
+    "test:functional": "./node_modules/.bin/jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
     "knex": "^0.95.10",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef6b8e654ea1c4fd1389e7b10713c21afd238d8e/framework/dist/lisk-service-framework-1.2.2.tgz",
     "mysql": "^2.18.1",
-    "node-cron": "=2.0.3"
+    "node-cron": "=2.0.3",
+    "uuid": "^8.3.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "joi": "^17.4.0",
+    "moleculer": "^0.14.16",
+    "jest": "^26.6.3"
+  }
 }
