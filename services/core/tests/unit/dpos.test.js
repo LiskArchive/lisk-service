@@ -96,64 +96,121 @@ describe('DPoS tests', () => {
 
 	describe('Verify calculateUnlockEndHeight', () => {
 		it('Voter unlocking', async () => {
-			expect(calculateUnlockEndHeight(unlock.voter, account.normal, account.delegate))
+			const unlockEndHeight = calculateUnlockEndHeight(
+				unlock.voter,
+				account.normal,
+				account.delegate,
+			);
+			expect(unlockEndHeight)
 				.toBe(unlock.voter.unvoteHeight + constants.WAIT_TIME_VOTER);
 		});
 
 		it('Self-vote unlocking', async () => {
-			expect(calculateUnlockEndHeight(unlock.selfVote, account.delegate, account.delegate))
+			const unlockEndHeight = calculateUnlockEndHeight(
+				unlock.selfVote,
+				account.delegate,
+				account.delegate,
+			);
+			expect(unlockEndHeight)
 				.toBe(unlock.selfVote.unvoteHeight + constants.WAIT_TIME_SELF_VOTE);
 		});
 
 		it('Punished voter unlocking', async () => {
-			expect(calculateUnlockEndHeight(unlock.punishedVoter, account.punishedVoter, account.punishedDelegate))
-				.toBe(findPomHeightForUnlock(unlock.punishedVoter, account.punishedDelegate, false) + constants.PUNISH_TIME_VOTER);
+			const unlockEndHeight = calculateUnlockEndHeight(
+				unlock.punishedVoter,
+				account.punishedVoter,
+				account.punishedDelegate,
+			);
+			expect(unlockEndHeight)
+				.toBe(
+					findPomHeightForUnlock(unlock.punishedVoter, account.punishedDelegate, false)
+					+ constants.PUNISH_TIME_VOTER,
+				);
 		});
 
 		it('Punished self-vote unlocking', async () => {
-			expect(calculateUnlockEndHeight(unlock.punishedSelfVote, account.punishedDelegate, account.punishedDelegate))
-				.toBe(findPomHeightForUnlock(unlock.punishedVoter, account.punishedDelegate, false) + constants.PUNISH_TIME_SELF_VOTE);
+			const unlockEndHeight = calculateUnlockEndHeight(
+				unlock.punishedSelfVote,
+				account.punishedDelegate,
+				account.punishedDelegate,
+			);
+			expect(unlockEndHeight)
+				.toBe(
+					findPomHeightForUnlock(unlock.punishedVoter, account.punishedDelegate, false)
+					+ constants.PUNISH_TIME_SELF_VOTE,
+				);
 		});
 	});
 
 	describe('Verify standardizeUnlockHeight', () => {
 		it('Voter unlocking', async () => {
-			const standardizedUnlock = standardizeUnlockHeight(unlock.voter, account.normal, account.delegate);
+			const standardizedUnlock = standardizeUnlockHeight(
+				unlock.voter,
+				account.normal,
+				account.delegate,
+			);
 			expect(standardizedUnlock).toHaveProperty('start');
 			expect(standardizedUnlock).toHaveProperty('end');
 			expect(standardizedUnlock).toStrictEqual({
 				start: unlock.voter.unvoteHeight,
-				end: calculateUnlockEndHeight(unlock.voter, account.normal, account.delegate),
+				end: calculateUnlockEndHeight(
+					unlock.voter,
+					account.normal,
+					account.delegate,
+				),
 			});
 		});
 
 		it('Self-vote unlocking', async () => {
-			const standardizedUnlock = standardizeUnlockHeight(unlock.selfVote, account.delegate, account.delegate);
+			const standardizedUnlock = standardizeUnlockHeight(
+				unlock.selfVote,
+				account.delegate,
+				account.delegate,
+			);
 			expect(standardizedUnlock).toHaveProperty('start');
 			expect(standardizedUnlock).toHaveProperty('end');
 			expect(standardizedUnlock).toStrictEqual({
 				start: unlock.selfVote.unvoteHeight,
-				end: calculateUnlockEndHeight(unlock.selfVote, account.delegate, account.delegate),
+				end: calculateUnlockEndHeight(unlock.selfVote,
+					account.delegate,
+					account.delegate,
+				),
 			});
 		});
 
 		it('Punished voter unlocking', async () => {
-			const standardizedUnlock = standardizeUnlockHeight(unlock.punishedVoter, account.punishedVoter, account.punishedDelegate);
+			const standardizedUnlock = standardizeUnlockHeight(
+				unlock.punishedVoter,
+				account.punishedVoter,
+				account.punishedDelegate,
+			);
 			expect(standardizedUnlock).toHaveProperty('start');
 			expect(standardizedUnlock).toHaveProperty('end');
 			expect(standardizedUnlock).toStrictEqual({
 				start: unlock.punishedVoter.unvoteHeight,
-				end: calculateUnlockEndHeight(unlock.punishedVoter, account.punishedVoter, account.punishedDelegate),
+				end: calculateUnlockEndHeight(
+					unlock.punishedVoter,
+					account.punishedVoter,
+					account.punishedDelegate,
+				),
 			});
 		});
 
 		it('Punished self-vote unlocking', async () => {
-			const standardizedUnlock = standardizeUnlockHeight(unlock.punishedSelfVote, account.punishedDelegate, account.punishedDelegate);
+			const standardizedUnlock = standardizeUnlockHeight(
+				unlock.punishedSelfVote,
+				account.punishedDelegate,
+				account.punishedDelegate,
+			);
 			expect(standardizedUnlock).toHaveProperty('start');
 			expect(standardizedUnlock).toHaveProperty('end');
 			expect(standardizedUnlock).toStrictEqual({
 				start: unlock.punishedSelfVote.unvoteHeight,
-				end: calculateUnlockEndHeight(unlock.punishedSelfVote, account.punishedDelegate, account.punishedDelegate),
+				end: calculateUnlockEndHeight(
+					unlock.punishedSelfVote,
+					account.punishedDelegate,
+					account.punishedDelegate,
+				),
 			});
 		});
 	});
