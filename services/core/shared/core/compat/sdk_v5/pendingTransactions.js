@@ -25,6 +25,7 @@ const coreApi = require('./coreApi');
 const {
 	getIndexedAccountInfo,
 } = require('./accounts');
+const { getHexAddressFromPublicKey } = require('./accountUtils');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
@@ -72,34 +73,48 @@ const loadAllPendingTransactions = async () => {
 };
 
 const validateParams = async params => {
-	const requestParams = {};
 	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
 		throw new ValidationException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
 	}
 
-	if (params.username) {
-		const accountInfo = await getIndexedAccountInfo({ username: params.username, limit: 1 }, ['address', 'publicKey']);
-		if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.username} does not exist`);
-		requestParams.senderPublicKey = accountInfo.publicKey;
+	if (params.senderUsername) {
+		const accountInfo = await getIndexedAccountInfo({ username: params.senderUsername, limit: 1 }, ['address', 'publicKey']);
+		if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.senderUsername} does not exist`);
+		params.senderPublicKey = accountInfo.publicKey;
 	}
 
 	if (params.senderIdOrRecipientId) {
-		requestParams.senderId = params.senderIdOrRecipientId;
-		requestParams.recipientId = params.senderIdOrRecipientId;
+		params.senderId = params.senderIdOrRecipientId;
+		params.recipientId = params.senderIdOrRecipientId;
 	}
 
 	if (params.senderId) {
 		const account = await getIndexedAccountInfo({ address: params.senderId, limit: 1 }, ['address', 'publicKey']);
-		requestParams.senderPublicKey = account.publicKey;
+		params.senderPublicKey = account.publicKey;
+	}
+
+	if (params.senderAddress) {
+		const account = await getIndexedAccountInfo({ address: params.senderAddress, limit: 1 }, ['address', 'publicKey']);
+		params.senderPublicKey = account.publicKey;
+	}
+
+	if (params.recipientPublicKey) {
+		params.recipientId = getHexAddressFromPublicKey(params.recipientPublicKey);
+	}
+
+	if (params.recipientUsername) {
+		const accountInfo = await getIndexedAccountInfo({ username: params.recipientUsername, limit: 1 }, ['address']);
+		if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.recipientUsername} does not exist`);
+		params.recipientId = accountInfo.address;
 	}
 
 	if (params.amount && params.amount.includes(':')) {
 		const minAmount = params.amount.split(':')[0];
 		const maxAmount = params.amount.split(':')[1];
-		requestParams.minAmount = Number(minAmount);
-		requestParams.maxAmount = Number(maxAmount);
+		params.minAmount = Number(minAmount);
+		params.maxAmount = Number(maxAmount);
 	}
-	return requestParams;
+	return params;
 };
 
 const getPendingTransactions = async params => {
@@ -111,7 +126,7 @@ const getPendingTransactions = async params => {
 	const offset = Number(params.offset) || 0;
 	const limit = Number(params.limit) || 10;
 
-	const requestParams = await validateParams(params);
+	params = await validateParams(params);
 	const sortComparator = (sortParam) => {
 		const sortProp = sortParam.split(':')[0];
 		const sortOrder = sortParam.split(':')[1];
@@ -124,22 +139,24 @@ const getPendingTransactions = async params => {
 
 	if (pendingTransactionsList.length) {
 		const filteredPendingTxs = pendingTransactionsList.filter(transaction => (
-			(!requestParams.senderPublicKey
-				|| transaction.senderPublicKey === requestParams.senderPublicKey)
-			&& (!requestParams.recipientId
-				|| transaction.asset.recipientAddress === requestParams.recipientId)
-			&& (!requestParams.moduleAssetId
-				|| transaction.amoduleAssetId === requestParams.moduleAssetId)
-			&& (!requestParams.moduleAssetName
-				|| transaction.moduleAssetName === requestParams.moduleAssetName)
-			&& (!requestParams.data
-				|| transaction.asset.data.includes(requestParams.data))
-			&& (!requestParams.data
-				|| transaction.asset.data.includes(requestParams.data))
-			&& (!requestParams.from
-				|| Number(transaction.amount) >= requestParams.minAmount)
-			&& (!requestParams.to
-				|| Number(transaction.amount) <= requestParams.maxAmount)
+			(!params.id
+				|| transaction.id === params.id)
+			&& (!params.senderPublicKey
+				|| transaction.senderPublicKey === params.senderPublicKey)
+			&& (!params.recipientId
+				|| transaction.asset.recipientAddress === params.recipientId)
+			&& (!params.moduleAssetId
+				|| transaction.amoduleAssetId === params.moduleAssetId)
+			&& (!params.moduleAssetName
+				|| transaction.moduleAssetName === params.moduleAssetName)
+			&& (!params.data
+				|| transaction.asset.data.includes(params.data))
+			&& (!params.data
+				|| transaction.asset.data.includes(params.data))
+			&& (!params.from
+				|| Number(transaction.asset.amount) >= params.minAmount)
+			&& (!params.to
+				|| Number(transaction.asset.amount) <= params.maxAmount)
 		));
 		pendingTransactions.data = filteredPendingTxs
 			.sort(sortComparator(params.sort))
