@@ -66,14 +66,17 @@ const mysqlIndex = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
 const blocksIndexSchema = require('./schema/blocks');
+const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
 const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
 
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 // A boolean mapping against the genesis account addresses to indicate migration status
 const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
@@ -167,7 +170,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 
 			// A genesis block account is considered migrated
 			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address });
+			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 			return account;
 		},
@@ -211,6 +214,15 @@ const resolveAccountInfo = async accounts => BluebirdPromise.map(
 	{ concurrency: accounts.length },
 );
 
+const verifyIfPunished = async delegate => {
+	const latestBlockString = await latestBlockCache.get('latestBlock');
+	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
+	const isPunished = delegate.pomHeights
+		.some(pomHeight => pomHeight.start <= latestBlock.height
+			&& latestBlock.height <= pomHeight.end);
+	return isPunished;
+};
+
 const resolveDelegateInfo = async accounts => {
 	accounts = await BluebirdPromise.map(
 		accounts,
@@ -225,17 +237,6 @@ const resolveDelegateInfo = async accounts => {
 					publicKey: account.publicKey,
 				};
 
-				const selfVote = account.dpos.sentVotes
-					.find(vote => vote.delegateAddress === account.address);
-				const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
-				const cap = selfVoteAmount * BigInt(10);
-
-				account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
-				const voteWeight = BigInt(account.totalVotesReceived) > cap
-					? cap
-					: account.totalVotesReceived;
-
-				account.delegateWeight = voteWeight;
 				account.username = account.dpos.delegate.username;
 				account.balance = account.token.balance;
 				account.pomHeights = account.dpos.delegate.pomHeights
@@ -243,16 +244,53 @@ const resolveDelegateInfo = async accounts => {
 					.slice(0, 5)
 					.map(pomHeight => standardizePomHeight(pomHeight));
 
+				// Re-calculate unlocking heights when the delegate is punished
+				if (account.pomHeights.length) {
+					account.dpos.unlocking = account.dpos.unlocking.map(unlockItem => {
+						const [pomHeight] = account.pomHeights
+							.filter(
+								pomItem => pomItem.start <= unlockItem.height.end
+									&& unlockItem.height.end <= pomItem.end,
+							);
+						if (pomHeight) unlockItem.height.end = pomHeight.end;
+						return unlockItem;
+					});
+				}
+
+				if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
+					account.delegateWeight = BigInt('0');
+				} else {
+					const selfVote = account.dpos.sentVotes
+						.find(vote => vote.delegateAddress === account.address);
+					const selfVoteAmount = selfVote ? BigInt(selfVote.amount) : BigInt(0);
+					const cap = selfVoteAmount * BigInt(10);
+
+					account.totalVotesReceived = BigInt(account.dpos.delegate.totalVotesReceived);
+					const voteWeight = BigInt(account.totalVotesReceived) > cap
+						? cap
+						: account.totalVotesReceived;
+
+					account.delegateWeight = voteWeight;
+				}
+
 				const [lastForgedBlock = {}] = await blocksDB.find({
 					generatorPublicKey: account.publicKey,
 					sort: 'height:desc',
 					limit: 1,
-				});
+				}, ['height']);
 				account.dpos.delegate.lastForgedHeight = lastForgedBlock.height || null;
 
 				// Iff the COMPLETE blockchain is SUCCESSFULLY indexed
 				if (getIsSyncFullBlockchain() && getIndexReadyStatus()) {
-					const accountInfo = await getIndexedAccountInfo({ publicKey: account.publicKey });
+					const accountInfo = account.publicKey
+						? await getIndexedAccountInfo(
+							{
+								publicKey: account.publicKey,
+								limit: 1,
+							},
+							['rewards', 'producedBlocks'],
+						)
+						: {};
 					account.rewards = accountInfo && accountInfo.rewards
 						? accountInfo.rewards
 						: 0;
@@ -264,7 +302,8 @@ const resolveDelegateInfo = async accounts => {
 					const [delegateRegTx = {}] = await transactionsDB.find({
 						senderPublicKey: account.publicKey,
 						moduleAssetId: delegateRegTxModuleAssetId,
-					});
+						limit: 1,
+					}, ['height']);
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
 						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
@@ -331,7 +370,8 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 	const [reclaimTx] = await transactionsDB.find({
 		senderPublicKey: publicKey,
 		moduleAssetId: reclaimTxModuleAssetId,
-	});
+		limit: 1,
+	}, ['id']);
 
 	if (reclaimTx) {
 		Object.assign(
@@ -434,7 +474,7 @@ const getAccounts = async params => {
 		};
 	}
 
-	const resultSet = await accountsDB.find(params);
+	const resultSet = await accountsDB.find(params, ['address', 'publicKey', 'username']);
 	if (resultSet.length) params.addresses = resultSet
 		.map(row => getHexAddressFromBase32(row.address));
 
@@ -551,7 +591,46 @@ const getMultisignatureGroups = async account => {
 	return multisignatureAccount;
 };
 
-const getMultisignatureMemberships = async () => []; // TODO
+const getMultisignatureMemberships = async account => {
+	const multisignatureMemberships = { memberships: [] };
+	const multisignatureDB = await getMultisignatureIndex();
+	const membershipInfo = await multisignatureDB.find({ memberAddress: account.address }, ['groupAddress', 'memberAddress']);
+
+	await BluebirdPromise.map(
+		membershipInfo,
+		async membership => {
+			const result = await getIndexedAccountInfo(
+				{ address: membership.groupAddress, limit: 1 },
+				['address', 'username', 'publicKey'],
+			);
+			multisignatureMemberships.memberships.push({
+				address: result && result.address ? result.address : undefined,
+				username: result && result.username ? result.username : undefined,
+				publicKey: result && result.publicKey ? result.publicKey : undefined,
+			});
+		},
+		{ concurrency: membershipInfo.length },
+	);
+
+	return multisignatureMemberships;
+};
+
+const resolveMultisignatureMemberships = tx => {
+	const multisignatureInfoToIndex = [];
+	const allKeys = tx.asset.mandatoryKeys.concat(tx.asset.optionalKeys);
+
+	allKeys.forEach(key => {
+		const members = {
+			id: getBase32AddressFromPublicKey(tx.senderPublicKey)
+				.concat('_', getBase32AddressFromPublicKey(key)),
+			memberAddress: getBase32AddressFromPublicKey(key),
+			groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
+		};
+		multisignatureInfoToIndex.push(members);
+	});
+
+	return multisignatureInfoToIndex;
+};
 
 const removeReclaimedLegacyAccountInfoFromCache = () => {
 	// Clear the legacyAccount cache when a reclaim transaction has been made
@@ -590,4 +669,5 @@ module.exports = {
 	indexAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
+	resolveMultisignatureMemberships,
 };

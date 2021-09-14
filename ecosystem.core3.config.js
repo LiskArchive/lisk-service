@@ -32,6 +32,9 @@ module.exports = {
 				PORT: '9901',
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+				ENABLE_WS_RATELIMIT: false,
+				WS_RATELIMIT_POINTS: 5,
+				WS_RATELIMIT_DURATION: 1, // in seconds
 				// ENABLE_HTTP_API: 'http-status,http-version2',
 				// ENABLE_WS_API: 'blockchain,rpc-v2',
 				// HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
@@ -61,6 +64,7 @@ module.exports = {
 				GEOIP_JSON: '',
 				INDEX_N_BLOCKS: '0',
 				ENABLE_TRANSACTION_STATS: 'true',
+				ENABLE_JOB_MISSING_BLOCKS: 'true',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',

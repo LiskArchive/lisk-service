@@ -1,0 +1,51 @@
+config:
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/rpc-v2"
+  socketio:
+    transports: ["websocket"]
+  phases:
+    - duration: 15
+      arrivalRate: 50
+scenarios:
+  - name: "Transactions"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.transactions", "params": {"limit": 30}}
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+  - name: "Blocks"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks", "params": {"limit": 30}}
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks", "params": {"limit": 10}}
+      - emit:
+          channel: "request"
+          data: {"method": "get.blocks", "params": {"limit": 100}}
+  - name: "Delegates"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.accounts", "params": {"isDelegate": true, "limit": 100}}
+      - emit:
+          channel: "request"
+          data: {"method": "get.accounts", "params": {"isDelegate": true, "limit": 30, "offset": 101}}
+      - emit:
+          channel: "request"
+          data: {"method": "get.forgers", "params": {"limit": 101}}
+  - name: "Accounts"
+    engine: "socketio"
+    flow:
+      - emit:
+          channel: "request"
+          data: {"method": "get.accounts", "params": {"limit": 30}}
+      - emit:
+          channel: "request"
+          data: {"method": "get.accounts", "params": {"limit": 30, "offset": 30}}

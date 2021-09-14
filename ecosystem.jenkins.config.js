@@ -32,6 +32,10 @@ module.exports = {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				STRICT_READINESS_CHECK: true,
+				ENABLE_WS_RATELIMIT: false,
+				WS_RATELIMIT_POINTS: 5,
+				WS_RATELIMIT_DURATION: 1, // in seconds
+				RATE_LIMIT_CONNECTIONS: '0',
 			},
 		},
 		{
@@ -59,6 +63,7 @@ module.exports = {
 				INDEX_N_BLOCKS: '0',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
+				GENESIS_HEIGHT: '250',
 			},
 		},
 		{
@@ -75,6 +80,24 @@ module.exports = {
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+			},
+		},
+		{
+			name: 'lisk-service-newsfeed',
+			script: 'app.js',
+			cwd: './services/newsfeed',
+			pid_file: './pids/service_newsfeed.pid',
+			out_file: './logs/service_newsfeed.log',
+			error_file: './logs/service_newsfeed.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '512M',
+			instances: 1,
+			autorestart: true,
+			env: {
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
 			},
 		},
 	],

@@ -20,7 +20,7 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const getCachedAccountBy = async (key, value) => {
 	const accountsDB = await getAccountsIndex();
-	const [result] = await accountsDB.find({ [key]: value });
+	const [result] = await accountsDB.find({ [key]: value, limit: 1 }, ['address', 'username', 'publicKey']);
 	if (!result) return null;
 	const { address, username, publicKey } = result;
 	const account = { address, username, publicKey };

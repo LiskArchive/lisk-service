@@ -59,11 +59,14 @@ const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
+const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 const logger = Logger();
 
 const requestApi = coreApi.requestRetry;
 
+let latestBlock;
 let genesisHeight;
 let finalizedHeight;
 let indexStartHeight;
@@ -114,7 +117,7 @@ const indexBlocks = async job => {
 	const generatorPkInfoArray = [];
 	blocks.forEach(async block => {
 		if (block.generatorPublicKey) {
-			const [blockInfo] = await blocksDB.find({ id: block.id });
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
 			generatorPkInfoArray.push({
 				publicKey: block.generatorPublicKey,
 				reward: block.reward,
@@ -145,7 +148,9 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({ ...block.header, payload: block.payload })),
 		async block => {
-			const account = block.generatorPublicKey ? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex') }) : {};
+			const account = block.generatorPublicKey
+				? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex'), limit: 1 }, ['address', 'username'])
+				: {};
 			block.generatorAddress = account && account.address ? account.address : null;
 			block.generatorUsername = account && account.username ? account.username : null;
 			block.isFinal = block.height <= getFinalizedHeight();
@@ -209,7 +214,9 @@ const getBlocksByHeightBetween = async (from, to) => {
 
 const getLastBlock = async () => {
 	const response = await requestApi(coreApi.getLastBlock);
-	return normalizeBlocks(response.data);
+	[latestBlock] = await normalizeBlocks(response.data);
+	if (latestBlock && latestBlock.id) await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
+	return [latestBlock];
 };
 
 const isQueryFromIndex = params => {
@@ -241,14 +248,15 @@ const indexNewBlocks = async blocks => {
 		const [block] = blocks.data;
 		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
-		const [blockInfo] = await blocksDB.find({ height: block.height });
+		const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
 			await indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
 
 			// Update block finality status
 			const finalizedBlockHeight = getFinalizedHeight();
-			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 });
+			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
+				Object.keys(blocksIndexSchema.schema));
 			await updateBlockIndexQueue.add('updateBlockIndexQueue', {
 				blocks: nonFinalBlocks
 					.filter(b => b.height <= finalizedBlockHeight)
@@ -258,7 +266,7 @@ const indexNewBlocks = async blocks => {
 			if (blockInfo && blockInfo.id !== block.id) {
 				// Fork detected
 
-				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 				const blocksToRemove = await blocksDB.find({
 					propBetweens: [{
 						property: 'height',
@@ -266,7 +274,7 @@ const indexNewBlocks = async blocks => {
 						to: highestIndexedBlock.height,
 					}],
 					limit: highestIndexedBlock.height - block.height,
-				});
+				}, ['id']);
 				const blockIDsToRemove = blocksToRemove.map(b => b.id);
 				await blocksDB.deleteIds(blockIDsToRemove);
 
@@ -295,12 +303,12 @@ const getBlocks = async params => {
 	if (params.address) {
 		const { address, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ address });
+		accountInfo = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
 	}
 	if (params.username) {
 		const { username, ...remParams } = params;
 		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ username });
+		accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['publicKey']);
 	}
 
 	if (accountInfo && accountInfo.publicKey) {
@@ -335,7 +343,7 @@ const getBlocks = async params => {
 
 	const total = await blocksDB.count(params);
 	if (isQueryFromIndex(params)) {
-		const resultSet = await blocksDB.find(params);
+		const resultSet = await blocksDB.find(params, ['id']);
 		params.ids = resultSet.map(row => row.id);
 	}
 
@@ -410,24 +418,42 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const indexGenesisAccounts = async () => {
+	let numAccountsIndexed;
 	const BATCH_SIZE = 10000;
 	try {
+		const accountsDB = await getAccountsIndex();
+		numAccountsIndexed = await accountsDB.count();
+
 		if (!isGenesisAccountsIndexingInProgress) {
 			isGenesisAccountsIndexingInProgress = true;
 			genesisAccountIndexingBatchNum++;
 
-			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
-
-			const accountsDB = await getAccountsIndex();
-			const numAccountsIndexed = await accountsDB.count();
 			const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
-
 			if (!genesisAccountsToIndex) {
 				genesisAccountsToIndex = genesisBlock.asset.accounts
 					.filter(account => account.address.length === 40);
 				logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 			}
 
+			// If the cache doesn't contain information, it'll be updated later on successful completion
+			const indexedTillBatch = await genesisAccountsCache.get('indexedTillBatch');
+			if (
+				indexedTillBatch !== undefined
+				&& numAccountsIndexed < ((indexedTillBatch + 1) * BATCH_SIZE)
+			) {
+				// Resume indexing starting from the batch that was last indexed
+				genesisAccountIndexingBatchNum = indexedTillBatch;
+				logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
+			} else {
+				// Calculate number of batches that already have been indexed and continue
+				const prevGenesisAccountIndexingBatchNum = genesisAccountIndexingBatchNum;
+				genesisAccountIndexingBatchNum = Math.floor(numAccountsIndexed / BATCH_SIZE);
+				if (indexedTillBatch === undefined || prevGenesisAccountIndexingBatchNum === 0) {
+					logger.info(`Genesis accounts already indexed until batch: ${genesisAccountIndexingBatchNum - 1}, will continue from batch ${genesisAccountIndexingBatchNum}`);
+				}
+			}
+
+			const batchNum = genesisAccountIndexingBatchNum; // Use shorter alias
 			const genesisAccountAddressesToIndex = genesisAccountsToIndex
 				.slice(batchNum * BATCH_SIZE, (batchNum + 1) * BATCH_SIZE)
 				.map(account => account.address);
@@ -448,7 +474,7 @@ const indexGenesisAccounts = async () => {
 
 				logger.info(`Indexing genesis account batch: ${batchNum}, ${Math.ceil(genesisAccountsToIndex.length / BATCH_SIZE) - batchNum - 1} to go`);
 
-				const PAGE_SIZE = 20;
+				const PAGE_SIZE = 1000;
 				const NUM_PAGES = Math.ceil(genesisAccountAddressesToIndex.length / PAGE_SIZE);
 				for (let i = 0; i < NUM_PAGES; i++) {
 					// eslint-disable-next-line no-await-in-loop
@@ -468,12 +494,18 @@ const indexGenesisAccounts = async () => {
 					genesisAccountsToIndex = undefined;
 				}
 			}
+
+			// On success, update the cache with the batch number
+			await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
 		}
 	} catch (err) {
 		logger.warn(`Unable to index Genesis block accounts batch ${genesisAccountIndexingBatchNum}, will retry again: ${err}`);
 		genesisAccountIndexingBatchNum--;
+		await genesisAccountsCache.set('indexedTillBatch', genesisAccountIndexingBatchNum);
 	} finally {
-		isGenesisAccountsIndexingInProgress = false;
+		if (numAccountsIndexed >= BATCH_SIZE * (genesisAccountIndexingBatchNum + 1)) {
+			isGenesisAccountsIndexingInProgress = false;
+		}
 	}
 };
 
@@ -593,7 +625,11 @@ const indexPastBlocks = async () => {
 
 	// Highest finalized block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1, isFinal: true });
+	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({
+		sort: 'height:desc',
+		limit: 1,
+		isFinal: true,
+	}, ['height']);
 	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
 		? lastIndexedHeight : blockIndexLowerRange;
 
@@ -613,7 +649,7 @@ const checkIndexReadiness = async () => {
 			const networkStatus = await requestApi(coreApi.getNetworkStatus);
 			const currentChainHeight = networkStatus.data.height;
 			const numBlocksIndexed = await blocksDB.count();
-			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 });
+			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 
 			logger.debug(
 				`\nnumBlocksIndexed: ${numBlocksIndexed}`,
@@ -661,7 +697,11 @@ const init = async () => {
 
 	// Check and update index readiness status
 	Signals.get('newBlock').add(checkIndexReadiness);
-	Signals.get('newBlock').add(indexGenesisAccounts);
+
+	const indexGenesisAccountsListener = async ({ data: [newBlock] }) => {
+		if (newBlock.height % 10 === 0) await indexGenesisAccounts();
+	};
+	Signals.get('newBlock').add(indexGenesisAccountsListener);
 };
 
 module.exports = {

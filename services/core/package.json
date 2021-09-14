@@ -1,7 +1,7 @@
 {
   "name": "lisk-service-core",
-  "version": "0.4.5",
-  "description": "Lisk Serivce Core Component",
+  "version": "0.5.0-alpha.0",
+  "description": "Lisk Service Core",
   "keywords": [
     "lisk",
     "blockchain"
@@ -53,7 +53,7 @@
     "split": "^1.0.1",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.4",
-    "tar": "^6.1.2"
+    "tar": "^6.1.9"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",
