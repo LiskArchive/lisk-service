@@ -79,11 +79,11 @@ RATE_LIMIT_DURATION_WS=1
 ### HTTP Requests rate limit settings
 
 ```bash
-# To enable `HTTP Rate limit`, the `RATE_LIMIT_ENABLE` environment variable is required to be true.
-# The `HTTP Rate limit` directives can be set using `RATE_LIMIT_WINDOW` and `RATE_LIMIT_CONNECTIONS` environment 
+# To enable `HTTP Rate limit`, the `RATE_LIMIT_ENABLE_HTTP` environment variable is required to be true.
+# The `HTTP Rate limit` directives can be set using `RATE_LIMIT_WINDOW_HTTP` and `RATE_LIMIT_CONNECTIONS_HTTP` environment 
 # variable.
 RATE_LIMIT_ENABLE_HTTP=true
-RATE_LIMIT_WINDOW_HTTP=10 # To keep record of requests in memory (in milliseconds). Defaults to 10 seconds
+RATE_LIMIT_WINDOW_HTTP=10 # To keep record of requests in memory (in seconds). Defaults to 10 seconds
 RATE_LIMIT_CONNECTIONS_HTTP=200 # Max number of requests during window. Defaults to 200 requests
 ```
 
