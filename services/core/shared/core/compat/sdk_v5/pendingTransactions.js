@@ -84,13 +84,8 @@ const validateParams = async params => {
 	}
 
 	if (params.senderIdOrRecipientId) {
-		params.senderId = params.senderIdOrRecipientId;
+		params.senderAddress = params.senderIdOrRecipientId;
 		params.recipientId = params.senderIdOrRecipientId;
-	}
-
-	if (params.senderId) {
-		const account = await getIndexedAccountInfo({ address: params.senderId, limit: 1 }, ['address', 'publicKey']);
-		params.senderPublicKey = account.publicKey;
 	}
 
 	if (params.senderAddress) {
