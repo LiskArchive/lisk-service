@@ -193,7 +193,7 @@ const resolveAccountInfo = async accounts => BluebirdPromise.map(
 				const delegateHexAddress = unlock.delegateAddress;
 				unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
 
-				let delegateAccount;
+				let delegateAccount = account;
 				if (unlock.delegateAddress !== account.address) {
 					const {
 						data: [delegateAcc],
