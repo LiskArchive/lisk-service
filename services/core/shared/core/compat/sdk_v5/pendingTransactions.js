@@ -141,7 +141,7 @@ const getPendingTransactions = async params => {
 			&& (!params.recipientId
 				|| transaction.asset.recipientAddress === params.recipientId)
 			&& (!params.moduleAssetId
-				|| transaction.amoduleAssetId === params.moduleAssetId)
+				|| transaction.moduleAssetId === params.moduleAssetId)
 			&& (!params.moduleAssetName
 				|| transaction.moduleAssetName === params.moduleAssetName)
 			&& (!params.data
