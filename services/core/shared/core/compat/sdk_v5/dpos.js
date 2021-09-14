@@ -44,14 +44,17 @@ const findPomHeightForUnlock = (unlock, account, isSelfVote) => {
 	//   and still in the mandatory locking period(see the “voting LIP”).
 	// """
 	// Refer: https://github.com/LiskHQ/lips/blob/master/proposals/lip-0024.md#update-to-validity-of-unlock-transaction
-	const [pomHeight] = account.dpos.delegate.pomHeights
+	const { unvoteHeight } = unlock;
+	const [pomHeightForUnlock] = account.dpos.delegate.pomHeights
 		.sort((a, b) => b - a)
 		.filter(
-			height => unlock.unvoteHeight < height + pomWaitingPeriod
-				&& height < unlock.unvoteHeight + unlockWaitingPeriod,
+			pomHeight => pomHeight <= unvoteHeight
+				&& unvoteHeight + unlockWaitingPeriod > pomHeight
+				&& unvoteHeight < pomHeight + pomWaitingPeriod
+				&& unvoteHeight + unlockWaitingPeriod < pomHeight + pomWaitingPeriod,
 		);
 
-	return pomHeight || null;
+	return pomHeightForUnlock || null;
 };
 
 const calculateUnlockEndHeight = (unlock, account, delegateAcc) => {

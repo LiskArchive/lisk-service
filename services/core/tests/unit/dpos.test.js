@@ -92,6 +92,62 @@ describe('DPoS tests', () => {
 			expect(findPomHeightForUnlock(unlock.punishedSelfVote, account.punishedDelegate, true))
 				.toBe(account.punishedDelegate.dpos.delegate.pomHeights[0]);
 		});
+
+		describe('Edge-case scenarios', () => {
+			it('Unlock height equals pomHeight - punished voter', async () => {
+				const pomHeight = findPomHeightForUnlock(
+					{
+						...unlock.punishedVoter,
+						unvoteHeight: account.punishedDelegate.dpos.delegate.pomHeights[0],
+					},
+					account.punishedDelegate,
+					false,
+				);
+				expect(pomHeight)
+					.toBe(account.punishedDelegate.dpos.delegate.pomHeights[0]);
+			});
+
+			it('Unlock height equals pomHeight - punished self-vote', async () => {
+				const pomHeight = findPomHeightForUnlock(
+					{
+						...unlock.punishedSelfVote,
+						unvoteHeight: account.punishedDelegate.dpos.delegate.pomHeights[0],
+					},
+					account.punishedDelegate,
+					false,
+				);
+				expect(pomHeight)
+					.toBe(account.punishedDelegate.dpos.delegate.pomHeights[0]);
+			});
+
+			it('Unlock wait height equals pomHeight - punished voter', async () => {
+				const unvoteHeight = account.punishedDelegate.dpos.delegate.pomHeights[0]
+					+ constants.PUNISH_TIME_VOTER;
+				const pomHeight = findPomHeightForUnlock(
+					{
+						...unlock.punishedVoter,
+						unvoteHeight,
+					},
+					account.punishedDelegate,
+					false,
+				);
+				expect(pomHeight).toBeNull();
+			});
+
+			it('Unlock wait height equals pomHeight - punished self-vote', async () => {
+				const unvoteHeight = account.punishedDelegate.dpos.delegate.pomHeights[0]
+					+ constants.PUNISH_TIME_SELF_VOTE;
+				const pomHeight = findPomHeightForUnlock(
+					{
+						...unlock.punishedVoter,
+						unvoteHeight,
+					},
+					account.punishedDelegate,
+					false,
+				);
+				expect(pomHeight).toBeNull();
+			});
+		});
 	});
 
 	describe('Verify calculateUnlockEndHeight', () => {
