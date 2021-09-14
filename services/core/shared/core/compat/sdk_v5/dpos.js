@@ -37,8 +37,11 @@ const findPomHeightForUnlock = (unlock, account, isSelfVote) => {
 		? PUNISH_TIME_SELF_VOTE
 		: PUNISH_TIME_VOTER;
 
-	// Consider the PoM height iff the unvote happens before the punishment ends
-	// and punishment starts before the (unvote) unlock period ends
+	// Consider the PoM height iff the following consditions are met:
+	// - the punishment period begins before the unlock period ends (unvote height + waiting time)
+	// - the unlock period begins (unvote height) before the punishment period ends
+	// - the unlock period ends before the punishment period ends
+	//
 	// """
 	//   This extended locking period also applies to tokens recently unvoted
 	//   and still in the mandatory locking period(see the “voting LIP”).
