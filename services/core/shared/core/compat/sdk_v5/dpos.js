@@ -37,7 +37,7 @@ const findPomHeightForUnlock = (unlock, account, isSelfVote) => {
 		? PUNISH_TIME_SELF_VOTE
 		: PUNISH_TIME_VOTER;
 
-	// Consider the PoM height iff the following consditions are met:
+	// Consider the PoM height iff the following conditions are met:
 	// - the punishment period begins before the unlock period ends (unvote height + waiting time)
 	// - the unlock period begins (unvote height) before the punishment period ends
 	// - the unlock period ends before the punishment period ends
