@@ -70,6 +70,21 @@ describe('Pending transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('returns transactions with known moduleAssetId', async () => {
+			const response = await api.get(`${endpoint}?includePending=true&moduleAssetId=${refTransaction.moduleAssetId}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(response.meta).toMap(metaSchema);
+		});
+
 		it('returns transactions with known sender address', async () => {
 			const response = await api.get(`${endpoint}?includePending=true&senderAddress=${refTransaction.sender.address}`);
 			expect(response).toMap(goodRequestSchema);
