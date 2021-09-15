@@ -29,7 +29,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
 const endpoint = `${baseUrlV2}/transactions`;
 
-describe('Transactions API', () => {
+describe('Pending transactions API', () => {
 	let refTransaction;
 	beforeAll(async () => {
 		await api.post(endpoint,
@@ -41,7 +41,7 @@ describe('Transactions API', () => {
 	});
 
 	describe('Retrieve pending transaction by query params', () => {
-		it('returns transactions with transactionId', async () => {
+		it('returns transaction with transactionId', async () => {
 			const response = await api.get(`${endpoint}?includePending=true&transactionId=${refTransaction.id}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
