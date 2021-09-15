@@ -34,16 +34,24 @@ const mergeTransactions = async (params) => {
 		meta: {},
 	};
 
+	const transactions = {
+		data: [],
+		meta: {},
+	};
+
 	const { offset, limit, ...remParams } = params;
 	params = remParams;
 
 	const pendingTxs = await getPendingTransactions(params);
-	const transactions = !params.id ? await coreApi.getTransactions(params) : { data: [], meta: {} };
+	const response = !params.id ? await coreApi.getTransactions(params) : {};
+	if (response.data) transactions.data = response.data;
+	if (response.meta) transactions.meta = response.meta;
+	transactions.meta.total = transactions.meta.total ? transactions.meta.total : 0;
+
 	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(offset, offset + limit);
 
 	allTransactions.meta.count = allTransactions.data.length;
 	allTransactions.meta.offset = offset;
-	transactions.meta.total = transactions.meta.total || 0;
 	allTransactions.meta.total = pendingTxs.data.length
 		? (transactions.meta.total + pendingTxs.meta.total)
 		: transactions.meta.total;
