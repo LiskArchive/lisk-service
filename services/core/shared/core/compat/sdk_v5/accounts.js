@@ -191,7 +191,9 @@ const resolveAccountInfo = async accounts => BluebirdPromise.map(
 	accounts,
 	async account => {
 		account.dpos.unlocking = await BluebirdPromise.map(
-			account.dpos.unlocking,
+			account.dpos.unlocking
+				.sort((a, b) => b - a)
+				.slice(0, 5),
 			async unlock => {
 				const delegateHexAddress = unlock.delegateAddress;
 				unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
@@ -243,19 +245,6 @@ const resolveDelegateInfo = async accounts => {
 					.sort((a, b) => b - a)
 					.slice(0, 5)
 					.map(pomHeight => standardizePomHeight(pomHeight));
-
-				// Re-calculate unlocking heights when the delegate is punished
-				if (account.pomHeights.length) {
-					account.dpos.unlocking = account.dpos.unlocking.map(unlockItem => {
-						const [pomHeight] = account.pomHeights
-							.filter(
-								pomItem => pomItem.start <= unlockItem.height.end
-									&& unlockItem.height.end <= pomItem.end,
-							);
-						if (pomHeight) unlockItem.height.end = pomHeight.end;
-						return unlockItem;
-					});
-				}
 
 				if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
 					account.delegateWeight = BigInt('0');
