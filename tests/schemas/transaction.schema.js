@@ -71,8 +71,21 @@ const postTransactionSchema = {
 	message: Joi.string().valid('Transaction payload was successfully passed to the network node').required(),
 };
 
+const pendingTransactionSchemaVersion5 = {
+	id: Joi.string().required(),
+	moduleAssetId: Joi.string().required(),
+	moduleAssetName: Joi.string().required(),
+	fee: Joi.string().required(),
+	nonce: Joi.string().optional(),
+	signatures: Joi.array().items(Joi.string().allow('').optional()).required(),
+	asset: Joi.object().required(),
+	sender: Joi.object(sender).optional(),
+	isPending: Joi.boolean().required(),
+};
+
 module.exports = {
 	transactionSchema: Joi.object(transactionSchema),
 	transactionSchemaVersion5: Joi.object(transactionSchemaVersion5),
 	postTransactionSchema: Joi.object(postTransactionSchema),
+	pendingTransactionSchemaVersion5: Joi.object(pendingTransactionSchemaVersion5),
 };
