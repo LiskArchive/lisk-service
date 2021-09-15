@@ -53,6 +53,11 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data).toBeArrayOfSize(1);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -75,6 +80,11 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -90,6 +100,11 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -105,6 +120,11 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -120,6 +140,11 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -135,6 +160,11 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(result.meta).toMap(metaSchema);
 		});
 	});

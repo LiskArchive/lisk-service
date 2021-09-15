@@ -47,6 +47,11 @@ describe('Pending transactions API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data).toBeArrayOfSize(1);
 			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -57,6 +62,11 @@ describe('Pending transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -67,6 +77,11 @@ describe('Pending transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -77,6 +92,11 @@ describe('Pending transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -87,6 +107,11 @@ describe('Pending transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
