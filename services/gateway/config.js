@@ -37,10 +37,10 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
 
 config.rateLimit = {};
-config.rateLimit.enable = Boolean(String(process.env.RATE_LIMIT_ENABLE_HTTP).toLowerCase() === 'true');
-config.rateLimit.window = Number(process.env.RATE_LIMIT_WINDOW_HTTP) || 10; // in seconds
+config.rateLimit.enable = Boolean(String(process.env.HTTP_RATE_LIMIT_ENABLE).toLowerCase() === 'true');
+config.rateLimit.window = Number(process.env.HTTP_RATE_LIMIT_WINDOW) || 10; // in seconds
 // Max number of requests during window
-config.rateLimit.connectionLimit = Number(process.env.RATE_LIMIT_CONNECTIONS_HTTP || 200);
+config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTIONS || 200);
 
 /**
  * LOGGING
@@ -84,16 +84,16 @@ config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK)
 
 // configuration for websocket rate limit
 config.websocket = {
-	enableRateLimit: Boolean(String(process.env.RATE_LIMIT_ENABLE_WS).toLowerCase() === 'true'),
+	enableRateLimit: Boolean(String(process.env.WS_RATE_LIMIT_ENABLE).toLowerCase() === 'true'),
 	rateLimit: {
-		points: Number(process.env.RATE_LIMIT_CONNECTIONS_WS || 5),
-		duration: Number(process.env.RATE_LIMIT_DURATION_WS || 1), // in seconds
+		points: Number(process.env.WS_RATE_LIMIT_CONNECTIONS || 5),
+		duration: Number(process.env.WS_RATE_LIMIT_DURATION || 1), // in seconds
 	},
 };
 
 // Gateway RPC cache settings
 config.rpcCache = {
-	ttl: 10, // in seconds
+	ttl: 5, // in seconds
 	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
 };
 
