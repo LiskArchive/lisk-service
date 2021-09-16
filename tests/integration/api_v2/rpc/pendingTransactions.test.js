@@ -18,8 +18,6 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 
 const {
 	resultEnvelopeSchema,
-	emptyResultEnvelopeSchema,
-	emptyResponseSchema,
 	jsonRpcEnvelopeSchema,
 	metaSchema,
 } = require('../../../schemas/rpcGenerics.schema');
@@ -161,54 +159,104 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transaction id -> empty response', async () => {
+		it('empty transaction id -> ok', async () => {
 			const response = await getTransactions({
 				includePending: true,
 				transactionId: '',
 			});
-			expect(response).toMap(emptyResponseSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transaction moduleAsset -> empty response', async () => {
+		it('empty transaction moduleAsset -> ok', async () => {
 			const response = await getTransactions({
 				includePending: true,
 				moduleAssetId: '',
 			});
-			expect(response).toMap(emptyResponseSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transaction sender address -> empty response', async () => {
+		it('empty transaction sender address -> ok', async () => {
 			const response = await getTransactions({
 				includePending: true,
 				senderAddress: '',
 			});
-			expect(response).toMap(emptyResponseSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transaction sender username -> empty response', async () => {
+		it('empty transaction sender username -> ok', async () => {
 			const response = await getTransactions({
 				includePending: true,
 				senderUsername: '',
 			});
-			expect(response).toMap(emptyResponseSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transaction sender publicKey -> empty response', async () => {
+		it('empty transaction sender publicKey -> ok', async () => {
 			const response = await getTransactions({
 				includePending: true,
 				senderPublicKey: '',
 			});
-			expect(response).toMap(emptyResponseSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(result.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(result.meta).toMap(metaSchema);
 		});
 	});
 });
