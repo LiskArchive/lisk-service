@@ -46,7 +46,7 @@ const mergeTransactions = async (params) => {
 	const response = !params.id ? await coreApi.getTransactions(params) : {};
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
-	transactions.meta.total = transactions.meta.total ? transactions.meta.total : 0;
+	transactions.meta.total = transactions.meta.total || 0;
 
 	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(offset, offset + limit);
 
