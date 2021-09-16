@@ -41,8 +41,8 @@ const transactionSchema = {
 };
 
 const sender = {
-	address: Joi.string().required(),
-	publicKey: Joi.string().required(),
+	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
+	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).required(),
 	username: Joi.string().optional(),
 };
 
@@ -73,10 +73,10 @@ const postTransactionSchema = {
 
 const pendingTransactionSchemaVersion5 = {
 	id: Joi.string().required(),
-	moduleAssetId: Joi.string().required(),
-	moduleAssetName: Joi.string().required(),
+	moduleAssetId: Joi.string().min(1).max(21).required(),
+	moduleAssetName: Joi.string().min(1).required(),
 	fee: Joi.string().required(),
-	nonce: Joi.string().optional(),
+	nonce: Joi.string().required(),
 	signatures: Joi.array().items(Joi.string().allow('').optional()).required(),
 	asset: Joi.object().required(),
 	sender: Joi.object(sender).optional(),
