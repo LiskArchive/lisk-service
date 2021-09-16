@@ -129,5 +129,65 @@ describe('Pending transactions API', () => {
 			);
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		it('empty transaction moduleAssetId ->  ok', async () => {
+			const response = await api.get(`${endpoint}?includePending=true&moduleAssetId=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('empty transaction sender address ->  ok', async () => {
+			const response = await api.get(`${endpoint}?includePending=true&senderAddress=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('empty transaction sender username ->  ok', async () => {
+			const response = await api.get(`${endpoint}?includePending=true&senderUsername=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('empty transaction sender publicKey ->  ok', async () => {
+			const response = await api.get(`${endpoint}?includePending=true&senderPublicKey=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(response.meta).toMap(metaSchema);
+		});
 	});
 });

@@ -61,13 +61,6 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('empty transaction id -> empty response', async () => {
-			const response = await getTransactions({ transactionId: '' });
-			expect(response).toMap(emptyResponseSchema);
-			const { result } = response;
-			expect(result).toMap(emptyResultEnvelopeSchema);
-		});
-
 		it('known transaction moduleAssetId -> ok', async () => {
 			const response = await getTransactions({
 				includePending: true,
@@ -166,6 +159,56 @@ describe('Method get.transactions with includePending', () => {
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('empty transaction id -> empty response', async () => {
+			const response = await getTransactions({
+				includePending: true,
+				transactionId: '',
+			});
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('empty transaction moduleAsset -> empty response', async () => {
+			const response = await getTransactions({
+				includePending: true,
+				moduleAssetId: '',
+			});
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('empty transaction sender address -> empty response', async () => {
+			const response = await getTransactions({
+				includePending: true,
+				senderAddress: '',
+			});
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('empty transaction sender username -> empty response', async () => {
+			const response = await getTransactions({
+				includePending: true,
+				senderUsername: '',
+			});
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('empty transaction sender publicKey -> empty response', async () => {
+			const response = await getTransactions({
+				includePending: true,
+				senderPublicKey: '',
+			});
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 	});
 });
