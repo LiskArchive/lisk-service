@@ -33,8 +33,10 @@ const postTransactions = async params => request(wsRpcUrl, 'post.transactions', 
 describe('Method get.transactions with includePending', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		await postTransactions({ transaction: '08021000185a2080c2d72f2a20bfccf04909701c44add442c12cd86bb1332e61a70b2b6d48d97021b4dc3e6a60322b0880c2d72f1214df0e187bb3895806261c87cf66e1772566ee8e581a0e746f6b656e207472616e736665723a402957482724c3fb48770ecee577a231522edc4f774f05c0311dae990145f202e6d04b80220fcad52556604c8c7d587db87ce8e03deb038f15976286ec60cd2507' });
-
+		await postTransactions({
+			transaction: '08021000185a2080c2d72f2a20bfccf04909701c44add442c12cd86bb1332e61a70b2b6d48d97021b4dc3e6a60322b0880c2d72f1214df0e187bb3895806261c87cf66e1772566ee8e581a0e746f6b656e207472616e736665723a402957482724c3fb48770ecee577a231522edc4f774f05c0311dae990145f202e6d04b80220fcad52556604c8c7d587db87ce8e03deb038f15976286ec60cd2507',
+		});
+		// Wait for pending transactions list to get updated
 		await new Promise(res => setTimeout(res, 10000));
 		const response1 = await getTransactions({ includePending: true, limit: 1 });
 		[refTransaction] = response1.result.data;
@@ -183,66 +185,6 @@ describe('Method get.transactions with includePending', () => {
 			const response = await getTransactions({
 				includePending: true,
 				moduleAssetId: '',
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
-			expect(result.data[0]).toEqual(
-				expect.objectContaining({
-					isPending: true,
-				}),
-			);
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('empty transaction sender address -> ok', async () => {
-			const response = await getTransactions({
-				includePending: true,
-				senderAddress: '',
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
-			expect(result.data[0]).toEqual(
-				expect.objectContaining({
-					isPending: true,
-				}),
-			);
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('empty transaction sender username -> ok', async () => {
-			const response = await getTransactions({
-				includePending: true,
-				senderUsername: '',
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			expect(response.result).toMap(resultEnvelopeSchema);
-			expect(result.data[0]).toMap(pendingTransactionSchemaVersion5);
-			expect(result.data[0]).toEqual(
-				expect.objectContaining({
-					isPending: true,
-				}),
-			);
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('empty transaction sender publicKey -> ok', async () => {
-			const response = await getTransactions({
-				includePending: true,
-				senderPublicKey: '',
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

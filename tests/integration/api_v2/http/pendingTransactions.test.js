@@ -35,6 +35,7 @@ describe('Pending transactions API', () => {
 		await api.post(endpoint,
 			{ transaction: '0802100018782080c2d72f2a20bfccf04909701c44add442c12cd86bb1332e61a70b2b6d48d97021b4dc3e6a60322b0880c2d72f1214df0e187bb3895806261c87cf66e1772566ee8e581a0e746f6b656e207472616e736665723a4022a7f6be7b6e31112adf0e5b2f4a2e092c4568118587a2e681ccab24a68c7531c68ccf79e0ed88633ae5020b6f3d1d647e1a178bdf088c33f78f80eb9fc2b90b' },
 		);
+		// Wait for pending transactions list to get updated
 		await new Promise(res => setTimeout(res, 10000));
 		const response1 = await api.get(`${endpoint}?includePending=true&limit=1`);
 		[refTransaction] = response1.data;
@@ -130,53 +131,23 @@ describe('Pending transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
+		it('empty transaction transactionId ->  ok', async () => {
+			const response = await api.get(`${endpoint}?includePending=true&transactionId=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
+			expect(response.data[0]).toEqual(
+				expect.objectContaining({
+					isPending: true,
+				}),
+			);
+			expect(response.meta).toMap(metaSchema);
+		});
+
 		it('empty transaction moduleAssetId ->  ok', async () => {
 			const response = await api.get(`${endpoint}?includePending=true&moduleAssetId=`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
-			expect(response.data[0]).toEqual(
-				expect.objectContaining({
-					isPending: true,
-				}),
-			);
-			expect(response.meta).toMap(metaSchema);
-		});
-
-		it('empty transaction sender address ->  ok', async () => {
-			const response = await api.get(`${endpoint}?includePending=true&senderAddress=`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
-			expect(response.data[0]).toEqual(
-				expect.objectContaining({
-					isPending: true,
-				}),
-			);
-			expect(response.meta).toMap(metaSchema);
-		});
-
-		it('empty transaction sender username ->  ok', async () => {
-			const response = await api.get(`${endpoint}?includePending=true&senderUsername=`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			expect(response.data[0]).toMap(pendingTransactionSchemaVersion5);
-			expect(response.data[0]).toEqual(
-				expect.objectContaining({
-					isPending: true,
-				}),
-			);
-			expect(response.meta).toMap(metaSchema);
-		});
-
-		it('empty transaction sender publicKey ->  ok', async () => {
-			const response = await api.get(`${endpoint}?includePending=true&senderPublicKey=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
