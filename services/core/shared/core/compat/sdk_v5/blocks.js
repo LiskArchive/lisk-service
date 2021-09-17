@@ -115,17 +115,21 @@ const indexBlocks = async job => {
 	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const generatorPkInfoArray = [];
-	blocks.forEach(async block => {
-		if (block.generatorPublicKey) {
-			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-			generatorPkInfoArray.push({
-				publicKey: block.generatorPublicKey,
-				reward: block.reward,
-				isForger: true,
-				isBlockIndexed: !!blockInfo,
-			});
-		}
-	});
+	await BluebirdPromise.map(
+		blocks,
+		async block => {
+			if (block.generatorPublicKey) {
+				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+				generatorPkInfoArray.push({
+					publicKey: block.generatorPublicKey,
+					reward: block.reward,
+					isForger: true,
+					isBlockIndexed: !!blockInfo,
+				});
+			}
+		},
+		{ concurrency: blocks.length },
+	);
 	await blocksDB.upsert(blocks);
 	await indexAccountsbyPublicKey(generatorPkInfoArray);
 	await indexTransactions(blocks);
