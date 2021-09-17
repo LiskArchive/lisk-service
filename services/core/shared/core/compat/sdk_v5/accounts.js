@@ -222,10 +222,10 @@ const resolveDelegateInfo = async accounts => {
 					account.dpos.unlocking = account.dpos.unlocking.map(unlockItem => {
 						const [pomHeight] = account.pomHeights
 							.filter(
-								pomItem => pomItem.start <= unlockItem.height.end
-									&& unlockItem.height.end <= pomItem.end,
+								pomItem => pomItem.start <= unlockItem.unvoteHeight
+									&& unlockItem.unvoteHeight <= pomItem.end,
 							);
-						if (pomHeight) unlockItem.height.end = pomHeight.end;
+						if (pomHeight) unlockItem.unvoteHeight = pomHeight.end;
 						return unlockItem;
 					});
 				}
