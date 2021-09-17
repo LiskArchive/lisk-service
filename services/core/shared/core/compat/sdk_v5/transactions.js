@@ -22,6 +22,7 @@ const coreApi = require('./coreApi');
 
 const {
 	getHexAddressFromPublicKey,
+	getBase32AddressFromPublicKey,
 	getBase32AddressFromHex,
 } = require('./accountUtils');
 
@@ -362,7 +363,7 @@ const getTransactionsByBlockId = async blockId => {
 			}, ['address', 'publicKey', 'username']);
 			transaction.senderId = account && account.address
 				? account.address
-				: getHexAddressFromPublicKey(transaction.senderPublicKey);
+				: getBase32AddressFromPublicKey(transaction.senderPublicKey);
 			transaction.username = account && account.username ? account.username : undefined;
 			transaction.isPending = false;
 			return transaction;
