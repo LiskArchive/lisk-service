@@ -64,7 +64,7 @@ const loadConfig = async () => {
 	} else {
 		const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
 		if (networkConfig) {
-			logger.info(`Found config for ${networkConfig.mainnet} (${networkIdentifier})`);
+			logger.info(`Found config for ${networkConfig.name} (${networkIdentifier})`);
 
 			genesisBlockUrl = networkConfig.genesisBlockUrl;
 			logger.info(`genesisBlockUrl set to ${genesisBlockUrl}`);
