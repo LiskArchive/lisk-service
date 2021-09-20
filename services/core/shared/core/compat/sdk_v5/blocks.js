@@ -596,19 +596,19 @@ const checkIndexReadiness = async () => {
 			const numBlocksIndexed = await blocksDB.count();
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 
-			logger.debug(
-				`\nnumBlocksIndexed: ${numBlocksIndexed}`,
-				`\nlastIndexedBlock: ${lastIndexedBlock.height}`,
-				`\ncurrentChainHeight: ${currentChainHeight}`,
-			);
+			logger.info([
+				`numBlocksIndexed: ${numBlocksIndexed}`,
+				`lastIndexedBlock: ${lastIndexedBlock.height}`,
+				`currentChainHeight: ${currentChainHeight}`,
+			].join(', '));
 			if (numBlocksIndexed >= currentChainHeight - genesisHeight
 				&& lastIndexedBlock.height >= currentChainHeight - 1) {
 				setIndexReadyStatus(true);
-				logger.info('Blocks index is now ready');
+				logger.info('The blockchain index is complete');
 				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
 				Signals.get('blockIndexReady').dispatch(true);
 			} else {
-				logger.debug('Blocks index is not yet ready');
+				logger.info('The blockchain indexing in progress');
 			}
 		} catch (err) {
 			logger.warn(`Error while checking index readiness: ${err.message}`);
@@ -645,11 +645,6 @@ const init = async () => {
 
 	// Check and update index readiness status
 	Signals.get('newBlock').add(checkIndexReadiness);
-
-	const indexGenesisAccountsListener = async ({ data: [newBlock] }) => {
-		if (newBlock.height % 10 === 0) await indexGenesisAccounts();
-	};
-	Signals.get('newBlock').add(indexGenesisAccountsListener);
 };
 
 module.exports = {
