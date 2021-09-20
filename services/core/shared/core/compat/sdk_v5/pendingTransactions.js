@@ -26,26 +26,15 @@ const {
 	getIndexedAccountInfo,
 } = require('./accounts');
 const { getHexAddressFromPublicKey } = require('./accountUtils');
-const { getRegisteredModuleAssets } = require('../common');
-const { parseToJSONCompatObj } = require('../../../jsonTools');
+const { normalizeTransaction } = require('./transactions');
 
 const requestApi = coreApi.requestRetry;
 
-const availableLiskModuleAssets = getRegisteredModuleAssets();
 let pendingTransactionsList = [];
-
-const normalizeTransaction = tx => {
-	const [{ id, name }] = availableLiskModuleAssets
-		.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-	tx = parseToJSONCompatObj(tx);
-	tx.moduleAssetId = id;
-	tx.moduleAssetName = name;
-	return tx;
-};
 
 const getPendingTransactionsFromCore = async () => {
 	const response = await requestApi(coreApi.getPendingTransactions);
-	let pendingTx = response.data.map(tx => normalizeTransaction(tx));
+	let pendingTx = await normalizeTransaction(response.data);
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,
 		async transaction => {

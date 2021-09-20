@@ -386,4 +386,5 @@ module.exports = {
 	removeTransactionsByBlockIDs,
 	getTransactionsByBlockId,
 	getTransactionsByIDs,
+	normalizeTransaction,
 };
