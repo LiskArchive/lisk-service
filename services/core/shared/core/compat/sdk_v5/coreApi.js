@@ -121,8 +121,8 @@ const getBlockByHeight = async height => {
 		if (Number(height) === await getGenesisHeight()) {
 			return { data: [await getGenesisBlockFromFS()] };
 		}
-	} catch(err) {
-		logger.warn('Retrieval of the genesis block from the file system did not succeed');
+	} catch (err) {
+		logger.warn('Retrieval of the genesis block snapshot was not possible, retrieveing genesis block directly from Lisk Core');
 	}
 
 	try {
