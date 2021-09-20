@@ -136,7 +136,7 @@ const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
 const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
 const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', deleteIndexedBlocks);
 
-const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
+const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 	const apiClient = await getApiClient();
 
 	const normalizedBlocks = await BluebirdPromise.map(
@@ -167,7 +167,7 @@ const normalizeBlocks = async (blocks, isIgnoreGenesisAccounts = true) => {
 				block.totalFee += BigInt(txn.fee) - txnMinFee;
 			});
 
-			if (isIgnoreGenesisAccounts) {
+			if (includeGenesisAccounts !== true) {
 				const {
 					accounts,
 					initRounds,
@@ -196,9 +196,9 @@ const getBlocksByIDs = async ids => {
 	return normalizeBlocks(response.data);
 };
 
-const getBlockByHeight = async (height, isIgnoreGenesisAccounts = true) => {
+const getBlockByHeight = async (height, includeGenesisAccounts = false) => {
 	const response = await requestApi(coreApi.getBlockByHeight, height);
-	return normalizeBlocks(response.data, isIgnoreGenesisAccounts);
+	return normalizeBlocks(response.data, includeGenesisAccounts);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
@@ -391,7 +391,7 @@ const deleteBlock = async (block) => {
 
 const cacheLegacyAccountInfo = async () => {
 	// Cache the legacy account reclaim balance information
-	const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
 	const unregisteredAccounts = genesisBlock.asset.accounts
 		.filter(account => account.address.length !== 40);
 
@@ -412,7 +412,7 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
-	const [genesisBlock] = await getBlockByHeight(genesisHeight, false);
+	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
 
 	const genesisAccountsToIndex = genesisBlock.asset.accounts;
 
@@ -421,11 +421,14 @@ const performGenesisAccountsIndexing = async () => {
 	const PAGE_SIZE = 1000;
 	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
 	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
-		const slicedAccounts = genesisAccountsToIndex.slice(
-			pageNum * PAGE_SIZE, (pageNum + 1) * PAGE_SIZE);
+		const currentPage = pageNum * PAGE_SIZE;
+		const nextPage = (pageNum + 1) * PAGE_SIZE;
+		const slicedAccounts = genesisAccountsToIndex.slice(currentPage, nextPage);
 		const genesisAccountAddressesToIndex = slicedAccounts
 			.filter(account => account.address.length === 40)
 			.map(account => account.address);
+
+		logger.info(`Scheduling retrieval of genesis accounts ${currentPage}-${nextPage} (${pageNum}/${NUM_PAGES})`);
 
 		// eslint-disable-next-line no-await-in-loop
 		await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
@@ -622,17 +625,20 @@ const init = async () => {
 	// Check state of index and perform update
 	try {
 		// Set the genesis height
-		setGenesisHeight(await coreApi.getGenesisHeight());
+		const gHeight = await coreApi.getGenesisHeight();
+		setGenesisHeight(gHeight);
 		indexVerifiedHeight = getGenesisHeight() - 1;
 
+		logger.info(`Genesis height is set to ${gHeight}`);
+
 		// First download the genesis block, if applicable
-		await getBlocks({ height: genesisHeight });
+		await getBlockByHeight(gHeight);
 
 		// Start the indexing process
 		await indexAllDelegateAccounts();
 		await cacheLegacyAccountInfo();
-		await indexPastBlocks();
 		await indexGenesisAccounts();
+		await indexPastBlocks();
 	} catch (err) {
 		logger.warn(`Unable to update block index:\n${err.stack}`);
 	}

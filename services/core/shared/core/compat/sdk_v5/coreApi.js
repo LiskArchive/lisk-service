@@ -51,11 +51,10 @@ const getGenesisHeight = async () => {
 	if (!genesisHeight) {
 		try {
 			// Determine genesis height
-			const { data: { networkIdentifier } } = await getNetworkStatus();
-
 			if (process.env.GENESIS_HEIGHT) {
 				genesisHeight = config.genesisHeight;
 			} else {
+				const { data: { networkIdentifier } } = await getNetworkStatus();
 				const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
 				genesisHeight = networkConfig ? networkConfig.genesisHeight : 0;
 			}
@@ -115,18 +114,21 @@ const getBlocksByIDs = async ids => {
 const getBlockByHeight = async height => {
 	try {
 		// File based Genesis block handling
-		if (getGenesisBlockId() && Number(height) === await getGenesisHeight()) {
+		// TODO: Add the proper handling when the URL is not available
+		if (Number(height) === await getGenesisHeight()) {
 			return { data: [await getGenesisBlockFromFS()] };
 		}
+	} catch(err) {
+		logger.warn('Retrieval of the genesis block from the file system did not succeed');
+	}
 
+	try {
+		// Retrieve the genesis block directly (fallback)
 		const apiClient = await getApiClient();
 		const block = await apiClient.block.getByHeight(height);
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			// Download to the FS & return the genesis block
-			// eslint-disable-next-line max-len
-			if (Number(height) === await getGenesisHeight()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
 		}
 		throw err;
