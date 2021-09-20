@@ -428,7 +428,7 @@ const performGenesisAccountsIndexing = async () => {
 			.filter(account => account.address.length === 40)
 			.map(account => account.address);
 
-		const percentage = Math.round(pageNum / NUM_PAGES * 10000) / 100;
+		const percentage = Math.round((nextPage - 1) / genesisAccountsToIndex.length) / 100;
 		logger.info(`Scheduling retrieval of genesis accounts ${currentPage}-${nextPage} (${percentage.toFixed(1)}%)`);
 
 		// eslint-disable-next-line no-await-in-loop
@@ -482,7 +482,8 @@ const buildIndex = async (from, to) => {
 		const batchFromHeight = offset + 1;
 		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
 			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		logger.info(`Attempting to cache blocks ${batchFromHeight}-${batchToHeight}`);
+		// TODO: Add percentage
+		logger.info(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight}`);
 
 		let blocks;
 		do {
