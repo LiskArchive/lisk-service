@@ -43,8 +43,9 @@ const mergeTransactions = async (params) => {
 	params = remParams;
 
 	const pendingTxs = await getPendingTransactions(params);
-	//
-	try {
+	// Handle pending txs When call with `transactionId`
+	// In case of error from core, returns pendingTxs
+	try { 
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
