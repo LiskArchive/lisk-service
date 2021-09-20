@@ -16,12 +16,15 @@
 const BluebirdPromise = require('bluebird');
 const {
 	CacheRedis,
-	Exceptions: { ValidationException },
+	Exceptions: {
+		NotFoundException,
+		ValidationException,
+	},
 } = require('lisk-service-framework');
 
 const {
+	validateAddress,
 	validatePublicKey,
-	confirmAddress,
 	confirmPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
@@ -49,6 +52,11 @@ const {
 const {
 	parseToJSONCompatObj,
 } = require('../../../jsonTools');
+
+const {
+	standardizeUnlockHeight,
+	standardizePomHeight,
+} = require('./dpos');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
@@ -179,25 +187,34 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 	}
 };
 
-const resolveAccountsInfo = async accounts => {
-	const balanceUnlockWaitHeightSelf = 260000;
-	const balanceUnlockWaitHeightDefault = 2000;
+const resolveAccountInfo = async accounts => BluebirdPromise.map(
+	accounts,
+	async account => {
+		account.dpos.unlocking = await BluebirdPromise.map(
+			account.dpos.unlocking
+				.sort((a, b) => b - a)
+				.slice(0, 5),
+			async unlock => {
+				const delegateHexAddress = unlock.delegateAddress;
+				unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
 
-	accounts.map(async account => {
-		account.dpos.unlocking = account.dpos.unlocking.map(item => {
-			item.delegateAddress = getBase32AddressFromHex(item.delegateAddress);
-			const balanceUnlockWaitHeight = (item.delegateAddress === account.address)
-				? balanceUnlockWaitHeightSelf : balanceUnlockWaitHeightDefault;
-			item.height = {
-				start: item.unvoteHeight,
-				end: item.unvoteHeight + balanceUnlockWaitHeight,
-			};
-			return item;
-		});
+				let delegateAccount = account;
+				if (unlock.delegateAddress !== account.address) {
+					const {
+						data: [delegateAcc],
+					} = await getAccountsFromCache({ address: delegateHexAddress });
+					delegateAccount = delegateAcc;
+				}
+				unlock.height = standardizeUnlockHeight(unlock, account, delegateAccount);
+
+				return unlock;
+			},
+			{ concurrency: 1 },
+		);
 		return account;
-	});
-	return accounts;
-};
+	},
+	{ concurrency: accounts.length },
+);
 
 const verifyIfPunished = async delegate => {
 	const latestBlockString = await latestBlockCache.get('latestBlock');
@@ -209,7 +226,6 @@ const verifyIfPunished = async delegate => {
 };
 
 const resolveDelegateInfo = async accounts => {
-	const punishmentHeight = 780000;
 	accounts = await BluebirdPromise.map(
 		accounts,
 		async account => {
@@ -228,20 +244,7 @@ const resolveDelegateInfo = async accounts => {
 				account.pomHeights = account.dpos.delegate.pomHeights
 					.sort((a, b) => b - a)
 					.slice(0, 5)
-					.map(height => ({ start: height, end: height + punishmentHeight }));
-
-				// Re-calculate unlocking heights when the delegate is punished
-				if (account.pomHeights.length) {
-					account.dpos.unlocking = account.dpos.unlocking.map(unlockItem => {
-						const [pomHeight] = account.pomHeights
-							.filter(
-								pomItem => pomItem.start <= unlockItem.height.end
-									&& unlockItem.height.end <= pomItem.end,
-							);
-						if (pomHeight) unlockItem.height.end = pomHeight.end;
-						return unlockItem;
-					});
-				}
+					.map(pomHeight => standardizePomHeight(pomHeight));
 
 				if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
 					account.delegateWeight = BigInt('0');
@@ -435,10 +438,6 @@ const getAccounts = async params => {
 		params.address = id;
 	}
 
-	if (params.address && typeof params.address === 'string') {
-		if (!(await confirmAddress(params.address))) return {};
-	}
-
 	if (params.publicKey && typeof params.publicKey === 'string') {
 		if (!validatePublicKey(params.publicKey)) return {};
 
@@ -449,6 +448,10 @@ const getAccounts = async params => {
 			...remParams,
 			address: addressFromParamPublicKey,
 		};
+	}
+
+	if (params.address && typeof params.address === 'string') {
+		if (!validateAddress(params.address)) return {};
 	}
 
 	if (params.addresses) {
@@ -487,7 +490,7 @@ const getAccounts = async params => {
 			if (response.data.length) accounts.data = response.data;
 			if (params.address && 'offset' in params && params.limit) accounts.data = accounts.data.slice(params.offset, params.offset + params.limit);
 		} catch (err) {
-			if (!(paramPublicKey && err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN')) throw new Error(err);
+			if (!(paramPublicKey && (err instanceof NotFoundException || err.message === 'MISSING_ACCOUNT_IN_BLOCKCHAIN'))) return err;
 		}
 	}
 
@@ -523,7 +526,7 @@ const getAccounts = async params => {
 		},
 		{ concurrency: 10 },
 	);
-	accounts.data = await resolveAccountsInfo(accounts.data);
+	accounts.data = await resolveAccountInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
 
 	if (paramPublicKey && !accounts.data.length) {

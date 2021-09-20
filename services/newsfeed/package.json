@@ -34,7 +34,7 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "html-entities": "^2.3.2",
-    "html-to-text": "^1.2.1",
+    "html-to-text": "^8.0.0",
     "knex": "^0.95.4",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/0ba4de1b8dc37fd35f38ce122321345284f35771/framework/dist/lisk-service-framework-1.2.1.tgz",
     "moment": "^2.29.1",
