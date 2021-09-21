@@ -57,7 +57,7 @@ services:
     env_file:
       - ./lisk-service/env/mysql.env
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin" ,"ping", "-ppassword", "-hlocalhost"]
       timeout: 20s
       retries: 10
 
