@@ -492,8 +492,8 @@ const buildIndex = async (from, to) => {
 		const batchFromHeight = offset + 1;
 		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
 			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		// TODO: Add percentage
-		logger.info(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight}`);
+		const percentage = Math.round(((pageNum + 1) / numOfPages) * 1000);
+		logger.info(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${(percentage / 10).toFixed(1)}%)`);
 
 		let blocks;
 		do {
