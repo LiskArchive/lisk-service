@@ -415,24 +415,33 @@ const performGenesisAccountsIndexing = async () => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
 
 	const genesisAccountsToIndex = genesisBlock.asset.accounts;
+	const genesisAccountPageCached = 'genesisAccountPageCached';
 
 	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
+
+	const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
 
 	const PAGE_SIZE = 1000;
 	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
 	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
 		const currentPage = pageNum * PAGE_SIZE;
 		const nextPage = (pageNum + 1) * PAGE_SIZE;
-		const slicedAccounts = genesisAccountsToIndex.slice(currentPage, nextPage);
-		const genesisAccountAddressesToIndex = slicedAccounts
-			.filter(account => account.address.length === 40)
-			.map(account => account.address);
-
 		const percentage = Math.round(((nextPage - 1) / genesisAccountsToIndex.length) * 1000);
-		logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
 
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+		if (pageNum >= lastCachedPage) {
+			const slicedAccounts = genesisAccountsToIndex.slice(currentPage, nextPage);
+			const genesisAccountAddressesToIndex = slicedAccounts
+				.filter(account => account.address.length === 40)
+				.map(account => account.address);
+	
+			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
+	
+			// eslint-disable-next-line no-await-in-loop
+			await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+		} else {
+			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
+		}
 	}
 };
 
@@ -448,6 +457,7 @@ const indexGenesisAccounts = async () => {
 		logger.info('Attepmting to update genesis account index update (one-time operation)');
 		await performGenesisAccountsIndexing();
 		await genesisAccountsCache.set('isGenesisAccountIndexingScheduled', true);
+		await genesisAccountsCache.set('genesisAccountPageCached', 0);
 	} catch (err) {
 		logger.error('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
 		logger.error(err.message);
