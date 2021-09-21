@@ -117,7 +117,6 @@ const getBlocksByIDs = async ids => {
 const getBlockByHeight = async height => {
 	try {
 		// File based Genesis block handling
-		// TODO: Add the proper handling when the URL is not available
 		if (Number(height) === await getGenesisHeight()) {
 			return { data: [await getGenesisBlockFromFS()] };
 		}
