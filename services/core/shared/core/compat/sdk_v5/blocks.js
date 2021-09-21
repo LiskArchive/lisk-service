@@ -428,8 +428,8 @@ const performGenesisAccountsIndexing = async () => {
 			.filter(account => account.address.length === 40)
 			.map(account => account.address);
 
-		const percentage = Math.round((nextPage * PAGE_SIZE) / genesisAccountsToIndex.length) / 10;
-		logger.info(`Scheduling retrieval of genesis accounts ${currentPage}-${nextPage} (${percentage.toFixed(1)}%)`);
+		const percentage = Math.round(((nextPage - 1) / genesisAccountsToIndex.length) * 1000);
+		logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
 
 		// eslint-disable-next-line no-await-in-loop
 		await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
