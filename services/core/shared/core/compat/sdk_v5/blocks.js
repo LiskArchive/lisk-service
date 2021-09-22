@@ -426,19 +426,20 @@ const performGenesisAccountsIndexing = async () => {
 	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
 		const currentPage = pageNum * PAGE_SIZE;
 		const nextPage = (pageNum + 1) * PAGE_SIZE;
-		const percentage = Math.round(((nextPage - 1) / genesisAccountsToIndex.length) * 1000);
+		const percentage = Math.round(((pageNum + 1) / NUM_PAGES) * 1000);
 
 		if (pageNum >= lastCachedPage) {
 			const slicedAccounts = genesisAccountsToIndex.slice(currentPage, nextPage);
 			const genesisAccountAddressesToIndex = slicedAccounts
 				.filter(account => account.address.length === 40)
 				.map(account => account.address);
-	
+
 			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
-	
-			// eslint-disable-next-line no-await-in-loop
+
+			/* eslint-disable no-await-in-loop */
 			await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
 			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+			/* eslint-enable no-await-in-loop */
 		} else {
 			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
 		}
@@ -454,7 +455,7 @@ const indexGenesisAccounts = async () => {
 	}
 
 	try {
-		logger.info('Attepmting to update genesis account index update (one-time operation)');
+		logger.info('Attempting to update genesis account index (one-time operation)');
 		await performGenesisAccountsIndexing();
 		await genesisAccountsCache.set('isGenesisAccountIndexingScheduled', true);
 		await genesisAccountsCache.set('genesisAccountPageCached', 0);
@@ -492,8 +493,8 @@ const buildIndex = async (from, to) => {
 		const batchFromHeight = offset + 1;
 		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
 			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		const percentage = Math.round(((pageNum + 1) / numOfPages) * 1000);
-		logger.info(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${(percentage / 10).toFixed(1)}%)`);
+		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
+		logger.info(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
 
 		let blocks;
 		do {
