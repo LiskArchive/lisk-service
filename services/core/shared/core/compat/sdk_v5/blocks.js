@@ -441,7 +441,7 @@ const performGenesisAccountsIndexing = async () => {
 			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
 			/* eslint-enable no-await-in-loop */
 		} else {
-			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
+			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 		}
 	}
 };
