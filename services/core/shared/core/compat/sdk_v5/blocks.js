@@ -426,7 +426,7 @@ const performGenesisAccountsIndexing = async () => {
 	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
 		const currentPage = pageNum * PAGE_SIZE;
 		const nextPage = (pageNum + 1) * PAGE_SIZE;
-		const percentage = Math.round(((pageNum + 1) / NUM_PAGES) * 1000);
+		const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
 
 		if (pageNum >= lastCachedPage) {
 			const slicedAccounts = genesisAccountsToIndex.slice(currentPage, nextPage);
@@ -434,7 +434,7 @@ const performGenesisAccountsIndexing = async () => {
 				.filter(account => account.address.length === 40)
 				.map(account => account.address);
 
-			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum}/${NUM_PAGES} (${(percentage / 10).toFixed(1)}%)`);
+			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
 			/* eslint-disable no-await-in-loop */
 			await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
