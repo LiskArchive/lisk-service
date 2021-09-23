@@ -414,7 +414,9 @@ const cacheLegacyAccountInfo = async () => {
 const performGenesisAccountsIndexing = async () => {
 	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
 
-	const genesisAccountsToIndex = genesisBlock.asset.accounts;
+	const genesisAccountsToIndex = genesisBlock.asset.accounts
+		.filter(account => account.address.length === 40)
+		.map(account => account.address);
 	const genesisAccountPageCached = 'genesisAccountPageCached';
 
 	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
@@ -429,10 +431,7 @@ const performGenesisAccountsIndexing = async () => {
 		const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
 
 		if (pageNum >= lastCachedPage) {
-			const slicedAccounts = genesisAccountsToIndex.slice(currentPage, nextPage);
-			const genesisAccountAddressesToIndex = slicedAccounts
-				.filter(account => account.address.length === 40)
-				.map(account => account.address);
+			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
 
 			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
