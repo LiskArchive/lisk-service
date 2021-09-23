@@ -51,6 +51,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);
@@ -66,6 +67,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);
@@ -81,6 +83,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);
@@ -96,6 +99,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);
@@ -111,6 +115,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);
@@ -126,6 +131,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);
@@ -141,6 +147,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);
@@ -156,6 +163,7 @@ describe('Pending transactions API', () => {
 			expect(response.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(response.meta).toMap(metaSchema);

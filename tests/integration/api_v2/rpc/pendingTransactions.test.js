@@ -56,6 +56,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
@@ -76,6 +77,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
@@ -96,6 +98,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
@@ -116,6 +119,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
@@ -136,6 +140,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
@@ -156,6 +161,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
@@ -176,6 +182,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);
@@ -196,6 +203,7 @@ describe('Method get.transactions with includePending', () => {
 			expect(result.data[0]).toEqual(
 				expect.objectContaining({
 					isPending: true,
+					id: refTransaction.id,
 				}),
 			);
 			expect(result.meta).toMap(metaSchema);

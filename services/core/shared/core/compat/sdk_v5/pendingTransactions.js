@@ -74,7 +74,7 @@ const validateParams = async params => {
 
 	if (params.senderIdOrRecipientId) {
 		params.senderAddress = params.senderIdOrRecipientId;
-		params.recipientId = params.senderIdOrRecipientId;
+		params.recipientAddress = params.senderIdOrRecipientId;
 	}
 
 	if (params.senderAddress) {
@@ -83,13 +83,13 @@ const validateParams = async params => {
 	}
 
 	if (params.recipientPublicKey) {
-		params.recipientId = getHexAddressFromPublicKey(params.recipientPublicKey);
+		params.recipientAddress = getHexAddressFromPublicKey(params.recipientPublicKey);
 	}
 
 	if (params.recipientUsername) {
 		const accountInfo = await getIndexedAccountInfo({ username: params.recipientUsername, limit: 1 }, ['address']);
 		if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.recipientUsername} does not exist`);
-		params.recipientId = accountInfo.address;
+		params.recipientAddress = accountInfo.address;
 	}
 
 	if (params.amount && params.amount.includes(':')) {
@@ -127,8 +127,8 @@ const getPendingTransactions = async params => {
 				|| transaction.id === params.id)
 			&& (!params.senderPublicKey
 				|| transaction.senderPublicKey === params.senderPublicKey)
-			&& (!params.recipientId
-				|| transaction.asset.recipientAddress === params.recipientId)
+			&& (!params.recipientAddress
+				|| transaction.asset.recipientAddress === params.recipientAddress)
 			&& (!params.moduleAssetId
 				|| transaction.moduleAssetId === params.moduleAssetId)
 			&& (!params.moduleAssetName
