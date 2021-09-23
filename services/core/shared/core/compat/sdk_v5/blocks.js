@@ -459,8 +459,8 @@ const indexGenesisAccounts = async () => {
 		await genesisAccountsCache.set('isGenesisAccountIndexingScheduled', true);
 		await genesisAccountsCache.set('genesisAccountPageCached', 0);
 	} catch (err) {
-		logger.error('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
-		logger.error(err.message);
+		logger.fatal('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
+		logger.fatal(err.message);
 		process.exit(1);
 	}
 };
