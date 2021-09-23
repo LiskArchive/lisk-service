@@ -503,7 +503,7 @@ const buildIndex = async (from, to) => {
 		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
 		/* eslint-enable no-await-in-loop */
 	}
-	logger.info(`Finished building block index (${from}-${to})`);
+	logger.info(`Finished scheduling the block index build (${from}-${to})`);
 };
 
 const indexMissingBlocks = async (startHeight, endHeight) => {
@@ -522,7 +522,7 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 			const fromHeight = (toHeight - PAGE_SIZE) > startHeight
 				? (toHeight - PAGE_SIZE) : startHeight;
 
-			logger.info(`Checking for missing blocks between height ${fromHeight} - ${toHeight}`);
+			logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight}`);
 
 			const blocksDB = await getBlocksIndex();
 			const propBetweens = [{
@@ -553,7 +553,7 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 					for (let i = 0; i < missingBlocksRanges.length; i++) {
 						const { from, to } = missingBlocksRanges[i];
 
-						logger.info(`Attempting to cache missing blocks ${from}-${to}`);
+						logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from} blocks)`);
 						await buildIndex(from, to);
 					}
 				}
@@ -562,13 +562,12 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 		}
 	} catch (err) {
 		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
-		await indexMissingBlocks(startHeight, endHeight);
 	}
 };
 
 const indexPastBlocks = async () => {
-	logger.info('Building the blocks index');
-	const blocksDB = await getBlocksIndex();
+	logger.info('Building block index');
+	// const blocksDB = await getBlocksIndex();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
@@ -582,20 +581,18 @@ const indexPastBlocks = async () => {
 
 	// Highest finalized block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({
-		sort: 'height:desc',
-		limit: 1,
-		isFinal: true,
-	}, ['height']);
-	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
-		? lastIndexedHeight : blockIndexLowerRange;
+	// const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({
+	// 	sort: 'height:desc',
+	// 	limit: 1,
+	// 	isFinal: true,
+	// }, ['height']);
+	// const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
+	// 	? lastIndexedHeight : blockIndexLowerRange;
 
 	// Start building the block index
-	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(err => {
+	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange).catch(err => {
 		logger.warn(`Indexing failed due to: ${err.message}`);
 	});
-	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
-	logger.info('Finished building the blocks index');
 };
 
 const checkIndexReadiness = async () => {
@@ -620,7 +617,7 @@ const checkIndexReadiness = async () => {
 				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
 				Signals.get('blockIndexReady').dispatch(true);
 			} else {
-				logger.info('The blockchain indexing in progress');
+				logger.info('Blockchain indexing still in progress');
 			}
 		} catch (err) {
 			logger.warn(`Error while checking index readiness: ${err.message}`);
