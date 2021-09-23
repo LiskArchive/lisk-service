@@ -1027,11 +1027,10 @@ No params required.
   "meta": {
     "lastUpdate": 123456789,
     "lastBlockHeight": 25,
-    "lastBlockId": 1354568
+    "lastBlockId": "1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e"
   },
   "links": {}
 }
-
 ```
 
 503 Service Unavailable
