@@ -26,7 +26,7 @@ cli-%:
 	$(compose) exec $* /bin/sh
 
 mysql-%:
-	$(compose) exec mysql_$* mysql -u root -p
+	$(compose) exec mysql_$* mysql -u root -ppassword lisk
 
 redis-%:
 	$(compose) exec redis_$* redis-cli
@@ -39,6 +39,9 @@ logs-live:
 
 logs-%:
 	$(compose) logs $*
+
+logs-live-%:
+	$(compose) logs $* --follow
 
 print-config:
 	$(compose) config
