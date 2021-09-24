@@ -19,7 +19,7 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const requestApi = coreApi.requestRetry;
 
-// From https://github.com/LiskHQ/lisk-sdk/blob/v5.1.4/elements/lisk-chain/src/block_reward.ts
+// As in https://github.com/LiskHQ/lisk-sdk/blob/v5.1.4/elements/lisk-chain/src/block_reward.ts
 const calculateMilestone = (height, blockRewardArgs) => {
 	const distance = Math.floor(blockRewardArgs.distance);
 	const location = Math.trunc((height - blockRewardArgs.offset) / distance);
@@ -43,7 +43,7 @@ const calculateDefaultReward = (height, blockRewardArgs) => {
 const getNetworkStatus = async () => {
 	const status = await requestApi(coreApi.getNetworkStatus);
 
-	status.data.milestone = calculateDefaultReward(
+	status.data.milestone = calculateMilestone(
 		status.data.height,
 		status.data.genesisConfig.rewards,
 	);
