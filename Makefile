@@ -25,6 +25,12 @@ cli: cli-gateway
 cli-%:
 	$(compose) exec $* /bin/sh
 
+mysql-%:
+	$(compose) exec mysql_$* mysql -u root -p
+
+redis-%:
+	$(compose) exec redis_$* redis-cli
+
 logs:
 	$(compose) logs
 
