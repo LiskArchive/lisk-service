@@ -15,6 +15,7 @@
  */
 const coreApi = require('./coreApi');
 const { resolvemoduleAssets } = require('../common/constants');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const requestApi = coreApi.requestRetry;
 
@@ -58,7 +59,7 @@ const getNetworkStatus = async () => {
 	// Required to fetch knownAccounts
 	status.data.constants = { nethash: status.data.networkIdentifier };
 
-	return status;
+	return parseToJSONCompatObj(status);
 };
 
 module.exports = {
