@@ -28,7 +28,7 @@ services:
       - SERVICE_CORE_REDIS_VOLATILE=redis://redis_core_volatile:6379/0
       - SERVICE_CORE_MYSQL=mysql://lisk:password@mysql_core:3306/lisk
       - LISK_STATIC=https://static-data.lisk.com
-      - GEOIP_JSON=
+      - GEOIP_JSON=${GEOIP_JSON}
       - INDEX_N_BLOCKS=${INDEX_N_BLOCKS}
       - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
