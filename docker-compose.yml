@@ -44,6 +44,7 @@ services:
     image: redis:5-alpine
     volumes:
       - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
+      - redis-data-core:/data
     networks:
       - core_network
     restart: always
@@ -131,6 +132,7 @@ services:
     image: redis:5-alpine
     volumes:
       - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
+      - redis-data-market:/data
     networks:
       - market_network
     restart: always
@@ -178,3 +180,5 @@ networks:
 volumes:
   mysql-data-newsfeed:
   mysql-data-core:
+  redis-data-core:
+  redis-data-market:
