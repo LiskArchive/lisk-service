@@ -50,14 +50,14 @@ services:
   mysql_core:
     image: mysql:5.7
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql_core-data:/var/lib/mysql
     restart: always
     networks:
       - core_network
     env_file:
       - ./lisk-service/env/mysql.env
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin" ,"ping", "-ppassword", "-hlocalhost"]
       timeout: 20s
       retries: 10
 
@@ -66,7 +66,7 @@ services:
       - core
 
 volumes:
-  mysql-data:
+  mysql_core-data:
 
 networks:
   core_network:
