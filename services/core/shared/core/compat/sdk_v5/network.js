@@ -43,6 +43,8 @@ const calculateDefaultReward = (height, blockRewardArgs) => {
 const getNetworkStatus = async () => {
 	const status = await requestApi(coreApi.getNetworkStatus);
 
+	// Ensure 'milestones' are in correct order
+	status.data.genesisConfig.rewards.milestones.sort((a, b) => Number(BigInt(b) - BigInt(a)));
 	status.data.milestone = calculateMilestone(
 		status.data.height,
 		status.data.genesisConfig.rewards,

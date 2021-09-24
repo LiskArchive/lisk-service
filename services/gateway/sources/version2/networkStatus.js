@@ -21,9 +21,9 @@ module.exports = {
 		data: {
 			height: '=,number',
 			finalizedHeight: '=,number',
-			milestone: '=,string',
 			networkVersion: '=,string',
 			networkIdentifier: '=,string',
+			milestone: '=,string',
 			currentReward: '=,string',
 			rewards: 'data.genesisConfig.rewards',
 			supply: '=,string',
