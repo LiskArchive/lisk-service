@@ -1,30 +1,16 @@
-.PHONY: clean coldstart mrproper up build
+.PHONY: clean coldstart mrproper up build logs
 all: build up
 
-compose := docker-compose \
-	-f docker-compose.yml \
-	-f lisk-service/docker-compose.core.yml \
-	-f lisk-service/docker-compose.gateway.yml \
-	-f lisk-service/docker-compose.market.yml \
-	-f lisk-service/docker-compose.newsfeed.yml \
-	-f lisk-service/docker-compose.gateway-ports.yml
+compose := docker-compose
 
-up: up-core3
-
-up-mainnet: up-custom-core2-mainnet
-
-up-testnet: up-custom-core2-testnet
-
-up-core3: up-custom-core3-default
-
-up-custom-%:
-	cd ./docker && $(compose) --env-file ./network/$*.env up --detach
+up:
+	docker-compose up -d
 
 down:
-	cd ./docker && $(compose) down --volumes --remove-orphans
+	$(compose) down --volumes --remove-orphans
 
 ready:
-	cd ./docker && $(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/ready' >/dev/null
+	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/ready' >/dev/null
 
 test: test-functional
 
@@ -37,16 +23,25 @@ test-integration:
 cli: cli-gateway
 
 cli-%:
-	cd ./docker && $(compose) exec $* /bin/sh
+	$(compose) exec $* /bin/sh
+
+mysql-%:
+	$(compose) exec mysql_$* mysql -u root -p
+
+redis-%:
+	$(compose) exec redis_$* redis-cli
 
 logs:
-	cd ./docker && $(compose) logs
+	$(compose) logs
+
+logs-live:
+	$(compose) logs --follow
 
 logs-%:
-	cd ./docker && $(compose) logs $*
+	$(compose) logs $*
 
 print-config:
-	cd ./docker && $(compose) config
+	$(compose) config
 
 build: build-core build-market build-newsfeed build-gateway
 

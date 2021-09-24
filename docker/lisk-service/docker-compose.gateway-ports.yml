@@ -1,6 +1,0 @@
-version: "3"
-services:
-
-  gateway:
-    ports:
-      - 9901:9901
