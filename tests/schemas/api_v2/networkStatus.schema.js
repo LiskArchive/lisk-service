@@ -21,7 +21,7 @@ const networkStatusSchema = {
 	milestone: Joi.array().required(),
 	networkVersion: Joi.string().required(),
 	networkIdentifier: Joi.string().required(),
-	currentReward: Joi.number().required(),
+	currentReward: Joi.string().required(),
 	rewards: Joi.object().required(),
 	registeredModules: Joi.array().required(),
 	moduleAssets: Joi.array().required(),
