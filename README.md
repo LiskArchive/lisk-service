@@ -82,27 +82,23 @@ make build
 
 The default configuration is sufficient to run Lisk Service against the local node.
 
-Before running the application set the required environment variables:
+Before running the application copy the default docker-compose environment file:
+
+```bash
+cp docker/example.env .env
+```
+
+In the next step, set the required environment variables:
+
+The example below is valid with the assumption the Lisk Core node is running on host machine, not in a Docker container.
 
 ```
 ## Required
 # The local Lisk Core node WebSocket API port
-export LISK_CORE_WS="ws://localhost:8080"
-
-## Optional
-# To index all blocks in the blockchain (might take a while)
-export INDEX_N_BLOCKS="0"
-
-# Enable transaction statistics
-export ENABLE_TRANSACTION_STATS="true"
-export TRANSACTION_STATS_HISTORY_LENGTH_DAYS="366"
-export TRANSACTION_STATS_UPDATE_INTERVAL="3600"
-
-# Enable fee estimator
-export ENABLE_FEE_ESTIMATOR_QUICK="true"
+export LISK_CORE_WS="ws://host.docker.internal:8080"
 ```
 
-When running a local instance of Lisk Core and Lisk Service that is run by Docker, then the following variable needs to be set: `LISK_CORE_WS="ws://host.docker.internal:8080"`.
+When running a Docker instance of Lisk Core that is run by Docker, the variable needs to refer to the container: `LISK_CORE_WS="ws://<your_docker_container>:8080"`.
 
 It is strongly recommended that you synchronize your Lisk Core node with the network **before** starting the Lisk Service.
 
@@ -123,6 +119,8 @@ To stop the application execute the following command:
 ```bash
 make down
 ```
+
+> Optional: It is possible to use regular docker-compose commands such as `docker-compose up -d`. Please check the `Makefile` for more examples.
 
 ## Benchmark
 
