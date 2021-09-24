@@ -1008,28 +1008,35 @@ No params required.
 ```jsonc
 {
   "data": {
-    "height": 27256,
-    "finalizedHeight": 27112,
-    "milestone": "0",
-    "networkVersion": "2.0",
-    "networkIdentifier": "08ec0e01794b57e5ceaf5203be8c1bda51bcdd39bb6fc516adbe93223f85d630",
-    "reward": "500000000",
-    "supply": "10094237000000000",
-    "registeredModules": ["token", "sequence", "keys", "dpos", "legacyAccount"],
-    "operations": [
-      { "id": "2:0", "name": "token:transfer" }
+    "height": 16550779,
+    "finalizedHeight": 16550609,
+    "milestone": "100000000",
+    "networkVersion": "3.0",
+    "networkIdentifier": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
+    "currentReward": "100000000",
+    "rewards": {
+      "milestones": [ "500000000", "400000000", "300000000", "200000000", "100000000" ],
+      "offset": 1451520,
+      "distance": 3000000
+    },
+    "registeredModules": [ "token", "sequence", "keys", "dpos", "legacyAccount" ],
+    "moduleAssets": [
+      {
+        "id": "2:0",
+        "name": "token:transfer"
+      },
       ...
     ],
     "blockTime": 10,
     "communityIdentifier": "Lisk",
-    "maxPayloadLength": 15360,
+    "minRemainingBalance": "5000000",
+    "maxPayloadLength": 15360
   },
   "meta": {
-    "lastUpdate": 123456789,
-    "lastBlockHeight": 25,
-    "lastBlockId": "1963e291eaa694fb41af320d7af4e92e38be26ddd88f61b150c74347f119de2e"
-  },
-  "links": {}
+    "lastUpdate": 1632471013,
+    "lastBlockHeight": 16550779,
+    "lastBlockId": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f"
+  }
 }
 ```
 

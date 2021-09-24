@@ -20,15 +20,20 @@ const requestApi = coreApi.requestRetry;
 
 const getNetworkStatus = async () => {
 	const status = await requestApi(coreApi.getNetworkStatus);
-	const { offset } = status.data.genesisConfig.rewards;
-	const { distance } = status.data.genesisConfig.rewards;
-	status.data.moduleAssets = await resolvemoduleAssets(status.data.registeredModules);
+
+	const { offset, distance, milestones } = status.data.genesisConfig.rewards;
 	const rewardIndex = Math.floor((status.data.height - offset) / distance);
-	const finalRewardIndex = rewardIndex >= status.data.genesisConfig.rewards.milestones.length
-		? status.data.genesisConfig.rewards.milestones.length - 1 : rewardIndex;
+	const finalRewardIndex = rewardIndex >= milestones.length
+		? milestones.length - 1
+		: rewardIndex;
 	status.data.currentReward = finalRewardIndex >= 0
-		? status.data.genesisConfig.rewards.milestones[finalRewardIndex] : 0;
+		? milestones[finalRewardIndex]
+		: 0;
+	status.data.milestone = status.data.currentReward;
+
+	status.data.moduleAssets = await resolvemoduleAssets(status.data.registeredModules);
 	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
+
 	status.data.lastUpdate = Math.floor(Date.now() / 1000);
 
 	// Required to fetch knownAccounts
