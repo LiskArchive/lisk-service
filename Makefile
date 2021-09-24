@@ -4,7 +4,7 @@ all: build up
 compose := docker-compose
 
 up:
-	docker-compose up -d
+	$(compose) up -d
 
 down:
 	$(compose) down --volumes --remove-orphans

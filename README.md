@@ -91,7 +91,7 @@ cp docker/example.env .env
 In the next step, set the required environment variables.
 
 ```bash
-nano .env # or vim
+$EDITOR .env
 ```
 
 The example below is valid with the assumption the Lisk Core node is running on host machine, not in a Docker container.
