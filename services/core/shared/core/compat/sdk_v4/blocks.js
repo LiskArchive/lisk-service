@@ -99,7 +99,7 @@ const getBlocks = async (params) => {
 		}),
 		),
 	);
-	if (blocks.data.length === 1) await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
+	if (blocks.data.length === 1) await indexBlocksQueue.add({ blocks: blocks.data });
 
 	return blocks;
 };
