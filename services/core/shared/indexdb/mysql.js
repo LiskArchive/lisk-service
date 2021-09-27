@@ -147,7 +147,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return rows;
 	};
 
-	const inserts = async (trx, row) => {
+	const insert = async (trx, row) => {
 		const result = await trx(tableName)
 			.insert(row)
 			.onConflict(tableConfig.primaryKey)
@@ -156,7 +156,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return result;
 	};
 
-	const updates = async (trx, row) => {
+	const update = async (trx, row) => {
 		const result = await trx(tableName)
 			.where(primaryKey, '=', row[primaryKey])
 			.update(row)
@@ -176,8 +176,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		// 		const result = await trx(tableName)
 		// 			.select(primaryKey)
 		// 			.where(primaryKey, '=', row[primaryKey]);
-		// 		if (!result.length) return inserts(trx, row);
-		// 		return updates(trx, row);
+		// 		if (!result.length) return insert(trx, row);
+		// 		return update(trx, row);
 		// 	},
 		// 	{ concurrency: rows.length },
 		// ).then(trx.transacting(trx)).then(trx.commit).catch(trx.rollback));
@@ -189,8 +189,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 					.select(primaryKey)
 					.where(primaryKey, '=', row[primaryKey])
 					.then(result => {
-						if (!result.length) return inserts(trx, row);
-						return updates(trx, row);
+						if (!result.length) return insert(trx, row);
+						return update(trx, row);
 					})
 					.then(trx.transacting(trx))
 					.then(trx.commit)
