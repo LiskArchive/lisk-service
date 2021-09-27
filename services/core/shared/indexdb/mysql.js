@@ -147,23 +147,6 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return rows;
 	};
 
-	// const upsert = (inputRows) => {
-	// 	let rawRows = inputRows;
-	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
-	// 	const rows = mapRows(rawRows);
-
-	// 	const queries = rows.map((tuple) => {
-	// 		const insertQuery = knex(tableName).insert(tuple).toString()
-	// 		const updateQuery = knex(tableName)
-	// .update(tuple).toString()
-	// .replace(/^update(.*?)set\s/gi, '')
-	// 		return knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
-	// 	})
-	// 	return knex.transaction(trx => {
-	// 		return Promise.all(queries).then(trx.transacting(trx)).then(trx.commit).catch(trx.rollback)
-	// 	});
-	// }
-
 	const inserts = async (trx, row) => {
 		const result = await trx(tableName)
 			.insert(row)
