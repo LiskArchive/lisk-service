@@ -54,7 +54,7 @@ const createDbConnection = async (connEndpoint) => {
 		connection: connEndpoint,
 		useNullAsDefault: true,
 		pool: {
-			max: 50,
+			max: 100,
 			min: 2,
 		},
 		log: {
@@ -147,40 +147,39 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return rows;
 	};
 
+	const getTransaction = async () => knex.transaction();
+	const defaultTrx = await getTransaction();
+
 	const insert = async (trx, row) => trx(tableName)
 		.transacting(trx)
 		.insert(row)
 		.onConflict(tableConfig.primaryKey)
-		.merge()
-		.then(trx.commit)
-		.catch(trx.rollback);
+		.merge();
 
 	const update = async (trx, row) => trx(tableName)
 		.transacting(trx)
 		.where(primaryKey, '=', row[primaryKey])
-		.update(row)
-		.then(trx.commit)
-		.catch(trx.rollback);
+		.update(row);
 
-	const upsert = async (inputRows) => {
+	const upsert = async (trx = defaultTrx, inputRows) => {
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
 
 		const rows = mapRows(rawRows);
-
+		const concurrency = 25;
 		return BluebirdPromise.map(
 			rows,
-			async row => knex.transaction(trx => {
+			async row => {
 				trx(tableName)
 					.select(primaryKey)
 					.where(primaryKey, '=', row[primaryKey])
 					.then(result => {
 						if (!result.length) return insert(trx, row);
 						return update(trx, row);
-					});
+					})
 			},
-			{ concurrency: rows.length },
-			));
+			{ concurrency },
+		);
 	};
 
 	const queryBuilder = (params, columns) => {
@@ -345,6 +344,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		count,
 		rawQuery,
 		increment,
+		getTransaction,
 	};
 };
 
