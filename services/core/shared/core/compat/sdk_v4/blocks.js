@@ -20,7 +20,7 @@ const coreApi = require('./coreApi');
 const Signals = require('../../../signals');
 
 const config = require('../../../../config');
-const { initializeQueue } = require('../../queue');
+const Queue = require('../../queue');
 
 const {
 	getUnixTime,
@@ -67,7 +67,7 @@ const indexBlocks = async job => {
 	});
 };
 
-const indexBlocksQueue = initializeQueue('indexBlocksQueuev4', indexBlocks);
+const indexBlocksQueue = Queue('blockIndex', indexBlocks, 1);
 
 const getBlocks = async (params) => {
 	const blocks = {
@@ -129,7 +129,7 @@ const buildIndex = async (from, to) => {
 			});
 		} while (!(blocks.data.length && blocks.data.every(block => !!block && !!block.height)));
 
-		await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
+		await indexBlocksQueue.add({ blocks: blocks.data });
 
 		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
 		const topHeightFromBatch = (blocks.data.pop()).height;

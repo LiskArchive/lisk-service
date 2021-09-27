@@ -20,9 +20,8 @@ const BigNumber = require('big-number');
 
 const Signals = require('../signals');
 
-const config = require('../../config');
 const { getTransactions } = require('./transactions');
-const { initializeQueue } = require('./queue');
+const Queue = require('./queue');
 const mysql = require('../indexdb/mysql');
 const requestAll = require('../requestAll');
 const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
@@ -30,9 +29,6 @@ const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
 const logger = Logger();
 
 const getDbInstance = () => mysql('transaction_statistics', txStatisticsIndexSchema);
-
-const queueName = 'transactionStatisticsQueue';
-const queueOptions = config.queue[queueName];
 
 const getSelector = (params) => {
 	const result = { property: 'date' };
@@ -150,7 +146,8 @@ const queueJob = async (job) => {
 	}
 };
 
-const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOptions);
+const queueName = 'transactionStats';
+const transactionStatisticsQueue = Queue(queueName, queueJob, 1);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();

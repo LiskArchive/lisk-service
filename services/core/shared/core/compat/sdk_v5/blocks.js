@@ -48,7 +48,7 @@ const {
 	setIsSyncFullBlockchain,
 } = require('../common');
 
-const { initializeQueue } = require('../../queue');
+const Queue = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const mysqlIndex = require('../../../indexdb/mysql');
@@ -136,9 +136,9 @@ const updateBlockIndex = async job => {
 	await blocksDB.upsert(blocks);
 };
 
-const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
-const updateBlockIndexQueue = initializeQueue('updateBlockIndexQueue', updateBlockIndex);
-const deleteIndexedBlocksQueue = initializeQueue('deleteIndexedBlocksQueue', deleteIndexedBlocks);
+const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 1);
+const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
+const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
 const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 	const apiClient = await getApiClient();
@@ -249,13 +249,13 @@ const indexNewBlocks = async blocks => {
 		const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
-			await indexBlocksQueue.add('indexBlocksQueue', { blocks: blocks.data });
+			await indexBlocksQueue.add({ blocks: blocks.data });
 
 			// Update block finality status
 			const finalizedBlockHeight = getFinalizedHeight();
 			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
 				Object.keys(blocksIndexSchema.schema));
-			await updateBlockIndexQueue.add('updateBlockIndexQueue', {
+			await updateBlockIndexQueue.add({
 				blocks: nonFinalBlocks
 					.filter(b => b.height <= finalizedBlockHeight)
 					.map(b => ({ ...b, isFinal: true })),
@@ -389,7 +389,7 @@ const getBlocks = async params => {
 };
 
 const deleteBlock = async (block) => {
-	await deleteIndexedBlocksQueue.add('deleteIndexedBlocksQueue', { blocks: [block] });
+	await deleteIndexedBlocksQueue.add({ blocks: [block] });
 	return block;
 };
 
@@ -504,7 +504,7 @@ const buildIndex = async (from, to) => {
 			blocks = await getBlocksByHeightBetween(batchFromHeight, batchToHeight);
 		} while (!(blocks.length && blocks.every(block => !!block && block.height >= 0)));
 
-		await indexBlocksQueue.add('indexBlocksQueue', { blocks });
+		await indexBlocksQueue.add({ blocks });
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished scheduling the block index build (${from}-${to})`);
@@ -570,8 +570,39 @@ const indexMissingBlocks = async (startHeight, endHeight) => {
 };
 
 const indexPastBlocks = async () => {
-	logger.info('Building block index');
-	// const blocksDB = await getBlocksIndex();
+	logger.info('Building the blocks index');
+	const blocksDB = await getBlocksIndex();
+
+	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
+
+	// Lowest and highest block heights expected to be indexed
+	const blockIndexHigherRange = (await requestApi(coreApi.getNetworkStatus)).data.height;
+	const blockIndexLowerRange = config.indexNumOfBlocks > 0
+		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
+
+	// Store the value for the missing blocks job
+	setIndexStartHeight(blockIndexLowerRange);
+
+	// Highest finalized block available within the index
+	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
+	const [{ height: lastIndexedHeight = blockIndexLowerRange } = {}] = await blocksDB.find({
+		sort: 'height:desc',
+		limit: 1,
+		isFinal: true,
+	}, ['height']);
+	const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
+		? lastIndexedHeight : blockIndexLowerRange;
+
+	// Start building the block index
+	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(err => {
+		logger.warn(`Indexing failed due to: ${err.message}`);
+	});
+	logger.info('Finished building the blocks index');
+};
+
+const indexMissingBlocksWoRange = async () => {
+	logger.info('Building the blocks index');
+	const blocksDB = await getBlocksIndex();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
@@ -650,8 +681,9 @@ const init = async () => {
 		// Start the indexing process
 		await indexAllDelegateAccounts();
 		await cacheLegacyAccountInfo();
-		await indexGenesisAccounts();
-		await indexPastBlocks();
+		// await indexGenesisAccounts();
+		// await indexPastBlocks();
+		await indexMissingBlocksWoRange();
 	} catch (err) {
 		logger.warn(`Unable to update block index:\n${err.stack}`);
 	}
