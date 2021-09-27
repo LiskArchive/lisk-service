@@ -23,7 +23,7 @@ const logger = Logger();
 
 const queuePool = {};
 
-const STATS_INTERVAL = 15 * 1000; // ms
+const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
 const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options = config.queue.defaults) => {
 	const queueName = 'defaultQueue';
@@ -57,7 +57,9 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 
 		setInterval(async () => {
 			const jc = await queue.getJobCounts();
-			logger.debug(`Queue counters: waiting: ${jc.waiting}, active: ${jc.active}, completed: ${jc.completed}, failed: ${jc.failed}, delayed: ${jc.delayed}, paused: ${jc.paused}`);
+			if (Number(jc.waiting) > 0 || Number(jc.active) > 0 || Number(jc.paused) > 0) {
+				logger.info(`Queue counters: waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
+			}
 		}, STATS_INTERVAL);
 	}
 
