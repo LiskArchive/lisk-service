@@ -1010,9 +1010,9 @@ No params required.
   "data": {
     "height": 16550779,
     "finalizedHeight": 16550609,
-    "milestone": "4",
     "networkVersion": "3.0",
     "networkIdentifier": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
+    "milestone": "4",
     "currentReward": "100000000",
     "rewards": {
       "milestones": [ "500000000", "400000000", "300000000", "200000000", "100000000" ],
