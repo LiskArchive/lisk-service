@@ -53,6 +53,11 @@ const {
 	parseToJSONCompatObj,
 } = require('../../../jsonTools');
 
+const {
+	standardizeUnlockHeight,
+	standardizePomHeight,
+} = require('./dpos');
+
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 const Signals = require('../../../signals');
@@ -182,13 +187,34 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 	}
 };
 
-const standardizePomHeights = async pomHeights => {
-	const punishmentPeriod = 780000;
-	return pomHeights
-		.sort((a, b) => b - a)
-		.slice(0, 5)
-		.map(height => ({ start: height, end: height + punishmentPeriod }));
-};
+const resolveAccountInfo = async accounts => BluebirdPromise.map(
+	accounts,
+	async account => {
+		account.dpos.unlocking = await BluebirdPromise.map(
+			account.dpos.unlocking
+				.sort((a, b) => b - a)
+				.slice(0, 5),
+			async unlock => {
+				const delegateHexAddress = unlock.delegateAddress;
+				unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
+
+				let delegateAccount = account;
+				if (unlock.delegateAddress !== account.address) {
+					const {
+						data: [delegateAcc],
+					} = await getAccountsFromCache({ address: delegateHexAddress });
+					delegateAccount = delegateAcc;
+				}
+				unlock.height = standardizeUnlockHeight(unlock, account, delegateAccount);
+
+				return unlock;
+			},
+			{ concurrency: 1 },
+		);
+		return account;
+	},
+	{ concurrency: accounts.length },
+);
 
 const verifyIfPunished = async delegate => {
 	const latestBlockString = await latestBlockCache.get('latestBlock');
@@ -215,20 +241,10 @@ const resolveDelegateInfo = async accounts => {
 
 				account.username = account.dpos.delegate.username;
 				account.balance = account.token.balance;
-				account.pomHeights = await standardizePomHeights(account.dpos.delegate.pomHeights);
-
-				// Re-calculate unlocking heights when the delegate is punished
-				if (account.pomHeights.length) {
-					account.dpos.unlocking = account.dpos.unlocking.map(unlockItem => {
-						const [pomHeight] = account.pomHeights
-							.filter(
-								pomItem => pomItem.start <= unlockItem.height.end
-									&& unlockItem.height.end <= pomItem.end,
-							);
-						if (pomHeight) unlockItem.height.end = pomHeight.end;
-						return unlockItem;
-					});
-				}
+				account.pomHeights = account.dpos.delegate.pomHeights
+					.sort((a, b) => b - a)
+					.slice(0, 5)
+					.map(pomHeight => standardizePomHeight(pomHeight));
 
 				if (account.dpos.delegate.isBanned || await verifyIfPunished(account)) {
 					account.delegateWeight = BigInt('0');
@@ -287,59 +303,6 @@ const resolveDelegateInfo = async accounts => {
 		{ concurrency: accounts.length },
 	);
 
-	return accounts;
-};
-
-const resolveAccountsInfo = async accounts => {
-	const balanceUnlockWaitPeriodSelf = 260000;
-	const balanceUnlockWaitPeriodDefault = 2000;
-
-	accounts = await BluebirdPromise.map(
-		accounts,
-		async account => {
-			account.dpos.unlocking = await BluebirdPromise.map(
-				account.dpos.unlocking,
-				async unlock => {
-					const delegateHexAddress = unlock.delegateAddress;
-					unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
-
-					const isThisDelegateCurrentAccount = unlock.delegateAddress === account.address;
-					const balanceUnlockWaitHeight = isThisDelegateCurrentAccount
-						? balanceUnlockWaitPeriodSelf : balanceUnlockWaitPeriodDefault;
-
-					unlock.height = {
-						start: unlock.unvoteHeight,
-						end: unlock.unvoteHeight + balanceUnlockWaitHeight,
-					};
-
-					// Re-calculate unlocking heights when the delegate is punished
-					let delegateAccount;
-					if (!isThisDelegateCurrentAccount) {
-						const {
-							data: [delegateAcc],
-						} = await getAccountsFromCache({ address: delegateHexAddress });
-						delegateAccount = delegateAcc;
-						delegateAccount.pomHeights = await standardizePomHeights(
-							delegateAccount.dpos.delegate.pomHeights,
-						);
-					}
-
-					const unlockDelegateAccount = isThisDelegateCurrentAccount ? account : delegateAccount;
-					const [pomHeight] = unlockDelegateAccount.pomHeights
-						.filter(
-							pomItem => pomItem.start <= unlock.height.end
-								&& unlock.height.end <= pomItem.end,
-						);
-					if (pomHeight) unlock.height.end = pomHeight.end;
-
-					return unlock;
-				},
-				{ concurrency: 1 },
-			);
-			return account;
-		},
-		{ concurrency: accounts.length },
-	);
 	return accounts;
 };
 
@@ -563,8 +526,8 @@ const getAccounts = async params => {
 		},
 		{ concurrency: 10 },
 	);
+	accounts.data = await resolveAccountInfo(accounts.data);
 	accounts.data = await resolveDelegateInfo(accounts.data);
-	accounts.data = await resolveAccountsInfo(accounts.data);
 
 	if (paramPublicKey && !accounts.data.length) {
 		// Check if reclaim information is available for the account
