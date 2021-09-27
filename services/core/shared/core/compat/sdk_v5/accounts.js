@@ -95,7 +95,7 @@ const indexAccounts = async job => {
 	await accountsDB.upsert(accounts);
 };
 
-const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 1);
+const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
 const indexAccountsByAddressQueue = Queue('indexAccountsByAddressQueue', indexAccounts, 1);
 const indexAccountsByPublicKeyQueue = Queue('indexAccountsByPublicKeyQueue', indexAccounts, 1);
 

@@ -136,7 +136,7 @@ const updateBlockIndex = async job => {
 	await blocksDB.upsert(blocks);
 };
 
-const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 1);
+const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 4);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
