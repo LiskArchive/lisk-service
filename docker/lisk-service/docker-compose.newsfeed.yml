@@ -16,19 +16,19 @@ services:
   mysql_newsfeed:
     image: mysql:5.7
     volumes:
-      - mysql-data:/var/lib/mysql
+      - mysql_newsfeed-data:/var/lib/mysql
     restart: always
     networks:
       - newsfeed_network
     env_file:
       - ./lisk-service/env/mysql.env
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      test: ["CMD", "mysqladmin" ,"ping", "-ppassword", "-hlocalhost"]
       timeout: 20s
       retries: 10
 
 volumes:
-  mysql-data:
+  mysql_newsfeed-data:
 
 networks:
   newsfeed_network:
