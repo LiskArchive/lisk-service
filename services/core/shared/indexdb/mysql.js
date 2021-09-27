@@ -176,7 +176,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 					.then(result => {
 						if (!result.length) return insert(trx, row);
 						return update(trx, row);
-					})
+					});
 			},
 			{ concurrency },
 		);
