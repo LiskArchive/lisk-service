@@ -201,22 +201,20 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 		return BluebirdPromise.map(
 			rows,
-			async row => {
-				return knex.transaction(trx => {
-					trx(tableName)
-						.select(primaryKey)
-						.where(primaryKey, '=', row[primaryKey])
-						.then(result => {
-							if (!result.length) return inserts(trx, row);
-							return updates(trx, row);
-						})
-						.then(trx.transacting(trx))
-						.then(trx.commit)
-						.catch(trx.rollback)
-				},
-					{ concurrency: rows.length },
-				);
-			});
+			async row => knex.transaction(trx => {
+				trx(tableName)
+					.select(primaryKey)
+					.where(primaryKey, '=', row[primaryKey])
+					.then(result => {
+						if (!result.length) return inserts(trx, row);
+						return updates(trx, row);
+					})
+					.then(trx.transacting(trx))
+					.then(trx.commit)
+					.catch(trx.rollback);
+			},
+			{ concurrency: rows.length },
+			));
 	};
 
 	const queryBuilder = (params, columns) => {
