@@ -147,67 +147,55 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return rows;
 	};
 
+	// const upsert = (inputRows) => {
+	// 	let rawRows = inputRows;
+	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
+	// 	const rows = mapRows(rawRows);
+
+	// 	const queries = rows.map((tuple) => {
+	// 		const insertQuery = knex(tableName).insert(tuple).toString()
+	// 		const updateQuery = knex(tableName)
+	// .update(tuple).toString()
+	// .replace(/^update(.*?)set\s/gi, '')
+	// 		return knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
+	// 	})
+	// 	return knex.transaction(trx => {
+	// 		return Promise.all(queries).then(trx.transacting(trx)).then(trx.commit).catch(trx.rollback)
+	// 	});
+	// }
+
+	const inserts = async (trx, row) => {
+		const result = await trx(tableName)
+			.insert(row)
+			.transacting(trx);
+		return result;
+	};
+
+	const updates = async (trx, row) => {
+		const result = await trx(tableName)
+			.where(primaryKey, '=', row[primaryKey])
+			.update(row)
+			.transacting(trx);
+		return result;
+	};
+
 	const upsert = async (inputRows) => {
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
 
 		const rows = mapRows(rawRows);
 
-		try {
-			const chunkSize = 1000;
-			const ids = await knex
-				.transaction(trx => knex.batchInsert(tableName, rows, chunkSize).transacting(trx));
-			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-
-			// Return '0' on successful inserts
-			return ids.length ? 0 : 1;
-		} catch (error) {
-			const errCode = error.code;
-			const errMessage = error.message.split(`${errCode}: `)[1] || error.message;
-			const errCause = errMessage.split(': ')[0];
-			logger.debug('Encountered error with batch insert:', errCause,
-				'\nRe-attempting to update/merge the conflicted transactions one at a time: ');
-
-			let inserts;
-			const concurrency = 25;
-			try {
-				await knex.transaction(async trx => {
-					inserts = await BluebirdPromise.map(
-						rows,
-						async row => {
-							const [result] = await trx(tableName)
-								.insert(row)
-								.onConflict(tableConfig.primaryKey)
-								.merge()
-								.transacting(trx);
-							return result;
-						},
-						{ concurrency },
-					);
-				});
-			} catch (_) {
-				// As a last resort, try inserting/ updating one row at a time,
-				// wrapped within individual transactions to avoid deadlocks
-				inserts = await BluebirdPromise.map(
-					rows,
-					async row => {
-						const [result] = await knex.transaction(
-							trx => trx(tableName)
-								.insert(row)
-								.onConflict(tableConfig.primaryKey)
-								.merge()
-								.transacting(trx),
-						);
-						return result;
-					},
-					{ concurrency },
-				);
-			}
-
-			// Return '0' on successful inserts
-			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-			return inserts.reduce((a, b) => a + b, 0);
-		}
+		return knex.transaction(async trx => BluebirdPromise.map(
+			rows,
+			async row => {
+				const result = await trx(tableName)
+					.select(primaryKey)
+					.where(primaryKey, '=', row[primaryKey]);
+				if (!result.length) return inserts(trx, row);
+				return updates(trx, row);
+			},
+			{ concurrency: rows.length },
+		).then(trx.transacting(trx)).then(trx.commit).catch(trx.rollback));
 	};
 
 	const queryBuilder = (params, columns) => {
