@@ -226,7 +226,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 				delay: (attempt ** 2) * 60 * 60 * 1000,
 				attempt: attempt += 1,
 			};
-			await transactionStatisticsQueue.add(queueName, { date, options });
+			await transactionStatisticsQueue.add({ date, options });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
 			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 		}
