@@ -106,28 +106,35 @@ const deleteIndexedBlocks = async job => {
 };
 
 const indexBlocks = async job => {
-	const { blocks } = job.data;
-	const blocksDB = await getBlocksIndex();
-	const generatorPkInfoArray = [];
-	await BluebirdPromise.map(
-		blocks,
-		async block => {
-			if (block.generatorPublicKey) {
-				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-				generatorPkInfoArray.push({
-					publicKey: block.generatorPublicKey,
-					reward: block.reward,
-					isForger: true,
-					isBlockIndexed: !!blockInfo,
-				});
-			}
-		},
-		{ concurrency: blocks.length },
-	);
-	await blocksDB.upsert(blocks);
-	await indexAccountsbyPublicKey(generatorPkInfoArray);
-	await indexTransactions(blocks);
-	await indexVotes(blocks);
+	let trx;
+	try {
+		const { blocks } = job.data;
+		const blocksDB = await getBlocksIndex();
+		const generatorPkInfoArray = [];
+		await BluebirdPromise.map(
+			blocks,
+			async block => {
+				if (block.generatorPublicKey) {
+					const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+					generatorPkInfoArray.push({
+						publicKey: block.generatorPublicKey,
+						reward: block.reward,
+						isForger: true,
+						isBlockIndexed: !!blockInfo,
+					});
+				}
+			},
+			{ concurrency: blocks.length },
+		);
+		trx = await blocksDB.getTransaction();
+		await blocksDB.upsert(trx, blocks);
+		await indexAccountsbyPublicKey(trx, generatorPkInfoArray);
+		await indexTransactions(trx, blocks);
+		await indexVotes(trx, blocks);
+		trx.commit();
+	} catch (error) {
+		trx.rollback();
+	}
 };
 
 const updateBlockIndex = async job => {
@@ -416,6 +423,8 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
+	const blocksDB = await getBlocksIndex();
+	const trx = await blocksDB.getTransaction();
 	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
 
 	const genesisAccountsToIndex = genesisBlock.asset.accounts
@@ -440,7 +449,7 @@ const performGenesisAccountsIndexing = async () => {
 			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
 			/* eslint-disable no-await-in-loop */
-			await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+			await indexAccountsbyAddress(trx, genesisAccountAddressesToIndex, true);
 			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
 			/* eslint-enable no-await-in-loop */
 		} else {
@@ -470,12 +479,15 @@ const indexGenesisAccounts = async () => {
 };
 
 const indexAllDelegateAccounts = async () => {
+	const blocksDB = await getBlocksIndex();
+	const trx = await blocksDB.getTransaction();
 	const allDelegatesInfo = await requestApi(coreApi.getAllDelegates);
 	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
 	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
 		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsbyAddress(allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+		await indexAccountsbyAddress(trx,
+			allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
 	}
 	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };

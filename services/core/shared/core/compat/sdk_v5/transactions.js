@@ -65,7 +65,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 	return response;
 };
 
-const indexTransactions = async blocks => {
+const indexTransactions = async (trx, blocks) => {
 	const transactionsDB = await getTransactionsIndex();
 	const multisignatureDB = await getMultisignatureIndex();
 	const multisignatureModuleAssetId = '4:0';
@@ -96,10 +96,12 @@ const indexTransactions = async blocks => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
-	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(recipientAddressesToIndex);
-	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
-	if (multisignatureInfoToIndex.length) await multisignatureDB.upsert(multisignatureInfoToIndex);
+	if (allTransactions.length) await transactionsDB.upsert(trx, allTransactions);
+	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(trx,
+		recipientAddressesToIndex);
+	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(trx, publicKeysToIndex);
+	if (multisignatureInfoToIndex.length) await multisignatureDB
+		.upsert(trx, multisignatureInfoToIndex);
 };
 
 const removeTransactionsByBlockIDs = async blockIDs => {

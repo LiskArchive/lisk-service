@@ -32,7 +32,7 @@ const voteTransactionAssetID = 1;
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
-const indexVotes = async blocks => {
+const indexVotes = async (trx, blocks) => {
 	const votesDB = await getVotesIndex();
 	const votesAggregateDB = await getVotesAggregateIndex();
 	const votesMultiArray = blocks.map(block => {
@@ -86,7 +86,7 @@ const indexVotes = async blocks => {
 	let allVotePromises = [];
 	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
 	const allVotes = await BluebirdPromise.all(allVotePromises);
-	if (allVotes.length) await votesDB.upsert(allVotes);
+	if (allVotes.length) await votesDB.upsert(trx, allVotes);
 };
 
 const removeVotesByTransactionIDs = async transactionIDs => {

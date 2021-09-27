@@ -86,7 +86,7 @@ const requestApi = coreApi.requestRetry;
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
 const indexAccounts = async job => {
-	const { accounts } = job.data;
+	const { accounts, trx } = job.data;
 	const accountsDB = await getAccountsIndex();
 	accounts.forEach(account => {
 		account.username = account.dpos.delegate.username || null;
@@ -94,7 +94,7 @@ const indexAccounts = async job => {
 		account.balance = account.token.balance;
 		return account;
 	});
-	await accountsDB.upsert(accounts);
+	await accountsDB.upsert(trx, accounts);
 };
 
 const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
@@ -162,7 +162,7 @@ const getAccountsFromCache = async (params) => {
 	return accounts;
 };
 
-const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
+const indexAccountsbyAddress = async (trx, addressesToIndex, isGenesisBlockAccount = false) => {
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		dropDuplicates(addressesToIndex),
 		async address => {
@@ -183,6 +183,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 		// eslint-disable-next-line no-await-in-loop
 		await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', {
 			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+			trx,
 		});
 	}
 };
@@ -306,7 +307,7 @@ const resolveDelegateInfo = async accounts => {
 	return accounts;
 };
 
-const indexAccountsbyPublicKey = async (accountInfoArray) => {
+const indexAccountsbyPublicKey = async (trx, accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		accountInfoArray
@@ -346,6 +347,7 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 		// eslint-disable-next-line no-await-in-loop
 		await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', {
 			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
+			trx,
 		});
 	}
 };
@@ -640,9 +642,11 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
 };
 
-const keepAccountsCacheUpdated = () => {
-	const updateAccountsCacheListener = indexAccountsbyAddress;
-	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
+const keepAccountsCacheUpdated = async () => {
+	const accountsDB = await getAccountsIndex();
+	const trx = await accountsDB.getTransaction();
+	const updateAccountsCacheListener = (address) => indexAccountsbyAddress(trx, address);
+	Signals.get('updateAccountsByAddress').add(address => updateAccountsCacheListener(address));
 };
 
 removeReclaimedLegacyAccountInfoFromCache();
