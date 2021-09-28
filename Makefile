@@ -9,6 +9,9 @@ up:
 down:
 	$(compose) down --volumes --remove-orphans
 
+restart: 
+	$(compose) restart
+
 ready:
 	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/ready' >/dev/null
 
