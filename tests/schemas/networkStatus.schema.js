@@ -38,23 +38,6 @@ const networkStatusSchema = {
 	fees: Joi.object(feeSchema).required(),
 };
 
-const networkStatusSchemaVersion5 = {
-	height: Joi.string().required(),
-	finalizedHeight: Joi.number().integer().required(),
-	milestone: Joi.array().required(),
-	networkVersion: Joi.string().required(),
-	networkIdentifier: Joi.string().required(),
-	currentReward: Joi.number().required(),
-	rewards: Joi.object().required(),
-	registeredModules: Joi.array().required(),
-	moduleAssets: Joi.array().required(),
-	blockTime: Joi.number().required(),
-	communityIdentifier: Joi.string().required(),
-	minRemainingBalance: Joi.string().required(),
-	maxPayloadLength: Joi.number().required(),
-};
-
 module.exports = {
 	networkStatusSchema: Joi.object(networkStatusSchema).required(),
-	networkStatusSchemaVersion5: Joi.object(networkStatusSchemaVersion5).required(),
 };
