@@ -94,7 +94,7 @@ In the next step, set the required environment variables.
 $EDITOR .env
 ```
 
-The example below is valid with the assumption the Lisk Core node is running on host machine, not in a Docker container.
+The example below assumes that the Lisk Core node is running on the host machine, and not inside of a Docker container.
 
 ```
 ## Required
@@ -102,7 +102,7 @@ The example below is valid with the assumption the Lisk Core node is running on 
 export LISK_CORE_WS="ws://host.docker.internal:8080"
 ```
 
-When running a Docker instance of Lisk Core that is run by Docker, the variable needs to refer to the container: `LISK_CORE_WS="ws://<your_docker_container>:8080"`.
+When running Lisk Core inside of a Docker container, the variable needs to refer to the container: `LISK_CORE_WS="ws://<your_docker_container>:8080"`.
 
 It is strongly recommended that you synchronize your Lisk Core node with the network **before** starting the Lisk Service.
 
@@ -128,7 +128,7 @@ make down
 
 ## Benchmark
 
-Assuming lisk-service is running on localhost:9901, and you are in the root of this repo, you can run:
+Assuming lisk-service is running on the localhost:9901, and you are in the root of this repo, you can run the following:
 
 ```bash
 cd tests
