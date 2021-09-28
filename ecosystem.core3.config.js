@@ -32,9 +32,12 @@ module.exports = {
 				PORT: '9901',
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				ENABLE_WS_RATELIMIT: false,
-				WS_RATELIMIT_POINTS: 5,
-				WS_RATELIMIT_DURATION: 1, // in seconds
+				WS_RATE_LIMIT_ENABLE: false,
+				WS_RATE_LIMIT_CONNECTIONS: 5,
+				WS_RATE_LIMIT_DURATION: 1, // in seconds
+				HTTP_RATE_LIMIT_ENABLE: false,
+				HTTP_RATE_LIMIT_CONNECTIONS: 200,
+				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
 				// ENABLE_HTTP_API: 'http-status,http-version2',
 				// ENABLE_WS_API: 'blockchain,rpc-v2',
 				// HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',

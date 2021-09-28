@@ -1,0 +1,88 @@
+config:
+  target: "{{ $processEnvironment.LISK_SERVICE_URL }}/api/v2"
+  phases:
+    - duration: 10
+      arrivalRate: 15
+      name: "Sustained max load of 15 users for 10 seconds"
+  defaults:
+    headers:
+      content-type: "application/json"
+scenarios:
+  - name: "Transactions"
+    flow:
+      - get:
+          url: "/transactions"
+          qs:
+            limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+  - name: "Blocks"
+    flow:
+      - get:
+          url: "/blocks"
+          qs:
+            limit: 30
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/blocks"
+          qs:
+            limit: 100
+          response:
+            match:
+              json: "$.meta.count"
+              value: 100
+          expect:
+            - statusCode: 200
+  - name: "Accounts"
+    flow:
+      - get:
+          url: "/accounts"
+          response:
+            match:
+              json: "$.meta.count"
+              value: 10
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/accounts"
+          qs:
+            limit: 20
+          response:
+            match:
+              json: "$.meta.count"
+              value: 20
+          expect:
+            - statusCode: 200
+  - name: "Delegates"
+    flow:
+      - get:
+          url: "/accounts"
+          qs:
+            limit: 30
+            isDelegate: true
+          response:
+            match:
+              json: "$.meta.count"
+              value: 30
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/accounts"
+          qs:
+            limit: 103
+            isDelegate: true
+          response:
+            match:
+              json: "$.meta.count"
+              value: 103
+          expect:
+            - statusCode: 200
