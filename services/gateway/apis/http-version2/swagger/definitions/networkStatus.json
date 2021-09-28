@@ -12,44 +12,39 @@
                 "properties": {
                     "height": {
                         "type": "integer",
-                        "example": 123,
-                        "minimum": 1,
-                        "description": "Current block height of the node.\nRepresents the current number of blocks in the chain on the node.\n"
+                        "example": 16550779,
+                        "minimum": 0,
+                        "description": "Current block height"
                     },
                     "finalizedHeight": {
                         "type": "integer",
-                        "example": 1234,
-                        "description": "Finalized block height of the network."
+                        "example": 16550609,
+                        "minimum": 0,
+                        "description": "Last finalized block height"
                     },
                     "networkVersion": {
                         "type": "string",
                         "format": "networkVersion",
-                        "example": "2.0",
-                        "description": "Network version"
+                        "example": "3.0",
+                        "description": "Current network version"
                     },
                     "networkIdentifier": {
                         "type": "string",
                         "format": "networkIdentifier",
-                        "example": "01e47ba4e3e57981642150f4b45f64c2160c10bac9434339888210a4fa5df097",
+                        "example": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
                         "description": "Network identifier"
+                    },
+                    "milestone": {
+                        "type": "string",
+                        "format": "milestone",
+                        "example": "4",
+                        "description": "Current milestone index. Check 'rewards.milestones' for all the milestones"
                     },
                     "currentReward": {
                         "type": "string",
                         "format": "currentReward",
-                        "example": "500000000",
+                        "example": "100000000",
                         "description": "Current reward"
-                    },
-                    "milestone": {
-                        "type": "array",
-                        "items": {
-                            "example": [
-                                "500000000",
-                                "400000000",
-                                "300000000",
-                                "200000000",
-                                "100000000"
-                            ]
-                        }
                     },
                     "rewards": {
                         "type": "object",
@@ -87,7 +82,7 @@
                                 "legacyAccount"
                             ]
                         },
-                        "description": "Array of registered modules"
+                        "description": "Array of all the current registered modules"
                     },
                     "moduleAssets": {
                         "type": "array",
@@ -103,11 +98,11 @@
                                 }
                             }
                         },
-                        "description": "Array of modules assets"
+                        "description": "Array of all current supported transaction types"
                     },
                     "blockTime": {
                         "type": "integer",
-                        "example": "10"
+                        "example": 10
                     },
                     "communityIdentifier": {
                         "type": "string",
@@ -115,11 +110,11 @@
                     },
                     "minRemainingBalance": {
                         "type": "string",
-                        "example": "500000000"
+                        "example": "5000000"
                     },
                     "maxPayloadLength": {
                         "type": "integer",
-                        "example": "15000"
+                        "example": 15360
                     }
                 }
             },
@@ -133,18 +128,18 @@
                 "properties": {
                     "lastUpdate": {
                         "type": "string",
-                        "example": "1616008148",
-                        "description": "timestamp"
+                        "example": "1632471013",
+                        "description": "Current timestamp"
                     },
                     "lastBlockHeight": {
                         "type": "integer",
-                        "example": 25,
-                        "description": "Height of a block"
+                        "example": 16550779,
+                        "description": "Height of the current block"
                     },
-                    "blockId": {
+                    "lastBlockId": {
                         "type": "string",
-                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                        "description": "Id of a block"
+                        "example": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f",
+                        "description": "ID of the current block"
                     }
                 }
             }
