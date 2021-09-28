@@ -599,7 +599,7 @@ const indexPastBlocks = async () => {
 		logger.warn(`Indexing failed due to: ${err.message}`);
 	});
 	await indexMissingBlocks(blockIndexLowerRange, blockIndexHigherRange);
-	logger.info('Finished building the blocks index');
+	logger.info('Finished scheduling the retrieval of the blocks');
 };
 
 const checkIndexReadiness = async () => {
@@ -613,18 +613,20 @@ const checkIndexReadiness = async () => {
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 
 			logger.info([
+				`numBlocksOnChain: ${currentChainHeight - genesisHeight + 1}`,
 				`numBlocksIndexed: ${numBlocksIndexed}`,
 				`lastIndexedBlock: ${lastIndexedBlock.height}`,
 				`currentChainHeight: ${currentChainHeight}`,
 			].join(', '));
+
 			if (numBlocksIndexed >= currentChainHeight - genesisHeight
 				&& lastIndexedBlock.height >= currentChainHeight - 1) {
 				setIndexReadyStatus(true);
-				logger.info('The blockchain index is complete');
+				logger.info('The blockchain indexing is complete');
 				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
 				Signals.get('blockIndexReady').dispatch(true);
 			} else {
-				logger.info('The blockchain indexing in progress');
+				logger.info('The blockchain indexing is in progress');
 			}
 		} catch (err) {
 			logger.warn(`Error while checking index readiness: ${err.message}`);
