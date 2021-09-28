@@ -29,13 +29,14 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 	const queueName = 'defaultQueue';
 
 	if (!queuePool[queueName]) {
-		queuePool[queueName] = new BullQueue(queueName, {
-			redis: config.endpoints.redis,
-			// limiter: options.limiter,
-			prefix: `queue-${packageJson.name}`,
-			defaultJobOptions: options.defaultJobOptions,
-			settings: options.settings,
-		});
+		queuePool[queueName] = new BullQueue(queueName,
+			config.endpoints.redis,
+			{
+				prefix: `queue-${packageJson.name}`,
+				defaultJobOptions: options.defaultJobOptions,
+				settings: options.settings,
+				limiter: options.limiter,
+			});
 
 		const queue = queuePool[queueName];
 
@@ -57,8 +58,11 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 
 		setInterval(async () => {
 			const jc = await queue.getJobCounts();
-			if (Number(jc.waiting) > 0 || Number(jc.active) > 0 || Number(jc.paused) > 0) {
+			if (Number(jc.waiting) > 0 || Number(jc.active) > 0
+				|| Number(jc.failed) > 0 || Number(jc.paused) > 0) {
 				logger.info(`Queue counters: waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
+			} else {
+				logger.info('Queue counters: All scheduled jobs are done.');
 			}
 		}, STATS_INTERVAL);
 	}
