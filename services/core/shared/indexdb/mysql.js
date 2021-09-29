@@ -107,11 +107,28 @@ const getValue = (val) => {
 	return val;
 };
 
-const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
+const mapRowsBySchema = (rawRows, schema) => {
+	const rows = [];
+	rawRows.forEach(item => {
+		const row = {};
+		Object.keys(schema).forEach(o => {
+			const val = item[o];
+			if (val || val === 0) row[o] = getValue(cast(val, schema[o].type));
+		});
+		rows.push(row);
+	});
+	return rows;
+};
+
+const getConnectionPoolKey = (connEndpoint = config.endpoints.mysql) => {
 	const userName = connEndpoint.split('//')[1].split('@')[0].split(':')[0];
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
 	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
-	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
+	return connPoolKey;
+};
+
+const getDbConnection = async (connEndpoint = config.endpoints.mysql) => {
+	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const defaultCharset = 'utf8mb4';
 
 	if (!connectionPool[connPoolKey]) {
@@ -126,61 +143,133 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	}
 
 	const knex = connectionPool[connPoolKey];
+	return knex;
+};
+
+const createTableIfNotExists = async (tableName,
+	tableConfig,
+	connEndpoint = config.endpoints.mysql) => {
+	const connPoolKey = getConnectionPoolKey(connEndpoint);
+	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
 	if (!tablePool[connPoolKeyTable]) {
+		const knex = await getDbConnection(connEndpoint);
 		await loadSchema(knex, tableName, tableConfig);
 		tablePool[connPoolKeyTable] = true;
 	}
+};
 
+const startTransaction = async (connection) => connection.transaction();
+
+const commitTransaction = async (transaction) => transaction.commit();
+
+const rollbackTransaction = async (transaction) => transaction.rollback();
+
+const getTableInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
 	const { primaryKey, schema } = tableConfig;
 
-	const mapRows = (rawRows) => {
-		const rows = [];
-		rawRows.forEach(item => {
-			const row = {};
-			Object.keys(schema).forEach(o => {
-				const val = item[o];
-				if (val || val === 0) row[o] = getValue(cast(val, schema[o].type));
-			});
-			rows.push(row);
-		});
-		return rows;
+	const knex = await getDbConnection(connEndpoint);
+
+	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
+
+	const insert = async (trx, rows) => {
+		if (!trx) throw new Error('Transaction not provided');
+		const chunkSize = 1000;
+		return trx.batchInsert(tableName, rows, chunkSize).transacting(trx);
 	};
 
-	const getTransaction = async () => knex.transaction();
-	const defaultTrx = await getTransaction();
+	const update = async (trx, row) => {
+		if (!trx) throw new Error('Transaction not provided');
+		return trx(tableName)
+			.where(primaryKey, '=', row[primaryKey])
+			.update(row)
+			.transacting(trx);
+	};
 
-	const insert = async (trx, row) => trx(tableName)
-		.transacting(trx)
-		.insert(row)
-		.onConflict(tableConfig.primaryKey)
-		.merge();
+	const upsert = async (trx, inputRows) => {
+		if (!trx) {
+			throw new Error('Transaction not provided');
+		}
 
-	const update = async (trx, row) => trx(tableName)
-		.transacting(trx)
-		.where(primaryKey, '=', row[primaryKey])
-		.update(row);
-
-	const upsert = async (trx = defaultTrx, inputRows) => {
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
 
-		const rows = mapRows(rawRows);
+		const rowsToInsert = [];
+
+		const rows = mapRowsBySchema(rawRows, schema);
 		const concurrency = 25;
-		return BluebirdPromise.map(
+		await BluebirdPromise.map(
 			rows,
-			async row => {
-				trx(tableName)
-					.select(primaryKey)
-					.where(primaryKey, '=', row[primaryKey])
-					.then(result => {
-						if (!result.length) return insert(trx, row);
-						return update(trx, row);
-					});
-			},
+			async row => trx(tableName)
+				.select(primaryKey)
+				.where(primaryKey, '=', row[primaryKey])
+				.then(result => {
+					if (result.length) return update(trx, row);
+					rowsToInsert.push(row);
+					return rowsToInsert;
+				}),
 			{ concurrency },
 		);
+		if (rowsToInsert.length) await insert(trx, rowsToInsert);
 	};
+
+	// const upsert = async (trx, inputRows) => {
+	// 	let rawRows = inputRows;
+	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
+
+	// 	const rows = mapRowsBySchema(rawRows, schema);
+
+	// 	try {
+	// 		const chunkSize = 1000;
+	// 		const ids = await trx.batchInsert(tableName, rows, chunkSize).transacting(trx);
+	// 		logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+
+	// 		// Return '0' on successful inserts
+	// 		return ids.length ? 0 : 1;
+	// 	} catch (error) {
+	// 		const errCode = error.code;
+	// 		const errMessage = error.message.split(`${errCode}: `)[1] || error.message;
+	// 		const errCause = errMessage.split(': ')[0];
+	// 		logger.debug('Encountered error with batch insert:', errCause,
+	// 			'\nRe-attempting to update/merge the conflicted transactions one at a time: ');
+
+	// 		let inserts;
+	// 		const concurrency = 25;
+	// 		try {
+	// 			inserts = await BluebirdPromise.map(
+	// 				rows,
+	// 				async row => {
+	// 					const [result] = await trx(tableName)
+	// 						.insert(row)
+	// 						.onConflict(tableConfig.primaryKey)
+	// 						.merge()
+	// 						.transacting(trx);
+	// 					return result;
+	// 				},
+	// 				{ concurrency },
+	// 			);
+	// 		} catch (_) {
+	// 			// As a last resort, try inserting/ updating one row at a time,
+	// 			// wrapped within individual transactions to avoid deadlocks
+	// 			inserts = await BluebirdPromise.map(
+	// 				rows,
+	// 				async row => {
+	// 					const [result] = await trx(tableName)
+	// 						.insert(row)
+	// 						.onConflict(tableConfig.primaryKey)
+	// 						.merge()
+	// 						.transacting(trx);
+	// 					return result;
+	// 				},
+	// 				{ concurrency },
+	// 			);
+	// 		}
+
+	// 		// Return '0' on successful inserts
+	// 		logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
+	// 		return inserts.reduce((a, b) => a + b, 0);
+	// 	}
+	// };
 
 	const queryBuilder = (params, columns) => {
 		const query = knex.select(columns).table(tableName);
@@ -317,7 +406,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const increment = async (params, rawRow = {}) => {
 		let result;
-		const [row] = mapRows([rawRow]);
+		const [row] = mapRowsBySchema([rawRow], schema);
 		try {
 			[result] = await knex.transaction(
 				trx => trx(tableName)
@@ -344,8 +433,13 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		count,
 		rawQuery,
 		increment,
-		getTransaction,
 	};
 };
 
-module.exports = getDbInstance;
+module.exports = {
+	getDbConnection,
+	startTransaction,
+	commitTransaction,
+	rollbackTransaction,
+	getTableInstance,
+};
