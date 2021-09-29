@@ -180,6 +180,10 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
 			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
+
+			account.username = account.dpos.delegate.username || null;
+			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
+			account.balance = account.token.balance;
 			return account;
 		},
 		{ concurrency: 10 },
@@ -335,6 +339,9 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 					totalVotesReceived: account.dpos.delegate.totalVotesReceived,
 				});
 			}
+			account.username = account.dpos.delegate.username || null;
+			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
+			account.balance = account.token.balance;
 			return account;
 		},
 		{ concurrency: 10 },
