@@ -41,7 +41,8 @@ const { getTableInstance } = require('../../../indexdb/mysql');
 // const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
-// const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema);
+// const getMultisignatureIndex = () => getTableInstance('multisignature',
+// multisignatureIndexSchema);
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const requestApi = coreApi.requestRetry;

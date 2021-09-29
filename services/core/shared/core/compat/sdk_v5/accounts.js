@@ -104,8 +104,10 @@ const isItGenesisAccount = async address => (await isGenesisAccountCache.get(add
 // };
 
 // const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
-// const indexAccountsByAddressQueue = initializeQueue('indexAccountsByAddressQueue', indexAccounts);
-// const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQueue', indexAccounts);
+// const indexAccountsByAddressQueue = initializeQueue('indexAccountsByAddressQueue',
+// indexAccounts);
+// const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQueue',
+// indexAccounts);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
