@@ -23,13 +23,15 @@ const Signals = require('../signals');
 const config = require('../../config');
 const { getTransactions } = require('./transactions');
 const { initializeQueue } = require('./queue');
-const mysql = require('../indexdb/mysql');
+const {
+	getTableInstance,
+} = require('../indexdb/mysql');
 const requestAll = require('../requestAll');
 const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
 
 const logger = Logger();
 
-const getDbInstance = () => mysql('transaction_statistics', txStatisticsIndexSchema);
+const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema);
 
 const queueName = 'transactionStatisticsQueue';
 const queueOptions = config.queue[queueName];
