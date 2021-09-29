@@ -20,19 +20,19 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const { getIndexedAccountInfo } = require('./accounts');
 const { getBase32AddressFromHex } = require('./accountUtils');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
 const votesAggregateIndexSchema = require('./schema/votesAggregate');
 
-const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
-const getVotesAggregateIndex = () => mysqlIndex('votes_aggregate', votesAggregateIndexSchema);
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
+const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
-const indexVotes = async (trx, blocks) => {
+const indexVotes = async (blocks) => {
 	const votesDB = await getVotesIndex();
 	const votesAggregateDB = await getVotesAggregateIndex();
 	const votesMultiArray = blocks.map(block => {
@@ -86,7 +86,8 @@ const indexVotes = async (trx, blocks) => {
 	let allVotePromises = [];
 	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
 	const allVotes = await BluebirdPromise.all(allVotePromises);
-	if (allVotes.length) await votesDB.upsert(trx, allVotes);
+	// if (allVotes.length) await votesDB.upsert(trx, allVotes);
+	return allVotes;
 };
 
 const removeVotesByTransactionIDs = async transactionIDs => {

@@ -51,10 +51,25 @@ const {
 const { initializeQueue } = require('../../queue');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
-const mysqlIndex = require('../../../indexdb/mysql');
-const blocksIndexSchema = require('./schema/blocks');
+const {
+	getDbConnection,
+	getTableInstance,
+	startTransaction,
+	commitTransaction,
+	rollbackTransaction,
+} = require('../../../indexdb/mysql');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const blocksIndexSchema = require('./schema/blocks');
+const accountsIndexSchema = require('./schema/accounts');
+const transactionsIndexSchema = require('./schema/transactions');
+const votesIndexSchema = require('./schema/votes');
+const multisignatureIndexSchema = require('./schema/multisignature');
+
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
@@ -106,10 +121,15 @@ const deleteIndexedBlocks = async job => {
 };
 
 const indexBlocks = async job => {
-	let trx;
+	const connection = await getDbConnection();
+	const trx = await startTransaction(connection);
 	try {
 		const { blocks } = job.data;
 		const blocksDB = await getBlocksIndex();
+		const accountsDB = await getBlocksIndex();
+		const transactionsDB = await getTransactionsIndex();
+		const votesDB = await getVotesIndex();
+		const multisignatureDB = await getMultisignatureIndex();
 		const generatorPkInfoArray = [];
 		await BluebirdPromise.map(
 			blocks,
@@ -126,21 +146,38 @@ const indexBlocks = async job => {
 			},
 			{ concurrency: blocks.length },
 		);
-		trx = await blocksDB.getTransaction();
 		await blocksDB.upsert(trx, blocks);
-		await indexAccountsbyPublicKey(trx, generatorPkInfoArray);
-		await indexTransactions(trx, blocks);
-		await indexVotes(trx, blocks);
-		trx.commit();
+
+		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
+
+		const { accounts, transactions, multisignatureInfoToIndex } = await indexTransactions(blocks);
+
+		await accountsDB.upsert(trx, accounts.concat(accountsByPublicKey));
+
+		await transactionsDB.upsert(transactions);
+
+		await multisignatureDB.upsert(trx, multisignatureInfoToIndex);
+
+		const votes = await indexVotes(blocks);
+		await votesDB.upsert(trx, votes);
+		await commitTransaction(trx);
 	} catch (error) {
-		trx.rollback();
+		await rollbackTransaction(trx);
 	}
 };
 
 const updateBlockIndex = async job => {
-	const { blocks } = job.data;
-	const blocksDB = await getBlocksIndex();
-	await blocksDB.upsert(blocks);
+	let trx;
+	try {
+		const connection = await getDbConnection();
+		const { blocks } = job.data;
+		const blocksDB = await getBlocksIndex();
+		trx = await startTransaction(connection);
+		await blocksDB.upsert(trx, blocks);
+		await commitTransaction(trx);
+	} catch (error) {
+		await rollbackTransaction(trx);
+	}
 };
 
 const indexBlocksQueue = initializeQueue('indexBlocksQueue', indexBlocks);
@@ -423,38 +460,45 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
-	const blocksDB = await getBlocksIndex();
-	const trx = await blocksDB.getTransaction();
-	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
+	const connection = await getDbConnection();
+	const trx = await startTransaction(connection);
+	try {
+		const accountsDB = await getAccountsIndex();
+		const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
 
-	const genesisAccountsToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length === 40)
-		.map(account => account.address);
-	const genesisAccountPageCached = 'genesisAccountPageCached';
+		const genesisAccountsToIndex = genesisBlock.asset.accounts
+			.filter(account => account.address.length === 40)
+			.map(account => account.address);
+		const genesisAccountPageCached = 'genesisAccountPageCached';
 
-	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
+		logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 
-	const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
+		const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
 
-	const PAGE_SIZE = 1000;
-	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
-	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
-		const currentPage = pageNum * PAGE_SIZE;
-		const nextPage = (pageNum + 1) * PAGE_SIZE;
-		const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
+		const PAGE_SIZE = 1000;
+		const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
+		for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
+			const currentPage = pageNum * PAGE_SIZE;
+			const nextPage = (pageNum + 1) * PAGE_SIZE;
+			const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
 
-		if (pageNum >= lastCachedPage) {
-			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
+			if (pageNum >= lastCachedPage) {
+				const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
 
-			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+				logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
-			/* eslint-disable no-await-in-loop */
-			await indexAccountsbyAddress(trx, genesisAccountAddressesToIndex, true);
-			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
-			/* eslint-enable no-await-in-loop */
-		} else {
-			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+				/* eslint-disable no-await-in-loop */
+				const accounts = await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+				await accountsDB.upsert(trx, accounts);
+				await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+				/* eslint-enable no-await-in-loop */
+			} else {
+				logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+			}
 		}
+		await commitTransaction(trx);
+	} catch (error) {
+		await rollbackTransaction(trx);
 	}
 };
 
@@ -479,17 +523,24 @@ const indexGenesisAccounts = async () => {
 };
 
 const indexAllDelegateAccounts = async () => {
-	const blocksDB = await getBlocksIndex();
-	const trx = await blocksDB.getTransaction();
+	const connection = await getDbConnection();
+	const accountsDB = await getAccountsIndex();
 	const allDelegatesInfo = await requestApi(coreApi.getAllDelegates);
 	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
-	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsbyAddress(trx,
-			allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+	const trx = await startTransaction(connection);
+	try {
+		for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
+			/* eslint-disable no-await-in-loop */
+			const accounts = await (allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+			await accountsDB.upsert(trx, accounts);
+			/* eslint-enable no-await-in-loop */
+		}
+		await commitTransaction(trx);
+		logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
+	} catch (error) {
+		await rollbackTransaction(trx);
 	}
-	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
 
 const buildIndex = async (from, to) => {
