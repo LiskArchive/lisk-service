@@ -659,6 +659,7 @@ const keepAccountsCacheUpdated = async () => {
 		Signals.get('updateAccountsByAddress').add(address => updateAccountsCacheListener(address));
 	} catch (error) {
 		await rollbackTransaction(trx);
+		throw error;
 	}
 };
 
