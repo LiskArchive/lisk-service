@@ -107,7 +107,7 @@ const getValue = (val) => {
 	return val;
 };
 
-const mapRowsBySchema = (rawRows, schema) => {
+const mapRowsBySchema = async (rawRows, schema) => {
 	const rows = [];
 	rawRows.forEach(item => {
 		const row = {};
@@ -196,7 +196,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 
 		const rowsToInsert = [];
 
-		const rows = mapRowsBySchema(rawRows, schema);
+		const rows = await mapRowsBySchema(rawRows, schema);
 		const concurrency = 25;
 		await BluebirdPromise.map(
 			rows,
@@ -406,7 +406,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 
 	const increment = async (params, rawRow = {}) => {
 		let result;
-		const [row] = mapRowsBySchema([rawRow], schema);
+		const [row] = await mapRowsBySchema([rawRow], schema);
 		try {
 			[result] = await knex.transaction(
 				trx => trx(tableName)
