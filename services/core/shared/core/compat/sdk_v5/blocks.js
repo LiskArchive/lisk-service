@@ -126,7 +126,7 @@ const indexBlocks = async job => {
 	try {
 		const { blocks } = job.data;
 		const blocksDB = await getBlocksIndex();
-		const accountsDB = await getBlocksIndex();
+		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
 		const multisignatureDB = await getMultisignatureIndex();
@@ -146,7 +146,7 @@ const indexBlocks = async job => {
 			},
 			{ concurrency: blocks.length },
 		);
-		await blocksDB.upsert(trx, blocks);
+		if (blocks.length) await blocksDB.upsert(trx, blocks);
 
 		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
 
@@ -154,15 +154,17 @@ const indexBlocks = async job => {
 
 		await accountsDB.upsert(trx, accounts.concat(accountsByPublicKey));
 
-		await transactionsDB.upsert(transactions);
+		if (transactions.length) await transactionsDB.upsert(trx, transactions);
 
-		await multisignatureDB.upsert(trx, multisignatureInfoToIndex);
+		if (multisignatureInfoToIndex.length) await multisignatureDB
+			.upsert(trx, multisignatureInfoToIndex);
 
 		const votes = await indexVotes(blocks);
-		await votesDB.upsert(trx, votes);
+		if (votes.length) await votesDB.upsert(trx, votes);
 		await commitTransaction(trx);
 	} catch (error) {
 		await rollbackTransaction(trx);
+		throw error;
 	}
 };
 
@@ -489,7 +491,7 @@ const performGenesisAccountsIndexing = async () => {
 
 				/* eslint-disable no-await-in-loop */
 				const accounts = await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
-				await accountsDB.upsert(trx, accounts);
+				if (accounts.length) await accountsDB.upsert(trx, accounts);
 				await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
 				/* eslint-enable no-await-in-loop */
 			} else {
@@ -499,6 +501,7 @@ const performGenesisAccountsIndexing = async () => {
 		await commitTransaction(trx);
 	} catch (error) {
 		await rollbackTransaction(trx);
+		throw error;
 	}
 };
 
@@ -532,7 +535,8 @@ const indexAllDelegateAccounts = async () => {
 	try {
 		for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
 			/* eslint-disable no-await-in-loop */
-			const accounts = await (allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+			const accounts = await indexAccountsbyAddress(allDelegateAddresses
+				.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
 			await accountsDB.upsert(trx, accounts);
 			/* eslint-enable no-await-in-loop */
 		}
@@ -540,6 +544,7 @@ const indexAllDelegateAccounts = async () => {
 		logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 	} catch (error) {
 		await rollbackTransaction(trx);
+		throw error;
 	}
 };
 
