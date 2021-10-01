@@ -118,7 +118,7 @@ config.queue = {
 			removeOnComplete: true,
 		},
 		settings: {},
-		limiter: {},
+		// limiter: {},
 	},
 	transactionStatisticsQueue: {
 		defaultJobOptions: {
@@ -127,7 +127,7 @@ config.queue = {
 			removeOnComplete: true,
 		},
 		settings: {},
-		limiter: {},
+		// limiter: {},
 	},
 };
 
