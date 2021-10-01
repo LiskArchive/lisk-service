@@ -179,6 +179,7 @@ const updateBlockIndex = async job => {
 		await commitTransaction(trx);
 	} catch (error) {
 		await rollbackTransaction(trx);
+		throw error;
 	}
 };
 

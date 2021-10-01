@@ -172,24 +172,39 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 
 	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
 
-	const insert = async (trx, rows) => {
+	// Works as expected
+	// const upsert = async (trx, inputRows) => {
+	// 	let rawRows = inputRows;
+	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
+	// 	const rows = await mapRowsBySchema(rawRows, schema);
+
+	// 	const queries = rows.map((row) => {
+	// 		const insertQuery = trx(tableName).insert(row).toString()
+	// 		const updateQuery = trx(tableName).update(row).toString().replace(/^update(.*?)set\s/gi, '')
+	// 		return trx.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
+	// 	})
+
+	// 	return Promise.all(queries).then(trx.transacting(trx));
+	// }
+
+	const inserts = async (trx, rows) => {
 		if (!trx) throw new Error('Transaction not provided');
 		const chunkSize = 1000;
-		return trx.batchInsert(tableName, rows, chunkSize).transacting(trx);
+		const insertRows = await trx.batchInsert(tableName, rows, chunkSize).transacting(trx);
+		return insertRows;
 	};
 
 	const update = async (trx, row) => {
 		if (!trx) throw new Error('Transaction not provided');
-		return trx(tableName)
+		const updateRow = await trx(tableName)
 			.where(primaryKey, '=', row[primaryKey])
 			.update(row)
 			.transacting(trx);
+		return updateRow;
 	};
 
 	const upsert = async (trx, inputRows) => {
-		if (!trx) {
-			throw new Error('Transaction not provided');
-		}
+		if (!trx) throw new Error('Transaction not provided');
 
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
@@ -200,76 +215,18 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		const concurrency = 25;
 		await BluebirdPromise.map(
 			rows,
-			async row => trx(tableName)
-				.select(primaryKey)
-				.where(primaryKey, '=', row[primaryKey])
-				.then(result => {
-					if (result.length) return update(trx, row);
-					rowsToInsert.push(row);
-					return rowsToInsert;
-				}),
+			async row => {
+				const result = await trx(tableName).select(primaryKey).where(primaryKey, '=', row[primaryKey]).transacting(trx);
+				if (result.length) {
+					return update(trx, row);
+				}
+				rowsToInsert.push(row);
+				return result;
+			},
 			{ concurrency },
 		);
-		if (rowsToInsert.length) await insert(trx, rowsToInsert);
+		if (rowsToInsert.length) await inserts(trx, rowsToInsert);
 	};
-
-	// const upsert = async (trx, inputRows) => {
-	// 	let rawRows = inputRows;
-	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
-
-	// 	const rows = mapRowsBySchema(rawRows, schema);
-
-	// 	try {
-	// 		const chunkSize = 1000;
-	// 		const ids = await trx.batchInsert(tableName, rows, chunkSize).transacting(trx);
-	// 		logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-
-	// 		// Return '0' on successful inserts
-	// 		return ids.length ? 0 : 1;
-	// 	} catch (error) {
-	// 		const errCode = error.code;
-	// 		const errMessage = error.message.split(`${errCode}: `)[1] || error.message;
-	// 		const errCause = errMessage.split(': ')[0];
-	// 		logger.debug('Encountered error with batch insert:', errCause,
-	// 			'\nRe-attempting to update/merge the conflicted transactions one at a time: ');
-
-	// 		let inserts;
-	// 		const concurrency = 25;
-	// 		try {
-	// 			inserts = await BluebirdPromise.map(
-	// 				rows,
-	// 				async row => {
-	// 					const [result] = await trx(tableName)
-	// 						.insert(row)
-	// 						.onConflict(tableConfig.primaryKey)
-	// 						.merge()
-	// 						.transacting(trx);
-	// 					return result;
-	// 				},
-	// 				{ concurrency },
-	// 			);
-	// 		} catch (_) {
-	// 			// As a last resort, try inserting/ updating one row at a time,
-	// 			// wrapped within individual transactions to avoid deadlocks
-	// 			inserts = await BluebirdPromise.map(
-	// 				rows,
-	// 				async row => {
-	// 					const [result] = await trx(tableName)
-	// 						.insert(row)
-	// 						.onConflict(tableConfig.primaryKey)
-	// 						.merge()
-	// 						.transacting(trx);
-	// 					return result;
-	// 				},
-	// 				{ concurrency },
-	// 			);
-	// 		}
-
-	// 		// Return '0' on successful inserts
-	// 		logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-	// 		return inserts.reduce((a, b) => a + b, 0);
-	// 	}
-	// };
 
 	const queryBuilder = (params, columns) => {
 		const query = knex.select(columns).table(tableName);
