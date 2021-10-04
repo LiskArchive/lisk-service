@@ -78,12 +78,7 @@ const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
-// A boolean mapping against the genesis account addresses to indicate migration status
-const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
-
 const requestApi = coreApi.requestRetry;
-
-const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
 const indexAccounts = async job => {
 	const { accounts } = job.data;
@@ -167,11 +162,15 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 		dropDuplicates(addressesToIndex),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
+			if (isGenesisBlockAccount) account.isGenesisAccount = true;
 
-			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
-			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
+			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey', 'isGenesisAccount']);
+			if (accountFromDB) {
+				if (accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
+				if (accountFromDB.isGenesisAccount) {
+					account.isGenesisAccount = accountFromDB.isGenesisAccount;
+				}
+			}
 			return account;
 		},
 		{ concurrency: 10 },
@@ -288,14 +287,17 @@ const resolveDelegateInfo = async accounts => {
 						: 0;
 
 					// Check for the delegate registration transaction
-					const [delegateRegTx = {}] = await transactionsDB.find({
-						senderPublicKey: account.publicKey,
-						moduleAssetId: delegateRegTxModuleAssetId,
-						limit: 1,
-					}, ['height']);
+					const [delegateRegTx = {}] = await transactionsDB.find(
+						{
+							senderPublicKey: account.publicKey,
+							moduleAssetId: delegateRegTxModuleAssetId,
+							limit: 1,
+						},
+						['height'],
+					);
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
-						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
+						: await coreApi.getGenesisHeight();
 				}
 			}
 			return account;
@@ -463,9 +465,13 @@ const getAccounts = async params => {
 		};
 	}
 
-	const resultSet = await accountsDB.find(params, ['address', 'publicKey', 'username']);
-	if (resultSet.length) params.addresses = resultSet
-		.map(row => getHexAddressFromBase32(row.address));
+	const resultSet = await accountsDB.find(
+		params,
+		['address', 'publicKey', 'username', 'isGenesisAccount'],
+	);
+	if (resultSet.length) {
+		params.addresses = resultSet.map(row => getHexAddressFromBase32(row.address));
+	}
 
 	if (params.address) {
 		params.address = getHexAddressFromBase32(params.address);
@@ -499,6 +505,7 @@ const getAccounts = async params => {
 		async account => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
 			if (indexedAccount) {
+				account.isGenesisAccount = indexedAccount.isGenesisAccount;
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
 					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [account] });
@@ -508,9 +515,8 @@ const getAccounts = async params => {
 			}
 
 			if (account.publicKey) {
-				const isGenesisAccount = await isItGenesisAccount(account.address);
-				if (isGenesisAccount) {
-					account.isMigrated = isGenesisAccount;
+				if (account.isGenesisAccount) {
+					account.isMigrated = account.isGenesisAccount;
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
 					// Use only dynamically computed legacyAccount information, ignore the hardcoded info
