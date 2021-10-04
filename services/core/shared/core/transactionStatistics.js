@@ -37,6 +37,7 @@ const getSelector = (params) => {
 	return {
 		propBetweens: [result],
 		sort: 'date:desc',
+		limit: params.limit || 366, // max supported limit of days
 	};
 };
 
@@ -219,7 +220,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
-		const shouldUpdate = i === 0 || !((await db.find({ date }, ['id'])).length);
+		const shouldUpdate = i === 0 || !((await db.find({ date, limit: 1 }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
 			let attempt = 0;
@@ -230,7 +231,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 			await transactionStatisticsQueue.add({ date, options });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
 			logger.debug(`Added day ${i + 1}, ${formattedDate} to the queue.`);
-			scheduledDays.push(formattedDate);
+			scheduledDays.push(formattedDate.toString());
 		}
 		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[0]} - ${scheduledDays[scheduledDays.length - 1]})`);
 	});
