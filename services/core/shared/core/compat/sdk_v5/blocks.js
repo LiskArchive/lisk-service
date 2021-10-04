@@ -772,7 +772,7 @@ const init = async () => {
 		// Set the genesis height
 		const gHeight = await coreApi.getGenesisHeight();
 		setGenesisHeight(gHeight);
-		indexVerifiedHeight = getGenesisHeight() - 1;
+		indexVerifiedHeight = await getGenesisHeight() - 1;
 
 		logger.info(`Genesis height is set to ${gHeight}`);
 
