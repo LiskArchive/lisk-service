@@ -307,6 +307,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 	// This block helps determine empty index
 	if (indexedBlockCount < 3) {
+		logger.info('The index seems to be empty, attempting to index all blocks');
 		result = [{ from: fromHeight, to: toHeight }];
 	} else if (indexedBlockCount !== heightDifference) {
 		const missingBlocksQueryStatement = `
@@ -353,7 +354,7 @@ const getNonFinalHeights = async () => {
 		isFinal: false,
 	}, ['height']);
 
-	return lastIndexedHeight;
+	return lastIndexedHeight || [];
 };
 
 const indexMissingBlocks = async () => {
@@ -383,7 +384,7 @@ const indexMissingBlocks = async () => {
 			for (let i = 0; i < missingBlockRanges.length; i++) {
 				const { from, to } = missingBlockRanges[i];
 
-				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from} blocks)`);
+				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from + 1} blocks)`);
 				/* eslint-disable-next-line no-await-in-loop */
 				await buildIndex(from, to);
 				/* eslint-disable-next-line no-await-in-loop */
@@ -396,8 +397,8 @@ const indexMissingBlocks = async () => {
 };
 
 const updateNonFinalBlocks = async () => {
-	const cHeight = getCurrentHeight();
-	const nfHeights = getNonFinalHeights();
+	const cHeight = await getCurrentHeight();
+	const nfHeights = await getNonFinalHeights();
 
 	if (nfHeights.length > 0) {
 		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
@@ -491,16 +492,10 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
-		const gHeight = await getGenesisHeight();
-
 		// Start the indexing process (blocks)
 		await indexGenesisBlock();
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
-
-		// First download the genesis block, if applicable
-		// Make sure the genesis block is ready when requested
-		await getBlockByHeight(gHeight);
 
 		// Start the indexing process (accounts)
 		await indexAllDelegateAccounts();
