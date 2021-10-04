@@ -20,21 +20,18 @@ const BigNumber = require('big-number');
 
 const Signals = require('../signals');
 
-const config = require('../../config');
 const { getTransactions } = require('./transactions');
-const { initializeQueue } = require('./queue');
+// const { initializeQueue } = require('./queue');
 const {
 	getTableInstance,
 } = require('../indexdb/mysql');
+const Queue = require('./queue');
 const requestAll = require('../requestAll');
 const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
 
 const logger = Logger();
 
 const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema);
-
-const queueName = 'transactionStatisticsQueue';
-const queueOptions = config.queue[queueName];
 
 const getSelector = (params) => {
 	const result = { property: 'date' };
@@ -152,7 +149,8 @@ const queueJob = async (job) => {
 	}
 };
 
-const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOptions);
+const queueName = 'transactionStats';
+const transactionStatisticsQueue = Queue(queueName, queueJob, 1);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();
@@ -231,7 +229,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 				delay: (attempt ** 2) * 60 * 60 * 1000,
 				attempt: attempt += 1,
 			};
-			await transactionStatisticsQueue.add(queueName, { date, options });
+			await transactionStatisticsQueue.add({ date, options });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
 			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 		}

@@ -41,9 +41,7 @@ const {
 	getIndexReadyStatus,
 } = require('../common');
 
-// const {
-// 	initializeQueue,
-// } = require('../../queue');
+// const Queue = require('../../queue');
 
 const {
 	dropDuplicates,
@@ -90,6 +88,22 @@ const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.re
 const requestApi = coreApi.requestRetry;
 
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
+
+// const indexAccounts = async job => {
+// 	const { accounts } = job.data;
+// 	const accountsDB = await getAccountsIndex();
+// 	accounts.forEach(account => {
+// 		account.username = account.dpos.delegate.username || null;
+// 		account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
+// 		account.balance = account.token.balance;
+// 		return account;
+// 	});
+// 	await accountsDB.upsert(accounts);
+// };
+
+// const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
+// const indexAccountsByAddressQueue = Queue('indexAccountsByAddressQueue', indexAccounts, 1);
+// const indexAccountsByPublicKeyQueue = Queue('indexAccountsByPublicKeyQueue', indexAccounts, 1);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
