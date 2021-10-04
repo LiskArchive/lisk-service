@@ -22,13 +22,19 @@ const Signals = require('../../../signals');
 
 const logger = Logger();
 
-const mysqlIdx = require('../../../indexdb/mysql');
+const {
+	getTableInstance,
+	getDbConnection,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
+} = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 const transactionIdxSchema = require('./schema/transactions');
 const { transactionTypes } = require('./mappings');
 
-const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
-const getTransactionIdx = () => mysqlIdx('transactionIdx', transactionIdxSchema);
+const getBlockIdx = () => getTableInstance('blockIdx', blockIdxSchema);
+const getTransactionIdx = () => getTableInstance('transactionIdx', transactionIdxSchema);
 
 let pendingTransactionsList = [];
 const MAX_TRANSACTION_AMOUNT = '9223372036854775807';
@@ -169,21 +175,29 @@ const getPendingTransactions = async params => {
 };
 
 const indexTransactionsListener = async (blockId) => {
-	const transactionIdx = await getTransactionIdx();
-	const blockResult = await transactionIdx.find({ blockId }, 'id');
-	if (blockResult.length > 0) return;
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	try {
+		const transactionIdx = await getTransactionIdx();
+		const blockResult = await transactionIdx.find({ blockId }, 'id');
+		if (blockResult.length > 0) return;
 
-	const transactions = await getTransactionsByBlockId(blockId);
-	const blockIdx = await getBlockIdx();
-	const blockRes = await blockIdx.find({ id: blockId }, ['timestamp', 'unixTimestamp']);
-	if (blockRes.length !== 1) return;
+		const transactions = await getTransactionsByBlockId(blockId);
+		const blockIdx = await getBlockIdx();
+		const blockRes = await blockIdx.find({ id: blockId }, ['timestamp', 'unixTimestamp']);
+		if (blockRes.length !== 1) return;
 
-	const { timestamp, unixTimestamp } = blockRes[0];
-	transactions.data.forEach(tx => {
-		tx.timestamp = timestamp;
-		tx.unixTimestamp = unixTimestamp;
-	});
-	transactionIdx.upsert(transactions.data);
+		const { timestamp, unixTimestamp } = blockRes[0];
+		transactions.data.forEach(tx => {
+			tx.timestamp = timestamp;
+			tx.unixTimestamp = unixTimestamp;
+		});
+		transactionIdx.upsert(transactions.data);
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 Signals.get('indexTransactions').add(indexTransactionsListener);
