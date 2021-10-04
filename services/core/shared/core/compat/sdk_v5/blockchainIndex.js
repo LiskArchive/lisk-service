@@ -361,7 +361,12 @@ const indexMissingBlocks = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	const lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
+	// Missing blocks are being checked during start
+	// By default they are checked from the blockchain's beginning
+	// It is possible to resume indexing from the last safe height
+	// Uncomment the line below to (slightly) increase performance during start
+	// const lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
+	const lastScheduledBlock = genesisHeight;
 	const minReqHeight = config.indexNumOfBlocks > 0
 		? currentHeight - config.indexNumOfBlocks : genesisHeight;
 
@@ -396,6 +401,8 @@ const indexMissingBlocks = async () => {
 };
 
 const updateNonFinalBlocks = async () => {
+	// TODO: This function always reports empty final heights
+	// Make sure it is correct
 	const cHeight = await getCurrentHeight();
 	const nfHeights = await getNonFinalHeights();
 
@@ -404,19 +411,6 @@ const updateNonFinalBlocks = async () => {
 		await buildIndex(nfHeights[0].height, cHeight);
 	}
 };
-
-// const indexGenesisBlock = async () => {
-// 	try {
-// 		const genesisHeight = await getGenesisHeight();
-
-// 		if (Number.isNaN(genesisHeight)) throw new Error('Genesis height is not set in the blockchainStore');
-
-// 		await indexBlocks({ data: { from: genesisHeight, to: genesisHeight } });
-// 	} catch (err) {
-// 		logger.fatal(`Genesis block indexing failed due to: ${err.message}`);
-// 		process.exit(2);
-// 	}
-// };
 
 const updateFinalizedHeight = async () => setFinalizedHeight(await getLastFinalBlockHeight());
 
@@ -494,7 +488,6 @@ const init = async () => {
 	// Check state of index and perform update
 	try {
 		// Start the indexing process (blocks)
-		// await indexGenesisBlock();
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
