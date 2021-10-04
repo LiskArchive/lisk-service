@@ -65,7 +65,6 @@ const blockchainStore = require('./blockchainStore');
 
 // Genesis height can be greater that 0
 // Blockchain starts form a non-zero block height
-const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
 // The top final block
@@ -293,6 +292,8 @@ const indexNewBlocks = async blocks => {
 };
 
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
+	let result = [];
+
 	const heightDifference = toHeight - fromHeight;
 	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${heightDifference} blocks)`);
 
@@ -303,7 +304,11 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 		to: toHeight,
 	}];
 	const indexedBlockCount = await blocksDB.count({ propBetweens });
-	if (indexedBlockCount !== heightDifference) {
+
+	// This block helps determine empty index
+	if (indexedBlockCount < 3) {
+		result = [{ from: fromHeight, to: toHeight }];
+	} else if (indexedBlockCount !== heightDifference) {
 		const missingBlocksQueryStatement = `
 			SELECT
 				(SELECT COALESCE(MAX(b0.height), ${fromHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
@@ -315,40 +320,15 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 		`;
 
 		const missingBlockRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
-		const logContent = missingBlockRanges.map(o => `${o.from} - ${o.to} (${o.to - o.from + 1} blocks)`);
-		// logger.info(`Missing blocks in range: ${logContent.join('\n')}`);
 
-		logContent.forEach(o => logger.info(`Missing blocks in range: ${o}`));
-
-		return missingBlockRanges;
+		result = missingBlockRanges;
 	}
-	return [];
+
+	const logContent = result.map(o => `${o.from}-${o.to} (${o.to - o.from + 1} blocks)`);
+	logContent.forEach(o => logger.info(`Missing blocks in range: ${o}`));
+
+	return result;
 };
-
-// const findMissingBlocksInChunks = async (startHeight, endHeight, genesisHeight) => {
-// 	try {
-// 		// startHeight can never be lower than genesisHeight
-// 		// and, do not search the index below the indexVerifiedHeight
-// 		// endHeight can not be lower than startHeight or indexVerifiedHeight
-// 		startHeight = Math.max(startHeight, genesisHeight, indexVerifiedHeight);
-// 		endHeight = Math.max(startHeight, endHeight, indexVerifiedHeight);
-
-// 		const PAGE_SIZE = 10000;
-// 		const numOfPages = Math.ceil((endHeight - startHeight) / PAGE_SIZE);
-// 		for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-// 			/* eslint-disable no-await-in-loop */
-// 			const toHeight = endHeight - (PAGE_SIZE * pageNum);
-// 			const fromHeight = (toHeight - PAGE_SIZE) > startHeight
-// 				? (toHeight - PAGE_SIZE) : startHeight;
-
-// 				findMissingBlocks
-
-// 			/* eslint-enable no-await-in-loop */
-// 		}
-// 	} catch (err) {
-// 		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
-// 	}
-// };
 
 const getLastFinalBlockHeight = async () => {
 	// Returns the highest finalized block available within the index
@@ -380,14 +360,13 @@ const indexMissingBlocks = async () => {
 	// if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
-	const lastIndexedFinalBlock = currentHeight;
 
 	const lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
 	const minReqHeight = config.indexNumOfBlocks > 0
-		? lastIndexedFinalBlock - config.indexNumOfBlocks : genesisHeight;
+		? currentHeight - config.indexNumOfBlocks : genesisHeight;
 
 	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = lastIndexedFinalBlock;
+	const blockIndexHigherRange = currentHeight;
 	const blockIndexLowerRange = Math.max(minReqHeight, lastScheduledBlock);
 
 	// Retrieve the list of missing blocks
@@ -423,6 +402,19 @@ const updateNonFinalBlocks = async () => {
 	if (nfHeights.length > 0) {
 		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
 		await buildIndex(nfHeights[0].height, cHeight);
+	}
+};
+
+const indexGenesisBlock = async () => {
+	try {
+		const genesisHeight = await getGenesisHeight();
+
+		if (Number.isNaN(genesisHeight)) throw new Error('Genesis height is not set in the blockchainStore');
+
+		await indexBlocks({ data: { from: genesisHeight, to: genesisHeight } });
+	} catch (err) {
+		logger.fatal(`Genesis block indexing failed due to: ${err.message}`);
+		process.exit(2);
 	}
 };
 
@@ -499,13 +491,10 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
-		// Set the genesis height
 		const gHeight = await getGenesisHeight();
-		await setGenesisHeight(gHeight);
-
-		logger.info(`Genesis height is set to ${gHeight}`);
 
 		// Start the indexing process (blocks)
+		await indexGenesisBlock();
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
