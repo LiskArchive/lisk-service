@@ -655,35 +655,65 @@ const indexNonFinalBlocks = async () => {
 	logger.info('Finished building the blocks index');
 };
 
-const checkIndexReadiness = async () => {
-	logger.debug('============== Checking blocks index ready status ==============');
-	if (!getIndexReadyStatus()) {
-		try {
-			const blocksDB = await getBlocksIndex();
-			const currentChainHeight = (await requestApi(coreApi.getNetworkStatus)).data.height;
-			const genesisHeight = await getGenesisHeight();
-			const numBlocksIndexed = await blocksDB.count();
-			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-			const chainLength = currentChainHeight - genesisHeight - 1; // minus the block being index atm
-			const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
+const getIndexStats = async () => {
+	try {
+		const blocksDB = await getBlocksIndex();
+		const currentChainHeight = (await requestApi(coreApi.getNetworkStatus)).data.height;
+		const genesisHeight = await getGenesisHeight();
+		const numBlocksIndexed = await blocksDB.count();
+		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+		const chainLength = currentChainHeight - genesisHeight;
+		const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
-			logger.info([
-				`numBlocksIndexed: ${numBlocksIndexed}`,
-				`lastIndexedBlock: ${lastIndexedBlock.height}`,
-				`currentChainHeight: ${currentChainHeight}`,
-			].join(', '));
-			logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
-			if (numBlocksIndexed === chainLength) {
-				setIndexReadyStatus(true);
-				logger.info('The blockchain index is complete');
-				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
-				Signals.get('blockIndexReady').dispatch(true);
-			}
-		} catch (err) {
-			logger.warn(`Error while checking index readiness: ${err.message}`);
-		}
+		return {
+			currentChainHeight,
+			genesisHeight,
+			numBlocksIndexed,
+			lastIndexedBlock,
+			chainLength,
+			percentage,
+		};
+	} catch (err) {
+		logger.warn(`Error while checking index readiness: ${err.message}`);
+		return { error: true };
 	}
+};
+
+const checkIndexReadiness = async () => {
+	logger.debug('Checking blocks index ready status');
+
+	const {
+		numBlocksIndexed,
+		chainLength,
+	} = await getIndexStats();
+
+	if (!getIndexReadyStatus() // status is set only once
+		&& numBlocksIndexed >= chainLength - 1) { // last block is being indexed atm
+		setIndexReadyStatus(true);
+		logger.info('The blockchain index is complete');
+		logger.debug(`'blockIndexReady' signal: ${Signals.get('blockIndexReady')}`);
+		Signals.get('blockIndexReady').dispatch(true);
+	}
+
 	return getIndexReadyStatus();
+};
+
+const reportIndexStatus = async () => {
+	const {
+		currentChainHeight,
+		numBlocksIndexed,
+		lastIndexedBlock,
+		chainLength,
+		percentage,
+	} = await getIndexStats();
+
+	logger.info([
+		`numBlocksIndexed: ${numBlocksIndexed}`,
+		`lastIndexedBlock: ${lastIndexedBlock.height}`,
+		`currentChainHeight: ${currentChainHeight}`,
+	].join(', '));
+
+	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
 };
 
 const init = async () => {
@@ -691,6 +721,7 @@ const init = async () => {
 	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
 	Signals.get('newBlock').add(indexNewBlocksListener);
 	Signals.get('newBlock').add(checkIndexReadiness);
+	setInterval(reportIndexStatus, 15 * 1000); // ms
 
 	// Check state of index and perform update
 	try {
