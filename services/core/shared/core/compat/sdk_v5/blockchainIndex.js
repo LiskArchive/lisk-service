@@ -494,7 +494,6 @@ const init = async () => {
 	// Check state of index and perform update
 	try {
 		// Start the indexing process (blocks)
-		// await indexGenesisBlock();
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
