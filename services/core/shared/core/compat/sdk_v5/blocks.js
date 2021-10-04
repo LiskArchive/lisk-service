@@ -146,21 +146,21 @@ const indexBlocks = async job => {
 			},
 			{ concurrency: blocks.length },
 		);
-		if (blocks.length) await blocksDB.upsert(trx, blocks);
 
 		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
-
-		const { accounts, transactions, multisignatureInfoToIndex } = await indexTransactions(blocks);
+		const votes = await indexVotes(blocks);
+		const {
+			accounts,
+			transactions,
+			multisignatureInfoToIndex,
+		} = await indexTransactions(blocks);
 
 		await accountsDB.upsert(trx, accounts.concat(accountsByPublicKey));
-
 		if (transactions.length) await transactionsDB.upsert(trx, transactions);
-
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(trx, multisignatureInfoToIndex);
-
-		const votes = await indexVotes(blocks);
 		if (votes.length) await votesDB.upsert(trx, votes);
+		if (blocks.length) await blocksDB.upsert(trx, blocks);
 		await commitTransaction(trx);
 	} catch (error) {
 		await rollbackTransaction(trx);
@@ -463,8 +463,8 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
+	let trx;
 	const connection = await getDbConnection();
-	const trx = await startTransaction(connection);
 	try {
 		const accountsDB = await getAccountsIndex();
 		const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
@@ -481,6 +481,8 @@ const performGenesisAccountsIndexing = async () => {
 		const PAGE_SIZE = 1000;
 		const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
 		for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
+			/* eslint-disable no-await-in-loop */
+			trx = await startTransaction(connection);
 			const currentPage = pageNum * PAGE_SIZE;
 			const nextPage = (pageNum + 1) * PAGE_SIZE;
 			const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
@@ -490,16 +492,15 @@ const performGenesisAccountsIndexing = async () => {
 
 				logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
-				/* eslint-disable no-await-in-loop */
 				const accounts = await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
 				if (accounts.length) await accountsDB.upsert(trx, accounts);
 				await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
-				/* eslint-enable no-await-in-loop */
 			} else {
 				logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 			}
+			await commitTransaction(trx);
+			/* eslint-enable no-await-in-loop */
 		}
-		await commitTransaction(trx);
 	} catch (error) {
 		await rollbackTransaction(trx);
 		throw error;

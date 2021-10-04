@@ -179,28 +179,25 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	// 	const rows = await mapRowsBySchema(rawRows, schema);
 
 	// 	const queries = rows.map((row) => {
-	// 		const insertQuery = trx(tableName).insert(row).toString()
-	// 		const updateQuery = trx(tableName).update(row).toString().replace(/^update(.*?)set\s/gi, '')
-	// 		return trx.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
+	// 		const insertQuery = trx(tableName).insert(row).transacting(trx).toString()
+	// 		const updateQuery = trx(tableName).update(row).transacting(trx).toString().replace(/^update(.*?)set\s/gi, '')
+	// 		return knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
 	// 	})
 
 	// 	return Promise.all(queries).then(trx.transacting(trx));
 	// }
 
-	const inserts = async (trx, rows) => {
+	const insert = async (trx, row) => {
 		if (!trx) throw new Error('Transaction not provided');
-		const chunkSize = 1000;
-		const insertRows = await trx.batchInsert(tableName, rows, chunkSize).transacting(trx);
-		return insertRows;
+		return trx(tableName).insert(row).transacting(trx);
 	};
 
 	const update = async (trx, row) => {
 		if (!trx) throw new Error('Transaction not provided');
-		const updateRow = await trx(tableName)
+		return trx(tableName)
 			.where(primaryKey, '=', row[primaryKey])
 			.update(row)
 			.transacting(trx);
-		return updateRow;
 	};
 
 	const upsert = async (trx, inputRows) => {
@@ -209,23 +206,18 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
 
-		const rowsToInsert = [];
 
 		const rows = await mapRowsBySchema(rawRows, schema);
 		const concurrency = 25;
 		await BluebirdPromise.map(
 			rows,
 			async row => {
-				const result = await trx(tableName).select(primaryKey).where(primaryKey, '=', row[primaryKey]).transacting(trx);
-				if (result.length) {
-					return update(trx, row);
-				}
-				rowsToInsert.push(row);
-				return result;
+				const result = await trx(tableName).select(primaryKey).where(primaryKey, '=', row[primaryKey]);
+				if (result.length) return update(trx, row);
+				return insert(trx, row);
 			},
 			{ concurrency },
 		);
-		if (rowsToInsert.length) await inserts(trx, rowsToInsert);
 	};
 
 	const queryBuilder = (params, columns) => {
