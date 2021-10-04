@@ -160,7 +160,7 @@ const indexBlocks = async job => {
 		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
 		const votes = await indexVotes(blocks);
 		const {
-			accountsFromTransactions,
+			accounts: accountsFromTransactions,
 			transactions,
 			multisignatureInfoToIndex,
 		} = await indexTransactions(blocks);
@@ -731,9 +731,9 @@ const init = async () => {
 		await getBlockByHeight(gHeight);
 
 		// Start the indexing process
-		await indexAllDelegateAccounts();
-		await cacheLegacyAccountInfo();
-		await indexGenesisAccounts();
+		// await indexAllDelegateAccounts();
+		// await cacheLegacyAccountInfo();
+		// await indexGenesisAccounts();
 		await indexPastBlocks();
 	} catch (err) {
 		logger.warn(`Unable to update block index:\n${err.stack}`);

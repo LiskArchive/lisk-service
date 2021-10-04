@@ -179,8 +179,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	// 	const rows = await mapRowsBySchema(rawRows, schema);
 
 	// 	const queries = rows.map((row) => {
-	// 		const insertQuery = trx(tableName).insert(row).transacting(trx).toString()
-	// 		const updateQuery = trx(tableName).update(row).transacting(trx).toString().replace(/^update(.*?)set\s/gi, '')
+	// 		const insertQuery = trx(tableName)
+	// 			.insert(row)
+	// 			.transacting(trx)
+	// 			.toString()
+	// 		const updateQuery = trx(tableName)
+	// 			.update(row)
+	// 			.transacting(trx)
+	// 			.toString()
+	// 			.replace(/^update(.*?)set\s/gi, '')
 	// 		return knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
 	// 	})
 
