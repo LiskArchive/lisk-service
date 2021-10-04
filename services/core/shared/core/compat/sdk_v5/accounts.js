@@ -65,9 +65,9 @@ const Signals = require('../../../signals');
 const {
 	getTableInstance,
 	getDbConnection,
-	startTransaction,
-	commitTransaction,
-	rollbackTransaction,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
@@ -90,24 +90,6 @@ const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.re
 const requestApi = coreApi.requestRetry;
 
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
-
-// const indexAccounts = async job => {
-// 	const { accounts, trx } = job.data;
-// 	const accountsDB = await getAccountsIndex();
-// 	accounts.forEach(account => {
-// 		account.username = account.dpos.delegate.username || null;
-// 		account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
-// 		account.balance = account.token.balance;
-// 		return account;
-// 	});
-// 	await accountsDB.upsert(trx, accounts);
-// };
-
-// const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
-// const indexAccountsByAddressQueue = initializeQueue('indexAccountsByAddressQueue',
-// indexAccounts);
-// const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQueue',
-// indexAccounts);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
@@ -500,13 +482,13 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					const connection = await getDbConnection();
-					const trx = await startTransaction(connection);
+					const trx = await startDbTransaction(connection);
 					try {
 						account.publicKey = paramPublicKey;
 						await accountsDB.upsert(trx, [account]);
-						await commitTransaction(trx);
+						await commitDbTransaction(trx);
 					} catch (error) {
-						await rollbackTransaction(trx);
+						await rollbackDbTransaction(trx);
 					}
 				} else {
 					account.publicKey = indexedAccount.publicKey;
@@ -648,17 +630,17 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 
 const keepAccountsCacheUpdated = async () => {
 	const connection = await getDbConnection();
-	const trx = await startTransaction(connection);
+	const trx = await startDbTransaction(connection);
 	try {
 		const accountsDB = await getAccountsIndex();
 		const updateAccountsCacheListener = async (address) => {
 			const accounts = await indexAccountsbyAddress(address);
 			await accountsDB.upsert(trx, accounts);
-			await commitTransaction(trx);
+			await commitDbTransaction(trx);
 		};
 		Signals.get('updateAccountsByAddress').add(address => updateAccountsCacheListener(address));
 	} catch (error) {
-		await rollbackTransaction(trx);
+		await rollbackDbTransaction(trx);
 		throw error;
 	}
 };

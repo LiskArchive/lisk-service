@@ -54,9 +54,9 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 const {
 	getDbConnection,
 	getTableInstance,
-	startTransaction,
-	commitTransaction,
-	rollbackTransaction,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 
 const blocksIndexSchema = require('./schema/blocks');
@@ -104,25 +104,35 @@ const updateFinalizedHeight = async () => {
 };
 
 const deleteIndexedBlocks = async job => {
-	const { blocks } = job.data;
-	const blocksDB = await getBlocksIndex();
-	const generatorPkInfoArray = [];
-	blocks.forEach(async block => {
-		if (block.generatorPublicKey) generatorPkInfoArray.push({
-			publicKey: block.generatorPublicKey,
-			reward: block.reward,
-			isForger: true,
-			isDeleteBlock: true,
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	try {
+		const accountsDB = await getAccountsIndex();
+		const { blocks } = job.data;
+		const blocksDB = await getBlocksIndex();
+		const generatorPkInfoArray = [];
+		blocks.forEach(async block => {
+			if (block.generatorPublicKey) generatorPkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: block.reward,
+				isForger: true,
+				isDeleteBlock: true,
+			});
 		});
-	});
-	await indexAccountsbyPublicKey(generatorPkInfoArray);
-	await removeTransactionsByBlockIDs(blocks.map(b => b.id));
-	await blocksDB.deleteIds(blocks.map(b => b.height));
+		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
+		if (accountsByPublicKey.length) await accountsDB.upsert(trx, accountsByPublicKey);
+		await removeTransactionsByBlockIDs(blocks.map(b => b.id));
+		await blocksDB.deleteIds(blocks.map(b => b.height));
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 const indexBlocks = async job => {
 	const connection = await getDbConnection();
-	const trx = await startTransaction(connection);
+	const trx = await startDbTransaction(connection);
 	try {
 		const { blocks } = job.data;
 		const blocksDB = await getBlocksIndex();
@@ -150,35 +160,35 @@ const indexBlocks = async job => {
 		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
 		const votes = await indexVotes(blocks);
 		const {
-			accounts,
+			accountsFromTransactions,
 			transactions,
 			multisignatureInfoToIndex,
 		} = await indexTransactions(blocks);
 
-		await accountsDB.upsert(trx, accounts.concat(accountsByPublicKey));
+		if (accountsByPublicKey.length) await accountsDB.upsert(trx, accountsByPublicKey);
+		if (accountsFromTransactions.length) await accountsDB.upsert(trx, accountsFromTransactions);
 		if (transactions.length) await transactionsDB.upsert(trx, transactions);
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(trx, multisignatureInfoToIndex);
 		if (votes.length) await votesDB.upsert(trx, votes);
 		if (blocks.length) await blocksDB.upsert(trx, blocks);
-		await commitTransaction(trx);
+		await commitDbTransaction(trx);
 	} catch (error) {
-		await rollbackTransaction(trx);
+		await rollbackDbTransaction(trx);
 		throw error;
 	}
 };
 
 const updateBlockIndex = async job => {
-	let trx;
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
 	try {
-		const connection = await getDbConnection();
 		const { blocks } = job.data;
 		const blocksDB = await getBlocksIndex();
-		trx = await startTransaction(connection);
 		await blocksDB.upsert(trx, blocks);
-		await commitTransaction(trx);
+		await commitDbTransaction(trx);
 	} catch (error) {
-		await rollbackTransaction(trx);
+		await rollbackDbTransaction(trx);
 		throw error;
 	}
 };
@@ -482,7 +492,7 @@ const performGenesisAccountsIndexing = async () => {
 		const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
 		for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
 			/* eslint-disable no-await-in-loop */
-			trx = await startTransaction(connection);
+			trx = await startDbTransaction(connection);
 			const currentPage = pageNum * PAGE_SIZE;
 			const nextPage = (pageNum + 1) * PAGE_SIZE;
 			const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
@@ -498,11 +508,11 @@ const performGenesisAccountsIndexing = async () => {
 			} else {
 				logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 			}
-			await commitTransaction(trx);
+			await commitDbTransaction(trx);
 			/* eslint-enable no-await-in-loop */
 		}
 	} catch (error) {
-		await rollbackTransaction(trx);
+		await rollbackDbTransaction(trx);
 		throw error;
 	}
 };
@@ -533,7 +543,7 @@ const indexAllDelegateAccounts = async () => {
 	const allDelegatesInfo = await requestApi(coreApi.getAllDelegates);
 	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
-	const trx = await startTransaction(connection);
+	const trx = await startDbTransaction(connection);
 	try {
 		for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
 			/* eslint-disable no-await-in-loop */
@@ -542,10 +552,10 @@ const indexAllDelegateAccounts = async () => {
 			await accountsDB.upsert(trx, accounts);
 			/* eslint-enable no-await-in-loop */
 		}
-		await commitTransaction(trx);
+		await commitDbTransaction(trx);
 		logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 	} catch (error) {
-		await rollbackTransaction(trx);
+		await rollbackDbTransaction(trx);
 		throw error;
 	}
 };

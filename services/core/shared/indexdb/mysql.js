@@ -159,11 +159,11 @@ const createTableIfNotExists = async (tableName,
 	}
 };
 
-const startTransaction = async (connection) => connection.transaction();
+const startDbTransaction = async (connection) => connection.transaction();
 
-const commitTransaction = async (transaction) => transaction.commit();
+const commitDbTransaction = async (transaction) => transaction.commit();
 
-const rollbackTransaction = async (transaction) => transaction.rollback();
+const rollbackDbTransaction = async (transaction) => transaction.rollback();
 
 const getTableInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
 	const { primaryKey, schema } = tableConfig;
@@ -387,8 +387,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 
 module.exports = {
 	getDbConnection,
-	startTransaction,
-	commitTransaction,
-	rollbackTransaction,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
 	getTableInstance,
 };
