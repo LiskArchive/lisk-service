@@ -214,6 +214,7 @@ const getDistributionByType = async params => {
 
 const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const db = await getDbInstance();
+	const scheduledDays = [];
 	[...Array(n)].forEach(async (_, i) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
@@ -228,8 +229,10 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 			};
 			await transactionStatisticsQueue.add({ date, options });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
-			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			logger.debug(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			scheduledDays.push(formattedDate);
 		}
+		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[0]} - ${scheduledDays[scheduledDays.length - 1]})`);
 	});
 };
 
