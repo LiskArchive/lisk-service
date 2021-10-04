@@ -307,7 +307,6 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 	// This block helps determine empty index
 	if (indexedBlockCount < 3) {
-		logger.info('The index seems to be empty, attempting to index all blocks');
 		result = [{ from: fromHeight, to: toHeight }];
 	} else if (indexedBlockCount !== heightDifference) {
 		const missingBlocksQueryStatement = `
@@ -406,18 +405,18 @@ const updateNonFinalBlocks = async () => {
 	}
 };
 
-const indexGenesisBlock = async () => {
-	try {
-		const genesisHeight = await getGenesisHeight();
+// const indexGenesisBlock = async () => {
+// 	try {
+// 		const genesisHeight = await getGenesisHeight();
 
-		if (Number.isNaN(genesisHeight)) throw new Error('Genesis height is not set in the blockchainStore');
+// 		if (Number.isNaN(genesisHeight)) throw new Error('Genesis height is not set in the blockchainStore');
 
-		await indexBlocks({ data: { from: genesisHeight, to: genesisHeight } });
-	} catch (err) {
-		logger.fatal(`Genesis block indexing failed due to: ${err.message}`);
-		process.exit(2);
-	}
-};
+// 		await indexBlocks({ data: { from: genesisHeight, to: genesisHeight } });
+// 	} catch (err) {
+// 		logger.fatal(`Genesis block indexing failed due to: ${err.message}`);
+// 		process.exit(2);
+// 	}
+// };
 
 const updateFinalizedHeight = async () => setFinalizedHeight(await getLastFinalBlockHeight());
 
@@ -428,7 +427,7 @@ const getIndexStats = async () => {
 		const genesisHeight = await getGenesisHeight();
 		const numBlocksIndexed = await blocksDB.count();
 		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-		const chainLength = currentChainHeight - genesisHeight;
+		const chainLength = currentChainHeight - genesisHeight + 1;
 		const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
 		return {
@@ -453,19 +452,20 @@ const checkIndexReadiness = async () => {
 		chainLength,
 	} = await getIndexStats();
 
-	if (!getIndexReadyStatus() // status is set only once
+	const status = await getIndexReadyStatus();
+
+	if (!status // status is set only once
 		&& numBlocksIndexed >= chainLength - 1) { // last block is being indexed atm
-		setIndexReadyStatus(true);
+		await setIndexReadyStatus(true);
 		logger.info('The blockchain index is complete');
 		logger.debug(`'blockIndexReady' signal: ${Signals.get('blockIndexReady')}`);
 		Signals.get('blockIndexReady').dispatch(true);
 	}
-
-	return getIndexReadyStatus();
 };
 
 const reportIndexStatus = async () => {
 	const {
+		genesisHeight,
 		currentChainHeight,
 		numBlocksIndexed,
 		lastIndexedBlock,
@@ -477,6 +477,7 @@ const reportIndexStatus = async () => {
 		`numBlocksIndexed: ${numBlocksIndexed}`,
 		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 		`currentChainHeight: ${currentChainHeight}`,
+		`virtHeight: ${currentChainHeight - genesisHeight}`,
 	].join(', '));
 
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
@@ -493,7 +494,7 @@ const init = async () => {
 	// Check state of index and perform update
 	try {
 		// Start the indexing process (blocks)
-		await indexGenesisBlock();
+		// await indexGenesisBlock();
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
