@@ -56,6 +56,8 @@ const blocksIndexSchema = require('./schema/blocks');
 
 const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
 
+const blockchainStore = require('./blockchainStore');
+
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
@@ -65,22 +67,23 @@ const logger = Logger();
 const requestApi = coreApi.requestRetry;
 
 let latestBlock;
-let genesisHeight;
-let finalizedHeight;
-let indexStartHeight;
-let indexVerifiedHeight; // Height below which there are no missing blocks in the index
 
-const setGenesisHeight = (height) => genesisHeight = height;
+// Genesis height can be greater that 0
+// Blockchain starts form a non-zero block height
+const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
+const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
-const getGenesisHeight = async () => genesisHeight;
+// The top final block
+const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);
+const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
 
-const setFinalizedHeight = (height) => finalizedHeight = height;
+// TODO: Add description
+const setIndexStartHeight = (height) => blockchainStore.set('indexStartHeight', height);
+const getIndexStartHeight = () => blockchainStore.get('indexStartHeight');
 
-const getFinalizedHeight = () => finalizedHeight;
-
-const setIndexStartHeight = (height) => indexStartHeight = height;
-
-const getIndexStartHeight = () => indexStartHeight;
+// Height below which there are no missing blocks in the index
+const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
+const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 
 const updateFinalizedHeight = async () => {
 	const result = await requestApi(coreApi.getNetworkStatus);
@@ -316,14 +319,9 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const deleteBlock = async (block) => {
-	await deleteIndexedBlocksQueue.add({ blocks: [block] });
-	return block;
-};
-
 const cacheLegacyAccountInfo = async () => {
 	// Cache the legacy account reclaim balance information
-	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
+	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 	const unregisteredAccounts = genesisBlock.asset.accounts
 		.filter(account => account.address.length !== 40);
 
@@ -344,7 +342,7 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
-	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
+	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 
 	const genesisAccountsToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length === 40)
@@ -408,9 +406,7 @@ const indexAllDelegateAccounts = async () => {
 	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
 
-
-
-const validateBlocks = (blocks) => blocks.length 
+const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
 
 const indexBlocks = async job => {
@@ -444,6 +440,11 @@ const indexBlocks = async job => {
 const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 4);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+
+const deleteBlock = async (block) => {
+	await deleteIndexedBlocksQueue.add({ blocks: [block] });
+	return block;
+};
 
 const buildIndex = async (from, to) => {
 	if (from > to) {
@@ -611,7 +612,8 @@ const indexMissingBlocks = async () => {
 	try {
 		if (missingBlockRanges.length === 0) {
 			// Update 'indexVerifiedHeight' when no missing blocks are found
-			indexVerifiedHeight = Math.max(indexVerifiedHeight, blockIndexHigherRange);
+			const indexVerifiedHeight = await getIndexVerifiedHeight();
+			setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
 		} else {
 			for (let i = 0; i < missingBlockRanges.length; i++) {
 				const { from, to } = missingBlockRanges[i];
@@ -628,6 +630,8 @@ const indexMissingBlocks = async () => {
 
 const indexNonFinalBlocks = async () => {
 	logger.info('Building the blocks index');
+
+	const genesisHeight = await getGenesisHeight();
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
@@ -662,7 +666,7 @@ const checkIndexReadiness = async () => {
 			const numBlocksIndexed = await blocksDB.count();
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 			const chainLength = lastIndexedBlock.height - genesisHeight;
-			const percentage = (((numBlocksIndexed + 1) / chainLength) * 100).toFixed(1);
+			const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
 			logger.info([
 				`numBlocksIndexed: ${numBlocksIndexed}`,
@@ -695,7 +699,7 @@ const init = async () => {
 		// Set the genesis height
 		const gHeight = await coreApi.getGenesisHeight();
 		setGenesisHeight(gHeight);
-		indexVerifiedHeight = getGenesisHeight() - 1;
+		setIndexVerifiedHeight(gHeight - 1);
 
 		logger.info(`Genesis height is set to ${gHeight}`);
 
