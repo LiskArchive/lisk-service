@@ -528,15 +528,14 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	if (indexedBlockCount !== heightDifference) {
 		const missingBlocksQueryStatement = `
 			SELECT
-				(SELECT COALESCE(MAX(b0.height)+1, ${fromHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
+				(SELECT COALESCE(MAX(b0.height), ${fromHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
 				(b1.height - 1) AS 'to'
 			FROM blocks b1
-			WHERE b1.height BETWEEN ${fromHeight} AND ${toHeight}
+			WHERE b1.height BETWEEN ${fromHeight} + 1 AND ${toHeight}
 				AND b1.height != ${toHeight}
 				AND NOT EXISTS (SELECT 1 FROM blocks b2 WHERE b2.height = b1.height - 1)
 		`;
 
-		logger.info('propBetweens', util.inspect(propBetweens));
 		const missingBlockRanges = await blocksDB.rawQuery(missingBlocksQueryStatement);
 		const logContent = missingBlockRanges.map(o => `${o.from} - ${o.to} (${o.to - o.from + 1} blocks)`);
 		// logger.info(`Missing blocks in range: ${logContent.join('\n')}`);
@@ -591,18 +590,15 @@ const indexMissingBlocks = async () => {
 	// if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = (await requestApi(coreApi.getNetworkStatus)).data.height;
-	const lastIndexedFinalBlock = await getLastFinalBlock() || currentHeight;
+	const lastIndexedFinalBlock = currentHeight;
 
-	// const highestIndexedHeight = lastIndexedHeight > blockIndexLowerRange
-	// 	? lastIndexedHeight : blockIndexLowerRange;
+	const lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
+	const minReqHeight = config.indexNumOfBlocks > 0
+		? lastIndexedFinalBlock - config.indexNumOfBlocks : genesisHeight;
 
 	// Lowest and highest block heights expected to be indexed
 	const blockIndexHigherRange = lastIndexedFinalBlock;
-	const blockIndexLowerRange = config.indexNumOfBlocks > 0
-		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
-
-	// Store the value for the missing blocks job
-	setIndexStartHeight(blockIndexLowerRange);
+	const blockIndexLowerRange = Math.max(minReqHeight, lastScheduledBlock);
 
 	// Retrieve the list of missing blocks
 	const missingBlockRanges = await findMissingBlocksInRange(
@@ -613,7 +609,7 @@ const indexMissingBlocks = async () => {
 		if (missingBlockRanges.length === 0) {
 			// Update 'indexVerifiedHeight' when no missing blocks are found
 			const indexVerifiedHeight = await getIndexVerifiedHeight();
-			setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
+			await setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
 		} else {
 			for (let i = 0; i < missingBlockRanges.length; i++) {
 				const { from, to } = missingBlockRanges[i];
@@ -621,6 +617,8 @@ const indexMissingBlocks = async () => {
 				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from} blocks)`);
 				/* eslint-disable-next-line no-await-in-loop */
 				await buildIndex(from, to);
+				/* eslint-disable-next-line no-await-in-loop */
+				await setIndexVerifiedHeight(to + 1);
 			}
 		}
 	} catch (err) {
@@ -632,6 +630,8 @@ const indexNonFinalBlocks = async () => {
 	logger.info('Building the blocks index');
 
 	const genesisHeight = await getGenesisHeight();
+
+	// await getLastFinalBlock() || 
 
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
@@ -660,12 +660,11 @@ const checkIndexReadiness = async () => {
 	if (!getIndexReadyStatus()) {
 		try {
 			const blocksDB = await getBlocksIndex();
-			const networkStatus = await requestApi(coreApi.getNetworkStatus);
-			const currentChainHeight = networkStatus.data.height;
+			const currentChainHeight = (await requestApi(coreApi.getNetworkStatus)).data.height;
 			const genesisHeight = await getGenesisHeight();
 			const numBlocksIndexed = await blocksDB.count();
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-			const chainLength = lastIndexedBlock.height - genesisHeight;
+			const chainLength = currentChainHeight - genesisHeight - 1; // minus the block being index atm
 			const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
 			logger.info([
@@ -674,8 +673,7 @@ const checkIndexReadiness = async () => {
 				`currentChainHeight: ${currentChainHeight}`,
 			].join(', '));
 			logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
-			if (numBlocksIndexed >= currentChainHeight - genesisHeight
-				&& lastIndexedBlock.height >= currentChainHeight - 1) {
+			if (numBlocksIndexed === chainLength) {
 				setIndexReadyStatus(true);
 				logger.info('The blockchain index is complete');
 				logger.debug(`============== 'blockIndexReady' signal: ${Signals.get('blockIndexReady')} ==============`);
@@ -698,22 +696,22 @@ const init = async () => {
 	try {
 		// Set the genesis height
 		const gHeight = await coreApi.getGenesisHeight();
-		setGenesisHeight(gHeight);
-		setIndexVerifiedHeight(gHeight - 1);
+		await setGenesisHeight(gHeight);
 
 		logger.info(`Genesis height is set to ${gHeight}`);
 
+		// Start the indexing process (blocks)
+		// await indexNonFinalBlocks();
+		await indexMissingBlocks();
+
 		// First download the genesis block, if applicable
-		await getBlockByHeight(gHeight);
+		// Make sure the genesis block is ready when requested
+		// await getBlockByHeight(gHeight);
 
 		// Start the indexing process (accounts)
-		await indexAllDelegateAccounts();
-		await cacheLegacyAccountInfo();
+		// await indexAllDelegateAccounts();
+		// await cacheLegacyAccountInfo();
 		// await indexGenesisAccounts();
-
-		// Start the indexing process (blocks)
-		await indexNonFinalBlocks();
-		await indexMissingBlocks();
 	} catch (err) {
 		logger.warn(`Unable to update block index:\n${err.stack}`);
 	}
