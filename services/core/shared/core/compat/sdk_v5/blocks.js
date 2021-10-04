@@ -14,7 +14,6 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const util = require('util');
 const {
 	CacheRedis,
 	Logger,
@@ -626,34 +625,34 @@ const indexMissingBlocks = async () => {
 	}
 };
 
-const indexNonFinalBlocks = async () => {
-	logger.info('Building the blocks index');
+// const indexNonFinalBlocks = async () => {
+// 	logger.info('Building the blocks index');
 
-	const genesisHeight = await getGenesisHeight();
+// 	const genesisHeight = await getGenesisHeight();
 
-	// await getLastFinalBlock() || 
+// 	// await getLastFinalBlock() ||
 
-	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
+// 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
-	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = (await requestApi(coreApi.getNetworkStatus)).data.height;
-	const blockIndexLowerRange = config.indexNumOfBlocks > 0
-		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
+// 	// Lowest and highest block heights expected to be indexed
+// 	const blockIndexHigherRange = (await requestApi(coreApi.getNetworkStatus)).data.height;
+// 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
+// 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
 
-	// Store the value for the missing blocks job
-	setIndexStartHeight(blockIndexLowerRange);
+// 	// Store the value for the missing blocks job
+// 	setIndexStartHeight(blockIndexLowerRange);
 
-	// Highest finalized block available within the index
-	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const highestIndexedHeight = await getLastFinalBlock()
-		|| await getGenesisHeight();
+// 	// Highest finalized block available within the index
+// 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
+// 	const highestIndexedHeight = await getLastFinalBlock()
+// 		|| await getGenesisHeight();
 
-	// Start building the block index
-	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(err => {
-		logger.warn(`Indexing failed due to: ${err.message}`);
-	});
-	logger.info('Finished building the blocks index');
-};
+// 	// Start building the block index
+// 	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(err => {
+// 		logger.warn(`Indexing failed due to: ${err.message}`);
+// 	});
+// 	logger.info('Finished building the blocks index');
+// };
 
 const getIndexStats = async () => {
 	try {
@@ -737,12 +736,14 @@ const init = async () => {
 
 		// First download the genesis block, if applicable
 		// Make sure the genesis block is ready when requested
-		// await getBlockByHeight(gHeight);
+		await getBlockByHeight(gHeight);
 
 		// Start the indexing process (accounts)
-		// await indexAllDelegateAccounts();
-		// await cacheLegacyAccountInfo();
-		// await indexGenesisAccounts();
+		await indexAllDelegateAccounts();
+		await cacheLegacyAccountInfo();
+		await indexGenesisAccounts();
+
+		logger.info('Finished all blockchain index startup tasks');
 	} catch (err) {
 		logger.warn(`Unable to update block index:\n${err.stack}`);
 	}
