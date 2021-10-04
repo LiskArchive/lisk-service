@@ -141,18 +141,18 @@ const gatewayConfig = {
 	},
 };
 
-if (config.rateLimit.connectionLimit > 0) {
+if (config.rateLimit.enable) {
 	logger.info(`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}`);
 
 	gatewayConfig.settings.rateLimit = {
-		window: config.rateLimit.window || 15 * 1000,
-		limit: config.rateLimit.connectionLimit || 20,
+		window: (config.rateLimit.window || 10) * 1000,
+		limit: config.rateLimit.connectionLimit || 200,
 		headers: true,
 
 		key: (req) => req.headers['x-forwarded-for']
-				|| req.connection.remoteAddress
-				|| req.socket.remoteAddress
-				|| req.connection.socket.remoteAddress,
+			|| req.connection.remoteAddress
+			|| req.socket.remoteAddress
+			|| req.connection.socket.remoteAddress,
 	};
 }
 
