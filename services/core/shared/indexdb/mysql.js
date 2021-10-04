@@ -182,17 +182,17 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	// 		const insertQuery = trx(tableName)
 	// 			.insert(row)
 	// 			.transacting(trx)
-	// 			.toString()
+	// 			.toString();
 	// 		const updateQuery = trx(tableName)
 	// 			.update(row)
 	// 			.transacting(trx)
 	// 			.toString()
-	// 			.replace(/^update(.*?)set\s/gi, '')
+	// 			.replace(/^update(.*?)set\s/gi, '');
 	// 		return knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
-	// 	})
+	// 	});
 
 	// 	return Promise.all(queries).then(trx.transacting(trx));
-	// }
+	// };
 
 	const insert = async (trx, row) => {
 		if (!trx) throw new Error('Transaction not provided');
@@ -215,15 +215,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 
 
 		const rows = await mapRowsBySchema(rawRows, schema);
-		const concurrency = 25;
 		await BluebirdPromise.map(
 			rows,
-			async row => {
-				const result = await trx(tableName).select(primaryKey).where(primaryKey, '=', row[primaryKey]);
-				if (result.length) return update(trx, row);
-				return insert(trx, row);
-			},
-			{ concurrency },
+			async row => insert(trx, row).catch(async () => update(trx, row)),
+			{ concurrency: 1 },
 		);
 	};
 

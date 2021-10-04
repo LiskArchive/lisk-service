@@ -349,11 +349,6 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const deleteBlock = async (block) => {
-	await deleteIndexedBlocksQueue.add({ blocks: [block] });
-	return block;
-};
-
 const cacheLegacyAccountInfo = async () => {
 	// Cache the legacy account reclaim balance information
 	const [genesisBlock] = await getBlockByHeight(genesisHeight, true);
@@ -465,7 +460,6 @@ const indexAllDelegateAccounts = async () => {
 };
 
 
-
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
 
@@ -475,7 +469,6 @@ const indexBlocks = async job => {
 	const trx = await startDbTransaction(connection);
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${job.data.from}-${job.data.to} }`);
 	try {
-		const { blocks } = job.data;
 		const blocksDB = await getBlocksIndex();
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
@@ -523,6 +516,11 @@ const indexBlocks = async job => {
 const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 4);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+
+const deleteBlock = async (block) => {
+	await deleteIndexedBlocksQueue.add({ blocks: [block] });
+	return block;
+};
 
 const buildIndex = async (from, to) => {
 	if (from > to) {
@@ -667,7 +665,7 @@ const getLastFinalBlock = async () => {
 
 const indexMissingBlocks = async () => {
 	// if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
-	const genesisHeight = await getGenesisHeight();
+	genesisHeight = await getGenesisHeight();
 	const currentHeight = (await requestApi(coreApi.getNetworkStatus)).data.height;
 	const lastIndexedFinalBlock = await getLastFinalBlock() || currentHeight;
 
@@ -737,7 +735,7 @@ const checkIndexReadiness = async () => {
 			const blocksDB = await getBlocksIndex();
 			const networkStatus = await requestApi(coreApi.getNetworkStatus);
 			const currentChainHeight = networkStatus.data.height;
-			const genesisHeight = await getGenesisHeight();
+			genesisHeight = await getGenesisHeight();
 			const numBlocksIndexed = await blocksDB.count();
 			const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 			const chainLength = lastIndexedBlock.height - genesisHeight;
