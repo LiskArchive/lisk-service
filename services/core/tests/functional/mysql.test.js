@@ -13,10 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const mysqlIndex = require('../../shared/indexdb/mysql');
+const {
+	getDbConnection,
+	getTableInstance,
+	startDbTransaction,
+	commitDbTransaction,
+} = require('../../shared/indexdb/mysql');
 const schema = require('../constants/blocksSchema');
 
-const getIndex = () => mysqlIndex('testSchema', schema);
+const getIndex = () => getTableInstance('testSchema', schema);
 
 const { emptyBlock, nonEmptyBlock } = require('../constants/blocks');
 
@@ -40,7 +45,10 @@ describe('Test mysql', () => {
 	});
 
 	it('Insert row', async () => {
-		await db.upsert([emptyBlock]);
+		const connection = await getDbConnection();
+		const trx = await startDbTransaction(connection);
+		await db.upsert(trx, [emptyBlock]);
+		await commitDbTransaction(trx);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
@@ -56,8 +64,10 @@ describe('Test mysql', () => {
 	});
 
 	it('Update row', async () => {
-		await db.upsert([{ ...emptyBlock, size: 50 }]);
-
+		const connection = await getDbConnection();
+		const trx = await startDbTransaction(connection);
+		await db.upsert(trx, [{ ...emptyBlock, size: 50 }]);
+		await commitDbTransaction(trx);
 		const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
 		expect(retrievedBlock.id).toBe(emptyBlock.id);
 		expect(retrievedBlock.size).toBe(50);
@@ -99,7 +109,10 @@ describe('Test mysql', () => {
 	});
 
 	it('Batch row insert', async () => {
-		await db.upsert([emptyBlock, nonEmptyBlock]);
+		const connection = await getDbConnection();
+		const trx = await startDbTransaction(connection);
+		await db.upsert(trx, [emptyBlock, nonEmptyBlock]);
+		await commitDbTransaction(trx);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(2);
