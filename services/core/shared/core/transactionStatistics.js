@@ -24,6 +24,10 @@ const { getTransactions } = require('./transactions');
 // const { initializeQueue } = require('./queue');
 const {
 	getTableInstance,
+	getDbConnection,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
 } = require('../indexdb/mysql');
 const Queue = require('./queue');
 const requestAll = require('../requestAll');
@@ -101,27 +105,33 @@ const transformStatsObjectToList = statsObject => (
 
 const insertToDb = async (statsList, date) => {
 	const db = await getDbInstance();
-
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
 	try {
-		const [{ id }] = db.find({ date, limit: 1 }, ['id']);
-		await db.deleteIds([id]);
-		logger.debug(`Removed the following date from the database: ${date}`);
-	} catch (err) {
-		logger.debug(`The database does not contain the entry with the following date: ${date}`);
+		try {
+			const [{ id }] = db.find({ date, limit: 1 }, ['id']);
+			await db.deleteIds([id]);
+			logger.debug(`Removed the following date from the database: ${date}`);
+		} catch (err) {
+			logger.debug(`The database does not contain the entry with the following date: ${date}`);
+		}
+
+		statsList.map(statistic => {
+			Object.assign(statistic, { date, amount_range: statistic.range });
+			statistic.id = String(statistic.date)
+				.concat('-', statistic.type)
+				.concat('-', statistic.amount_range);
+			delete statistic.range;
+			return statistic;
+		});
+		await db.upsert(trx, statsList);
+		await commitDbTransaction(trx);
+		const count = statsList.reduce((acc, row) => acc + row.count, 0);
+		return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
 	}
-
-	statsList.map(statistic => {
-		Object.assign(statistic, { date, amount_range: statistic.range });
-		statistic.id = String(statistic.date)
-			.concat('-', statistic.type)
-			.concat('-', statistic.amount_range);
-		delete statistic.range;
-		return statistic;
-	});
-	await db.upsert(statsList);
-
-	const count = statsList.reduce((acc, row) => acc + row.count, 0);
-	return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
 };
 
 const fetchTransactions = async (date) => {
