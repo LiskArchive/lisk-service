@@ -449,7 +449,7 @@ describe('Method get.transactions', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		xit('returns transactions with senderPublicKey and nonce', async () => {
+		it('returns transactions with senderPublicKey and nonce', async () => {
 			const response = await getTransactions({
 				senderPublicKey: refDelegate.summary.publicKey,
 				nonce: String(Number(refDelegate.sequence.nonce) - 1),
@@ -594,7 +594,7 @@ describe('Method get.transactions', () => {
 			}
 		});
 
-		xit('returns transactions when queried with search', async () => {
+		it('returns transactions when queried with search', async () => {
 			const response = await getTransactions({ search: refDelegate.summary.username });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -630,7 +630,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		xit('returns transactions when queried with search, limit and offset', async () => {
+		it('returns transactions when queried with search, limit and offset', async () => {
 			try {
 				const response = await getTransactions({
 					search: refDelegate.summary.username,
