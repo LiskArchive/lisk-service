@@ -233,7 +233,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 			logger.debug(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 			scheduledDays.push(formattedDate.toString());
 		}
-		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[0]} - ${scheduledDays[scheduledDays.length - 1]})`);
+		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
 	});
 };
 
