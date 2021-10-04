@@ -585,6 +585,18 @@ const getLastFinalBlock = async () => {
 	return lastIndexedHeight;
 };
 
+const getNonFinalHeights = async () => {
+	const blocksDB = await getBlocksIndex();
+
+	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
+		sort: 'height:asc',
+		limit: 5000,
+		isFinal: false,
+	}, ['height']);
+
+	return lastIndexedHeight;
+};
+
 const indexMissingBlocks = async () => {
 	// if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 	const genesisHeight = await getGenesisHeight();
@@ -625,34 +637,17 @@ const indexMissingBlocks = async () => {
 	}
 };
 
-// const indexNonFinalBlocks = async () => {
-// 	logger.info('Building the blocks index');
+const getCurrentHeight = async () => (await requestApi(coreApi.getNetworkStatus)).data.height;
 
-// 	const genesisHeight = await getGenesisHeight();
+const updateNonFinalBlocks = async () => {
+	const cHeight = getCurrentHeight();
+	const nfHeights = getNonFinalHeights();
 
-// 	// await getLastFinalBlock() ||
-
-// 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
-
-// 	// Lowest and highest block heights expected to be indexed
-// 	const blockIndexHigherRange = (await requestApi(coreApi.getNetworkStatus)).data.height;
-// 	const blockIndexLowerRange = config.indexNumOfBlocks > 0
-// 		? blockIndexHigherRange - config.indexNumOfBlocks : genesisHeight;
-
-// 	// Store the value for the missing blocks job
-// 	setIndexStartHeight(blockIndexLowerRange);
-
-// 	// Highest finalized block available within the index
-// 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-// 	const highestIndexedHeight = await getLastFinalBlock()
-// 		|| await getGenesisHeight();
-
-// 	// Start building the block index
-// 	await buildIndex(highestIndexedHeight, blockIndexHigherRange).catch(err => {
-// 		logger.warn(`Indexing failed due to: ${err.message}`);
-// 	});
-// 	logger.info('Finished building the blocks index');
-// };
+	if (nfHeights.length > 0) {
+		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
+		await buildIndex(nfHeights[0].height, cHeight);
+	}
+};
 
 const getIndexStats = async () => {
 	try {
@@ -731,8 +726,8 @@ const init = async () => {
 		logger.info(`Genesis height is set to ${gHeight}`);
 
 		// Start the indexing process (blocks)
-		// await indexNonFinalBlocks();
 		await indexMissingBlocks();
+		await updateNonFinalBlocks();
 
 		// First download the genesis block, if applicable
 		// Make sure the genesis block is ready when requested
