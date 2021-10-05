@@ -50,7 +50,6 @@ let latestBlock;
 
 // Genesis height can be greater that 0
 // Blockchain starts form a non-zero block height
-const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
 // The top final block
@@ -272,8 +271,8 @@ const getBlocks = async params => {
 
 const init = async () => {
 	// Set the genesis height
-	const gHeight = await coreApi.getGenesisHeight();
-	await setGenesisHeight(gHeight);
+	await coreApi.updateGenesisHeight();
+	const gHeight = await getGenesisHeight();
 
 	logger.info(`Genesis height is set to ${gHeight}`);
 };

@@ -33,7 +33,13 @@ const {
 const delay = require('../../../delay');
 const config = require('../../../../config');
 
-let genesisHeight;
+const blockchainStore = require('./blockchainStore');
+
+// Genesis height can be greater that 0
+// Blockchain starts form a non-zero block height
+const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
+const getGenesisHeight = () => blockchainStore.get('genesisHeight');
+
 const logger = Logger();
 const timeoutMessage = 'Response not received in';
 
@@ -50,25 +56,24 @@ const getNetworkStatus = async () => {
 	}
 };
 
-const getGenesisHeight = async () => {
-	if (!genesisHeight) {
-		try {
-			// Determine genesis height
-			if (process.env.GENESIS_HEIGHT) {
-				genesisHeight = config.genesisHeight;
-			} else {
-				const { data: { networkIdentifier } } = await getNetworkStatus();
-				const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
-				genesisHeight = networkConfig ? networkConfig.genesisHeight : 0;
-			}
-		} catch (err) {
-			if (err.message.includes(timeoutMessage)) {
-				throw new TimeoutException('Request timed out when calling \'getGenesisHeight\'');
-			}
-			throw err;
+const updateGenesisHeight = async () => {
+	let genesisHeight = 0;
+	try {
+		// Determine genesis height
+		if (process.env.GENESIS_HEIGHT) {
+			genesisHeight = config.genesisHeight;
+		} else {
+			const { data: { networkIdentifier } } = await getNetworkStatus();
+			const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+			genesisHeight = networkConfig ? networkConfig.genesisHeight : 0;
 		}
+		await setGenesisHeight(genesisHeight);
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getGenesisHeight\'');
+		}
+		throw err;
 	}
-	return genesisHeight;
 };
 
 const getBlockByID = async id => {
@@ -347,6 +352,7 @@ const requestRetry = async (fn, params, numRetries = 5) => {
 };
 
 module.exports = {
+	updateGenesisHeight,
 	getGenesisHeight,
 	getBlockByID,
 	getBlocksByIDs,
