@@ -29,7 +29,7 @@ const Queue = require('../../queue');
 const {
 	getIndexReadyStatus,
 	setIndexReadyStatus,
-	// setIsSyncFullBlockchain, // ??
+	setIsSyncFullBlockchain, // To get rewards and produced blocks
 } = require('../common');
 
 const {
@@ -357,7 +357,6 @@ const getNonFinalHeights = async () => {
 };
 
 const indexMissingBlocks = async () => {
-	// if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
@@ -484,6 +483,9 @@ const init = async () => {
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('newBlock').add(updateFinalizedHeight);
 	setInterval(reportIndexStatus, 15 * 1000); // ms
+
+	// Enable rewards and produced blocks in get.accounts
+	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
 	// Check state of index and perform update
 	try {
