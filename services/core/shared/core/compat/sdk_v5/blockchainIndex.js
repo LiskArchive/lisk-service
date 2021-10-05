@@ -364,8 +364,8 @@ const indexMissingBlocks = async () => {
 	// By default they are checked from the blockchain's beginning
 	// It is possible to resume indexing from the last safe height
 	// Uncomment the line below to (slightly) increase performance during start
-	// const lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
-	const lastScheduledBlock = genesisHeight;
+	const lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
+	// const lastScheduledBlock = genesisHeight;
 	const minReqHeight = config.indexNumOfBlocks > 0
 		? currentHeight - config.indexNumOfBlocks : genesisHeight;
 
@@ -458,7 +458,6 @@ const checkIndexReadiness = async () => {
 
 const reportIndexStatus = async () => {
 	const {
-		genesisHeight,
 		currentChainHeight,
 		numBlocksIndexed,
 		lastIndexedBlock,
@@ -467,10 +466,8 @@ const reportIndexStatus = async () => {
 	} = await getIndexStats();
 
 	logger.info([
-		`numBlocksIndexed: ${numBlocksIndexed}`,
-		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 		`currentChainHeight: ${currentChainHeight}`,
-		`virtHeight: ${currentChainHeight - genesisHeight}`,
+		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 	].join(', '));
 
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);

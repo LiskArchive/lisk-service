@@ -90,7 +90,7 @@ const getBlocks = async (params = {}) => {
 		|| (params.timestamp && params.timestamp.includes(':'))) {
 		total = blocks.meta.total;
 	} else {
-		total = getTotalNumberOfBlocks();
+		total = await getTotalNumberOfBlocks();
 	}
 
 	if (coreApi.getFinalizedHeight) {
