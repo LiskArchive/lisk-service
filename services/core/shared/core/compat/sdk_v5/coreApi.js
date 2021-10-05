@@ -142,6 +142,8 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		const gHeight = await getGenesisHeight();
 		const blocks = [[], []];
 
+		// TODO: Add safety check to not exceed the genesisHeight range
+
 		// File based Genesis block handling
 		if (Number(from) === gHeight) {
 			blocks[0] = (await getBlockByHeight(gHeight)).data;
