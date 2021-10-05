@@ -29,7 +29,7 @@ const Queue = require('../../queue');
 const {
 	getIndexReadyStatus,
 	setIndexReadyStatus,
-	// setIsSyncFullBlockchain, // ??
+	setIsSyncFullBlockchain, // To get rewards and produced blocks
 } = require('../common');
 
 const {
@@ -357,7 +357,6 @@ const getNonFinalHeights = async () => {
 };
 
 const indexMissingBlocks = async () => {
-	// if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
@@ -404,19 +403,6 @@ const updateNonFinalBlocks = async () => {
 		await buildIndex(nfHeights[0].height, cHeight);
 	}
 };
-
-// const indexGenesisBlock = async () => {
-// 	try {
-// 		const genesisHeight = await getGenesisHeight();
-
-// 		if (Number.isNaN(genesisHeight)) throw new Error('Genesis height is not set in the blockchainStore');
-
-// 		await indexBlocks({ data: { from: genesisHeight, to: genesisHeight } });
-// 	} catch (err) {
-// 		logger.fatal(`Genesis block indexing failed due to: ${err.message}`);
-// 		process.exit(2);
-// 	}
-// };
 
 const updateFinalizedHeight = async () => setFinalizedHeight(await getLastFinalBlockHeight());
 
@@ -490,6 +476,9 @@ const init = async () => {
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('newBlock').add(updateFinalizedHeight);
 	setInterval(reportIndexStatus, 15 * 1000); // ms
+
+	// Enable rewards and produced blocks in get.accounts
+	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
 
 	// Check state of index and perform update
 	try {
