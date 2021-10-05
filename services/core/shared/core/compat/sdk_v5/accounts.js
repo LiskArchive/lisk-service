@@ -174,7 +174,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 
 			// A genesis block account is considered migrated
 			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
+			const accountFromDB = await getIndexedAccountInfo({ address: account.address, limit: 1 }, ['publicKey']);
 			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
 
 			account.username = account.dpos.delegate.username || null;
