@@ -458,7 +458,6 @@ const checkIndexReadiness = async () => {
 
 const reportIndexStatus = async () => {
 	const {
-		genesisHeight,
 		currentChainHeight,
 		numBlocksIndexed,
 		lastIndexedBlock,
@@ -467,10 +466,8 @@ const reportIndexStatus = async () => {
 	} = await getIndexStats();
 
 	logger.info([
-		`numBlocksIndexed: ${numBlocksIndexed}`,
-		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 		`currentChainHeight: ${currentChainHeight}`,
-		`virtHeight: ${currentChainHeight - genesisHeight}`,
+		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 	].join(', '));
 
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
