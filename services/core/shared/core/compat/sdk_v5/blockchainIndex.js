@@ -56,10 +56,25 @@ const {
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
 
-const mysqlIndex = require('../../../indexdb/mysql');
-const blocksIndexSchema = require('./schema/blocks');
+const {
+	getDbConnection,
+	getTableInstance,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
+} = require('../../../indexdb/mysql');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const blocksIndexSchema = require('./schema/blocks');
+const accountsIndexSchema = require('./schema/accounts');
+const transactionsIndexSchema = require('./schema/transactions');
+const votesIndexSchema = require('./schema/votes');
+const multisignatureIndexSchema = require('./schema/multisignature');
+
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 
 const blockchainStore = require('./blockchainStore');
 
@@ -80,53 +95,93 @@ const validateBlocks = (blocks) => blocks.length
 
 const indexBlocks = async job => {
 	const blocks = await getBlocksByHeightBetween(job.data.from, job.data.to);
-
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${job.data.from}-${job.data.to} }`);
+	try {
+		const blocksDB = await getBlocksIndex();
+		const accountsDB = await getAccountsIndex();
+		const transactionsDB = await getTransactionsIndex();
+		const votesDB = await getVotesIndex();
+		const multisignatureDB = await getMultisignatureIndex();
+		const generatorPkInfoArray = [];
+		await BluebirdPromise.map(
+			blocks,
+			async block => {
+				if (block.generatorPublicKey) {
+					const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+					generatorPkInfoArray.push({
+						publicKey: block.generatorPublicKey,
+						reward: block.reward,
+						isForger: true,
+						isBlockIndexed: !!blockInfo,
+					});
+				}
+			},
+			{ concurrency: blocks.length },
+		);
 
-	const blocksDB = await getBlocksIndex();
-	const generatorPkInfoArray = [];
-	await BluebirdPromise.map(
-		blocks,
-		async block => {
-			if (block.generatorPublicKey) {
-				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-				generatorPkInfoArray.push({
-					publicKey: block.generatorPublicKey,
-					reward: block.reward,
-					isForger: true,
-					isBlockIndexed: !!blockInfo,
-				});
-			}
-		},
-		{ concurrency: blocks.length },
-	);
-	await blocksDB.upsert(blocks);
-	await indexAccountsbyPublicKey(generatorPkInfoArray);
-	await indexTransactions(blocks);
-	await indexVotes(blocks);
+		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
+		const votes = await indexVotes(blocks);
+		const {
+			accounts: accountsFromTransactions,
+			transactions,
+			multisignatureInfoToIndex,
+		} = await indexTransactions(blocks);
+
+		if (accountsByPublicKey.length) await accountsDB.upsert(trx, accountsByPublicKey);
+		if (accountsFromTransactions.length) await accountsDB.upsert(trx, accountsFromTransactions);
+		if (transactions.length) await transactionsDB.upsert(trx, transactions);
+		if (multisignatureInfoToIndex.length) await multisignatureDB
+			.upsert(trx, multisignatureInfoToIndex);
+		if (votes.length) await votesDB.upsert(trx, votes);
+		if (blocks.length) await blocksDB.upsert(trx, blocks);
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 const updateBlockIndex = async job => {
-	const { blocks } = job.data;
-	const blocksDB = await getBlocksIndex();
-	await blocksDB.upsert(blocks);
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	try {
+		const { blocks } = job.data;
+		const blocksDB = await getBlocksIndex();
+		await blocksDB.upsert(trx, blocks);
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 const deleteIndexedBlocks = async job => {
-	const { blocks } = job.data;
-	const blocksDB = await getBlocksIndex();
-	const generatorPkInfoArray = [];
-	blocks.forEach(async block => {
-		if (block.generatorPublicKey) generatorPkInfoArray.push({
-			publicKey: block.generatorPublicKey,
-			reward: block.reward,
-			isForger: true,
-			isDeleteBlock: true,
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	try {
+		const accountsDB = await getAccountsIndex();
+		const { blocks } = job.data;
+		const blocksDB = await getBlocksIndex();
+		const generatorPkInfoArray = [];
+		blocks.forEach(async block => {
+			if (block.generatorPublicKey) generatorPkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: block.reward,
+				isForger: true,
+				isDeleteBlock: true,
+			});
 		});
-	});
-	await indexAccountsbyPublicKey(generatorPkInfoArray);
-	await removeTransactionsByBlockIDs(blocks.map(b => b.id));
-	await blocksDB.deleteIds(blocks.map(b => b.height));
+		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
+		if (accountsByPublicKey.length) await accountsDB.upsert(trx, accountsByPublicKey);
+		await removeTransactionsByBlockIDs(blocks.map(b => b.id));
+		await blocksDB.deleteIds(blocks.map(b => b.height));
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 // Initialize queues
@@ -157,36 +212,47 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
+	let trx;
+	const connection = await getDbConnection();
+	const accountsDB = await getAccountsIndex();
+	try {
+		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 
-	const genesisAccountsToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length === 40)
-		.map(account => account.address);
-	const genesisAccountPageCached = 'genesisAccountPageCached';
+		const genesisAccountsToIndex = genesisBlock.asset.accounts
+			.filter(account => account.address.length === 40)
+			.map(account => account.address);
+		const genesisAccountPageCached = 'genesisAccountPageCached';
 
-	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
+		logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 
-	const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
+		const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
 
-	const PAGE_SIZE = 1000;
-	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
-	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
-		const currentPage = pageNum * PAGE_SIZE;
-		const nextPage = (pageNum + 1) * PAGE_SIZE;
-		const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
-
-		if (pageNum >= lastCachedPage) {
-			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
-
-			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
-
+		const PAGE_SIZE = 1000;
+		const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
+		for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
 			/* eslint-disable no-await-in-loop */
-			await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
-			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+			trx = await startDbTransaction(connection);
+			const currentPage = pageNum * PAGE_SIZE;
+			const nextPage = (pageNum + 1) * PAGE_SIZE;
+			const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
+
+			if (pageNum >= lastCachedPage) {
+				const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
+
+				logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+
+				const accounts = await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+				if (accounts.length) await accountsDB.upsert(trx, accounts);
+				await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+			} else {
+				logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+			}
+			await commitDbTransaction(trx);
 			/* eslint-enable no-await-in-loop */
-		} else {
-			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 		}
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
 	}
 };
 
@@ -211,14 +277,26 @@ const indexGenesisAccounts = async () => {
 };
 
 const indexAllDelegateAccounts = async () => {
-	const allDelegatesInfo = await getAllDelegates();
-	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
-	const PAGE_SIZE = 1000;
-	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsbyAddress(allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+	const connection = await getDbConnection();
+	const accountsDB = await getAccountsIndex();
+	const trx = await startDbTransaction(connection);
+	try {
+		const allDelegatesInfo = await getAllDelegates();
+		const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
+		const PAGE_SIZE = 1000;
+		for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
+			/* eslint-disable no-await-in-loop */
+			const accounts = await indexAccountsbyAddress(allDelegateAddresses
+				.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+			await accountsDB.upsert(trx, accounts);
+			/* eslint-enable no-await-in-loop */
+		}
+		logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
 	}
-	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
 
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
@@ -409,7 +487,8 @@ const updateNonFinalBlocks = async () => {
 // 	try {
 // 		const genesisHeight = await getGenesisHeight();
 
-// 		if (Number.isNaN(genesisHeight)) throw new Error('Genesis height is not set in the blockchainStore');
+// 		if (Number
+// .isNaN(genesisHeight)) throw new Error('Genesis height is not set in the blockchainStore');
 
 // 		await indexBlocks({ data: { from: genesisHeight, to: genesisHeight } });
 // 	} catch (err) {

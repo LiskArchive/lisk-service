@@ -14,7 +14,6 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
 
@@ -165,6 +164,8 @@ const commitDbTransaction = async (transaction) => transaction.commit();
 
 const rollbackDbTransaction = async (transaction) => transaction.rollback();
 
+const defaultTransaction = async (connection) => startDbTransaction(connection);
+
 const getTableInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
 	const { primaryKey, schema } = tableConfig;
 
@@ -173,54 +174,50 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
 
 	// Works as expected
-	// const upsert = async (trx, inputRows) => {
-	// 	let rawRows = inputRows;
-	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
-	// 	const rows = await mapRowsBySchema(rawRows, schema);
-
-	// 	const queries = rows.map((row) => {
-	// 		const insertQuery = trx(tableName)
-	// 			.insert(row)
-	// 			.transacting(trx)
-	// 			.toString();
-	// 		const updateQuery = trx(tableName)
-	// 			.update(row)
-	// 			.transacting(trx)
-	// 			.toString()
-	// 			.replace(/^update(.*?)set\s/gi, '');
-	// 		return knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${updateQuery}`);
-	// 	});
-
-	// 	return Promise.all(queries).then(trx.transacting(trx));
-	// };
-
-	const insert = async (trx, row) => {
-		if (!trx) throw new Error('Transaction not provided');
-		return trx(tableName).insert(row).transacting(trx);
-	};
-
-	const update = async (trx, row) => {
-		if (!trx) throw new Error('Transaction not provided');
-		return trx(tableName)
-			.where(primaryKey, '=', row[primaryKey])
-			.update(row)
-			.transacting(trx);
-	};
-
 	const upsert = async (trx, inputRows) => {
-		if (!trx) throw new Error('Transaction not provided');
-
+		if (!trx) trx = await defaultTransaction(knex);
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
-
-
 		const rows = await mapRowsBySchema(rawRows, schema);
-		await BluebirdPromise.map(
-			rows,
-			async row => insert(trx, row).catch(async () => update(trx, row)),
-			{ concurrency: 1 },
+		// Create all queries for `INSERT or UPDATE on Duplicate keys`
+		const queries = rows.map((row) => knex.raw(trx(tableName)
+			.insert(row)
+			.onConflict(primaryKey)
+			.merge()
+			.transacting(trx)
+			.toString()),
 		);
+		// Perform all queries within a batch together
+		return Promise.all(queries).then(trx.transacting(trx));
 	};
+
+	// const insert = async (trx, row) => {
+	// if (!trx) trx = await defaultTransaction(knex);
+	// 	return trx(tableName).insert(row).transacting(trx);
+	// };
+
+	// const update = async (trx, row) => {
+	// if (!trx) trx = await defaultTransaction(knex);
+	// 	return trx(tableName)
+	// 		.where(primaryKey, '=', row[primaryKey])
+	// 		.update(row)
+	// 		.transacting(trx);
+	// };
+
+	// const upsert = async (trx, inputRows) => {
+	// 	if (!trx) trx = await defaultTransaction(knex);
+
+	// 	let rawRows = inputRows;
+	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
+
+
+	// 	const rows = await mapRowsBySchema(rawRows, schema);
+	// 	await BluebirdPromise.map(
+	// 		rows,
+	// 		async row => insert(trx, row).catch(async () => update(trx, row)),
+	// 		{ concurrency: 1 },
+	// 	);
+	// };
 
 	const queryBuilder = (params, columns) => {
 		const query = knex.select(columns).table(tableName);
