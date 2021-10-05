@@ -547,6 +547,8 @@ const getAccounts = async params => {
 
 const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
 
+const getAllDelegates = () => requestApi(coreApi.getAllDelegates);
+
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
 	if (account.keys && account.keys.numberOfSignatures) {
@@ -666,6 +668,7 @@ module.exports = {
 	confirmPublicKey,
 	getAccounts,
 	getDelegates,
+	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountsbyAddress,

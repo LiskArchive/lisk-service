@@ -139,22 +139,22 @@ const getBlockByHeight = async height => {
 
 const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
+		const gHeight = await getGenesisHeight();
+		const blocks = [[], []];
+
 		// File based Genesis block handling
-		if (getGenesisBlockId() && Number(from) === await getGenesisHeight()) {
-			const genesisBlockResult = await getBlockByHeight(from);
-			if (from < to) {
-				const { data: [genesisBlock] } = genesisBlockResult;
-				// eslint-disable-next-line max-len
-				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween({ from: from + 1, to });
-				return { data: [genesisBlock, ...remainingBlocks] };
-			}
-			return genesisBlockResult;
+		if (Number(from) === gHeight) {
+			blocks[0] = (await getBlockByHeight(gHeight)).data;
+			from++;
 		}
 
-		const apiClient = await getApiClient();
-		const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', { from, to });
-		const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
-		return { data: blocks };
+		if (from <= to) {
+			const apiClient = await getApiClient();
+			const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', { from, to });
+			blocks[1] = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
+		}
+
+		return { data: [...blocks[0], ...blocks[1]] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
