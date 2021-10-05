@@ -22,8 +22,9 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	networkStatusSchemaVersion5,
-} = require('../../../schemas/networkStatus.schema');
+	networkStatusSchema,
+	metaSchema,
+} = require('../../../schemas/api_v2/networkStatus.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const requestNetworkStatus = async params => request(wsRpcUrl, 'get.network.status', params);
@@ -33,11 +34,17 @@ describe('get.network.status', () => {
 		const response = await requestNetworkStatus();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
-		expect(result.data).toMap(networkStatusSchemaVersion5);
+		expect(result.data).toMap(networkStatusSchema);
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('params not supported -> 400 BAD REQUEST', async () => {
 		const response = await requestNetworkStatus({ someparam: 'not_supported' }).catch(e => e);
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('params (empty) not supported -> 400 BAD REQUEST', async () => {
+		const response = await requestNetworkStatus({ someparam: '' }).catch(e => e);
 		expect(response).toMap(invalidParamsSchema);
 	});
 });

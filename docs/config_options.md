@@ -67,22 +67,24 @@ ENABLE_REQUEST_CACHING=true
 ### Websocket settings
 
 ```bash
-# To enable websocket rate limit, the `ENABLE_WS_RATELIMIT` environment variable is required to be true.
+# To enable websocket rate limit, the `WS_RATE_LIMIT_ENABLE` environment variable is required to be true.
 # Number of connections per second can be set using 
-# `WS_RATELIMIT_POINTS` and `WS_RATELIMIT_DURATION` environment 
+# `WS_RATE_LIMIT_CONNECTIONS` and `WS_RATE_LIMIT_DURATION` environment 
 # variable. currently defaults to `5 connections per second`
-ENABLE_WS_RATELIMIT=true
-WS_RATELIMIT_POINTS=5
-WS_RATELIMIT_DURATION=1
+WS_RATE_LIMIT_ENABLE=true
+WS_RATE_LIMIT_CONNECTIONS=5
+WS_RATE_LIMIT_DURATION=1
 ```
 
 ### HTTP Requests rate limit settings
 
 ```bash
-# The `HTTP Rate limit` directives can be set using `RATE_LIMIT_WINDOW` and `RATE_LIMIT_CONNECTIONS` environment 
+# To enable `HTTP Rate limit`, the `HTTP_RATE_LIMIT_ENABLE` environment variable is required to be true.
+# The `HTTP Rate limit` directives can be set using `HTTP_RATE_LIMIT_WINDOW` and `HTTP_RATE_LIMIT_CONNECTIONS` environment 
 # variable.
-RATE_LIMIT_WINDOW=15000 # To keep record of requests in memory (in milliseconds). Defaults to 15 seconds
-RATE_LIMIT_CONNECTIONS=20 # Max number of requests during window. Defaults to 20
+HTTP_RATE_LIMIT_ENABLE=true
+HTTP_RATE_LIMIT_WINDOW=10 # To keep record of requests in memory (in seconds). Defaults to 10 seconds
+HTTP_RATE_LIMIT_CONNECTIONS=200 # Max number of requests during window. Defaults to 200 requests
 ```
 
 ### Compatibility settings
