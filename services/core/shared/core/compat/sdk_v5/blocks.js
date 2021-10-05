@@ -61,7 +61,7 @@ const getCurrentHeight = async () => (await requestApi(coreApi.getNetworkStatus)
 
 const updateFinalizedHeight = async () => {
 	const result = await requestApi(coreApi.getNetworkStatus);
-	setFinalizedHeight(result.data.finalizedHeight);
+	await setFinalizedHeight(result.data.finalizedHeight);
 	return result;
 };
 
