@@ -128,6 +128,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	const knex = connectionPool[connPoolKey];
 
 	if (!tablePool[connPoolKeyTable]) {
+		logger.info(`Creating schema for ${tableName}`);
 		await loadSchema(knex, tableName, tableConfig);
 		tablePool[connPoolKeyTable] = true;
 	}
