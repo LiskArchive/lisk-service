@@ -39,8 +39,8 @@ const {
 } = require('./blocks');
 
 const {
-	indexAccountsbyAddress,
-	indexAccountsbyPublicKey,
+	getAccountsbyAddress,
+	getAccountsbyPublicKey,
 	getAllDelegates,
 } = require('./accounts');
 
@@ -50,7 +50,7 @@ const {
 
 const {
 	indexTransactions,
-	removeTransactionsByBlockIDs,
+	getTransactionsByBlockIDs,
 } = require('./transactions');
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
@@ -121,7 +121,7 @@ const indexBlocks = async job => {
 			{ concurrency: blocks.length },
 		);
 
-		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
+		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
 		const votes = await indexVotes(blocks);
 		const {
 			accounts: accountsFromTransactions,
@@ -162,8 +162,10 @@ const deleteIndexedBlocks = async job => {
 	const trx = await startDbTransaction(connection);
 	try {
 		const accountsDB = await getAccountsIndex();
-		const { blocks } = job.data;
+		const transactionsDB = await getTransactionsIndex();
+		const votesDB = await getVotesIndex();
 		const blocksDB = await getBlocksIndex();
+		const { blocks } = job.data;
 		const generatorPkInfoArray = [];
 		blocks.forEach(async block => {
 			if (block.generatorPublicKey) generatorPkInfoArray.push({
@@ -173,10 +175,14 @@ const deleteIndexedBlocks = async job => {
 				isDeleteBlock: true,
 			});
 		});
-		const accountsByPublicKey = await indexAccountsbyPublicKey(generatorPkInfoArray);
+		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(trx, accountsByPublicKey);
-		await removeTransactionsByBlockIDs(blocks.map(b => b.id));
-		await blocksDB.deleteIds(blocks.map(b => b.height));
+		const {
+			forkedVotes,
+			forkedTransactionIDs } = await getTransactionsByBlockIDs(blocks.map(b => b.id));
+		await transactionsDB.deleteIds(trx, forkedTransactionIDs);
+		await votesDB.deleteIds(trx, forkedVotes.map(v => v.tempId));
+		await blocksDB.deleteIds(trx, blocks.map(b => b.height));
 		await commitDbTransaction(trx);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
@@ -241,7 +247,7 @@ const performGenesisAccountsIndexing = async () => {
 
 				logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
-				const accounts = await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+				const accounts = await getAccountsbyAddress(genesisAccountAddressesToIndex, true);
 				if (accounts.length) await accountsDB.upsert(trx, accounts);
 				await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
 			} else {
@@ -286,7 +292,7 @@ const indexAllDelegateAccounts = async () => {
 		const PAGE_SIZE = 1000;
 		for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
 			/* eslint-disable no-await-in-loop */
-			const accounts = await indexAccountsbyAddress(allDelegateAddresses
+			const accounts = await getAccountsbyAddress(allDelegateAddresses
 				.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
 			await accountsDB.upsert(trx, accounts);
 			/* eslint-enable no-await-in-loop */
@@ -359,11 +365,7 @@ const indexNewBlocks = async blocks => {
 					}],
 					limit: highestIndexedBlock.height - block.height,
 				}, ['id']);
-				const blockIDsToRemove = blocksToRemove.map(b => b.id);
-				await blocksDB.deleteIds(blockIDsToRemove);
-
-				// Remove transactions in the forked blocks
-				await removeTransactionsByBlockIDs(blockIDsToRemove);
+				await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 			}
 		}
 	}

@@ -27,14 +27,14 @@ const {
 } = require('./accountUtils');
 
 const {
-	indexAccountsbyAddress,
-	indexAccountsbyPublicKey,
+	getAccountsbyAddress,
+	getAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
 } = require('./accounts');
 
-const { removeVotesByTransactionIDs } = require('./voters');
+const { getVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 const { getTableInstance } = require('../../../indexdb/mysql');
@@ -96,8 +96,8 @@ const indexTransactions = async (blocks) => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	const accountsByAddress = await indexAccountsbyAddress(recipientAddressesToIndex);
-	const accountsByPublicKey = await indexAccountsbyPublicKey(publicKeysToIndex);
+	const accountsByAddress = await getAccountsbyAddress(recipientAddressesToIndex);
+	const accountsByPublicKey = await getAccountsbyPublicKey(publicKeysToIndex);
 	const allAccounts = accountsByAddress.concat(accountsByPublicKey);
 
 	return {
@@ -107,7 +107,7 @@ const indexTransactions = async (blocks) => {
 	};
 };
 
-const removeTransactionsByBlockIDs = async blockIDs => {
+const getTransactionsByBlockIDs = async blockIDs => {
 	const transactionsDB = await getTransactionsIndex();
 	const forkedTransactions = await transactionsDB.find({
 		whereIn: {
@@ -116,8 +116,11 @@ const removeTransactionsByBlockIDs = async blockIDs => {
 		},
 	}, ['id']);
 	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
-	await transactionsDB.deleteIds(forkedTransactionIDs);
-	await removeVotesByTransactionIDs(forkedTransactionIDs);
+	const forkedVotes = await getVotesByTransactionIDs(forkedTransactionIDs);
+	return {
+		forkedVotes,
+		forkedTransactionIDs,
+	};
 };
 
 const normalizeTransaction = async txs => {
@@ -387,7 +390,7 @@ const getTransactionsByBlockId = async blockId => {
 module.exports = {
 	getTransactions,
 	indexTransactions,
-	removeTransactionsByBlockIDs,
+	getTransactionsByBlockIDs,
 	getTransactionsByBlockId,
 	getTransactionsByIDs,
 	normalizeTransaction,

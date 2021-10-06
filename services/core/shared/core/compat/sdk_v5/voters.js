@@ -90,7 +90,7 @@ const indexVotes = async (blocks) => {
 	return allVotes;
 };
 
-const removeVotesByTransactionIDs = async transactionIDs => {
+const getVotesByTransactionIDs = async transactionIDs => {
 	const votesDB = await getVotesIndex();
 	const forkedVotes = await votesDB.find({
 		whereIn: {
@@ -98,7 +98,7 @@ const removeVotesByTransactionIDs = async transactionIDs => {
 			values: transactionIDs,
 		},
 	}, ['tempId']);
-	await votesDB.deleteIds(forkedVotes.map(v => v.tempId));
+	return forkedVotes;
 };
 
 const getVoters = async params => {
@@ -184,5 +184,5 @@ const getVoters = async params => {
 module.exports = {
 	getVoters,
 	indexVotes,
-	removeVotesByTransactionIDs,
+	getVotesByTransactionIDs,
 };

@@ -89,22 +89,6 @@ const requestApi = coreApi.requestRetry;
 
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
 
-// const indexAccounts = async job => {
-// 	const { accounts } = job.data;
-// 	const accountsDB = await getAccountsIndex();
-// 	accounts.forEach(account => {
-// 		account.username = account.dpos.delegate.username || null;
-// 		account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
-// 		account.balance = account.token.balance;
-// 		return account;
-// 	});
-// 	await accountsDB.upsert(accounts);
-// };
-
-// const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
-// const indexAccountsByAddressQueue = Queue('indexAccountsByAddressQueue', indexAccounts, 1);
-// const indexAccountsByPublicKeyQueue = Queue('indexAccountsByPublicKeyQueue', indexAccounts, 1);
-
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
 	account.isDelegate = !(account.dpos && !account.dpos.delegate.username);
@@ -166,7 +150,7 @@ const getAccountsFromCache = async (params) => {
 	return accounts;
 };
 
-const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
+const getAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		dropDuplicates(addressesToIndex),
 		async address => {
@@ -306,7 +290,7 @@ const resolveDelegateInfo = async accounts => {
 	return accounts;
 };
 
-const indexAccountsbyPublicKey = async (accountInfoArray) => {
+const getAccountsbyPublicKey = async (accountInfoArray) => {
 	const accountsDB = await getAccountsIndex();
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		accountInfoArray
@@ -650,7 +634,7 @@ const keepAccountsCacheUpdated = async () => {
 	try {
 		const accountsDB = await getAccountsIndex();
 		const updateAccountsCacheListener = async (address) => {
-			const accounts = await indexAccountsbyAddress(address);
+			const accounts = await getAccountsbyAddress(address);
 			await accountsDB.upsert(trx, accounts);
 			await commitDbTransaction(trx);
 		};
@@ -671,8 +655,8 @@ module.exports = {
 	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	indexAccountsbyAddress,
-	indexAccountsbyPublicKey,
+	getAccountsbyAddress,
+	getAccountsbyPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
