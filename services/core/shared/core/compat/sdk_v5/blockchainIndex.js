@@ -120,7 +120,7 @@ const indexBlocks = async job => {
 		);
 
 		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
-		const votes = await indexVotes(blocks, trx);
+		const votes = await indexVotes(blocks);
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
