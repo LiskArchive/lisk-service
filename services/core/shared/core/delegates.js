@@ -333,12 +333,11 @@ const updateDelegateListOnAccountsUpdate = () => {
 
 				// Update the account details of the affected delegate
 				Object.assign(delegate, parseToJSONCompatObj(updatedDelegate));
-				delegateList[delegateIndex] = delegate;
 			}
 		});
 	};
 
-	Signals.get('updateAccountsByAddress').add(updateDelegateListOnAccountsUpdateListener);
+	Signals.get('updateAccountState').add(updateDelegateListOnAccountsUpdateListener);
 };
 
 // Reload the delegate cache when all the indexes are up-to-date
