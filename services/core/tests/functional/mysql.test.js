@@ -47,7 +47,7 @@ describe('Test mysql', () => {
 	it('Insert row', async () => {
 		const connection = await getDbConnection();
 		const trx = await startDbTransaction(connection);
-		await db.upsert(trx, [emptyBlock]);
+		await db.upsert([emptyBlock], trx);
 		await commitDbTransaction(trx);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
@@ -66,7 +66,7 @@ describe('Test mysql', () => {
 	it('Update row', async () => {
 		const connection = await getDbConnection();
 		const trx = await startDbTransaction(connection);
-		await db.upsert(trx, [{ ...emptyBlock, size: 50 }]);
+		await db.upsert([{ ...emptyBlock, size: 50 }], trx);
 		await commitDbTransaction(trx);
 		const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
 		expect(retrievedBlock.id).toBe(emptyBlock.id);
@@ -111,7 +111,7 @@ describe('Test mysql', () => {
 	it('Batch row insert', async () => {
 		const connection = await getDbConnection();
 		const trx = await startDbTransaction(connection);
-		await db.upsert(trx, [emptyBlock, nonEmptyBlock]);
+		await db.upsert([emptyBlock, nonEmptyBlock], trx);
 		await commitDbTransaction(trx);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
