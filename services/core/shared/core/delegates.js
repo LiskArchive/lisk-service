@@ -327,7 +327,10 @@ const updateDelegateListOnAccountsUpdate = () => {
 			const delegateIndex = delegateList.findIndex(acc => acc.address === address);
 			const delegate = delegateList[delegateIndex] || {};
 			if (Object.getOwnPropertyNames(delegate).length) {
-				const { data: [updatedDelegate] } = await coreApi.getDelegates({ address: delegate.address });
+				const {
+					data: [updatedDelegate],
+				} = await coreApi.getDelegates({ address: delegate.address });
+
 				// Update the account details of the affected delegate
 				Object.assign(delegate, parseToJSONCompatObj(updatedDelegate));
 				delegateList[delegateIndex] = delegate;
