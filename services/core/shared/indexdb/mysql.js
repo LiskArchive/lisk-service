@@ -295,9 +295,12 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		});
 	});
 
-	const deleteIds = async ids => knex(tableName)
-		.whereIn(primaryKey, ids)
-		.del();
+	const deleteIds = async (trx, ids) => {
+		if (!trx) trx = await defaultTransaction(knex);
+		return trx(tableName)
+			.whereIn(primaryKey, ids)
+			.del();
+	};
 
 	const count = async (params = {}) => {
 		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
