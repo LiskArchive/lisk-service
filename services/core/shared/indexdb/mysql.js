@@ -158,24 +158,27 @@ const createTableIfNotExists = async (tableName,
 	}
 };
 
-const startDbTransaction = async (connection) => connection.transaction();
-
-const commitDbTransaction = async (transaction) => transaction.commit();
-
-const rollbackDbTransaction = async (transaction) => transaction.rollback();
-
-const defaultTransaction = async (connection) => startDbTransaction(connection);
-
 const getTableInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
 	const { primaryKey, schema } = tableConfig;
 
 	const knex = await getDbConnection(connEndpoint);
 
+	const startDbTransaction = async (connection) => connection.transaction();
+
+	const commitDbTransaction = async (transaction) => transaction.commit();
+
+	const rollbackDbTransaction = async (transaction) => transaction.rollback();
+
+	const defaultTransaction = async (connection) => startDbTransaction(connection);
+
 	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
 
-	// Works as expected
-	const upsert = async (trx, inputRows) => {
-		if (!trx) trx = await defaultTransaction(knex);
+	const upsert = async (inputRows, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await defaultTransaction(knex);
+			isDefaultTrx = true;
+		}
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
 		const rows = await mapRowsBySchema(rawRows, schema);
@@ -188,36 +191,9 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.toString()),
 		);
 		// Perform all queries within a batch together
-		return Promise.all(queries).then(trx.transacting(trx));
+		if (isDefaultTrx) return Promise.all(queries).then(trx.commit).catch(trx.rollback);
+		return Promise.all(queries);
 	};
-
-	// const insert = async (trx, row) => {
-	// if (!trx) trx = await defaultTransaction(knex);
-	// 	return trx(tableName).insert(row).transacting(trx);
-	// };
-
-	// const update = async (trx, row) => {
-	// if (!trx) trx = await defaultTransaction(knex);
-	// 	return trx(tableName)
-	// 		.where(primaryKey, '=', row[primaryKey])
-	// 		.update(row)
-	// 		.transacting(trx);
-	// };
-
-	// const upsert = async (trx, inputRows) => {
-	// 	if (!trx) trx = await defaultTransaction(knex);
-
-	// 	let rawRows = inputRows;
-	// 	if (!Array.isArray(rawRows)) rawRows = [inputRows];
-
-
-	// 	const rows = await mapRowsBySchema(rawRows, schema);
-	// 	await BluebirdPromise.map(
-	// 		rows,
-	// 		async row => insert(trx, row).catch(async () => update(trx, row)),
-	// 		{ concurrency: 1 },
-	// 	);
-	// };
 
 	const queryBuilder = (params, columns) => {
 		const query = knex.select(columns).table(tableName);
@@ -295,11 +271,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		});
 	});
 
-	const deleteIds = async (trx, ids) => {
-		if (!trx) trx = await defaultTransaction(knex);
-		return trx(tableName)
-			.whereIn(primaryKey, ids)
-			.del();
+	const deleteIds = async (ids, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await defaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+		const result = await trx(tableName).whereIn(primaryKey, ids).del();
+		if (isDefaultTrx) await commitDbTransaction(trx);
+		return result;
 	};
 
 	const count = async (params = {}) => {
@@ -384,13 +364,13 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		count,
 		rawQuery,
 		increment,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
 	};
 };
 
 module.exports = {
 	getDbConnection,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
 	getTableInstance,
 };
