@@ -63,9 +63,6 @@ const Signals = require('../../../signals');
 const {
 	getTableInstance,
 	getDbConnection,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
@@ -301,7 +298,7 @@ const getAccountsbyPublicKey = async (accountInfoArray) => {
 				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
 			account.publicKey = accountInfo.publicKey;
 			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
-				accountsDB.increment({
+				await accountsDB.increment({
 					increment: {
 						rewards: BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1)),
 						producedBlocks: accountInfo.isDeleteBlock ? -1 : 1,
@@ -480,13 +477,13 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					const connection = await getDbConnection();
-					const trx = await startDbTransaction(connection);
+					const trx = await accountsDB.startDbTransaction(connection);
 					try {
 						account.publicKey = paramPublicKey;
-						await accountsDB.upsert(trx, [account]);
-						await commitDbTransaction(trx);
+						await accountsDB.upsert([account], trx);
+						await accountsDB.commitDbTransaction(trx);
 					} catch (error) {
-						await rollbackDbTransaction(trx);
+						await accountsDB.rollbackDbTransaction(trx);
 					}
 				} else {
 					account.publicKey = indexedAccount.publicKey;
@@ -629,18 +626,18 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 };
 
 const keepAccountsCacheUpdated = async () => {
+	const accountsDB = await getAccountsIndex();
 	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
+	const trx = await accountsDB.startDbTransaction(connection);
 	try {
-		const accountsDB = await getAccountsIndex();
 		const updateAccountsCacheListener = async (address) => {
 			const accounts = await getAccountsbyAddress(address);
-			await accountsDB.upsert(trx, accounts);
-			await commitDbTransaction(trx);
+			await accountsDB.upsert(accounts, trx);
+			await accountsDB.commitDbTransaction(trx);
 		};
 		Signals.get('updateAccountsByAddress').add(address => updateAccountsCacheListener(address));
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await accountsDB.rollbackDbTransaction(trx);
 		throw error;
 	}
 };

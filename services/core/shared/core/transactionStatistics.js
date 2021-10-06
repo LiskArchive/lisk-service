@@ -25,9 +25,6 @@ const { getTransactions } = require('./transactions');
 const {
 	getTableInstance,
 	getDbConnection,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
 } = require('../indexdb/mysql');
 const Queue = require('./queue');
 const requestAll = require('../requestAll');
@@ -107,7 +104,7 @@ const transformStatsObjectToList = statsObject => (
 const insertToDb = async (statsList, date) => {
 	const db = await getDbInstance();
 	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
+	const trx = await db.startDbTransaction(connection);
 	try {
 		try {
 			const [{ id }] = db.find({ date, limit: 1 }, ['id']);
@@ -125,12 +122,12 @@ const insertToDb = async (statsList, date) => {
 			delete statistic.range;
 			return statistic;
 		});
-		await db.upsert(trx, statsList);
-		await commitDbTransaction(trx);
+		await db.upsert(statsList, trx);
+		await db.commitDbTransaction(trx);
 		const count = statsList.reduce((acc, row) => acc + row.count, 0);
 		return `${statsList.length} rows with total tx count ${count} for ${date} inserted to db`;
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await db.rollbackDbTransaction(trx);
 		throw error;
 	}
 };
