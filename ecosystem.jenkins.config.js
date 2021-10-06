@@ -95,7 +95,6 @@ module.exports = {
 			watch: false,
 			kill_timeout: 10000,
 			max_memory_restart: '512M',
-			instances: 1,
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',

@@ -400,8 +400,6 @@ const indexMissingBlocks = async () => {
 };
 
 const updateNonFinalBlocks = async () => {
-	// TODO: This function always reports empty final heights
-	// Make sure it is correct
 	const cHeight = await getCurrentHeight();
 	const nfHeights = await getNonFinalHeights();
 
