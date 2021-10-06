@@ -25,9 +25,6 @@ const logger = Logger();
 const {
 	getTableInstance,
 	getDbConnection,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 const transactionIdxSchema = require('./schema/transactions');
@@ -175,10 +172,10 @@ const getPendingTransactions = async params => {
 };
 
 const indexTransactionsListener = async (blockId) => {
+	const transactionIdx = await getTransactionIdx();
 	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
+	const trx = await transactionIdx.startDbTransaction(connection);
 	try {
-		const transactionIdx = await getTransactionIdx();
 		const blockResult = await transactionIdx.find({ blockId }, 'id');
 		if (blockResult.length > 0) return;
 
@@ -192,10 +189,10 @@ const indexTransactionsListener = async (blockId) => {
 			tx.timestamp = timestamp;
 			tx.unixTimestamp = unixTimestamp;
 		});
-		transactionIdx.upsert(transactions.data);
-		await commitDbTransaction(trx);
+		transactionIdx.upsert(transactions.data, trx);
+		await transactionIdx.commitDbTransaction(trx);
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await transactionIdx.rollbackDbTransaction(trx);
 		throw error;
 	}
 };
