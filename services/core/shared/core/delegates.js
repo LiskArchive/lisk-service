@@ -320,6 +320,24 @@ const updateDelegateListEveryBlock = () => {
 	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
 
+const updateDelegateListOnAccountsUpdate = () => {
+	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
+		hexAddresses.forEach(async hexAddress => {
+			const address = coreApi.getBase32AddressFromHex(hexAddress);
+			const delegateIndex = delegateList.findIndex(acc => acc.address === address);
+			const delegate = delegateList[delegateIndex] || {};
+			if (Object.getOwnPropertyNames(delegate).length) {
+				const { data: [updatedDelegate] } = await coreApi.getDelegates({ address: delegate.address });
+				// Update the account details of the affected delegate
+				Object.assign(delegate, parseToJSONCompatObj(updatedDelegate));
+				delegateList[delegateIndex] = delegate;
+			}
+		});
+	};
+
+	Signals.get('updateAccountsByAddress').add(updateDelegateListOnAccountsUpdateListener);
+};
+
 // Reload the delegate cache when all the indexes are up-to-date
 const refreshDelegateListOnIndexReady = () => {
 	const reloadDelegateCacheListener = () => reload();
@@ -327,6 +345,7 @@ const refreshDelegateListOnIndexReady = () => {
 };
 
 updateDelegateListEveryBlock();
+updateDelegateListOnAccountsUpdate();
 refreshDelegateListOnIndexReady();
 
 module.exports = {
