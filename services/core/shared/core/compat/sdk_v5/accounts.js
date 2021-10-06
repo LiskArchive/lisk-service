@@ -288,7 +288,6 @@ const resolveDelegateInfo = async accounts => {
 };
 
 const getAccountsbyPublicKey = async (accountInfoArray) => {
-	const accountsDB = await getAccountsIndex();
 	const finalAccountsToIndex = await BluebirdPromise.map(
 		accountInfoArray
 			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
@@ -297,25 +296,6 @@ const getAccountsbyPublicKey = async (accountInfoArray) => {
 			const [accountInfo] = accountInfoArray
 				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
 			account.publicKey = accountInfo.publicKey;
-			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
-				await accountsDB.increment({
-					increment: {
-						rewards: BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1)),
-						producedBlocks: accountInfo.isDeleteBlock ? -1 : 1,
-					},
-					where: {
-						property: 'address',
-						value: account.address,
-					},
-				}, {
-					...account,
-					balance: account.token.balance,
-					username: account.dpos.delegate.username,
-					rewards: accountInfo.reward,
-					producedBlocks: 1,
-					totalVotesReceived: account.dpos.delegate.totalVotesReceived,
-				});
-			}
 			account.username = account.dpos.delegate.username || null;
 			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
 			account.balance = account.token.balance;

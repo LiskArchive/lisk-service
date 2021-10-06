@@ -44,6 +44,7 @@ const {
 	getAllDelegates,
 } = require('./accounts');
 
+const { getBase32AddressFromPublicKey } = require('./accountUtils');
 const {
 	indexVotes,
 } = require('./voters');
@@ -119,7 +120,7 @@ const indexBlocks = async job => {
 		);
 
 		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
-		const votes = await indexVotes(blocks);
+		const votes = await indexVotes(blocks, trx);
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
@@ -132,6 +133,24 @@ const indexBlocks = async job => {
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 		if (votes.length) await votesDB.upsert(votes, trx);
+
+		// Update producedBlocks & rewards
+		await BluebirdPromise.map(
+			generatorPkInfoArray,
+			async PkInfoArray => {
+				await accountsDB.increment({
+					increment: {
+						rewards: BigInt(PkInfoArray.reward),
+						producedBlocks: 1,
+					},
+					where: {
+						property: 'address',
+						value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
+					},
+				}, trx);
+			});
+
+
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await blocksDB.commitDbTransaction(trx);
 	} catch (error) {
@@ -179,6 +198,22 @@ const deleteIndexedBlocks = async job => {
 			forkedTransactionIDs } = await getTransactionsByBlockIDs(blocks.map(b => b.id));
 		await transactionsDB.deleteIds(forkedTransactionIDs, trx);
 		await votesDB.deleteIds(forkedVotes.map(v => v.tempId), trx);
+
+		// Update producedBlocks & rewards
+		await BluebirdPromise.map(
+			generatorPkInfoArray,
+			async PkInfoArray => {
+				await accountsDB.decrement({
+					decrement: {
+						rewards: BigInt(PkInfoArray.reward),
+						producedBlocks: 1,
+					},
+					where: {
+						property: 'address',
+						value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
+					},
+				}, trx);
+			});
 		await blocksDB.deleteIds(blocks.map(b => b.height), trx);
 		await blocksDB.commitDbTransaction(trx);
 	} catch (error) {

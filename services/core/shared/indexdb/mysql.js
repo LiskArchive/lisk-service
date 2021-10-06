@@ -335,26 +335,34 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		return resultSet;
 	};
 
-	const increment = async (params, rawRow = {}) => {
-		let result;
-		const [row] = await mapRowsBySchema([rawRow], schema);
-		try {
-			[result] = await knex.transaction(
-				trx => trx(tableName)
-					.insert(row)
-					.transacting(trx),
-			);
-			// always return number of rows affected
-			result = result === 0 ? 1 : 0;
-		} catch (error) {
-			result = await knex.transaction(
-				trx => trx(tableName)
-					.where(params.where.property, '=', params.where.value)
-					.increment(params.increment)
-					.transacting(trx),
-			);
+	const increment = async (params, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await defaultTransaction(knex);
+			isDefaultTrx = true;
 		}
-		return result;
+		const query = knex.raw(trx(tableName)
+			.where(params.where.property, '=', params.where.value)
+			.increment(params.increment)
+			.transacting(trx)
+			.toString());
+		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
+		return query;
+	};
+
+	const decrement = async (params, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await defaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+		const query = knex.raw(trx(tableName)
+			.where(params.where.property, '=', params.where.value)
+			.decrement(params.decrement)
+			.transacting(trx)
+			.toString());
+		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
+		return query;
 	};
 
 	return {
@@ -364,6 +372,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		count,
 		rawQuery,
 		increment,
+		decrement,
 		startDbTransaction,
 		commitDbTransaction,
 		rollbackDbTransaction,
