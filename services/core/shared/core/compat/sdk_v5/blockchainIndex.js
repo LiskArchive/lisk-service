@@ -473,6 +473,20 @@ const reportIndexStatus = async () => {
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
 };
 
+const indexSchemas = {
+	accounts: require('./schema/accounts'),
+	blocks: require('./schema/blocks'),
+	multisignature: require('./schema/multisignature'),
+	transactions: require('./schema/transactions'),
+	votes: require('./schema/votes'),
+	votes_aggregate: require('./schema/votesAggregate'),
+};
+
+const initializeSearchIndex = () => BluebirdPromise.map(
+	Object.keys(indexSchemas),
+	key => mysqlIndex(key, indexSchemas[key]),
+	{ concurrency: 1 });
+
 const init = async () => {
 	// Index every new incoming block
 	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
@@ -506,4 +520,5 @@ module.exports = {
 	getLastFinalBlockHeight,
 	getIndexStats,
 	deleteBlock,
+	initializeSearchIndex,
 };
