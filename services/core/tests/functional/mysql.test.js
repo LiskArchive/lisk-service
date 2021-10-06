@@ -16,8 +16,6 @@
 const {
 	getDbConnection,
 	getTableInstance,
-	startDbTransaction,
-	commitDbTransaction,
 } = require('../../shared/indexdb/mysql');
 const schema = require('../constants/blocksSchema');
 
@@ -46,9 +44,9 @@ describe('Test mysql', () => {
 
 	it('Insert row', async () => {
 		const connection = await getDbConnection();
-		const trx = await startDbTransaction(connection);
+		const trx = await db.startDbTransaction(connection);
 		await db.upsert([emptyBlock], trx);
-		await commitDbTransaction(trx);
+		await db.commitDbTransaction(trx);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(1);
@@ -65,9 +63,9 @@ describe('Test mysql', () => {
 
 	it('Update row', async () => {
 		const connection = await getDbConnection();
-		const trx = await startDbTransaction(connection);
+		const trx = await db.startDbTransaction(connection);
 		await db.upsert([{ ...emptyBlock, size: 50 }], trx);
-		await commitDbTransaction(trx);
+		await db.commitDbTransaction(trx);
 		const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
 		expect(retrievedBlock.id).toBe(emptyBlock.id);
 		expect(retrievedBlock.size).toBe(50);
@@ -110,9 +108,9 @@ describe('Test mysql', () => {
 
 	it('Batch row insert', async () => {
 		const connection = await getDbConnection();
-		const trx = await startDbTransaction(connection);
+		const trx = await db.startDbTransaction(connection);
 		await db.upsert([emptyBlock, nonEmptyBlock], trx);
-		await commitDbTransaction(trx);
+		await db.commitDbTransaction(trx);
 		const result = await db.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(2);
