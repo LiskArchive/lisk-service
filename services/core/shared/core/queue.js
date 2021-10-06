@@ -73,13 +73,11 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 
 	const add = (params) => queue.add(jobName, params);
 
-	const { pause, resume } = () => queue;
-
 	return {
 		add,
 		queue,
-		pause,
-		resume,
+		pause: queue.pause,
+		resume: queue.resume,
 	};
 };
 
