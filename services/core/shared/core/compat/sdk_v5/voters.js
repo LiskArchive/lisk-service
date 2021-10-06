@@ -32,7 +32,7 @@ const voteTransactionAssetID = 1;
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
-const indexVotes = async (blocks) => {
+const indexVotes = async (blocks, trx) => {
 	const votesDB = await getVotesIndex();
 	const votesAggregateDB = await getVotesAggregateIndex();
 	const votesMultiArray = blocks.map(block => {
@@ -64,7 +64,7 @@ const indexVotes = async (blocks) => {
 								property: 'id',
 								value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
 							},
-						}, {
+						}, trx, {
 							...voteEntry,
 							id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
 						});
