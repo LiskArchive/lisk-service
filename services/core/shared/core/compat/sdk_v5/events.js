@@ -58,6 +58,7 @@ const register = async (events) => {
 			logger.debug(`Block deleted: ${deletedBlock.id} at height ${deletedBlock.height}`);
 			events.deleteBlock(deletedBlock);
 			events.updateAccountsByAddress(affectedAccountAddresses);
+			events.calculateFeeEstimate();
 		} catch (err) {
 			logger.error(`Error while processing the 'app:block:delete' event:\n${err.stack}`);
 		}
