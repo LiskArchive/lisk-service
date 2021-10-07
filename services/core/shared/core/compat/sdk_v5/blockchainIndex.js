@@ -133,7 +133,7 @@ const indexBlocks = async job => {
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 
 		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
-		const { allVotes: votes, votesToAggregatedArray } = await indexVotes(blocks);
+		const { allVotes: votes, votesToAggregateArray } = await indexVotes(blocks);
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
@@ -152,7 +152,7 @@ const indexBlocks = async job => {
 			generatorPkInfoArray,
 			async PkInfoArray => {
 				if (!PkInfoArray.isBlockIndexed) {
-					await accountsDB.increment({
+					const incrementParam = {
 						increment: {
 							rewards: BigInt(PkInfoArray.reward),
 							producedBlocks: 1,
@@ -161,20 +161,27 @@ const indexBlocks = async job => {
 							property: 'address',
 							value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
 						},
-					}, {
-						address: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
-						publicKey: PkInfoArray.publicKey,
-						producedBlocks: 1,
-						rewards: PkInfoArray.reward,
-					}, trx);
-				}
-			});
+					};
 
-		// indexing aggregated votes per account
+					// If no rows are affected with increment, insert the row
+					const [accountToIncrement] = await accountsDB.increment(incrementParam, trx);
+					if (accountToIncrement.affectedRows === 0) {
+						await accountsDB.upsert({
+							address: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
+							publicKey: PkInfoArray.publicKey,
+							producedBlocks: 1,
+							rewards: PkInfoArray.reward,
+						}, trx);
+					}
+				}
+			},
+		);
+
+		// Indexing aggregated votes per account
 		await BluebirdPromise.map(
-			votesToAggregatedArray,
+			votesToAggregateArray,
 			async voteToAggregate => {
-				await votesAggregateDB.increment({
+				const incrementParam = {
 					increment: {
 						amount: BigInt(voteToAggregate.amount),
 					},
@@ -182,8 +189,13 @@ const indexBlocks = async job => {
 						property: 'id',
 						value: voteToAggregate.id,
 					},
-				}, voteToAggregate.voteObject, trx);
-			});
+				};
+				const [voteToIncrement] = await votesAggregateDB.increment(incrementParam, trx);
+				if (voteToIncrement.affectedRows === 0) {
+					await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+				}
+			},
+		);
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);

@@ -34,7 +34,7 @@ const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(p
 
 const indexVotes = async (blocks) => {
 	const votesDB = await getVotesIndex();
-	const votesToAggregatedArray = [];
+	const votesToAggregateArray = [];
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
@@ -55,7 +55,7 @@ const indexVotes = async (blocks) => {
 						limit: 1,
 					}, ['isAggregated']);
 					if (!row || !row.isAggregated) {
-						votesToAggregatedArray.push({
+						votesToAggregateArray.push({
 							amount: BigInt(vote.amount),
 							id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
 							voteObject: {
@@ -80,7 +80,7 @@ const indexVotes = async (blocks) => {
 	let allVotePromises = [];
 	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
 	const allVotes = await BluebirdPromise.all(allVotePromises);
-	return { allVotes, votesToAggregatedArray };
+	return { allVotes, votesToAggregateArray };
 };
 
 const getVotesByTransactionIDs = async transactionIDs => {

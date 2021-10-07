@@ -179,9 +179,11 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
+
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
 		const rows = await mapRowsBySchema(rawRows, schema);
+
 		// Create all queries for `INSERT or UPDATE on Duplicate keys`
 		const queries = rows.map((row) => knex.raw(trx(tableName)
 			.insert(row)
@@ -190,6 +192,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.transacting(trx)
 			.toString()),
 		);
+
 		// Perform all queries within a batch together
 		if (isDefaultTrx) return Promise.all(queries).then(trx.commit).catch(trx.rollback);
 		return Promise.all(queries);
@@ -277,6 +280,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
+
 		const result = await trx(tableName).whereIn(primaryKey, ids).del();
 		if (isDefaultTrx) await commitDbTransaction(trx);
 		return result;
@@ -335,20 +339,19 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		return resultSet;
 	};
 
-	const increment = async (params, rawRow = {}, trx) => {
+	const increment = async (params, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
 			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
-		const [row] = await mapRowsBySchema([rawRow], schema);
-		const insertQuery = trx(tableName).insert(row).transacting(trx).toString();
-		const incrementQuery = trx(tableName)
+
+		const query = knex.raw(trx(tableName)
+			.where(params.where.property, '=', params.where.value)
 			.increment(params.increment)
 			.transacting(trx)
-			.toString()
-			.replace(/^update(.*?)set\s/gi, '');
-		const query = knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${incrementQuery}`);
+			.toString());
+
 		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
 		return query;
 	};
@@ -359,11 +362,13 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
+
 		const query = knex.raw(trx(tableName)
 			.where(params.where.property, '=', params.where.value)
 			.decrement(params.decrement)
 			.transacting(trx)
 			.toString());
+
 		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
 		return query;
 	};
