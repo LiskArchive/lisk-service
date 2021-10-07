@@ -43,17 +43,17 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 		logger.info(`Initialized queue ${queueName}`);
 
 		queue.on('completed', (job) => {
-			logger.debug(`${queueName} Job completed ${job.name}`);
+			logger.debug(`${jobName} Job completed ${job.name}`);
 			job.remove();
 		});
 
 		queue.on('error', (err) => {
-			logger.error(`${queueName} Job error`, err);
+			logger.error(`${jobName} Job error`, err);
 		});
 
 		queue.on('failed', (job, err) => {
-			logger.warn(`${queueName} Job failed`, err.message);
-			logger.warn(`${queueName} Job failed`, err.stack);
+			logger.warn(`${jobName} Job failed`, err.message);
+			logger.warn(`${jobName} Job failed`, err.stack);
 		});
 
 		setInterval(async () => {
@@ -73,13 +73,11 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 
 	const add = (params) => queue.add(jobName, params);
 
-	const { pause, resume } = () => queue;
-
 	return {
 		add,
 		queue,
-		pause,
-		resume,
+		pause: queue.pause,
+		resume: queue.resume,
 	};
 };
 

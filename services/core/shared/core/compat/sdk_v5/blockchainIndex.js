@@ -93,6 +93,11 @@ const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
 const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
 const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 
+// Last blockchain index status
+const setIndexDiff = (height) => blockchainStore.set('indexStatus', height);
+const getIndexDiff = () => blockchainStore.get('indexStatus');
+
+
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
 
@@ -506,16 +511,17 @@ const getNonFinalHeights = async () => {
 	return lastIndexedHeight || [];
 };
 
-const indexMissingBlocks = async () => {
+const indexMissingBlocks = async (params = {}) => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
 	// Missing blocks are being checked during start
 	// By default they are checked from the blockchain's beginning
-	// It is possible to resume indexing from the last safe height
-	// Uncomment the line below to (slightly) increase performance during start
-	// const lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
-	const lastScheduledBlock = genesisHeight;
+	// The param force: true skips the getIndexVerifiedHeight
+	// and makes it check the whole index
+	let lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
+	if (params.force === true) lastScheduledBlock = genesisHeight;
+
 	const minReqHeight = config.indexNumOfBlocks > 0
 		? currentHeight - config.indexNumOfBlocks : genesisHeight;
 
@@ -550,8 +556,6 @@ const indexMissingBlocks = async () => {
 };
 
 const updateNonFinalBlocks = async () => {
-	// TODO: This function always reports empty final heights
-	// Make sure it is correct
 	const cHeight = await getCurrentHeight();
 	const nfHeights = await getNonFinalHeights();
 
@@ -587,18 +591,14 @@ const getIndexStats = async () => {
 	}
 };
 
+const validateIndexReadiness = async () => {
+	const { numBlocksIndexed, chainLength } = await getIndexStats();
+	return (numBlocksIndexed >= chainLength - 1);
+};
+
 const checkIndexReadiness = async () => {
-	logger.debug('Checking blocks index ready status');
-
-	const {
-		numBlocksIndexed,
-		chainLength,
-	} = await getIndexStats();
-
-	const status = await getIndexReadyStatus();
-
-	if (!status // status is set only once
-		&& numBlocksIndexed >= chainLength - 1) { // last block is being indexed atm
+	if (!await getIndexReadyStatus() // status is set only once
+		&& await validateIndexReadiness()) { // last block is being indexed atm
 		await setIndexReadyStatus(true);
 		logger.info('The blockchain index is complete');
 		logger.debug(`'blockIndexReady' signal: ${Signals.get('blockIndexReady')}`);
@@ -606,9 +606,26 @@ const checkIndexReadiness = async () => {
 	}
 };
 
+const fixMissingBlocks = async () => {
+	const { numBlocksIndexed } = await getIndexStats();
+
+	if (!(await validateIndexReadiness())) {
+		const prevIndex = await getIndexDiff();
+		const minTolerableDiff = 0;
+		const maxDiff = 200;
+		const currentDiff = numBlocksIndexed - prevIndex;
+
+		if (currentDiff > minTolerableDiff
+			&& currentDiff < maxDiff) { // maxDiff because we don't need to run it when index is not ready
+			logger.info(`Detected block discrepancy (${currentDiff} missing blocks)`);
+			indexMissingBlocks({ force: true });
+		}
+	}
+	setIndexDiff(numBlocksIndexed);
+};
+
 const reportIndexStatus = async () => {
 	const {
-		genesisHeight,
 		currentChainHeight,
 		numBlocksIndexed,
 		lastIndexedBlock,
@@ -617,14 +634,26 @@ const reportIndexStatus = async () => {
 	} = await getIndexStats();
 
 	logger.info([
-		`numBlocksIndexed: ${numBlocksIndexed}`,
-		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 		`currentChainHeight: ${currentChainHeight}`,
-		`virtHeight: ${currentChainHeight - genesisHeight}`,
+		`lastIndexedBlock: ${lastIndexedBlock.height}`,
 	].join(', '));
 
 	logger.info(`Block index status: ${numBlocksIndexed}/${chainLength} blocks indexed (${percentage}%) `);
 };
+
+const indexSchemas = {
+	accounts: require('./schema/accounts'),
+	blocks: require('./schema/blocks'),
+	multisignature: require('./schema/multisignature'),
+	transactions: require('./schema/transactions'),
+	votes: require('./schema/votes'),
+	votes_aggregate: require('./schema/votesAggregate'),
+};
+
+const initializeSearchIndex = () => BluebirdPromise.map(
+	Object.keys(indexSchemas),
+	key => mysqlIndex(key, indexSchemas[key]),
+	{ concurrency: 1 });
 
 const init = async () => {
 	// Index every new incoming block
@@ -633,6 +662,7 @@ const init = async () => {
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('newBlock').add(updateFinalizedHeight);
 	setInterval(reportIndexStatus, 15 * 1000); // ms
+	setInterval(fixMissingBlocks, 15 * 60 * 1000); // ms
 
 	// Enable rewards and produced blocks in get.accounts
 	if (config.indexNumOfBlocks === 0) setIsSyncFullBlockchain(true);
@@ -659,4 +689,5 @@ module.exports = {
 	getLastFinalBlockHeight,
 	getIndexStats,
 	deleteBlock,
+	initializeSearchIndex,
 };
