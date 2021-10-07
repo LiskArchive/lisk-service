@@ -31,6 +31,9 @@ const {
 const {
 	getTableInstance,
 	getDbConnection,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 
@@ -61,7 +64,7 @@ const getFinalizedHeight = () => heightFinalized;
 const indexBlocks = async job => {
 	const blockIdx = await getBlockIdx();
 	const connection = await getDbConnection();
-	const trx = await blockIdx.startDbTransaction(connection);
+	const trx = await startDbTransaction(connection);
 	try {
 		const { blocks } = job.data;
 		blocks.forEach(block => {
@@ -71,9 +74,9 @@ const indexBlocks = async job => {
 				Signals.get('indexTransactions').dispatch(block.id);
 			}
 		});
-		await blockIdx.commitDbTransaction(trx);
+		await commitDbTransaction(trx);
 	} catch (error) {
-		await blockIdx.rollbackDbTransaction(trx);
+		await rollbackDbTransaction(trx);
 		throw error;
 	}
 };

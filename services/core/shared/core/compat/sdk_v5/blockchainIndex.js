@@ -96,6 +96,28 @@ const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
 
+const getGeneratorPkInfoArray = async (blocks, isDelete = false) => {
+	const blocksDB = await getBlocksIndex();
+	const PkInfoArray = [];
+	await BluebirdPromise.map(
+		blocks,
+		async block => {
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+			if (block.generatorPublicKey) {
+				PkInfoArray.push({
+					publicKey: block.generatorPublicKey,
+					reward: block.reward,
+					isForger: true,
+					isDeleteBlock: isDelete,
+					isBlockIndexed: !!blockInfo,
+				});
+			}
+		},
+		{ concurrency: blocks.length },
+	);
+	return PkInfoArray;
+};
+
 const indexBlocks = async job => {
 	const blocksDB = await getBlocksIndex();
 	const votesAggregateDB = await getVotesAggregateIndex();
@@ -108,22 +130,7 @@ const indexBlocks = async job => {
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
 		const multisignatureDB = await getMultisignatureIndex();
-		const generatorPkInfoArray = [];
-		await BluebirdPromise.map(
-			blocks,
-			async block => {
-				if (block.generatorPublicKey) {
-					const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-					generatorPkInfoArray.push({
-						publicKey: block.generatorPublicKey,
-						reward: block.reward,
-						isForger: true,
-						isBlockIndexed: !!blockInfo,
-					});
-				}
-			},
-			{ concurrency: blocks.length },
-		);
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 
 		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
 		const { allVotes: votes, votesToAggregatedArray } = await indexVotes(blocks);
@@ -209,15 +216,7 @@ const deleteIndexedBlocks = async job => {
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
 		const { blocks } = job.data;
-		const generatorPkInfoArray = [];
-		blocks.forEach(async block => {
-			if (block.generatorPublicKey) generatorPkInfoArray.push({
-				publicKey: block.generatorPublicKey,
-				reward: block.reward,
-				isForger: true,
-				isDeleteBlock: true,
-			});
-		});
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks, true);
 		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
 		const {
