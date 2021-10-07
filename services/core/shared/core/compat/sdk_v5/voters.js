@@ -32,9 +32,9 @@ const voteTransactionAssetID = 1;
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
-const indexVotes = async (blocks, trx) => {
+const indexVotes = async (blocks) => {
 	const votesDB = await getVotesIndex();
-	const votesAggregateDB = await getVotesAggregateIndex();
+	const votesToAggregatedArray = [];
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
@@ -55,20 +55,14 @@ const indexVotes = async (blocks, trx) => {
 						limit: 1,
 					}, ['isAggregated']);
 					if (!row || !row.isAggregated) {
-						// indexing aggregated votes per account
-						const numRowsAffected = await votesAggregateDB.increment({
-							increment: {
-								amount: BigInt(vote.amount),
-							},
-							where: {
-								property: 'id',
-								value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-							},
-						}, {
-							...voteEntry,
+						votesToAggregatedArray.push({
+							amount: BigInt(vote.amount),
 							id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-						}, trx);
-						voteEntry.isAggregated = numRowsAffected > 0;
+							voteObject: {
+								...voteEntry,
+								id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+							},
+						});
 					}
 
 					// TODO: Remove 'tempId' after composite PK support is added
@@ -86,8 +80,7 @@ const indexVotes = async (blocks, trx) => {
 	let allVotePromises = [];
 	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
 	const allVotes = await BluebirdPromise.all(allVotePromises);
-	// if (allVotes.length) await votesDB.upsert(trx, allVotes);
-	return allVotes;
+	return { allVotes, votesToAggregatedArray };
 };
 
 const getVotesByTransactionIDs = async transactionIDs => {

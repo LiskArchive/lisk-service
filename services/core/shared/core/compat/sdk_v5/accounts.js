@@ -63,6 +63,9 @@ const Signals = require('../../../signals');
 const {
 	getTableInstance,
 	getDbConnection,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
@@ -457,13 +460,13 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					const connection = await getDbConnection();
-					const trx = await accountsDB.startDbTransaction(connection);
+					const trx = await startDbTransaction(connection);
 					try {
 						account.publicKey = paramPublicKey;
 						await accountsDB.upsert([account], trx);
-						await accountsDB.commitDbTransaction(trx);
+						await commitDbTransaction(trx);
 					} catch (error) {
-						await accountsDB.rollbackDbTransaction(trx);
+						await rollbackDbTransaction(trx);
 					}
 				} else {
 					account.publicKey = indexedAccount.publicKey;
@@ -608,16 +611,16 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 const keepAccountsCacheUpdated = async () => {
 	const accountsDB = await getAccountsIndex();
 	const connection = await getDbConnection();
-	const trx = await accountsDB.startDbTransaction(connection);
+	const trx = await startDbTransaction(connection);
 	try {
 		const updateAccountsCacheListener = async (address) => {
 			const accounts = await getAccountsbyAddress(address);
 			await accountsDB.upsert(accounts, trx);
-			await accountsDB.commitDbTransaction(trx);
+			await commitDbTransaction(trx);
 		};
 		Signals.get('updateAccountsByAddress').add(address => updateAccountsCacheListener(address));
 	} catch (error) {
-		await accountsDB.rollbackDbTransaction(trx);
+		await rollbackDbTransaction(trx);
 		throw error;
 	}
 };

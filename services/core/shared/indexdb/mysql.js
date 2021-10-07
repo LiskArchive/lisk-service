@@ -158,25 +158,25 @@ const createTableIfNotExists = async (tableName,
 	}
 };
 
+const startDbTransaction = async (connection) => connection.transaction();
+
+const commitDbTransaction = async (transaction) => transaction.commit();
+
+const rollbackDbTransaction = async (transaction) => transaction.rollback();
+
 const getTableInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
 	const { primaryKey, schema } = tableConfig;
 
 	const knex = await getDbConnection(connEndpoint);
 
-	const startDbTransaction = async (connection) => connection.transaction();
-
-	const commitDbTransaction = async (transaction) => transaction.commit();
-
-	const rollbackDbTransaction = async (transaction) => transaction.rollback();
-
-	const defaultTransaction = async (connection) => startDbTransaction(connection);
+	const createDefaultTransaction = async (connection) => startDbTransaction(connection);
 
 	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
 
 	const upsert = async (inputRows, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
-			trx = await defaultTransaction(knex);
+			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
 		let rawRows = inputRows;
@@ -274,7 +274,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	const deleteIds = async (ids, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
-			trx = await defaultTransaction(knex);
+			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
 		const result = await trx(tableName).whereIn(primaryKey, ids).del();
@@ -338,7 +338,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	const increment = async (params, rawRow = {}, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
-			trx = await defaultTransaction(knex);
+			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
 		const [row] = await mapRowsBySchema([rawRow], schema);
@@ -356,7 +356,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	const decrement = async (params, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
-			trx = await defaultTransaction(knex);
+			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
 		const query = knex.raw(trx(tableName)
@@ -376,13 +376,14 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		rawQuery,
 		increment,
 		decrement,
-		startDbTransaction,
-		commitDbTransaction,
-		rollbackDbTransaction,
 	};
 };
 
 module.exports = {
+	default: getTableInstance,
 	getDbConnection,
 	getTableInstance,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
 };
