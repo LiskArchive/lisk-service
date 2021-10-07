@@ -106,10 +106,8 @@ pipeline {
 				sleep(90){
 					script { echoBanner('Failed to run the pipeline') }
 					nvm(getNodejsVersion()) {
-					sh 'pm2 logs lisk-service-gateway --lines=100  --nostream'
-					sh 'pm2 logs lisk-service-core --lines=500  --nostream'
-					sh 'pm2 logs lisk-service-market --lines=100  --nostream'
-					sh 'pm2 logs lisk-service-newsfeed --lines=100  --nostream'
+						sh 'pm2 logs lisk-service-gateway --lines=00  --nostream'
+						sh 'pm2 logs lisk-service-core --lines=500  --nostream'
 					}
 				}
 				waitForHttp('http://localhost:9901/api/ready')
