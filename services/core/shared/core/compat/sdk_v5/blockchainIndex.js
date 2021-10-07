@@ -650,10 +650,14 @@ const indexSchemas = {
 	votes_aggregate: require('./schema/votesAggregate'),
 };
 
-const initializeSearchIndex = () => BluebirdPromise.map(
-	Object.keys(indexSchemas),
-	key => mysqlIndex(key, indexSchemas[key]),
-	{ concurrency: 1 });
+const initializeSearchIndex = async () => {
+	await BluebirdPromise.map(
+		Object.keys(indexSchemas),
+		key => getTableInstance(key, indexSchemas[key]),
+		{ concurrency: 1 },
+	);
+	Signals.get('searchIndexInitialized').dispatch();
+};
 
 const init = async () => {
 	// Index every new incoming block

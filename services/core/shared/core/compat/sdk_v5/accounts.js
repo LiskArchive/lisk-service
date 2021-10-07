@@ -625,8 +625,8 @@ const keepAccountsCacheUpdated = async () => {
 	}
 };
 
-removeReclaimedLegacyAccountInfoFromCache();
-keepAccountsCacheUpdated();
+Signals.get('searchIndexInitialized').add(removeReclaimedLegacyAccountInfoFromCache);
+Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
 
 module.exports = {
 	confirmPublicKey,
