@@ -335,17 +335,20 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		return resultSet;
 	};
 
-	const increment = async (params, trx) => {
+	const increment = async (params, trx, rawRow = {}) => {
 		let isDefaultTrx = false;
 		if (!trx) {
 			trx = await defaultTransaction(knex);
 			isDefaultTrx = true;
 		}
-		const query = knex.raw(trx(tableName)
-			.where(params.where.property, '=', params.where.value)
+		const [row] = await mapRowsBySchema([rawRow], schema);
+		const insertQuery = trx(tableName).insert(row).transacting(trx).toString();
+		const incrementQuery = trx(tableName)
 			.increment(params.increment)
 			.transacting(trx)
-			.toString());
+			.toString()
+			.replace(/^update(.*?)set\s/gi, '');
+		const query = knex.raw(`${insertQuery} ON DUPLICATE KEY UPDATE ${incrementQuery}`);
 		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
 		return query;
 	};
