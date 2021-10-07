@@ -138,16 +138,23 @@ const indexBlocks = async job => {
 		await BluebirdPromise.map(
 			generatorPkInfoArray,
 			async PkInfoArray => {
-				await accountsDB.increment({
-					increment: {
-						rewards: BigInt(PkInfoArray.reward),
+				if (!PkInfoArray.isBlockIndexed) {
+					await accountsDB.increment({
+						increment: {
+							rewards: BigInt(PkInfoArray.reward),
+							producedBlocks: 1,
+						},
+						where: {
+							property: 'address',
+							value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
+						},
+					}, trx, {
+						address: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
+						publicKey: PkInfoArray.publicKey,
 						producedBlocks: 1,
-					},
-					where: {
-						property: 'address',
-						value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
-					},
-				}, trx);
+						rewards: PkInfoArray.reward,
+					});
+				}
 			});
 
 
