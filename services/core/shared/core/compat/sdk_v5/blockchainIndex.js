@@ -148,12 +148,12 @@ const indexBlocks = async job => {
 							property: 'address',
 							value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
 						},
-					}, trx, {
+					}, {
 						address: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
 						publicKey: PkInfoArray.publicKey,
 						producedBlocks: 1,
 						rewards: PkInfoArray.reward,
-					});
+					}, trx);
 				}
 			});
 

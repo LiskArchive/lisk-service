@@ -335,7 +335,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		return resultSet;
 	};
 
-	const increment = async (params, trx, rawRow = {}) => {
+	const increment = async (params, rawRow = {}, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
 			trx = await defaultTransaction(knex);

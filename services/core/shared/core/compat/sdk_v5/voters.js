@@ -64,10 +64,10 @@ const indexVotes = async (blocks, trx) => {
 								property: 'id',
 								value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
 							},
-						}, trx, {
+						}, {
 							...voteEntry,
 							id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-						});
+						}, trx);
 						voteEntry.isAggregated = numRowsAffected > 0;
 					}
 

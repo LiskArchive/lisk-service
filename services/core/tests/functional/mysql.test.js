@@ -88,7 +88,7 @@ describe('Test mysql', () => {
 				property: 'id',
 				value: emptyBlock.id,
 			},
-		});
+		}, emptyBlock);
 
 		const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['timestamp']);
 		expect(retrievedBlock).toBeTruthy();
