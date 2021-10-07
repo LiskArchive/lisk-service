@@ -67,7 +67,7 @@ const createDbConnection = async (connEndpoint) => {
 
 	knex.select(1)
 		.on('query-error', (error) => {
-			logger.error(error);
+			logger.error(error.message);
 		})
 		.catch((err) => {
 			if (err.code === 'ECONNREFUSED') {
@@ -75,7 +75,7 @@ const createDbConnection = async (connEndpoint) => {
 				logger.error('Database error, shutting down the process');
 				process.exit(1);
 			}
-			logger.error(err);
+			logger.error(err.message);
 		});
 
 	return knex;
@@ -128,6 +128,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	const knex = connectionPool[connPoolKey];
 
 	if (!tablePool[connPoolKeyTable]) {
+		logger.info(`Creating schema for ${tableName}`);
 		await loadSchema(knex, tableName, tableConfig);
 		tablePool[connPoolKeyTable] = true;
 	}
@@ -140,7 +141,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			const row = {};
 			Object.keys(schema).forEach(o => {
 				const val = item[o];
-				if (val || val === 0) row[o] = getValue(cast(val, schema[o].type));
+				if (val || val === 0 || val === false) row[o] = getValue(cast(val, schema[o].type));
 			});
 			rows.push(row);
 		});
