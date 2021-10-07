@@ -17,16 +17,10 @@ const networkStatus = {
 	data: {
 		height: '14629925',
 		finalizedHeight: 14629758,
-		milestone: [
-			'500000000',
-			'400000000',
-			'300000000',
-			'200000000',
-			'100000000',
-		],
+		milestone: '4',
 		networkVersion: '3.0',
 		networkIdentifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		currentReward: 100000000,
+		currentReward: '100000000',
 		rewards: {
 			milestones: [
 				'500000000',
