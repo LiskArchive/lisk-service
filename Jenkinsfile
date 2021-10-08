@@ -103,7 +103,9 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
-				sleep(90)
+				sleep(90){
+					sh 'pm2 logs lisk-service-core --lines=300  --nostream'
+					}
 				waitForHttp('http://localhost:9901/api/ready')
 				// waitForHttp('http://localhost:9901/api/v2/blocks')
 			}
