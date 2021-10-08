@@ -41,7 +41,7 @@ const {
 	getIndexReadyStatus,
 } = require('../common');
 
-// const Queue = require('../../queue');
+const Queue = require('../../queue');
 
 const {
 	dropDuplicates,
@@ -88,6 +88,21 @@ const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.re
 const requestApi = coreApi.requestRetry;
 
 const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
+
+const indexAccounts = async (job) => {
+	const accountsDB = await getAccountsIndex();
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	const { account } = job.data;
+	try {
+		await accountsDB.upsert(account, trx);
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+	}
+};
+
+const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
@@ -151,7 +166,7 @@ const getAccountsFromCache = async (params) => {
 };
 
 const getAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
-	const finalAccountsToIndex = await BluebirdPromise.map(
+	const accounts = await BluebirdPromise.map(
 		dropDuplicates(addressesToIndex),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
@@ -168,7 +183,7 @@ const getAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = fa
 		},
 		{ concurrency: 10 },
 	);
-	return finalAccountsToIndex;
+	return accounts;
 };
 
 const resolveAccountInfo = async accounts => BluebirdPromise.map(
@@ -291,7 +306,7 @@ const resolveDelegateInfo = async accounts => {
 };
 
 const getAccountsbyPublicKey = async (accountInfoArray) => {
-	const finalAccountsToIndex = await BluebirdPromise.map(
+	const accounts = await BluebirdPromise.map(
 		accountInfoArray
 			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
 		async address => {
@@ -306,7 +321,7 @@ const getAccountsbyPublicKey = async (accountInfoArray) => {
 		},
 		{ concurrency: 10 },
 	);
-	return finalAccountsToIndex;
+	return accounts;
 };
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
@@ -459,15 +474,8 @@ const getAccounts = async params => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
-					const connection = await getDbConnection();
-					const trx = await startDbTransaction(connection);
-					try {
-						account.publicKey = paramPublicKey;
-						await accountsDB.upsert([account], trx);
-						await commitDbTransaction(trx);
-					} catch (error) {
-						await rollbackDbTransaction(trx);
-					}
+					account.publicKey = paramPublicKey;
+					await indexAccountsQueue.add({ account });
 				} else {
 					account.publicKey = indexedAccount.publicKey;
 				}
@@ -618,7 +626,7 @@ const keepAccountsCacheUpdated = async () => {
 			await accountsDB.upsert(accounts, trx);
 			await commitDbTransaction(trx);
 		};
-		Signals.get('updateAccountsByAddress').add(address => updateAccountsCacheListener(address));
+		Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
 		throw error;

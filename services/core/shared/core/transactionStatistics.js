@@ -21,7 +21,7 @@ const BigNumber = require('big-number');
 const Signals = require('../signals');
 
 const { getTransactions } = require('./transactions');
-// const { initializeQueue } = require('./queue');
+
 const {
 	getTableInstance,
 	getDbConnection,
@@ -29,6 +29,7 @@ const {
 	commitDbTransaction,
 	rollbackDbTransaction,
 } = require('../indexdb/mysql');
+
 const Queue = require('./queue');
 const requestAll = require('../requestAll');
 const txStatisticsIndexSchema = require('./schemas/transactionStatistics');

@@ -34,16 +34,12 @@ const {
 	resolveMultisignatureMemberships,
 } = require('./accounts');
 
-const { getVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 const { getTableInstance } = require('../../../indexdb/mysql');
 
-// const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
-// const getMultisignatureIndex = () => getTableInstance('multisignature',
-// multisignatureIndexSchema);
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const requestApi = coreApi.requestRetry;
@@ -67,7 +63,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 	return response;
 };
 
-const indexTransactions = async (blocks) => {
+const getTransactionIndexingInfo = async (blocks) => {
 	const multisignatureModuleAssetId = '4:0';
 	let multisignatureInfoToIndex = [];
 	const publicKeysToIndex = [];
@@ -116,11 +112,7 @@ const getTransactionsByBlockIDs = async blockIDs => {
 		},
 	}, ['id']);
 	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
-	const forkedVotes = await getVotesByTransactionIDs(forkedTransactionIDs);
-	return {
-		forkedVotes,
-		forkedTransactionIDs,
-	};
+	return forkedTransactionIDs;
 };
 
 const normalizeTransaction = async txs => {
@@ -389,7 +381,7 @@ const getTransactionsByBlockId = async blockId => {
 
 module.exports = {
 	getTransactions,
-	indexTransactions,
+	getTransactionIndexingInfo,
 	getTransactionsByBlockIDs,
 	getTransactionsByBlockId,
 	getTransactionsByIDs,

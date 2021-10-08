@@ -47,10 +47,11 @@ const {
 const { getBase32AddressFromPublicKey } = require('./accountUtils');
 const {
 	indexVotes,
+	getVotesByTransactionIDs,
 } = require('./voters');
 
 const {
-	indexTransactions,
+	getTransactionIndexingInfo,
 	getTransactionsByBlockIDs,
 } = require('./transactions');
 
@@ -103,13 +104,13 @@ const validateBlocks = (blocks) => blocks.length
 
 const getGeneratorPkInfoArray = async (blocks, isDelete = false) => {
 	const blocksDB = await getBlocksIndex();
-	const PkInfoArray = [];
+	const pkInfoArray = [];
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
 			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
 			if (block.generatorPublicKey) {
-				PkInfoArray.push({
+				pkInfoArray.push({
 					publicKey: block.generatorPublicKey,
 					reward: block.reward,
 					isForger: true,
@@ -120,7 +121,7 @@ const getGeneratorPkInfoArray = async (blocks, isDelete = false) => {
 		},
 		{ concurrency: blocks.length },
 	);
-	return PkInfoArray;
+	return pkInfoArray;
 };
 
 const indexBlocks = async job => {
@@ -143,7 +144,7 @@ const indexBlocks = async job => {
 			accounts: accountsFromTransactions,
 			transactions,
 			multisignatureInfoToIndex,
-		} = await indexTransactions(blocks);
+		} = await getTransactionIndexingInfo(blocks);
 
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
 		if (accountsFromTransactions.length) await accountsDB.upsert(accountsFromTransactions, trx);
@@ -182,7 +183,7 @@ const indexBlocks = async job => {
 			},
 		);
 
-		// Indexing aggregated votes per account
+		// Update the aggregated votes information
 		await BluebirdPromise.map(
 			votesToAggregateArray,
 			async voteToAggregate => {
@@ -195,8 +196,8 @@ const indexBlocks = async job => {
 						value: voteToAggregate.id,
 					},
 				};
-				const [voteToIncrement] = await votesAggregateDB.increment(incrementParam, trx);
-				if (voteToIncrement.affectedRows === 0) {
+				const [result] = await votesAggregateDB.increment(incrementParam, trx);
+				if (result.affectedRows === 0) {
 					await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
 				}
 			},
@@ -236,9 +237,8 @@ const deleteIndexedBlocks = async job => {
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks, true);
 		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
-		const {
-			forkedVotes,
-			forkedTransactionIDs } = await getTransactionsByBlockIDs(blocks.map(b => b.id));
+		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
+		const forkedVotes = await getVotesByTransactionIDs(forkedTransactionIDs);
 		await transactionsDB.deleteIds(forkedTransactionIDs, trx);
 		await votesDB.deleteIds(forkedVotes.map(v => v.tempId), trx);
 
