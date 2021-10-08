@@ -54,7 +54,7 @@ const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
 // The top final block
 const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);
-const getFinalizedHeight = async () => blockchainStore.get('finalizedHeight');
+const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
 
 const getCurrentHeight = async () => (await requestApi(coreApi.getNetworkStatus)).data.height;
 
