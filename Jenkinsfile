@@ -101,10 +101,12 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
+					sh 'pm2 stop --silent ecosystem.jenkins.config.js'
+					sh 'pm2 del --silent ecosystem.jenkins.config.js'
 					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
 				sleep(90){
-					sh 'pm2 logs lisk-service-core --lines=300  --nostream'
+					sh 'pm2 logs lisk-service-core --lines=100  --nostream'
 					}
 				waitForHttp('http://localhost:9901/api/ready')
 				// waitForHttp('http://localhost:9901/api/v2/blocks')
