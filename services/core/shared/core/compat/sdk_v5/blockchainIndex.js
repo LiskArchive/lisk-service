@@ -540,4 +540,5 @@ module.exports = {
 	getIndexStats,
 	deleteBlock,
 	initializeSearchIndex,
+	indexMissingBlocks,
 };
