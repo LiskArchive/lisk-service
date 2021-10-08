@@ -22,9 +22,9 @@ const news = [
 		source_id: '8d2067e723f7d4229bf33502b1b0c2906c68a853',
 		created_at: 1612965420,
 		modified_at: 1612965420,
-		url: 'https://lisk.io/blog/foundation/financial-update-january-2021',
+		url: 'https://lisk.com/blog/foundation/financial-update-january-2021',
 		author: 'Lisk',
-		image_url: 'https://lisk.io/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-02/financial-update-january-2021-Blog%402x.png?itok=W-6nunXO',
+		image_url: 'https://lisk.com/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-02/financial-update-january-2021-Blog%402x.png?itok=W-6nunXO',
 	},
 	{
 		content_orig: 'RT @CryptoJobsList: 👍 Featured opportunity: 💼 Backend Developer -\nBlockchain/Node.js at 🏛️ Lightcurve @LiskHQ 📍 Berlin, Germ Apply now,…',
