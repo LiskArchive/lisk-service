@@ -165,7 +165,7 @@ const getAccountsFromCache = async (params) => {
 	return accounts;
 };
 
-const getAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
+const getAccountsByAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
 	const accounts = await BluebirdPromise.map(
 		dropDuplicates(addressesToIndex),
 		async address => {
@@ -305,7 +305,7 @@ const resolveDelegateInfo = async accounts => {
 	return accounts;
 };
 
-const getAccountsbyPublicKey = async (accountInfoArray) => {
+const getAccountsByPublicKey = async (accountInfoArray) => {
 	const accounts = await BluebirdPromise.map(
 		accountInfoArray
 			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
@@ -622,7 +622,7 @@ const keepAccountsCacheUpdated = async () => {
 	const trx = await startDbTransaction(connection);
 	try {
 		const updateAccountsCacheListener = async (address) => {
-			const accounts = await getAccountsbyAddress(address);
+			const accounts = await getAccountsByAddress(address);
 			await accountsDB.upsert(accounts, trx);
 			await commitDbTransaction(trx);
 		};
@@ -643,8 +643,8 @@ module.exports = {
 	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	getAccountsbyAddress,
-	getAccountsbyPublicKey,
+	getAccountsByAddress,
+	getAccountsByPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,

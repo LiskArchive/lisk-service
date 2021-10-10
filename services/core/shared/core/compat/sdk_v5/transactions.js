@@ -27,8 +27,8 @@ const {
 } = require('./accountUtils');
 
 const {
-	getAccountsbyAddress,
-	getAccountsbyPublicKey,
+	getAccountsByAddress,
+	getAccountsByPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
@@ -92,8 +92,8 @@ const getTransactionIndexingInfo = async (blocks) => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	const accountsByAddress = await getAccountsbyAddress(recipientAddressesToIndex);
-	const accountsByPublicKey = await getAccountsbyPublicKey(publicKeysToIndex);
+	const accountsByAddress = await getAccountsByAddress(recipientAddressesToIndex);
+	const accountsByPublicKey = await getAccountsByPublicKey(publicKeysToIndex);
 	const allAccounts = accountsByAddress.concat(accountsByPublicKey);
 
 	return {

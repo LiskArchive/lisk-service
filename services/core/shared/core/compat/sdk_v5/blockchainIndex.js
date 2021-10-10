@@ -39,8 +39,8 @@ const {
 } = require('./blocks');
 
 const {
-	getAccountsbyAddress,
-	getAccountsbyPublicKey,
+	getAccountsByAddress,
+	getAccountsByPublicKey,
 	getAllDelegates,
 } = require('./accounts');
 
@@ -138,7 +138,7 @@ const indexBlocks = async job => {
 		const multisignatureDB = await getMultisignatureIndex();
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 
-		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
+		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		const { allVotes: votes, votesToAggregateArray } = await indexVotes(blocks);
 		const {
 			accounts: accountsFromTransactions,
@@ -235,7 +235,7 @@ const deleteIndexedBlocks = async job => {
 		const votesDB = await getVotesIndex();
 		const { blocks } = job.data;
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks, true);
-		const accountsByPublicKey = await getAccountsbyPublicKey(generatorPkInfoArray);
+		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
 		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
 		const forkedVotes = await getVotesByTransactionIDs(forkedTransactionIDs);
@@ -245,15 +245,15 @@ const deleteIndexedBlocks = async job => {
 		// Update producedBlocks & rewards
 		await BluebirdPromise.map(
 			generatorPkInfoArray,
-			async PkInfoArray => {
+			async pkInfoArray => {
 				await accountsDB.decrement({
 					decrement: {
-						rewards: BigInt(PkInfoArray.reward),
+						rewards: BigInt(pkInfoArray.reward),
 						producedBlocks: 1,
 					},
 					where: {
 						property: 'address',
-						value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
+						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
 					},
 				}, trx);
 			});
@@ -322,7 +322,7 @@ const performGenesisAccountsIndexing = async () => {
 
 				logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
-				const accounts = await getAccountsbyAddress(genesisAccountAddressesToIndex, true);
+				const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
 				if (accounts.length) await accountsDB.upsert(accounts, trx);
 				await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
 			} else {
@@ -367,7 +367,7 @@ const indexAllDelegateAccounts = async () => {
 		const PAGE_SIZE = 1000;
 		for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
 			/* eslint-disable no-await-in-loop */
-			const accounts = await getAccountsbyAddress(allDelegateAddresses
+			const accounts = await getAccountsByAddress(allDelegateAddresses
 				.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
 			await accountsDB.upsert(accounts, trx);
 			/* eslint-enable no-await-in-loop */
