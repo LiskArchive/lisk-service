@@ -212,16 +212,8 @@ const indexBlocks = async job => {
 
 const updateBlockIndex = async job => {
 	const blocksDB = await getBlocksIndex();
-	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
-	try {
-		const { blocks } = job.data;
-		await blocksDB.upsert(blocks, trx);
-		await commitDbTransaction(trx);
-	} catch (error) {
-		await rollbackDbTransaction(trx);
-		throw error;
-	}
+	const { blocks } = job.data;
+	await blocksDB.upsert(blocks);
 };
 
 const deleteIndexedBlocks = async job => {
