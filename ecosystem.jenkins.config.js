@@ -31,6 +31,7 @@ module.exports = {
 			env: {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_GATEWAY_VOLATILE: 'redis://localhost:6379/2',
 				STRICT_READINESS_CHECK: true,
 				WS_RATE_LIMIT_ENABLE: false,
 				WS_RATE_LIMIT_CONNECTIONS: 5,
@@ -56,6 +57,7 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_CORE_WS: 'ws://localhost:5001',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
+				SERVICE_CORE_VOLATILE: 'redis://localhost:6379/2',
 				SERVICE_CORE_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
 				GEOIP_JSON: 'https://geoip.lisk.io/json',
