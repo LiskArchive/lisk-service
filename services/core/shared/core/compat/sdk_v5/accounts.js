@@ -91,15 +91,8 @@ const isItGenesisAccount = async address => (await isGenesisAccountCache.get(add
 
 const indexAccounts = async (job) => {
 	const accountsDB = await getAccountsIndex();
-	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
-	const { account } = job.data;
-	try {
-		await accountsDB.upsert(account, trx);
-		await commitDbTransaction(trx);
-	} catch (error) {
-		await rollbackDbTransaction(trx);
-	}
+	const { accounts } = job.data;
+	await accountsDB.upsert(accounts);
 };
 
 const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
@@ -475,7 +468,7 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
-					await indexAccountsQueue.add({ account });
+					await indexAccountsQueue.add({ accounts: [account] });
 				} else {
 					account.publicKey = indexedAccount.publicKey;
 				}
@@ -618,19 +611,11 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 
 const keepAccountsCacheUpdated = async () => {
 	const accountsDB = await getAccountsIndex();
-	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
-	try {
-		const updateAccountsCacheListener = async (address) => {
-			const accounts = await getAccountsByAddress(address);
-			await accountsDB.upsert(accounts, trx);
-			await commitDbTransaction(trx);
-		};
-		Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
-	} catch (error) {
-		await rollbackDbTransaction(trx);
-		throw error;
-	}
+	const updateAccountsCacheListener = async (address) => {
+		const accounts = await getAccountsByAddress(address);
+		await accountsDB.upsert(accounts);
+	};
+	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
 };
 
 Signals.get('searchIndexInitialized').add(removeReclaimedLegacyAccountInfoFromCache);
