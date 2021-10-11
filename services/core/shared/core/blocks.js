@@ -30,7 +30,8 @@ const setLastBlock = block => {
 
 const getLastBlock = () => lastBlock;
 
-const getTotalNumberOfBlocks = () => (getLastBlock()).height - coreApi.getGenesisHeight() + 1;
+const getTotalNumberOfBlocks = async () => (getLastBlock()).height
+	- (await coreApi.getGenesisHeight()) + 1;
 
 const waitForLastBlock = () => new Promise((resolve) => {
 	const checkLastBlock = (interval) => {
@@ -89,7 +90,7 @@ const getBlocks = async (params = {}) => {
 		|| (params.timestamp && params.timestamp.includes(':'))) {
 		total = blocks.meta.total;
 	} else {
-		total = getTotalNumberOfBlocks();
+		total = await getTotalNumberOfBlocks();
 	}
 
 	if (coreApi.getFinalizedHeight) {
