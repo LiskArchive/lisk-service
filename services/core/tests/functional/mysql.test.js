@@ -204,16 +204,17 @@ describe('Test MySQL', () => {
 			const trx = await startDbTransaction(connection);
 			await db.upsert([emptyBlock], trx);
 			await db.upsert([{ ...emptyBlock, size: 50 }], trx);
+
 			// Expect all operations to be successful, commit the transaction
 			await commitDbTransaction(trx);
+			
 			// Verify committed transaction has been successful
 			const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 			expect(retrievedBlock.size).toBe(50);
 		});
 
-		// TODO: Enable after fixing mysql.js
-		xit('Successful transaction rollback', async () => {
+		it('Successful transaction rollback', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
 			await db.upsert([{ ...emptyBlock, id: 'rollback' }], trx);
@@ -224,8 +225,10 @@ describe('Test MySQL', () => {
 					value: 'rollback',
 				},
 			}, trx);
+
 			// Assume failure occured, rollback the transaction
 			await rollbackDbTransaction(trx);
+
 			// Verify none of the above operations have been committed
 			const [retrievedBlock] = await db.find({ id: 'rollback' }, ['id']);
 			expect(retrievedBlock).toBeUndefined();

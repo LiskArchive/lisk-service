@@ -186,12 +186,11 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		const rows = await mapRowsBySchema(rawRows, schema);
 
 		// Create all queries for `INSERT or UPDATE on Duplicate keys`
-		const queries = rows.map((row) => knex.raw(trx(tableName)
+		const queries = rows.map((row) => knex(tableName)
+			.transacting(trx)
 			.insert(row)
 			.onConflict(primaryKey)
-			.merge()
-			.transacting(trx)
-			.toString()),
+			.merge(),
 		);
 
 		// Perform all queries within a batch together
@@ -347,11 +346,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			isDefaultTrx = true;
 		}
 
-		const query = knex.raw(trx(tableName)
-			.where(params.where.property, '=', params.where.value)
-			.increment(params.increment)
+		const query = knex(tableName)
 			.transacting(trx)
-			.toString());
+			.where(params.where.property, '=', params.where.value)
+			.increment(params.increment);
 
 		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
 		return query;
@@ -364,11 +362,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			isDefaultTrx = true;
 		}
 
-		const query = knex.raw(trx(tableName)
-			.where(params.where.property, '=', params.where.value)
-			.decrement(params.decrement)
+		const query = knex(tableName)
 			.transacting(trx)
-			.toString());
+			.where(params.where.property, '=', params.where.value)
+			.decrement(params.decrement);
 
 		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
 		return query;
