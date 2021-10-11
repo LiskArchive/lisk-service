@@ -592,10 +592,10 @@ const fixMissingBlocks = async () => {
 		if (currentDiff > minTolerableDiff
 			&& currentDiff < maxDiff) { // maxDiff because we don't need to run it when index is not ready
 			logger.info(`Detected block discrepancy (${currentDiff} missing blocks)`);
-			indexMissingBlocks({ force: true });
+			await indexMissingBlocks({ force: true });
 		}
 	}
-	setIndexDiff(numBlocksIndexed);
+	await setIndexDiff(numBlocksIndexed);
 };
 
 const reportIndexStatus = async () => {
@@ -647,6 +647,9 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
+		// Download genesis block
+		await getBlockByHeight(await getGenesisHeight());
+
 		// Start the indexing process (blocks)
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
