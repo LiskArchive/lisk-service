@@ -257,7 +257,7 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 50);
+const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 30);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
