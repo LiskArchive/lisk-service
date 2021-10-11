@@ -31,7 +31,7 @@ describe('Votes Received API', () => {
 		expect(response).toStrictEqual(votesReceived);
 	});
 
-	it('Retrieve sent votes (no votes)', async () => {
+	it('Retrieve received votes (no votes)', async () => {
 		const { address } = noVotesReceived.result.data.account;
 		const response = await getReceivedVotes({ address });
 		expect(response).toStrictEqual(noVotesReceived);
