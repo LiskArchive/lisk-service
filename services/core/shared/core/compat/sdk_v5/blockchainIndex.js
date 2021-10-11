@@ -651,7 +651,7 @@ const init = async () => {
 		await getBlockByHeight(await getGenesisHeight());
 
 		// Start the indexing process (blocks)
-		// await indexMissingBlocks();
+		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
 		// Start the indexing process (accounts)
