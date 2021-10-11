@@ -207,7 +207,7 @@ describe('Test MySQL', () => {
 
 			// Expect all operations to be successful, commit the transaction
 			await commitDbTransaction(trx);
-			
+
 			// Verify committed transaction has been successful
 			const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
 			expect(retrievedBlock.id).toBe(emptyBlock.id);

@@ -145,8 +145,8 @@ const indexBlocks = async job => {
 			multisignatureInfoToIndex,
 		} = await getTransactionIndexingInfo(blocks);
 
-		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
-		if (accountsFromTransactions.length) await accountsDB.upsert(accountsFromTransactions, trx);
+		const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
+		if (allAccounts.length) await accountsDB.upsert(allAccounts, trx);
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
@@ -169,8 +169,8 @@ const indexBlocks = async job => {
 					};
 
 					// If no rows are affected with increment, insert the row
-					const [accountToIncrement] = await accountsDB.increment(incrementParam, trx);
-					if (accountToIncrement.affectedRows === 0) {
+					const numRowsAffected = await accountsDB.increment(incrementParam, trx);
+					if (numRowsAffected === 0) {
 						await accountsDB.upsert({
 							address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
 							publicKey: pkInfoArray.publicKey,
@@ -195,8 +195,8 @@ const indexBlocks = async job => {
 						value: voteToAggregate.id,
 					},
 				};
-				const [result] = await votesAggregateDB.increment(incrementParam, trx);
-				if (result.affectedRows === 0) {
+				const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
+				if (numRowsAffected === 0) {
 					await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
 				}
 			},
@@ -265,7 +265,7 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 4);
+const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 50);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
@@ -370,7 +370,7 @@ const buildIndex = async (from, to) => {
 		return;
 	}
 
-	const MAX_BLOCKS_LIMIT_PP = 100;
+	const MAX_BLOCKS_LIMIT_PP = 1; // 1 block at a time
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
@@ -676,4 +676,5 @@ module.exports = {
 	getIndexStats,
 	deleteBlock,
 	initializeSearchIndex,
+	indexMissingBlocks,
 };
