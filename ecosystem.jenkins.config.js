@@ -30,7 +30,7 @@ module.exports = {
 			autorestart: true,
 			env: {
 				PORT: '9901',
-				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_BROKER: 'redis://localhost:6381/0',
 				STRICT_READINESS_CHECK: true,
 				WS_RATE_LIMIT_ENABLE: false,
 				WS_RATE_LIMIT_CONNECTIONS: 5,
@@ -53,9 +53,9 @@ module.exports = {
 			max_memory_restart: '512M',
 			autorestart: true,
 			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_BROKER: 'redis://localhost:6381/0',
 				LISK_CORE_WS: 'ws://localhost:5001',
-				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
+				SERVICE_CORE_REDIS: 'redis://localhost:6381/1',
 				SERVICE_CORE_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
 				GEOIP_JSON: 'https://geoip.lisk.io/json',
@@ -81,7 +81,7 @@ module.exports = {
 			max_memory_restart: '512M',
 			autorestart: true,
 			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_BROKER: 'redis://localhost:6381/0',
 			},
 		},
 		{
@@ -97,7 +97,7 @@ module.exports = {
 			max_memory_restart: '512M',
 			autorestart: true,
 			env: {
-				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_BROKER: 'redis://localhost:6381/0',
 				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
 			},
 		},
