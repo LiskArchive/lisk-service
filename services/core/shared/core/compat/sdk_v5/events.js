@@ -22,7 +22,7 @@ const config = require('../../../../config');
 
 const register = async (events) => {
 	const apiClient = await getApiClient();
-	logger.info(`(Re-)registering ${config.endpoints.liskWs} for blockchain events`);
+	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
 	apiClient.subscribe('app:block:new', async data => {
 		try {

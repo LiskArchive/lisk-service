@@ -20,9 +20,8 @@ const BigNumber = require('big-number');
 
 const Signals = require('../signals');
 
-const config = require('../../config');
 const { getTransactions } = require('./transactions');
-const { initializeQueue } = require('./queue');
+const Queue = require('./queue');
 const mysql = require('../indexdb/mysql');
 const requestAll = require('../requestAll');
 const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
@@ -31,9 +30,6 @@ const logger = Logger();
 
 const getDbInstance = () => mysql('transaction_statistics', txStatisticsIndexSchema);
 
-const queueName = 'transactionStatisticsQueue';
-const queueOptions = config.queue[queueName];
-
 const getSelector = (params) => {
 	const result = { property: 'date' };
 	if (params.dateFrom) result.from = params.dateFrom.unix();
@@ -41,6 +37,7 @@ const getSelector = (params) => {
 	return {
 		propBetweens: [result],
 		sort: 'date:desc',
+		limit: params.limit || 366, // max supported limit of days
 	};
 };
 
@@ -150,7 +147,8 @@ const queueJob = async (job) => {
 	}
 };
 
-const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOptions);
+const queueName = 'transactionStats';
+const transactionStatisticsQueue = Queue(queueName, queueJob, 1);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();
@@ -217,11 +215,12 @@ const getDistributionByType = async params => {
 
 const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const db = await getDbInstance();
+	const scheduledDays = [];
 	[...Array(n)].forEach(async (_, i) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
-		const shouldUpdate = i === 0 || !((await db.find({ date }, ['id'])).length);
+		const shouldUpdate = i === 0 || !((await db.find({ date, limit: 1 }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
 			let attempt = 0;
@@ -229,10 +228,12 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 				delay: (attempt ** 2) * 60 * 60 * 1000,
 				attempt: attempt += 1,
 			};
-			await transactionStatisticsQueue.add(queueName, { date, options });
+			await transactionStatisticsQueue.add({ date, options });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
-			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			logger.debug(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			scheduledDays.push(formattedDate.toString());
 		}
+		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
 	});
 };
 

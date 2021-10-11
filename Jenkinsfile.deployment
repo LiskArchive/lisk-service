@@ -8,6 +8,7 @@ pipeline {
 			steps {
 				sh 'make build-core'
 				sh 'make build-market'
+				sh 'make build-newsfeed'
 				sh 'make build-gateway'
 			}
 		}
