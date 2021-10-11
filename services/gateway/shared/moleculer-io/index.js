@@ -21,7 +21,7 @@ const { BadRequestError } = require('./errors');
 const { isValidNonEmptyResponse } = require('../utils');
 
 const rpcCache = CacheRedis('rpcCache', config.volatileRedis);
-const expireMiliseconds = config.rpcCache.ttl;
+const expireMiliseconds = config.rpcCache.ttl * 1000;
 
 const rateLimiter = new RateLimiterMemory(config.websocket.rateLimit);
 

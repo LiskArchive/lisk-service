@@ -112,28 +112,22 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
 config.queue = {
 	defaults: {
-		limiter: {
-			max: 8,
-			duration: 20, // millisecs
-		},
 		defaultJobOptions: {
 			attempts: 5,
 			timeout: 5 * 60 * 1000, // millisecs
 			removeOnComplete: true,
 		},
 		settings: {},
+		// limiter: {},
 	},
 	transactionStatisticsQueue: {
-		limiter: {
-			max: 8,
-			duration: 20, //  millisecs
-		},
 		defaultJobOptions: {
 			attempts: 5,
 			timeout: 5 * 60 * 1000, // millisecs
 			removeOnComplete: true,
 		},
 		settings: {},
+		// limiter: {},
 	},
 };
 

@@ -33,7 +33,13 @@ const {
 const delay = require('../../../delay');
 const config = require('../../../../config');
 
-let genesisHeight;
+const blockchainStore = require('./blockchainStore');
+
+// Genesis height can be greater that 0
+// Blockchain starts form a non-zero block height
+const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
+const getGenesisHeight = () => blockchainStore.get('genesisHeight');
+
 const logger = Logger();
 const timeoutMessage = 'Response not received in';
 
@@ -50,26 +56,24 @@ const getNetworkStatus = async () => {
 	}
 };
 
-const getGenesisHeight = async () => {
-	if (!genesisHeight) {
-		try {
-			// Determine genesis height
+const updateGenesisHeight = async () => {
+	let genesisHeight = 0;
+	try {
+		// Determine genesis height
+		if (process.env.GENESIS_HEIGHT) {
+			genesisHeight = config.genesisHeight;
+		} else {
 			const { data: { networkIdentifier } } = await getNetworkStatus();
-
-			if (process.env.GENESIS_HEIGHT) {
-				genesisHeight = config.genesisHeight;
-			} else {
-				const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
-				genesisHeight = networkConfig ? networkConfig.genesisHeight : 0;
-			}
-		} catch (err) {
-			if (err.message.includes(timeoutMessage)) {
-				throw new TimeoutException('Request timed out when calling \'getGenesisHeight\'');
-			}
-			throw err;
+			const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+			genesisHeight = networkConfig ? networkConfig.genesisHeight : 0;
 		}
+		await setGenesisHeight(genesisHeight);
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getGenesisHeight\'');
+		}
+		throw err;
 	}
-	return genesisHeight;
 };
 
 const getBlockByID = async id => {
@@ -118,18 +122,20 @@ const getBlocksByIDs = async ids => {
 const getBlockByHeight = async height => {
 	try {
 		// File based Genesis block handling
-		if (getGenesisBlockId() && Number(height) === await getGenesisHeight()) {
+		if (Number(height) === await getGenesisHeight()) {
 			return { data: [await getGenesisBlockFromFS()] };
 		}
+	} catch (err) {
+		logger.warn('Retrieval of the genesis block snapshot was not possible, retrieveing genesis block directly from Lisk Core');
+	}
 
+	try {
+		// Retrieve the genesis block directly (fallback)
 		const apiClient = await getApiClient();
 		const block = await apiClient.block.getByHeight(height);
 		return { data: [block] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			// Download to the FS & return the genesis block
-			// eslint-disable-next-line max-len
-			if (Number(height) === await getGenesisHeight()) return { data: [await getGenesisBlockFromFS()] };
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
 		}
 		throw err;
@@ -138,22 +144,24 @@ const getBlockByHeight = async height => {
 
 const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
+		const gHeight = await getGenesisHeight();
+		const blocks = [[], []];
+
+		// TODO: Add safety check to not exceed the genesisHeight range
+
 		// File based Genesis block handling
-		if (getGenesisBlockId() && Number(from) === await getGenesisHeight()) {
-			const genesisBlockResult = await getBlockByHeight(from);
-			if (from < to) {
-				const { data: [genesisBlock] } = genesisBlockResult;
-				// eslint-disable-next-line max-len
-				const { data: [...remainingBlocks] } = await getBlocksByHeightBetween({ from: from + 1, to });
-				return { data: [genesisBlock, ...remainingBlocks] };
-			}
-			return genesisBlockResult;
+		if (Number(from) === gHeight) {
+			blocks[0] = (await getBlockByHeight(gHeight)).data;
+			from++;
 		}
 
-		const apiClient = await getApiClient();
-		const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', { from, to });
-		const blocks = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
-		return { data: blocks };
+		if (from <= to) {
+			const apiClient = await getApiClient();
+			const encodedBlocks = await apiClient._channel.invoke('app:getBlocksByHeightBetween', { from, to });
+			blocks[1] = encodedBlocks.map(blk => apiClient.block.decode(Buffer.from(blk, 'hex')));
+		}
+
+		return { data: [...blocks[0], ...blocks[1]] };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
@@ -344,6 +352,7 @@ const requestRetry = async (fn, params, numRetries = 5) => {
 };
 
 module.exports = {
+	updateGenesisHeight,
 	getGenesisHeight,
 	getBlockByID,
 	getBlocksByIDs,

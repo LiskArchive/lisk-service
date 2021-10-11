@@ -21,8 +21,9 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	networkStatusSchemaVersion5,
-} = require('../../../schemas/networkStatus.schema');
+	networkStatusSchema,
+	metaSchema,
+} = require('../../../schemas/api_v2/networkStatus.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
@@ -32,7 +33,8 @@ describe('Network Status API', () => {
 	describe(`GET ${endpoint}`, () => {
 		it('retrieves network status -> 200 OK', async () => {
 			const response = await api.get(endpoint);
-			expect(response.data).toMap(networkStatusSchemaVersion5);
+			expect(response.data).toMap(networkStatusSchema);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('params not supported -> 400 BAD REQUEST', async () => {

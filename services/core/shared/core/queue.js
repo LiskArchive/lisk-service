@@ -14,50 +14,71 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const Queue = require('bull');
-const util = require('util');
+const BullQueue = require('bull');
 
 const packageJson = require('../../package.json');
 const config = require('../../config');
 
 const logger = Logger();
 
-const initializeQueue = (queueName = 'defaultQueue', queueJob, options = config.queue.defaults) => {
-	const queue = new Queue(queueName, {
-		redis: config.endpoints.redis,
-		limiter: options.limiter,
-		prefix: `queue-${packageJson.name}`,
-		defaultJobOptions: options.defaultJobOptions,
-		settings: options.settings,
-	});
+const queuePool = {};
 
-	queue.process(queueName, queueJob);
+const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
-	queue.process((job, done) => {
-		job.progress();
-		done();
-	});
+const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options = config.queue.defaults) => {
+	const queueName = 'defaultQueue';
 
-	queue.on('completed', (job, result) => {
-		logger.debug(`${queueName} Job completed`, result);
-		job.remove();
-	});
+	if (!queuePool[queueName]) {
+		queuePool[queueName] = new BullQueue(queueName,
+			config.endpoints.redis,
+			{
+				prefix: `queue-${packageJson.name}`,
+				defaultJobOptions: options.defaultJobOptions,
+				settings: options.settings,
+				limiter: options.limiter,
+			});
 
-	queue.on('error', (err) => {
-		logger.debug(`${queueName} Job error`, err);
-	});
+		const queue = queuePool[queueName];
 
-	queue.on('failed', (job, err) => {
-		logger.warn(`${queueName} Job failed`, err.message);
-		logger.warn(`${queueName} Job failed`, err.stack);
-	});
+		logger.info(`Initialized queue ${queueName}`);
 
-	setInterval(async () => {
-		const jobCounts = await queue.getJobCounts();
-		logger.debug(`Queue counters: ${util.inspect(jobCounts)}`);
-	}, 30000);
+		queue.on('completed', (job) => {
+			logger.debug(`${jobName} Job completed ${job.name}`);
+			job.remove();
+		});
 
-	return queue;
+		queue.on('error', (err) => {
+			logger.error(`${jobName} Job error`, err);
+		});
+
+		queue.on('failed', (job, err) => {
+			logger.warn(`${jobName} Job failed`, err.message);
+			logger.warn(`${jobName} Job failed`, err.stack);
+		});
+
+		setInterval(async () => {
+			const jc = await queue.getJobCounts();
+			if (Number(jc.waiting) > 0 || Number(jc.active) > 0
+				|| Number(jc.failed) > 0 || Number(jc.paused) > 0) {
+				logger.info(`Queue counters: waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
+			} else {
+				logger.info('Queue counters: All scheduled jobs are done.');
+			}
+		}, STATS_INTERVAL);
+	}
+
+	const queue = queuePool[queueName];
+
+	queue.process(jobName, concurrency, jobFn);
+
+	const add = (params) => queue.add(jobName, params);
+
+	return {
+		add,
+		queue,
+		pause: queue.pause,
+		resume: queue.resume,
+	};
 };
 
-module.exports = { initializeQueue };
+module.exports = queueInstance;
