@@ -62,10 +62,6 @@ const Signals = require('../../../signals');
 
 const {
 	getTableInstance,
-	getDbConnection,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
