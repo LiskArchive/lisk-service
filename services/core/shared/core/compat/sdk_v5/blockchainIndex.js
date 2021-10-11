@@ -102,7 +102,7 @@ const getIndexDiff = () => blockchainStore.get('indexStatus');
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
 
-const getGeneratorPkInfoArray = async (blocks, isDelete = false) => {
+const getGeneratorPkInfoArray = async (blocks) => {
 	const blocksDB = await getBlocksIndex();
 	const pkInfoArray = [];
 	await BluebirdPromise.map(
@@ -114,7 +114,6 @@ const getGeneratorPkInfoArray = async (blocks, isDelete = false) => {
 					publicKey: block.generatorPublicKey,
 					reward: block.reward,
 					isForger: true,
-					isDeleteBlock: isDelete,
 					isBlockIndexed: !!blockInfo,
 				});
 			}
@@ -156,16 +155,16 @@ const indexBlocks = async job => {
 		// Update producedBlocks & rewards
 		await BluebirdPromise.map(
 			generatorPkInfoArray,
-			async PkInfoArray => {
-				if (!PkInfoArray.isBlockIndexed) {
+			async pkInfoArray => {
+				if (!pkInfoArray.isBlockIndexed) {
 					const incrementParam = {
 						increment: {
-							rewards: BigInt(PkInfoArray.reward),
+							rewards: BigInt(pkInfoArray.reward),
 							producedBlocks: 1,
 						},
 						where: {
 							property: 'address',
-							value: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
+							value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
 						},
 					};
 
@@ -173,10 +172,10 @@ const indexBlocks = async job => {
 					const [accountToIncrement] = await accountsDB.increment(incrementParam, trx);
 					if (accountToIncrement.affectedRows === 0) {
 						await accountsDB.upsert({
-							address: getBase32AddressFromPublicKey(PkInfoArray.publicKey),
-							publicKey: PkInfoArray.publicKey,
+							address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+							publicKey: pkInfoArray.publicKey,
 							producedBlocks: 1,
-							rewards: PkInfoArray.reward,
+							rewards: pkInfoArray.reward,
 						}, trx);
 					}
 				}
@@ -234,7 +233,7 @@ const deleteIndexedBlocks = async job => {
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
 		const { blocks } = job.data;
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks, true);
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
 		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
@@ -293,47 +292,38 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
-	let trx;
-	const connection = await getDbConnection();
 	const accountsDB = await getAccountsIndex();
-	try {
-		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
+	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 
-		const genesisAccountsToIndex = genesisBlock.asset.accounts
-			.filter(account => account.address.length === 40)
-			.map(account => account.address);
-		const genesisAccountPageCached = 'genesisAccountPageCached';
+	const genesisAccountsToIndex = genesisBlock.asset.accounts
+		.filter(account => account.address.length === 40)
+		.map(account => account.address);
+	const genesisAccountPageCached = 'genesisAccountPageCached';
 
-		logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
+	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 
-		const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
+	const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
 
-		const PAGE_SIZE = 1000;
-		const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
-		for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
-			/* eslint-disable no-await-in-loop */
-			trx = await startDbTransaction(connection);
-			const currentPage = pageNum * PAGE_SIZE;
-			const nextPage = (pageNum + 1) * PAGE_SIZE;
-			const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
+	const PAGE_SIZE = 1000;
+	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
+	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
+		/* eslint-disable no-await-in-loop */
+		const currentPage = pageNum * PAGE_SIZE;
+		const nextPage = (pageNum + 1) * PAGE_SIZE;
+		const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
 
-			if (pageNum >= lastCachedPage) {
-				const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
+		if (pageNum >= lastCachedPage) {
+			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
 
-				logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
-				const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
-				if (accounts.length) await accountsDB.upsert(accounts, trx);
-				await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
-			} else {
-				logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
-			}
-			await commitDbTransaction(trx);
-			/* eslint-enable no-await-in-loop */
+			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
+			if (accounts.length) await accountsDB.upsert(accounts);
+			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+		} else {
+			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 		}
-	} catch (error) {
-		await rollbackDbTransaction(trx);
-		throw error;
+		/* eslint-enable no-await-in-loop */
 	}
 };
 
@@ -358,26 +348,18 @@ const indexGenesisAccounts = async () => {
 };
 
 const indexAllDelegateAccounts = async () => {
-	const connection = await getDbConnection();
 	const accountsDB = await getAccountsIndex();
-	const trx = await startDbTransaction(connection);
-	try {
-		const allDelegatesInfo = await getAllDelegates();
-		const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
-		const PAGE_SIZE = 1000;
-		for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
-			/* eslint-disable no-await-in-loop */
-			const accounts = await getAccountsByAddress(allDelegateAddresses
-				.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
-			await accountsDB.upsert(accounts, trx);
-			/* eslint-enable no-await-in-loop */
-		}
-		logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
-		await commitDbTransaction(trx);
-	} catch (error) {
-		await rollbackDbTransaction(trx);
-		throw error;
+	const allDelegatesInfo = await getAllDelegates();
+	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
+	const PAGE_SIZE = 1000;
+	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
+		/* eslint-disable no-await-in-loop */
+		const accounts = await getAccountsByAddress(allDelegateAddresses
+			.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+		await accountsDB.upsert(accounts);
+		/* eslint-enable no-await-in-loop */
 	}
+	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
 
 const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
