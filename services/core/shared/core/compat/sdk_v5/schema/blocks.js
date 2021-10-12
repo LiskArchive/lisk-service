@@ -22,7 +22,7 @@ module.exports = {
 		generatorPublicKey: { type: 'string' },
 		size: { type: 'integer' },
 		reward: { type: 'bigInteger' },
-		isFinal: { type: 'boolean' },
+		isFinal: { type: 'boolean', defaultValue: false },
 	},
 	indexes: {
 		id: { type: 'key' },

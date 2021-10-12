@@ -97,47 +97,47 @@ pipeline {
 				}
 			}
 		}
-		stage('Run microservices') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					sh 'pm2 start --silent ecosystem.jenkins.config.js'
-				}
-				sleep(90)
-				waitForHttp('http://localhost:9901/api/ready')
-				// waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
-			}
-		}
+		// stage('Run microservices') {
+		// 	steps {
+		// 		script { echoBanner(STAGE_NAME) }
+		// 		nvm(getNodejsVersion()) {
+		// 			sh 'pm2 start --silent ecosystem.jenkins.config.js'
+		// 		}
+		// 		sleep(180)
+		// 		// waitForHttp('http://localhost:9901/api/ready')
+		// 		// waitForHttp('http://localhost:9901/api/v2/blocks')
+		// 	}
+		// }
 		stage('Perform functional tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./services/market') { sh "npm run test:functional" }
-					dir('./services/newsfeed') { sh "npm run test:functional" }
+					// dir('./services/market') { sh "npm run test:functional" }
+					// dir('./services/newsfeed') { sh "npm run test:functional" }
 					dir('./framework') { sh "npm run test:functional" }
 				}
 			}
 		}
-		stage('Perform integration tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				ansiColor('xterm') {
-					nvm(getNodejsVersion()) {
-						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
-					}
-				}
-			}
-		}
-		stage('Perform benchmark') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				ansiColor('xterm') {
-					nvm(getNodejsVersion()) {
-						dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
-					}
-				}
-			}
-		}
+		// stage('Perform integration tests') {
+		// 	steps {
+		// 		script { echoBanner(STAGE_NAME) }
+		// 		ansiColor('xterm') {
+		// 			nvm(getNodejsVersion()) {
+		// 				dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
+		// 			}
+		// 		}
+		// 	}
+		// }
+		// stage('Perform benchmark') {
+		// 	steps {
+		// 		script { echoBanner(STAGE_NAME) }
+		// 		ansiColor('xterm') {
+		// 			nvm(getNodejsVersion()) {
+		// 				dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 	post {
 		failure {

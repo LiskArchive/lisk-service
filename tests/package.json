@@ -30,6 +30,7 @@
     "test:integration:APIv1:SDKv4": "jest --config=jest.config.integration.apiv1.sdkv4.js",
     "test:integration:APIv2:SDKv5": "jest --config=jest.config.integration.apiv2.sdkv5.js",
     "test:functional": "jest --config=jest.config.functional.js",
+    "test:regression": "jest --config=jest.config.regression.js",
     "benchmark:RPC:APIv2": "artillery run benchmark/socket_rpc_v2.yaml",
     "benchmark:HTTP:APIv2": "artillery run benchmark/http_v2.yaml",
     "benchmark": "npm run benchmark:RPC:APIv2 && npm run benchmark:HTTP:APIv2",

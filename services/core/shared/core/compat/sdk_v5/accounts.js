@@ -41,9 +41,7 @@ const {
 	getIndexReadyStatus,
 } = require('../common');
 
-const {
-	initializeQueue,
-} = require('../../queue');
+const Queue = require('../../queue');
 
 const {
 	dropDuplicates,
@@ -97,9 +95,9 @@ const indexAccounts = async job => {
 	await accountsDB.upsert(accounts);
 };
 
-const indexAccountsQueue = initializeQueue('indexAccountsQueue', indexAccounts);
-const indexAccountsByAddressQueue = initializeQueue('indexAccountsByAddressQueue', indexAccounts);
-const indexAccountsByPublicKeyQueue = initializeQueue('indexAccountsByPublicKeyQueue', indexAccounts);
+const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
+const indexAccountsByAddressQueue = Queue('indexAccountsByAddressQueue', indexAccounts, 1);
+const indexAccountsByPublicKeyQueue = Queue('indexAccountsByPublicKeyQueue', indexAccounts, 1);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
@@ -182,7 +180,7 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 	const NUM_PAGES = Math.ceil(finalAccountsToIndex.length / PAGE_SIZE);
 	for (let i = 0; i < NUM_PAGES; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsByAddressQueue.add('indexAccountsByAddressQueue', {
+		await indexAccountsByAddressQueue.add({
 			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
 		});
 	}
@@ -341,11 +339,11 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 		{ concurrency: 10 },
 	);
 
-	const PAGE_SIZE = 100;
+	const PAGE_SIZE = 1000;
 	const NUM_PAGES = Math.ceil(finalAccountsToIndex.length / PAGE_SIZE);
 	for (let i = 0; i < NUM_PAGES; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsByPublicKeyQueue.add('indexAccountsByPublicKeyQueue', {
+		await indexAccountsByPublicKeyQueue.add({
 			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
 		});
 	}
@@ -502,7 +500,7 @@ const getAccounts = async params => {
 			if (indexedAccount) {
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
-					await indexAccountsQueue.add('indexAccountsQueue', { accounts: [account] });
+					await indexAccountsQueue.add({ accounts: [account] });
 				} else {
 					account.publicKey = indexedAccount.publicKey;
 				}
@@ -545,6 +543,8 @@ const getAccounts = async params => {
 };
 
 const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
+
+const getAllDelegates = () => requestApi(coreApi.getAllDelegates);
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};
@@ -653,6 +653,7 @@ module.exports = {
 	confirmPublicKey,
 	getAccounts,
 	getDelegates,
+	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	indexAccountsbyAddress,

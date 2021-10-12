@@ -52,7 +52,7 @@ const events = {
 			} catch (_) {
 				response = {
 					data: [newBlock],
-					meta: { count: 1, offset: 0, total: getTotalNumberOfBlocks() },
+					meta: { count: 1, offset: 0, total: await getTotalNumberOfBlocks() },
 				};
 			}
 
