@@ -332,6 +332,8 @@ const nonDelegate = {
 				publicKey: 'bd2b11d1b36f14883d9899285926b4ede7bb71704ff616470a57ac0225934a73',
 				isDelegate: false,
 				isMultisignature: false,
+				isMigrated: true,
+				legacyAddress: '9326477068202836140L',
 			},
 			token: {
 				balance: '9979703000',
@@ -387,7 +389,7 @@ const delegate = {
 				delegate: {
 					username: 'genesis_37',
 					consecutiveMissedBlocks: 0,
-					registrationHeight: false,
+					registrationHeight: 14075260,
 					lastForgedHeight: 14075260,
 					isBanned: false,
 					voteWeight: '0',
@@ -431,7 +433,7 @@ const delegateWithIsDelegate = {
 				delegate: {
 					username: 'genesis_37',
 					consecutiveMissedBlocks: 0,
-					registrationHeight: false,
+					registrationHeight: 14075260,
 					lastForgedHeight: 14075260,
 					isBanned: false,
 					voteWeight: '0',

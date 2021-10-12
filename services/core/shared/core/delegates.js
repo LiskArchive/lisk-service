@@ -329,7 +329,7 @@ const updateDelegateListOnAccountsUpdate = () => {
 			if (Object.getOwnPropertyNames(delegate).length) {
 				const {
 					data: [updatedDelegate],
-				} = await coreApi.getDelegates({ address: delegate.address });
+				} = await coreApi.getDelegates({ address: delegate.address, limit: 1 });
 
 				// Update the account details of the affected delegate
 				Object.assign(delegate, parseToJSONCompatObj(updatedDelegate));
