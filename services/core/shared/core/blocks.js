@@ -94,7 +94,7 @@ const getBlocks = async (params = {}) => {
 	}
 
 	if (coreApi.getFinalizedHeight) {
-		const finalHeight = coreApi.getFinalizedHeight();
+		const finalHeight = await coreApi.getFinalizedHeight();
 		const data = blocks.data.map((block) => Object.assign(block,
 			{ isFinal: block.height <= finalHeight },
 		));
