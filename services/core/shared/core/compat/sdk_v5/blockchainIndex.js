@@ -368,7 +368,7 @@ const buildIndex = async (from, to) => {
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 		/* eslint-disable no-await-in-loop */
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		const offset = pseudoOffset >= from ? pseudoOffset : from - 1;
 		const batchFromHeight = offset + 1;
 		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
 			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
@@ -566,9 +566,10 @@ const getIndexStats = async () => {
 	}
 };
 
-const validateIndexReadiness = async () => {
+const validateIndexReadiness = async ({ strict } = {}) => {
 	const { numBlocksIndexed, chainLength } = await getIndexStats();
-	return (numBlocksIndexed >= chainLength - 1);
+	const chainLenToConsider = strict === true ? chainLength : chainLength - 1;
+	return numBlocksIndexed >= chainLenToConsider;
 };
 
 const checkIndexReadiness = async () => {
@@ -583,8 +584,7 @@ const checkIndexReadiness = async () => {
 
 const fixMissingBlocks = async () => {
 	const { numBlocksIndexed } = await getIndexStats();
-
-	if (!(await validateIndexReadiness())) {
+	if (!await validateIndexReadiness({ strict: true })) {
 		const prevIndex = await getIndexDiff();
 		const minTolerableDiff = 0;
 		const maxDiff = 1000;
