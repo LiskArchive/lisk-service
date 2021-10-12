@@ -31,7 +31,7 @@ module.exports = {
 			env: {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_GATEWAY_VOLATILE: 'redis://localhost:6379/2',
+				SERVICE_GATEWAY_VOLATILE: 'redis://localhost:6379/3',
 				STRICT_READINESS_CHECK: false,
 				WS_RATE_LIMIT_ENABLE: false,
 				WS_RATE_LIMIT_CONNECTIONS: 5,
