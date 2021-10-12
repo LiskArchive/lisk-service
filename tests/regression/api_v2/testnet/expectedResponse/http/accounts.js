@@ -332,6 +332,8 @@ const nonDelegate = {
 				publicKey: 'bd2b11d1b36f14883d9899285926b4ede7bb71704ff616470a57ac0225934a73',
 				isDelegate: false,
 				isMultisignature: false,
+				isMigrated: true,
+				legacyAddress: '9326477068202836140L',
 			},
 			token: {
 				balance: '9979703000',
