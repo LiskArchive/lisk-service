@@ -453,6 +453,7 @@ const getAccounts = async params => {
 
 	if (params.address && typeof params.address === 'string') {
 		if (!validateAddress(params.address)) return {};
+		if (!('limit' in params)) params.limit = 1;
 	}
 
 	if (params.addresses) {
@@ -462,6 +463,7 @@ const getAccounts = async params => {
 			property: 'address',
 			values: addresses,
 		};
+		if (!('limit' in params)) params.limit = addresses.length;
 	}
 
 	const resultSet = await accountsDB.find(
