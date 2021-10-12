@@ -133,6 +133,7 @@ const getAccountsFromCore = async (params) => {
 			async account => accountsCache.set(account.address, JSON.stringify(account)),
 			{ concurrency: accounts.data.length },
 		);
+		Signals.get('updateAccountState').dispatch(params.addresses || [params.address]);
 	}
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
