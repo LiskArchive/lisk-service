@@ -423,8 +423,8 @@ const indexNewBlocks = async blocks => {
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	let result = [];
 
-	const heightDifference = toHeight - fromHeight;
-	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${heightDifference} blocks)`);
+	const totalNumOfBlocks = toHeight - fromHeight + 1;
+	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks)`);
 
 	const blocksDB = await getBlocksIndex();
 	const propBetweens = [{
@@ -437,7 +437,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	// This block helps determine empty index
 	if (indexedBlockCount < 3) {
 		result = [{ from: fromHeight, to: toHeight }];
-	} else if (indexedBlockCount !== heightDifference) {
+	} else if (indexedBlockCount !== totalNumOfBlocks) {
 		const missingBlocksQueryStatement = `
 			SELECT
 				(SELECT COALESCE(MAX(b0.height), ${fromHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
@@ -458,6 +458,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 	return result;
 };
+
 
 const getLastFinalBlockHeight = async () => {
 	// Returns the highest finalized block available within the index
@@ -586,7 +587,7 @@ const fixMissingBlocks = async () => {
 	if (!(await validateIndexReadiness())) {
 		const prevIndex = await getIndexDiff();
 		const minTolerableDiff = 0;
-		const maxDiff = 200;
+		const maxDiff = 1000;
 		const currentDiff = numBlocksIndexed - prevIndex;
 
 		if (currentDiff > minTolerableDiff
