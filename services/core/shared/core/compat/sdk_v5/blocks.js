@@ -75,7 +75,7 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 				: {};
 			block.generatorAddress = account && account.address ? account.address : null;
 			block.generatorUsername = account && account.username ? account.username : null;
-			block.isFinal = block.height <= getFinalizedHeight();
+			block.isFinal = block.height <= (await getFinalizedHeight());
 			block.numberOfTransactions = block.payload.length;
 
 			block.size = 0;

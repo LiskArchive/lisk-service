@@ -265,7 +265,7 @@ const indexNewBlocks = async blocks => {
 			await indexBlocksQueue.add({ from: block.height, to: block.height });
 
 			// Update block finality status
-			const finalizedBlockHeight = getFinalizedHeight();
+			const finalizedBlockHeight = await getFinalizedHeight();
 			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
 				Object.keys(blocksIndexSchema.schema));
 			await updateBlockIndexQueue.add({
@@ -540,4 +540,5 @@ module.exports = {
 	getIndexStats,
 	deleteBlock,
 	initializeSearchIndex,
+	indexMissingBlocks,
 };
