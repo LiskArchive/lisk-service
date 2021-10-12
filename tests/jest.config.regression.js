@@ -16,12 +16,11 @@
 module.exports = {
 	verbose: true,
 	testMatch: [
-		'<rootDir>/integration/**/*.test.js',
-		'<rootDir>/functional/**/*.test.js',
 		'<rootDir>/regression/**/*.test.js',
 	],
 	testEnvironment: 'node',
-	testTimeout: 15000,
+	testTimeout: 50000,
+	maxWorkers: 1,
 	setupFilesAfterEnv: [
 		'jest-extended',
 		'<rootDir>/helpers/setupCustomMatchers.js',

@@ -13,23 +13,28 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const fees = {
+	data: {
+		feeEstimatePerByte: {
+			low: 0,
+			medium: 0,
+			high: 0,
+		},
+		baseFeeById: {
+			'5:0': '1000000000',
+		},
+		baseFeeByName: {
+			'dpos:registerDelegate': '1000000000',
+		},
+		minFeePerByte: 1000,
+	},
+	meta: {
+		lastUpdate: 1632141101,
+		lastBlockHeight: 14623584,
+		lastBlockId: '3ffd66092280c21c860cd781018adbfad9fd0631c07b5b77a59ef9018f2df216',
+	},
+};
+
 module.exports = {
-	verbose: true,
-	testMatch: [
-		'<rootDir>/integration/**/*.test.js',
-		'<rootDir>/functional/**/*.test.js',
-		'<rootDir>/regression/**/*.test.js',
-	],
-	testEnvironment: 'node',
-	testTimeout: 15000,
-	setupFilesAfterEnv: [
-		'jest-extended',
-		'<rootDir>/helpers/setupCustomMatchers.js',
-	],
-	watchPlugins: [
-		['jest-watch-toggle-config', { setting: 'verbose' }],
-		['jest-watch-toggle-config', { setting: 'bail' }],
-		['jest-watch-toggle-config', { setting: 'notify' }],
-		'jest-watch-typeahead/filename',
-	],
+	fees,
 };
