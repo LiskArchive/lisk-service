@@ -389,7 +389,7 @@ const delegate = {
 				delegate: {
 					username: 'genesis_37',
 					consecutiveMissedBlocks: 0,
-					registrationHeight: false,
+					registrationHeight: 14075260,
 					lastForgedHeight: 14075260,
 					isBanned: false,
 					voteWeight: '0',
@@ -433,7 +433,7 @@ const delegateWithIsDelegate = {
 				delegate: {
 					username: 'genesis_37',
 					consecutiveMissedBlocks: 0,
-					registrationHeight: false,
+					registrationHeight: 14075260,
 					lastForgedHeight: 14075260,
 					isBanned: false,
 					voteWeight: '0',
