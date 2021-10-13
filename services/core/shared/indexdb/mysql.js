@@ -194,7 +194,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		);
 
 		// Perform all queries within a batch together
-		if (isDefaultTrx) return Promise.all(queries).then(trx.commit).catch(trx.rollback);
+		if (isDefaultTrx) return Promise.all(queries).then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
 		return Promise.all(queries);
 	};
 
@@ -281,9 +284,12 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			isDefaultTrx = true;
 		}
 
-		const result = await trx(tableName).whereIn(primaryKey, ids).del();
-		if (isDefaultTrx) await commitDbTransaction(trx);
-		return result;
+		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
+		if (isDefaultTrx) return query.then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
+		return query;
 	};
 
 	const count = async (params = {}) => {
@@ -351,7 +357,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.where(params.where.property, '=', params.where.value)
 			.increment(params.increment);
 
-		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
+		if (isDefaultTrx) return query.then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
 		return query;
 	};
 
@@ -367,7 +376,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.where(params.where.property, '=', params.where.value)
 			.decrement(params.decrement);
 
-		if (isDefaultTrx) return query.then(trx.commit).catch(trx.rollback);
+		if (isDefaultTrx) return query.then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
 		return query;
 	};
 

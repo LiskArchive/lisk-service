@@ -22,41 +22,41 @@ const {
 } = require('../../shared/indexdb/mysql');
 const schema = require('../constants/blocksSchema');
 
-const tableName = 'testSchema';
+const tableName = 'functional_test';
 const getIndex = () => getTableInstance(tableName, schema);
 
 const { emptyBlock, nonEmptyBlock } = require('../constants/blocks');
 
 describe('Test MySQL', () => {
-	let db;
+	let testTable;
 	beforeAll(async () => {
 		// Create table
-		db = await getIndex();
+		testTable = await getIndex();
 	});
 
 	afterAll(async () => {
 		// Drop table
-		await db.rawQuery(`DROP TABLE IF EXISTS ${tableName}`);
+		await testTable.rawQuery(`DROP TABLE IF EXISTS ${tableName}`);
 	});
 
-	it('DB exists', async () => {
-		const result = await db.find();
+	it(`${tableName} exists`, async () => {
+		const result = await testTable.find();
 		expect(result).toBeInstanceOf(Array);
 		expect(result.length).toBe(0);
 	});
 
 	describe('With IMPLICIT DB transaction (auto-commit mode)', () => {
-		afterAll(() => db.rawQuery(`TRUNCATE ${tableName}`));
+		afterAll(() => testTable.rawQuery(`TRUNCATE ${tableName}`));
 
 		it('Insert row', async () => {
-			await db.upsert([emptyBlock]);
-			const result = await db.find();
+			await testTable.upsert([emptyBlock]);
+			const result = await testTable.find();
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(1);
 		});
 
 		it('Fetch rows', async () => {
-			const result = await db.find({ id: emptyBlock.id }, ['id']);
+			const result = await testTable.find({ id: emptyBlock.id }, ['id']);
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(1);
 
@@ -65,25 +65,25 @@ describe('Test MySQL', () => {
 		});
 
 		it('Update row', async () => {
-			await db.upsert([{ ...emptyBlock, size: 50 }]);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }]);
 
-			const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 			expect(retrievedBlock.size).toBe(50);
 		});
 
 		it('Row count', async () => {
-			const count = await db.count();
+			const count = await testTable.count();
 			expect(count).toBe(1);
 		});
 
 		it('Conditional row count', async () => {
-			const count = await db.count({ id: nonEmptyBlock.id });
+			const count = await testTable.count({ id: nonEmptyBlock.id });
 			expect(count).toEqual(0);
 		});
 
 		it('Increase column value', async () => {
-			await db.increment({
+			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: {
 					property: 'id',
@@ -91,45 +91,45 @@ describe('Test MySQL', () => {
 				},
 			});
 
-			const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['timestamp']);
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
 			expect(retrievedBlock).toBeTruthy();
 			expect(retrievedBlock.timestamp).toBe(5 + emptyBlock.timestamp);
 		});
 
 		it('Delete row by id', async () => {
-			const [existingBlock] = await db.find();
+			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
-			const count = await db.deleteIds([existingBlockId]);
+			const count = await testTable.deleteIds([existingBlockId]);
 			expect(count).toEqual(1);
 
-			const result = await db.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
+			const result = await testTable.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
 			expect(result.length).toBe(0);
 			expect(result.every(b => b.id !== existingBlock.id)).toBeTruthy();
 		});
 
 		it('Batch row insert', async () => {
-			await db.upsert([emptyBlock, nonEmptyBlock]);
-			const result = await db.find();
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const result = await testTable.find();
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(2);
 		});
 	});
 
 	describe('With EXPLICIT DB transaction (non-auto commit mode)', () => {
-		afterAll(() => db.rawQuery(`TRUNCATE ${tableName}`));
+		afterAll(() => testTable.rawQuery(`TRUNCATE ${tableName}`));
 
 		it('Insert row', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			await db.upsert([emptyBlock], trx);
+			await testTable.upsert([emptyBlock], trx);
 			await commitDbTransaction(trx);
-			const result = await db.find();
+			const result = await testTable.find();
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(1);
 		});
 
 		it('Fetch rows', async () => {
-			const result = await db.find({ id: emptyBlock.id }, ['id']);
+			const result = await testTable.find({ id: emptyBlock.id }, ['id']);
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(1);
 
@@ -140,27 +140,27 @@ describe('Test MySQL', () => {
 		it('Update row', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			await db.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
 			await commitDbTransaction(trx);
-			const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 			expect(retrievedBlock.size).toBe(50);
 		});
 
 		it('Row count', async () => {
-			const count = await db.count();
+			const count = await testTable.count();
 			expect(count).toBe(1);
 		});
 
 		it('Conditional row count', async () => {
-			const count = await db.count({ id: nonEmptyBlock.id });
+			const count = await testTable.count({ id: nonEmptyBlock.id });
 			expect(count).toEqual(0);
 		});
 
 		it('Increase column value', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			await db.increment({
+			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: {
 					property: 'id',
@@ -168,7 +168,7 @@ describe('Test MySQL', () => {
 				},
 			}, trx);
 			await commitDbTransaction(trx);
-			const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['timestamp']);
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['timestamp']);
 			expect(retrievedBlock).toBeTruthy();
 			expect(retrievedBlock.timestamp).toBe(5 + emptyBlock.timestamp);
 		});
@@ -176,13 +176,13 @@ describe('Test MySQL', () => {
 		it('Delete row by id', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			const [existingBlock] = await db.find();
+			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
-			const count = await db.deleteIds([existingBlockId], trx);
+			const count = await testTable.deleteIds([existingBlockId], trx);
 			await commitDbTransaction(trx);
 			expect(count).toEqual(1);
 
-			const result = await db.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
+			const result = await testTable.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
 			expect(result.length).toBe(0);
 			expect(result.every(b => b.id !== existingBlock.id)).toBeTruthy();
 		});
@@ -190,9 +190,9 @@ describe('Test MySQL', () => {
 		it('Batch row insert', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			await db.upsert([emptyBlock, nonEmptyBlock], trx);
+			await testTable.upsert([emptyBlock, nonEmptyBlock], trx);
 			await commitDbTransaction(trx);
-			const result = await db.find();
+			const result = await testTable.find();
 			expect(result).toBeInstanceOf(Array);
 			expect(result.length).toBe(2);
 		});
@@ -202,14 +202,14 @@ describe('Test MySQL', () => {
 		it('Successful transaction commit', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			await db.upsert([emptyBlock], trx);
-			await db.upsert([{ ...emptyBlock, size: 50 }], trx);
+			await testTable.upsert([emptyBlock], trx);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
 
 			// Expect all operations to be successful, commit the transaction
 			await commitDbTransaction(trx);
 
 			// Verify committed transaction has been successful
-			const [retrievedBlock] = await db.find({ id: emptyBlock.id }, ['id', 'size']);
+			const [retrievedBlock] = await testTable.find({ id: emptyBlock.id }, ['id', 'size']);
 			expect(retrievedBlock.id).toBe(emptyBlock.id);
 			expect(retrievedBlock.size).toBe(50);
 		});
@@ -217,8 +217,8 @@ describe('Test MySQL', () => {
 		it('Successful transaction rollback', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
-			await db.upsert([{ ...emptyBlock, id: 'rollback' }], trx);
-			await db.increment({
+			await testTable.upsert([{ ...emptyBlock, id: 'rollback' }], trx);
+			await testTable.increment({
 				increment: { size: 100 },
 				where: {
 					property: 'id',
@@ -230,8 +230,45 @@ describe('Test MySQL', () => {
 			await rollbackDbTransaction(trx);
 
 			// Verify none of the above operations have been committed
-			const [retrievedBlock] = await db.find({ id: 'rollback' }, ['id']);
+			const [retrievedBlock] = await testTable.find({ id: 'rollback' }, ['id']);
 			expect(retrievedBlock).toBeUndefined();
+		});
+
+		it('Additional operational on committed transaction throws error', async () => {
+			const connection = await getDbConnection();
+			const trx = await startDbTransaction(connection);
+			await testTable.upsert([emptyBlock], trx);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+
+			// Expect all operations to be successful, commit the transaction
+			await commitDbTransaction(trx);
+
+			// Perform upsert using committed transaction
+			expect(testTable.upsert([{ ...emptyBlock, id: 'same transaction' }], trx)).rejects.toThrow();
+		});
+
+		it('Additional operational on rollback transaction throws error', async () => {
+			const connection = await getDbConnection();
+			const trx = await startDbTransaction(connection);
+			await testTable.upsert([emptyBlock], trx);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+
+			// Assume failure occured, rollback the transaction
+			await rollbackDbTransaction(trx);
+
+			// Perform upsert using rollback transaction
+			expect(testTable.upsert([{ ...emptyBlock, id: 'same transaction' }], trx)).rejects.toThrow();
+		});
+
+		it('Rolling back a committed transaction has no effect', async () => {
+			const connection = await getDbConnection();
+			const trx = await startDbTransaction(connection);
+			await testTable.upsert([emptyBlock], trx);
+			await testTable.upsert([{ ...emptyBlock, size: 50 }], trx);
+
+			// Expect all operations to be successful, commit the transaction
+			await commitDbTransaction(trx);
+			expect(rollbackDbTransaction(trx)).resolves.toBeUndefined();
 		});
 	});
 });

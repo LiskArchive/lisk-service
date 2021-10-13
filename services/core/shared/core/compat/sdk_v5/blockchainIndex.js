@@ -46,7 +46,7 @@ const {
 
 const { getBase32AddressFromPublicKey } = require('./accountUtils');
 const {
-	indexVotes,
+	getVoteIndexingInfo,
 	getVotesByTransactionIDs,
 } = require('./voters');
 
@@ -108,8 +108,8 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
-			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
 			if (block.generatorPublicKey) {
+				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
 				pkInfoArray.push({
 					publicKey: block.generatorPublicKey,
 					reward: block.reward,
@@ -138,7 +138,7 @@ const indexBlocks = async job => {
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		const { allVotes: votes, votesToAggregateArray } = await indexVotes(blocks);
+		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
