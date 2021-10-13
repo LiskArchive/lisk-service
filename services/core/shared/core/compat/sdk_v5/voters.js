@@ -85,13 +85,13 @@ const getVoteIndexingInfo = async (blocks) => {
 
 const getVotesByTransactionIDs = async transactionIDs => {
 	const votesDB = await getVotesIndex();
-	const forkedVotes = await votesDB.find({
+	const votes = await votesDB.find({
 		whereIn: {
 			property: 'id',
 			values: transactionIDs,
 		},
 	}, ['tempId']);
-	return forkedVotes;
+	return votes;
 };
 
 const getVoters = async params => {
