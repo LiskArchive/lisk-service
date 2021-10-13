@@ -78,16 +78,11 @@ const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
-// A boolean mapping against the genesis account addresses to indicate migration status
-const isGenesisAccountCache = CacheRedis('isGenesisAccount', config.endpoints.redis);
-
 const requestApi = coreApi.requestRetry;
 
-const isItGenesisAccount = async address => (await isGenesisAccountCache.get(address)) === true;
-
-const indexAccounts = async (job) => {
-	const accountsDB = await getAccountsIndex();
+const indexAccounts = async job => {
 	const { accounts } = job.data;
+	const accountsDB = await getAccountsIndex();
 	await accountsDB.upsert(accounts);
 };
 
@@ -127,6 +122,7 @@ const getAccountsFromCore = async (params) => {
 			async account => accountsCache.set(account.address, JSON.stringify(account)),
 			{ concurrency: accounts.data.length },
 		);
+		Signals.get('updateAccountState').dispatch(params.addresses || [params.address]);
 	}
 	if (response.meta) accounts.meta = response.meta;
 	return accounts;
@@ -159,12 +155,15 @@ const getAccountsByAddress = async (addressesToIndex, isGenesisBlockAccount = fa
 		dropDuplicates(addressesToIndex),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
+			if (isGenesisBlockAccount) account.isGenesisAccount = true;
 
-			// A genesis block account is considered migrated
-			if (isGenesisBlockAccount) await isGenesisAccountCache.set(address, true);
-			const accountFromDB = await getIndexedAccountInfo({ address: account.address, limit: 1 }, ['publicKey']);
-			if (accountFromDB && accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
-
+			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey', 'isGenesisAccount']);
+			if (accountFromDB) {
+				if (accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
+				if (accountFromDB.isGenesisAccount) {
+					account.isGenesisAccount = accountFromDB.isGenesisAccount;
+				}
+			}
 			account.username = account.dpos.delegate.username || null;
 			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
 			account.balance = account.token.balance;
@@ -276,14 +275,17 @@ const resolveDelegateInfo = async accounts => {
 						: 0;
 
 					// Check for the delegate registration transaction
-					const [delegateRegTx = {}] = await transactionsDB.find({
-						senderPublicKey: account.publicKey,
-						moduleAssetId: delegateRegTxModuleAssetId,
-						limit: 1,
-					}, ['height']);
+					const [delegateRegTx = {}] = await transactionsDB.find(
+						{
+							senderPublicKey: account.publicKey,
+							moduleAssetId: delegateRegTxModuleAssetId,
+							limit: 1,
+						},
+						['height'],
+					);
 					account.dpos.delegate.registrationHeight = delegateRegTx.height
 						? delegateRegTx.height
-						: (await isItGenesisAccount(account.address)) && (await coreApi.getGenesisHeight());
+						: await coreApi.getGenesisHeight();
 				}
 			}
 			return account;
@@ -415,6 +417,7 @@ const getAccounts = async params => {
 
 	if (params.address && typeof params.address === 'string') {
 		if (!validateAddress(params.address)) return {};
+		if (!('limit' in params)) params.limit = 1;
 	}
 
 	if (params.addresses) {
@@ -424,11 +427,16 @@ const getAccounts = async params => {
 			property: 'address',
 			values: addresses,
 		};
+		if (!('limit' in params)) params.limit = addresses.length;
 	}
 
-	const resultSet = await accountsDB.find(params, ['address', 'publicKey', 'username']);
-	if (resultSet.length) params.addresses = resultSet
-		.map(row => getHexAddressFromBase32(row.address));
+	const resultSet = await accountsDB.find(
+		params,
+		['address', 'publicKey', 'username', 'isGenesisAccount'],
+	);
+	if (resultSet.length) {
+		params.addresses = resultSet.map(row => getHexAddressFromBase32(row.address));
+	}
 
 	if (params.address) {
 		params.address = getHexAddressFromBase32(params.address);
@@ -462,6 +470,7 @@ const getAccounts = async params => {
 		async account => {
 			const [indexedAccount] = resultSet.filter(acc => acc.address === account.address);
 			if (indexedAccount) {
+				account.isGenesisAccount = indexedAccount.isGenesisAccount;
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
 					await indexAccountsQueue.add({ accounts: [account] });
@@ -471,9 +480,8 @@ const getAccounts = async params => {
 			}
 
 			if (account.publicKey) {
-				const isGenesisAccount = await isItGenesisAccount(account.address);
-				if (isGenesisAccount) {
-					account.isMigrated = isGenesisAccount;
+				if (account.isGenesisAccount) {
+					account.isMigrated = account.isGenesisAccount;
 					account.legacyAddress = getLegacyAddressFromPublicKey(account.publicKey);
 				} else {
 					// Use only dynamically computed legacyAccount information, ignore the hardcoded info
