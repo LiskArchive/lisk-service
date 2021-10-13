@@ -24,13 +24,24 @@ const broker = new ServiceBroker({
 	logger: console,
 });
 
-describe('Test multsig.create', () => {
+describe('Test multsig actions', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
 	describe('Connect to client and create multisignature transaction', () => {
 		it('call transaction.multisig.create', async () => {
 			const result = await broker.call('transaction.multisig.create', {});
+			if (result.data.error) {
+				serviceUnavailableSchema.validate(result);
+			} else {
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toBeGreaterThanOrEqual(1);
+				result.data.forEach(tx => transactionSchema.validate(tx));
+			}
+		});
+
+		it('call transaction.multisig', async () => {
+			const result = await broker.call('transaction.multisig', {});
 			if (result.data.error) {
 				serviceUnavailableSchema.validate(result);
 			} else {
