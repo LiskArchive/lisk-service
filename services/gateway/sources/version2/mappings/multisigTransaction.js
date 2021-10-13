@@ -20,7 +20,7 @@ module.exports = {
 	fee: '=,string',
 	height: '=,number',
 	nonce: '=,string',
-	expires: '=,number',
+	expires: 'expiresAt,number',
 	signatures: '=',
 	asset: '=',
 };
