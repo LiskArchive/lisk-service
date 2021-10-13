@@ -214,7 +214,7 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.size).toBe(50);
 		});
 
-		it('Successful transaction rollback', async () => {
+		it('Successful transaction rollback - 1', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
 			await testTable.upsert([{ ...emptyBlock, id: 'rollback' }], trx);
@@ -232,6 +232,27 @@ describe('Test MySQL', () => {
 			// Verify none of the above operations have been committed
 			const [retrievedBlock] = await testTable.find({ id: 'rollback' }, ['id']);
 			expect(retrievedBlock).toBeUndefined();
+		});
+
+		it('Successful transaction rollback - 2', async () => {
+			const height = 14555;
+			const connection = await getDbConnection();
+			const trx1 = await startDbTransaction(connection);
+			const trx2 = await startDbTransaction(connection);
+			await testTable.upsert([{ ...emptyBlock, height }], trx1);
+			await commitDbTransaction(trx1);
+
+			// Start a new transaction, perform upsert/delete and rollback
+			await testTable.upsert([{ ...emptyBlock, height, size: emptyBlock.timestamp + 100 }], trx2);
+			const numRowsAffected = await testTable.deleteIds([height], trx2);
+			expect(numRowsAffected).toEqual(1);
+
+			await rollbackDbTransaction(trx2);
+
+			// The row must still be available
+			const [retrievedBlock2] = await testTable.find({ height }, ['height', 'timestamp']);
+			expect(retrievedBlock2.height).toBe(height);
+			expect(retrievedBlock2.timestamp).toBe(emptyBlock.timestamp);
 		});
 
 		it('Additional operational on committed transaction throws error', async () => {
