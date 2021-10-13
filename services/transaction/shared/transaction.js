@@ -51,6 +51,41 @@ const createMultisignatureTx = async inputTransaction => {
 	return transaction;
 };
 
+const getMultisignatureTx = async params => {
+	const multisignatureTxDB = await getMultiSignatureTxIndex();
+	const transaction = {
+		data: [],
+		meta: {},
+	};
+
+	// Temporary logic for test case, remove after finishing real implementation
+	await multisignatureTxDB.upsert({
+		serviceId: uuidv4(),
+		nonce: 1,
+		senderPublicKey: '3e50549cd4d98760064ff2fe51801afba4e5e8623335275cece0eeff8495a81b',
+		asset: '{"numberOfSignatures":2,"mandatoryKeys":["228c865b903dab827342aa6611676bf883e982e7cd467c9168a7966cdabb391c","9bc945f92141d5e11e97274c275d127dc7656dda5c8fcbf1df7d44827a732664"],"optionalKeys":[]}',
+		moduleAssetId: '4:0',
+		fee: '314000',
+		rejected: false,
+	});
+
+	const resultSet = await multisignatureTxDB.find(params);
+	const total = await multisignatureTxDB.count(params);
+
+	if (resultSet.length) transaction.data = resultSet
+		.map(acc => acc = { ...acc, asset: JSON.parse(acc.asset) });
+
+
+	transaction.meta = {
+		offset: params.offset || 0,
+		count: transaction.data.length,
+		total,
+	};
+
+	return transaction;
+};
+
 module.exports = {
 	createMultisignatureTx,
+	getMultisignatureTx,
 };

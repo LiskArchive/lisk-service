@@ -13,17 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = [
-	{
-		name: 'event.hello',
-		description: 'Generic hello event',
-		controller: callback => {
-			setInterval(() => {
-				callback({
-					data: ['Hello!'],
-					meta: { count: 1 },
-				});
-			}, 1000);
-		},
-	},
-];
+module.exports = {
+	serviceId: '=,string',
+	moduleAssetId: '=,string',
+	senderPublicKey: 'senderPublicKey,string',
+	fee: '=,string',
+	height: '=,number',
+	nonce: '=,string',
+	expires: '=,number',
+	signatures: '=',
+	asset: '=',
+};

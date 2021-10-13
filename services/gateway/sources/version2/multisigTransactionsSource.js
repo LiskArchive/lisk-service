@@ -13,26 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	createMultisignatureTx,
-	getMultisignatureTx,
-} = require('./controllers/transaction');
+const multisigTransaction = require('./mappings/multisigTransaction');
 
-module.exports = [
-	{
-		name: 'multisig.create',
-		controller: createMultisignatureTx,
-		params: {},
+module.exports = {
+	type: 'moleculer',
+	method: 'transaction.multisig',
+	params: {
+		serviceId: '=,string',
+		address: '=,string',
+		publicKey: '=,string',
+		offset: '=,number',
+		limit: '=,number',
 	},
-	{
-		name: 'multisig',
-		controller: getMultisignatureTx,
-		params: {
-			serviceId: { optional: true, type: 'any' },
-			address: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
+	definition: {
+		data: ['data', multisigTransaction],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
 		},
+		links: {},
 	},
-];
+};
