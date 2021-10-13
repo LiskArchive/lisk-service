@@ -41,7 +41,9 @@ describe('Method get.transactions.multisig', () => {
 			const response = await getTransactions();
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toBeArrayOfSize(1);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction).toMap(multisigTransactionSchema));
 			expect(result.meta).toMap(metaSchema);
@@ -58,10 +60,12 @@ describe('Method get.transactions.multisig', () => {
 		});
 
 		it('Known multisig transaction by address', async () => {
-			const response = await getTransactions({ address: refTransaction.address });
+			const response = await getTransactions({ address: 'lsk2dp8gf6me3hafoqgtqej8dk96uusdhykvnkbrr' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toBeArrayOfSize(1);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction).toMap(multisigTransactionSchema));
 			expect(result.meta).toMap(metaSchema);
@@ -71,7 +75,9 @@ describe('Method get.transactions.multisig', () => {
 			const response = await getTransactions({ publicKey: refTransaction.publicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toBeArrayOfSize(1);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(transaction => expect(transaction).toMap(multisigTransactionSchema));
 			expect(result.meta).toMap(metaSchema);

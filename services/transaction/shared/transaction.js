@@ -62,7 +62,7 @@ const createMultisignatureTx = async inputTransaction => {
 		fee: '314000',
 		rejected: false,
 	};
-	
+
 	transaction.data.push({
 		...inputTransaction,
 		serviceId: uuidv4(),

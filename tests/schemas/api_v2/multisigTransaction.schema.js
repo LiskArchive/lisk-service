@@ -22,8 +22,7 @@ const multisigTransactionSchema = {
 	asset: Joi.object().required(),
 	moduleAssetId: Joi.string().required(),
 	fee: Joi.string().required(),
-	expiresAt: Joi.number().integer().positive().required(),
-	rejected: Joi.boolean().required(),
+	expires: Joi.number().integer().positive().required(),
 };
 
 module.exports = {

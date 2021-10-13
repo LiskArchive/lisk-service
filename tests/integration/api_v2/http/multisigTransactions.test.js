@@ -35,6 +35,7 @@ describe('Multisignature Transactions API', () => {
 		const response1 = await api.get(`${endpoint}?limit=1`);
 		[refTransaction] = response1.data;
 	});
+
 	describe('Retrieve multisignature transaction lists', () => {
 		it('returns list of multisignature transactions', async () => {
 			const response = await api.get(`${endpoint}`);
@@ -58,7 +59,7 @@ describe('Multisignature Transactions API', () => {
 		});
 
 		it('returns multisignature transactions with known address', async () => {
-			const response = await api.get(`${endpoint}?address=${refTransaction.address}`);
+			const response = await api.get(`${endpoint}?address=lsk2dp8gf6me3hafoqgtqej8dk96uusdhykvnkbrr`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -75,7 +76,7 @@ describe('Multisignature Transactions API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(transaction => expect(transaction)
-				.toMap(multisigTransactionSchema, { publicKey: refTransaction.senderPublicKey }));
+				.toMap(multisigTransactionSchema, { senderPublicKey: refTransaction.senderPublicKey }));
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
