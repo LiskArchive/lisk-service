@@ -73,7 +73,7 @@ const getMultisignatureTx = async params => {
 	const total = await multisignatureTxDB.count(params);
 
 	if (resultSet.length) transaction.data = resultSet
-		.map(acc => acc = { ...acc, asset: JSON.parse(acc.asset) });
+		.map(acc => ({ ...acc, asset: JSON.parse(acc.asset) }));
 
 
 	transaction.meta = {
