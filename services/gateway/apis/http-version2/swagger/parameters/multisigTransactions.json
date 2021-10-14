@@ -1,0 +1,18 @@
+{
+    "publicKey": {
+        "name": "publicKey",
+        "in": "query",
+        "description": "Public key to query",
+        "type": "string",
+        "format": "publicKey",
+        "minLength": 1
+    },
+    "serviceId": {
+        "name": "serviceId",
+        "in": "query",
+        "description": "serviceId to query",
+        "type": "string",
+        "format": "serviceId",
+        "minLength": 1
+    }
+}
