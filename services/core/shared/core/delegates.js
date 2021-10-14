@@ -61,6 +61,8 @@ const computeDelegateStatus = async () => {
 	// TODO: These feature should be handled by the compatibility layer
 	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
 
+	const MIN_ELIGIBLE_VOTE_WEIGHT = BigInt(1000);
+
 	const lastestBlock = getLastBlock();
 	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
@@ -79,14 +81,21 @@ const computeDelegateStatus = async () => {
 			} else delegate.status = delegateStatus.STANDBY;
 		} else {
 			logger.debug('Determine delegate status');
-			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
-			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
-			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
-			else if (activeNextForgersList.includes(delegate.account.address)) {
-				delegate.status = delegateStatus.ACTIVE;
-			} else delegate.status = delegateStatus.STANDBY;
-		}
 
+			// Default delegate status
+			delegate.status = delegateStatus.NON_ELIGIBLE;
+
+			// Update delegate status, if applicable
+			if (delegate.isBanned) {
+				delegate.status = delegateStatus.BANNED;
+			} else if (verifyIfPunished(delegate)) {
+				delegate.status = delegateStatus.PUNISHED;
+			} else if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else if (delegate.delegateWeight >= MIN_ELIGIBLE_VOTE_WEIGHT) {
+				delegate.status = delegateStatus.STANDBY;
+			}
+		}
 		return delegate;
 	});
 	return delegateList;
