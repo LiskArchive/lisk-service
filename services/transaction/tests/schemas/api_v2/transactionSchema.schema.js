@@ -19,7 +19,7 @@ const transactionSchema = {
 	serviceId: Joi.string().required(),
 	nonce: Joi.number().required(),
 	senderPublicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).required(),
-	asset: Joi.object().required(),
+	asset: Joi.string().required(),
 	moduleAssetId: Joi.string().required(),
 	fee: Joi.string().required(),
 	createdAt: Joi.number().integer().positive().required(),
