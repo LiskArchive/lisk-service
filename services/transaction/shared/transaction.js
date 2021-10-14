@@ -16,34 +16,15 @@
 const { v4: uuidv4 } = require('uuid');
 
 const {
-	getAddressFromPublicKey,
-	getBase32AddressFromAddress,
-} = require('@liskhq/lisk-cryptography');
-
-const {
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
+
+const { getBase32AddressFromPublicKey } = require('./accountUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
 const multisignatureTxIndexSchema = require('./schema/multisignature');
 
 const getMultiSignatureTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
-
-const getHexAddressFromPublicKey = publicKey => {
-	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));
-	return binaryAddress.toString('hex');
-};
-
-const getBase32AddressFromHex = address => {
-	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
-	return base32Address;
-};
-
-const getBase32AddressFromPublicKey = publicKey => {
-	const hexAddress = getHexAddressFromPublicKey(publicKey);
-	const base32Address = getBase32AddressFromHex(hexAddress);
-	return base32Address;
-};
 
 const createMultisignatureTx = async inputTransaction => {
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
