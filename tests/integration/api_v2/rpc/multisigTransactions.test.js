@@ -55,7 +55,8 @@ describe('Method get.transactions.multisig', () => {
 			const { result } = response;
 			expect(result.data).toBeArrayOfSize(1);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(multisigTransactionSchema));
+			result.data.forEach(transaction => expect(transaction)
+				.toMap(multisigTransactionSchema, { serviceId: refTransaction.serviceId }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -67,7 +68,8 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(multisigTransactionSchema));
+			result.data.forEach(transaction => expect(transaction)
+				.toMap(multisigTransactionSchema, { address: refTransaction.address }));
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -79,7 +81,8 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
-			result.data.forEach(transaction => expect(transaction).toMap(multisigTransactionSchema));
+			result.data.forEach(transaction => expect(transaction)
+				.toMap(multisigTransactionSchema, { senderPublicKey: refTransaction.senderPublicKey }));
 			expect(result.meta).toMap(metaSchema);
 		});
 	});

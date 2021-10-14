@@ -72,7 +72,7 @@ const getMultisignatureTx = async params => {
 		params.senderPublicKey = publicKey;
 	}
 
-	// Temporary logic for test case, remove after finishing real implementation
+	// TODO: Temporary logic for test case, remove after finishing real implementation
 	await multisignatureTxDB.upsert({
 		serviceId: uuidv4(),
 		nonce: 1,
@@ -88,6 +88,7 @@ const getMultisignatureTx = async params => {
 	const resultSet = await multisignatureTxDB.find(params);
 	const total = await multisignatureTxDB.count(params);
 
+	// TODO: Add signature to response once issue #161 is done
 	if (resultSet.length) transaction.data = resultSet
 		.map(acc => ({ ...acc, asset: JSON.parse(acc.asset) }));
 
