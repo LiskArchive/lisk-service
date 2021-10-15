@@ -105,14 +105,14 @@ const getTransactionIndexingInfo = async (blocks) => {
 
 const getTransactionsByBlockIDs = async blockIDs => {
 	const transactionsDB = await getTransactionsIndex();
-	const forkedTransactions = await transactionsDB.find({
+	const transactions = await transactionsDB.find({
 		whereIn: {
 			property: 'blockId',
 			values: blockIDs,
 		},
 	}, ['id']);
-	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
-	return forkedTransactionIDs;
+	const transactionsIds = transactions.map(t => t.id);
+	return transactionsIds;
 };
 
 const normalizeTransaction = async txs => {

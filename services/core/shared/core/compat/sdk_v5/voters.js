@@ -32,7 +32,7 @@ const voteTransactionAssetID = 1;
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
-const indexVotes = async (blocks) => {
+const getVoteIndexingInfo = async (blocks) => {
 	const votesDB = await getVotesIndex();
 	const votesToAggregateArray = [];
 	const votesMultiArray = blocks.map(block => {
@@ -79,19 +79,19 @@ const indexVotes = async (blocks) => {
 	});
 	let allVotePromises = [];
 	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
-	const allVotes = await BluebirdPromise.all(allVotePromises);
-	return { allVotes, votesToAggregateArray };
+	const votes = await BluebirdPromise.all(allVotePromises);
+	return { votes, votesToAggregateArray };
 };
 
 const getVotesByTransactionIDs = async transactionIDs => {
 	const votesDB = await getVotesIndex();
-	const forkedVotes = await votesDB.find({
+	const votes = await votesDB.find({
 		whereIn: {
 			property: 'id',
 			values: transactionIDs,
 		},
 	}, ['tempId']);
-	return forkedVotes;
+	return votes;
 };
 
 const getVoters = async params => {
@@ -176,6 +176,6 @@ const getVoters = async params => {
 
 module.exports = {
 	getVoters,
-	indexVotes,
+	getVoteIndexingInfo,
 	getVotesByTransactionIDs,
 };

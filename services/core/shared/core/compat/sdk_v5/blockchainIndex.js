@@ -46,7 +46,7 @@ const {
 
 const { getBase32AddressFromPublicKey } = require('./accountUtils');
 const {
-	indexVotes,
+	getVoteIndexingInfo,
 	getVotesByTransactionIDs,
 } = require('./voters');
 
@@ -108,8 +108,8 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
-			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
 			if (block.generatorPublicKey) {
+				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
 				pkInfoArray.push({
 					publicKey: block.generatorPublicKey,
 					reward: block.reward,
@@ -138,7 +138,7 @@ const indexBlocks = async job => {
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		const { allVotes: votes, votesToAggregateArray } = await indexVotes(blocks);
+		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
@@ -368,7 +368,7 @@ const buildIndex = async (from, to) => {
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 		/* eslint-disable no-await-in-loop */
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		const offset = pseudoOffset >= from ? pseudoOffset : from - 1;
 		const batchFromHeight = offset + 1;
 		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
 			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
@@ -423,8 +423,8 @@ const indexNewBlocks = async blocks => {
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	let result = [];
 
-	const heightDifference = toHeight - fromHeight;
-	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${heightDifference} blocks)`);
+	const totalNumOfBlocks = toHeight - fromHeight + 1;
+	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks)`);
 
 	const blocksDB = await getBlocksIndex();
 	const propBetweens = [{
@@ -437,7 +437,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	// This block helps determine empty index
 	if (indexedBlockCount < 3) {
 		result = [{ from: fromHeight, to: toHeight }];
-	} else if (indexedBlockCount !== heightDifference) {
+	} else if (indexedBlockCount !== totalNumOfBlocks) {
 		const missingBlocksQueryStatement = `
 			SELECT
 				(SELECT COALESCE(MAX(b0.height), ${fromHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
@@ -458,6 +458,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 	return result;
 };
+
 
 const getLastFinalBlockHeight = async () => {
 	// Returns the highest finalized block available within the index
@@ -565,9 +566,10 @@ const getIndexStats = async () => {
 	}
 };
 
-const validateIndexReadiness = async () => {
+const validateIndexReadiness = async ({ strict } = {}) => {
 	const { numBlocksIndexed, chainLength } = await getIndexStats();
-	return (numBlocksIndexed >= chainLength - 1);
+	const chainLenToConsider = strict === true ? chainLength : chainLength - 1;
+	return numBlocksIndexed >= chainLenToConsider;
 };
 
 const checkIndexReadiness = async () => {
@@ -582,11 +584,10 @@ const checkIndexReadiness = async () => {
 
 const fixMissingBlocks = async () => {
 	const { numBlocksIndexed } = await getIndexStats();
-
-	if (!(await validateIndexReadiness())) {
+	if (!await validateIndexReadiness({ strict: true })) {
 		const prevIndex = await getIndexDiff();
 		const minTolerableDiff = 0;
-		const maxDiff = 200;
+		const maxDiff = 1000;
 		const currentDiff = numBlocksIndexed - prevIndex;
 
 		if (currentDiff > minTolerableDiff
