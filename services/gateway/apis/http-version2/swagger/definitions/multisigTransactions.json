@@ -54,32 +54,10 @@
                 }
             },
             "asset": {
-                "type": "object",
-                "properties": {
-                    "numberOfSignatures": {
-                        "type": "integer",
-                        "format": "int32",
-                        "example": "1"
-                    },
-                    "mandatoryKeys": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "example": "689b9a40aa11cbc8327d5eeebed9a1052940730f9c34cffb33ae591131141349"
-                        }
-                    },
-                    "optionalKeys": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "example": "478842a844914f18a1c620a6494bf9931d0a862e96212bf5fc6f3ca18658febe"
-                        }
-                    }
-                }
+                "type": "object"
             }
         }
     },
-
     "MultisigTransactionsWithEnvelope": {
         "type": "object",
         "required": [
@@ -103,7 +81,6 @@
             }
         }
     },
-
     "notFoundEnvelope": {
         "type": "object",
         "properties": {

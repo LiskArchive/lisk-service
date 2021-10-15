@@ -23,7 +23,7 @@ module.exports = {
 	schema: {
 		serviceId: { type: 'string', null: false },
 		nonce: { type: 'integer', null: false },
-		address: { type: 'string', null: false },
+		senderAddress: { type: 'string', null: false },
 		senderPublicKey: { type: 'string', null: false },
 		asset: { type: 'text', null: true, defaultValue: '' },
 		moduleAssetId: { type: 'string' },
