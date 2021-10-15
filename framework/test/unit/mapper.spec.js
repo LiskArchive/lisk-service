@@ -84,19 +84,16 @@ describe('Object mapper: ', () => {
 
 	it('Array with an object with reference = put an object inside an array -> ok', () => {
 		const result = mapperService({ address: '16009998050678037905L' }, [{ address: '=' }]);
-		expect(result).toBeArray();
 		expect(result[0]).toMapRequiredSchema({ address: '16009998050678037905L' });
 	});
 
 	it('Array with an object with = and type put an object inside an array -> ok', () => {
 		const result = mapperService({ address: '100' }, [{ address: '=,number' }]);
-		expect(result).toBeArray();
 		expect(result[0]).toMapRequiredSchema({ address: 100 });
 	});
 
 	it('Map an array inside a plain object -> ok', () => {
 		const result = mapperService({ data: [{ address: '16009998050678037905L' }] }, ['data', { address: '=' }]);
-		expect(result).toBeArray();
 		expect(result).toEqual(['data', { data: [{ address: '16009998050678037905L' }] }]);
 	});
 
@@ -147,7 +144,6 @@ describe('Object mapper: ', () => {
 
 	it('Map a plain object with an empty object inside an array -> ok', () => {
 		const result = mapperService({ address: [{}] }, { address: '=' });
-		expect(result.address).toBeArray();
 		expect(result.address[0]).toMapRequiredSchema({});
 	});
 
