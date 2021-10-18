@@ -1,4 +1,12 @@
 {
+    "address": {
+        "name": "address",
+        "in": "query",
+        "description": "Account address to query",
+        "type": "string",
+        "format": "address",
+        "minLength": 1
+    },
     "publicKey": {
         "name": "publicKey",
         "in": "query",
