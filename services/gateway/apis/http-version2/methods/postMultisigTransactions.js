@@ -15,6 +15,7 @@
  */
 const postMultisigTransactionsSource = require('../../../sources/version2/postMultisigTransactionsSource');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -23,6 +24,27 @@ module.exports = {
 	tags: ['Multisignature Transactions'],
 	params: {
 		transaction: { optional: true, type: 'string' },
+	},
+	get schema() {
+		const multisigTransactionSchema = {};
+		multisigTransactionSchema[this.swaggerApiPath] = { post: {} };
+		multisigTransactionSchema[this.swaggerApiPath].post.tags = this.tags;
+		multisigTransactionSchema[this.swaggerApiPath].post.summary = 'Requests multisignature transactions';
+		multisigTransactionSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns multisignature transactions',
+		});
+		multisigTransactionSchema[this.swaggerApiPath].post.parameters = transformParams('multisignature', this.params);
+		multisigTransactionSchema[this.swaggerApiPath].post.responses = {
+			200: {
+				description: 'Updated multisignature transaction',
+				schema: {
+					$ref: '#/definitions/MultisigTransactionsWithEnvelope',
+				},
+			},
+		};
+		Object.assign(multisigTransactionSchema[this.swaggerApiPath].post.responses, response);
+		return multisigTransactionSchema;
 	},
 	source: postMultisigTransactionsSource,
 	envelope,
