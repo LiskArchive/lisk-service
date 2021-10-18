@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "ioredis": "^4.27.2",
-    "jest": "^27.3.0"
+    "jest": "^27.3.0",
+    "moleculer": "^0.14.17"
   }
 }
