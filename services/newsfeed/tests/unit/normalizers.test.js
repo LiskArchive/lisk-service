@@ -71,7 +71,7 @@ describe('Test normalizers', () => {
 	it('Test drupalDomainPrefixer', async () => {
 		const result = await normalizeFunctions
 			.drupalDomainPrefixer(drupalData[0].link, config.sources.drupal_lisk_announcements);
-		expect(result).toBe('https://lisk.io/blog/announcement/introducing-lisk-community-squad');
+		expect(result).toBe('https://lisk.com/blog/announcement/introducing-lisk-community-squad');
 	});
 
 	it('Test textifyForShort', async () => {
