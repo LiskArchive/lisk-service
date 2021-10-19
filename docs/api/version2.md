@@ -1133,33 +1133,28 @@ Retrieves current market prices.
 {
   "data": [
     {
-      "code": "LSK_CHF",
-      "from": "LSK",
-      "rate": "2.4058",
-      "to": "CHF",
+      "code": "BTC_EUR",
+      "from": "BTC",
+      "rate": "53623.7800",
       "sources": [
-        "kraken"
+          "binance"
       ],
-      "updateTimestamp": 1623053809
-    }
+      "to": "EUR",
+      "updateTimestamp": 1634649300
+    },
   ],
   "meta": {
-    "count": 1
+      "count": 7
   }
 }
 ```
 
-400 Bad Request
+503 Service Unavailable
 ```
 {
   "error": true,
-  "message": "Unknown input parameter(s): <param_name>"
+  "message": "Service is not ready yet"
 }
-```
-
-404 Not Found
-```
-
 ```
 
 ## News Feed Aggregator
@@ -1187,27 +1182,27 @@ _Supports pagination._
 ```jsonc
 {
   "data": [
-        {
-            "author": "Lisk",
-            "content_t": "In the previous research blog post \"Introduction to Blockchain\nInteroperability\", we provided an overview of various methods for blockchain\ninteroperability. The blog post described different types of blockchain\ninteroperability, ranging from cross-chain token exchange to general cross-chain\nmessages. We already revealed that the Lisk interoperability solution aims to\nenable general cross-chain messages.",
-            "createdAt": 1617895920,
-            "image_url": "https://lisk.io/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/ama-recap-high-level-overview-of-lisk-interoperability-solution-MAIN%402x.png?itok=phccd700",
-            "modifiedAt": 1617895920,
-            "source": "drupal_lisk_general",
-            "source_id": "1025",
-            "title": "AMA Recap: High-level Overview of Lisk Interoperability Solution",
-            "url": "https://lisk.io/blog/events/ama-recap-high-level-overview-lisk-interoperability-solution"
-        }
-    ],
-    "meta": {
-        "count": 10,
-        "limit": 10,
-        "offset": 0
+    {
+      "author": "Lisk",
+      "content_t": "In the previous research blog post \"Introduction to Blockchain\nInteroperability\", we provided an overview of various methods for blockchain\ninteroperability. The blog post described different types of blockchain\ninteroperability, ranging from cross-chain token exchange to general cross-chain\nmessages. We already revealed that the Lisk interoperability solution aims to\nenable general cross-chain messages.",
+      "createdAt": 1617895920,
+      "image_url": "https://lisk.io/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/ama-recap-high-level-overview-of-lisk-interoperability-solution-MAIN%402x.png?itok=phccd700",
+      "modifiedAt": 1617895920,
+      "source": "drupal_lisk_general",
+      "source_id": "1025",
+      "title": "AMA Recap: High-level Overview of Lisk Interoperability Solution",
+      "url": "https://lisk.io/blog/events/ama-recap-high-level-overview-lisk-interoperability-solution"
     }
+  ],
+  "meta": {
+    "count": 10,
+    "limit": 10,
+    "offset": 0
+  }
 }
 ```
 
-400 Bad Request 
+400 Bad Request
 
 _Invalid parameter_
 ```
@@ -1224,7 +1219,6 @@ _Invalid source name_
     "message": "Invalid input: The 'source' field fails to match the required pattern."
 }
 ```
-
 
 503 Service Unavailable
 ```
