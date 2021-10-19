@@ -16,6 +16,6 @@
 module.exports = {
 	SERVICE_ENDPOINT: process.env.SERVICE_ENDPOINT || 'http://localhost:9901',
 	MOCK_ENDPOINT: process.env.MOCK_ENDPOINT || 'http://localhost:9006',
-	SERVICE_STAGING: process.env.SERVICE_STAGING || 'https://mainnet-service-staging.lisk.io',
+	SERVICE_STAGING: process.env.SERVICE_STAGING || 'https://mainnet-service-staging.lisk.com',
 	SERVICE_PROD: process.env.SERVICE_PROD || 'https://service.lisk.com',
 };
