@@ -1187,26 +1187,29 @@ _Supports pagination._
 ```jsonc
 {
   "data": [
-    {
-      "author": "LiskHQ",
-      "content_t": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
-      "source": "twitter_lisk",
-      "source_id": "4584a7d2db15920e130eeaf1014f87c99b5af329",
-      "createdAt": 1623053809,
-      "modifiedAt": 1623053809,
-      "title": "Financial Update for January 2021",
-      "url": "https://t.co/QpZOkBfrgA",
-      "image_url": "https://t.co/QpZOkBfrgA.jpg"
+        {
+            "author": "Lisk",
+            "content_t": "In the previous research blog post \"Introduction to Blockchain\nInteroperability\", we provided an overview of various methods for blockchain\ninteroperability. The blog post described different types of blockchain\ninteroperability, ranging from cross-chain token exchange to general cross-chain\nmessages. We already revealed that the Lisk interoperability solution aims to\nenable general cross-chain messages.",
+            "createdAt": 1617895920,
+            "image_url": "https://lisk.io/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/ama-recap-high-level-overview-of-lisk-interoperability-solution-MAIN%402x.png?itok=phccd700",
+            "modifiedAt": 1617895920,
+            "source": "drupal_lisk_general",
+            "source_id": "1025",
+            "title": "AMA Recap: High-level Overview of Lisk Interoperability Solution",
+            "url": "https://lisk.io/blog/events/ama-recap-high-level-overview-lisk-interoperability-solution"
+        }
+    ],
+    "meta": {
+        "count": 10,
+        "limit": 10,
+        "offset": 0
     }
-  ],
-  "meta": {
-    "count": 1
-  },
-  "links": {}
 }
 ```
 
-400 Bad Request
+400 Bad Request 
+
+_Invalid parameter_
 ```
 {
   "error": true,
@@ -1214,7 +1217,19 @@ _Supports pagination._
 }
 ```
 
-404 Not Found
+_Invalid source name_
+```
+{
+    "error": true,
+    "message": "Invalid input: The 'source' field fails to match the required pattern."
+}
 ```
 
+
+503 Service Unavailable
+```
+{
+  "error": true,
+  "message": "Service is not ready yet"
+}
 ```
