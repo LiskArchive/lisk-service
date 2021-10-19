@@ -651,12 +651,14 @@ const init = async () => {
 		// Download genesis block
 		await getBlockByHeight(await getGenesisHeight());
 
+		// Index all the delegate accounts first
+		await indexAllDelegateAccounts();
+
 		// Start the indexing process (blocks)
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
 		// Start the indexing process (accounts)
-		await indexAllDelegateAccounts();
 		await cacheLegacyAccountInfo();
 		await indexGenesisAccounts();
 
