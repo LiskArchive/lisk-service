@@ -20,6 +20,7 @@ const { transformParams, response, getSwaggerDescription } = require('../../../s
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/transactions/multisig',
+	httpMethod: 'POST',
 	rpcMethod: 'post.transactions.multisig',
 	tags: ['Multisignature Transactions'],
 	params: {
@@ -29,10 +30,10 @@ module.exports = {
 		const multisigTransactionSchema = {};
 		multisigTransactionSchema[this.swaggerApiPath] = { post: {} };
 		multisigTransactionSchema[this.swaggerApiPath].post.tags = this.tags;
-		multisigTransactionSchema[this.swaggerApiPath].post.summary = 'Requests multisignature transactions';
+		multisigTransactionSchema[this.swaggerApiPath].post.summary = 'Create a transaction in the multisignature pool';
 		multisigTransactionSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns multisignature transactions',
+			description: 'Creates a transaction in the multisignature pool and returns the transaction',
 		});
 		multisigTransactionSchema[this.swaggerApiPath].post.parameters = transformParams('multisignature', this.params);
 		multisigTransactionSchema[this.swaggerApiPath].post.responses = {
