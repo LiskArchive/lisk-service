@@ -30,9 +30,10 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions.multisig', params);
 const createMultisigTransaction = async params => request(wsRpcUrl, 'post.transactions.multisig', params);
 
-describe('Method get.transactions.multisig', () => {
+describe('Multisignature Transactions API', () => {
 	let refTransaction;
 	let inputTransaction;
+
 	beforeAll(async () => {
 		const response1 = await getTransactions({ limit: 1 });
 		[refTransaction] = response1.result.data;
@@ -71,7 +72,7 @@ describe('Method get.transactions.multisig', () => {
 	});
 
 	describe('Retrieve multisignature transaction lists', () => {
-		it('list of multisig transactions', async () => {
+		it('returns list of multisignature transactions', async () => {
 			const response = await getTransactions();
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -83,7 +84,7 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Known multisig transaction by serviceId', async () => {
+		it('returns multisignature transactions with known serviceId', async () => {
 			const response = await getTransactions({ serviceId: refTransaction.serviceId });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -94,7 +95,7 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Known multisig transaction by address', async () => {
+		it('returns multisignature transactions with known address', async () => {
 			const response = await getTransactions({ address: 'lsk2dp8gf6me3hafoqgtqej8dk96uusdhykvnkbrr' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -107,7 +108,7 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Known multisig transaction by publicKey', async () => {
+		it('returns multisignature transactions with known publicKey', async () => {
 			const response = await getTransactions({ publicKey: refTransaction.senderPublicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

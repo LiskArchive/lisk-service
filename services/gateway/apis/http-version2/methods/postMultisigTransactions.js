@@ -41,7 +41,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Creates a transaction in the multisignature pool and returns the transaction',
 		});
-		multisigTransactionSchema[this.swaggerApiPath].post.parameters = transformParams('multisignature', this.params);
+		multisigTransactionSchema[this.swaggerApiPath].post.parameters = transformParams('multisignature', { multisigTransaction: '' });
 		multisigTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
 				description: 'Updated multisignature transaction',
