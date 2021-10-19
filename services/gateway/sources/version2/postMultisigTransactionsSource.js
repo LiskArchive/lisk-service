@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const postMultisigTransaction = require('./mappings/postMultisigTransaction');
+const multisigTransaction = require('./mappings/multisigTransaction');
 
 module.exports = {
 	type: 'moleculer',
@@ -28,7 +28,7 @@ module.exports = {
 		signatures: '=,array',
 	},
 	definition: {
-		data: ['data', postMultisigTransaction],
+		data: ['data', multisigTransaction],
 		meta: {
 			count: '=,number',
 			offset: '=,number',
