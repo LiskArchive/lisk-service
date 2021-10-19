@@ -20,8 +20,8 @@ module.exports = {
 	method: 'transaction.multisig',
 	params: {
 		serviceId: '=,string',
-		address: '=,string',
-		publicKey: '=,string',
+		senderAddress: 'address,string',
+		senderPublicKey: 'publicKey,string',
 		offset: '=,number',
 		limit: '=,number',
 	},
