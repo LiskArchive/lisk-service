@@ -35,6 +35,9 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
+- [Off-chain Features](#off-chain-features)
+  - [Market Prices](#market-prices)
+  - [News Feed Aggregator](#news-feed-aggregator)
 
 ## Response format
 
@@ -1106,4 +1109,112 @@ No params required.
 
 ```
 https://service.lisk.com/api/v2/network/statistics`
+```
+
+# Off-chain Features
+
+## Market Prices
+
+Retrieves current market prices.
+
+#### Endpoints
+
+- HTTP `/api/v2/market/prices`
+- RPC `get.market.prices`
+
+#### Request parameters
+
+*(no params)*
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": [
+    {
+      "code": "LSK_CHF",
+      "from": "LSK",
+      "rate": "2.4058",
+      "to": "CHF",
+      "sources": [
+        "kraken"
+      ],
+      "updateTimestamp": 1623053809
+    }
+  ],
+  "meta": {
+    "count": 1
+  }
+}
+```
+
+400 Bad Request
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+404 Not Found
+```
+
+```
+
+## News Feed Aggregator
+
+Retrieves recent blogposts from Lisk Blog and Twitter.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP `/api/v2/newsfeed`
+- RPC `get.newsfeed`
+
+#### Request parameters
+
+| Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
+| source         | String           | `/([A-z]\|,)+/`   | `*`     | Retrieves all sources by default |
+| limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
+| offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": [
+    {
+      "author": "LiskHQ",
+      "content_t": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
+      "source": "twitter_lisk",
+      "source_id": "4584a7d2db15920e130eeaf1014f87c99b5af329",
+      "createdAt": 1623053809,
+      "modifiedAt": 1623053809,
+      "title": "Financial Update for January 2021",
+      "url": "https://t.co/QpZOkBfrgA",
+      "image_url": "https://t.co/QpZOkBfrgA.jpg"
+    }
+  ],
+  "meta": {
+    "count": 1
+  },
+  "links": {}
+}
+```
+
+400 Bad Request
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+404 Not Found
+```
+
 ```
