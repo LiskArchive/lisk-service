@@ -44,7 +44,7 @@
     "debug": "=4.1.1",
     "ioredis": "^4.27.1",
     "knex": "^0.95.4",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef6b8e654ea1c4fd1389e7b10713c21afd238d8e/framework/dist/lisk-service-framework-1.2.2.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/810-update-dependecies/framework/dist/lisk-service-framework-1.2.3.tgz",
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
     "mysql": "^2.18.1",
@@ -57,8 +57,8 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",
-    "babel-jest": "^25.5.1",
-    "jest": "^26.6.3",
+    "babel-jest": "^27.3.0",
+    "jest": "^27.3.0",
     "mocker-data-generator": "^2.12.0"
   }
 }
