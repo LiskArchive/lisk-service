@@ -26,6 +26,9 @@
     "multisigTransaction": {
         "type": "object",
         "in": "body",
+        "schema": {
+            "$ref": "#/definitions/multisigTransaction"
+        },
         "required": [
             "senderPublicKey",
             "moduleAssetId",
@@ -35,26 +38,22 @@
         ],
         "properties": {
             "nonce": {
-                "in": "body",
                 "type": "string",
                 "example": "0",
                 "description": "Optional, LS takes it from the network"
             },
             "senderPublicKey": {
-                "in": "body",
                 "type": "string",
                 "format": "senderPublicKey",
                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
                 "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
             },
             "moduleAssetId": {
-                "in": "body",
                 "type": "string",
                 "example": "2:0",
                 "description": "Combination of transaction module:asset Id.\n"
             },
             "asset": {
-                "in": "body",
                 "type": "object",
                 "properties": {
                     "amount": {
@@ -81,19 +80,16 @@
                 }
             },
             "fee": {
-                "in": "body",
                 "type": "string",
                 "example": "1000000",
                 "description": "Transaction fee associated with this transaction.\n"
             },
             "expires": {
-                "in": "body",
                 "type": "integer",
                 "example": 1613323667,
                 "description": "UNIX Timestamp"
             },
             "signatures": {
-                "in": "body",
                 "type": "array",
                 "items": {
                     "type": "object",
