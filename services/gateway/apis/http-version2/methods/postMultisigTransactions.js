@@ -24,7 +24,13 @@ module.exports = {
 	rpcMethod: 'post.transactions.multisig',
 	tags: ['Multisignature Transactions'],
 	params: {
-		transaction: { optional: true, type: 'string' },
+		nonce: { optional: true, type: 'string' },
+		senderPublicKey: { optional: false, type: 'string' },
+		moduleAssetId: { optional: false, type: 'string' },
+		asset: { optional: false, type: 'object' },
+		fee: { optional: false, type: 'string' },
+		expires: { optional: true, type: 'number' },
+		signatures: { optional: false, type: 'array' },
 	},
 	get schema() {
 		const multisigTransactionSchema = {};

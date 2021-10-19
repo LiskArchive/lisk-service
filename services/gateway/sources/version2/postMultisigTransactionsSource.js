@@ -19,7 +19,13 @@ module.exports = {
 	type: 'moleculer',
 	method: 'transaction.multisig.create',
 	params: {
-		transaction: '=,string',
+		nonce: '=,string',
+		senderPublicKey: '=,string',
+		moduleAssetId: '=,string',
+		asset: '=,object',
+		fee: '=,string',
+		expires: '=,string',
+		signatures: '=,array',
 	},
 	definition: {
 		data: ['data', postMultisigTransaction],
