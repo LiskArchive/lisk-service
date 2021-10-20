@@ -99,10 +99,21 @@ const updateMultisignatureTx = async transactionPatch => {
 	if (!pooledTransaction) throw new NotFoundException(`Transaction with serviceId: ${serviceId} does not exist in the pool`);
 
 	signatures.forEach(signature => {
-		// TODO: Implement the logic
+		// TODO: Validation
+		pooledTransaction.signatures.push(signature);
 	});
 
+	try {
+		// Persist the transaction into the database
+		await multisignatureTxDB.upsert(pooledTransaction);
+	} catch (err) {
+		// TODO: Send appropriate named exception
+		throw new Error(`Unable to create the transaction: ${err.message}`);
+	}
+
 	const response = await getMultisignatureTx({ serviceId });
+	if (response.data) transaction.data = response.data;
+	if (response.meta) transaction.meta = response.meta;
 
 	return transaction;
 };
