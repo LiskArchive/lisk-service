@@ -96,7 +96,7 @@ describe('Multisignature Transactions API', () => {
 		});
 
 		it('returns multisignature transactions with known address', async () => {
-			const response = await getTransactions({ address: 'lsk2dp8gf6me3hafoqgtqej8dk96uusdhykvnkbrr' });
+			const response = await getTransactions({ address: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
