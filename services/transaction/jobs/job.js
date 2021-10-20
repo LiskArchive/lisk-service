@@ -22,7 +22,7 @@ module.exports = [
 		schedule: '* * * * *', // Every 1 min
 		controller: () => {
 			const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			logger.info(`Dummy job is done, processed ${operationResult.length} items`);
+			// logger.info(`Dummy job is done, processed ${operationResult.length} items`);
 		},
 	},
 ];
