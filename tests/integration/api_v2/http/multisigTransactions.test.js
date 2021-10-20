@@ -90,7 +90,7 @@ describe('Multisignature Transactions API', () => {
 		});
 
 		it('returns multisignature transactions with known address', async () => {
-			const response = await api.get(`${endpoint}?address=lsk2dp8gf6me3hafoqgtqej8dk96uusdhykvnkbrr`);
+			const response = await api.get(`${endpoint}?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);

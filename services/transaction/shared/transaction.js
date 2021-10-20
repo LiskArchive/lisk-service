@@ -68,7 +68,7 @@ const createMultisignatureTx = async inputTransaction => {
 
 	// Stringify the transaction asset object
 	inputTransaction.asset = JSON.stringify(inputTransaction.asset);
-	inputTransaction.address = getBase32AddressFromPublicKey(inputTransaction.senderPublicKey);
+	inputTransaction.senderAddress = getBase32AddressFromPublicKey(inputTransaction.senderPublicKey);
 
 	try {
 		// Persist the transaction into the database
