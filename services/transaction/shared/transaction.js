@@ -15,6 +15,10 @@
  */
 const { v4: uuidv4 } = require('uuid');
 
+const {
+	Exceptions: { NotFoundException },
+} = require('lisk-service-framework');
+
 const { getBase32AddressFromPublicKey } = require('./accountUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
@@ -82,7 +86,29 @@ const createMultisignatureTx = async inputTransaction => {
 	return transaction;
 };
 
+const updateMultisignatureTx = async transactionPatch => {
+	const multisignatureTxDB = await getMultiSignatureTxIndex();
+	const transaction = {
+		data: [],
+		meta: {},
+	};
+	const { serviceId, signatures } = transactionPatch;
+
+	// Find the transaction from the pool
+	const [pooledTransaction] = await multisignatureTxDB.find({ serviceId });
+	if (!pooledTransaction) throw new NotFoundException(`Transaction with serviceId: ${serviceId} does not exist in the pool`);
+
+	signatures.forEach(signature => {
+		// TODO: Implement the logic
+	});
+
+	const response = await getMultisignatureTx({ serviceId });
+
+	return transaction;
+};
+
 module.exports = {
 	getMultisignatureTx,
 	createMultisignatureTx,
+	updateMultisignatureTx,
 };

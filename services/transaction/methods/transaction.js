@@ -14,11 +14,23 @@
  *
  */
 const {
-	createMultisignatureTx,
 	getMultisignatureTx,
+	createMultisignatureTx,
+	updateMultisignatureTx,
 } = require('./controllers/transaction');
 
 module.exports = [
+	{
+		name: 'multisig',
+		controller: getMultisignatureTx,
+		params: {
+			serviceId: { optional: true, type: 'any' },
+			address: { optional: true, type: 'any' },
+			publicKey: { optional: true, type: 'any' },
+			limit: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
+		},
+	},
 	{
 		name: 'multisig.create',
 		controller: createMultisignatureTx,
@@ -33,14 +45,11 @@ module.exports = [
 		},
 	},
 	{
-		name: 'multisig',
-		controller: getMultisignatureTx,
+		name: 'multisig.update',
+		controller: updateMultisignatureTx,
 		params: {
-			serviceId: { optional: true, type: 'any' },
-			address: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
+			serviceId: { optional: false, type: 'any' },
+			signatures: { optional: false, type: 'any' },
 		},
 	},
 ];
