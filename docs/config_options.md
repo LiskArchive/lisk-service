@@ -144,7 +144,7 @@ MYSQL_PASSWORD=password
 LISK_STATIC=https://static-data.lisk.com
 
 # Lisk Service geolocation backend
-GEOIP_JSON=https://geoip.lisk.io/json
+GEOIP_JSON=https://geoip.lisk.com/json
 ```
 
 ### Indexing

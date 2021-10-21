@@ -519,12 +519,14 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
+		// Index all the delegate accounts first
+		await indexAllDelegateAccounts();
+
 		// Start the indexing process (blocks)
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
 		// Start the indexing process (accounts)
-		await indexAllDelegateAccounts();
 		await cacheLegacyAccountInfo();
 		await indexGenesisAccounts();
 
