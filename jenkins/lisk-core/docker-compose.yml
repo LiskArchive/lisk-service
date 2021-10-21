@@ -1,7 +1,7 @@
 version: '3'
 services:
   lisk-core:
-    image: lisk/core:3.0.0
+    image: lisk/core:3.0.2
     volumes:
       - ./snapshots/:/tmp/snapshots
       - ./config/:/tmp/config

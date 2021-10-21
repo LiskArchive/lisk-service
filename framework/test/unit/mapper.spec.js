@@ -84,19 +84,22 @@ describe('Object mapper: ', () => {
 
 	it('Array with an object with reference = put an object inside an array -> ok', () => {
 		const result = mapperService({ address: '16009998050678037905L' }, [{ address: '=' }]);
-		expect(result).toBeArray();
-		expect(result[0]).toMapRequiredSchema({ address: '16009998050678037905L' });
+		expect(result).toBeInstanceOf(Array);
+		expect(result).toHaveLength(1);
+		result.forEach(entry => expect(entry).toMapRequiredSchema({ address: '16009998050678037905L' }));
 	});
 
 	it('Array with an object with = and type put an object inside an array -> ok', () => {
 		const result = mapperService({ address: '100' }, [{ address: '=,number' }]);
-		expect(result).toBeArray();
-		expect(result[0]).toMapRequiredSchema({ address: 100 });
+		expect(result).toBeInstanceOf(Array);
+		expect(result).toHaveLength(1);
+		result.forEach(entry => expect(entry).toMapRequiredSchema({ address: 100 }));
 	});
 
 	it('Map an array inside a plain object -> ok', () => {
 		const result = mapperService({ data: [{ address: '16009998050678037905L' }] }, ['data', { address: '=' }]);
-		expect(result).toBeArray();
+		expect(result).toBeInstanceOf(Array);
+		expect(result).toHaveLength(2);
 		expect(result).toEqual(['data', { data: [{ address: '16009998050678037905L' }] }]);
 	});
 
@@ -147,8 +150,11 @@ describe('Object mapper: ', () => {
 
 	it('Map a plain object with an empty object inside an array -> ok', () => {
 		const result = mapperService({ address: [{}] }, { address: '=' });
-		expect(result.address).toBeArray();
-		expect(result.address[0]).toMapRequiredSchema({});
+		expect(result).toBeInstanceOf(Object);
+		const { address } = result;
+		expect(address).toBeInstanceOf(Array);
+		expect(address).toHaveLength(1);
+		address.forEach(entry => expect(entry).toMapRequiredSchema({}));
 	});
 
 	it('Plain object with undefined maps to empty object with refrence undefined -> ok', () => {
