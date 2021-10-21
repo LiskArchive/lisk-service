@@ -134,12 +134,6 @@ config.queue = {
 /**
  * Lisk Core jobs configs
  */
-config.jobs = {
-	missingBlocks: {
-		enabled: Boolean(String(process.env.ENABLE_JOB_MISSING_BLOCKS).toLowerCase() === 'true'),
-		// Config to set the last number of blocks within which the job checks for the missing blocks
-		range: Number(process.env.INDEX_MISSING_BLOCKS_RANGE || 1080), // Avg. block count every 3hrs
-	},
-};
+config.jobs = {};
 
 module.exports = config;
