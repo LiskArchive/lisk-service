@@ -101,7 +101,7 @@ const getEstimateFeeByte = async () => {
 		};
 	}
 
-	if (!config.quickAlgorithmEnabled && !config.fullAlgorithmEnabled) {
+	if (!config.feeEstimates.quickAlgorithmEnabled && !config.feeEstimates.fullAlgorithmEnabled) {
 		return {
 			data: { error: 'The dynamic fees algorithm has not been enabled.' },
 			status: 'SERVICE_UNAVAILABLE',
