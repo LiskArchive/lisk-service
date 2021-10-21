@@ -1171,7 +1171,7 @@ _Supports pagination._
 
 | Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
 | -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
-| source         | String           | `/([A-z]\|,)+/`   | `*`     | Retrieves all sources by default |
+| source         | String           | `/[A-z]+/`   | `*`     | Retrieves all sources by default |
 | limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
 | offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
 
