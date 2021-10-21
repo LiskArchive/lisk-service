@@ -1094,7 +1094,6 @@ No params required.
     "meta": {},
     "links": {}
   }
-
 ```
 
 503 Service Unavailable
@@ -1184,19 +1183,21 @@ _Supports pagination._
   "data": [
     {
       "author": "Lisk",
-      "content_t": "In the previous research blog post \"Introduction to Blockchain\nInteroperability\", we provided an overview of various methods for blockchain\ninteroperability. The blog post described different types of blockchain\ninteroperability, ranging from cross-chain token exchange to general cross-chain\nmessages. We already revealed that the Lisk interoperability solution aims to\nenable general cross-chain messages.",
-      "createdAt": 1617895920,
-      "image_url": "https://lisk.io/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/ama-recap-high-level-overview-of-lisk-interoperability-solution-MAIN%402x.png?itok=phccd700",
-      "modifiedAt": 1617895920,
+      "content": "On Wednesday, March 3rd, Max Kordek, CEO and Co-founder at Lisk, hosted a live\nmonthly AMA (Ask Max Anything) on Lisk.chat. He answered questions regarding the\nupcoming milestones for Lisk, Lisk.js 2021, marketing plans for this year, and\nmuch more.\n\nThis blog post includes a recap of the live AMA session and features the\nquestions asked by community members, as well as Max’s answers.",
+      "image_url": "https://lisk.com/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/montly-ama-ask-max-anything-recap-MAIN-V1%402x_0.png?itok=_0lipXxp",
+      "imageUrl": "https://lisk.com/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/montly-ama-ask-max-anything-recap-MAIN-V1%402x_0.png?itok=_0lipXxp",
       "source": "drupal_lisk_general",
-      "source_id": "1025",
-      "title": "AMA Recap: High-level Overview of Lisk Interoperability Solution",
-      "url": "https://lisk.io/blog/events/ama-recap-high-level-overview-lisk-interoperability-solution"
+      "sourceId": "1001",
+      "timestamp": 1614854580,
+      "createdAt": 1614854580,
+      "modifiedAt": 1614854580,
+      "title": "AMA Recap: Ask Max Anything in March 2021",
+      "url": "https://lisk.com/blog/events/ama-recap-ask-max-anything-march-2021"
     }
   ],
   "meta": {
-    "count": 10,
-    "limit": 10,
+    "count": 1,
+    "limit": 1,
     "offset": 0
   }
 }
