@@ -65,6 +65,28 @@ describe('Multisignature Transactions API', () => {
 			response.data.forEach(multisigTxn => expect(multisigTxn).toMap(multisigTransactionSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		it('PATCH an existing multisignature transaction: add a new signature', async () => {
+			const signaturePatch = {
+				// serviceId: refTransaction.serviceId,
+				serviceId: 'a3fb4bbf-3a07-4499-af9f-ca26d23d32a0',
+				signatures: [{
+					publicKey: '968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b',
+					signature: 'a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07'
+				}],
+			};
+
+			const response = await api.patch(`${endpoint}`, signaturePatch);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(1);
+			response.data.forEach(multisigTxn => {
+				expect(multisigTxn).toMap(multisigTransactionSchema);
+				expect(multisigTxn.signatures.some(entry => entry.signature === signaturePatch[0].signature))
+					.toBeTruthy();
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
 	});
 
 	describe('Retrieve multisignature transaction lists', () => {
