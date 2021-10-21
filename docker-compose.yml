@@ -155,6 +155,10 @@ services:
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
       - SERVICE_NEWSFEED_MYSQL=mysql://lisk:password@mysql_newsfeed:3306/lisk
+      - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+      - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+      - TWITTER_ACCESS_TOKEN_KEY=${TWITTER_ACCESS_TOKEN_KEY}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
     restart: always
 
   mysql_newsfeed:
