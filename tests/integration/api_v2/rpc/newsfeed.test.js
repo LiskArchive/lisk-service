@@ -132,6 +132,24 @@ describe('Method get.newsfeed.articles', () => {
 			expect(result.meta.offset).toEqual(offset);
 		});
 
+		it('ensure retrieved news is in reverse chronology', async () => {
+			const response = await getNewsfeed({});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((news, index) => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/);
+				if (index) {
+					const prev_news = result.data[index - 1];
+					expect(prev_news.createdAt).toBeGreaterThanOrEqual(news.createdAt);
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
 		it('error when invalid params', async () => {
 			const response = await getNewsfeed({ invalidParam: '4584a7d2db15920e130eeaf1014f87c99b5af329' });
 			expect(response).toMap(invalidParamsSchema);

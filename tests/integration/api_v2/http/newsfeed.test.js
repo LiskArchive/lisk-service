@@ -120,6 +120,23 @@ describe('Newsfeed API', () => {
 			expect(response.meta.offset).toEqual(offset);
 		});
 
+		it('ensure retrieved news is in reverse chronology', async () => {
+			const response = await api.get(endpoint);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((news, index) => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/);
+				if (index) {
+					const prev_news = response.data[index - 1];
+					expect(prev_news.createdAt).toBeGreaterThanOrEqual(news.createdAt);
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
 		it('returns 400 BAD REQUEST with invalid params', async () => {
 			const expectedResponseCode = 400;
 			const response = await api.get(`${endpoint}?invalidParam=4584a7d2db15920e130eeaf1014f87c99b5af329`, expectedResponseCode);
