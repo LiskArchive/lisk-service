@@ -101,6 +101,13 @@ const getEstimateFeeByte = async () => {
 		};
 	}
 
+	if (!config.feeEstimates.quickAlgorithmEnabled && !config.feeEstimates.fullAlgorithmEnabled) {
+		return {
+			data: { error: 'The dynamic fees algorithm has not been enabled.' },
+			status: 'SERVICE_UNAVAILABLE',
+		};
+	}
+
 	const latestBlock = getLastBlock();
 	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
