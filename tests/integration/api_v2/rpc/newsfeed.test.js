@@ -143,8 +143,8 @@ describe('Method get.newsfeed.articles', () => {
 				expect(news).toMap(newsfeedSchema);
 				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/);
 				if (index) {
-					const prev_news = result.data[index - 1];
-					expect(prev_news.createdAt).toBeGreaterThanOrEqual(news.createdAt);
+					const prevNews = result.data[index - 1];
+					expect(prevNews.createdAt).toBeGreaterThanOrEqual(news.createdAt);
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
