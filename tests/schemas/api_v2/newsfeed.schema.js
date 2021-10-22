@@ -23,7 +23,7 @@ const newsfeedArticleSchema = {
 	source_id: Joi.string().required(),
 	createdAt: Joi.number().integer().positive().required(),
 	modifiedAt: Joi.number().integer().positive().required(),
-	title: Joi.string().allow('').required(),
+	title: Joi.string().allow('', null).required(),
 	url: Joi.string().required(),
 };
 
