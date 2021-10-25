@@ -20,8 +20,8 @@ Each service is an independent part of the repository and is placed in a separat
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | [Gateway](services/gateway) | The Gateway provides the API, which all users of Lisk Service can access and use. Its main purpose is to proxy API requests from users to other services provided by Lisk Service. This provides the users with a central point of data access that never breaks existing application compatibility.|
 | [Lisk](services/core) | The Lisk Core service acts as a bridge between the Lisk Core and the Lisk Service API. Its main purpose is to provide enriched data from the Lisk Core API. This service is aimed at providing high availability, and both efficient and reliable access to the Lisk Core API. |
-| [Market](services/market) | The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients. |
-| [Newsfeed](services/newsfeed) | The Newsfeed service is a single-purpose microservice that polls the content sharing platforms and shares collected data with UI clients such as Lisk Desktop |
+| [Market](services/market) | The Market service allows price data retrieval. It supports multiple sources to keep the current Lisk token price up-to-date and available to the clients in real time. |
+| [Newsfeed](services/newsfeed) | The Newsfeed service is a single-purpose microservice that aggregates content sharing platforms and shares collected data with UI clients such as Lisk Desktop. |
 | [Template](services/template) | The Template service is an abstract service that all of Lisk Service services are inherited from. It allows all services to share a similar interface and design pattern. Its purpose is to reduce code duplication and increase consistency between each service, hence simplifying code maintenance and testing. |
 
 **Remarks**
@@ -96,7 +96,7 @@ $EDITOR .env
 
 The example below assumes that the Lisk Core node is running on the host machine, and not inside of a Docker container.
 
-```
+```bash
 ## Required
 # The local Lisk Core node WebSocket API port
 export LISK_CORE_WS="ws://host.docker.internal:8080"

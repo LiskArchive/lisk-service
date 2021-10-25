@@ -35,6 +35,9 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
+- [Off-chain Features](#off-chain-features)
+  - [Market Prices](#market-prices)
+  - [News Feed Aggregator](#news-feed-aggregator)
 
 ## Response format
 
@@ -1106,4 +1109,121 @@ No params required.
 
 ```
 https://service.lisk.com/api/v2/network/statistics`
+```
+
+# Off-chain Features
+
+## Market Prices
+
+Retrieves current market prices.
+
+#### Endpoints
+
+- HTTP `/api/v2/market/prices`
+- RPC `get.market.prices`
+
+#### Request parameters
+
+*(no params)*
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": [
+    {
+      "code": "BTC_EUR",
+      "from": "BTC",
+      "rate": "53623.7800",
+      "sources": [
+          "binance"
+      ],
+      "to": "EUR",
+      "updateTimestamp": 1634649300
+    },
+  ],
+  "meta": {
+      "count": 7
+  }
+}
+```
+
+503 Service Unavailable
+```
+{
+  "error": true,
+  "message": "Service is not ready yet"
+}
+```
+
+## News Feed Aggregator
+
+Retrieves recent blogposts from Lisk Blog and Twitter.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP `/api/v2/newsfeed`
+- RPC `get.newsfeed`
+
+#### Request parameters
+
+| Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
+| source         | String           | `/([A-z]\|,)+/`   | `*`     | Retrieves all sources by default |
+| limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
+| offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": [
+    {
+      "author": "Lisk",
+      "content_t": "In the previous research blog post \"Introduction to Blockchain\nInteroperability\", we provided an overview of various methods for blockchain\ninteroperability. The blog post described different types of blockchain\ninteroperability, ranging from cross-chain token exchange to general cross-chain\nmessages. We already revealed that the Lisk interoperability solution aims to\nenable general cross-chain messages.",
+      "createdAt": 1617895920,
+      "image_url": "https://lisk.io/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/ama-recap-high-level-overview-of-lisk-interoperability-solution-MAIN%402x.png?itok=phccd700",
+      "modifiedAt": 1617895920,
+      "source": "drupal_lisk_general",
+      "source_id": "1025",
+      "title": "AMA Recap: High-level Overview of Lisk Interoperability Solution",
+      "url": "https://lisk.io/blog/events/ama-recap-high-level-overview-lisk-interoperability-solution"
+    }
+  ],
+  "meta": {
+    "count": 10,
+    "limit": 10,
+    "offset": 0
+  }
+}
+```
+
+400 Bad Request
+
+_Invalid parameter_
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+_Invalid source name_
+```
+{
+    "error": true,
+    "message": "Invalid input: The 'source' field fails to match the required pattern."
+}
+```
+
+503 Service Unavailable
+```
+{
+  "error": true,
+  "message": "Service is not ready yet"
+}
 ```
