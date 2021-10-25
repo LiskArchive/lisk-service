@@ -24,11 +24,11 @@ const config = require('../config');
 
 const logger = Logger();
 
-const getNewsfeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
+const getNewsFeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
 
 const refreshTwitterData = async () => {
 	logger.debug('Updating Twitter data...');
-	const newsfeedDB = await getNewsfeedIndex();
+	const newsfeedDB = await getNewsFeedIndex();
 
 	const response = await getData();
 	const normalizedData = normalizeData(config.sources.twitter_lisk, response);
