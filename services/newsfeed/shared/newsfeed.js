@@ -53,4 +53,4 @@ const getNewsfeedArticles = async params => {
 	};
 };
 
-module.exports = { getNewsfeedArticles };
+module.exports = { getNewsfeedArticles, getnewsfeedIndex };
