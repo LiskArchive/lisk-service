@@ -31,6 +31,8 @@ const supportedFiatCurrencies = config.market.supportedFiatCurrencies.split(',')
 
 const targetPairs = config.market.targetPairs.split(',');
 
+let isWarnMessageDisplayed = false;
+
 const getRawPricesBySource = async () => ({
 	binance: await binance.getFromCache(),
 	bittrex: await bittrex.getFromCache(),
@@ -53,7 +55,10 @@ const calcTargetPairPrices = (rawPricesBySource, targetPairings = targetPairs) =
 		// Append source name to the price code and push to sourcePrices array
 		// Eg: LSK_BTC from binance results in binance_LSK_EUR
 		if (Array.isArray(prices)) prices.forEach(item => sourcePrices.push({ ...item, code: `${source}_${item.code}` }));
-		else logger.warn(`Data from '${source}' is unavailable for market price computation.`);
+		else if (isWarnMessageDisplayed === false) {
+			logger.warn(`Data from '${source}' is unavailable for market price computation.`);
+			isWarnMessageDisplayed = true;
+		}
 	});
 
 	// Loop through each target pair and calculate the final prices
