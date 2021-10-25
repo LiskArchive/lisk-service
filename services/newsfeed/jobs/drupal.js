@@ -26,10 +26,10 @@ const config = require('../config');
 
 const logger = Logger();
 
-const getnewsfeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
+const getNewsFeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
 
 const reloadNewsFromDrupal = async drupalSources => {
-	const newsfeedDB = await getnewsfeedIndex();
+	const newsfeedDB = await getNewsFeedIndex();
 
 	drupalSources.forEach(async source => {
 		const response = await requestLib(source.url);
