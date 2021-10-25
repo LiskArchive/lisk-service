@@ -23,7 +23,7 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 
-const newsfeedStore = require('./shared/newsfeed');
+const newsFeedStore = require('./shared/newsfeed');
 
 // Configure logger
 const loggerConf = {
@@ -45,7 +45,7 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-newsfeedStore.getnewsfeedIndex().then(() => {
+newsFeedStore.getNewsFeedIndex().then(() => {
 	// Add routes, events & jobs
 	app.addMethods(path.join(__dirname, 'methods'));
 	app.addJobs(path.join(__dirname, 'jobs'));
