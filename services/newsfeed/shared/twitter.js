@@ -51,12 +51,21 @@ const getImageUrl = ({ entities }) => (
 	entities.media && entities.media[0] && entities.media[0].media_url_https
 );
 
-const tweetMapper = o => ({
-	...o,
-	url: tweetUrl(o),
-	image_url: getImageUrl(o),
-	author: safeRef(o, 'user.screen_name'),
-});
+const tweetMapper = o => {
+	const tweet = {
+		...o,
+		url: tweetUrl(o),
+		image_url: getImageUrl(o),
+		author: safeRef(o, 'user.screen_name'),
+	};
+
+	if (o.is_quote_status && o.quoted_status) {
+		// Append original quoted status to the re-tweet text
+		tweet.text = `${o.text}\n\nQuoted status by ${o.quoted_status.user.name} (@${o.quoted_status.user.screen_name}): ${o.quoted_status.text}`;
+	}
+
+	return tweet;
+};
 
 const getData = () => new Promise((resolve, reject) => {
 	const { url, requestOptions } = config.sources.twitter_lisk;
