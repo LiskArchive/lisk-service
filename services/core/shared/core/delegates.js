@@ -86,7 +86,7 @@ const computeDelegateStatus = async () => {
 			delegate.status = delegateStatus.NON_ELIGIBLE;
 
 			// Update delegate status, if applicable
-			if (delegate.isBanned) {
+			if (delegate.dpos.delegate.isBanned) {
 				delegate.status = delegateStatus.BANNED;
 			} else if (verifyIfPunished(delegate)) {
 				delegate.status = delegateStatus.PUNISHED;
