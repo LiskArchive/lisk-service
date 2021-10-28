@@ -34,8 +34,6 @@ services:
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
       - ENABLE_TRANSACTION_STATS=${ENABLE_TRANSACTION_STATS}
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
-      - ENABLE_JOB_MISSING_BLOCKS=${ENABLE_JOB_MISSING_BLOCKS}
-      - INDEX_MISSING_BLOCKS_RANGE=${INDEX_MISSING_BLOCKS_RANGE}
       - LISK_CORE_WS=${LISK_CORE_WS}
     restart: always
     extra_hosts:
@@ -65,7 +63,8 @@ services:
       test: redis-cli ping
 
   mysql_core:
-    image: mysql:5.7
+    image: mysql:8
+    command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - mysql-data-core:/var/lib/mysql
     restart: always
@@ -154,10 +153,15 @@ services:
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
       - SERVICE_NEWSFEED_MYSQL=mysql://lisk:password@mysql_newsfeed:3306/lisk
+      - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
+      - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
+      - TWITTER_ACCESS_TOKEN_KEY=${TWITTER_ACCESS_TOKEN_KEY}
+      - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
     restart: always
 
   mysql_newsfeed:
-    image: mysql:5.7
+    image: mysql:8
+    command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - mysql-data-newsfeed:/var/lib/mysql
     restart: always

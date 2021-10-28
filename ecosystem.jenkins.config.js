@@ -60,7 +60,7 @@ module.exports = {
 				SERVICE_CORE_VOLATILE: 'redis://localhost:6379/2',
 				SERVICE_CORE_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
-				GEOIP_JSON: 'https://geoip.lisk.io/json',
+				GEOIP_JSON: 'https://geoip.lisk.com/json',
 				ENABLE_TRANSACTION_STATS: 'true',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '40',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',

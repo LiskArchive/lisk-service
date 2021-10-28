@@ -92,6 +92,9 @@ const getFromCache = async () => {
 };
 
 const reload = async () => {
+	// Skip updates if there is no accessKey
+	if (!accessKey) return;
+
 	const conversionRatesFromCache = await getFromCache();
 
 	// Check if prices exists in cache

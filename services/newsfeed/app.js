@@ -23,6 +23,8 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 
+const newsFeedStore = require('./shared/newsfeed');
+
 // Configure logger
 const loggerConf = {
 	...config.log,
@@ -43,15 +45,17 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-// Add routes, events & jobs
-app.addMethods(path.join(__dirname, 'methods'));
-app.addJobs(path.join(__dirname, 'jobs'));
+newsFeedStore.getNewsFeedIndex().then(() => {
+	// Add routes, events & jobs
+	app.addMethods(path.join(__dirname, 'methods'));
+	app.addJobs(path.join(__dirname, 'jobs'));
 
-// Run the application
-app.run().then(() => {
-	logger.info(`Service started ${packageJson.name}`);
-}).catch(err => {
-	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-	logger.fatal(err.stack);
-	process.exit(1);
+	// Run the application
+	app.run().then(() => {
+		logger.info(`Service started ${packageJson.name}`);
+	}).catch(err => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});
 });

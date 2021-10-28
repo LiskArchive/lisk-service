@@ -25,7 +25,7 @@ const {
 const {
 	newsfeedSchema,
 	metaSchema,
-} = require('../../../schemas/newsfeed.schema');
+} = require('../../../schemas/api_v2/newsfeed.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getNewsfeed = async params => request(wsRpcUrl, 'get.newsfeed.articles', params);
@@ -130,6 +130,24 @@ describe('Method get.newsfeed.articles', () => {
 			});
 			expect(result.meta).toMap(metaSchema);
 			expect(result.meta.offset).toEqual(offset);
+		});
+
+		it('ensure retrieved news is in reverse chronology', async () => {
+			const response = await getNewsfeed({});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((news, index) => {
+				expect(news).toMap(newsfeedSchema);
+				expect(news.source).toMatch(/^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/);
+				if (index) {
+					const prevNews = result.data[index - 1];
+					expect(prevNews.createdAt).toBeGreaterThanOrEqual(news.createdAt);
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('error when invalid params', async () => {
