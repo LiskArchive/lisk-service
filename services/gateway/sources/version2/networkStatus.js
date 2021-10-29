@@ -19,12 +19,12 @@ module.exports = {
 	method: 'core.network.status',
 	definition: {
 		data: {
-			height: '=,string',
+			height: '=,number',
 			finalizedHeight: '=,number',
-			milestone: 'data.genesisConfig.rewards.milestones',
 			networkVersion: '=,string',
 			networkIdentifier: '=,string',
-			currentReward: '=,number',
+			milestone: '=,string',
+			currentReward: '=,string',
 			rewards: 'data.genesisConfig.rewards',
 			supply: '=,string',
 			registeredModules: '=',
@@ -36,7 +36,7 @@ module.exports = {
 		},
 		meta: {
 			lastUpdate: 'data.lastUpdate,number',
-			lastBlockHeight: 'data.height,string',
+			lastBlockHeight: 'data.height,number',
 			lastBlockId: 'data.lastBlockID,string',
 		},
 		links: {},

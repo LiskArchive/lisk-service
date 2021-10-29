@@ -67,7 +67,7 @@ const sendSocketIoEvent = (eventName, payload) => {
 	});
 };
 
-broker.createService({
+const gatewayConfig = {
 	transporter: config.transporter,
 	mixins: [ApiService, SocketIOService],
 	name: 'gateway',
@@ -139,7 +139,24 @@ broker.createService({
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},
-});
+};
+
+if (config.rateLimit.enable) {
+	logger.info(`Enabling rate limiter, connLimit: ${config.rateLimit.connectionLimit}, window: ${config.rateLimit.window}`);
+
+	gatewayConfig.settings.rateLimit = {
+		window: (config.rateLimit.window || 10) * 1000,
+		limit: config.rateLimit.connectionLimit || 200,
+		headers: true,
+
+		key: (req) => req.headers['x-forwarded-for']
+			|| req.connection.remoteAddress
+			|| req.socket.remoteAddress
+			|| req.connection.socket.remoteAddress,
+	};
+}
+
+broker.createService(gatewayConfig);
 
 broker.waitForServices(['core', 'market', 'newsfeed', 'transaction']);
 

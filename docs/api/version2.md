@@ -35,6 +35,9 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
     - [Network peers](#network-peers)
     - [Network status](#network-status)
     - [Network statistics](#network-statistics)
+- [Off-chain Features](#off-chain-features)
+  - [Market Prices](#market-prices)
+  - [News Feed Aggregator](#news-feed-aggregator)
 
 ## Response format
 
@@ -1008,30 +1011,36 @@ No params required.
 ```jsonc
 {
   "data": {
-    "height": 27256,
-    "finalizedHeight": 27112,
-    "milestone": "0",
-    "networkVersion": "2.0",
-    "networkIdentifier": "08ec0e01794b57e5ceaf5203be8c1bda51bcdd39bb6fc516adbe93223f85d630",
-    "reward": "500000000",
-    "supply": "10094237000000000",
-    "registeredModules": ["token", "sequence", "keys", "dpos", "legacyAccount"],
-    "operations": [
-      { "id": "2:0", "name": "token:transfer" }
+    "height": 16550779,
+    "finalizedHeight": 16550609,
+    "networkVersion": "3.0",
+    "networkIdentifier": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
+    "milestone": "4",
+    "currentReward": "100000000",
+    "rewards": {
+      "milestones": [ "500000000", "400000000", "300000000", "200000000", "100000000" ],
+      "offset": 1451520,
+      "distance": 3000000
+    },
+    "registeredModules": [ "token", "sequence", "keys", "dpos", "legacyAccount" ],
+    "moduleAssets": [
+      {
+        "id": "2:0",
+        "name": "token:transfer"
+      },
       ...
     ],
     "blockTime": 10,
     "communityIdentifier": "Lisk",
-    "maxPayloadLength": 15360,
+    "minRemainingBalance": "5000000",
+    "maxPayloadLength": 15360
   },
   "meta": {
-    "lastUpdate": 123456789,
-    "lastBlockHeight": 25,
-    "lastBlockId": 1354568
-  },
-  "links": {}
+    "lastUpdate": 1632471013,
+    "lastBlockHeight": 16550779,
+    "lastBlockId": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f"
+  }
 }
-
 ```
 
 503 Service Unavailable
@@ -1085,7 +1094,6 @@ No params required.
     "meta": {},
     "links": {}
   }
-
 ```
 
 503 Service Unavailable
@@ -1100,4 +1108,123 @@ No params required.
 
 ```
 https://service.lisk.com/api/v2/network/statistics`
+```
+
+# Off-chain Features
+
+## Market Prices
+
+Retrieves current market prices.
+
+#### Endpoints
+
+- HTTP `/api/v2/market/prices`
+- RPC `get.market.prices`
+
+#### Request parameters
+
+*(no params)*
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": [
+    {
+      "code": "BTC_EUR",
+      "from": "BTC",
+      "rate": "53623.7800",
+      "sources": [
+          "binance"
+      ],
+      "to": "EUR",
+      "updateTimestamp": 1634649300
+    },
+  ],
+  "meta": {
+      "count": 7
+  }
+}
+```
+
+503 Service Unavailable
+```
+{
+  "error": true,
+  "message": "Service is not ready yet"
+}
+```
+
+## News Feed Aggregator
+
+Retrieves recent blogposts from Lisk Blog and Twitter.
+
+_Supports pagination._
+
+#### Endpoints
+
+- HTTP `/api/v2/newsfeed`
+- RPC `get.newsfeed`
+
+#### Request parameters
+
+| Parameter      | Type             | Validation                                                                                                                                                                      | Default       | Comment |
+| -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- | ------- |
+| source         | String           | `/[A-z]+/`   | `*`     | Retrieves all sources by default |
+| limit          | Number           | `<1;100>`                                                                                                                                                                       | 10            |
+| offset         | Number           | `<0;+Inf>`                                                                                                                                                                      | 0             |
+
+#### Response example
+
+200 OK
+```jsonc
+{
+  "data": [
+    {
+      "author": "Lisk",
+      "content": "On Wednesday, March 3rd, Max Kordek, CEO and Co-founder at Lisk, hosted a live\nmonthly AMA (Ask Max Anything) on Lisk.chat. He answered questions regarding the\nupcoming milestones for Lisk, Lisk.js 2021, marketing plans for this year, and\nmuch more.\n\nThis blog post includes a recap of the live AMA session and features the\nquestions asked by community members, as well as Max’s answers.",
+      "image_url": "https://lisk.com/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/montly-ama-ask-max-anything-recap-MAIN-V1%402x_0.png?itok=_0lipXxp",
+      "imageUrl": "https://lisk.com/sites/default/files/styles/blog_main_image_xl_retina/public/images/2021-04/montly-ama-ask-max-anything-recap-MAIN-V1%402x_0.png?itok=_0lipXxp",
+      "source": "drupal_lisk_general",
+      "sourceId": "1001",
+      "timestamp": 1614854580,
+      "createdAt": 1614854580,
+      "modifiedAt": 1614854580,
+      "title": "AMA Recap: Ask Max Anything in March 2021",
+      "url": "https://lisk.com/blog/events/ama-recap-ask-max-anything-march-2021"
+    }
+  ],
+  "meta": {
+    "count": 1,
+    "limit": 1,
+    "offset": 0
+  }
+}
+```
+
+400 Bad Request
+
+_Invalid parameter_
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+_Invalid source name_
+```
+{
+    "error": true,
+    "message": "Invalid input: The 'source' field fails to match the required pattern."
+}
+```
+
+503 Service Unavailable
+```
+{
+  "error": true,
+  "message": "Service is not ready yet"
+}
 ```

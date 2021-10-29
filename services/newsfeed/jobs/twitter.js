@@ -13,23 +13,34 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const { Logger } = require('lisk-service-framework');
 
+const { normalizeData } = require('../shared/normalizers');
+const { getData } = require('../shared/twitter');
+
+const mysqlIndex = require('../shared/indexdb/mysql');
+const newsfeedIndexSchema = require('../shared/schema/newsfeed');
 const config = require('../config');
-const refreshTwitterData = require('../shared/twitter');
+
+const logger = Logger();
+
+const getNewsFeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
+
+const refreshTwitterData = async () => {
+	logger.debug('Updating Twitter data...');
+	const newsfeedDB = await getNewsFeedIndex();
+
+	const response = await getData();
+	const normalizedData = normalizeData(config.sources.twitter_lisk, response);
+	await newsfeedDB.upsert(normalizedData);
+};
 
 module.exports = [
 	{
 		name: 'newsfeed.retrieve.twitter',
 		description: 'Retrieves data from Twitter',
 		interval: config.sources.twitter_lisk.interval,
-		init: async () => {
-			logger.debug('Initializing data from Twitter');
-			await refreshTwitterData();
-		},
-		controller: async () => {
-			logger.debug('Job scheduled to update data from Twitter');
-			await refreshTwitterData();
-		},
+		init: refreshTwitterData,
+		controller: refreshTwitterData,
 	},
 ];

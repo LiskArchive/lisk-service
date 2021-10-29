@@ -112,10 +112,17 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
 	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
+	const defaultCharset = 'utf8mb4';
 
 	if (!connectionPool[connPoolKey]) {
 		logger.info(`Attempting to connect ${connEndpoint}...`);
-		connectionPool[connPoolKey] = await createDbConnection(connEndpoint);
+		let connString = connEndpoint;
+		if (!connEndpoint.includes('charset')) {
+			connString = connEndpoint.includes('?')
+				? `${connEndpoint}&charset=${defaultCharset}`
+				: `${connEndpoint}?charset=${defaultCharset}`;
+		}
+		connectionPool[connPoolKey] = await createDbConnection(connString);
 	}
 
 	const knex = connectionPool[connPoolKey];
@@ -127,10 +134,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 
 	const { primaryKey, schema } = tableConfig;
 
-	const upsert = async (inputRows) => {
-		let rawRows = inputRows;
-		if (!Array.isArray(rawRows)) rawRows = [inputRows];
-
+	const mapRows = (rawRows) => {
 		const rows = [];
 		rawRows.forEach(item => {
 			const row = {};
@@ -140,6 +144,14 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			});
 			rows.push(row);
 		});
+		return rows;
+	};
+
+	const upsert = async (inputRows) => {
+		let rawRows = inputRows;
+		if (!Array.isArray(rawRows)) rawRows = [inputRows];
+
+		const rows = mapRows(rawRows);
 
 		try {
 			const chunkSize = 1000;
@@ -208,6 +220,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				propBetween => {
 					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
 					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
+					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 
@@ -245,13 +259,22 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(queryParams).sum(`${params.aggregate} as total`);
 		}
 
-		if (params.limit) query.limit(Number(params.limit));
+		if (params.limit) {
+			query.limit(Number(params.limit));
+		} else {
+			logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
+		}
+
 		if (params.offset) query.offset(Number(params.offset));
 
 		return query;
 	};
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
+		if (!columns) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			columns = [tableConfig.primaryKey];
+		}
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
@@ -277,6 +300,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 				propBetween => {
 					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
 					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
+					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 
@@ -318,8 +343,9 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return resultSet;
 	};
 
-	const increment = async (params, row) => {
+	const increment = async (params, rawRow = {}) => {
 		let result;
+		const [row] = mapRows([rawRow]);
 		try {
 			[result] = await knex.transaction(
 				trx => trx(tableName)

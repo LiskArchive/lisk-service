@@ -45,6 +45,9 @@ const app = Microservice({
 nodeStatus.waitForNode().then(async () => {
 	logger.info('Found a node, initiating Lisk Core...');
 
+	const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
+	await blockchainStore.initializeSearchIndex();
+
 	app.addMethods(path.join(__dirname, 'methods', 'api_v1'));
 	app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
 	app.addEvents(path.join(__dirname, 'events'));

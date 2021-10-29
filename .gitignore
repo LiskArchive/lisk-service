@@ -69,3 +69,6 @@ docker/graylog/data*
 
 # Temporary database snapshots
 /docker/*.db.gz
+
+# Custom Docker env file
+.env

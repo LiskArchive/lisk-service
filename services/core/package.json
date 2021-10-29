@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-core",
-  "version": "0.4.3",
+  "version": "0.5.0-rc.1",
   "description": "Lisk Service Core",
   "keywords": [
     "lisk",
@@ -38,13 +38,13 @@
     "big-number": "=2.0.0",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
-    "bull": "=3.13.0",
+    "bull": "^3.29.2",
     "commander": "=5.0.0",
     "compression": "^1.7.4",
     "debug": "=4.1.1",
     "ioredis": "^4.27.1",
     "knex": "^0.95.4",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef6b8e654ea1c4fd1389e7b10713c21afd238d8e/framework/dist/lisk-service-framework-1.2.2.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
     "mysql": "^2.18.1",
@@ -53,12 +53,12 @@
     "split": "^1.0.1",
     "stack-trace": "0.0.10",
     "string-similarity": "^4.0.4",
-    "tar": "^6.1.2"
+    "tar": "^6.1.9"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",
-    "babel-jest": "^25.5.1",
-    "jest": "^26.6.3",
+    "babel-jest": "^27.3.0",
+    "jest": "^27.3.0",
     "mocker-data-generator": "^2.12.0"
   }
 }

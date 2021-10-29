@@ -15,13 +15,14 @@
  */
 module.exports = {
 	author: '=,string',
-	content_t: '=,string',
-	imageUrl: '=,string',
+	content: 'content_t,string',
+	image_url: '=,string',
+	imageUrl: 'image_url,string',
 	source: '=,string',
-	source_id: '=,string',
+	sourceId: 'source_id,string',
+	timestamp: 'modified_at,number',
 	createdAt: 'created_at,number',
 	modifiedAt: 'modified_at,number',
 	title: '=,string',
-	image_url: '=,string',
 	url: '=,string',
 };

@@ -16,12 +16,6 @@
 const Twitter = require('twitter');
 
 const config = require('../config');
-const { normalizeData } = require('./normalizers');
-
-const mysqlIndex = require('./indexdb/mysql');
-const newsfeedIndexSchema = require('./schema/newsfeed');
-
-const getNewsfeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
 
 const client = new Twitter({
 	consumer_key: process.env.TWITTER_CONSUMER_KEY,
@@ -36,6 +30,16 @@ const safeRef = (obj, path) => {
 	} catch (e) {
 		return null;
 	}
+};
+
+const getTweetText = (o) => {
+	let tweetText = o.text;
+
+	if (o.is_quote_status && o.quoted_status) {
+		// Append original quoted status to the re-tweet text
+		tweetText = `${o.text}\n\nQuoted status by ${o.quoted_status.user.name} (@${o.quoted_status.user.screen_name}): ${o.quoted_status.text}`;
+	}
+	return tweetText;
 };
 
 const tweetUrl = (o) => {
@@ -59,6 +63,7 @@ const getImageUrl = ({ entities }) => (
 
 const tweetMapper = o => ({
 	...o,
+	text: getTweetText(o),
 	url: tweetUrl(o),
 	image_url: getImageUrl(o),
 	author: safeRef(o, 'user.screen_name'),
@@ -80,12 +85,10 @@ const getData = () => new Promise((resolve, reject) => {
 	});
 });
 
-const refreshData = async () => {
-	const newsfeedDB = await getNewsfeedIndex();
-
-	const response = await getData();
-	const normalizedData = normalizeData(config.sources.twitter_lisk, response);
-	await newsfeedDB.upsert(normalizedData);
+module.exports = {
+	safeRef,
+	tweetUrl,
+	getImageUrl,
+	tweetMapper,
+	getData,
 };
-
-module.exports = refreshData;

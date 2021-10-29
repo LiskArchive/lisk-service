@@ -20,14 +20,14 @@ const { getBlocks, getGenesisHeight } = require('./blocks');
 const { getApiClient } = require('../common');
 const { calcAvgFeeByteModes, EMAcalc } = require('../common/dynamicFees');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 const config = require('../../../../config');
 
 const blocksIndexSchema = require('./schema/blocks');
 const transactionsIndexSchema = require('./schema/transactions');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
-const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 
@@ -36,7 +36,7 @@ const logger = Logger();
 const calculateBlockSize = async block => {
 	const blocksDB = await getBlocksIndex();
 
-	const [blockInfo] = await blocksDB.find({ id: block.id });
+	const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['size']);
 	if (blockInfo) return blockInfo.size;
 
 	// If information is unavailable, compute on-the-fly
@@ -144,7 +144,7 @@ const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) =>
 
 const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 	const transactionsDB = await getTransactionsIndex();
-	const genesisHeight = getGenesisHeight();
+	const genesisHeight = await getGenesisHeight();
 	const { defaultStartBlockHeight } = config.feeEstimates;
 
 	// Check if the starting height is permitted by config or adjust acc.
@@ -179,7 +179,8 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 					height: prevFeeEstPerByte.blockHeight + 1 - i,
 				});
 				block.payload = block.numberOfTransactions
-					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions })
+					? await transactionsDB.find({ blockId: block.id, limit: block.numberOfTransactions },
+						Object.keys(transactionsIndexSchema.schema))
 					: [];
 				return block;
 			},

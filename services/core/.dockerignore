@@ -4,6 +4,7 @@
 *.orig
 
 # Logs
+*.log
 logs/*
 npm-debug.log*
 
