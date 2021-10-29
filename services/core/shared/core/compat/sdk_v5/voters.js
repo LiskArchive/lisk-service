@@ -20,21 +20,21 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const { getIndexedAccountInfo } = require('./accounts');
 const { getBase32AddressFromHex } = require('./accountUtils');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 const votesIndexSchema = require('./schema/votes');
 const votesAggregateIndexSchema = require('./schema/votesAggregate');
 
-const getVotesIndex = () => mysqlIndex('votes', votesIndexSchema);
-const getVotesAggregateIndex = () => mysqlIndex('votes_aggregate', votesAggregateIndexSchema);
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
+const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
-const indexVotes = async blocks => {
+const getVoteIndexingInfo = async (blocks) => {
 	const votesDB = await getVotesIndex();
-	const votesAggregateDB = await getVotesAggregateIndex();
+	const votesToAggregateArray = [];
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
 			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
@@ -55,20 +55,14 @@ const indexVotes = async blocks => {
 						limit: 1,
 					}, ['isAggregated']);
 					if (!row || !row.isAggregated) {
-						// indexing aggregated votes per account
-						const numRowsAffected = await votesAggregateDB.increment({
-							increment: {
-								amount: BigInt(vote.amount),
-							},
-							where: {
-								property: 'id',
-								value: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-							},
-						}, {
-							...voteEntry,
+						votesToAggregateArray.push({
+							amount: BigInt(vote.amount),
 							id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+							voteObject: {
+								...voteEntry,
+								id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
+							},
 						});
-						voteEntry.isAggregated = numRowsAffected > 0;
 					}
 
 					// TODO: Remove 'tempId' after composite PK support is added
@@ -85,19 +79,19 @@ const indexVotes = async blocks => {
 	});
 	let allVotePromises = [];
 	votesMultiArray.forEach(votes => allVotePromises = allVotePromises.concat(votes));
-	const allVotes = await BluebirdPromise.all(allVotePromises);
-	if (allVotes.length) await votesDB.upsert(allVotes);
+	const votes = await BluebirdPromise.all(allVotePromises);
+	return { votes, votesToAggregateArray };
 };
 
-const removeVotesByTransactionIDs = async transactionIDs => {
+const getVotesByTransactionIDs = async transactionIDs => {
 	const votesDB = await getVotesIndex();
-	const forkedVotes = await votesDB.find({
+	const votes = await votesDB.find({
 		whereIn: {
 			property: 'id',
 			values: transactionIDs,
 		},
 	}, ['tempId']);
-	await votesDB.deleteIds(forkedVotes.map(v => v.tempId));
+	return votes;
 };
 
 const getVoters = async params => {
@@ -182,6 +176,6 @@ const getVoters = async params => {
 
 module.exports = {
 	getVoters,
-	indexVotes,
-	removeVotesByTransactionIDs,
+	getVoteIndexingInfo,
+	getVotesByTransactionIDs,
 };

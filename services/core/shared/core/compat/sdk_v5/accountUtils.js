@@ -26,9 +26,9 @@ const coreCache = require('./coreCache');
 
 const accountsIndexSchema = require('./schema/accounts');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 
-const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 
 const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
 

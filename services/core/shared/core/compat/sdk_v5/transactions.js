@@ -27,23 +27,20 @@ const {
 } = require('./accountUtils');
 
 const {
-	indexAccountsbyAddress,
-	indexAccountsbyPublicKey,
+	getAccountsByAddress,
+	getAccountsByPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
 } = require('./accounts');
 
-const { removeVotesByTransactionIDs } = require('./voters');
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 
-const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
-const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
-const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const requestApi = coreApi.requestRetry;
 
@@ -66,9 +63,7 @@ const resolveModuleAsset = (moduleAssetVal) => {
 	return response;
 };
 
-const indexTransactions = async blocks => {
-	const transactionsDB = await getTransactionsIndex();
-	const multisignatureDB = await getMultisignatureIndex();
+const getTransactionIndexingInfo = async (blocks) => {
 	const multisignatureModuleAssetId = '4:0';
 	let multisignatureInfoToIndex = [];
 	const publicKeysToIndex = [];
@@ -97,23 +92,27 @@ const indexTransactions = async blocks => {
 	});
 	let allTransactions = [];
 	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	if (allTransactions.length) await transactionsDB.upsert(allTransactions);
-	if (recipientAddressesToIndex.length) await indexAccountsbyAddress(recipientAddressesToIndex);
-	if (publicKeysToIndex.length) await indexAccountsbyPublicKey(publicKeysToIndex);
-	if (multisignatureInfoToIndex.length) await multisignatureDB.upsert(multisignatureInfoToIndex);
+	const accountsByAddress = await getAccountsByAddress(recipientAddressesToIndex);
+	const accountsByPublicKey = await getAccountsByPublicKey(publicKeysToIndex);
+	const allAccounts = accountsByAddress.concat(accountsByPublicKey);
+
+	return {
+		accounts: allAccounts,
+		transactions: allTransactions,
+		multisignatureInfoToIndex,
+	};
 };
 
-const removeTransactionsByBlockIDs = async blockIDs => {
+const getTransactionsByBlockIDs = async blockIDs => {
 	const transactionsDB = await getTransactionsIndex();
-	const forkedTransactions = await transactionsDB.find({
+	const transactions = await transactionsDB.find({
 		whereIn: {
 			property: 'blockId',
 			values: blockIDs,
 		},
 	}, ['id']);
-	const forkedTransactionIDs = forkedTransactions.map(t => t.id);
-	await transactionsDB.deleteIds(forkedTransactionIDs);
-	await removeVotesByTransactionIDs(forkedTransactionIDs);
+	const transactionsIds = transactions.map(t => t.id);
+	return transactionsIds;
 };
 
 const normalizeTransaction = async txs => {
@@ -382,8 +381,8 @@ const getTransactionsByBlockId = async blockId => {
 
 module.exports = {
 	getTransactions,
-	indexTransactions,
-	removeTransactionsByBlockIDs,
+	getTransactionIndexingInfo,
+	getTransactionsByBlockIDs,
 	getTransactionsByBlockId,
 	getTransactionsByIDs,
 	normalizeTransaction,

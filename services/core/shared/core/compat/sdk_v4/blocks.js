@@ -28,10 +28,16 @@ const {
 	validateTimestamp,
 } = require('../common');
 
-const mysqlIdx = require('../../../indexdb/mysql');
+const {
+	getTableInstance,
+	getDbConnection,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
+} = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 
-const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
+const getBlockIdx = () => getTableInstance('blockIdx', blockIdxSchema);
 
 const logger = Logger();
 
@@ -56,15 +62,23 @@ const updateFinalizedHeight = async () => {
 const getFinalizedHeight = () => heightFinalized;
 
 const indexBlocks = async job => {
-	const { blocks } = job.data;
 	const blockIdx = await getBlockIdx();
-	blocks.forEach(block => {
-		if (block.numberOfTransactions > 0) {
-			blockIdx.upsert(block);
-			logger.debug(`============== 'indexTransactions' signal: ${Signals.get('indexTransactions')} ==============`);
-			Signals.get('indexTransactions').dispatch(block.id);
-		}
-	});
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	try {
+		const { blocks } = job.data;
+		blocks.forEach(block => {
+			if (block.numberOfTransactions > 0) {
+				blockIdx.upsert(block, trx);
+				logger.debug(`============== 'indexTransactions' signal: ${Signals.get('indexTransactions')} ==============`);
+				Signals.get('indexTransactions').dispatch(block.id);
+			}
+		});
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 const indexBlocksQueue = Queue('blockIndex', indexBlocks, 1);

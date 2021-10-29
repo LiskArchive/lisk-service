@@ -40,7 +40,7 @@
         "type": "string",
         "format": "address",
         "minLength": 1,
-        "maxLength": 22
+        "maxLength": 41
     },
     "search": {
         "in": "query",

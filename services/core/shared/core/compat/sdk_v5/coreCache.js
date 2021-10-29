@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 const accountsIndexSchema = require('./schema/accounts');
 
-const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 
 const getCachedAccountBy = async (key, value) => {
 	const accountsDB = await getAccountsIndex();

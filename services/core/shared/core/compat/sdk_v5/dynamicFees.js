@@ -20,14 +20,14 @@ const { getBlocks, getGenesisHeight } = require('./blocks');
 const { getApiClient } = require('../common');
 const { calcAvgFeeByteModes, EMAcalc } = require('../common/dynamicFees');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 const config = require('../../../../config');
 
 const blocksIndexSchema = require('./schema/blocks');
 const transactionsIndexSchema = require('./schema/transactions');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
-const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
 

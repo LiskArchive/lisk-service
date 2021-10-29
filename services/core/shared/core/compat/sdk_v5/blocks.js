@@ -33,10 +33,13 @@ const {
 
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const {
+	getTableInstance,
+} = require('../../../indexdb/mysql');
+
 const blocksIndexSchema = require('./schema/blocks');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
 
 const blockchainStore = require('./blockchainStore');
 
