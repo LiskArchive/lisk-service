@@ -58,6 +58,33 @@ ENABLE_HTTP_CACHE_CONTROL=true
 # The `Cache-Control` directives can be overridden with the `HTTP_CACHE_CONTROL_DIRECTIVES` 
 # environment variable and currently defaults to `public, max-age=10`.
 HTTP_CACHE_CONTROL_DIRECTIVES='public, max-age=10'
+
+# To enable RPC response caching, the `ENABLE_REQUEST_CACHING` environment 
+# variable is required to be true.
+ENABLE_REQUEST_CACHING=true
+```
+
+### Websocket settings
+
+```bash
+# To enable websocket rate limit, the `WS_RATE_LIMIT_ENABLE` environment variable is required to be true.
+# Number of connections per second can be set using 
+# `WS_RATE_LIMIT_CONNECTIONS` and `WS_RATE_LIMIT_DURATION` environment 
+# variable. currently defaults to `5 connections per second`
+WS_RATE_LIMIT_ENABLE=true
+WS_RATE_LIMIT_CONNECTIONS=5
+WS_RATE_LIMIT_DURATION=1
+```
+
+### HTTP Requests rate limit settings
+
+```bash
+# To enable `HTTP Rate limit`, the `HTTP_RATE_LIMIT_ENABLE` environment variable is required to be true.
+# The `HTTP Rate limit` directives can be set using `HTTP_RATE_LIMIT_WINDOW` and `HTTP_RATE_LIMIT_CONNECTIONS` environment 
+# variable.
+HTTP_RATE_LIMIT_ENABLE=true
+HTTP_RATE_LIMIT_WINDOW=10 # To keep record of requests in memory (in seconds). Defaults to 10 seconds
+HTTP_RATE_LIMIT_CONNECTIONS=200 # Max number of requests during window. Defaults to 200 requests
 ```
 
 ### Compatibility settings
@@ -117,7 +144,7 @@ MYSQL_PASSWORD=password
 LISK_STATIC=https://static-data.lisk.com
 
 # Lisk Service geolocation backend
-GEOIP_JSON=https://geoip.lisk.io/json
+GEOIP_JSON=https://geoip.lisk.com/json
 ```
 
 ### Indexing

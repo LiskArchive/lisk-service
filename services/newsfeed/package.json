@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-newsfeed",
-  "version": "0.4.0-beta.0",
+  "version": "0.5.0-beta.0",
   "description": "Lisk Service Newsfeed",
   "keywords": [
     "lisk",
@@ -15,7 +15,7 @@
     "url": "https://github.com/LiskHQ/lisk-service/issues"
   },
   "private": true,
-  "author": "Lisk Foundation <admin@lisk.io>, lightcurve GmbH <admin@lightcurve.io>",
+  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
@@ -34,9 +34,9 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "html-entities": "^2.3.2",
-    "html-to-text": "^1.2.1",
+    "html-to-text": "^8.0.0",
     "knex": "^0.95.4",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/0ba4de1b8dc37fd35f38ce122321345284f35771/framework/dist/lisk-service-framework-1.2.1.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "object-hash": "^2.2.0",

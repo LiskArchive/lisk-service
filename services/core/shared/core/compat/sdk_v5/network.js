@@ -15,26 +15,53 @@
  */
 const coreApi = require('./coreApi');
 const { resolvemoduleAssets } = require('../common/constants');
+const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const requestApi = coreApi.requestRetry;
 
+// As in https://github.com/LiskHQ/lisk-sdk/blob/v5.1.4/elements/lisk-chain/src/block_reward.ts
+const calculateMilestone = (height, blockRewardArgs) => {
+	const distance = Math.floor(blockRewardArgs.distance);
+	const location = Math.trunc((height - blockRewardArgs.offset) / distance);
+	const lastMile = blockRewardArgs.milestones[blockRewardArgs.milestones.length - 1];
+
+	if (location > blockRewardArgs.milestones.length - 1) {
+		return blockRewardArgs.milestones.lastIndexOf(lastMile);
+	}
+
+	return location;
+};
+
+const calculateDefaultReward = (height, blockRewardArgs) => {
+	if (height < blockRewardArgs.offset) {
+		return BigInt(0);
+	}
+
+	return blockRewardArgs.milestones[calculateMilestone(height, blockRewardArgs)];
+};
+
 const getNetworkStatus = async () => {
 	const status = await requestApi(coreApi.getNetworkStatus);
-	const { offset } = status.data.genesisConfig.rewards;
-	const { distance } = status.data.genesisConfig.rewards;
-	status.data.moduleAssets = await resolvemoduleAssets(status.data.registeredModules);
-	const rewardIndex = Math.floor((status.data.height - offset) / distance);
-	const finalRewardIndex = rewardIndex >= status.data.genesisConfig.rewards.milestones.length
-		? status.data.genesisConfig.rewards.milestones.length - 1 : rewardIndex;
-	status.data.currentReward = finalRewardIndex >= 0
-		? status.data.genesisConfig.rewards.milestones[finalRewardIndex] : 0;
+
+	// Ensure 'milestones' are in correct order
+	status.data.genesisConfig.rewards.milestones.sort((a, b) => Number(BigInt(b) - BigInt(a)));
+	status.data.milestone = calculateMilestone(
+		status.data.height,
+		status.data.genesisConfig.rewards,
+	);
+	status.data.currentReward = calculateDefaultReward(
+		status.data.height,
+		status.data.genesisConfig.rewards,
+	);
+	status.data.moduleAssets = resolvemoduleAssets(status.data.registeredModules);
 	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
+
 	status.data.lastUpdate = Math.floor(Date.now() / 1000);
 
 	// Required to fetch knownAccounts
 	status.data.constants = { nethash: status.data.networkIdentifier };
 
-	return status;
+	return parseToJSONCompatObj(status);
 };
 
 module.exports = {

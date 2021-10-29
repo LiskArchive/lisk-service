@@ -61,6 +61,8 @@ const computeDelegateStatus = async () => {
 	// TODO: These feature should be handled by the compatibility layer
 	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
 
+	const MIN_ELIGIBLE_VOTE_WEIGHT = BigInt(1000);
+
 	const lastestBlock = getLastBlock();
 	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
 	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
@@ -79,14 +81,21 @@ const computeDelegateStatus = async () => {
 			} else delegate.status = delegateStatus.STANDBY;
 		} else {
 			logger.debug('Determine delegate status');
-			if (!delegate.isDelegate) delegate.status = delegateStatus.NON_ELIGIBLE;
-			else if (delegate.isBanned) delegate.status = delegateStatus.BANNED;
-			else if (verifyIfPunished(delegate)) delegate.status = delegateStatus.PUNISHED;
-			else if (activeNextForgersList.includes(delegate.account.address)) {
-				delegate.status = delegateStatus.ACTIVE;
-			} else delegate.status = delegateStatus.STANDBY;
-		}
 
+			// Default delegate status
+			delegate.status = delegateStatus.NON_ELIGIBLE;
+
+			// Update delegate status, if applicable
+			if (delegate.dpos.delegate.isBanned) {
+				delegate.status = delegateStatus.BANNED;
+			} else if (verifyIfPunished(delegate)) {
+				delegate.status = delegateStatus.PUNISHED;
+			} else if (activeNextForgersList.includes(delegate.account.address)) {
+				delegate.status = delegateStatus.ACTIVE;
+			} else if (delegate.delegateWeight >= MIN_ELIGIBLE_VOTE_WEIGHT) {
+				delegate.status = delegateStatus.STANDBY;
+			}
+		}
 		return delegate;
 	});
 	return delegateList;
@@ -276,24 +285,25 @@ const updateDelegateListEveryBlock = () => {
 					}
 				}
 			});
+			if (updatedDelegateAddresses.length) {
+				const { data: updatedDelegateAccounts } = await coreApi
+					.getAccounts({ addresses: updatedDelegateAddresses });
 
-			const { data: updatedDelegateAccounts } = await coreApi
-				.getAccounts({ addresses: updatedDelegateAddresses });
+				updatedDelegateAccounts.forEach(delegate => {
+					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
+					// Update delegate list on newBlock event
+					if (delegate.isDelegate) {
+						if (delegateIndex === -1) delegateList.push(delegate);
+						else delegateList[delegateIndex] = delegate;
+						// Remove delegate from list when deleteBlock event contains delegate registration tx
+					} else if (delegateIndex !== -1) {
+						delegateList.splice(delegateIndex, 1);
+					}
+				});
 
-			updatedDelegateAccounts.forEach(delegate => {
-				const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-				// Update delegate list on newBlock event
-				if (delegate.isDelegate) {
-					if (delegateIndex === -1) delegateList.push(delegate);
-					else delegateList[delegateIndex] = delegate;
-				// Remove delegate from list when deleteBlock event contains delegate registration tx
-				} else if (delegateIndex !== -1) {
-					delegateList.splice(delegateIndex, 1);
-				}
-			});
-
-			// Rank is impacted only when a delegate gets (un-)voted
-			if (updatedDelegateAddresses.length) await computeDelegateRank();
+				// Rank is impacted only when a delegate gets (un-)voted
+				await computeDelegateRank();
+			}
 
 			// Update delegate cache with producedBlocks and rewards
 			const delegateIndex = delegateList.findIndex(acc => acc.address === block.generatorAddress);
@@ -319,6 +329,26 @@ const updateDelegateListEveryBlock = () => {
 	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
 
+const updateDelegateListOnAccountsUpdate = () => {
+	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
+		hexAddresses.forEach(async hexAddress => {
+			const address = coreApi.getBase32AddressFromHex(hexAddress);
+			const delegateIndex = delegateList.findIndex(acc => acc.address === address);
+			const delegate = delegateList[delegateIndex] || {};
+			if (Object.getOwnPropertyNames(delegate).length) {
+				const {
+					data: [updatedDelegate],
+				} = await coreApi.getDelegates({ address: delegate.address, limit: 1 });
+
+				// Update the account details of the affected delegate
+				Object.assign(delegate, parseToJSONCompatObj(updatedDelegate));
+			}
+		});
+	};
+
+	Signals.get('updateAccountState').add(updateDelegateListOnAccountsUpdateListener);
+};
+
 // Reload the delegate cache when all the indexes are up-to-date
 const refreshDelegateListOnIndexReady = () => {
 	const reloadDelegateCacheListener = () => reload();
@@ -326,6 +356,7 @@ const refreshDelegateListOnIndexReady = () => {
 };
 
 updateDelegateListEveryBlock();
+updateDelegateListOnAccountsUpdate();
 refreshDelegateListOnIndexReady();
 
 module.exports = {

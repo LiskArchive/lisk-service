@@ -20,33 +20,15 @@ const BigNumber = require('big-number');
 
 const Signals = require('../signals');
 
-const config = require('../../config');
 const { getTransactions } = require('./transactions');
-const { initializeQueue } = require('./queue');
+const Queue = require('./queue');
 const mysql = require('../indexdb/mysql');
 const requestAll = require('../requestAll');
+const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
 
 const logger = Logger();
 
-const tableConfig = {
-	primaryKey: 'id',
-	schema: {
-		amount_range: { type: 'string' },
-		count: { type: 'integer' },
-		date: { type: 'integer' },
-		id: { type: 'string' },
-		type: { type: 'string' },
-		volume: { type: 'bigInteger' },
-	},
-	indexes: {
-		date: { type: 'range' },
-	},
-};
-
-const getDbInstance = () => mysql('transaction_statistics', tableConfig);
-
-const queueName = 'transactionStatisticsQueue';
-const queueOptions = config.queue[queueName];
+const getDbInstance = () => mysql('transaction_statistics', txStatisticsIndexSchema);
 
 const getSelector = (params) => {
 	const result = { property: 'date' };
@@ -55,6 +37,7 @@ const getSelector = (params) => {
 	return {
 		propBetweens: [result],
 		sort: 'date:desc',
+		limit: params.limit || 366, // max supported limit of days
 	};
 };
 
@@ -118,7 +101,7 @@ const insertToDb = async (statsList, date) => {
 	const db = await getDbInstance();
 
 	try {
-		const [{ id }] = db.find({ date });
+		const [{ id }] = db.find({ date, limit: 1 }, ['id']);
 		await db.deleteIds([id]);
 		logger.debug(`Removed the following date from the database: ${date}`);
 	} catch (err) {
@@ -164,12 +147,13 @@ const queueJob = async (job) => {
 	}
 };
 
-const transactionStatisticsQueue = initializeQueue(queueName, queueJob, queueOptions);
+const queueName = 'transactionStats';
+const transactionStatisticsQueue = Queue(queueName, queueJob, 1);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();
 
-	const result = await db.find(getSelector(params));
+	const result = await db.find(getSelector(params), ['date', 'count', 'volume']);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -196,7 +180,7 @@ const getStatsTimeline = async params => {
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
+	const result = (await db.find(getSelector(params), ['amount_range', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -214,7 +198,7 @@ const getDistributionByAmount = async params => {
 const getDistributionByType = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(getSelector(params))).filter(o => o.count > 0);
+	const result = (await db.find(getSelector(params), ['type', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -231,11 +215,12 @@ const getDistributionByType = async params => {
 
 const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const db = await getDbInstance();
+	const scheduledDays = [];
 	[...Array(n)].forEach(async (_, i) => {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
-		const shouldUpdate = i === 0 || !((await db.find({ date })).length);
+		const shouldUpdate = i === 0 || !((await db.find({ date, limit: 1 }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
 			let attempt = 0;
@@ -243,10 +228,12 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 				delay: (attempt ** 2) * 60 * 60 * 1000,
 				attempt: attempt += 1,
 			};
-			await transactionStatisticsQueue.add(queueName, { date, options });
+			await transactionStatisticsQueue.add({ date, options });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
-			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			logger.debug(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			scheduledDays.push(formattedDate.toString());
 		}
+		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
 	});
 };
 

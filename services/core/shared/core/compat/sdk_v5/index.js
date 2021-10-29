@@ -16,15 +16,21 @@
 const events = require('./events');
 
 const {
-	init,
 	getBlocks,
-	deleteBlock,
 	getGenesisHeight,
 	getIndexStartHeight,
-	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 } = require('./blocks');
+
+const blockInit = require('./blocks').init;
+
+const {
+	deleteBlock,
+	indexMissingBlocks,
+} = require('./blockchainIndex');
+
+const blockchainIndexInit = require('./blockchainIndex').init;
 
 const {
 	getAccounts,
@@ -89,6 +95,11 @@ const {
 } = require('./pendingTransactions');
 
 const nop = () => { };
+
+const init = async () => {
+	await blockInit();
+	await blockchainIndexInit();
+};
 
 module.exports = {
 	...require('../sdk_v4'),

@@ -22,7 +22,7 @@ const config = require('../config');
 const mysqlIndex = require('./indexdb/mysql');
 const newsfeedIndexSchema = require('./schema/newsfeed');
 
-const getnewsfeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
+const getNewsFeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
 
 const enabledSources = Object.values(config.sources)
 	.filter(({ enabled }) => enabled)
@@ -30,14 +30,17 @@ const enabledSources = Object.values(config.sources)
 
 const getNewsfeedArticles = async params => {
 	const { offset, limit, source = enabledSources } = params;
-	const newsfeedDB = await getnewsfeedIndex();
+	const newsfeedDB = await getNewsFeedIndex();
 
 	if (params.source) params = {
 		...params,
 		orWhereIn: { property: 'source', values: params.source.split(',') },
 	};
 
-	const data = await newsfeedDB.find(params);
+	const data = await newsfeedDB.find(
+		{ sort: 'created_at:desc', ...params },
+		Object.keys(newsfeedIndexSchema.schema),
+	);
 
 	// Send 'Service Unavailable' when no data is available
 	if (!data.length) throw new ServiceUnavailableException('Service not available');
@@ -53,4 +56,4 @@ const getNewsfeedArticles = async params => {
 	};
 };
 
-module.exports = { getNewsfeedArticles };
+module.exports = { getNewsfeedArticles, getNewsFeedIndex };

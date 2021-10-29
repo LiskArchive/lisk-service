@@ -5,20 +5,21 @@ version: '3.3'
 services:
 
   mysql:
-    image: mysql:5.7
+    image: mysql:8
+    command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - db-data:/var/lib/mysql
-      - ./mysql-healthcheck:/healthcheck
+      - ./mysql-healthcheck.sh:/healthcheck.sh
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${ENV_LISK_DB_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${ENV_LISK_DB_DATABASE}
-      MYSQL_USER: ${ENV_LISK_DB_USER}
-      MYSQL_PASSWORD: ${ENV_LISK_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: lisk
+      MYSQL_USER: lisk
+      MYSQL_PASSWORD: password
     ports:
       - "127.0.0.1:3306:3306"
     healthcheck:
-      test: ['CMD', 'healthcheck']
+      test: ['CMD', 'bash', '/healthcheck.sh']
       interval: 1m
       timeout: 5s
 

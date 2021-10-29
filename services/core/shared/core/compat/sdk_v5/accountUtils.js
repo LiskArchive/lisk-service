@@ -32,6 +32,8 @@ const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
 
 const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
 
+const validateAddress = address => (typeof address === 'string' && address.match(/^lsk[a-hjkm-z2-9]{38}$/g));
+
 const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
 
 const confirmAddress = async address => {
@@ -46,13 +48,16 @@ const confirmPublicKey = async publicKey => {
 	return (account && account.publicKey === publicKey);
 };
 
-const getIndexedAccountInfo = async params => {
-	const accountsDB = await getAccountsIndex();
-	const [account] = await accountsDB.find(params);
-	return account;
+const getIndexedAccountInfo = async (params, columns) => {
+	if (!('publicKey' in params) || params.publicKey) {
+		const accountsDB = await getAccountsIndex();
+		const [account] = await accountsDB.find(params, columns);
+		return account;
+	}
+	return {};
 };
 
-const getAccountsBySearch = async (searchProp, searchString) => {
+const getAccountsBySearch = async (searchProp, searchString, columns) => {
 	const accountsDB = await getAccountsIndex();
 	const params = {
 		search: {
@@ -60,7 +65,7 @@ const getAccountsBySearch = async (searchProp, searchString) => {
 			pattern: searchString,
 		},
 	};
-	const account = await accountsDB.find(params);
+	const account = await accountsDB.find(params, columns);
 	return account;
 };
 
@@ -97,6 +102,7 @@ const getBase32AddressFromPublicKey = publicKey => {
 };
 
 module.exports = {
+	validateAddress,
 	validatePublicKey,
 	confirmAddress,
 	confirmPublicKey,
