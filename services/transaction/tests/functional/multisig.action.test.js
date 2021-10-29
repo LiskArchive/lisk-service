@@ -14,7 +14,6 @@
  *
  */
 const { ServiceBroker } = require('moleculer');
-const { transactionSchema } = require('../schemas/api_v2/transactionSchema.schema');
 const { serviceUnavailableSchema } = require('../schemas/api_v2/serviceUnavailable.schema');
 
 const broker = new ServiceBroker({
@@ -30,13 +29,24 @@ describe('Test multsig actions', () => {
 
 	describe('Connect to client and create multisignature transaction', () => {
 		it('call transaction.multisig.create', async () => {
-			const result = await broker.call('transaction.multisig.create', {});
+			const inputTransaction = {
+				nonce: '0',
+				senderPublicKey: 'b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd',
+				moduleAssetId: '2:0',
+				asset: {},
+				fee: '1000000',
+				expires: Math.floor(Date.now() / 1000) + 31556952,
+				signatures: [],
+			};
+
+			const result = await broker.call('transaction.multisig.create', inputTransaction);
 			if (result.data.error) {
 				serviceUnavailableSchema.validate(result);
 			} else {
+				expect('data' in result).toBe(true);
+				expect('meta' in result).toBe(true);
 				expect(result.data).toBeInstanceOf(Array);
-				expect(result.data.length).toBeGreaterThanOrEqual(1);
-				result.data.forEach(tx => transactionSchema.validate(tx));
+				expect(result.meta).toBeInstanceOf(Object);
 			}
 		});
 
@@ -45,9 +55,10 @@ describe('Test multsig actions', () => {
 			if (result.data.error) {
 				serviceUnavailableSchema.validate(result);
 			} else {
+				expect('data' in result).toBe(true);
+				expect('meta' in result).toBe(true);
 				expect(result.data).toBeInstanceOf(Array);
-				expect(result.data.length).toBeGreaterThanOrEqual(1);
-				result.data.forEach(tx => transactionSchema.validate(tx));
+				expect(result.meta).toBeInstanceOf(Object);
 			}
 		});
 	});

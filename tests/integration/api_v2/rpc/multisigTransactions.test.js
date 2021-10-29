@@ -28,16 +28,51 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions.multisig', params);
+const createMultisigTransaction = async params => request(wsRpcUrl, 'post.transactions.multisig', params);
 
-describe('Method get.transactions.multisig', () => {
+describe('Multisignature Transactions API', () => {
 	let refTransaction;
+	let inputTransaction;
+
 	beforeAll(async () => {
 		const response1 = await getTransactions({ limit: 1 });
 		[refTransaction] = response1.result.data;
+
+		inputTransaction = {
+			nonce: '0',
+			senderPublicKey: 'b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd',
+			moduleAssetId: '2:0',
+			asset: {
+				amount: '500000000',
+				recipientId: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99',
+				data: 'Multisig token transfer transaction',
+			},
+			fee: '1000000',
+			// expires: Math.floor(Date.now() / 1000) + 31556952,
+			signatures: [
+				{
+					publicKey: '968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b',
+					signature: '72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a',
+				},
+			],
+		};
 	});
 
-	describe('is able to retrieve multisig transaction', () => {
-		it('list of multisig transactions', async () => {
+	describe('Create and update multisignature transactions in the pool', () => {
+		it('POST a new multisignature transaction', async () => {
+			const response = await createMultisigTransaction(inputTransaction);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBe(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(multisigTxn => expect(multisigTxn).toMap(multisigTransactionSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+	});
+
+	describe('Retrieve multisignature transaction lists', () => {
+		it('returns list of multisignature transactions', async () => {
 			const response = await getTransactions();
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -49,7 +84,7 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Known multisig transaction by serviceId', async () => {
+		it('returns multisignature transactions with known serviceId', async () => {
 			const response = await getTransactions({ serviceId: refTransaction.serviceId });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -60,8 +95,8 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Known multisig transaction by address', async () => {
-			const response = await getTransactions({ address: 'lsk2dp8gf6me3hafoqgtqej8dk96uusdhykvnkbrr' });
+		it('returns multisignature transactions with known address', async () => {
+			const response = await getTransactions({ address: 'lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -73,8 +108,8 @@ describe('Method get.transactions.multisig', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Known multisig transaction by publicKey', async () => {
-			const response = await getTransactions({ publicKey: refTransaction.publicKey });
+		it('returns multisignature transactions with known publicKey', async () => {
+			const response = await getTransactions({ publicKey: refTransaction.senderPublicKey });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);

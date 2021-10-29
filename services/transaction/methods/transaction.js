@@ -22,7 +22,15 @@ module.exports = [
 	{
 		name: 'multisig.create',
 		controller: createMultisignatureTx,
-		params: {},
+		params: {
+			nonce: { optional: true, type: 'any' },
+			senderPublicKey: { optional: false, type: 'any' },
+			moduleAssetId: { optional: false, type: 'any' },
+			asset: { optional: false, type: 'any' },
+			fee: { optional: false, type: 'any' },
+			expires: { optional: true, type: 'any' },
+			signatures: { optional: false, type: 'any' },
+		},
 	},
 	{
 		name: 'multisig',

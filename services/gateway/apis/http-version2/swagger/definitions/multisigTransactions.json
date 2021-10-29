@@ -24,9 +24,9 @@
                 "example": "2:0",
                 "description": "Combination of transaction module:asset Id.\n"
             },
-            "publicKey": {
+            "senderPublicKey": {
                 "type": "string",
-                "format": "publicKey",
+                "format": "senderPublicKey",
                 "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
                 "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
             },
@@ -47,11 +47,46 @@
             "signatures": {
                 "type": "array",
                 "items": {
-                    "type": "string",
-                    "format": "signature",
-                    "example": "72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a",
-                    "description": "If the transaction is a multisignature transaction, all signatures of the members of the corresponding multisignature group will be listed here."
-                }
+                    "type": "object",
+                    "required": [
+                        "publicKey",
+                        "address",
+                        "signature",
+                        "accountRole"
+                    ],
+                    "properties": {
+                        "publicKey": {
+                            "type": "string",
+                            "format": "publicKey",
+                            "example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+                            "description": "Public key of the member signing the multisignature transaction."
+                        },
+                        "address": {
+                            "type": "string",
+                            "format": "address",
+                            "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                            "description": "Address of the member signing the multisignature transaction."
+                        },
+                        "signature": {
+                            "type": "string",
+                            "format": "signature",
+                            "example": "72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a",
+                            "description": "Signature of the member signing the multisignature transaction."
+                        },
+                        "accountRole": {
+                            "type": "string",
+                            "format": "accountRole",
+                            "enum": [
+                                "mandatory",
+                                "optional",
+                                "owner"
+                            ],
+                            "example": "owner",
+                            "description": "Account role of the member signing the multisignature transaction."
+                        }
+                    }
+                },
+                "description": "If the transaction is a multisignature transaction, all signatures of the members of the corresponding multisignature group will be listed here."
             },
             "asset": {
                 "type": "object"
