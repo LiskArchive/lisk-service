@@ -82,7 +82,31 @@ const createMultisignatureTx = async inputTransaction => {
 	return transaction;
 };
 
+const rejectMultisignatureTx = async params => {
+	const multisignatureTxDB = await getMultiSignatureTxIndex();
+	const transaction = {
+		data: [],
+		meta: {},
+	};
+	const [response] = await multisignatureTxDB.find({ serviceId: params.serviceId });
+	const total = await multisignatureTxDB.count({ serviceId: params.serviceId });
+
+	if (response) {
+		response.rejected = true;
+		transaction.data = [response]
+			.map(acc => ({ ...acc, asset: JSON.parse(acc.asset) }));
+		transaction.meta = {
+			offset: params.offset || 0,
+			count: transaction.data.length,
+			total,
+		};
+	}
+	await multisignatureTxDB.upsert(response);
+	return transaction;
+};
+
 module.exports = {
 	getMultisignatureTx,
 	createMultisignatureTx,
+	rejectMultisignatureTx,
 };
