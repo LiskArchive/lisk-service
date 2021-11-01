@@ -26,100 +26,15 @@
     "deleteMultisigTransaction": {
         "name": "deleteMultisigTransaction",
         "in": "body",
-        "type": "object"
+        "schema": {
+            "$ref": "#/definitions/deleteMultisigTransaction"
+        }
     },
     "multisigTransaction": {
-        "type": "object",
+        "name": "multisigTransaction",
         "in": "body",
         "schema": {
             "$ref": "#/definitions/multisigTransaction"
-        },
-        "required": [
-            "senderPublicKey",
-            "moduleAssetId",
-            "asset",
-            "fee",
-            "signatures"
-        ],
-        "properties": {
-            "nonce": {
-                "type": "string",
-                "example": "0",
-                "description": "Optional, LS takes it from the network"
-            },
-            "senderPublicKey": {
-                "type": "string",
-                "format": "senderPublicKey",
-                "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
-                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
-            },
-            "moduleAssetId": {
-                "type": "string",
-                "example": "2:0",
-                "description": "Combination of transaction module:asset Id.\n"
-            },
-            "asset": {
-                "type": "object",
-                "properties": {
-                    "amount": {
-                        "type": "string",
-                        "example": "1000000",
-                        "description": "Amount to be transferred.\n"
-                    },
-                    "recipientId": {
-                        "type": "array",
-                        "items": {
-                            "type": "string",
-                            "example": "689b9a40aa11cbc8327d5eeebed9a1052940730f9c34cffb33ae591131141349",
-                            "description": "Recipient address to whom the transfer is being made.\n"
-                        }
-                    },
-                    "data": {
-                        "type": "string",
-                        "items": {
-                            "type": "string",
-                            "example": "Token transfer",
-                            "description": "Message associated with the transaction.\n"
-                        }
-                    }
-                }
-            },
-            "fee": {
-                "type": "string",
-                "example": "1000000",
-                "description": "Transaction fee associated with this transaction.\n"
-            },
-            "expires": {
-                "type": "integer",
-                "example": 1613323667,
-                "description": "UNIX Timestamp"
-            },
-            "signatures": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "required": [
-                        "publicKey",
-                        "address",
-                        "signature",
-                        "accountRole"
-                    ],
-                    "properties": {
-                        "publicKey": {
-                            "type": "string",
-                            "format": "publicKey",
-                            "example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
-                            "description": "Public key of the member signing the multisignature transaction."
-                        },
-                        "signature": {
-                            "type": "string",
-                            "format": "signature",
-                            "example": "72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a",
-                            "description": "Signature of the member signing the multisignature transaction."
-                        }
-                    }
-                }
-            }
         }
     }
 }

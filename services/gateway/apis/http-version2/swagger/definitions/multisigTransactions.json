@@ -93,6 +93,46 @@
             }
         }
     },
+    "deleteMultisigTransaction": {
+        "type": "object",
+        "required": [
+            "serviceId",
+            "signatures"
+        ],
+        "properties": {
+            "serviceId": {
+                "type": "string",
+                "format": "id",
+                "example": "0943699c-54e0-4722-8add-f3d5d60b7cf9",
+                "minLength": 1,
+                "description": "LS internal transaction ID.\n"
+            },
+            "signatures": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "publicKey",
+                        "signature"
+                    ],
+                    "properties": {
+                        "publicKey": {
+                            "type": "string",
+                            "format": "publicKey",
+                            "example": "968ba2fa993ea9dc27ed740da0daf49eddd740dbd7cb1cb4fc5db3a20baf341b",
+                            "description": "Public key of the member signing the multisignature transaction."
+                        },
+                        "signature": {
+                            "type": "string",
+                            "format": "signature",
+                            "example": "72c9b2aa734ec1b97549718ddf0d4737fd38a7f0fd105ea28486f2d989e9b3e399238d81a93aa45c27309d91ce604a5db9d25c9c90a138821f2011bc6636c60a",
+                            "description": "Signature of the member signing the multisignature transaction."
+                        }
+                    }
+                }
+            }
+        }
+    },
     "MultisigTransactionsWithEnvelope": {
         "type": "object",
         "required": [

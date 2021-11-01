@@ -26,10 +26,21 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 		const method = services[key];
 		return { ...acc, [key]: method.schema };
 	}, {});
+
 	if (methods.postTransactions) methods.transactions['/transactions'].post = methods.postTransactions['/transactions'].post;
-	const apiSchemas = Object.keys(methods);
+	if (methods.postMultisigTransactions) methods.multisigTransactions['/transactions/multisig'].post = methods.postMultisigTransactions['/transactions/multisig'].post;
+	if (methods.deleteMultisigTransactions) methods.multisigTransactions['/transactions/multisig'].delete = methods.deleteMultisigTransactions['/transactions/multisig'].delete;
+
+	const {
+		postTransactions,
+		postMultisigTransactions,
+		deleteMultisigTransactions,
+		...remainingMethods
+	} = methods;
+
+	const apiSchemas = Object.keys(remainingMethods);
 	apiSchemas.forEach((key) => {
-		Object.assign(apiJsonPaths, methods[key]);
+		Object.assign(apiJsonPaths, remainingMethods[key]);
 	});
 	return apiJsonPaths;
 };
