@@ -76,7 +76,7 @@ describe('Multisignature Transactions API', () => {
 				serviceId: refTransaction.serviceId,
 				signatures: [{
 					publicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
-					signature: 'ow533254aad600fa787d6223002278c3400be5e8ed47blse27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07'
+					signature: 'ow533254aad600fa787d6223002278c3400be5e8ed47blse27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07',
 				}],
 			};
 
