@@ -111,7 +111,7 @@ describe('Multisignature Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		describe('Reject multisignature transactions in the pool', () => {
+		describe('Reject multisignature transactions from the transaction pool', () => {
 			it('Reject a multisignature transaction', async () => {
 				const params = {
 					serviceId: refTransaction.serviceId,
