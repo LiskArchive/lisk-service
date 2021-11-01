@@ -29,15 +29,15 @@ module.exports = {
 	},
 	get schema() {
 		const multisigTransactionSchema = {};
-		multisigTransactionSchema[this.swaggerApiPath] = { post: {} };
-		multisigTransactionSchema[this.swaggerApiPath].post.tags = this.tags;
-		multisigTransactionSchema[this.swaggerApiPath].post.summary = 'Delete a transaction in the multisignature pool';
-		multisigTransactionSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
+		multisigTransactionSchema[this.swaggerApiPath] = { delete: {} };
+		multisigTransactionSchema[this.swaggerApiPath].delete.tags = this.tags;
+		multisigTransactionSchema[this.swaggerApiPath].delete.summary = 'Delete a transaction in the multisignature pool';
+		multisigTransactionSchema[this.swaggerApiPath].delete.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Delete a transaction in the multisignature pool and returns the transaction',
 		});
-		multisigTransactionSchema[this.swaggerApiPath].post.parameters = transformParams('multisignature', { multisigTransaction: '' });
-		multisigTransactionSchema[this.swaggerApiPath].post.responses = {
+		multisigTransactionSchema[this.swaggerApiPath].delete.parameters = transformParams('multisignature', this.params);
+		multisigTransactionSchema[this.swaggerApiPath].delete.responses = {
 			200: {
 				description: 'Updated multisignature transaction',
 				schema: {
@@ -45,7 +45,7 @@ module.exports = {
 				},
 			},
 		};
-		Object.assign(multisigTransactionSchema[this.swaggerApiPath].post.responses, response);
+		Object.assign(multisigTransactionSchema[this.swaggerApiPath].delete.responses, response);
 		return multisigTransactionSchema;
 	},
 	source: deleteMultisigTransactionsSource,
