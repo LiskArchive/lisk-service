@@ -31,10 +31,10 @@ module.exports = {
 		const multisigTransactionSchema = {};
 		multisigTransactionSchema[this.swaggerApiPath] = { delete: {} };
 		multisigTransactionSchema[this.swaggerApiPath].delete.tags = this.tags;
-		multisigTransactionSchema[this.swaggerApiPath].delete.summary = 'Delete a transaction in the multisignature pool';
+		multisigTransactionSchema[this.swaggerApiPath].delete.summary = 'Rejects a transaction from the multisignature pool';
 		multisigTransactionSchema[this.swaggerApiPath].delete.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Delete a transaction from the multisignature pool and returns the transaction',
+			description: 'Rejects a transaction from the multisignature pool and returns the transaction',
 		});
 		multisigTransactionSchema[this.swaggerApiPath].delete.parameters = transformParams('multisignature', { deleteMultisigTransaction: '' });
 		multisigTransactionSchema[this.swaggerApiPath].delete.responses = {
