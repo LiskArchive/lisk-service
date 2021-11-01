@@ -59,7 +59,28 @@ const getMultisignatureTx = async params => {
 	}
 };
 
+const rejectMultisignatureTx = async params => {
+	const transaction = {
+		data: [],
+		meta: {},
+	};
+
+	try {
+		const response = await transactionService.rejectMultisignatureTx(params);
+		if (response.data) transaction.data = response.data;
+		if (response.meta) transaction.meta = response.meta;
+
+		return transaction;
+	} catch (err) {
+		let status;
+		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
+};
+
 module.exports = {
 	createMultisignatureTx,
 	getMultisignatureTx,
+	rejectMultisignatureTx,
 };
