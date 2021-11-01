@@ -24,6 +24,7 @@ const broker = new ServiceBroker({
 });
 
 describe('Test multsig actions', () => {
+	let serviceId;
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
@@ -40,6 +41,7 @@ describe('Test multsig actions', () => {
 			};
 
 			const result = await broker.call('transaction.multisig.create', inputTransaction);
+			serviceId = result.data[0].serviceId;
 			if (result.data.error) {
 				serviceUnavailableSchema.validate(result);
 			} else {
@@ -52,6 +54,18 @@ describe('Test multsig actions', () => {
 
 		it('call transaction.multisig', async () => {
 			const result = await broker.call('transaction.multisig', {});
+			if (result.data.error) {
+				serviceUnavailableSchema.validate(result);
+			} else {
+				expect('data' in result).toBe(true);
+				expect('meta' in result).toBe(true);
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.meta).toBeInstanceOf(Object);
+			}
+		});
+
+		it('call transaction.multisig.reject', async () => {
+			const result = await broker.call('transaction.multisig.reject', { serviceId, signatures: [] });
 			if (result.data.error) {
 				serviceUnavailableSchema.validate(result);
 			} else {
