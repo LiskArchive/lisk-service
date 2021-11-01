@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'delete.transactions.multisig',
 	tags: ['Multisignature Transactions'],
 	params: {
-		serviceId: { optional: true, type: 'string', min: 1, max: 64 },
+		serviceId: { optional: false, type: 'string', min: 1, max: 64 },
 		signatures: { optional: false, type: 'array' },
 	},
 	get schema() {
@@ -36,7 +36,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Delete a transaction in the multisignature pool and returns the transaction',
 		});
-		multisigTransactionSchema[this.swaggerApiPath].delete.parameters = transformParams('multisignature', this.params);
+		multisigTransactionSchema[this.swaggerApiPath].delete.parameters = transformParams('multisignature', { deleteMultisigTransaction: '' });
 		multisigTransactionSchema[this.swaggerApiPath].delete.responses = {
 			200: {
 				description: 'Updated multisignature transaction',

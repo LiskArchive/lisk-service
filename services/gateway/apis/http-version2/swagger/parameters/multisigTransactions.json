@@ -23,6 +23,11 @@
         "format": "serviceId",
         "minLength": 1
     },
+    "deleteMultisigTransaction": {
+        "name": "deleteMultisigTransaction",
+        "in": "body",
+        "type": "object"
+    },
     "multisigTransaction": {
         "type": "object",
         "in": "body",
