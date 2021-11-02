@@ -66,6 +66,7 @@ describe('Test multsig actions', () => {
 				expect('data' in result).toBe(true);
 				expect('meta' in result).toBe(true);
 				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data[0].rejected).toBe(true);
 				expect(result.meta).toBeInstanceOf(Object);
 			}
 		});

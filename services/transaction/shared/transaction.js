@@ -93,10 +93,11 @@ const rejectMultisignatureTx = async params => {
 	const [response] = await multisignatureTxDB.find({ serviceId: params.serviceId });
 	const total = await multisignatureTxDB.count({ serviceId: params.serviceId });
 
+	const rejectTransaction = { ...response, rejected: true };
 	// Update the multisignature transaction with rejected flag as true
-	await multisignatureTxDB.upsert({ ...response, rejected: true });
+	await multisignatureTxDB.upsert(rejectTransaction);
 
-	if (response) transaction.data = [response]
+	if (response) transaction.data = [rejectTransaction]
 		.map(acc => ({ ...acc, asset: JSON.parse(acc.asset) }));
 
 	transaction.meta = {
