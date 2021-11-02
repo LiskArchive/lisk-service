@@ -24,11 +24,11 @@ const {
 const { getBase32AddressFromPublicKey } = require('./accountUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
-const multisignatureTxIndexSchema = require('./schema/multisignature');
-const signaturePoolSchema = require('./schema/signaturePool');
+const multisignatureTxIndexSchema = require('./schema/multisigTransaction');
+const multisigSignaturePoolSchema = require('./schema/multisigSignaturePool');
 
-const getMultiSignatureTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
-const getMultisigSignaturePool = () => mysqlIndex('MultisigSignaturePool', signaturePoolSchema);
+const getMultiSignatureTxIndex = () => mysqlIndex('MultisigTransaction', multisignatureTxIndexSchema);
+const getMultisigSignaturePool = () => mysqlIndex('MultisigSignaturePool', multisigSignaturePoolSchema);
 
 const getMultisignatureTx = async params => {
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
