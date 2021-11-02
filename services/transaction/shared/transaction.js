@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const { v4: uuidv4 } = require('uuid');
 
 const {
@@ -23,11 +25,14 @@ const { getBase32AddressFromPublicKey } = require('./accountUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
 const multisignatureTxIndexSchema = require('./schema/multisignature');
+const signaturePoolSchema = require('./schema/signaturePool');
 
 const getMultiSignatureTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
+const getMultisigSignaturePool = () => mysqlIndex('MultisigSignaturePool', signaturePoolSchema);
 
 const getMultisignatureTx = async params => {
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
+	const multisigSignaturePool = await getMultisigSignaturePool();
 	const transaction = {
 		data: [],
 		meta: {},
@@ -42,10 +47,20 @@ const getMultisignatureTx = async params => {
 	const resultSet = await multisignatureTxDB.find(params);
 	const total = await multisignatureTxDB.count(params);
 
-	// TODO: Add signature to response once issue #161 is done
-	if (resultSet.length) transaction.data = resultSet
-		.map(acc => ({ ...acc, asset: JSON.parse(acc.asset) }));
-
+	if (resultSet.length) {
+		transaction.data = await BluebirdPromise.map(
+			resultSet,
+			async transaction => {
+				const signatures = await multisigSignaturePool.find({ serviceId: transaction.serviceId }, ['signature']);
+				return {
+					...transaction,
+					asset: JSON.parse(transaction.asset),
+					signatures: signatures.map(entry => JSON.parse(entry.signature)),
+				};
+			},
+			{ concurrency: resultSet.length },
+		);
+	}
 
 	transaction.meta = {
 		offset: params.offset || 0,
@@ -58,6 +73,7 @@ const getMultisignatureTx = async params => {
 
 const createMultisignatureTx = async inputTransaction => {
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
+	const multisigSignaturePool = await getMultisigSignaturePool();
 	const transaction = {
 		data: [],
 		meta: {},
@@ -71,7 +87,16 @@ const createMultisignatureTx = async inputTransaction => {
 	inputTransaction.senderAddress = getBase32AddressFromPublicKey(inputTransaction.senderPublicKey);
 
 	try {
-		// Persist the transaction into the database
+		// Persist the signatures and the transaction into the database
+		// TODO: Add transactional support and validations
+		await BluebirdPromise.map(
+			inputTransaction.signatures,
+			async signature => multisigSignaturePool.upsert({
+				serviceId: inputTransaction.serviceId,
+				signature: JSON.stringify(signature),
+			}),
+			{ concurrency: inputTransaction.signatures.length },
+		);
 		await multisignatureTxDB.upsert(inputTransaction);
 	} catch (err) {
 		// TODO: Send appropriate named exception
@@ -88,6 +113,7 @@ const createMultisignatureTx = async inputTransaction => {
 
 const updateMultisignatureTx = async transactionPatch => {
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
+	const multisigSignaturePool = await getMultisigSignaturePool();
 	const transaction = {
 		data: [],
 		meta: {},
@@ -98,14 +124,17 @@ const updateMultisignatureTx = async transactionPatch => {
 	const [pooledTransaction] = await multisignatureTxDB.find({ serviceId });
 	if (!pooledTransaction) throw new NotFoundException(`Transaction with serviceId: ${serviceId} does not exist in the pool`);
 
-	signatures.forEach(signature => {
-		// TODO: Validation
-		pooledTransaction.signatures.push(signature);
-	});
-
 	try {
-		// Persist the transaction into the database
-		await multisignatureTxDB.upsert(pooledTransaction);
+		// Validate and add the signatures into the pool
+		// TODO: Add transactional support and validations
+		await BluebirdPromise.map(
+			signatures,
+			async signature => multisigSignaturePool.upsert({
+				serviceId: transactionPatch.serviceId,
+				signature: JSON.stringify(signature),
+			}),
+			{ concurrency: signatures.length },
+		);
 	} catch (err) {
 		// TODO: Send appropriate named exception
 		throw new Error(`Unable to create the transaction: ${err.message}`);
