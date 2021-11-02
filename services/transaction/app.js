@@ -45,7 +45,6 @@ const app = Microservice({
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
-app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
 app.run().then(() => {
