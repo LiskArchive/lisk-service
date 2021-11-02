@@ -89,6 +89,7 @@ const rejectMultisignatureTx = async params => {
 		meta: {},
 	};
 
+	// TODO: Add validations
 	const [response] = await multisignatureTxDB.find({ serviceId: params.serviceId });
 	const total = await multisignatureTxDB.count({ serviceId: params.serviceId });
 
