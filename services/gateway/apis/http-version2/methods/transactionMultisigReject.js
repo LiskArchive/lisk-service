@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const deleteMultisigTransactionsSource = require('../../../sources/version2/deleteMultisigTransactionsSource');
+const transactionMultisigRejectSource = require('../../../sources/version2/transactionMultisigRejectSource');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
@@ -48,6 +48,6 @@ module.exports = {
 		Object.assign(multisigTransactionSchema[this.swaggerApiPath].delete.responses, response);
 		return multisigTransactionSchema;
 	},
-	source: deleteMultisigTransactionsSource,
+	source: transactionMultisigRejectSource,
 	envelope,
 };
