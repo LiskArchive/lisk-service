@@ -25,15 +25,18 @@ module.exports = [
 		description: 'Prunes the DB to remove the expired transactions',
 		schedule: '0 0 * * *', // At midnight everyday
 		controller: async () => {
-			logger.debug('Job scheduled to prune expired transactions from the DB');
-			const expiryInDays = config.db.cleanup;
-			const params = {
-				propBetweens: [{
-					property: 'expiresAt',
-					to: moment().subtract(expiryInDays, 'days').unix(),
-				}],
-			};
-			await prune(params);
+			try {
+				logger.debug('Job scheduled to prune expired transactions from the DB');
+				const params = {
+					propBetweens: [{
+						property: 'expiresAt',
+						to: moment().subtract(config.db.expiryInDays, 'days').unix(),
+					}],
+				};
+				await prune(params);
+			} catch (err) {
+				logger.warn(`Expired multisignature transaction cleanup failed due to: ${err.message}`);
+			}
 		},
 	},
 	{
@@ -41,16 +44,19 @@ module.exports = [
 		description: 'Prunes the DB to remove the rejected transactions',
 		schedule: '0 0 * * *', // At midnight everyday
 		controller: async () => {
-			logger.debug('Job scheduled to prune rejected transactions from the DB');
-			const expiryInDays = config.db.cleanup;
-			const params = {
-				rejected: true,
-				propBetweens: [{
-					property: 'modifiedAt',
-					to: moment().subtract(expiryInDays, 'days').unix(),
-				}],
-			};
-			await prune(params);
+			try {
+				logger.debug('Job scheduled to prune rejected transactions from the DB');
+				const params = {
+					rejected: true,
+					propBetweens: [{
+						property: 'modifiedAt',
+						to: moment().subtract(config.db.expiryInDays, 'days').unix(),
+					}],
+				};
+				await prune(params);
+			} catch (err) {
+				logger.warn(`Rejected multisignature transaction cleanup failed due to: ${err.message}`);
+			}
 		},
 	},
 ];
