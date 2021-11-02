@@ -133,7 +133,7 @@ const updateMultisignatureTx = async transactionPatch => {
 				serviceId: transactionPatch.serviceId,
 				signature: JSON.stringify(signature),
 			}),
-			{ concurrency: signatures.length },
+			{ concurrency: 1 },
 		);
 	} catch (err) {
 		// TODO: Send appropriate named exception
