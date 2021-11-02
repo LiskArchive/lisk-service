@@ -29,7 +29,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions.multisig', params);
 const createMultisigTransaction = async params => request(wsRpcUrl, 'post.transactions.multisig', params);
-const deleteMultisigTransaction = async params => request(wsRpcUrl, 'delete.transactions.multisig', params);
+const rejectMultisigTransaction = async params => request(wsRpcUrl, 'delete.transactions.multisig', params);
 
 describe('Multisignature Transactions API', () => {
 	let refTransaction;
@@ -124,7 +124,7 @@ describe('Multisignature Transactions API', () => {
 
 		describe('Reject multisignature transactions from the transaction pool', () => {
 			it('Reject a multisignature transaction', async () => {
-				const response = await deleteMultisigTransaction({
+				const response = await rejectMultisigTransaction({
 					serviceId: refTransaction.serviceId,
 					signatures: inputTransaction.signatures,
 				});
