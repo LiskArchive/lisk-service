@@ -36,7 +36,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Rejects a transaction from the multisignature pool and returns the transaction',
 		});
-		multisigTransactionSchema[this.swaggerApiPath].delete.parameters = transformParams('multisignature', { deleteMultisigTransaction: '' });
+		multisigTransactionSchema[this.swaggerApiPath].delete.parameters = transformParams('multisignature', { rejectMultisigTransaction: '' });
 		multisigTransactionSchema[this.swaggerApiPath].delete.responses = {
 			200: {
 				description: 'Updated multisignature transaction',

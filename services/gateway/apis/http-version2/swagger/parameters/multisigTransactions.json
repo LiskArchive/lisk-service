@@ -23,11 +23,11 @@
         "format": "serviceId",
         "minLength": 1
     },
-    "deleteMultisigTransaction": {
-        "name": "deleteMultisigTransaction",
+    "rejectMultisigTransaction": {
+        "name": "rejectMultisigTransaction",
         "in": "body",
         "schema": {
-            "$ref": "#/definitions/deleteMultisigTransaction"
+            "$ref": "#/definitions/rejectMultisigTransaction"
         }
     },
     "multisigTransaction": {

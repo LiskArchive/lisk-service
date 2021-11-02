@@ -29,12 +29,12 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 
 	if (methods.postTransactions) methods.transactions['/transactions'].post = methods.postTransactions['/transactions'].post;
 	if (methods.postMultisigTransactions) methods.multisigTransactions['/transactions/multisig'].post = methods.postMultisigTransactions['/transactions/multisig'].post;
-	if (methods.deleteMultisigTransactions) methods.multisigTransactions['/transactions/multisig'].delete = methods.deleteMultisigTransactions['/transactions/multisig'].delete;
+	if (methods.transactionMultisigReject) methods.multisigTransactions['/transactions/multisig'].delete = methods.transactionMultisigReject['/transactions/multisig'].delete;
 
 	const {
 		postTransactions,
 		postMultisigTransactions,
-		deleteMultisigTransactions,
+		transactionMultisigReject,
 		...remainingMethods
 	} = methods;
 
