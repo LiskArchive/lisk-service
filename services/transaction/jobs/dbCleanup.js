@@ -46,7 +46,7 @@ module.exports = [
 			const params = {
 				rejected: true,
 				propBetweens: [{
-					property: 'expiresAt',
+					property: 'modifiedAt',
 					to: moment().subtract(expiryInDays, 'days').unix(),
 				}],
 			};
