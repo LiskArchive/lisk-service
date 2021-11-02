@@ -50,11 +50,11 @@ const getMultisignatureTx = async params => {
 	if (resultSet.length) {
 		transaction.data = await BluebirdPromise.map(
 			resultSet,
-			async transaction => {
-				const signatures = await multisigSignaturePool.find({ serviceId: transaction.serviceId }, ['signature']);
+			async txn => {
+				const signatures = await multisigSignaturePool.find({ serviceId: txn.serviceId }, ['signature']);
 				return {
-					...transaction,
-					asset: JSON.parse(transaction.asset),
+					...txn,
+					asset: JSON.parse(txn.asset),
 					signatures: signatures.map(entry => JSON.parse(entry.signature)),
 				};
 			},

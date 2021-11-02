@@ -88,8 +88,9 @@ describe('Multisignature Transactions API', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(multisigTxn => {
 				expect(multisigTxn).toMap(multisigTransactionSchema);
-				expect(multisigTxn.signatures.some(entry => entry.signature === signaturePatch[0].signature))
-					.toBeTruthy();
+				expect(
+					multisigTxn.signatures.some(entry => entry.signature === signaturePatch[0].signature),
+				).toBeTruthy();
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
