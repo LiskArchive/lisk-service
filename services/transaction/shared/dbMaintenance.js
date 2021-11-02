@@ -30,9 +30,15 @@ const prune = async (params) => {
 
 	const result = await multisignatureTxDB.find(params);
 	const serviceIdsToDelete = result.map(r => r[`${multisignatureTxIndexSchema.primaryKey}`]);
+	// const idstoDelete = multisignaturePool.find({
+	// 	whereIn: {
+	// 		property: 'serviceId',
+	// 		values: serviceIdsToDelete,
+	// 	},
+	// }, ['id']);
 	logger.debug(`Removing ${result.length} entries from '${multisigTableName}' and ${multisigPoolTableName} index`);
 	await multisignatureTxDB.deleteIds(serviceIdsToDelete);
-	// await multisignaturePool.deleteIds(serviceIdsToDelete);
+	// await multisignaturePool.deleteIds(idstoDelete);
 };
 
 module.exports = {
