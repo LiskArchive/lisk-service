@@ -113,11 +113,10 @@ describe('Multisignature Transactions API', () => {
 
 		describe('Reject multisignature transactions from the transaction pool', () => {
 			it('Reject a multisignature transaction', async () => {
-				const params = {
+				const response = await api.del(`${endpoint}`, {
 					serviceId: refTransaction.serviceId,
 					signatures: inputTransaction.signatures,
-				};
-				const response = await api.del(`${endpoint}`, params);
+				});
 				expect(response).toMap(goodRequestSchema);
 				expect(response.data).toBeInstanceOf(Array);
 				expect(response.data.length).toBe(1);
