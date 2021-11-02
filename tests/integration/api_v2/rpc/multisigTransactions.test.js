@@ -133,7 +133,10 @@ describe('Multisignature Transactions API', () => {
 				expect(result.data).toBeInstanceOf(Array);
 				expect(result.data.length).toBe(1);
 				expect(response.result).toMap(resultEnvelopeSchema);
-				result.data.forEach(multisigTxn => expect(multisigTxn).toMap(multisigTransactionSchema));
+				result.data.forEach(multisigTxn => {
+					expect(multisigTxn).toMap(multisigTransactionSchema);
+					expect(multisigTxn.rejected).toBe(true);
+				});
 				expect(result.meta).toMap(metaSchema);
 			});
 		});
