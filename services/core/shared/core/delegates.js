@@ -34,7 +34,7 @@ const delegateStatus = {
 	STANDBY: 'standby',
 	BANNED: 'banned',
 	PUNISHED: 'punished',
-	NON_ELIGIBLE: 'ineligible',
+	INELIGIBLE: 'ineligible',
 };
 
 let rawNextForgers = [];
@@ -83,7 +83,7 @@ const computeDelegateStatus = async () => {
 			logger.debug('Determine delegate status');
 
 			// Default delegate status
-			delegate.status = delegateStatus.NON_ELIGIBLE;
+			delegate.status = delegateStatus.INELIGIBLE;
 
 			// Update delegate status, if applicable
 			if (delegate.dpos.delegate.isBanned) {
