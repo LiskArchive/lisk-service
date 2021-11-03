@@ -17,6 +17,7 @@ const logger = require('lisk-service-framework').Logger();
 
 const mysqlIndex = require('./indexdb/mysql');
 const multisignatureTxIndexSchema = require('./schema/multisignature');
+// TODO: Uncomment all commented part once issue #161 is merged
 // const multisigSignaturePoolSchema = require('./schema/multisigSignaturePool');
 
 const getIndex = (tableName, tableSchema) => mysqlIndex(tableName, tableSchema);
