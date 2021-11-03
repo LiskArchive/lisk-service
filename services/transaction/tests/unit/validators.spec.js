@@ -23,7 +23,7 @@ const {
 	isMultisigRegistration,
 	isWithinPoolLimit,
 	hasValidServiceId,
-	isValidTransaction,
+	isValidCoreTransaction,
 	hasValidSignatures,
 	hasValidNonce,
 } = require('../../shared/validators');
@@ -81,8 +81,8 @@ describe('Test validator', () => {
 	});
 
 	it.todo('for transaction validation using lisk-elements', () => {
-		expect(isValidTransaction(genericTransaction)).toBe(true);
-		expect(isValidTransaction(transactionInvalidModuleAssetId)).toBe(false);
+		expect(isValidCoreTransaction(genericTransaction)).toBe(true);
+		expect(isValidCoreTransaction(transactionInvalidModuleAssetId)).toBe(false);
 	});
 
 	it.todo('for valid signatures', () => {
