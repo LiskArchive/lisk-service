@@ -13,9 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { v4: uuidv4 } = require('uuid');
-
 const { getBase32AddressFromPublicKey } = require('./accountUtils');
+const { computeServiceId } = require('./transactionUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
 const multisignatureTxIndexSchema = require('./schema/multisignature');
@@ -59,8 +58,8 @@ const createMultisignatureTx = async inputTransaction => {
 		meta: {},
 	};
 
-	// Assign the transaction a serviceId
-	inputTransaction.serviceId = uuidv4();
+	// Compute and assign the serviceId to the transaction
+	inputTransaction.serviceId = computeServiceId(inputTransaction);
 
 	// Stringify the transaction asset object
 	inputTransaction.asset = JSON.stringify(inputTransaction.asset);
