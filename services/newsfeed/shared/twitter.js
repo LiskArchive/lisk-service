@@ -32,6 +32,16 @@ const safeRef = (obj, path) => {
 	}
 };
 
+const getTweetText = (o) => {
+	let tweetText = o.text;
+
+	if (o.is_quote_status && o.quoted_status) {
+		// Append original quoted status to the re-tweet text
+		tweetText = `${o.text}\n\nQuoted status by ${o.quoted_status.user.name} (@${o.quoted_status.user.screen_name}): ${o.quoted_status.text}`;
+	}
+	return tweetText;
+};
+
 const tweetUrl = (o) => {
 	let url;
 	if (o.retweeted_status) {
@@ -53,6 +63,7 @@ const getImageUrl = ({ entities }) => (
 
 const tweetMapper = o => ({
 	...o,
+	text: getTweetText(o),
 	url: tweetUrl(o),
 	image_url: getImageUrl(o),
 	author: safeRef(o, 'user.screen_name'),
