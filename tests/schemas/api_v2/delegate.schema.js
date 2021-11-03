@@ -15,7 +15,7 @@
  */
 import Joi from 'joi';
 
-const validDelegateStatuses = ['active', 'standby', 'banned', 'punished', 'non-eligible'];
+const validDelegateStatuses = ['active', 'standby', 'banned', 'punished', 'ineligible'];
 
 const pomHeightSchema = {
 	start: Joi.number().required(),

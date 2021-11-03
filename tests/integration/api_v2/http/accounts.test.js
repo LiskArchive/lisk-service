@@ -230,8 +230,8 @@ describe('Accounts API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns non-delegate accounts when status is non-eligible', async () => {
-			const response = await api.get(`${endpoint}?status=non-eligible`);
+		it('returns non-delegate accounts when status is ineligible', async () => {
+			const response = await api.get(`${endpoint}?status=ineligible`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);

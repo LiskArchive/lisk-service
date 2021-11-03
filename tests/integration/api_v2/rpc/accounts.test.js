@@ -184,8 +184,8 @@ describe('Method get.accounts', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('returns delegate accounts when status is non-eligible', async () => {
-			const response = await getAccounts({ status: 'non-eligible' });
+		it('returns delegate accounts when status is ineligible', async () => {
+			const response = await getAccounts({ status: 'ineligible' });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
