@@ -30,6 +30,7 @@ const prune = async (params) => {
 
 	const result = await multisignatureTxDB.find(params);
 	const serviceIdsToDelete = result.map(r => r[`${multisignatureTxIndexSchema.primaryKey}`]);
+	// Fetch the id(s) corresponding the serviceIdsToDelete
 	// const idstoDelete = multisignaturePool.find({
 	// 	whereIn: {
 	// 		property: 'serviceId',
