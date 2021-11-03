@@ -31,7 +31,10 @@ describe('Test the transaction utilities', () => {
 		});
 
 		it('serviceId varies with modified inputs', async () => {
-			const serviceId = computeServiceId({ ...inputTransaction, nonce: String(Number(inputTransaction.nonce) + 1) });
+			const serviceId = computeServiceId({
+				...inputTransaction,
+				nonce: String(Number(inputTransaction.nonce) + 1),
+			});
 			expect(serviceId.length).toBe(64);
 			expect(serviceId).not.toEqual(inputTransactionServiceId);
 		});
