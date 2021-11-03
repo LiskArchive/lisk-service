@@ -30,7 +30,7 @@ module.exports = [
 				const params = {
 					propBetweens: [{
 						property: 'expiresAt',
-						to: moment().subtract(config.db.expiryInDays, 'days').unix(),
+						to: moment().subtract(config.db.expireInDays, 'days').unix(),
 					}],
 				};
 				await prune(params);
@@ -50,7 +50,7 @@ module.exports = [
 					rejected: true,
 					propBetweens: [{
 						property: 'modifiedAt',
-						to: moment().subtract(config.db.expiryInDays, 'days').unix(),
+						to: moment().subtract(config.db.expireInDays, 'days').unix(),
 					}],
 				};
 				await prune(params);
