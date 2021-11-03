@@ -60,17 +60,19 @@ const coreApi = require('./coreApi');
 const config = require('../../../../config');
 const Signals = require('../../../signals');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const {
+	getTableInstance,
+} = require('../../../indexdb/mysql');
 
 const accountsIndexSchema = require('./schema/accounts');
 const blocksIndexSchema = require('./schema/blocks');
 const multisignatureIndexSchema = require('./schema/multisignature');
 const transactionsIndexSchema = require('./schema/transactions');
 
-const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
-const getMultisignatureIndex = () => mysqlIndex('multisignature', multisignatureIndexSchema);
-const getTransactionsIndex = () => mysqlIndex('transactions', transactionsIndexSchema);
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
@@ -81,18 +83,10 @@ const requestApi = coreApi.requestRetry;
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
-	accounts.forEach(account => {
-		account.username = account.dpos.delegate.username || null;
-		account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
-		account.balance = account.token.balance;
-		return account;
-	});
 	await accountsDB.upsert(accounts);
 };
 
 const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
-const indexAccountsByAddressQueue = Queue('indexAccountsByAddressQueue', indexAccounts, 1);
-const indexAccountsByPublicKeyQueue = Queue('indexAccountsByPublicKeyQueue', indexAccounts, 1);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
@@ -156,8 +150,8 @@ const getAccountsFromCache = async (params) => {
 	return accounts;
 };
 
-const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
-	const finalAccountsToIndex = await BluebirdPromise.map(
+const getAccountsByAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
+	const accounts = await BluebirdPromise.map(
 		dropDuplicates(addressesToIndex),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
@@ -170,19 +164,14 @@ const indexAccountsbyAddress = async (addressesToIndex, isGenesisBlockAccount = 
 					account.isGenesisAccount = accountFromDB.isGenesisAccount;
 				}
 			}
+			account.username = account.dpos.delegate.username || null;
+			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
+			account.balance = account.token.balance;
 			return account;
 		},
 		{ concurrency: 10 },
 	);
-
-	const PAGE_SIZE = 100;
-	const NUM_PAGES = Math.ceil(finalAccountsToIndex.length / PAGE_SIZE);
-	for (let i = 0; i < NUM_PAGES; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsByAddressQueue.add({
-			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-		});
-	}
+	return accounts;
 };
 
 const resolveAccountInfo = async accounts => BluebirdPromise.map(
@@ -307,9 +296,8 @@ const resolveDelegateInfo = async accounts => {
 	return accounts;
 };
 
-const indexAccountsbyPublicKey = async (accountInfoArray) => {
-	const accountsDB = await getAccountsIndex();
-	const finalAccountsToIndex = await BluebirdPromise.map(
+const getAccountsByPublicKey = async (accountInfoArray) => {
+	const accounts = await BluebirdPromise.map(
 		accountInfoArray
 			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
 		async address => {
@@ -317,38 +305,14 @@ const indexAccountsbyPublicKey = async (accountInfoArray) => {
 			const [accountInfo] = accountInfoArray
 				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
 			account.publicKey = accountInfo.publicKey;
-			if (accountInfo.isForger && (!accountInfo.isBlockIndexed || accountInfo.isDeleteBlock)) {
-				accountsDB.increment({
-					increment: {
-						rewards: BigInt(accountInfo.reward * (accountInfo.isDeleteBlock ? -1 : 1)),
-						producedBlocks: accountInfo.isDeleteBlock ? -1 : 1,
-					},
-					where: {
-						property: 'address',
-						value: account.address,
-					},
-				}, {
-					...account,
-					balance: account.token.balance,
-					username: account.dpos.delegate.username,
-					rewards: accountInfo.reward,
-					producedBlocks: 1,
-					totalVotesReceived: account.dpos.delegate.totalVotesReceived,
-				});
-			}
+			account.username = account.dpos.delegate.username || null;
+			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
+			account.balance = account.token.balance;
 			return account;
 		},
 		{ concurrency: 10 },
 	);
-
-	const PAGE_SIZE = 1000;
-	const NUM_PAGES = Math.ceil(finalAccountsToIndex.length / PAGE_SIZE);
-	for (let i = 0; i < NUM_PAGES; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsByPublicKeyQueue.add({
-			accounts: finalAccountsToIndex.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE),
-		});
-	}
+	return accounts;
 };
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
@@ -649,13 +613,17 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
 };
 
-const keepAccountsCacheUpdated = () => {
-	const updateAccountsCacheListener = indexAccountsbyAddress;
+const keepAccountsCacheUpdated = async () => {
+	const accountsDB = await getAccountsIndex();
+	const updateAccountsCacheListener = async (address) => {
+		const accounts = await getAccountsByAddress(address);
+		await accountsDB.upsert(accounts);
+	};
 	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
 };
 
-removeReclaimedLegacyAccountInfoFromCache();
-keepAccountsCacheUpdated();
+Signals.get('searchIndexInitialized').add(removeReclaimedLegacyAccountInfoFromCache);
+Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
 
 module.exports = {
 	confirmPublicKey,
@@ -664,8 +632,8 @@ module.exports = {
 	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
-	indexAccountsbyAddress,
-	indexAccountsbyPublicKey,
+	getAccountsByAddress,
+	getAccountsByPublicKey,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,

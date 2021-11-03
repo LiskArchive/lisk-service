@@ -39,27 +39,46 @@ const {
 } = require('./blocks');
 
 const {
-	indexAccountsbyAddress,
-	indexAccountsbyPublicKey,
+	getAccountsByAddress,
+	getAccountsByPublicKey,
 	getAllDelegates,
 } = require('./accounts');
 
+const { getBase32AddressFromPublicKey } = require('./accountUtils');
 const {
-	indexVotes,
+	getVoteIndexingInfo,
+	getVotesByTransactionIDs,
 } = require('./voters');
 
 const {
-	indexTransactions,
-	removeTransactionsByBlockIDs,
+	getTransactionIndexingInfo,
+	getTransactionsByBlockIDs,
 } = require('./transactions');
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
 
-const mysqlIndex = require('../../../indexdb/mysql');
-const blocksIndexSchema = require('./schema/blocks');
+const {
+	getDbConnection,
+	getTableInstance,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
+} = require('../../../indexdb/mysql');
 
-const getBlocksIndex = () => mysqlIndex('blocks', blocksIndexSchema);
+const blocksIndexSchema = require('./schema/blocks');
+const accountsIndexSchema = require('./schema/accounts');
+const transactionsIndexSchema = require('./schema/transactions');
+const votesIndexSchema = require('./schema/votes');
+const multisignatureIndexSchema = require('./schema/multisignature');
+const votesAggregateIndexSchema = require('./schema/votesAggregate');
+
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
+const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
 
 const blockchainStore = require('./blockchainStore');
 
@@ -83,19 +102,15 @@ const getIndexDiff = () => blockchainStore.get('indexStatus');
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
 
-const indexBlocks = async job => {
-	const blocks = await getBlocksByHeightBetween(job.data.from, job.data.to);
-
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${job.data.from}-${job.data.to} }`);
-
+const getGeneratorPkInfoArray = async (blocks) => {
 	const blocksDB = await getBlocksIndex();
-	const generatorPkInfoArray = [];
+	const pkInfoArray = [];
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
 			if (block.generatorPublicKey) {
 				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-				generatorPkInfoArray.push({
+				pkInfoArray.push({
 					publicKey: block.generatorPublicKey,
 					reward: block.reward,
 					isForger: true,
@@ -105,37 +120,144 @@ const indexBlocks = async job => {
 		},
 		{ concurrency: blocks.length },
 	);
-	await blocksDB.upsert(blocks);
-	await indexAccountsbyPublicKey(generatorPkInfoArray);
-	await indexTransactions(blocks);
-	await indexVotes(blocks);
+	return pkInfoArray;
+};
+
+const indexBlocks = async job => {
+	const blocksDB = await getBlocksIndex();
+	const votesAggregateDB = await getVotesAggregateIndex();
+	const blocks = await getBlocksByHeightBetween(job.data.from, job.data.to);
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${job.data.from}-${job.data.to} }`);
+	try {
+		const accountsDB = await getAccountsIndex();
+		const transactionsDB = await getTransactionsIndex();
+		const votesDB = await getVotesIndex();
+		const multisignatureDB = await getMultisignatureIndex();
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+
+		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
+		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
+		const {
+			accounts: accountsFromTransactions,
+			transactions,
+			multisignatureInfoToIndex,
+		} = await getTransactionIndexingInfo(blocks);
+
+		const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
+		if (allAccounts.length) await accountsDB.upsert(allAccounts, trx);
+		if (transactions.length) await transactionsDB.upsert(transactions, trx);
+		if (multisignatureInfoToIndex.length) await multisignatureDB
+			.upsert(multisignatureInfoToIndex, trx);
+		if (votes.length) await votesDB.upsert(votes, trx);
+
+		// Update producedBlocks & rewards
+		await BluebirdPromise.map(
+			generatorPkInfoArray,
+			async pkInfoArray => {
+				if (!pkInfoArray.isBlockIndexed) {
+					const incrementParam = {
+						increment: {
+							rewards: BigInt(pkInfoArray.reward),
+							producedBlocks: 1,
+						},
+						where: {
+							property: 'address',
+							value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+						},
+					};
+
+					// If no rows are affected with increment, insert the row
+					const numRowsAffected = await accountsDB.increment(incrementParam, trx);
+					if (numRowsAffected === 0) {
+						await accountsDB.upsert({
+							address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+							publicKey: pkInfoArray.publicKey,
+							producedBlocks: 1,
+							rewards: pkInfoArray.reward,
+						}, trx);
+					}
+				}
+			},
+		);
+
+		// Update the aggregated votes information
+		await BluebirdPromise.map(
+			votesToAggregateArray,
+			async voteToAggregate => {
+				const incrementParam = {
+					increment: {
+						amount: BigInt(voteToAggregate.amount),
+					},
+					where: {
+						property: 'id',
+						value: voteToAggregate.id,
+					},
+				};
+				const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
+				if (numRowsAffected === 0) {
+					await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+				}
+			},
+		);
+
+		if (blocks.length) await blocksDB.upsert(blocks, trx);
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 const updateBlockIndex = async job => {
-	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
+	const { blocks } = job.data;
 	await blocksDB.upsert(blocks);
 };
 
 const deleteIndexedBlocks = async job => {
-	const { blocks } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const generatorPkInfoArray = [];
-	blocks.forEach(async block => {
-		if (block.generatorPublicKey) generatorPkInfoArray.push({
-			publicKey: block.generatorPublicKey,
-			reward: block.reward,
-			isForger: true,
-			isDeleteBlock: true,
-		});
-	});
-	await indexAccountsbyPublicKey(generatorPkInfoArray);
-	await removeTransactionsByBlockIDs(blocks.map(b => b.id));
-	await blocksDB.deleteIds(blocks.map(b => b.height));
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	try {
+		const accountsDB = await getAccountsIndex();
+		const transactionsDB = await getTransactionsIndex();
+		const votesDB = await getVotesIndex();
+		const { blocks } = job.data;
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
+		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
+		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
+		const forkedVotes = await getVotesByTransactionIDs(forkedTransactionIDs);
+		await transactionsDB.deleteIds(forkedTransactionIDs, trx);
+		await votesDB.deleteIds(forkedVotes.map(v => v.tempId), trx);
+
+		// Update producedBlocks & rewards
+		await BluebirdPromise.map(
+			generatorPkInfoArray,
+			async pkInfoArray => {
+				await accountsDB.decrement({
+					decrement: {
+						rewards: BigInt(pkInfoArray.reward),
+						producedBlocks: 1,
+					},
+					where: {
+						property: 'address',
+						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+					},
+				}, trx);
+			});
+		await blocksDB.deleteIds(blocks.map(b => b.height), trx);
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 4);
+const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 30);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
@@ -162,6 +284,7 @@ const cacheLegacyAccountInfo = async () => {
 };
 
 const performGenesisAccountsIndexing = async () => {
+	const accountsDB = await getAccountsIndex();
 	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 
 	const genesisAccountsToIndex = genesisBlock.asset.accounts
@@ -176,6 +299,7 @@ const performGenesisAccountsIndexing = async () => {
 	const PAGE_SIZE = 1000;
 	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
 	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
+		/* eslint-disable no-await-in-loop */
 		const currentPage = pageNum * PAGE_SIZE;
 		const nextPage = (pageNum + 1) * PAGE_SIZE;
 		const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
@@ -185,13 +309,13 @@ const performGenesisAccountsIndexing = async () => {
 
 			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
-			/* eslint-disable no-await-in-loop */
-			await indexAccountsbyAddress(genesisAccountAddressesToIndex, true);
+			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
+			if (accounts.length) await accountsDB.upsert(accounts);
 			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
-			/* eslint-enable no-await-in-loop */
 		} else {
 			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 		}
+		/* eslint-enable no-await-in-loop */
 	}
 };
 
@@ -216,12 +340,16 @@ const indexGenesisAccounts = async () => {
 };
 
 const indexAllDelegateAccounts = async () => {
+	const accountsDB = await getAccountsIndex();
 	const allDelegatesInfo = await getAllDelegates();
 	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
 	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await indexAccountsbyAddress(allDelegateAddresses.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+		/* eslint-disable no-await-in-loop */
+		const accounts = await getAccountsByAddress(allDelegateAddresses
+			.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+		await accountsDB.upsert(accounts);
+		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
@@ -234,13 +362,13 @@ const buildIndex = async (from, to) => {
 		return;
 	}
 
-	const MAX_BLOCKS_LIMIT_PP = 100;
+	const MAX_BLOCKS_LIMIT_PP = 1; // 1 block at a time
 	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
 
 	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
 		/* eslint-disable no-await-in-loop */
 		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset > from ? pseudoOffset : from - 1;
+		const offset = pseudoOffset >= from ? pseudoOffset : from - 1;
 		const batchFromHeight = offset + 1;
 		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
 			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
@@ -286,11 +414,7 @@ const indexNewBlocks = async blocks => {
 					}],
 					limit: highestIndexedBlock.height - block.height,
 				}, ['id']);
-				const blockIDsToRemove = blocksToRemove.map(b => b.id);
-				await blocksDB.deleteIds(blockIDsToRemove);
-
-				// Remove transactions in the forked blocks
-				await removeTransactionsByBlockIDs(blockIDsToRemove);
+				await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 			}
 		}
 	}
@@ -299,8 +423,8 @@ const indexNewBlocks = async blocks => {
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	let result = [];
 
-	const heightDifference = toHeight - fromHeight;
-	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${heightDifference} blocks)`);
+	const totalNumOfBlocks = toHeight - fromHeight + 1;
+	logger.info(`Checking for missing blocks between height ${fromHeight}-${toHeight} (${totalNumOfBlocks} blocks)`);
 
 	const blocksDB = await getBlocksIndex();
 	const propBetweens = [{
@@ -313,7 +437,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	// This block helps determine empty index
 	if (indexedBlockCount < 3) {
 		result = [{ from: fromHeight, to: toHeight }];
-	} else if (indexedBlockCount !== heightDifference) {
+	} else if (indexedBlockCount !== totalNumOfBlocks) {
 		const missingBlocksQueryStatement = `
 			SELECT
 				(SELECT COALESCE(MAX(b0.height), ${fromHeight}) FROM blocks b0 WHERE b0.height < b1.height) AS 'from',
@@ -334,6 +458,7 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 
 	return result;
 };
+
 
 const getLastFinalBlockHeight = async () => {
 	// Returns the highest finalized block available within the index
@@ -441,9 +566,10 @@ const getIndexStats = async () => {
 	}
 };
 
-const validateIndexReadiness = async () => {
+const validateIndexReadiness = async ({ strict } = {}) => {
 	const { numBlocksIndexed, chainLength } = await getIndexStats();
-	return (numBlocksIndexed >= chainLength - 1);
+	const chainLenToConsider = strict === true ? chainLength : chainLength - 1;
+	return numBlocksIndexed >= chainLenToConsider;
 };
 
 const checkIndexReadiness = async () => {
@@ -458,20 +584,19 @@ const checkIndexReadiness = async () => {
 
 const fixMissingBlocks = async () => {
 	const { numBlocksIndexed } = await getIndexStats();
-
-	if (!(await validateIndexReadiness())) {
+	if (!await validateIndexReadiness({ strict: true })) {
 		const prevIndex = await getIndexDiff();
 		const minTolerableDiff = 0;
-		const maxDiff = 200;
+		const maxDiff = 1000;
 		const currentDiff = numBlocksIndexed - prevIndex;
 
 		if (currentDiff > minTolerableDiff
 			&& currentDiff < maxDiff) { // maxDiff because we don't need to run it when index is not ready
 			logger.info(`Detected block discrepancy (${currentDiff} missing blocks)`);
-			indexMissingBlocks({ force: true });
+			await indexMissingBlocks({ force: true });
 		}
 	}
-	setIndexDiff(numBlocksIndexed);
+	await setIndexDiff(numBlocksIndexed);
 };
 
 const reportIndexStatus = async () => {
@@ -500,10 +625,14 @@ const indexSchemas = {
 	votes_aggregate: require('./schema/votesAggregate'),
 };
 
-const initializeSearchIndex = () => BluebirdPromise.map(
-	Object.keys(indexSchemas),
-	key => mysqlIndex(key, indexSchemas[key]),
-	{ concurrency: 1 });
+const initializeSearchIndex = async () => {
+	await BluebirdPromise.map(
+		Object.keys(indexSchemas),
+		key => getTableInstance(key, indexSchemas[key]),
+		{ concurrency: 1 },
+	);
+	Signals.get('searchIndexInitialized').dispatch();
+};
 
 const init = async () => {
 	// Index every new incoming block
@@ -519,6 +648,9 @@ const init = async () => {
 
 	// Check state of index and perform update
 	try {
+		// Download genesis block
+		await getBlockByHeight(await getGenesisHeight());
+
 		// Index all the delegate accounts first
 		await indexAllDelegateAccounts();
 
