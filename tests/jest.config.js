@@ -18,6 +18,7 @@ module.exports = {
 	testMatch: [
 		'<rootDir>/integration/**/*.test.js',
 		'<rootDir>/functional/**/*.test.js',
+		'<rootDir>/regression/**/*.test.js',
 	],
 	testEnvironment: 'node',
 	testTimeout: 15000,

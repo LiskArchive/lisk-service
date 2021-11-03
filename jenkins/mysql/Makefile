@@ -13,3 +13,6 @@ logs:
 	$(compose) logs
 
 clean: down
+
+cli:
+	$(compose) exec mysql mysql -u root -ppassword lisk

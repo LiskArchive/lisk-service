@@ -100,14 +100,5 @@
         "type": "boolean",
         "minLength": 1,
         "default": false
-    },
-    "block": {
-        "name": "block",
-        "in": "query",
-        "description": "Block id to query",
-        "type": "string",
-        "format": "id",
-        "minLength": 1,
-        "maxLength": 20
     }
 }

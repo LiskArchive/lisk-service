@@ -14,7 +14,6 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const BluebirdPromise = require('bluebird');
 
 const config = require('../../config');
 
@@ -54,7 +53,7 @@ const createDbConnection = async (connEndpoint) => {
 		connection: connEndpoint,
 		useNullAsDefault: true,
 		pool: {
-			max: 50,
+			max: 100,
 			min: 2,
 		},
 		log: {
@@ -67,7 +66,7 @@ const createDbConnection = async (connEndpoint) => {
 
 	knex.select(1)
 		.on('query-error', (error) => {
-			logger.error(error);
+			logger.error(error.message);
 		})
 		.catch((err) => {
 			if (err.code === 'ECONNREFUSED') {
@@ -75,7 +74,7 @@ const createDbConnection = async (connEndpoint) => {
 				logger.error('Database error, shutting down the process');
 				process.exit(1);
 			}
-			logger.error(err);
+			logger.error(err.message);
 		});
 
 	return knex;
@@ -107,11 +106,28 @@ const getValue = (val) => {
 	return val;
 };
 
-const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
+const mapRowsBySchema = async (rawRows, schema) => {
+	const rows = [];
+	rawRows.forEach(item => {
+		const row = {};
+		Object.keys(schema).forEach(o => {
+			const val = item[o];
+			if (val || val === 0 || val === false) row[o] = getValue(cast(val, schema[o].type));
+		});
+		rows.push(row);
+	});
+	return rows;
+};
+
+const getConnectionPoolKey = (connEndpoint = config.endpoints.mysql) => {
 	const userName = connEndpoint.split('//')[1].split('@')[0].split(':')[0];
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
 	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
-	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
+	return connPoolKey;
+};
+
+const getDbConnection = async (connEndpoint = config.endpoints.mysql) => {
+	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const defaultCharset = 'utf8mb4';
 
 	if (!connectionPool[connPoolKey]) {
@@ -126,88 +142,63 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 	}
 
 	const knex = connectionPool[connPoolKey];
+	return knex;
+};
+
+const createTableIfNotExists = async (tableName,
+	tableConfig,
+	connEndpoint = config.endpoints.mysql) => {
+	const connPoolKey = getConnectionPoolKey(connEndpoint);
+	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
 	if (!tablePool[connPoolKeyTable]) {
+		logger.info(`Creating schema for ${tableName}`);
+		const knex = await getDbConnection(connEndpoint);
 		await loadSchema(knex, tableName, tableConfig);
 		tablePool[connPoolKeyTable] = true;
 	}
+};
 
+const startDbTransaction = async (connection) => connection.transaction();
+
+const commitDbTransaction = async (transaction) => transaction.commit();
+
+const rollbackDbTransaction = async (transaction) => transaction.rollback();
+
+const getTableInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
 	const { primaryKey, schema } = tableConfig;
 
-	const mapRows = (rawRows) => {
-		const rows = [];
-		rawRows.forEach(item => {
-			const row = {};
-			Object.keys(schema).forEach(o => {
-				const val = item[o];
-				if (val || val === 0) row[o] = getValue(cast(val, schema[o].type));
-			});
-			rows.push(row);
-		});
-		return rows;
-	};
+	const knex = await getDbConnection(connEndpoint);
 
-	const upsert = async (inputRows) => {
+	const createDefaultTransaction = async (connection) => startDbTransaction(connection);
+
+	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
+
+	const upsert = async (inputRows, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
 		let rawRows = inputRows;
 		if (!Array.isArray(rawRows)) rawRows = [inputRows];
+		const rows = await mapRowsBySchema(rawRows, schema);
 
-		const rows = mapRows(rawRows);
+		// Create all queries for `INSERT or UPDATE on Duplicate keys`
+		const queries = rows.map((row) => knex(tableName)
+			.transacting(trx)
+			.insert(row)
+			.onConflict(primaryKey)
+			.merge(),
+		);
 
-		try {
-			const chunkSize = 1000;
-			const ids = await knex
-				.transaction(trx => knex.batchInsert(tableName, rows, chunkSize).transacting(trx));
-			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-
-			// Return '0' on successful inserts
-			return ids.length ? 0 : 1;
-		} catch (error) {
-			const errCode = error.code;
-			const errMessage = error.message.split(`${errCode}: `)[1] || error.message;
-			const errCause = errMessage.split(': ')[0];
-			logger.debug('Encountered error with batch insert:', errCause,
-				'\nRe-attempting to update/merge the conflicted transactions one at a time: ');
-
-			let inserts;
-			const concurrency = 25;
-			try {
-				await knex.transaction(async trx => {
-					inserts = await BluebirdPromise.map(
-						rows,
-						async row => {
-							const [result] = await trx(tableName)
-								.insert(row)
-								.onConflict(tableConfig.primaryKey)
-								.merge()
-								.transacting(trx);
-							return result;
-						},
-						{ concurrency },
-					);
-				});
-			} catch (_) {
-				// As a last resort, try inserting/ updating one row at a time,
-				// wrapped within individual transactions to avoid deadlocks
-				inserts = await BluebirdPromise.map(
-					rows,
-					async row => {
-						const [result] = await knex.transaction(
-							trx => trx(tableName)
-								.insert(row)
-								.onConflict(tableConfig.primaryKey)
-								.merge()
-								.transacting(trx),
-						);
-						return result;
-					},
-					{ concurrency },
-				);
-			}
-
-			// Return '0' on successful inserts
-			logger.debug(`${rows.length} row(s) inserted/updated in '${tableName}' table`);
-			return inserts.reduce((a, b) => a + b, 0);
-		}
+		// Perform all queries within a batch together
+		if (isDefaultTrx) return Promise.all(queries).then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
+		return Promise.all(queries);
 	};
 
 	const queryBuilder = (params, columns) => {
@@ -259,13 +250,22 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			query.where(queryParams).sum(`${params.aggregate} as total`);
 		}
 
-		if (params.limit) query.limit(Number(params.limit));
+		if (params.limit) {
+			query.limit(Number(params.limit));
+		} else {
+			logger.warn(`No 'limit' set for the query:\n${query.toString()}`);
+		}
+
 		if (params.offset) query.offset(Number(params.offset));
 
 		return query;
 	};
 
 	const find = (params = {}, columns) => new Promise((resolve, reject) => {
+		if (!columns) {
+			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
+			columns = [tableConfig.primaryKey];
+		}
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
@@ -277,9 +277,20 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		});
 	});
 
-	const deleteIds = async ids => knex(tableName)
-		.whereIn(primaryKey, ids)
-		.del();
+	const deleteIds = async (ids, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
+		if (isDefaultTrx) return query.then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
+		return query;
+	};
 
 	const count = async (params = {}) => {
 		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
@@ -334,26 +345,42 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		return resultSet;
 	};
 
-	const increment = async (params, rawRow = {}) => {
-		let result;
-		const [row] = mapRows([rawRow]);
-		try {
-			[result] = await knex.transaction(
-				trx => trx(tableName)
-					.insert(row)
-					.transacting(trx),
-			);
-			// always return number of rows affected
-			result = result === 0 ? 1 : 0;
-		} catch (error) {
-			result = await knex.transaction(
-				trx => trx(tableName)
-					.where(params.where.property, '=', params.where.value)
-					.increment(params.increment)
-					.transacting(trx),
-			);
+	const increment = async (params, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
 		}
-		return result;
+
+		const query = knex(tableName)
+			.transacting(trx)
+			.where(params.where.property, '=', params.where.value)
+			.increment(params.increment);
+
+		if (isDefaultTrx) return query.then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
+		return query;
+	};
+
+	const decrement = async (params, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		const query = knex(tableName)
+			.transacting(trx)
+			.where(params.where.property, '=', params.where.value)
+			.decrement(params.decrement);
+
+		if (isDefaultTrx) return query.then(async (result) => {
+			await trx.commit();
+			return result;
+		}).catch(trx.rollback);
+		return query;
 	};
 
 	return {
@@ -363,7 +390,15 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		count,
 		rawQuery,
 		increment,
+		decrement,
 	};
 };
 
-module.exports = getDbInstance;
+module.exports = {
+	default: getTableInstance,
+	getDbConnection,
+	getTableInstance,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
+};

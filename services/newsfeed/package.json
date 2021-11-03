@@ -1,0 +1,50 @@
+{
+  "name": "lisk-service-newsfeed",
+  "version": "0.5.0",
+  "description": "Lisk Service Newsfeed",
+  "keywords": [
+    "lisk",
+    "blockchain"
+  ],
+  "homepage": "https://github.com/LiskHQ/lisk-service",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LiskHQ/lisk-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LiskHQ/lisk-service/issues"
+  },
+  "private": true,
+  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "engines": {
+    "node": "12.16.2",
+    "npm": "6.14.4"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "eslint": "eslint ./api ./knowledge ./services ./test ./*.js",
+    "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
+    "clean": "rm -rf ./node_modules",
+    "watch": "supervisor -w . -i ./node_modules app.js",
+    "test:unit": "./node_modules/.bin/jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
+    "test:functional": "./node_modules/.bin/jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "html-entities": "^2.3.2",
+    "html-to-text": "^8.0.0",
+    "knex": "^0.95.4",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
+    "moment": "^2.29.1",
+    "mysql": "^2.18.1",
+    "object-hash": "^2.2.0",
+    "twitter": "^1.7.1"
+  },
+  "devDependencies": {
+    "jest": "^27.0.4",
+    "joi": "^17.4.0",
+    "moleculer": "^0.14.13"
+  }
+}

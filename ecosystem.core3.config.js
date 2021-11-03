@@ -32,6 +32,12 @@ module.exports = {
 				PORT: '9901',
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+				WS_RATE_LIMIT_ENABLE: false,
+				WS_RATE_LIMIT_CONNECTIONS: 5,
+				WS_RATE_LIMIT_DURATION: 1, // in seconds
+				HTTP_RATE_LIMIT_ENABLE: false,
+				HTTP_RATE_LIMIT_CONNECTIONS: 200,
+				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
 				// ENABLE_HTTP_API: 'http-status,http-version2',
 				// ENABLE_WS_API: 'blockchain,rpc-v2',
 				// HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
@@ -61,6 +67,8 @@ module.exports = {
 				GEOIP_JSON: '',
 				INDEX_N_BLOCKS: '0',
 				ENABLE_TRANSACTION_STATS: 'true',
+				ENABLE_JOB_MISSING_BLOCKS: 'true',
+				INDEX_MISSING_BLOCKS_RANGE: '0',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
@@ -86,6 +94,23 @@ module.exports = {
 				// SERVICE_MARKET_FIAT_CURRENCIES: 'EUR,USD,CHF,GBP,RUB',
 				// SERVICE_MARKET_TARGET_PAIRS: 'LSK_BTC,LSK_EUR,LSK_USD,LSK_CHF,BTC_EUR,BTC_USD,BTC_CHF',
 				// EXCHANGERATESAPI_IO_API_KEY: ''
+			},
+		},
+		{
+			name: 'lisk-service-newsfeed',
+			script: 'app.js',
+			cwd: './services/newsfeed',
+			pid_file: './pids/service_newsfeed.pid',
+			out_file: './logs/service_newsfeed.log',
+			error_file: './logs/service_newsfeed.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '512M',
+			autorestart: true,
+			env: {
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
 			},
 		},
 	],

@@ -71,6 +71,7 @@ pipeline {
 					dir('./framework') { sh 'npm ci' }
 					dir('./services/core') { sh 'npm ci' }
 					dir('./services/market') { sh 'npm ci' }
+					dir('./services/newsfeed') { sh 'npm ci' }
 					dir('./services/gateway') { sh 'npm ci' }
 					dir('./services/template') { sh 'npm ci' }
 					dir('./tests') { sh "npm ci" }
@@ -92,39 +93,51 @@ pipeline {
 					dir('./framework') { sh "npm run test:unit" }
 					dir('./services/core') { sh "npm run test:unit" }
 					dir('./services/market') { sh "npm run test:unit" }
+					dir('./services/newsfeed') { sh "npm run test:unit" }
 				}
 			}
 		}
-		stage('Run microservices') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					sh 'pm2 start --silent ecosystem.jenkins.config.js'
-				}
-				sleep(90)
-				waitForHttp('http://localhost:9901/api/ready')
-				// waitForHttp('http://localhost:9901/api/v2/blocks?timestamp=1615917187')
-			}
-		}
+		// stage('Run microservices') {
+		// 	steps {
+		// 		script { echoBanner(STAGE_NAME) }
+		// 		nvm(getNodejsVersion()) {
+		// 			sh 'pm2 start --silent ecosystem.jenkins.config.js'
+		// 		}
+		// 		sleep(180)
+		// 		// waitForHttp('http://localhost:9901/api/ready')
+		// 		// waitForHttp('http://localhost:9901/api/v2/blocks')
+		// 	}
+		// }
 		stage('Perform functional tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./services/market') { sh "npm run test:functional" }
+					// dir('./services/market') { sh "npm run test:functional" }
+					// dir('./services/newsfeed') { sh "npm run test:functional" }
 					dir('./framework') { sh "npm run test:functional" }
 				}
 			}
 		}
-		stage('Perform integration tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				ansiColor('xterm') {
-					nvm(getNodejsVersion()) {
-						dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
-					}
-				}
-			}
-		}
+		// stage('Perform integration tests') {
+		// 	steps {
+		// 		script { echoBanner(STAGE_NAME) }
+		// 		ansiColor('xterm') {
+		// 			nvm(getNodejsVersion()) {
+		// 				dir('./tests') { sh 'npm run test:integration:APIv2:SDKv5' }
+		// 			}
+		// 		}
+		// 	}
+		// }
+		// stage('Perform benchmark') {
+		// 	steps {
+		// 		script { echoBanner(STAGE_NAME) }
+		// 		ansiColor('xterm') {
+		// 			nvm(getNodejsVersion()) {
+		// 				dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 	post {
 		failure {
@@ -134,6 +147,7 @@ pipeline {
 				sh 'pm2 logs lisk-service-gateway --lines=100  --nostream'
 				sh 'pm2 logs lisk-service-core --lines=100  --nostream'
 				sh 'pm2 logs lisk-service-market --lines=100  --nostream'
+				sh 'pm2 logs lisk-service-newsfeed --lines=100  --nostream'
 			}
 		}
 		cleanup {

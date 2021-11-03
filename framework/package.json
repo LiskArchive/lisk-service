@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-framework",
-  "version": "1.2.2",
+  "version": "1.2.4",
   "description": "Lisk Serivce Framework",
   "keywords": [
     "lisk",
@@ -29,7 +29,7 @@
   "dependencies": {
     "@keyv/redis": "^2.1.2",
     "@log4js-node/gelf": "github:MichalTuleja/log4js-node-gelf#89d9933",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bull": "^3.22.4",
     "debug": "^4.3.1",
     "fastest-validator": "^1.10.1",
@@ -37,7 +37,6 @@
     "json-colorizer": "^2.2.2",
     "keyv": "^4.0.3",
     "keyv-lru": "^3.0.4",
-    "knex": "^0.21.19",
     "log4js": "^5.3.0",
     "moleculer": "^0.14.13",
     "moleculer-web": "^0.9.1",
@@ -52,8 +51,8 @@
     "stack-trace": "0.0.10"
   },
   "devDependencies": {
-    "jest": "^26.6.3",
-    "jest-extended": "^0.11.5",
+    "jest": "^27.2.5",
+    "jest-extended": "^1.0.0",
     "redis-mock": "^0.49.0"
   }
 }

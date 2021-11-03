@@ -26,9 +26,9 @@ const coreCache = require('./coreCache');
 
 const accountsIndexSchema = require('./schema/accounts');
 
-const mysqlIndex = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 
-const getAccountsIndex = () => mysqlIndex('accounts', accountsIndexSchema);
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 
 const parseAddress = address => (typeof address === 'string') ? address.toUpperCase() : '';
 
@@ -48,16 +48,16 @@ const confirmPublicKey = async publicKey => {
 	return (account && account.publicKey === publicKey);
 };
 
-const getIndexedAccountInfo = async params => {
+const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
 		const accountsDB = await getAccountsIndex();
-		const [account] = await accountsDB.find(params);
+		const [account] = await accountsDB.find(params, columns);
 		return account;
 	}
 	return {};
 };
 
-const getAccountsBySearch = async (searchProp, searchString) => {
+const getAccountsBySearch = async (searchProp, searchString, columns) => {
 	const accountsDB = await getAccountsIndex();
 	const params = {
 		search: {
@@ -65,7 +65,7 @@ const getAccountsBySearch = async (searchProp, searchString) => {
 			pattern: searchString,
 		},
 	};
-	const account = await accountsDB.find(params);
+	const account = await accountsDB.find(params, columns);
 	return account;
 };
 

@@ -27,7 +27,7 @@ const getAccounts = async params => {
 	};
 	const { status, ...remainingParams } = params;
 	let response;
-	if (status && ['active', 'banned', 'punished', 'standby'].some(item => status.includes(item))) {
+	if (status) {
 		// Include delegate info in all accounts requests unless explicitly stated
 		response = params.isDelegate !== false ? await getDelegates(params) : { data: [] };
 	} else {
@@ -52,6 +52,7 @@ const getAccounts = async params => {
 				const delegateAccount = {
 					...account,
 					rank: delegateExtraProps.rank,
+					status: delegateExtraProps.status,
 					delegate: { ...delegateOrigProps, ...delegateExtraProps },
 				};
 				return delegateAccount;

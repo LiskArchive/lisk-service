@@ -20,19 +20,26 @@ const { normalizeBlocks } = require('./blocks');
 
 const config = require('../../../../config');
 
+const getAccountAddressesFromEventPayload = async (data) => {
+	const apiClient = await getApiClient();
+
+	return data.accounts.map(acc => {
+		const account = apiClient.account.decode(Buffer.from(acc, 'hex'));
+		const accountAddressHex = account.address.toString('hex');
+		return accountAddressHex;
+	});
+};
+
 const register = async (events) => {
 	const apiClient = await getApiClient();
-	logger.info(`(Re-)registering ${config.endpoints.liskWs} for blockchain events`);
+	logger.info(`Registering ${config.endpoints.liskWs} for blockchain events`);
 
 	apiClient.subscribe('app:block:new', async data => {
 		try {
 			const incomingBlock = apiClient.block.decode(Buffer.from(data.block, 'hex'));
 			const [newBlock] = await normalizeBlocks([incomingBlock]);
-			const affectedAccountAddresses = data.accounts.map(acc => {
-				const account = apiClient.account.decode(Buffer.from(acc, 'hex'));
-				const accountAddressHex = account.address.toString('hex');
-				return accountAddressHex;
-			});
+			const affectedAccountAddresses = await getAccountAddressesFromEventPayload(data);
+
 			logger.debug(`New block forged: ${newBlock.id} at height ${newBlock.height}`);
 			events.newBlock(newBlock);
 			events.updateAccountsByAddress(affectedAccountAddresses);
@@ -46,8 +53,12 @@ const register = async (events) => {
 		try {
 			const incomingBlock = apiClient.block.decode(Buffer.from(data.block, 'hex'));
 			const [deletedBlock] = await normalizeBlocks([incomingBlock]);
+			const affectedAccountAddresses = await getAccountAddressesFromEventPayload(data);
+
 			logger.debug(`Block deleted: ${deletedBlock.id} at height ${deletedBlock.height}`);
 			events.deleteBlock(deletedBlock);
+			events.updateAccountsByAddress(affectedAccountAddresses);
+			events.calculateFeeEstimate();
 		} catch (err) {
 			logger.error(`Error while processing the 'app:block:delete' event:\n${err.stack}`);
 		}

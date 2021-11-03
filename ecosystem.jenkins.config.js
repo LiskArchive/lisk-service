@@ -31,7 +31,14 @@ module.exports = {
 			env: {
 				PORT: '9901',
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				STRICT_READINESS_CHECK: true,
+				SERVICE_GATEWAY_VOLATILE: 'redis://localhost:6379/3',
+				STRICT_READINESS_CHECK: false,
+				WS_RATE_LIMIT_ENABLE: false,
+				WS_RATE_LIMIT_CONNECTIONS: 5,
+				WS_RATE_LIMIT_DURATION: 1, // in seconds
+				HTTP_RATE_LIMIT_ENABLE: true,
+				HTTP_RATE_LIMIT_CONNECTIONS: 200,
+				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
 			},
 		},
 		{
@@ -50,15 +57,17 @@ module.exports = {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_CORE_WS: 'ws://localhost:5001',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
+				SERVICE_CORE_VOLATILE: 'redis://localhost:6379/2',
 				SERVICE_CORE_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
-				GEOIP_JSON: 'https://geoip.lisk.io/json',
+				GEOIP_JSON: 'https://geoip.lisk.com/json',
 				ENABLE_TRANSACTION_STATS: 'true',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '40',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
 				INDEX_N_BLOCKS: '0',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
 				ENABLE_FEE_ESTIMATOR_FULL: 'false',
+				GENESIS_HEIGHT: '250',
 			},
 		},
 		{
@@ -75,6 +84,23 @@ module.exports = {
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+			},
+		},
+		{
+			name: 'lisk-service-newsfeed',
+			script: 'app.js',
+			cwd: './services/newsfeed',
+			pid_file: './pids/service_newsfeed.pid',
+			out_file: './logs/service_newsfeed.log',
+			error_file: './logs/service_newsfeed.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '512M',
+			autorestart: true,
+			env: {
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
 			},
 		},
 	],

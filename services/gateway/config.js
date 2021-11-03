@@ -28,12 +28,19 @@ config.host = process.env.HOST || '0.0.0.0';
  * Inter-service message broker
  */
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
+config.volatileRedis = process.env.SERVICE_GATEWAY_REDIS_VOLATILE || 'redis://localhost:6379/3';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in seconds
 
 /**
  * Compatibility
  */
 config.jsonRpcStrictMode = process.env.JSON_RPC_STRICT_MODE || 'false';
+
+config.rateLimit = {};
+config.rateLimit.enable = Boolean(String(process.env.HTTP_RATE_LIMIT_ENABLE).toLowerCase() === 'true');
+config.rateLimit.window = Number(process.env.HTTP_RATE_LIMIT_WINDOW) || 10; // in seconds
+// Max number of requests during window
+config.rateLimit.connectionLimit = Number(process.env.HTTP_RATE_LIMIT_CONNECTIONS || 200);
 
 /**
  * LOGGING
@@ -74,5 +81,20 @@ config.api.enableHttpCacheControl = Boolean(String(process.env.ENABLE_HTTP_CACHE
 
 // Unless STRICT_READINESS_CHECK env. variable is set false, includeCoreReadiness evaluates to true
 config.includeCoreReadiness = Boolean(String(process.env.STRICT_READINESS_CHECK).toLowerCase() !== 'false');
+
+// configuration for websocket rate limit
+config.websocket = {
+	enableRateLimit: Boolean(String(process.env.WS_RATE_LIMIT_ENABLE).toLowerCase() === 'true'),
+	rateLimit: {
+		points: Number(process.env.WS_RATE_LIMIT_CONNECTIONS || 5),
+		duration: Number(process.env.WS_RATE_LIMIT_DURATION || 1), // in seconds
+	},
+};
+
+// Gateway RPC cache settings
+config.rpcCache = {
+	ttl: 5, // in seconds
+	enable: Boolean(String(process.env.ENABLE_REQUEST_CACHING).toLowerCase() !== 'false'),
+};
 
 module.exports = config;

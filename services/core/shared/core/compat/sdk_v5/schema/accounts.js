@@ -18,6 +18,7 @@ module.exports = {
 	schema: {
 		address: { type: 'string' },
 		publicKey: { type: 'string' },
+		isGenesisAccount: { type: 'boolean', null: false, defaultValue: false },
 		isDelegate: { type: 'boolean', null: false, defaultValue: false },
 		balance: { type: 'bigInteger' },
 		username: { type: 'string' },

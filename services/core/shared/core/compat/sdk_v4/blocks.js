@@ -20,7 +20,7 @@ const coreApi = require('./coreApi');
 const Signals = require('../../../signals');
 
 const config = require('../../../../config');
-const { initializeQueue } = require('../../queue');
+const Queue = require('../../queue');
 
 const {
 	getUnixTime,
@@ -28,10 +28,16 @@ const {
 	validateTimestamp,
 } = require('../common');
 
-const mysqlIdx = require('../../../indexdb/mysql');
+const {
+	getTableInstance,
+	getDbConnection,
+	startDbTransaction,
+	commitDbTransaction,
+	rollbackDbTransaction,
+} = require('../../../indexdb/mysql');
 const blockIdxSchema = require('./schema/blocks');
 
-const getBlockIdx = () => mysqlIdx('blockIdx', blockIdxSchema);
+const getBlockIdx = () => getTableInstance('blockIdx', blockIdxSchema);
 
 const logger = Logger();
 
@@ -56,18 +62,26 @@ const updateFinalizedHeight = async () => {
 const getFinalizedHeight = () => heightFinalized;
 
 const indexBlocks = async job => {
-	const { blocks } = job.data;
 	const blockIdx = await getBlockIdx();
-	blocks.forEach(block => {
-		if (block.numberOfTransactions > 0) {
-			blockIdx.upsert(block);
-			logger.debug(`============== 'indexTransactions' signal: ${Signals.get('indexTransactions')} ==============`);
-			Signals.get('indexTransactions').dispatch(block.id);
-		}
-	});
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+	try {
+		const { blocks } = job.data;
+		blocks.forEach(block => {
+			if (block.numberOfTransactions > 0) {
+				blockIdx.upsert(block, trx);
+				logger.debug(`============== 'indexTransactions' signal: ${Signals.get('indexTransactions')} ==============`);
+				Signals.get('indexTransactions').dispatch(block.id);
+			}
+		});
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+		throw error;
+	}
 };
 
-const indexBlocksQueue = initializeQueue('indexBlocksQueuev4', indexBlocks);
+const indexBlocksQueue = Queue('blockIndex', indexBlocks, 1);
 
 const getBlocks = async (params) => {
 	const blocks = {
@@ -99,7 +113,7 @@ const getBlocks = async (params) => {
 		}),
 		),
 	);
-	if (blocks.data.length === 1) await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
+	if (blocks.data.length === 1) await indexBlocksQueue.add({ blocks: blocks.data });
 
 	return blocks;
 };
@@ -129,7 +143,7 @@ const buildIndex = async (from, to) => {
 			});
 		} while (!(blocks.data.length && blocks.data.every(block => !!block && !!block.height)));
 
-		await indexBlocksQueue.add('indexBlocksQueuev4', { blocks: blocks.data });
+		await indexBlocksQueue.add({ blocks: blocks.data });
 
 		blocks.data = blocks.data.sort((a, b) => a.height - b.height);
 		const topHeightFromBatch = (blocks.data.pop()).height;
