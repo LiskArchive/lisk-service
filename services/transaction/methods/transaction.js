@@ -16,6 +16,7 @@
 const {
 	createMultisignatureTx,
 	getMultisignatureTx,
+	rejectMultisignatureTx,
 } = require('./controllers/transaction');
 
 module.exports = [
@@ -41,6 +42,14 @@ module.exports = [
 			publicKey: { optional: true, type: 'any' },
 			limit: { optional: true, type: 'any' },
 			offset: { optional: true, type: 'any' },
+		},
+	},
+	{
+		name: 'multisig.reject',
+		controller: rejectMultisignatureTx,
+		params: {
+			serviceId: { optional: false, type: 'any' },
+			signatures: { optional: false, type: 'any' },
 		},
 	},
 ];

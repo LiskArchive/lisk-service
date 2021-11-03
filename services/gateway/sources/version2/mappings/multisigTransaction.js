@@ -23,4 +23,5 @@ module.exports = {
 	expires: 'expiresAt,number',
 	signatures: '=',
 	asset: '=',
+	rejected: '=,boolean',
 };
