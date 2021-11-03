@@ -82,7 +82,7 @@ Make the version 2 API able to retrieve data by those criteria.
 | publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
 | username  | String           | `/^[a-z0-9!@$&_.]{1,20}$/`                                 | *(empty)*      |
 | isDelegate | Boolean         | `true` or `false`                                          | *(empty)*      |
-| status    | String           | `active`, `standby`, `banned`, `punished`, `non-eligible`              | *(empty)*      | Multiple choice possible i.e. `active,banned`
+| status    | String           | `active`, `standby`, `banned`, `punished`, `ineligible`              | *(empty)*      | Multiple choice possible i.e. `active,banned`
 | search    | String           |                                  | *(empty)*      |
 | limit     | Number           | `<1;100>`                                                  | 10             |
 | offset    | Number           | `<0;+Inf>`                                                 | 0              |

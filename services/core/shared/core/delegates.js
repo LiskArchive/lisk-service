@@ -34,7 +34,7 @@ const delegateStatus = {
 	STANDBY: 'standby',
 	BANNED: 'banned',
 	PUNISHED: 'punished',
-	NON_ELIGIBLE: 'non-eligible',
+	NON_ELIGIBLE: 'ineligible',
 };
 
 let rawNextForgers = [];
