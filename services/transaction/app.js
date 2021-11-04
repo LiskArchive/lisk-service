@@ -23,6 +23,8 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 
+const { setBrokerHandle } = require('./shared/validators');
+
 // Configure logger
 const loggerConf = {
 	...config.log,
@@ -42,6 +44,8 @@ const app = Microservice({
 	packageJson,
 	logger: loggerConf,
 });
+
+setBrokerHandle(app.getBroker());
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
