@@ -13,16 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const multisigTransaction = require('./mappings/multisigTransaction');
 
-module.exports = [
-	{
-		name: 'job.1',
-		description: 'Generic job template',
-		schedule: '* * * * *', // Every 1 min
-		controller: () => {
-			const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			logger.info(`Dummy job is done, processed ${operationResult.length} items`);
-		},
+module.exports = {
+	type: 'moleculer',
+	method: 'transaction.multisig.update',
+	params: {
+		serviceId: '=,string',
+		signatures: '=,array',
 	},
-];
+	definition: {
+		data: ['data', multisigTransaction],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
+};

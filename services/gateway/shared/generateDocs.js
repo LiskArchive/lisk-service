@@ -27,15 +27,15 @@ const createApiDocs = (apiName, apiJsonPaths) => {
 		return { ...acc, [key]: method.schema };
 	}, {});
 
-	if (methods.postTransactions) methods.transactions['/transactions'].post = methods.postTransactions['/transactions'].post;
-	if (methods.postMultisigTransactions) methods.multisigTransactions['/transactions/multisig'].post = methods.postMultisigTransactions['/transactions/multisig'].post;
-	if (methods.patchMultisigTransactions) methods.multisigTransactions['/transactions/multisig'].patch = methods.patchMultisigTransactions['/transactions/multisig'].patch;
-	if (methods.transactionMultisigReject) methods.multisigTransactions['/transactions/multisig'].delete = methods.transactionMultisigReject['/transactions/multisig'].delete;
+	if (methods.transactionBroadcast) methods.transactions['/transactions'].post = methods.transactionBroadcast['/transactions'].post;
+	if (methods.transactionMultisigBroadcast) methods.transactionMultisig['/transactions/multisig'].post = methods.transactionMultisigBroadcast['/transactions/multisig'].post;
+	if (methods.transactionMultisigPatch) methods.transactionMultisig['/transactions/multisig'].patch = methods.transactionMultisigPatch['/transactions/multisig'].patch;
+	if (methods.transactionMultisigReject) methods.transactionMultisig['/transactions/multisig'].delete = methods.transactionMultisigReject['/transactions/multisig'].delete;
 
 	const {
-		postTransactions,
-		postMultisigTransactions,
-		patchMultisigTransactions,
+		transactionBroadcast,
+		transactionMultisigBroadcast,
+		transactionMultisigPatch,
 		transactionMultisigReject,
 		...remainingMethods
 	} = methods;

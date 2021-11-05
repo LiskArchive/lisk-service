@@ -29,6 +29,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions.multisig', params);
 const createMultisigTransaction = async params => request(wsRpcUrl, 'post.transactions.multisig', params);
+const updateMultisigTransaction = async params => request(wsRpcUrl, 'patch.transactions.multisig', params);
 const rejectMultisigTransaction = async params => request(wsRpcUrl, 'delete.transactions.multisig', params);
 
 describe('Multisignature Transactions API', () => {
@@ -68,6 +69,30 @@ describe('Multisignature Transactions API', () => {
 			expect(result.data.length).toBe(1);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(multisigTxn => expect(multisigTxn).toMap(multisigTransactionSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('PATCH an existing multisignature transaction: add a new signature', async () => {
+			const signaturePatch = {
+				serviceId: refTransaction.serviceId,
+				signatures: [{
+					publicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
+					signature: 'ow533254aad600fa787d6223002278c3400be5e8ed47blse27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07',
+				}],
+			};
+
+			const response = await updateMultisigTransaction(signaturePatch);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBe(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(multisigTxn => {
+				expect(multisigTxn).toMap(multisigTransactionSchema);
+				expect(
+					multisigTxn.signatures.some(entry => entry.signature === signaturePatch[0].signature),
+				).toBeTruthy();
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 	});
