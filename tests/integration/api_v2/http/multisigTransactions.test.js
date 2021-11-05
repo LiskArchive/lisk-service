@@ -110,5 +110,22 @@ describe('Multisignature Transactions API', () => {
 				.toMap(multisigTransactionSchema, { senderPublicKey: refTransaction.senderPublicKey }));
 			expect(response.meta).toMap(metaSchema);
 		});
+
+		describe('Reject multisignature transactions from the transaction pool', () => {
+			it('Reject a multisignature transaction', async () => {
+				const response = await api.del(`${endpoint}`, {
+					serviceId: refTransaction.serviceId,
+					signatures: inputTransaction.signatures,
+				});
+				expect(response).toMap(goodRequestSchema);
+				expect(response.data).toBeInstanceOf(Array);
+				expect(response.data.length).toBe(1);
+				response.data.forEach(multisigTxn => {
+					expect(multisigTxn).toMap(multisigTransactionSchema);
+					expect(multisigTxn.rejected).toBe(true);
+				});
+				expect(response.meta).toMap(metaSchema);
+			});
+		});
 	});
 });

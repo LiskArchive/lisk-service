@@ -29,6 +29,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions.multisig', params);
 const createMultisigTransaction = async params => request(wsRpcUrl, 'post.transactions.multisig', params);
+const rejectMultisigTransaction = async params => request(wsRpcUrl, 'delete.transactions.multisig', params);
 
 describe('Multisignature Transactions API', () => {
 	let refTransaction;
@@ -119,6 +120,25 @@ describe('Multisignature Transactions API', () => {
 			result.data.forEach(transaction => expect(transaction)
 				.toMap(multisigTransactionSchema, { senderPublicKey: refTransaction.senderPublicKey }));
 			expect(result.meta).toMap(metaSchema);
+		});
+
+		describe('Reject multisignature transactions from the transaction pool', () => {
+			it('Reject a multisignature transaction', async () => {
+				const response = await rejectMultisigTransaction({
+					serviceId: refTransaction.serviceId,
+					signatures: inputTransaction.signatures,
+				});
+				expect(response).toMap(jsonRpcEnvelopeSchema);
+				const { result } = response;
+				expect(result.data).toBeInstanceOf(Array);
+				expect(result.data.length).toBe(1);
+				expect(response.result).toMap(resultEnvelopeSchema);
+				result.data.forEach(multisigTxn => {
+					expect(multisigTxn).toMap(multisigTransactionSchema);
+					expect(multisigTxn.rejected).toBe(true);
+				});
+				expect(result.meta).toMap(metaSchema);
+			});
 		});
 	});
 });

@@ -31,7 +31,7 @@ module.exports = {
 		createdAt: { type: 'integer', null: false, defaultValue: currentTimestamp() },
 		modifiedAt: { type: 'integer', null: false, defaultValue: currentTimestamp() },
 		expiresAt: { type: 'integer', null: false, defaultValue: currentTimestamp() + yearInSeconds },
-		rejected: { type: 'boolean', null: true },
+		rejected: { type: 'boolean', null: true, defaultValue: false },
 	},
 	indexes: {},
 	purge: {},
