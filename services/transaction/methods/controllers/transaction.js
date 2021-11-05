@@ -19,6 +19,25 @@ const {
 
 const transactionService = require('../../shared/transaction');
 
+const getMultisignatureTx = async params => {
+	const transaction = {
+		data: [],
+		meta: {},
+	};
+
+	try {
+		const response = await transactionService.getMultisignatureTx(params);
+		if (response.data) transaction.data = response.data;
+		if (response.meta) transaction.meta = response.meta;
+		return transaction;
+	} catch (err) {
+		let status;
+		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
+};
+
 const createMultisignatureTx = async inputTransaction => {
 	const transaction = {
 		data: [],
@@ -39,17 +58,17 @@ const createMultisignatureTx = async inputTransaction => {
 	}
 };
 
-
-const getMultisignatureTx = async params => {
+const updateMultisignatureTx = async transactionPatch => {
 	const transaction = {
 		data: [],
 		meta: {},
 	};
 
 	try {
-		const response = await transactionService.getMultisignatureTx(params);
+		const response = await transactionService.updateMultisignatureTx(transactionPatch);
 		if (response.data) transaction.data = response.data;
 		if (response.meta) transaction.meta = response.meta;
+
 		return transaction;
 	} catch (err) {
 		let status;
@@ -80,7 +99,8 @@ const rejectMultisignatureTx = async params => {
 };
 
 module.exports = {
-	createMultisignatureTx,
 	getMultisignatureTx,
+	createMultisignatureTx,
+	updateMultisignatureTx,
 	rejectMultisignatureTx,
 };

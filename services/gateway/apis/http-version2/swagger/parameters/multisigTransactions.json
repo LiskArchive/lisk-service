@@ -36,5 +36,12 @@
         "schema": {
             "$ref": "#/definitions/multisigTransaction"
         }
+    },
+    "patchMultisigTransaction": {
+        "type": "object",
+        "in": "body",
+        "schema": {
+            "$ref": "#/definitions/patchMultisigTransaction"
+        }
     }
 }
