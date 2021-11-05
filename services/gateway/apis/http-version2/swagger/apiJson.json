@@ -34,6 +34,10 @@
             {
                 "name": "Network",
                 "description": "Lisk Network utils"
+            },
+            {
+                "name": "Multisignature Transactions",
+                "description": "Lisk Network multisignature transaction API calls"
             }
         ],
         "schemes": [

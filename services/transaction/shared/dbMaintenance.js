@@ -16,31 +16,30 @@
 const logger = require('lisk-service-framework').Logger();
 
 const mysqlIndex = require('./indexdb/mysql');
-const multisignatureTxIndexSchema = require('./schema/multisignature');
-// TODO: Uncomment all commented part once issue #161 is merged
-// const multisigSignaturePoolSchema = require('./schema/multisigSignaturePool');
+const multisignatureTxIndexSchema = require('./schema/multisigTransaction');
+const multisigSignaturePoolSchema = require('./schema/multisigSignaturePool');
 
 const getIndex = (tableName, tableSchema) => mysqlIndex(tableName, tableSchema);
 
-const multisigTableName = 'MultisignatureTx';
+const multisigTableName = 'MultisigTransaction';
 const multisigPoolTableName = 'MultisigSignaturePool';
 
 const prune = async (params) => {
 	const multisignatureTxDB = await getIndex(multisigTableName, multisignatureTxIndexSchema);
-	// const multisignaturePool = await getIndex(multisigPoolTableName, multisigSignaturePoolSchema);
+	const multisignaturePool = await getIndex(multisigPoolTableName, multisigSignaturePoolSchema);
 
 	const result = await multisignatureTxDB.find(params);
 	const serviceIdsToDelete = result.map(r => r[`${multisignatureTxIndexSchema.primaryKey}`]);
 	// Fetch the id(s) corresponding the serviceIdsToDelete
-	// const idstoDelete = multisignaturePool.find({
-	// 	whereIn: {
-	// 		property: 'serviceId',
-	// 		values: serviceIdsToDelete,
-	// 	},
-	// }, ['id']);
+	const idstoDelete = multisignaturePool.find({
+		whereIn: {
+			property: 'serviceId',
+			values: serviceIdsToDelete,
+		},
+	}, ['id']);
 	logger.debug(`Removing ${result.length} entries from '${multisigTableName}' and ${multisigPoolTableName} index`);
-	await multisignatureTxDB.deleteIds(serviceIdsToDelete);
-	// await multisignaturePool.deleteIds(idstoDelete);
+	if (serviceIdsToDelete.length) await multisignatureTxDB.deleteIds(serviceIdsToDelete);
+	if (idstoDelete.length) await multisignaturePool.deleteIds(idstoDelete);
 };
 
 module.exports = {

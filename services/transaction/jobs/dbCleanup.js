@@ -23,7 +23,8 @@ module.exports = [
 	{
 		name: 'multisig.cleanup.expired',
 		description: 'Prunes the DB to remove the expired transactions',
-		schedule: '0 0 * * *', // At midnight everyday
+		// schedule: '0 0 * * *', // At midnight everyday
+		interval: 10,
 		controller: async () => {
 			try {
 				logger.debug('Job scheduled to prune expired transactions from the DB');

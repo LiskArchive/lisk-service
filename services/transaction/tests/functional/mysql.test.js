@@ -14,7 +14,7 @@
  *
  */
 const mysqlIndex = require('../../shared/indexdb/mysql');
-const schema = require('../../shared/schema/multisignature');
+const schema = require('../../shared/schema/multisigTransaction');
 
 const tableName = 'testSchemaTransaction';
 const getIndex = () => mysqlIndex(tableName, schema);

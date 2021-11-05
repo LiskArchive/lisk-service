@@ -13,19 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Joi = require('joi');
-
-const multisigTransactionSchema = {
-	serviceId: Joi.string().required(),
-	nonce: Joi.number().required(),
-	senderPublicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).required(),
-	asset: Joi.object().required(),
-	moduleAssetId: Joi.string().required(),
-	fee: Joi.string().required(),
-	expires: Joi.number().integer().positive().required(),
-	rejected: Joi.boolean().required(),
-};
-
 module.exports = {
-	multisigTransactionSchema: Joi.object(multisigTransactionSchema).required(),
+	primaryKey: 'id',
+	charset: 'utf8mb4',
+	schema: {
+		id: { type: 'integer', increments: true },
+		serviceId: { type: 'string', null: false },
+		signature: { type: 'text', default: '' },
+	},
+	indexes: {},
+	purge: {},
 };
