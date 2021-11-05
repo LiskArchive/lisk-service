@@ -15,7 +15,7 @@
  */
 const transactions = [
 	{
-		serviceId: '22139cb8-d1d3-43ec-b7d3-9f1ed30e5957',
+		serviceId: '7328a536b56942ae5005c31fe0cba6e46dd98ab79e7511eefc3740cead0f37fb',
 		nonce: 1,
 		senderPublicKey: '3e50549cd4d98760064ff2fe51801afba4e5e8623335275cece0eeff8495a81b',
 		senderAddress: 'lsk6f9gs9zfk6wqxgxnmxw5tbce2g8d42krtrwdfd',
@@ -27,7 +27,7 @@ const transactions = [
 		expiresAt: 1662224456,
 	},
 	{
-		serviceId: '088ea73f-cf58-475e-8fec-128be99555bf',
+		serviceId: '395c2f5598a1643a205154c6f4c46ce36895b28e6c35660a95e5c6fd5ef9aeab',
 		nonce: 2,
 		senderPublicKey: '4d50549cd4d98760064ff2fe51801afba4e5e8623335275cece0eeff8495a81c',
 		senderAddress: 'lsk2dp8gf6me3hafoqgtqej8dk96uusdhykvnkbrr',
