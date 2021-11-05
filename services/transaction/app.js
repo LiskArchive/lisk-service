@@ -45,7 +45,7 @@ const app = Microservice({
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
-// app.addJobs(path.join(__dirname, 'jobs')); //TODO: Enable after issue #846 is merged
+app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
 app.run().then(() => {
