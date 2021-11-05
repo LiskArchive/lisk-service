@@ -54,4 +54,8 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
  */
 config.endpoints.mysql = process.env.SERVICE_TRANSACTION_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
+config.db = {
+	expireInDays: process.env.MULTISIG_DB_EXPIRY_IN_DAYS || 29,
+};
+
 module.exports = config;
