@@ -36,6 +36,7 @@ const getMultisignatureTx = async params => {
 	}
 
 	const resultSet = await multisignatureTxDB.find(params);
+	if (!resultSet.length) throw new Error('Transaction does not exists in the database');
 	const total = await multisignatureTxDB.count(params);
 
 	// TODO: Add signature to response once issue #161 is done
