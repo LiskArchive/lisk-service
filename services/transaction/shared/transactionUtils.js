@@ -13,16 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const { hash } = require('@liskhq/lisk-cryptography');
 
-module.exports = [
-	{
-		name: 'job.1',
-		description: 'Generic job template',
-		schedule: '* * * * *', // Every 1 min
-		controller: () => {
-			const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			logger.info(`Dummy job is done, processed ${operationResult.length} items`);
-		},
-	},
-];
+const computeServiceId = transaction => {
+	const {
+		nonce, senderPublicKey, moduleAssetId, fee, asset,
+	} = transaction;
+
+	const serviceId = hash(Buffer.from([nonce, senderPublicKey, moduleAssetId, fee, JSON.stringify(asset)]), 'hex');
+	return serviceId.toString('hex');
+};
+
+module.exports = {
+	computeServiceId,
+};
