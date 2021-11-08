@@ -27,6 +27,10 @@ module.exports = {
 		serviceId: { optional: false, type: 'string', min: 1, max: 64 },
 		signatures: { optional: false, type: 'array' },
 	},
+	paramsRequired: true,
+	validParamPairings: [
+		['serviceId'],
+	],
 	get schema() {
 		const multisigTransactionSchema = {};
 		multisigTransactionSchema[this.swaggerApiPath] = { delete: {} };
