@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// TODO: Remove the following lint disable directive
+/* eslint-disable no-unused-vars,max-len */
 const POOL_LIMIT = 64; // move it to config
 const REG_MULTISIG_GROUP_MA_ID = '4:0'; // can be retrieved from networkStatus
 const TOKEN_TRANSFER = '2:0';
@@ -26,7 +28,8 @@ const {
 	computeMinFee,
 } = require('@liskhq/lisk-transactions');
 
-const requestRpc = require('./rpcBroker');
+const { requestRpc } = require('./rpcBroker');
+
 const mysqlIndex = require('./indexdb/mysql');
 const multisignatureTxIndexSchema = require('./schema/multisigTransaction');
 
@@ -35,7 +38,7 @@ const getMsTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexS
 const getCurrentTimestamp = (new Date()).getTime();
 
 // TODO: Write logic for testing against SHA256
-const isSHA256 = (input) => /^[A-Fa-f0-9]{64}$/.test(input);
+const isSHA256 = (input) => true;
 const verifySHA256 = (input, hash) => true;
 
 const getAssetSchema = (moduleAssetId) => requestRpc('core.transactions.schemas', { moduleAssetId });

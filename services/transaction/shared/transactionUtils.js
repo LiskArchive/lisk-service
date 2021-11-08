@@ -21,7 +21,7 @@ const {
 	getAssetSchema,
 } = require('./validators');
 
-const requestRpc = require('./rpcBroker');
+const { requestRpc } = require('./rpcBroker');
 
 const MODULE_ASSET_ID = {
 	TOKEN_TRANSFER: '2:0',
@@ -88,6 +88,8 @@ const convertToCoreTransaction = (transaction) => {
 	return coreTransaction;
 };
 
+// TODO: Remove the following lint disable directive
+/* eslint-disable no-unused-vars */
 const validateNewTransaction = async (transaction) => {
 	const errors = [];
 
