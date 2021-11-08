@@ -287,9 +287,8 @@ describe('Multisignature Transactions API', () => {
 			result.data.forEach(multisigTxn => {
 				expect(multisigTxn).toMap(multisigTransactionSchema);
 				expect(multisigTxn.serviceId).toBe(signaturePatch.serviceId);
-				expect(
-					multisigTxn.signatures.some(entry => entry.signature === signaturePatch.signatures[0].signature),
-				).toBeTruthy();
+				expect(multisigTxn.signatures
+					.some(entry => entry.signature === signaturePatch.signatures[0].signature)).toBeTruthy();
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
@@ -312,9 +311,8 @@ describe('Multisignature Transactions API', () => {
 			result.data.forEach(multisigTxn => {
 				expect(multisigTxn).toMap(multisigTransactionSchema);
 				expect(multisigTxn.serviceId).toBe(signaturePatch.serviceId);
-				expect(
-					multisigTxn.signatures.some(entry => entry.signature === signaturePatch.signatures[0].signature),
-				).toBeTruthy();
+				expect(multisigTxn.signatures
+					.some(entry => entry.signature === signaturePatch.signatures[0].signature)).toBeTruthy();
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
