@@ -21,7 +21,17 @@ const { getAssetSchema } = require('./validators');
 
 const requestRpc = require('./rpcBroker');
 
-const computeServiceId = transaction => {
+const MODULE_ASSET_ID = {
+	TOKEN_TRANSFER: '2:0',
+	KEYS_REGISTER_MULTISIGNATURE_GROUP: '4:0',
+	DPOS_REGISTER_DELEGATE: '5:0',
+	DPOS_VOTE_DELEGATE: '5:1',
+	DPOS_UNLOCK_TOKEN: '5:2',
+	DPOS_REPORT_DELEGATE_MISBEHAVIOUR: '5:3',
+	LEGACY_ACCOUNT_RECLAIM_LSK: '1000:0',
+};
+
+const computeServiceId = (transaction) => {
 	const {
 		nonce, senderPublicKey, moduleAssetId, fee, asset,
 	} = transaction;
@@ -30,7 +40,29 @@ const computeServiceId = transaction => {
 	return serviceId.toString('hex');
 };
 
-const convertToCoreTransaction = transaction => {
+const makeAssetCoreCompliant = (moduleAssetId, asset) => {
+	if (moduleAssetId === MODULE_ASSET_ID.TOKEN_TRANSFER) {
+		asset.recipientAddress = getHexAddressFromBase32(asset.recipientAddress);
+	}
+
+	if (moduleAssetId === MODULE_ASSET_ID.KEYS_REGISTER_MULTISIGNATURE_GROUP) {
+		asset.mandatoryKeys = asset.mandatoryKeys.map(k => Buffer.from(k, 'hex'));
+		asset.optionalKeys = asset.optionalKeys.map(k => Buffer.from(k, 'hex'));
+	}
+
+	if (moduleAssetId === MODULE_ASSET_ID.DPOS_VOTE_DELEGATE) {
+		asset.votes = asset.votes.map(a => Buffer.from(a, 'hex'));
+	}
+
+	if (moduleAssetId === MODULE_ASSET_ID.DPOS_UNLOCK_TOKEN) {
+		asset.unlockObjects = asset.unlockObjects
+			.map(u => ({ ...u, delegateAddress: getHexAddressFromBase32(u.delegateAddress) }));
+	}
+
+	return asset;
+};
+
+const convertToCoreTransaction = (transaction) => {
 	const {
 		moduleAssetId,
 		nonce,
@@ -40,19 +72,6 @@ const convertToCoreTransaction = transaction => {
 		signatures,
 	} = transaction;
 
-	// TODO: Use constant mappings for moduleAssetId comparisons and break into a separate method
-	if (moduleAssetId === '2:0') {
-		asset.recipientAddress = getHexAddressFromBase32(asset.recipientAddress);
-	} else if (moduleAssetId === '4:0') {
-		asset.mandatoryKeys = asset.mandatoryKeys.map(k => Buffer.from(k, 'hex'));
-		asset.optionalKeys = asset.optionalKeys.map(k => Buffer.from(k, 'hex'));
-	} else if (moduleAssetId === '5:1') {
-		asset.votes = asset.votes.map(a => Buffer.from(a, 'hex'));
-	} else if (moduleAssetId === '5:2') {
-		asset.unlockObjects = asset.unlockObjects
-			.map(u => ({ ...u, delegateAddress: getHexAddressFromBase32(u.delegateAddress) }));
-	}
-
 	const [moduleID, assetID] = moduleAssetId.split(':');
 	const coreTransaction = {
 		moduleID,
@@ -60,20 +79,17 @@ const convertToCoreTransaction = transaction => {
 		nonce,
 		fee,
 		senderPublicKey: Buffer.from(senderPublicKey, 'hex'),
-		asset,
+		asset: makeAssetCoreCompliant(moduleAssetId, asset),
 		signatures: signatures.map(s => Buffer.from(s, 'hex')),
 	};
 
 	return coreTransaction;
 };
 
-const broadcastTransaction = coreTransaction => {
-	const {
-		data: [{ schema: txAssetSchema }],
-	} = await getAssetSchema(`${coreTransaction.moduleID}:${coreTransaction.assetID}`);
-
-	const txBytes = getBytes(txAssetSchema, coreTransaction);
-	return requestRpc('core.transactions.post', { transaction: txBytes });
+const broadcastTransaction = async (transaction) => {
+	const { data: [{ schema: txAssetSchema }] } = await getAssetSchema(transaction.moduleAssetId);
+	const txBytes = getBytes(txAssetSchema, convertToCoreTransaction(transaction));
+	return requestRpc('core.transactions.post', { transaction: txBytes.toString('hex') });
 };
 
 module.exports = {

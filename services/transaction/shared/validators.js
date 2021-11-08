@@ -28,14 +28,14 @@ const {
 
 const requestRpc = require('./rpcBroker');
 const mysqlIndex = require('./indexdb/mysql');
-const multisignatureTxIndexSchema = require('./schema/multisignature');
+const multisignatureTxIndexSchema = require('./schema/multisigTransaction');
 
 const getMsTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
 
 const getCurrentTimestamp = (new Date()).getTime();
 
 // TODO: Write logic for testing against SHA256
-const isSHA256 = (input) => true;
+const isSHA256 = (input) => /^[A-Fa-f0-9]{64}$/.test(input);
 const verifySHA256 = (input, hash) => true;
 
 const getAssetSchema = (moduleAssetId) => requestRpc('core.transactions.schemas', { moduleAssetId });

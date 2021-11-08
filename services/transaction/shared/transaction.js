@@ -19,8 +19,13 @@ const {
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
-const { getBase32AddressFromPublicKey } = require('./accountUtils');
-const { computeServiceId } = require('./transactionUtils');
+const {
+	getBase32AddressFromPublicKey,
+} = require('./accountUtils');
+
+const {
+	computeServiceId,
+} = require('./transactionUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
 const multisignatureTxIndexSchema = require('./schema/multisigTransaction');

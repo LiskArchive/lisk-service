@@ -14,6 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
+
 const logger = Logger();
 
 let ServiceBroker;
