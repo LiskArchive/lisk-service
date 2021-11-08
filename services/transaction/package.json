@@ -28,6 +28,7 @@
     "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
     "clean": "rm -rf ./node_modules",
     "watch": "supervisor -w . -i ./node_modules app.js",
+    "test:unit": "./node_modules/.bin/jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
     "test:functional": "./node_modules/.bin/jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
@@ -36,9 +37,9 @@
     "bluebird": "^3.7.2",
     "knex": "^0.95.10",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
+    "moment": "^2.29.1",
     "mysql": "^2.18.1",
-    "node-cron": "=2.0.3",
-    "uuid": "^8.3.2"
+    "node-cron": "=2.0.3"
   },
   "devDependencies": {
     "jest": "^27.3.1",
