@@ -179,7 +179,7 @@ describe('Multisignature Transactions API', () => {
 		};
 	});
 
-	describe('Initiate multisignature transactions (POST)', () => {
+	describe('Add multisignature transactions to the pool (POST)', () => {
 		it('Account registration', async () => {
 			const response = await api.post(`${endpoint}`, registerMultisigAccountTrx);
 			expect(response).toMap(goodRequestSchema);
@@ -269,8 +269,9 @@ describe('Multisignature Transactions API', () => {
 			expect(response.data.length).toBe(1);
 			response.data.forEach(multisigTxn => {
 				expect(multisigTxn).toMap(multisigTransactionSchema);
+				expect(multisigTxn.serviceId).toBe(signaturePatch.serviceId);
 				expect(
-					multisigTxn.signatures.some(entry => entry.signature === signaturePatch[0].signature),
+					multisigTxn.signatures.some(entry => entry.signature === signaturePatch.signatures[0].signature),
 				).toBeTruthy();
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -291,6 +292,7 @@ describe('Multisignature Transactions API', () => {
 			expect(response.data.length).toBe(1);
 			response.data.forEach(multisigTxn => {
 				expect(multisigTxn).toMap(multisigTransactionSchema);
+				expect(multisigTxn.serviceId).toBe(signaturePatch.serviceId);
 				expect(
 					multisigTxn.signatures.some(entry => entry.signature === signaturePatch[0].signature),
 				).toBeTruthy();
@@ -299,7 +301,7 @@ describe('Multisignature Transactions API', () => {
 		});
 	});
 
-	describe('Retrieve multisignature transaction lists', () => {
+	describe('Retrieve multisignature transactions from the pool', () => {
 		it('returns list of multisignature transactions', async () => {
 			const response = await api.get(`${endpoint}`);
 			expect(response).toMap(goodRequestSchema);
@@ -321,7 +323,7 @@ describe('Multisignature Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns multisignature transactions with known address', async () => {
+		xit('returns multisignature transactions with known address', async () => {
 			const response = await api.get(`${endpoint}?address=lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -342,22 +344,22 @@ describe('Multisignature Transactions API', () => {
 				.toMap(multisigTransactionSchema, { senderPublicKey: refTransaction.senderPublicKey }));
 			expect(response.meta).toMap(metaSchema);
 		});
+	});
 
-		describe('Reject multisignature transactions from the transaction pool', () => {
-			it('Reject a multisignature transaction', async () => {
-				const response = await api.del(`${endpoint}`, {
-					serviceId: refTransaction.serviceId,
-					signatures: tokenTransferTrx.signatures,
-				});
-				expect(response).toMap(goodRequestSchema);
-				expect(response.data).toBeInstanceOf(Array);
-				expect(response.data.length).toBe(1);
-				response.data.forEach(multisigTxn => {
-					expect(multisigTxn).toMap(multisigTransactionSchema);
-					expect(multisigTxn.rejected).toBe(true);
-				});
-				expect(response.meta).toMap(metaSchema);
+	describe('Reject multisignature transactions in the transaction pool', () => {
+		it('Existing transaction', async () => {
+			const response = await api.del(`${endpoint}`, {
+				serviceId: refTransaction.serviceId,
+				signatures: tokenTransferTrx.signatures,
 			});
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(1);
+			response.data.forEach(multisigTxn => {
+				expect(multisigTxn).toMap(multisigTransactionSchema);
+				expect(multisigTxn.rejected).toBe(true);
+			});
+			expect(response.meta).toMap(metaSchema);
 		});
 	});
 });
