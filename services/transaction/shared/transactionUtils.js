@@ -17,7 +17,9 @@ const { hash } = require('@liskhq/lisk-cryptography');
 const { getBytes } = require('@liskhq/lisk-transactions');
 
 const { getHexAddressFromBase32 } = require('./accountUtils');
-const { getAssetSchema } = require('./validators');
+const {
+	getAssetSchema,
+} = require('./validators');
 
 const requestRpc = require('./rpcBroker');
 
@@ -86,6 +88,24 @@ const convertToCoreTransaction = (transaction) => {
 	return coreTransaction;
 };
 
+const validateNewTransaction = async (transaction) => {
+	const errors = [];
+
+	return errors;
+};
+
+const validateUpdateTransaction = async (transaction) => {
+	const errors = [];
+
+	return errors;
+};
+
+const validateRejectTransaction = async (transaction) => {
+	const errors = [];
+
+	return errors;
+};
+
 const broadcastTransaction = async (transaction) => {
 	const { data: [{ schema: txAssetSchema }] } = await getAssetSchema(transaction.moduleAssetId);
 	const txBytes = getBytes(txAssetSchema, convertToCoreTransaction(transaction));
@@ -95,5 +115,8 @@ const broadcastTransaction = async (transaction) => {
 module.exports = {
 	computeServiceId,
 	convertToCoreTransaction,
+	validateNewTransaction,
+	validateUpdateTransaction,
+	validateRejectTransaction,
 	broadcastTransaction,
 };

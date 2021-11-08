@@ -16,7 +16,10 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-	Exceptions: { NotFoundException },
+	Exceptions: {
+		NotFoundException,
+		ValidationException,
+	},
 } = require('lisk-service-framework');
 
 const {
@@ -25,6 +28,7 @@ const {
 
 const {
 	computeServiceId,
+	validateNewTransaction,
 } = require('./transactionUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
@@ -86,13 +90,17 @@ const createMultisignatureTx = async inputTransaction => {
 	// Compute and assign the serviceId to the transaction
 	inputTransaction.serviceId = computeServiceId(inputTransaction);
 
+	// Validate the transaction
+	const errors = await validateNewTransaction(inputTransaction);
+	if (errors.length) throw new ValidationException(errors.join('\n'));
+
 	// Stringify the transaction asset object
 	inputTransaction.asset = JSON.stringify(inputTransaction.asset);
 	inputTransaction.senderAddress = getBase32AddressFromPublicKey(inputTransaction.senderPublicKey);
 
 	try {
 		// Persist the signatures and the transaction into the database
-		// TODO: Add transactional support and validations
+		// TODO: Add transactional support
 		await BluebirdPromise.map(
 			inputTransaction.signatures,
 			async signature => multisigSignaturePool.upsert({
