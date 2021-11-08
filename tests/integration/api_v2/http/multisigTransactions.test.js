@@ -120,9 +120,9 @@ describe('Multisignature Transactions API', () => {
 			moduleAssetId: '5:2',
 			asset: {
 				unlockObjects: [{
-					delegateAddress: '',
-					amount: '',
-					unvoteHeight: '',
+					delegateAddress: 'lskatchyvyh9y3tz3mmpu9z3kptw56c6qcw4k7fks',
+					amount: '200000000',
+					unvoteHeight: '305',
 				}],
 				numberOfSignatures: 3,
 			},
