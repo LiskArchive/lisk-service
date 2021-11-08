@@ -15,6 +15,11 @@
  */
 const Joi = require('joi');
 
+const signatureItem = {
+	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).required(),
+	signature: Joi.string().pattern(/^([A-Fa-f0-9]{2}){64}$/).required(),
+};
+
 const multisigTransactionSchema = {
 	serviceId: Joi.string().required(),
 	nonce: Joi.number().required(),
@@ -22,6 +27,7 @@ const multisigTransactionSchema = {
 	asset: Joi.object().required(),
 	moduleAssetId: Joi.string().required(),
 	fee: Joi.string().required(),
+	signatures: Joi.array().items(signatureItem).optional(),
 	expires: Joi.number().integer().positive().required(),
 	rejected: Joi.boolean().required(),
 };

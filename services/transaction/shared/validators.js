@@ -13,16 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+// TODO: Remove the following lint disable directive
+/* eslint-disable no-unused-vars,max-len */
 const POOL_LIMIT = 64; // move it to config
 const REG_MULTISIG_GROUP_MA_ID = '4:0'; // can be retrieved from networkStatus
 const TOKEN_TRANSFER = '2:0';
 const MIN_ACCOUNT_BALANCE = 5000000; // Defined by the protocol - not implemented by the SDK yet
 // minRemainingBalance
-
-const {
-	Microservice,
-	Logger,
-} = require('lisk-service-framework');
 
 const { verifyData } = require('@liskhq/lisk-cryptography');
 
@@ -31,14 +28,10 @@ const {
 	computeMinFee,
 } = require('@liskhq/lisk-transactions');
 
-const logger = Logger();
+const { requestRpc } = require('./rpcBroker');
 
 const mysqlIndex = require('./indexdb/mysql');
-const multisignatureTxIndexSchema = require('./schema/multisignature');
-
-let ServiceBroker;
-
-const setBrokerHandle = (h) => ServiceBroker = h;
+const multisignatureTxIndexSchema = require('./schema/multisigTransaction');
 
 const getMsTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
 
@@ -47,14 +40,6 @@ const getCurrentTimestamp = (new Date()).getTime();
 // TODO: Write logic for testing against SHA256
 const isSHA256 = (input) => true;
 const verifySHA256 = (input, hash) => true;
-
-const requestRpc = (method, params) => new Promise((resolve, reject) => {
-	ServiceBroker.call(method, params).then(res => resolve(res))
-		.catch(err => {
-			logger.error(`Error occurred! ${err.message}`);
-			reject(err);
-		});
-});
 
 const getAssetSchema = (moduleAssetId) => requestRpc('core.transactions.schemas', { moduleAssetId });
 
@@ -141,7 +126,4 @@ module.exports = {
 	isValidCoreTransaction,
 	isValidSignature,
 	hasValidNonce,
-
-	// Microservice
-	setBrokerHandle,
 };
