@@ -23,7 +23,7 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 
-const { setBrokerHandle } = require('./shared/validators');
+const { setBrokerHandle } = require('./shared/rpcBroker');
 
 // Configure logger
 const loggerConf = {

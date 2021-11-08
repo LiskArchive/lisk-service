@@ -19,11 +19,6 @@ const TOKEN_TRANSFER = '2:0';
 const MIN_ACCOUNT_BALANCE = 5000000; // Defined by the protocol - not implemented by the SDK yet
 // minRemainingBalance
 
-const {
-	Microservice,
-	Logger,
-} = require('lisk-service-framework');
-
 const { verifyData } = require('@liskhq/lisk-cryptography');
 
 const {
@@ -31,14 +26,9 @@ const {
 	computeMinFee,
 } = require('@liskhq/lisk-transactions');
 
-const logger = Logger();
-
+const requestRpc = require('./rpcBroker');
 const mysqlIndex = require('./indexdb/mysql');
 const multisignatureTxIndexSchema = require('./schema/multisignature');
-
-let ServiceBroker;
-
-const setBrokerHandle = (h) => ServiceBroker = h;
 
 const getMsTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
 
@@ -47,14 +37,6 @@ const getCurrentTimestamp = (new Date()).getTime();
 // TODO: Write logic for testing against SHA256
 const isSHA256 = (input) => true;
 const verifySHA256 = (input, hash) => true;
-
-const requestRpc = (method, params) => new Promise((resolve, reject) => {
-	ServiceBroker.call(method, params).then(res => resolve(res))
-		.catch(err => {
-			logger.error(`Error occurred! ${err.message}`);
-			reject(err);
-		});
-});
 
 const getAssetSchema = (moduleAssetId) => requestRpc('core.transactions.schemas', { moduleAssetId });
 
@@ -141,7 +123,4 @@ module.exports = {
 	isValidCoreTransaction,
 	isValidSignature,
 	hasValidNonce,
-
-	// Microservice
-	setBrokerHandle,
 };
