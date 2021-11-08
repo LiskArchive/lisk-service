@@ -29,6 +29,8 @@ const multisigSignaturePoolSchema = require('./schema/multisigSignaturePool');
 const getMultiSignatureTxIndex = () => mysqlIndex('MultisigTransaction', multisignatureTxIndexSchema);
 const getMultisigSignaturePool = () => mysqlIndex('MultisigSignaturePool', multisigSignaturePoolSchema);
 
+const validators = require('./validators');
+
 const getMultisignatureTx = async params => {
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
 	const multisigSignaturePool = await getMultisigSignaturePool();
@@ -148,6 +150,11 @@ const updateMultisignatureTx = async transactionPatch => {
 };
 
 const rejectMultisignatureTx = async params => {
+	const validationSet = {
+		isWithinExpirationTime: false,
+		isValidSignature: false,
+		hasValidNonce: false,
+	};
 	const multisignatureTxDB = await getMultiSignatureTxIndex();
 	const transaction = {
 		data: [],
@@ -157,6 +164,13 @@ const rejectMultisignatureTx = async params => {
 	// TODO: Add validations
 	const [response] = await multisignatureTxDB.find({ serviceId: params.serviceId });
 	const total = await multisignatureTxDB.count({ serviceId: params.serviceId });
+
+	if (validators.isWithinExpirationTime(response)) validationSet.isWithinExpirationTime = true;
+	if (validators.isValidSignature(response, params.signatures)) validationSet.isValidSignature = true;
+	if (validators.hasValidNonce(response)) validationSet.hasValidNonce = true;
+
+	const isTransactionValid = !Object.keys(validationSet).some(value => !validationSet[value]);
+	if (!isTransactionValid) throw new Error('Invalid transaction');
 
 	// Update the multisignature transaction with rejected flag as true
 	const rejectTransaction = { ...response, rejected: true };
