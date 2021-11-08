@@ -14,8 +14,10 @@
  *
  */
 const { hash } = require('@liskhq/lisk-cryptography');
+const { getBytes } = require('@liskhq/lisk-transactions');
 
 const { getHexAddressFromBase32 } = require('./accountUtils');
+const { getAssetSchema } = require('./validators');
 
 const requestRpc = require('./rpcBroker');
 
@@ -65,7 +67,17 @@ const convertToCoreTransaction = transaction => {
 	return coreTransaction;
 };
 
+const broadcastTransaction = coreTransaction => {
+	const {
+		data: [{ schema: txAssetSchema }],
+	} = await getAssetSchema(`${coreTransaction.moduleID}:${coreTransaction.assetID}`);
+
+	const txBytes = getBytes(txAssetSchema, coreTransaction);
+	return requestRpc('core.transactions.post', { transaction: txBytes });
+};
+
 module.exports = {
 	computeServiceId,
 	convertToCoreTransaction,
+	broadcastTransaction,
 };
