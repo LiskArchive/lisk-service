@@ -15,6 +15,10 @@
  */
 const { hash } = require('@liskhq/lisk-cryptography');
 
+const { getHexAddressFromBase32 } = require('./accountUtils');
+
+const requestRpc = require('./rpcBroker');
+
 const computeServiceId = transaction => {
 	const {
 		nonce, senderPublicKey, moduleAssetId, fee, asset,
@@ -24,6 +28,44 @@ const computeServiceId = transaction => {
 	return serviceId.toString('hex');
 };
 
+const convertToCoreTransaction = transaction => {
+	const {
+		moduleAssetId,
+		nonce,
+		fee,
+		senderPublicKey,
+		asset,
+		signatures,
+	} = transaction;
+
+	// TODO: Use constant mappings for moduleAssetId comparisons and break into a separate method
+	if (moduleAssetId === '2:0') {
+		asset.recipientAddress = getHexAddressFromBase32(asset.recipientAddress);
+	} else if (moduleAssetId === '4:0') {
+		asset.mandatoryKeys = asset.mandatoryKeys.map(k => Buffer.from(k, 'hex'));
+		asset.optionalKeys = asset.optionalKeys.map(k => Buffer.from(k, 'hex'));
+	} else if (moduleAssetId === '5:1') {
+		asset.votes = asset.votes.map(a => Buffer.from(a, 'hex'));
+	} else if (moduleAssetId === '5:2') {
+		asset.unlockObjects = asset.unlockObjects
+			.map(u => ({ ...u, delegateAddress: getHexAddressFromBase32(u.delegateAddress) }));
+	}
+
+	const [moduleID, assetID] = moduleAssetId.split(':');
+	const coreTransaction = {
+		moduleID,
+		assetID,
+		nonce,
+		fee,
+		senderPublicKey: Buffer.from(senderPublicKey, 'hex'),
+		asset,
+		signatures: signatures.map(s => Buffer.from(s, 'hex')),
+	};
+
+	return coreTransaction;
+};
+
 module.exports = {
 	computeServiceId,
+	convertToCoreTransaction,
 };
