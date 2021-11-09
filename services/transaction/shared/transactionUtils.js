@@ -126,7 +126,7 @@ const validateNewTransaction = async (transaction) => {
 		errors.push('Pool limit exceeded');
 	}
 
-	if (!hasMinimalBalance(account, transaction, coreTransaction)) {
+	if (!hasMinimalBalance(account, coreTransaction)) {
 		errors.push('INsufficient balance');
 	}
 
