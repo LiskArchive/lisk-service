@@ -32,17 +32,18 @@
     "test:functional": "./node_modules/.bin/jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-cryptography": "^3.1.0",
+    "@liskhq/lisk-cryptography": "^3.2.0",
+    "@liskhq/lisk-transactions": "^5.2.0",
     "bluebird": "^3.7.2",
     "knex": "^0.95.10",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ef6b8e654ea1c4fd1389e7b10713c21afd238d8e/framework/dist/lisk-service-framework-1.2.2.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
     "moment": "^2.29.1",
     "mysql": "^2.18.1",
     "node-cron": "=2.0.3"
   },
   "devDependencies": {
+    "jest": "^27.3.1",
     "joi": "^17.4.0",
-    "moleculer": "^0.14.16",
-    "jest": "^26.6.3"
+    "moleculer": "^0.14.16"
   }
 }
