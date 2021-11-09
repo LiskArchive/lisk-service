@@ -95,7 +95,7 @@ describe('Test validator', () => {
 
 	// This can be tested only in conjunction with Core Microservice
 	// TODO: Mock Core Microservice
-	it.todo('for minimal balance', async () => {
+	xit('for minimal balance', async () => {
 		expect(await hasMinimalBalance({ ...genericAccount, balance: 7500000 })).toBe(true);
 		expect(await hasMinimalBalance({ ...genericAccount, balance: 150 })).toBe(false);
 	});
@@ -120,7 +120,7 @@ describe('Test validator', () => {
 	});
 
 	// TODO: Mock MySQL database
-	it.todo('for number of transactions per account within the limit of 64', () => {
+	xit('for number of transactions per account within the limit of 64', async () => {
 		expect(isWithinPoolLimit(genericAccount.address)).toBe(true);
 		expect(isWithinPoolLimit('lskved5acuxcjo6bsvj7rggxkw9dnzca9tpf2h92d')).toBe(false);
 	});
@@ -131,7 +131,7 @@ describe('Test validator', () => {
 	});
 
 	// TODO: Mock getAssetSchema()
-	it.todo('for transaction validation using lisk-elements', () => {
+	xit('for transaction validation using lisk-elements', async () => {
 		expect(isValidCoreTransaction(convertToCoreTransaction(genericTransaction))).toBe(true);
 		expect(isValidCoreTransaction(convertToCoreTransaction(genericTransaction))).toBe(false);
 	});
