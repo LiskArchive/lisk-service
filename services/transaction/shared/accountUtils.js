@@ -15,6 +15,7 @@
  */
 const {
 	getAddressFromPublicKey,
+	getAddressFromBase32Address,
 	getBase32AddressFromAddress,
 } = require('@liskhq/lisk-cryptography');
 
@@ -28,6 +29,11 @@ const getBase32AddressFromHex = address => {
 	return base32Address;
 };
 
+const getHexAddressFromBase32 = address => {
+	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
+	return binaryAddress;
+};
+
 const getBase32AddressFromPublicKey = publicKey => {
 	const hexAddress = getHexAddressFromPublicKey(publicKey);
 	const base32Address = getBase32AddressFromHex(hexAddress);
@@ -35,5 +41,6 @@ const getBase32AddressFromPublicKey = publicKey => {
 };
 
 module.exports = {
+	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
 };
