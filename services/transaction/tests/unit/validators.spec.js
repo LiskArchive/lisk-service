@@ -23,8 +23,8 @@ const {
 	isMultisigRegistration,
 	isWithinPoolLimit,
 	hasValidServiceId,
-	isValidCoreTransaction,
-	isValidSignature,
+	// isValidCoreTransaction,
+	// isValidSignature,
 	hasValidNonce,
 } = require('../../shared/validators');
 
@@ -34,7 +34,7 @@ const {
 	// inputTransactionServiceId,
 } = require('../constants/multisignature');
 
-const { convertToCoreTransaction } = require('../../shared/transactionUtils');
+// const { convertToCoreTransaction } = require('../../shared/transactionUtils');
 
 const genericTransaction = inputTransaction;
 
@@ -78,11 +78,11 @@ const genericAccount = {
 	knowledge: {},
 };
 
-const genericSignature = {
-	publicKey: genericAccount.publicKey,
-	address: genericAccount.address,
-	signature: '123456',
-};
+// const genericSignature = {
+// 	publicKey: genericAccount.publicKey,
+// 	address: genericAccount.address,
+// 	signature: '123456',
+// };
 
 // const coreTransaction = convertToCoreTransaction(genericTransaction);
 
