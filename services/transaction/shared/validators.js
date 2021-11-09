@@ -17,12 +17,6 @@ const POOL_LIMIT = 64; // move it to config
 const REG_MULTISIG_GROUP_MA_ID = '4:0'; // can be retrieved from networkStatus
 const TOKEN_TRANSFER = '2:0';
 const MIN_ACCOUNT_BALANCE = 5000000; // Defined by the protocol - not implemented by the SDK yet
-// minRemainingBalance
-
-const {
-	Microservice,
-	Logger,
-} = require('lisk-service-framework');
 
 const { verifyData } = require('@liskhq/lisk-cryptography');
 
@@ -31,39 +25,27 @@ const {
 	computeMinFee,
 } = require('@liskhq/lisk-transactions');
 
-const logger = Logger();
-
 const mysqlIndex = require('./indexdb/mysql');
-const multisignatureTxIndexSchema = require('./schema/multisignature');
-
-let ServiceBroker;
-
-const setBrokerHandle = (h) => ServiceBroker = h;
+const multisignatureTxIndexSchema = require('./schema/multisigTransaction');
 
 const getMsTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
 
 const getCurrentTimestamp = (new Date()).getTime();
 
-// TODO: Write logic for testing against SHA256
-const isSHA256 = (input) => true;
-const verifySHA256 = (input, hash) => true;
-
-const requestRpc = (method, params) => new Promise((resolve, reject) => {
-	ServiceBroker.call(method, params).then(res => resolve(res))
-		.catch(err => {
-			logger.error(`Error occurred! ${err.message}`);
-			reject(err);
-		});
-});
+const requestRpc = require('./rpcUtils');
 
 const getAssetSchema = (moduleAssetId) => requestRpc('core.transactions.schemas', { moduleAssetId });
 
-// coreTransaction requires a json format
-
-const hasMinimalBalance = (account, transaction, coreTransaction) => { // simplify the transaction/coreTrx
+const hasMinimalBalance = (account, coreTrx) => {
 	let transferAmount = 0;
-	const assetSchema = getAssetSchema(transaction.moduleAssetId);
-	const minimumFee = computeMinFee(assetSchema, coreTransaction); // options
+	const moduleAssetId = `${coreTrx.moduleID}:${coreTrx.assetID}`;
+	const assetSchema = getAssetSchema(moduleAssetId);
+	const minimumFee = computeMinFee(
+		assetSchema,
+		coreTrx,
+		{
+			numberOfSignatures: 1, // TODO: Update with number of signatures
+		});
 	/* options are optional
 		  options?: {
 			minFeePerByte: number,
@@ -72,8 +54,8 @@ const hasMinimalBalance = (account, transaction, coreTransaction) => { // simpli
 		  }
 	*/
 
-	if (transaction.moduleAssetId === TOKEN_TRANSFER) {
-		transferAmount = transaction.asset.amount;
+	if (moduleAssetId === TOKEN_TRANSFER) {
+		transferAmount = coreTrx.asset.amount;
 	}
 	if (account.token.balance >= minimumFee + transferAmount + MIN_ACCOUNT_BALANCE) return true;
 	return false;
@@ -103,13 +85,12 @@ const isWithinPoolLimit = async account => {
 };
 
 const hasValidServiceId = transaction => {
-	if (transaction.serviceId && isSHA256(transaction.serviceId)) return true;
+	if (transaction.serviceId) return true;
 	return false;
 };
 
-
-const isValidCoreTransaction = async (coreTransaction) => {
-	const assetSchema = await getAssetSchema(`${coreTransaction.moduleId}:${coreTransaction.assetId}`);
+const isValidCoreTransaction = async (coreTrx) => {
+	const assetSchema = await getAssetSchema(`${coreTrx.moduleID}:${coreTrx.assetID}`);
 	// validateTransaction(
 	// 	// schema defined in custom asset to be signed
 	// 	assetSchema: Schema,
@@ -117,7 +98,7 @@ const isValidCoreTransaction = async (coreTransaction) => {
 	// 	transactionObject: Record<string, unknown>,
 	//   ): LiskValidationError | Error | undefined;
 
-	return validateTransaction(assetSchema, coreTransaction);
+	return validateTransaction(assetSchema, coreTrx);
 };
 
 const isValidSignature = (coreTransaction, s) => verifyData(
@@ -141,7 +122,4 @@ module.exports = {
 	isValidCoreTransaction,
 	isValidSignature,
 	hasValidNonce,
-
-	// Microservice
-	setBrokerHandle,
 };
