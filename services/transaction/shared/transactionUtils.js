@@ -14,10 +14,11 @@
  *
  */
 const { hash } = require('@liskhq/lisk-cryptography');
-// const { getBytes } = require('@liskhq/lisk-transactions');
+const { getBytes } = require('@liskhq/lisk-transactions');
 
 const { getHexAddressFromBase32 } = require('./accountUtils');
 const {
+	getAssetSchema,
 	hasMinimalBalance,
 	isMultisigAccount,
 	isWithinExpirationTime,
@@ -180,11 +181,11 @@ const validateRejectTransaction = async (transaction) => {
 	return errors;
 };
 
-// const broadcastTransaction = async (transaction) => {
-// 	const { data: [{ schema: txAssetSchema }] } = await getAssetSchema(transaction.moduleAssetId);
-// 	const txBytes = getBytes(txAssetSchema, convertToCoreTransaction(transaction));
-// 	return requestRpc('core.transactions.post', { transaction: txBytes.toString('hex') });
-// };
+const broadcastTransaction = async (transaction) => {
+	const { data: [{ schema: txAssetSchema }] } = await getAssetSchema(transaction.moduleAssetId);
+	const txBytes = getBytes(txAssetSchema, convertToCoreTransaction(transaction));
+	return requestRpc('core.transactions.post', { transaction: txBytes.toString('hex') });
+};
 
 module.exports = {
 	computeServiceId,
@@ -192,5 +193,5 @@ module.exports = {
 	validateNewTransaction,
 	validateUpdateTransaction,
 	validateRejectTransaction,
-	// broadcastTransaction,
+	broadcastTransaction,
 };

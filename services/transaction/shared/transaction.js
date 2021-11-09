@@ -95,9 +95,9 @@ const createMultisignatureTx = async inputTransaction => {
 	inputTransaction.senderAddress = getBase32AddressFromPublicKey(inputTransaction.senderPublicKey);
 
 
-	// Validate the transaction
-	const errors = await validateNewTransaction(inputTransaction);
-	if (errors.length) throw new ValidationException(errors.join('\n'));
+	// // Validate the transaction
+	// const errors = await validateNewTransaction(inputTransaction);
+	// if (errors.length) throw new ValidationException(errors.join('\n'));
 
 	try {
 		// Persist the signatures and the transaction into the database
@@ -118,6 +118,11 @@ const createMultisignatureTx = async inputTransaction => {
 
 	// Fetch the transaction from the pool and return as a response
 	const response = await getMultisignatureTx({ serviceId: inputTransaction.serviceId });
+
+	// Create and validate the transaction
+	const errors = await validateNewTransaction(response.data[0]);
+	if (errors.length) throw new ValidationException(errors.join('\n'));
+
 	if (response.data) transaction.data = response.data;
 	if (response.meta) transaction.meta = response.meta;
 
