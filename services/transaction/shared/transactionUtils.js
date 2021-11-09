@@ -19,6 +19,14 @@ const { getBytes } = require('@liskhq/lisk-transactions');
 const { getHexAddressFromBase32 } = require('./accountUtils');
 const {
 	getAssetSchema,
+	hasMinimalBalance,
+	isMultisigAccount,
+	isWithinExpirationTime,
+	isMultisigRegistration,
+	isWithinPoolLimit,
+	isValidCoreTransaction,
+	isValidSignature,
+	hasValidNonce,
 } = require('./validators');
 
 const { requestRpc } = require('./rpcBroker');
@@ -88,22 +96,87 @@ const convertToCoreTransaction = (transaction) => {
 	return coreTransaction;
 };
 
-// TODO: Remove the following lint disable directive
-/* eslint-disable no-unused-vars */
 const validateNewTransaction = async (transaction) => {
 	const errors = [];
+	const { data: [account] } = await requestRpc('core.accounts', { publicKey: transaction.senderPublicKey });
+	const coreTransaction = convertToCoreTransaction(transaction);
+
+	if (!isValidCoreTransaction(transaction)) {
+		errors.push('Invalid transaction');
+	}
+
+	if (transaction.signatures.some(s => !isValidSignature(coreTransaction, s))) {
+		errors.push('Invalid signature');
+	}
+
+	if (!isWithinExpirationTime(transaction)) {
+		errors.push('Transaction expired');
+	}
+
+	if (!isMultisigRegistration(transaction) && !isMultisigAccount(account)) {
+		errors.push('Not a multisignature transaction');
+		errors.push('Sender account not registered as a multisig account');
+	}
+
+	if (!hasValidNonce(transaction, account)) {
+		errors.push('Invalid nonce');
+	}
+
+	if (!isWithinPoolLimit(account)) {
+		errors.push('Pool limit exceeded');
+	}
+
+	if (!hasMinimalBalance(account, transaction, coreTransaction)) {
+		errors.push('INsufficient balance');
+	}
 
 	return errors;
 };
 
 const validateUpdateTransaction = async (transaction) => {
 	const errors = [];
+	const { data: [account] } = await requestRpc('core.accounts', { publicKey: transaction.senderPublicKey });
+	const coreTransaction = convertToCoreTransaction(transaction);
+
+	if (transaction.signatures.some(s => !isValidSignature(coreTransaction, s))) {
+		errors.push('Invalid signature');
+	}
+
+	if (!isWithinExpirationTime(transaction)) {
+		errors.push('Transaction expired');
+	}
+
+	if (!hasValidNonce(transaction, account)) {
+		errors.push('Invalid nonce');
+	}
+
+	if (!isWithinPoolLimit(account)) {
+		errors.push('Pool limit exceeded');
+	}
 
 	return errors;
 };
 
 const validateRejectTransaction = async (transaction) => {
 	const errors = [];
+	const { data: [account] } = await requestRpc('core.accounts', { publicKey: transaction.senderPublicKey });
+	const coreTransaction = convertToCoreTransaction(transaction);
+
+	if (transaction.signatures.some(s => !isValidSignature(coreTransaction, s))) {
+		errors.push('Invalid signature');
+	}
+
+	if (!isWithinExpirationTime(transaction)) {
+		errors.push('Transaction expired');
+	}
+
+	if (!hasValidNonce(transaction, account)) {
+		errors.push('Invalid nonce');
+	}
+
+	if (!isWithinPoolLimit(account)) {
+		errors.push('Pool limit exceeded');
+	}
 
 	return errors;
 };

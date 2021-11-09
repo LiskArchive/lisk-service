@@ -22,13 +22,12 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const {
-	getBase32AddressFromPublicKey,
-} = require('./accountUtils');
-
+const { getBase32AddressFromPublicKey } = require('./accountUtils');
 const {
 	computeServiceId,
 	validateNewTransaction,
+	validateUpdateTransaction,
+	validateRejectTransaction,
 } = require('./transactionUtils');
 
 const mysqlIndex = require('./indexdb/mysql');
@@ -53,6 +52,7 @@ const getMultisignatureTx = async params => {
 	}
 
 	const resultSet = await multisignatureTxDB.find(params);
+	if (!resultSet.length) throw new Error('Transaction does not exists in the database');
 	const total = await multisignatureTxDB.count(params);
 
 	if (resultSet.length) {
@@ -90,17 +90,18 @@ const createMultisignatureTx = async inputTransaction => {
 	// Compute and assign the serviceId to the transaction
 	inputTransaction.serviceId = computeServiceId(inputTransaction);
 
-	// Validate the transaction
-	const errors = await validateNewTransaction(inputTransaction);
-	if (errors.length) throw new ValidationException(errors.join('\n'));
-
 	// Stringify the transaction asset object
 	inputTransaction.asset = JSON.stringify(inputTransaction.asset);
 	inputTransaction.senderAddress = getBase32AddressFromPublicKey(inputTransaction.senderPublicKey);
 
+
+	// // Validate the transaction
+	// const errors = await validateNewTransaction(inputTransaction);
+	// if (errors.length) throw new ValidationException(errors.join('\n'));
+
 	try {
 		// Persist the signatures and the transaction into the database
-		// TODO: Add transactional support
+		// TODO: Add transactional support and validations
 		await BluebirdPromise.map(
 			inputTransaction.signatures,
 			async signature => multisigSignaturePool.upsert({
@@ -117,6 +118,11 @@ const createMultisignatureTx = async inputTransaction => {
 
 	// Fetch the transaction from the pool and return as a response
 	const response = await getMultisignatureTx({ serviceId: inputTransaction.serviceId });
+
+	// Create and validate the transaction
+	const errors = await validateNewTransaction(response.data[0]);
+	if (errors.length) throw new ValidationException(errors.join('\n'));
+
 	if (response.data) transaction.data = response.data;
 	if (response.meta) transaction.meta = response.meta;
 
@@ -153,6 +159,11 @@ const updateMultisignatureTx = async transactionPatch => {
 	}
 
 	const response = await getMultisignatureTx({ serviceId });
+
+	// Validate the transaction
+	const errors = await validateUpdateTransaction(response.data[0]);
+	if (errors.length) throw new ValidationException(errors.join('\n'));
+
 	if (response.data) transaction.data = response.data;
 	if (response.meta) transaction.meta = response.meta;
 
@@ -166,9 +177,12 @@ const rejectMultisignatureTx = async params => {
 		meta: {},
 	};
 
-	// TODO: Add validations
 	const [response] = await multisignatureTxDB.find({ serviceId: params.serviceId });
 	const total = await multisignatureTxDB.count({ serviceId: params.serviceId });
+
+	// Validate the transaction
+	const errors = await validateRejectTransaction(response);
+	if (errors.length) throw new ValidationException(errors.join('\n'));
 
 	// Update the multisignature transaction with rejected flag as true
 	const rejectTransaction = { ...response, rejected: true };
