@@ -34,7 +34,7 @@ const multisignatureTxIndexSchema = require('./schema/multisigTransaction');
 
 const getMsTxIndex = () => mysqlIndex('MultisignatureTx', multisignatureTxIndexSchema);
 
-const getCurrentTimestamp = (new Date()).getTime();
+const getCurrentTimestamp = () => (new Date()).getTime();
 
 const getAssetSchema = (moduleAssetId) => requestRpc('core.transactions.schemas', { moduleAssetId });
 
@@ -86,8 +86,10 @@ const isWithinPoolLimit = async account => {
 	return false;
 };
 
+const isValidServiceId = str => /^[a-fA-F0-9]{64}$/.test(str);
+
 const hasValidServiceId = transaction => {
-	if (transaction.serviceId) return true;
+	if (transaction.serviceId && isValidServiceId(transaction.serviceId)) return true;
 	return false;
 };
 
