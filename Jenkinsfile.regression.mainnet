@@ -1,6 +1,25 @@
 @Library('lisk-jenkins') _
+def echoBanner(msg) {
+	echo '----------------------------------------------------------------------'
+	echo msg
+	echo '----------------------------------------------------------------------'
+}
+
+def checkHttp(url) {
+	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
+	return (result == 0)
+}
+
+def waitForHttp(url) {
+	waitUntil { script { return (checkHttp(url) == true) } }
+}
+
 pipeline {
 	agent none
+	triggers {
+		// Triggers every week at midnight on Sunday morning
+		cron('0 0 * * 0')
+		}
 	stages {
 		stage('Readiness check') {
 			steps {
