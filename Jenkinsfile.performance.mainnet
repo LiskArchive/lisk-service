@@ -1,0 +1,18 @@
+@Library('lisk-jenkins') _
+pipeline {
+	agent none
+	stages {
+		stage('Run performance tests Mainnet') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				ansiColor('xterm') {
+					nvm(getNodejsVersion()) {
+						// Mainnet service URL
+						dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
+					}
+				}
+			}
+		}
+	}
+}
+// vim: filetype=groovy
