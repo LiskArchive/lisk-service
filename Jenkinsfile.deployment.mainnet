@@ -1,6 +1,10 @@
 @Library('lisk-jenkins') _
 pipeline {
 	agent none
+	triggers {
+		// Triggers every week at midnight on Sunday morning
+		cron('0 0 * * 0')
+		}
 	stages {
 		stage('Build docker images') {
 			agent any
@@ -18,7 +22,7 @@ pipeline {
 			environment {
 				ENABLE_HTTP_API='http-status,http-version2'
 				ENABLE_WS_API='blockchain,rpc-v2'
-                // Mainnet node URL
+				// Mainnet node URL
 				LISK_CORE_WS='ws://host.docker.internal:8080'
 				INDEX_N_BLOCKS='0'
 				ENABLE_JOB_MISSING_BLOCKS='true'
