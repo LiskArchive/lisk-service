@@ -113,5 +113,22 @@ module.exports = {
 				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
 			},
 		},
+		{
+			name: 'lisk-service-export',
+			script: 'app.js',
+			cwd: './services/export',
+			pid_file: './pids/service_export.pid',
+			out_file: './logs/service_export.log',
+			error_file: './logs/service_export.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '512M',
+			autorestart: true,
+			env: {
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_EXPORT_REDIS: 'redis://localhost:6379/3',
+			},
+		},
 	],
 };
