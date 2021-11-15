@@ -24,16 +24,16 @@ pipeline {
 		stage('Readiness check') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				// Mainnet service URL
+				// Service URL
 				waitForHttp('http://localhost:9901/api/ready')
 			}
 		}
-		stage('Run performance tests Mainnet') {
+		stage('Run performance tests Test blockchain') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
-						// Mainnet service URL
+						// Service URL
 						dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
 					}
 				}
