@@ -177,15 +177,44 @@ services:
       timeout: 20s
       retries: 10
 
+  export:
+    image: lisk/service_export
+    depends_on:
+      - redis_common
+      - redis_export
+    networks:
+      - services_network
+      - export_network
+    environment:
+      - SERVICE_BROKER=redis://redis_common:6379/0
+      - SERVICE_MARKET_REDIS=redis://redis_market:6379/0
+      - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
+      - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
+    restart: always
+
+  export_market:
+    image: redis:5-alpine
+    volumes:
+      - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
+      - redis-data-export:/data
+    networks:
+      - export_network
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping
+
 networks:
   newsfeed_network:
   services_network:
   market_network:
   core_network:
   gateway_network:
+  export_network:
 
 volumes:
   mysql-data-newsfeed:
   mysql-data-core:
   redis-data-core:
   redis-data-market:
+  redis-data-export:
