@@ -1,0 +1,37 @@
+{
+  "name": "lisk-service-export",
+  "version": "0.5.0",
+  "description": "Lisk Service Export",
+  "keywords": [
+    "lisk",
+    "blockchain"
+  ],
+  "homepage": "https://github.com/LiskHQ/lisk-service",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LiskHQ/lisk-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LiskHQ/lisk-service/issues"
+  },
+  "private": true,
+  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "engines": {
+    "node": "12.16.2",
+    "npm": "6.14.4"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "eslint": "eslint ./api ./knowledge ./services ./test ./*.js",
+    "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
+    "clean": "rm -rf ./node_modules",
+    "watch": "supervisor -w . -i ./node_modules app.js"
+  },
+  "dependencies": {
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
+    "node-cron": "=2.0.3"
+  },
+  "devDependencies": {}
+}
