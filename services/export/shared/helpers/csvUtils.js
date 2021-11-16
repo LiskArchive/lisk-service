@@ -16,10 +16,10 @@
 const { Parser } = require('json2csv');
 
 const parseJsonToCsv = (opts, json) => {
-    const parser = new Parser(opts);
-    return parser.parse(json);
+	const parser = new Parser(opts);
+	return parser.parse(json);
 };
 
 module.exports = {
-    parseJsonToCsv,
+	parseJsonToCsv,
 };
