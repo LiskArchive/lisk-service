@@ -58,4 +58,24 @@ module.exports = filterApis(config.api.http, {
 	'http-version1-compat': () => registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
 	'http-test': () => registerApi('http-test', { ...defaultConfig, path: '/test' }),
 	'http-status': () => registerApi('http-status', { ...defaultConfig, path: '/' }),
+	'http-exports': () => ({
+		...defaultConfig,
+		path: '/export',
+
+		whitelist: [
+			'export.csv',
+		],
+
+		aliases: {
+			'GET /csv': 'export.csv',
+		},
+
+		onAfterCall(ctx, route, req, res, data) {
+			res.setHeader('Content-Disposition', `attachment; filename="data-${ctx.params.id}.csv"`);
+			res.setHeader('Content-Type', 'text/csv');
+			res.end(data);
+		},
+
+		autoAliases: false,
+	}),
 });
