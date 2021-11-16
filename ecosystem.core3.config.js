@@ -127,7 +127,7 @@ module.exports = {
 			autorestart: true,
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				SERVICE_EXPORT_REDIS: 'redis://localhost:6379/3',
+				// SERVICE_EXPORT_REDIS: 'redis://localhost:6379/3',
 			},
 		},
 	],
