@@ -24,16 +24,16 @@ pipeline {
 		stage('Readiness check') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				// Service URL
+				// Mainnet service URL
 				waitForHttp('http://localhost:9901/api/ready')
 			}
 		}
-		stage('Run regression tests Test blockchain') {
+		stage('Run regression tests Mainnet') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
-						dir('./tests') { sh 'npm run test:regressions' }
+						dir('./tests') { sh 'npm run test:regression:mainnet' }
 					}
 				}
 			}

@@ -1,89 +1,42 @@
 @Library('lisk-jenkins') _
-
-LISK_CORE_HTTP_PORT = 4000
-LISK_CORE_WS_PORT = 5001
-MYSQL_PORT = 3306
-REDIS_PORT = 6381
-
-def checkOpenPort(nPort) {
-	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
-	return (result == 0)
-}
-
-def runServiceIfMissing(svcName, path, nPort) {
-	if (checkOpenPort(nPort) == false) {
-		echo "${svcName} is not running, starting a new instance on port ${nPort}"
-		dir(path) { sh "make up" }
-		if (checkOpenPort(nPort) == false) {
-			dir(path) { sh "make logs" }
-			currentBuild.result = "FAILURE"
-			throw new Exception("Failed to run ${svcName} instance")
-		}
-	}
-}
-
-def echoBanner(msg) {
-	echo '----------------------------------------------------------------------'
-	echo msg
-	echo '----------------------------------------------------------------------'
-}
-
-def checkHttp(url) {
-	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
-	return (result == 0)
-}
-
-def waitForHttp(url) {
-	waitUntil { script { return (checkHttp(url) == true) } }
-}
-
 pipeline {
-	agent { node { label 'lisk-service' } }
+	agent none
 	triggers {
 		// Triggers every week at midnight on Sunday morning
 		cron('0 0 * * 0')
 		}
-	options {
-		timeout(time: 10, unit: 'MINUTES')
-	}
-	environment {
-		ENABLE_HTTP_API='http-status,http-test,http-version2'
-		ENABLE_WS_API='blockchain,rpc-test,rpc-v2'
-	}
 	stages {
-		stage ('Run required services') {
+		stage('Build docker images') {
+			agent any
+            when { branch 'development' }
 			steps {
-				script {
-					echoBanner(STAGE_NAME)
-
-					runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
-					runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-					runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
-
-					// Install PM2
-					nvm(getNodejsVersion()) {
-						sh 'npm i -g pm2'
+				sh 'make build-core'
+				sh 'make build-market'
+				sh 'make build-newsfeed'
+				sh 'make build-gateway'
+			}
+		}
+		stage('Deploy lisk-service Mainnet') {
+			agent any
+			when { branch 'development' }
+			environment {
+				ENABLE_HTTP_API='http-status,http-version2'
+				ENABLE_WS_API='blockchain,rpc-v2'
+				// Mainnet node URL
+				LISK_CORE_WS='ws://host.docker.internal:8080'
+				INDEX_N_BLOCKS='0'
+				ENABLE_JOB_MISSING_BLOCKS='true'
+				INDEX_MISSING_BLOCKS_RANGE='0'
+				ENABLE_TRANSACTION_STATS='true'
+				TRANSACTION_STATS_HISTORY_LENGTH_DAYS='366'
+			}
+			steps {
+				ansiColor('xterm') {
+					dir('./') {
+						sh 'make down'
+						sh 'make up-custom-core3-cd'
+						sh 'make print-config'
 					}
-				}
-			}
-		}
-		stage ('Build deps') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm ci' }
-					dir('./services/core') { sh 'npm ci' }
-					dir('./services/market') { sh 'npm ci' }
-					dir('./services/newsfeed') { sh 'npm ci' }
-					dir('./services/gateway') { sh 'npm ci' }
-				}
-			}
-		}
-		stage('Run microservices') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					sh 'pm2 start --silent ecosystem.jenkins.config.js'
 				}
 			}
 		}
