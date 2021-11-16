@@ -16,15 +16,15 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm ci' }
-					dir('./framework') { sh 'npm ci' }
-					dir('./services/core') { sh 'npm ci' }
-					dir('./services/market') { sh 'npm ci' }
-					dir('./services/newsfeed') { sh 'npm ci' }
-					dir('./services/gateway') { sh 'npm ci' }
-					dir('./services/export') { sh 'npm ci' }
-					dir('./services/template') { sh 'npm ci' }
-					dir('./tests') { sh "npm ci" }
+					dir('./') { sh 'npm ci --cache .npm' }
+					dir('./framework') { sh 'npm ci --cache .npm' }
+					dir('./services/core') { sh 'npm ci --cache .npm' }
+					dir('./services/market') { sh 'npm ci --cache .npm' }
+					dir('./services/newsfeed') { sh 'npm ci --cache .npm' }
+					dir('./services/gateway') { sh 'npm ci --cache .npm' }
+					dir('./services/export') { sh 'npm ci --cache .npm' }
+					dir('./services/template') { sh 'npm ci --cache .npm' }
+					dir('./tests') { sh 'npm ci --cache .npm' }
 				}
 			}
 		}
