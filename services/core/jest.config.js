@@ -2,16 +2,12 @@
 // https://jestjs.io/docs/en/configuration.html
 
 module.exports = {
-	// The directory where Jest should output its coverage files
 	coverageDirectory: 'test/coverage',
 
-	testTimeout: 15000,
-	// The test environment that will be used for testing
-	testEnvironment: 'node',
-
-	// The glob patterns Jest uses to detect test files
 	testMatch: [
-		// '**/tests/**/*.[jt]s?(x)',
-		'**/?(*.)+(spec|test).[tj]s?(x)',
+		'<rootDir>/tests/unit/*.test.js',
 	],
+
+	testTimeout: 15000,
+	testEnvironment: 'node',
 };
