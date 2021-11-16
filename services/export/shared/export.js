@@ -13,27 +13,57 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Parser } = require('json2csv');
+const {
+    requestRpc,
+} = require('./rpcBroker');
 
-const { requestRpc } = require('./rpcBroker');
+const {
+    dateFromTimestamp,
+    timeFromTimestamp,
+} = require('./helpers/time');
+
+const {
+    parseJsonToCsv,
+} = require('./helpers/csvUtils');
+
+const fields = require('./csvFieldMappings');
 
 const getTransactions = (address) => requestRpc('core.transactions', { senderIdOrRecipientId: address });
 
-const getCsvFromJson = (json) => {
-	const fields = Object.keys(json[0]).map(k => ({ label: k, value: k }));
-	const opts = { fields };
-	const parser = new Parser(opts);
-	return parser.parse(json);
+const parseTransactionsToCsv = (json) => {
+    const opts = { fields };
+    return parseJsonToCsv(opts, json);
 };
 
-const normalizeTransaction = (transaction) => transaction;
+const normalizeTransaction = (tx) => {
+    const date = dateFromTimestamp(tx.unixTimestamp);
+    const time = timeFromTimestamp(tx.unixTimestamp);
+    const amount = tx.asset.amount || null;
+    const fee = tx.fee;
+    const moduleAssetId = tx.moduleAssetId;
+    const moduleAssetName = tx.moduleAssetName;
+    const sender = tx.senderId;
+    const recipient = tx.asset.recipient && tx.asset.recipient.address || null;
+    const senderPublicKey = tx.senderPublicKey;
+    const recipientPublicKey = tx.asset.recipient && tx.asset.recipient.publicKey || null;
+    const blockHeight = tx.height;
+    const note = tx.asset.data || null;
+    const transactionId = tx.id;
+
+    return {
+        date, time, amount, fee, moduleAssetId,
+        moduleAssetName, sender, recipient,
+        senderPublicKey, recipientPublicKey,
+        blockHeight, note, transactionId,
+    };
+};
 
 const exportTransactionsCSV = async (params) => {
-	const response = await getTransactions(params.address);
-	const csv = getCsvFromJson(response.data.map(t => normalizeTransaction(t)));
-	return csv;
+    const response = await getTransactions(params.address);
+    const csv = parseTransactionsToCsv(response.data.map(t => normalizeTransaction(t)));
+    return csv;
 };
 
 module.exports = {
-	exportTransactionsCSV,
+    exportTransactionsCSV,
 };
