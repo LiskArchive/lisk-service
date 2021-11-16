@@ -60,7 +60,7 @@ module.exports = filterApis(config.api.http, {
 	'http-status': () => registerApi('http-status', { ...defaultConfig, path: '/' }),
 	'http-exports': () => ({
 		...defaultConfig,
-		path: '/export',
+		path: '/v2',
 
 		whitelist: [
 			'export.csv',
