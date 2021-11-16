@@ -9,22 +9,22 @@ def echoBanner(msg) {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
-		timeout(time: 7, unit: 'MINUTES')
+		timeout(time: 10, unit: 'MINUTES')
 	}
 	stages {
 		stage ('Build deps') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm i --cache .npm' }
-					dir('./framework') { sh 'npm i --cache .npm' }
-					dir('./services/core') { sh 'npm i --cache .npm' }
-					dir('./services/market') { sh 'npm i --cache .npm' }
-					dir('./services/newsfeed') { sh 'npm i --cache .npm' }
-					dir('./services/export') { sh 'npm i --cache .npm' }
-					dir('./services/gateway') { sh 'npm i --cache .npm' }
-					dir('./services/template') { sh 'npm i --cache .npm' }
-					dir('./tests') { sh 'npm i --cache .npm' }
+					dir('./') { sh 'npm i' }
+					dir('./framework') { sh 'npm i' }
+					dir('./services/core') { sh 'npm i' }
+					dir('./services/market') { sh 'npm i' }
+					dir('./services/newsfeed') { sh 'npm i' }
+					dir('./services/export') { sh 'npm i' }
+					dir('./services/gateway') { sh 'npm i' }
+					dir('./services/template') { sh 'npm i' }
+					dir('./tests') { sh 'npm i' }
 				}
 			}
 		}
