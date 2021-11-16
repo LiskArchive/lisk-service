@@ -24,8 +24,6 @@
   },
   "scripts": {
     "start": "node app.js",
-    "eslint": "eslint ./api ./knowledge ./services ./test ./*.js",
-    "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
     "clean": "rm -rf ./node_modules",
     "watch": "supervisor -w . -i ./node_modules app.js",
     "test:unit": "./node_modules/.bin/jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
