@@ -9,7 +9,7 @@ def echoBanner(msg) {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	options {
-		timeout(time: 7, unit: 'MINUTES')
+		timeout(time: 10, unit: 'MINUTES')
 	}
 	stages {
 		stage ('Build deps') {
