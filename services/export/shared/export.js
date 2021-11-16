@@ -26,12 +26,13 @@ const {
 	parseJsonToCsv,
 } = require('./helpers/csvUtils');
 
+const config = require('../config');
 const fields = require('./csvFieldMappings');
 
 const getTransactions = (address) => requestRpc('core.transactions', { senderIdOrRecipientId: address });
 
 const parseTransactionsToCsv = (json) => {
-	const opts = { fields };
+	const opts = { delimiter: config.csv.delimiter, fields };
 	return parseJsonToCsv(opts, json);
 };
 

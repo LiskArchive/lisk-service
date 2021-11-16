@@ -47,4 +47,8 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
+// CSV related config
+config.csv = {};
+config.csv.delimiter = ';';
+
 module.exports = config;
