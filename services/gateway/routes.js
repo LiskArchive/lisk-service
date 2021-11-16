@@ -71,7 +71,21 @@ module.exports = filterApis(config.api.http, {
 		},
 
 		onAfterCall(ctx, route, req, res, data) {
-			res.setHeader('Content-Disposition', `attachment; filename="data-${ctx.params.id}.csv"`);
+			const {
+				$params: { address, publicKey, date },
+			} = req;
+
+			let filename = `${address}` || `${publicKey}`;
+			if (date) {
+				if (data.includes(':')) {
+					const [from, to] = date.split(':');
+					filename = `${filename}_${from}_${to}`;
+				} else {
+					filename = `${filename}_${date}`;
+				}
+			}
+
+			res.setHeader('Content-Disposition', `attachment; filename="${filename}.csv"`);
 			res.setHeader('Content-Type', 'text/csv');
 			res.end(data);
 		},
