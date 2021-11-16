@@ -19,13 +19,11 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": "12.16.2",
-    "npm": "6.14.4"
+    "node": "14.18.1",
+    "npm": "6.14.15"
   },
   "scripts": {
     "start": "node app.js",
-    "eslint": "eslint ./api ./knowledge ./services ./test ./*.js",
-    "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
     "clean": "rm -rf ./node_modules",
     "watch": "supervisor -w . -i ./node_modules app.js",
     "test:unit": "./node_modules/.bin/jest --config=jest.config.unit.js --detectOpenHandles --forceExit",

@@ -16,9 +16,9 @@ FROM node:14-alpine
 RUN apk add --no-cache curl
 RUN adduser -D lisk
 
-COPY ./ /home/lisk/lisk-service/market/
-COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/market/node_modules/
+COPY ./ /home/lisk/lisk-service/export/
+COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/export/node_modules/
 
 USER lisk
-WORKDIR /home/lisk/lisk-service/market
+WORKDIR /home/lisk/lisk-service/export
 CMD ["node", "app.js"]

@@ -49,9 +49,9 @@ logs-live-%:
 print-config:
 	$(compose) config
 
-build: build-core build-market build-newsfeed build-gateway
+build: build-core build-market build-newsfeed build-gateway build-export
 
-build-all: build-core build-market build-newsfeed build-gateway build-template build-tests
+build-all: build build-template build-tests
 
 build-core:
 	cd ./services/core && docker build --tag=lisk/service_core ./
@@ -61,6 +61,9 @@ build-market:
 	
 build-newsfeed:
 	cd ./services/newsfeed && docker build --tag=lisk/service_newsfeed ./
+
+build-export:
+	cd ./services/export && docker build --tag=lisk/service_export ./
 
 build-gateway:
 	cd ./services/gateway && docker build --tag=lisk/service_gateway ./
@@ -78,18 +81,24 @@ build-local:
 	cd ./services/market && npm ci
 	cd ./services/newsfeed && npm ci
 	cd ./services/gateway && npm ci
+	cd ./services/export && npm ci
 	cd ./services/template && npm ci
 	cd ./tests && npm ci
 
-clean:
+clean: clean-local clean-images
+
+clean-local:
 	rm -rf node_modules
 	cd ./framework && rm -rf node_modules
 	cd ./services/core && rm -rf node_modules
 	cd ./services/market && rm -rf node_modules
 	cd ./services/newsfeed && rm -rf node_modules
 	cd ./services/gateway && rm -rf node_modules
+	cd ./services/export && rm -rf node_modules
 	cd ./services/template && rm -rf node_modules
 	cd ./tests && rm -rf node_modules
+
+clean-images:
 	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests; :
 
 audit:
@@ -98,6 +107,7 @@ audit:
 	cd ./services/market && npm audit; :
 	cd ./services/newsfeed && npm audit; :
 	cd ./services/gateway && npm audit; :
+	cd ./services/export && npm audit; :
 
 audit-fix:
 	cd ./framework && npm audit fix; :
@@ -105,18 +115,21 @@ audit-fix:
 	cd ./services/market && npm audit fix; :
 	cd ./services/newsfeed && npm audit fix; :
 	cd ./services/gateway && npm audit fix; :
+	cd ./services/export && npm audit fix; :
 
 tag-%:
 	npm version --no-git-tag-version --allow-same-version $*
 	cd services/gateway && npm version --no-git-tag-version --allow-same-version $*
 	cd services/core && npm version --no-git-tag-version --allow-same-version $*
 	cd services/market && npm version --no-git-tag-version --allow-same-version $*
-	cd services/newsfeed && npm version --no-git-tag-version $*
+	cd services/newsfeed && npm version --no-git-tag-version --allow-same-version $*
+	cd services/export && npm version --no-git-tag-version --allow-same-version $*
 	cd services/template && npm version --no-git-tag-version --allow-same-version $*
 	git add ./services/gateway/package*.json
 	git add ./services/core/package*.json
 	git add ./services/market/package*.json
 	git add ./services/newsfeed/package*.json
+	git add ./services/export/package*.json
 	git add ./services/template/package*.json
 	git add ./package*.json
 	git commit -m "Version bump to $*"

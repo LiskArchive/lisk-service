@@ -1,4 +1,4 @@
-FROM node:12 AS builder
+FROM node:14 AS builder
 
 RUN apt update
 RUN apt install -y build-essential git libtool autoconf automake
@@ -12,7 +12,7 @@ COPY ./package-lock.json ./package.json ./.npmrc ./
 RUN npm ci
 
 
-FROM node:12
+FROM node:14
 
 RUN apt update
 RUN apt install -y curl
