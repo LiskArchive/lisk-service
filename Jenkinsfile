@@ -55,7 +55,7 @@ pipeline {
 		cleanup {
 			script { echoBanner('Cleaning up...') }
 
-			dir('./') { sh 'make clean' }
+			dir('./') { sh 'make clean-local' }
 		}
 	}
 }
