@@ -62,13 +62,13 @@ build-market:
 build-newsfeed:
 	cd ./services/newsfeed && docker build --tag=lisk/service_newsfeed ./
 
+build-export:
+	cd ./services/export && docker build --tag=lisk/service_export ./
+
 build-gateway:
 	cd ./services/gateway && docker build --tag=lisk/service_gateway ./
 
 build-template:
-	cd ./services/export && docker build --tag=lisk/service_export ./
-
-build-export:
 	cd ./services/template && docker build --tag=lisk/service_template ./
 
 build-tests:
