@@ -187,12 +187,10 @@ services:
       - export_network
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
-      - SERVICE_MARKET_REDIS=redis://redis_market:6379/0
-      - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
-      - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
+      - SERVICE_EXPORT_REDIS=redis://redis_export:6379/0
     restart: always
 
-  export_market:
+  redis_export:
     image: redis:5-alpine
     volumes:
       - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
