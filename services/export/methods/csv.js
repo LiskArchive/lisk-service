@@ -13,17 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Parser } = require('json2csv');
-const { requestRpc } = require('../shared/rpcBroker');
-
-const getTransactions = (address) => requestRpc('core.transactions', { senderIdOrRecipientId: address });
-
-const getCsvFromJson = (json) => {
-	const fields = Object.keys(json[0]).map(k => ({ label: k, value: k }));
-	const opts = { fields };
-	const parser = new Parser(opts);
-	return parser.parse(json);
-};
+const { exportTransactionsCSV } = require('./controllers/csv');
 
 module.exports = [
 	{
@@ -32,10 +22,6 @@ module.exports = [
 		params: {
 			address: { type: 'string', optional: false },
 		},
-		controller: async param => {
-			const transactions = await getTransactions(param.address);
-
-			return getCsvFromJson(transactions.data);
-		},
+		controller: exportTransactionsCSV,
 	},
 ];
