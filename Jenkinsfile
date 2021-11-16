@@ -16,15 +16,15 @@ pipeline {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm ci --cache .npm' }
-					dir('./framework') { sh 'npm ci --cache .npm' }
-					dir('./services/core') { sh 'npm ci --cache .npm' }
-					dir('./services/market') { sh 'npm ci --cache .npm' }
-					dir('./services/newsfeed') { sh 'npm ci --cache .npm' }
-					dir('./services/gateway') { sh 'npm ci --cache .npm' }
-					dir('./services/export') { sh 'npm ci --cache .npm' }
-					dir('./services/template') { sh 'npm ci --cache .npm' }
-					dir('./tests') { sh 'npm ci --cache .npm' }
+					dir('./') { sh 'npm i --cache .npm' }
+					dir('./framework') { sh 'npm i --cache .npm' }
+					dir('./services/core') { sh 'npm i --cache .npm' }
+					dir('./services/market') { sh 'npm i --cache .npm' }
+					dir('./services/newsfeed') { sh 'npm i --cache .npm' }
+					dir('./services/gateway') { sh 'npm i --cache .npm' }
+					dir('./services/export') { sh 'npm i --cache .npm' }
+					dir('./services/template') { sh 'npm i --cache .npm' }
+					dir('./tests') { sh 'npm i --cache .npm' }
 				}
 			}
 		}
@@ -54,8 +54,7 @@ pipeline {
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') }
-
-			dir('./') { sh 'make clean-local' }
+			echo 'Keeping dependencies for the next build'
 		}
 	}
 }
