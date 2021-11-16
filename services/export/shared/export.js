@@ -20,22 +20,20 @@ const { requestRpc } = require('./rpcBroker');
 const getTransactions = (address) => requestRpc('core.transactions', { senderIdOrRecipientId: address });
 
 const getCsvFromJson = (json) => {
-    const fields = Object.keys(json[0]).map(k => ({ label: k, value: k }));
-    const opts = { fields };
-    const parser = new Parser(opts);
-    return parser.parse(json);
+	const fields = Object.keys(json[0]).map(k => ({ label: k, value: k }));
+	const opts = { fields };
+	const parser = new Parser(opts);
+	return parser.parse(json);
 };
 
-const normalizeTransaction = (transaction) => {
-    return transaction;
-};
+const normalizeTransaction = (transaction) => transaction;
 
 const exportTransactionsCSV = async (params) => {
-    const response = await getTransactions(params.address);
-    const csv = getCsvFromJson(response.data);
-    return csv;
+	const response = await getTransactions(params.address);
+	const csv = getCsvFromJson(response.data.map(t => normalizeTransaction(t)));
+	return csv;
 };
 
 module.exports = {
-    exportTransactionsCSV,
+	exportTransactionsCSV,
 };
