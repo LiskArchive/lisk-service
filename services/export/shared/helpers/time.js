@@ -15,16 +15,18 @@
  */
 const moment = require('moment');
 
+const config = require('../../config');
+
 const momentFromTimestamp = timestamp => moment.unix(timestamp);
 
 const dateFromTimestamp = timestamp => {
 	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.format('YYYY-MM-DD');
+	return dateTime.format(config.csv.dateFormat);
 };
 
 const timeFromTimestamp = timestamp => {
 	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.format('hh:mm:ss');
+	return dateTime.format(config.csv.timeFormat);
 };
 
 module.exports = {
