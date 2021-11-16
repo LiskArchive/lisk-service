@@ -14,56 +14,17 @@
  *
  */
 module.exports = [
-	{
-		label: 'Date',
-		value: 'date',
-	},
-	{
-		label: 'Time',
-		value: 'time',
-	},
-	{
-		label: 'Amount LSK',
-		value: 'amount',
-	},
-	{
-		label: 'Fee LSK',
-		value: 'fee',
-	},
-	{
-		label: 'Module:Asset',
-		value: 'moduleAssetId',
-	},
-	{
-		label: 'Module:Asset Name',
-		value: 'moduleAssetName',
-	},
-	{
-		label: 'Sender',
-		value: 'sender',
-	},
-	{
-		label: 'Recipient',
-		value: 'recipient',
-	},
-	{
-		label: 'Sender Public Key',
-		value: 'senderPublicKey',
-	},
-	{
-		label: 'Recipient Public Key',
-		value: 'recipientPublicKey',
-	},
-	{
-		label: 'Block Height',
-		value: 'blockHeight',
-	},
-	{
-		label: 'Note',
-		value: 'note',
-	},
-	{
-		label: 'Transaction ID',
-		value: 'transactionId',
-	},
+	{ label: 'Date', value: 'date' },
+	{ label: 'Time', value: 'time' },
+	{ label: 'Amount LSK', value: 'amount' },
+	{ label: 'Fee LSK', value: 'fee' },
+	{ label: 'Module:Asset', value: 'moduleAssetId' },
+	{ label: 'Module:Asset Name', value: 'moduleAssetName' },
+	{ label: 'Sender', value: 'sender' },
+	{ label: 'Recipient', value: 'recipient' },
+	{ label: 'Sender Public Key', value: 'senderPublicKey' },
+	{ label: 'Recipient Public Key', value: 'recipientPublicKey' },
+	{ label: 'Block Height', value: 'blockHeight' },
+	{ label: 'Note', value: 'note' },
+	{ label: 'Transaction ID', value: 'transactionId' },
 ];
