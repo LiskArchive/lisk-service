@@ -42,27 +42,27 @@ pipeline {
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
-	environment {
-		ENABLE_HTTP_API='http-status,http-test,http-version2'
-		ENABLE_WS_API='blockchain,rpc-test,rpc-v2'
-	}
+	// environment {
+	// 	ENABLE_HTTP_API='http-status,http-test,http-version2'
+	// 	ENABLE_WS_API='blockchain,rpc-test,rpc-v2'
+	// }
 	stages {
-		stage ('Run required services') {
-			steps {
-				script {
-					echoBanner(STAGE_NAME)
+		// stage ('Run required services') {
+		// 	steps {
+		// 		script {
+		// 			echoBanner(STAGE_NAME)
 
-					runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
-					runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-					runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
+		// 			runServiceIfMissing('Lisk Core', './jenkins/lisk-core', LISK_CORE_WS_PORT)
+		// 			runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+		// 			runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
 
-					// Install PM2
-					nvm(getNodejsVersion()) {
-						sh 'npm i -g pm2'
-					}
-				}
-			}
-		}
+		// 			// Install PM2
+		// 			nvm(getNodejsVersion()) {
+		// 				sh 'npm i -g pm2'
+		// 			}
+		// 		}
+		// 	}
+		// }
 		stage ('Build deps') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
@@ -108,16 +108,16 @@ pipeline {
 		// 		// waitForHttp('http://localhost:9901/api/v2/blocks')
 		// 	}
 		// }
-		stage('Perform functional tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					// dir('./services/market') { sh "npm run test:functional" }
-					// dir('./services/newsfeed') { sh "npm run test:functional" }
-					dir('./framework') { sh "npm run test:functional" }
-				}
-			}
-		}
+		// stage('Perform functional tests') {
+		// 	steps {
+		// 		script { echoBanner(STAGE_NAME) }
+		// 		nvm(getNodejsVersion()) {
+		// 			// dir('./services/market') { sh "npm run test:functional" }
+		// 			// dir('./services/newsfeed') { sh "npm run test:functional" }
+		// 			// dir('./framework') { sh "npm run test:functional" }
+		// 		}
+		// 	}
+		// }
 		// stage('Perform integration tests') {
 		// 	steps {
 		// 		script { echoBanner(STAGE_NAME) }
@@ -143,23 +143,23 @@ pipeline {
 		failure {
 			script { echoBanner('Failed to run the pipeline') }
 
-			nvm(getNodejsVersion()) {
-				sh 'pm2 logs lisk-service-gateway --lines=100  --nostream'
-				sh 'pm2 logs lisk-service-core --lines=100  --nostream'
-				sh 'pm2 logs lisk-service-market --lines=100  --nostream'
-				sh 'pm2 logs lisk-service-newsfeed --lines=100  --nostream'
-			}
+			// nvm(getNodejsVersion()) {
+			// 	sh 'pm2 logs lisk-service-gateway --lines=100  --nostream'
+			// 	sh 'pm2 logs lisk-service-core --lines=100  --nostream'
+			// 	sh 'pm2 logs lisk-service-market --lines=100  --nostream'
+			// 	sh 'pm2 logs lisk-service-newsfeed --lines=100  --nostream'
+			// }
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') }
 
-			nvm(getNodejsVersion()) {
-				sh 'pm2 stop --silent ecosystem.jenkins.config.js'
-			}
+			// nvm(getNodejsVersion()) {
+			// 	sh 'pm2 stop --silent ecosystem.jenkins.config.js'
+			// }
 
-			dir('./jenkins/lisk-core') { sh "make down" }
-			dir('./jenkins/mysql') { sh "make down" }
-			dir('./jenkins/redis') { sh "make down" }
+			// dir('./jenkins/lisk-core') { sh "make down" }
+			// dir('./jenkins/mysql') { sh "make down" }
+			// dir('./jenkins/redis') { sh "make down" }
 			
 			dir('./') { sh 'make clean' }
 		}
