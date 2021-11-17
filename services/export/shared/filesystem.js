@@ -19,31 +19,57 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const createDir = (dirPath) => {
-	fs.mkdirSync(`${path.dirname(__dirname)}${dirPath}`, { recursive: true }, (error) => {
-		if (error) logger.error(error);
-	});
+const createDir = async (dirPath, options = { recursive: true }) => {
+	logger.debug(`Creating directory: ${dirPath}`);
+	await fs.mkdir(
+		dirPath,
+		options,
+		(err) => {
+			if (err) logger.error(`Error when creating directory: ${dirPath}\n`, err.message);
+			else logger.debug(`Successfully created directory: ${dirPath}`);
+		},
+	);
 };
 
 const init = (params) => createDir(params.dirPath);
 
-const write = async (filename, content) => {
-	fs.writeFileSync(
-		`${path.dirname(__dirname)}/${filename}`,
-		JSON.stringify(content),
-	);
+const write = async (filename, content) => new Promise((resolve, reject) => {
+	fs.writeFile(`${path.dirname(__dirname)}/${filename}`, JSON.stringify(content), (err) => {
+		if (err) {
+			console.error(err);
+			return reject(err);
+		}
+		return resolve();
+	});
+});
+
+const read = async (filename) => new Promise((resolve, reject) => {
+	fs.readFile(`${path.dirname(__dirname)}/${filename}`, (err, data) => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve(JSON.parse(data));
+	});
+});
+
+const remove = async (filename) => {
+	fs.unlink(`${path.dirname(__dirname)}/${filename}`, (err) => {
+		if (err) logger.error(err);
+	});
 };
 
-const read = async (filename) => fs.readFileSync(`${path.dirname(__dirname)}/${filename}`, 'utf8');
-// const delete = async (filename) => { };
-const list = async (n, page) => { };
-const purge = async (days) => { };
+const list = async (dirName, n, page) => {
+	fs.readdir(`${path.dirname(__dirname) / dirName}`, (err, files) => files.slice(page, page + n));
+};
+
+// const purge = async (days) => { };
 
 module.exports = {
 	init,
 	write,
 	read,
-	// delete,
+	remove,
 	list,
-	purge,
+	// purge,
 };
