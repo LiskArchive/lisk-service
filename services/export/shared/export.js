@@ -30,6 +30,11 @@ const {
 	timeFromTimestamp,
 } = require('./helpers/time');
 
+const {
+	beddowsToLsk,
+	normalizeTransactionAmount,
+} = require('./helpers/transaction');
+
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -46,14 +51,6 @@ const getAllTransactions = async (params) => requestRpc(
 const parseTransactionsToCsv = (json) => {
 	const opts = { delimiter: config.csv.delimiter, fields };
 	return parseJsonToCsv(opts, json);
-};
-
-const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
-
-const normalizeTransactionAmount = (address, tx) => {
-	if (!('amount' in tx.asset)) return null;
-	const sign = address === tx.senderId ? 1 : -1;
-	return beddowsToLsk(sign * tx.asset.amount);
 };
 
 const normalizeTransaction = (address, tx) => {
