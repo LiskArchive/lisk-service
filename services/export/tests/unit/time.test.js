@@ -25,12 +25,12 @@ const {
 } = require('../constants/time');
 
 describe('Time utils', () => {
-	it('returns ISO format Date from unix timestamp', async () => {
+	it('returns ISO format UTC Date from unix timestamp', async () => {
 		const date = dateFromTimestamp(timestamp);
 		expect(date).toBe(expectedDate);
 	});
 
-	it('returns ISO format Time from unix timestamp', async () => {
+	it('returns ISO format UTC Time from unix timestamp', async () => {
 		const time = timeFromTimestamp(timestamp);
 		expect(time).toBe(expectedTime);
 	});

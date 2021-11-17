@@ -15,7 +15,7 @@
  */
 const timestamp = 1637156065;
 const expectedDate = '2021-11-17';
-const expectedTime = '02:34:25';
+const expectedTime = '01:34:25';
 
 module.exports = {
 	timestamp,
