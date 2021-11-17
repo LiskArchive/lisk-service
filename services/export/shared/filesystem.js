@@ -13,9 +13,28 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const init = (params) => { };
-const write = async (filename, content) => { };
-const read = async (filename) => { };
+const path = require('path');
+const fs = require('fs');
+const { Logger } = require('lisk-service-framework');
+
+const logger = Logger();
+
+const createDir = (dirPath) => {
+	fs.mkdirSync(`${path.dirname(__dirname)}${dirPath}`, { recursive: true }, (error) => {
+		if (error) logger.error(error);
+	});
+};
+
+const init = (params) => createDir(params.dirPath);
+
+const write = async (filename, content) => {
+	fs.writeFileSync(
+		`${path.dirname(__dirname)}/${filename}`,
+		JSON.stringify(content),
+	);
+};
+
+const read = async (filename) => fs.readFileSync(`${path.dirname(__dirname)}/${filename}`, 'utf8');
 // const delete = async (filename) => { };
 const list = async (n, page) => { };
 const purge = async (days) => { };
