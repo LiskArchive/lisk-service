@@ -29,7 +29,7 @@ const cliParams = process.argv[3] ? JSON.parse(process.argv[3]) : undefined;
 const TIMEOUT = 15 * 1000;
 
 const broker = new ServiceBroker({
-	transporter: 'nats://localhost:4222',
+	transporter: 'redis://localhost:6379',
 	logLevel: 'info',
 	requestTimeout: 15 * 1000,
 	logger: console,

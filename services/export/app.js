@@ -20,6 +20,8 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
+const { setBrokerHandle } = require('./shared/rpcBroker.js');
+
 const config = require('./config');
 const packageJson = require('./package.json');
 
@@ -42,6 +44,8 @@ const app = Microservice({
 	packageJson,
 	logger: loggerConf,
 });
+
+setBrokerHandle(app.getBroker());
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
