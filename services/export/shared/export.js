@@ -29,7 +29,15 @@ const {
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
-const getTransactions = (address) => requestRpc('core.transactions', { senderIdOrRecipientId: address });
+const requestAll = require('./requestAll');
+
+const getAllTransactions = async (params) => requestRpc(
+	'core.transactions',
+	{
+		senderIdOrRecipientId: params.address,
+		sort: 'timestamp:asc',
+	},
+);
 
 const parseTransactionsToCsv = (json) => {
 	const opts = { delimiter: config.csv.delimiter, fields };
@@ -72,8 +80,14 @@ const normalizeTransaction = (tx) => {
 };
 
 const exportTransactionsCSV = async (params) => {
-	const response = await getTransactions(params.address);
-	const csv = parseTransactionsToCsv(response.data.map(t => normalizeTransaction(t)));
+	const MAX_NUM_TRANSACTIONS = 10000;
+	const transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
+
+	// Sort transactions in ascending by their timestamp
+	// Redundant, remove it???
+	transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
+
+	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(t)));
 	return csv;
 };
 
