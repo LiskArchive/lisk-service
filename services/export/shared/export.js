@@ -30,6 +30,8 @@ const {
 	timeFromTimestamp,
 } = require('./helpers/time');
 
+const cache = require('./csvCache');
+
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -92,9 +94,19 @@ const normalizeTransaction = (address, tx) => {
 	};
 };
 
+cache.init({ dirPath: './data/partials' });
+
 const exportTransactionsCSV = async (params) => {
 	const MAX_NUM_TRANSACTIONS = 10000;
-	const transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
+
+	let transactions = [];
+	const file = `${params.address}_current.csv`;
+
+	if (await cache.exists(file)) transactions = await cache.read(file);
+	else {
+		transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
+		cache.write(file, transactions);
+	}
 
 	// Sort transactions in ascending by their timestamp
 	// Redundant, remove it???
