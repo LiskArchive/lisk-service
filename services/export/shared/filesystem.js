@@ -34,7 +34,7 @@ const createDir = async (dirPath, options = { recursive: true }) => {
 const init = (params) => createDir(params.dirPath);
 
 const write = async (filename, content) => new Promise((resolve, reject) => {
-	fs.writeFile(`${path.dirname(__dirname)}/${filename}`, JSON.stringify(content), (err) => {
+	fs.writeFile(`${path.dirname(__dirname)}/data/${filename}`, JSON.stringify(content), (err) => {
 		if (err) {
 			console.error(err);
 			return reject(err);
@@ -44,7 +44,7 @@ const write = async (filename, content) => new Promise((resolve, reject) => {
 });
 
 const read = async (filename) => new Promise((resolve, reject) => {
-	fs.readFile(`${path.dirname(__dirname)}/${filename}`, (err, data) => {
+	fs.readFile(`${path.dirname(__dirname)}/data/${filename}`, (err, data) => {
 		if (err) {
 			logger.error(err);
 			return reject(err);
@@ -54,13 +54,13 @@ const read = async (filename) => new Promise((resolve, reject) => {
 });
 
 const remove = async (filename) => {
-	fs.unlink(`${path.dirname(__dirname)}/${filename}`, (err) => {
+	fs.unlink(`${path.dirname(__dirname)}/data/${filename}`, (err) => {
 		if (err) logger.error(err);
 	});
 };
 
-const list = async (dirName, n = 100, page = 0) => {
-	fs.readdir(`${path.dirname(__dirname) / dirName}`, (err, files) => files.slice(page, page + n));
+const list = async (filePath, n = 100, page = 0) => {
+	fs.readdir(`${path.dirname(__dirname)}/data/${filePath}`, (err, files) => files.slice(page, page + n));
 };
 
 const purge = async (dirName, days = 1) => {
