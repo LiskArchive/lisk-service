@@ -18,13 +18,17 @@ const {
 } = require('./rpcBroker');
 
 const {
-	dateFromTimestamp,
-	timeFromTimestamp,
-} = require('./helpers/time');
+	getBase32AddressFromPublicKey,
+} = require('./helpers/account');
 
 const {
 	parseJsonToCsv,
 } = require('./helpers/csv');
+
+const {
+	dateFromTimestamp,
+	timeFromTimestamp,
+} = require('./helpers/time');
 
 const config = require('../config');
 const fields = require('./csvFieldMappings');
@@ -44,7 +48,15 @@ const parseTransactionsToCsv = (json) => {
 	return parseJsonToCsv(opts, json);
 };
 
-const normalizeTransaction = (tx) => {
+const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
+
+const normalizeTransactionAmount = (address, tx) => {
+	if (!'amount' in tx.asset) return null;
+	const sign = address === tx.senderId ? 1 : -1;
+	return beddowsToLsk(sign * tx.asset.amount);
+};
+
+const normalizeTransaction = (address, tx) => {
 	const {
 		fee,
 		moduleAssetId,
@@ -54,7 +66,8 @@ const normalizeTransaction = (tx) => {
 
 	const date = dateFromTimestamp(tx.unixTimestamp);
 	const time = timeFromTimestamp(tx.unixTimestamp);
-	const amount = tx.asset.amount || null;
+	const amountLsk = normalizeTransactionAmount(address, tx);
+	const feeLsk = beddowsToLsk(fee);
 	const sender = tx.senderId;
 	const recipient = tx.asset.recipient && tx.asset.recipient.address || null;
 	const recipientPublicKey = tx.asset.recipient && tx.asset.recipient.publicKey || null;
@@ -65,8 +78,8 @@ const normalizeTransaction = (tx) => {
 	return {
 		date,
 		time,
-		amount,
-		fee,
+		amountLsk,
+		feeLsk,
 		moduleAssetId,
 		moduleAssetName,
 		sender,
@@ -87,7 +100,8 @@ const exportTransactionsCSV = async (params) => {
 	// Redundant, remove it???
 	transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
 
-	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(t)));
+	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
+	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
 	return csv;
 };
 

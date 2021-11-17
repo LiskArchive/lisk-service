@@ -16,8 +16,8 @@
 module.exports = [
 	{ label: 'Date', value: 'date' },
 	{ label: 'Time', value: 'time' },
-	{ label: 'Amount LSK', value: 'amount' },
-	{ label: 'Fee LSK', value: 'fee' },
+	{ label: 'Amount LSK', value: 'amountLsk' },
+	{ label: 'Fee LSK', value: 'feeLsk' },
 	{ label: 'Module:Asset', value: 'moduleAssetId' },
 	{ label: 'Module:Asset Name', value: 'moduleAssetName' },
 	{ label: 'Sender', value: 'sender' },
