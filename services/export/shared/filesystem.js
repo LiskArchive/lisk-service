@@ -15,7 +15,6 @@
  */
 const path = require('path');
 const fs = require('fs');
-const rimraf = require('rimraf');
 const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -65,16 +64,15 @@ const list = async (dirName, n = 100, page = 0) => {
 };
 
 const purge = async (dirName, days = 1) => {
-	fs.readdir(dirName, (err, files) => {
+	fs.readdir(dirName, (_, files) => {
 		files.forEach((file) => {
 			fs.stat(path.join(dirName, file), (err, stat) => {
-				if (err) return logger.error(err);
+				if (err) logger.error(err);
 				const now = new Date().getTime();
 				const endTime = new Date(stat.ctime).getTime() + (days * 24 * 60 * 60 * 1000);
 				if (now > endTime) {
-					return rimraf(path.join(dirName, file), (err) => {
-						if (err) return logger.error(err);
-						logger.info('successfully deleted');
+					fs.unlink(path.join(dirName, file), (error) => {
+						if (error) logger.error(error);
 					});
 				}
 			});
