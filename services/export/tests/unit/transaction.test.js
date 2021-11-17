@@ -45,7 +45,7 @@ describe('Transaction utils', () => {
 	describe('Validate transaction amount is properly normalized', () => {
 		it('returns amount in a standardized format for a valid transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.reclaim.sender.address,
+				transactions.reclaim.senderId,
 				transactions.reclaim,
 			);
 
@@ -60,7 +60,7 @@ describe('Transaction utils', () => {
 
 		it('returns positive amount value for reclaim transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.reclaim.sender.address,
+				transactions.reclaim.senderId,
 				transactions.reclaim,
 			);
 
@@ -78,7 +78,7 @@ describe('Transaction utils', () => {
 
 		it('returns negative amount value for outgoing token transfer transaction', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.tokenTransfer.sender.address,
+				transactions.tokenTransfer.senderId,
 				transactions.tokenTransfer,
 			);
 
@@ -87,7 +87,7 @@ describe('Transaction utils', () => {
 
 		it('returns null for other transaction types', async () => {
 			const amount = normalizeTransactionAmount(
-				transactions.vote.sender.address,
+				transactions.vote.senderId,
 				transactions.vote,
 			);
 

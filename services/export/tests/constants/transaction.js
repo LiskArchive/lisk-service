@@ -29,10 +29,8 @@ const reclaimTransaction = {
 		height: 424,
 		timestamp: 1629456896,
 	},
-	sender: {
-		address: 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
-		publicKey: '10bdf57ee21ff657ab617395acab81814c3983f608bf6f0be6e626298225331d',
-	},
+	senderId: 'lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd',
+	senderPublicKey: '10bdf57ee21ff657ab617395acab81814c3983f608bf6f0be6e626298225331d',
 	signatures: [
 		'a639b29d0a28054968bd6185e0785927b0e61b90c9f88a37c9d97adfa3b3d9cef46887b7d13f52f461017ffe11462e1d11506d6904088916d61727cdc23aa503',
 	],
@@ -54,10 +52,8 @@ const tokenTransferTransaction = {
 		height: 415,
 		timestamp: 1629456806,
 	},
-	sender: {
-		address: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
-		publicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
-	},
+	senderId: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
+	senderPublicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
 	signatures: [
 		'fc953e325c33dee5e32616483800ee8cb649531b07ce8f29d18dabdbcd434a86e7db7bc8d8272926b6cce6c2c59a897907eb15e74e0d17fe83486a9351b85308',
 	],
@@ -84,11 +80,9 @@ const voteTransaction = {
 		height: 336,
 		timestamp: 1629113786,
 	},
-	sender: {
-		address: 'lskatchyvyh9y3tz3mmpu9z3kptw56c6qcw4k7fks',
-		publicKey: '2f3dfb37326c6c42af28d04e6b6a76865430ade3d26969f1b86e3987b500bbaf',
-		username: 'multisig_delegateacc',
-	},
+	senderId: 'lskatchyvyh9y3tz3mmpu9z3kptw56c6qcw4k7fks',
+	senderPublicKey: '2f3dfb37326c6c42af28d04e6b6a76865430ade3d26969f1b86e3987b500bbaf',
+	senderUsername: 'multisig_delegateacc',
 	signatures: [
 		'5ede8ac818b0acae725751ddda1bb5754761ce5eb7e1aaa8ff11d8ca72d4865ea748adfe72493d8daa9ed40b83119bb1dd539a068f2845a5445eca6c10d90c00',
 		'94c115708a3daa65800b510cf14e51a8efd6a87922ef4740fe682aaae7b9ef76051b9387858048fe66aba5d3edc1f4adaafc54722156f7064ed344205d924601',

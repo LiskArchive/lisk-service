@@ -24,7 +24,7 @@ const normalizeTransactionAmount = (address, tx) => {
 	const isReclaim = tx.moduleAssetId === MODULE_ASSET_ID_RECLAIM_TRANSACTION;
 	const isTokenTransfer = tx.moduleAssetId === MODULE_ASSET_ID_TOKEN_TRANSFER;
 
-	const isSender = address === tx.sender.address;
+	const isSender = address === tx.senderId;
 	const isRecipient = isTokenTransfer && address === tx.asset.recipient.address;
 
 	const sign = (isSender && isReclaim) || (isRecipient && isTokenTransfer)
