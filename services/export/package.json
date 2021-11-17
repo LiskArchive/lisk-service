@@ -36,5 +36,7 @@
     "moment": "^2.29.1",
     "node-cron": "=2.0.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "^27.3.0"
+  }
 }
