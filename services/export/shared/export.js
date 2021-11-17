@@ -24,7 +24,7 @@ const {
 
 const {
 	parseJsonToCsv,
-} = require('./helpers/csvUtils');
+} = require('./helpers/csv');
 
 const config = require('../config');
 const fields = require('./csvFieldMappings');
