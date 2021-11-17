@@ -51,7 +51,7 @@ const parseTransactionsToCsv = (json) => {
 const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
 
 const normalizeTransactionAmount = (address, tx) => {
-	if (!'amount' in tx.asset) return null;
+	if (!('amount' in tx.asset)) return null;
 	const sign = address === tx.senderId ? 1 : -1;
 	return beddowsToLsk(sign * tx.asset.amount);
 };
