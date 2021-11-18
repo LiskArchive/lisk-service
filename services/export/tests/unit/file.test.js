@@ -61,13 +61,13 @@ describe('Test filesystem interface', () => {
 		expect(result).toEqual(testData);
 	});
 
-	it('Test remove', async () => {
+	it('Test remove method', async () => {
 		const filePath = `${dirPath}/testfile.json`;
 		expect(fs.existsSync(filePath)).toBe(true);
 		await remove(filePath).then(() => expect(fs.existsSync(filePath)).toBe(false));
 	});
 
-	it('Test list', async () => {
+	it('Test list method', async () => {
 		const testData = {
 			created_at: 1612965420,
 			modified_at: 1612965420,
@@ -83,7 +83,7 @@ describe('Test filesystem interface', () => {
 		expect(files.length).toBe(2);
 	});
 
-	it('Test purge', async () => {
+	it('Test purge method', async () => {
 		let files = await list(dirPath);
 		expect(files.length).toBe(2);
 
