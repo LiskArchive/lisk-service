@@ -32,7 +32,16 @@ const normalizeTransactionAmount = (address, tx) => {
 	return beddowsToLsk(sign * tx.asset.amount);
 };
 
+const normalizeTransactionFee = (address, tx) => {
+	const isTokenTransfer = tx.moduleAssetId === MODULE_ASSET_ID_TOKEN_TRANSFER;
+	if (!isTokenTransfer) return beddowsToLsk(tx.fee);
+
+	const isRecipient = address === tx.asset.recipient.address;
+	return isRecipient ? beddowsToLsk(0) : beddowsToLsk(tx.fee);
+};
+
 module.exports = {
 	beddowsToLsk,
 	normalizeTransactionAmount,
+	normalizeTransactionFee,
 };

@@ -31,8 +31,8 @@ const {
 } = require('./helpers/time');
 
 const {
-	beddowsToLsk,
 	normalizeTransactionAmount,
+	normalizeTransactionFee,
 } = require('./helpers/transaction');
 
 const config = require('../config');
@@ -55,7 +55,6 @@ const parseTransactionsToCsv = (json) => {
 
 const normalizeTransaction = (address, tx) => {
 	const {
-		fee,
 		moduleAssetId,
 		moduleAssetName,
 		senderPublicKey,
@@ -64,7 +63,7 @@ const normalizeTransaction = (address, tx) => {
 	const date = dateFromTimestamp(tx.unixTimestamp);
 	const time = timeFromTimestamp(tx.unixTimestamp);
 	const amountLsk = normalizeTransactionAmount(address, tx);
-	const feeLsk = beddowsToLsk(fee);
+	const feeLsk = normalizeTransactionFee(address, tx);
 	const sender = tx.senderId;
 	const recipient = tx.asset.recipient && tx.asset.recipient.address || null;
 	const recipientPublicKey = tx.asset.recipient && tx.asset.recipient.publicKey || null;
