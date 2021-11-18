@@ -25,6 +25,10 @@ const {
 } = require('../../shared/helpers/file');
 
 describe('Test filesystem interface', () => {
+	const testData = {
+		created_at: 1612965420,
+		modified_at: 1612965420,
+	};
 	let dirPath;
 	beforeAll(async () => {
 		// Test directory
@@ -36,21 +40,23 @@ describe('Test filesystem interface', () => {
 		await fs.rmdirSync(dirPath);
 	});
 
-	it('Test init method', async () => {
+	it('init() method', async () => {
 		await init({ dirPath });
 		expect(fs.existsSync(dirPath)).toBe(true);
 	});
 
-	it('Test read and write method', async () => {
-		const testData = {
-			created_at: 1612965420,
-			modified_at: 1612965420,
-		};
-
+	it('write() method', async () => {
 		const filePath = `${dirPath}/testfile.json`;
 
 		// Write data into the file
 		await write(filePath, testData);
+
+		// Verify if data is written into the file
+		expect((fs.statSync(filePath)).size).toBeGreaterThan(0);
+	});
+
+	it('read() method', async () => {
+		const filePath = `${dirPath}/testfile.json`;
 
 		// Read data from file
 		const result = await read(filePath);
@@ -58,18 +64,13 @@ describe('Test filesystem interface', () => {
 		expect(result).toEqual(testData);
 	});
 
-	it('Test remove method', async () => {
+	it('remove() method', async () => {
 		const filePath = `${dirPath}/testfile.json`;
 		expect(fs.existsSync(filePath)).toBe(true);
 		await remove(filePath).then(() => expect(fs.existsSync(filePath)).toBe(false));
 	});
 
-	it('Test list method', async () => {
-		const testData = {
-			created_at: 1612965420,
-			modified_at: 1612965420,
-		};
-
+	it('list() method', async () => {
 		const filePath1 = `${dirPath}/testfile1.json`;
 		const filePath2 = `${dirPath}/testfile2.json`;
 
@@ -80,7 +81,7 @@ describe('Test filesystem interface', () => {
 		expect(files.length).toBe(2);
 	});
 
-	it('Test purge method', async () => {
+	it('purge() method', async () => {
 		let files = await list(dirPath);
 		expect(files.length).toBe(2);
 
