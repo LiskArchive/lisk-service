@@ -19,7 +19,7 @@ const MODULE_ASSET_ID_RECLAIM_TRANSACTION = '1000:0';
 const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
 
 const normalizeTransactionAmount = (address, tx) => {
-	if (!('amount' in tx.asset)) return null;
+	if (!('amount' in tx.asset)) return beddowsToLsk(0);
 
 	const isReclaim = tx.moduleAssetId === MODULE_ASSET_ID_RECLAIM_TRANSACTION;
 	const isTokenTransfer = tx.moduleAssetId === MODULE_ASSET_ID_TOKEN_TRANSFER;
