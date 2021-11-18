@@ -33,12 +33,13 @@ describe('Test filesystem interface', () => {
 
 	afterAll(async () => {
 		// Remove test directory
-		await fs.rmdirSync(dirPath)
+		await fs.rmdirSync(dirPath);
 	});
 
 	it('Test init method', async () => {
 		expect(fs.existsSync(dirPath)).toBe(false);
 
+		// Create directory
 		await init({ dirPath });
 		expect(fs.existsSync(dirPath)).toBe(true);
 	});
@@ -51,18 +52,18 @@ describe('Test filesystem interface', () => {
 
 		const filePath = `${dirPath}/testfile.json`;
 
+		// Write data into the file
 		await write(filePath, testData);
-		const result = await read(filePath);
 
+		// Read data from file
+		const result = await read(filePath);
 		expect(result).toBeInstanceOf(Object);
 		expect(result).toEqual(testData);
 	});
 
 	it('Test remove', async () => {
 		const filePath = `${dirPath}/testfile.json`;
-
 		expect(fs.existsSync(filePath)).toBe(true);
-
 		await remove(filePath).then(() => expect(fs.existsSync(filePath)).toBe(false));
 	});
 
