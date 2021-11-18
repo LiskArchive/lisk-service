@@ -31,6 +31,11 @@ describe('Test filesystem interface', () => {
 		dirPath = `${path.dirname(__dirname)}/testDir`;
 	});
 
+	afterAll(async () => {
+		// Remove test directory
+		await fs.rmdirSync(dirPath)
+	});
+
 	it('Test init method', async () => {
 		expect(fs.existsSync(dirPath)).toBe(false);
 
@@ -77,7 +82,7 @@ describe('Test filesystem interface', () => {
 		expect(files.length).toBe(2);
 	});
 
-	xit('Test purge', async () => {
+	it('Test purge', async () => {
 		let files = await list(dirPath);
 		expect(files.length).toBe(2);
 
