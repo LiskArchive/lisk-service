@@ -62,7 +62,7 @@ describe('Test filesystem interface', () => {
 		await write(filePath2, testData);
 
 		const files = await list(`${path.dirname(__dirname)}/constants`);
-		expect(files).toBeInstanceOf(Array);
+		// expect(files).toBeInstanceOf(Array);
 		expect(files.length).toBe(3);
 	});
 
