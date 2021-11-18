@@ -33,8 +33,8 @@ const createDir = async (dirPath, options = { recursive: true }) => {
 
 const init = (params) => createDir(params.dirPath);
 
-const write = async (filename, content) => new Promise((resolve, reject) => {
-	fs.writeFile(`${path.dirname(__dirname)}/data/${filename}`, JSON.stringify(content), (err) => {
+const write = async (filePath, content) => new Promise((resolve, reject) => {
+	fs.writeFile(filePath, JSON.stringify(content), (err) => {
 		if (err) {
 			console.error(err);
 			return reject(err);
@@ -43,8 +43,8 @@ const write = async (filename, content) => new Promise((resolve, reject) => {
 	});
 });
 
-const read = async (filename) => new Promise((resolve, reject) => {
-	fs.readFile(`${path.dirname(__dirname)}/data/${filename}`, (err, data) => {
+const read = async (filePath) => new Promise((resolve, reject) => {
+	fs.readFile(filePath, (err, data) => {
 		if (err) {
 			logger.error(err);
 			return reject(err);
@@ -53,25 +53,26 @@ const read = async (filename) => new Promise((resolve, reject) => {
 	});
 });
 
-const remove = async (filename) => {
-	fs.unlink(`${path.dirname(__dirname)}/data/${filename}`, (err) => {
+const remove = async (filePath) => {
+	fs.unlink(filePath, (err) => {
 		if (err) logger.error(err);
 	});
 };
 
-const list = async (filePath, n = 100, page = 0) => {
-	fs.readdir(`${path.dirname(__dirname)}/data/${filePath}`, (err, files) => files.slice(page, page + n));
+const list = async (dirPath, n = 100, page = 0) => {
+	const files = await fs.readdirSync(dirPath);
+	return files.slice(page, page + n);
 };
 
-const purge = async (dirName, days = 1) => {
-	fs.readdir(dirName, (_, files) => {
+const purge = async (dirPath, days = 1) => {
+	fs.readdir(dirPath, (_, files) => {
 		files.forEach((file) => {
-			fs.stat(path.join(dirName, file), (err, stat) => {
+			fs.stat(path.join(dirPath, file), (err, stat) => {
 				if (err) logger.error(err);
 				const now = new Date().getTime();
 				const endTime = new Date(stat.ctime).getTime() + (days * 24 * 60 * 60 * 1000);
 				if (now > endTime) {
-					fs.unlink(path.join(dirName, file), (error) => {
+					fs.unlink(path.join(dirPath, file), (error) => {
 						if (error) logger.error(error);
 					});
 				}
