@@ -106,13 +106,13 @@ describe('Transaction utils', () => {
 			expect(Number(amount)).toBeLessThan(0);
 		});
 
-		it('returns null for other transaction types', async () => {
+		it('returns 0 for other transaction types', async () => {
 			const amount = normalizeTransactionAmount(
 				transactions.vote.senderId,
 				transactions.vote,
 			);
 
-			expect(amount).toBeNull();
+			expect(Number(amount)).toBe(0);
 		});
 	});
 
