@@ -25,11 +25,14 @@ const {
 } = require('../../shared/helpers/file');
 
 describe('Test filesystem interface', () => {
-	const testData = {
-		created_at: 1612965420,
-		modified_at: 1612965420,
-	};
 	let dirPath;
+	const testData = {
+		a: '1',
+		b: '2',
+		c: '3',
+		d: '4',
+	};
+
 	beforeAll(async () => {
 		// Test directory
 		dirPath = `${path.dirname(__dirname)}/testDir`;
