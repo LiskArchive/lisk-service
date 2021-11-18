@@ -88,6 +88,24 @@ describe('Transaction utils', () => {
 			expect(Number(amount)).toBeLessThan(0);
 		});
 
+		it('returns positive amount value for incoming self token transfer transaction', async () => {
+			const amount = normalizeTransactionAmount(
+				transactions.tokenTransferSelf.asset.recipient.address,
+				{ ...transactions.tokenTransferSelf, fee: '0', isSelfTokenTransferCredit: true },
+			);
+
+			expect(Number(amount)).toBeGreaterThan(0);
+		});
+
+		it('returns negative amount value for outgoing self token transfer transaction', async () => {
+			const amount = normalizeTransactionAmount(
+				transactions.tokenTransferSelf.senderId,
+				transactions.tokenTransferSelf,
+			);
+
+			expect(Number(amount)).toBeLessThan(0);
+		});
+
 		it('returns null for other transaction types', async () => {
 			const amount = normalizeTransactionAmount(
 				transactions.vote.senderId,
