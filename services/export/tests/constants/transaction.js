@@ -68,6 +68,34 @@ const tokenTransferTransaction = {
 	isPending: false,
 };
 
+const tokenTransferTransactionSelf = {
+	id: 'a22d1d1959af42988746d350d4c21c3ffb81086e116de34d29148e6799bc2e8e',
+	moduleAssetId: '2:0',
+	moduleAssetName: 'token:transfer',
+	fee: '143000',
+	height: 415,
+	nonce: '135',
+	block: {
+		id: '34c00b25881646cc112f37ab7bdbf587815a0d2ecc536f310386ac5ef444168c',
+		height: 415,
+		timestamp: 1629456806,
+	},
+	senderId: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
+	senderPublicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
+	signatures: [
+		'fc953e325c33dee5e32616483800ee8cb649531b07ce8f29d18dabdbcd434a86e7db7bc8d8272926b6cce6c2c59a897907eb15e74e0d17fe83486a9351b85308',
+	],
+	asset: {
+		amount: '2000000000',
+		data: '',
+		recipient: {
+			address: 'lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt',
+			publicKey: '0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a',
+		},
+	},
+	isPending: false,
+};
+
 const voteTransaction = {
 	id: '61ca0e9e5fa3fc1c798016eb6e0b5f2d93a806d3ae30b601bb4aa4152ad0e256',
 	moduleAssetId: '5:1',
@@ -110,6 +138,7 @@ module.exports = {
 	transactions: {
 		reclaim: reclaimTransaction,
 		tokenTransfer: tokenTransferTransaction,
+		tokenTransferSelf: tokenTransferTransactionSelf,
 		vote: voteTransaction,
 	},
 };

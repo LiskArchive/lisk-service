@@ -16,6 +16,8 @@
 const {
 	beddowsToLsk,
 	normalizeTransactionAmount,
+	normalizeTransactionFee,
+	checkIfSelfTokenTransfer,
 } = require('../../shared/helpers/transaction');
 
 const {
@@ -30,6 +32,7 @@ describe('Transaction utils', () => {
 		it('returns correct LSK value', async () => {
 			const inLSK = beddowsToLsk(beddows);
 
+			expect(inLSK).not.toBeNull();
 			expect(typeof inLSK).toBe('string');
 			expect(inLSK.includes('.')).toBeTruthy();
 
@@ -92,6 +95,79 @@ describe('Transaction utils', () => {
 			);
 
 			expect(amount).toBeNull();
+		});
+	});
+
+	describe('Validate transaction fee is properly normalized', () => {
+		it('returns fee in a standardized format for a valid transaction', async () => {
+			const fee = normalizeTransactionFee(
+				transactions.reclaim.senderId,
+				transactions.reclaim,
+			);
+
+			expect(fee).not.toBeNull();
+			expect(typeof fee).toBe('string');
+			expect(fee.includes('.')).toBeTruthy();
+
+			const [, decimal] = fee.split('.');
+			expect(decimal).toHaveLength(8);
+			expect(Number(transactions.reclaim.fee)).toBe(Math.trunc(Number(fee) * 10 ** 8));
+		});
+
+		it('returns 0 fees for a token transfer credit', async () => {
+			const fee = normalizeTransactionFee(
+				transactions.tokenTransfer.asset.recipient.address,
+				transactions.tokenTransfer,
+			);
+
+			expect(fee).not.toBeNull();
+			expect(typeof fee).toBe('string');
+			expect(fee.includes('.')).toBeTruthy();
+
+			const [, decimal] = fee.split('.');
+			expect(decimal).toHaveLength(8);
+			expect(Number(0)).toBe(Math.trunc(Number(fee) * 10 ** 8));
+		});
+
+		it('returns fee in a standardized format for a token transfer debit', async () => {
+			const fee = normalizeTransactionFee(
+				transactions.tokenTransfer.senderId,
+				transactions.tokenTransfer,
+			);
+
+			expect(fee).not.toBeNull();
+			expect(typeof fee).toBe('string');
+			expect(fee.includes('.')).toBeTruthy();
+
+			const [, decimal] = fee.split('.');
+			expect(decimal).toHaveLength(8);
+			expect(Number(transactions.tokenTransfer.fee)).toBe(Math.trunc(Number(fee) * 10 ** 8));
+		});
+	});
+
+	describe('Validate checkIfSelfTokenTransfer', () => {
+		it('returns false for non-TOKEN TRANSFER transaction', async () => {
+			const isSelfTokenTransfer = checkIfSelfTokenTransfer(transactions.reclaim);
+
+			expect(isSelfTokenTransfer).not.toBeNull();
+			expect(typeof isSelfTokenTransfer).toBe('boolean');
+			expect(isSelfTokenTransfer).toBeFalsy();
+		});
+
+		it('returns false for non-self TOKEN TRANSFER transaction', async () => {
+			const isSelfTokenTransfer = checkIfSelfTokenTransfer(transactions.tokenTransfer);
+
+			expect(isSelfTokenTransfer).not.toBeNull();
+			expect(typeof isSelfTokenTransfer).toBe('boolean');
+			expect(isSelfTokenTransfer).toBeFalsy();
+		});
+
+		it('returns true for self TOKEN TRANSFER transaction', async () => {
+			const isSelfTokenTransfer = checkIfSelfTokenTransfer(transactions.tokenTransferSelf);
+
+			expect(isSelfTokenTransfer).not.toBeNull();
+			expect(typeof isSelfTokenTransfer).toBe('boolean');
+			expect(isSelfTokenTransfer).toBeTruthy();
 		});
 	});
 });
