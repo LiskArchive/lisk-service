@@ -33,6 +33,7 @@ const {
 const {
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
+	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
 const config = require('../config');
@@ -95,6 +96,13 @@ const exportTransactionsCSV = async (params) => {
 	// Sort transactions in ascending by their timestamp
 	// Redundant, remove it???
 	transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
+
+	// Add duplicate entry with zero fees for self token transfer transactions
+	transactions.forEach((tx, i, arr) => {
+		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
+			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
+		}
+	});
 
 	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
 	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
