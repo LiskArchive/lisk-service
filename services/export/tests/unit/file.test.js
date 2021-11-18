@@ -27,7 +27,7 @@ const {
 describe('Test filesystem interface', () => {
 	let dirPath;
 	beforeAll(async () => {
-		// Create test directory
+		// Test directory
 		dirPath = `${path.dirname(__dirname)}/testDir`;
 	});
 
@@ -37,9 +37,6 @@ describe('Test filesystem interface', () => {
 	});
 
 	it('Test init method', async () => {
-		expect(fs.existsSync(dirPath)).toBe(false);
-
-		// Create directory
 		await init({ dirPath });
 		expect(fs.existsSync(dirPath)).toBe(true);
 	});
