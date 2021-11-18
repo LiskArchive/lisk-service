@@ -13,15 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { exportTransactionsCSV } = require('./controllers/csv');
+const timestamp = 1637156065;
+const expectedDate = '2021-11-17';
+const expectedTime = '01:34:25';
 
-module.exports = [
-	{
-		name: 'csv',
-		description: 'Exports CSV',
-		params: {
-			address: { type: 'string', optional: false },
-		},
-		controller: exportTransactionsCSV,
-	},
-];
+module.exports = {
+	timestamp,
+	expectedDate,
+	expectedTime,
+};

@@ -62,7 +62,7 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 /**
  * API enablement
  */
-config.api.http = process.env.ENABLE_HTTP_API || 'http-version1,http-version1-compat,http-status,http-version2';
+config.api.http = process.env.ENABLE_HTTP_API || 'http-version1,http-version1-compat,http-status,http-version2,http-exports';
 config.api.ws = process.env.ENABLE_WS_API || 'rpc,rpc-v1,blockchain,rpc-v2';
 
 /**
