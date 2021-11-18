@@ -28,7 +28,8 @@ const normalizeTransactionAmount = (address, tx) => {
 	const isRecipient = isTokenTransfer && address === tx.asset.recipient.address;
 
 	const { isSelfTokenTransferCredit } = tx;
-	const sign = (isReclaim && isSender) || (isTokenTransfer && isRecipient && isSelfTokenTransferCredit)
+	const sign = (isReclaim && isSender)
+		|| (isTokenTransfer && isRecipient && isSelfTokenTransferCredit)
 		? 1 : -1;
 	return beddowsToLsk(sign * tx.asset.amount);
 };
