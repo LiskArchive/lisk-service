@@ -40,8 +40,14 @@ const normalizeTransactionFee = (address, tx) => {
 	return isRecipient ? beddowsToLsk(0) : beddowsToLsk(tx.fee);
 };
 
+const checkIfSelfTokenTransfer = (tx) => {
+	const isTokenTransfer = tx.moduleAssetId === MODULE_ASSET_ID_TOKEN_TRANSFER;
+	return isTokenTransfer && tx.senderId === tx.asset.recipient.address;
+};
+
 module.exports = {
 	beddowsToLsk,
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
+	checkIfSelfTokenTransfer,
 };
