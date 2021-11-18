@@ -22,13 +22,20 @@ const {
 	remove,
 	list,
 	purge,
-} = require('../../shared/filesystem');
+} = require('../../shared/helpers/file');
 
 describe('Test filesystem interface', () => {
+	let dirPath;
+	beforeAll(async () => {
+		// Create test directory
+		dirPath = `${path.dirname(__dirname)}/testDir`;
+	});
+
 	it('Test init method', async () => {
-		const dirPath = `${path.dirname(__dirname)}/constants`;
+		expect(fs.existsSync(dirPath)).toBe(false);
+
 		await init({ dirPath });
-		expect(fs.existsSync(`${path.dirname(__dirname)}/constants`)).toBe(true);
+		expect(fs.existsSync(dirPath)).toBe(true);
 	});
 
 	it('Test read and write method', async () => {
@@ -36,17 +43,22 @@ describe('Test filesystem interface', () => {
 			created_at: 1612965420,
 			modified_at: 1612965420,
 		};
-		const filePath = `${path.dirname(__dirname)}/constants/testfile.json`;
+
+		const filePath = `${dirPath}/testfile.json`;
+
 		await write(filePath, testData);
 		const result = await read(filePath);
+
 		expect(result).toBeInstanceOf(Object);
 		expect(result).toEqual(testData);
 	});
 
-	xit('Test remove', async () => {
-		const filePath = `${path.dirname(__dirname)}/constants/testfile.json`;
-		await remove(filePath);
-		expect(fs.existsSync(filePath)).toBe(false);
+	it('Test remove', async () => {
+		const filePath = `${dirPath}/testfile.json`;
+
+		expect(fs.existsSync(filePath)).toBe(true);
+
+		await remove(filePath).then(() => expect(fs.existsSync(filePath)).toBe(false));
 	});
 
 	it('Test list', async () => {
@@ -55,19 +67,23 @@ describe('Test filesystem interface', () => {
 			modified_at: 1612965420,
 		};
 
-		const filePath1 = `${path.dirname(__dirname)}/constants/testfile1.json`;
-		const filePath2 = `${path.dirname(__dirname)}/constants/testfile2.json`;
+		const filePath1 = `${dirPath}/testfile1.json`;
+		const filePath2 = `${dirPath}/testfile2.json`;
 
 		await write(filePath1, testData);
 		await write(filePath2, testData);
 
-		const files = await list(`${path.dirname(__dirname)}/constants`);
-		// expect(files).toBeInstanceOf(Array);
-		expect(files.length).toBe(3);
+		const files = await list(dirPath);
+		expect(files.length).toBe(2);
 	});
 
-	it('Test purge', async () => {
-		const dirPath = `${path.dirname(__dirname)}/constants`;
-		await purge(dirPath, 1);
+	xit('Test purge', async () => {
+		let files = await list(dirPath);
+		expect(files.length).toBe(2);
+
+		await purge(dirPath, 0);
+
+		files = await list(dirPath);
+		expect(files.length).toBe(0);
 	});
 });

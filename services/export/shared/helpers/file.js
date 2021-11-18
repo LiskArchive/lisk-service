@@ -19,31 +19,37 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const createDir = async (dirPath, options = { recursive: true }) => {
+const getDaysinMilliseconds = days => days * 86400 * 1000;
+
+const createDir = (dirPath, options = { recursive: true }) => new Promise((resolve, reject) => {
 	logger.debug(`Creating directory: ${dirPath}`);
-	await fs.mkdir(
+	return fs.mkdir(
 		dirPath,
 		options,
 		(err) => {
-			if (err) logger.error(`Error when creating directory: ${dirPath}\n`, err.message);
-			else logger.debug(`Successfully created directory: ${dirPath}`);
+			if (err) {
+				logger.error(`Error when creating directory: ${dirPath}\n`, err.message);
+				return reject(err);
+			}
+			logger.debug(`Successfully created directory: ${dirPath}`);
+			return resolve();
 		},
 	);
-};
+});
 
-const init = (params) => createDir(params.dirPath);
+const init = async (params) => createDir(params.dirPath);
 
-const write = async (filePath, content) => new Promise((resolve, reject) => {
+const write = (filePath, content) => new Promise((resolve, reject) => {
 	fs.writeFile(filePath, JSON.stringify(content), (err) => {
 		if (err) {
-			console.error(err);
+			logger.error(err);
 			return reject(err);
 		}
 		return resolve();
 	});
 });
 
-const read = async (filePath) => new Promise((resolve, reject) => {
+const read = (filePath) => new Promise((resolve, reject) => {
 	fs.readFile(filePath, (err, data) => {
 		if (err) {
 			logger.error(err);
@@ -53,24 +59,39 @@ const read = async (filePath) => new Promise((resolve, reject) => {
 	});
 });
 
-const remove = async (filePath) => {
-	fs.unlink(filePath, (err) => {
-		if (err) logger.error(err);
-	});
-};
+const remove = (filePath) => new Promise((resolve, reject) => {
+	fs.unlink(
+		filePath,
+		(err) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+			return resolve();
+		},
+	);
+});
 
-const list = async (dirPath, n = 100, page = 0) => {
-	const files = await fs.readdirSync(dirPath);
-	return files.slice(page, page + n);
-};
+const list = (dirPath, n = 100, page = 0) => new Promise((resolve, reject) => {
+	fs.readdir(
+		dirPath,
+		(err, files) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+			return resolve(files.slice(page, page + n));
+		},
+	);
+});
 
-const purge = async (dirPath, days = 1) => {
+const purge = (dirPath, days = 1) => {
 	fs.readdir(dirPath, (_, files) => {
 		files.forEach((file) => {
 			fs.stat(path.join(dirPath, file), (err, stat) => {
 				if (err) logger.error(err);
 				const now = new Date().getTime();
-				const endTime = new Date(stat.ctime).getTime() + (days * 24 * 60 * 60 * 1000);
+				const endTime = new Date(stat.ctime).getTime() + getDaysinMilliseconds(days);
 				if (now > endTime) {
 					fs.unlink(path.join(dirPath, file), (error) => {
 						if (error) logger.error(error);
