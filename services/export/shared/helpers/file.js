@@ -83,7 +83,7 @@ const remove = (filePath) => new Promise((resolve, reject) => {
 	);
 });
 
-const list = (dirPath, n = 100, page = 0) => new Promise((resolve, reject) => {
+const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) => {
 	fs.readdir(
 		dirPath,
 		(err, files) => {
@@ -91,7 +91,7 @@ const list = (dirPath, n = 100, page = 0) => new Promise((resolve, reject) => {
 				logger.error(err);
 				return reject(err);
 			}
-			return resolve(files.slice(page, page + n));
+			return resolve(files.slice(page, page + count));
 		},
 	);
 });
