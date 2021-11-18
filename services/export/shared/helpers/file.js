@@ -20,9 +20,9 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const getDaysinMilliseconds = days => days * 86400 * 1000;
+const getDaysInMilliseconds = days => days * 86400 * 1000;
 
-const getStats = filePath => new Promise((resolve, reject) => {
+const getFileStats = filePath => new Promise((resolve, reject) => {
 	fs.stat(filePath, (err, stat) => {
 		if (err) {
 			logger.error(err);
@@ -105,9 +105,9 @@ const purge = (dirPath, days = 1) => new Promise((resolve, reject) => {
 		await BluebirdPromise.map(
 			files,
 			async (file) => {
-				const stat = await getStats(path.join(dirPath, file));
+				const stat = await getFileStats(path.join(dirPath, file));
 				const currentTime = new Date().getTime();
-				const expirationTime = new Date(stat.ctime).getTime() + getDaysinMilliseconds(days);
+				const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
 				if (currentTime > expirationTime) await remove(path.join(dirPath, file));
 			},
 			{ concurrency: files.length },
