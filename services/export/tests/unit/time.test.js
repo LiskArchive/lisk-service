@@ -13,23 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const moment = require('moment');
-
-const config = require('../../config');
-
-const momentFromTimestamp = timestamp => moment.unix(timestamp);
-
-const dateFromTimestamp = timestamp => {
-	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.dateFormat);
-};
-
-const timeFromTimestamp = timestamp => {
-	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.timeFormat);
-};
-
-module.exports = {
+const {
 	dateFromTimestamp,
 	timeFromTimestamp,
-};
+} = require('../../shared/helpers/time');
+
+const {
+	timestamp,
+	expectedDate,
+	expectedTime,
+} = require('../constants/time');
+
+describe('Time utils', () => {
+	it('returns ISO format UTC Date from unix timestamp', async () => {
+		const date = dateFromTimestamp(timestamp);
+		expect(date).toBe(expectedDate);
+	});
+
+	it('returns ISO format UTC Time from unix timestamp', async () => {
+		const time = timeFromTimestamp(timestamp);
+		expect(time).toBe(expectedTime);
+	});
+});

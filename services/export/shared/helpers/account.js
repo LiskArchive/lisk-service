@@ -18,9 +18,9 @@ const {
 	getBase32AddressFromAddress,
 } = require('@liskhq/lisk-cryptography');
 
-const validateAddress = address => (typeof address === 'string' && address.match(/^lsk[a-hjkm-z2-9]{38}$/g));
+const validateAddress = address => (typeof address === 'string' && (/^lsk[a-hjkm-z2-9]{38}$/g).test(address));
 
-const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicKey.match(/^([A-Fa-f0-9]{2}){32}$/g));
+const validatePublicKey = publicKey => (typeof publicKey === 'string' && (/^([A-Fa-f0-9]{2}){32}$/g).test(publicKey));
 
 const getHexAddressFromPublicKey = publicKey => {
 	const binaryAddress = getAddressFromPublicKey(Buffer.from(publicKey, 'hex'));

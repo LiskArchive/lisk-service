@@ -13,23 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const moment = require('moment');
-
-const config = require('../../config');
-
-const momentFromTimestamp = timestamp => moment.unix(timestamp);
-
-const dateFromTimestamp = timestamp => {
-	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.dateFormat);
-};
-
-const timeFromTimestamp = timestamp => {
-	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.timeFormat);
-};
+const timestamp = 1637156065;
+const expectedDate = '2021-11-17';
+const expectedTime = '01:34:25';
 
 module.exports = {
-	dateFromTimestamp,
-	timeFromTimestamp,
+	timestamp,
+	expectedDate,
+	expectedTime,
 };

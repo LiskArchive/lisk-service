@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-export",
-  "version": "0.5.0",
+  "version": "0.6.0-alpha.0",
   "description": "Lisk Service Export",
   "keywords": [
     "lisk",
@@ -25,6 +25,8 @@
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
+    "test": "npm run test:unit",
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {
@@ -34,5 +36,7 @@
     "moment": "^2.29.1",
     "node-cron": "=2.0.3"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "^27.3.0"
+  }
 }

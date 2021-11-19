@@ -13,23 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const moment = require('moment');
-
-const config = require('../../config');
-
-const momentFromTimestamp = timestamp => moment.unix(timestamp);
-
-const dateFromTimestamp = timestamp => {
-	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.dateFormat);
+const valid = {
+	address: 'lskatchyvyh9y3tz3mmpu9z3kptw56c6qcw4k7fks',
+	publicKey: '2f3dfb37326c6c42af28d04e6b6a76865430ade3d26969f1b86e3987b500bbaf',
+	hexAddress: 'ccc7d88a3d6c513020a5241a045093bad4355477',
 };
 
-const timeFromTimestamp = timestamp => {
-	const dateTime = momentFromTimestamp(timestamp);
-	return dateTime.utcOffset(0).format(config.csv.timeFormat);
+const invalid = {
+	address: 'lsk769d7rrnxtvme2egazc8uc8d77uzwnmgzqyp50',
+	publicKey: '2f3dfb37326c6c42af28d04e6b6a76865430ade3d26969f1b86e3987b500bbaf00',
 };
 
 module.exports = {
-	dateFromTimestamp,
-	timeFromTimestamp,
+	valid,
+	invalid,
 };

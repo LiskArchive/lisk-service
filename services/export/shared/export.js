@@ -32,6 +32,12 @@ const {
 
 const cache = require('./csvCache');
 
+const {
+	normalizeTransactionAmount,
+	normalizeTransactionFee,
+	checkIfSelfTokenTransfer,
+} = require('./helpers/transaction');
+
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -50,17 +56,8 @@ const parseTransactionsToCsv = (json) => {
 	return parseJsonToCsv(opts, json);
 };
 
-const beddowsToLsk = (beddows) => (beddows / 10 ** 8).toFixed(8);
-
-const normalizeTransactionAmount = (address, tx) => {
-	if (!('amount' in tx.asset)) return null;
-	const sign = address === tx.senderId ? 1 : -1;
-	return beddowsToLsk(sign * tx.asset.amount);
-};
-
 const normalizeTransaction = (address, tx) => {
 	const {
-		fee,
 		moduleAssetId,
 		moduleAssetName,
 		senderPublicKey,
@@ -69,7 +66,7 @@ const normalizeTransaction = (address, tx) => {
 	const date = dateFromTimestamp(tx.unixTimestamp);
 	const time = timeFromTimestamp(tx.unixTimestamp);
 	const amountLsk = normalizeTransactionAmount(address, tx);
-	const feeLsk = beddowsToLsk(fee);
+	const feeLsk = normalizeTransactionFee(address, tx);
 	const sender = tx.senderId;
 	const recipient = tx.asset.recipient && tx.asset.recipient.address || null;
 	const recipientPublicKey = tx.asset.recipient && tx.asset.recipient.publicKey || null;
@@ -111,6 +108,13 @@ const exportTransactionsCSV = async (params) => {
 	// Sort transactions in ascending by their timestamp
 	// Redundant, remove it???
 	transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
+
+	// Add duplicate entry with zero fees for self token transfer transactions
+	transactions.forEach((tx, i, arr) => {
+		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
+			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
+		}
+	});
 
 	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
 	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
