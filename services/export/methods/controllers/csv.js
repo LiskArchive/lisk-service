@@ -20,18 +20,9 @@ const {
 const exportService = require('../../shared/export');
 
 const exportTransactionsCSV = async (params) => {
-	const exportResponse = {
-		data: [],
-		meta: {},
-	};
-
 	try {
-		const response = await exportService.exportTransactionsCSV(params);
-		if (response.data) exportResponse.data = response.data;
-		if (response.meta) exportResponse.meta = response.meta;
-
-		// return exportResponse;
-		return response;
+		const csv = await exportService.exportTransactionsCSV(params);
+		return csv;
 	} catch (err) {
 		let status;
 		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
