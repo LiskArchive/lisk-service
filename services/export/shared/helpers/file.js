@@ -125,6 +125,8 @@ const purge = (dirPath, days) => new Promise((resolve, reject) => {
 	});
 });
 
+const exists = filePath => fs.existsSync(filePath);
+
 module.exports = {
 	init,
 	write,
@@ -132,4 +134,5 @@ module.exports = {
 	remove,
 	list,
 	purge,
+	exists,
 };
