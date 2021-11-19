@@ -38,8 +38,8 @@ module.exports = {
 				HTTP_RATE_LIMIT_ENABLE: false,
 				HTTP_RATE_LIMIT_CONNECTIONS: 200,
 				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
-				// ENABLE_HTTP_API: 'http-status,http-version2',
-				// ENABLE_WS_API: 'blockchain,rpc-v2',
+				ENABLE_HTTP_API: 'http-status,http-version2,http-exports',
+				ENABLE_WS_API: 'blockchain,rpc-v2',
 				// HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
 				// ENABLE_HTTP_CACHE_CONTROL: 'true'
 			},
@@ -59,7 +59,8 @@ module.exports = {
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				LISK_CORE_WS: 'ws://localhost:8080',
+				LISK_CORE_WS: 'ws://localhost:5001',
+				GENESIS_HEIGHT: '250',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
 				SERVICE_CORE_REDIS_VOLATILE: 'redis://localhost:6379/8',
 				SERVICE_CORE_MYSQL: 'mysql://root:password@localhost:3306/lisk',
@@ -67,8 +68,6 @@ module.exports = {
 				GEOIP_JSON: '',
 				INDEX_N_BLOCKS: '0',
 				ENABLE_TRANSACTION_STATS: 'true',
-				ENABLE_JOB_MISSING_BLOCKS: 'true',
-				INDEX_MISSING_BLOCKS_RANGE: '0',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
