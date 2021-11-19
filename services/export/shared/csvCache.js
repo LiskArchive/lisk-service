@@ -13,16 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { init, write, read } = require('./filesystem');
+const FileStorage = require('./helpers/file');
 
-module.exports = {
-	init,
-	write: (filename, content) => write(filename, content),
-	read: (filename) => read(filename),
-	exists: async (filename) => {
-		// TODO: Make it more performant
-		const data = await read(filename);
-		if (data.length > 0) return true;
-		return false;
-	},
+const CsvCache = (params) => {
+	const { init, write, read, exists } = FileStorage;
+	const { dirPath } = params;
+
+	init({ dirPath });
+
+	return {
+		write: (filename, content) => write(`${dirPath}/${filename}`, content),
+		read: (filename) => read(`${dirPath}/${filename}`),
+		exists: (filename) => exists(`${dirPath}/${filename}`),
+	};
 };
+
+module.exports = CsvCache;

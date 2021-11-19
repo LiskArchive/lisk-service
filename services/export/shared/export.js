@@ -30,7 +30,7 @@ const {
 	timeFromTimestamp,
 } = require('./helpers/time');
 
-const cache = require('./csvCache');
+const FilesystemCache = require('./csvCache');
 
 const {
 	normalizeTransactionAmount,
@@ -42,6 +42,9 @@ const config = require('../config');
 const fields = require('./csvFieldMappings');
 
 const requestAll = require('./requestAll');
+
+// const partials = FilesystemCache(config.cache.partials);
+const staticFiles = FilesystemCache(config.cache.exports);
 
 const getAllTransactions = async (params) => requestRpc(
 	'core.transactions',
@@ -91,33 +94,32 @@ const normalizeTransaction = (address, tx) => {
 	};
 };
 
-cache.init({ dirPath: './data/partials' });
-
 const exportTransactionsCSV = async (params) => {
 	const MAX_NUM_TRANSACTIONS = 10000;
 
-	let transactions = [];
+	let csv;
 	const file = `${params.address}_current.csv`;
 
-	if (await cache.exists(file)) transactions = await cache.read(file);
+	if (await staticFiles.exists(file)) csv = await staticFiles.read(file);
 	else {
-		transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
-		cache.write(file, transactions);
+		const transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
+
+		// Sort transactions in ascending by their timestamp
+		// Redundant, remove it???
+		transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
+
+		// Add duplicate entry with zero fees for self token transfer transactions
+		transactions.forEach((tx, i, arr) => {
+			if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
+				arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
+			}
+		});
+
+		const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
+		csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
+		staticFiles.write(file, csv);
 	}
 
-	// Sort transactions in ascending by their timestamp
-	// Redundant, remove it???
-	transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
-
-	// Add duplicate entry with zero fees for self token transfer transactions
-	transactions.forEach((tx, i, arr) => {
-		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
-			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
-		}
-	});
-
-	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
-	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
 	return csv;
 };
 
