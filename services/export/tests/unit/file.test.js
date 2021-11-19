@@ -22,6 +22,7 @@ const {
 	remove,
 	list,
 	purge,
+	exists,
 } = require('../../shared/helpers/file');
 
 describe('Test filesystem interface', () => {
@@ -45,7 +46,7 @@ describe('Test filesystem interface', () => {
 
 	it('init() method', async () => {
 		await init({ dirPath });
-		expect(fs.existsSync(dirPath)).toBe(true);
+		expect(exists(dirPath)).toBe(true);
 	});
 
 	it('write() method', async () => {
@@ -69,8 +70,8 @@ describe('Test filesystem interface', () => {
 
 	it('remove() method', async () => {
 		const filePath = `${dirPath}/testfile.json`;
-		expect(fs.existsSync(filePath)).toBe(true);
-		await remove(filePath).then(() => expect(fs.existsSync(filePath)).toBe(false));
+		expect(exists(filePath)).toBe(true);
+		await remove(filePath).then(() => expect(exists(filePath)).toBe(false));
 	});
 
 	it('list() method', async () => {
