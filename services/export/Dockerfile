@@ -1,6 +1,6 @@
 FROM node:14-alpine AS builder
 
-RUN apk add --no-cache alpine-sdk python2 git
+RUN apk add --no-cache alpine-sdk python2 git libtool autoconf automake
 RUN adduser -D builder
 
 USER builder
@@ -17,6 +17,7 @@ RUN apk add --no-cache curl
 RUN adduser -D lisk
 
 COPY ./ /home/lisk/lisk-service/export/
+RUN chown -R lisk:lisk /home/lisk/
 COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/export/node_modules/
 
 USER lisk

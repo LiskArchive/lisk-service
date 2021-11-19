@@ -13,15 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { exportTransactionsCSV } = require('./controllers/csv');
+const { Parser } = require('json2csv');
 
-module.exports = [
-	{
-		name: 'csv',
-		description: 'Exports CSV',
-		params: {
-			address: { type: 'string', optional: false },
-		},
-		controller: exportTransactionsCSV,
-	},
-];
+const parseJsonToCsv = (opts, json) => {
+	const parser = new Parser(opts);
+	return parser.parse(json);
+};
+
+module.exports = {
+	parseJsonToCsv,
+};
