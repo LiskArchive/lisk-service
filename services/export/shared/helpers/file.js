@@ -16,7 +16,10 @@
 const BluebirdPromise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
-const { Logger } = require('lisk-service-framework');
+const {
+	Logger,
+	Exceptions: { ValidationException },
+} = require('lisk-service-framework');
 
 const logger = Logger();
 
@@ -96,7 +99,8 @@ const list = (dirPath, count = 100, page = 0) => new Promise((resolve, reject) =
 	);
 });
 
-const purge = (dirPath, days = 1) => new Promise((resolve, reject) => {
+const purge = (dirPath, days) => new Promise((resolve, reject) => {
+	if (days === undefined) throw new ValidationException('days cannot be undefined');
 	fs.readdir(dirPath, async (err, files) => {
 		if (err) {
 			logger.error(err);
@@ -108,7 +112,12 @@ const purge = (dirPath, days = 1) => new Promise((resolve, reject) => {
 				const stat = await getFileStats(path.join(dirPath, file));
 				const currentTime = new Date().getTime();
 				const expirationTime = new Date(stat.ctime).getTime() + getDaysInMilliseconds(days);
-				if (currentTime > expirationTime) await remove(path.join(dirPath, file));
+				try {
+					if (currentTime > expirationTime) await remove(path.join(dirPath, file));
+				} catch (error) {
+					logger.error(err);
+					throw error;
+				}
 			},
 			{ concurrency: files.length },
 		);
