@@ -194,6 +194,28 @@ const registerApi = (apiName, config) => {
 				ctx.meta.$responseHeaders = { 'Cache-Control': gatewayConfig.api.httpCacheControlDirectives };
 			}
 
+			// TODO: Remove endpoint specific logic
+			if (req.parsedUrl === '/api/v2/csv') {
+				const {
+					$params: { address, publicKey, date },
+				} = req;
+
+				let filename = `${address}` || `${publicKey}`;
+				if (date) {
+					if (data.includes(':')) {
+						const [from, to] = date.split(':');
+						filename = `${filename}_${from}_${to}`;
+					} else {
+						filename = `${filename}_${date}`;
+					}
+				}
+
+				res.setHeader('Content-Disposition', `attachment; filename="${filename}.csv"`);
+				res.setHeader('Content-Type', 'text/csv');
+				res.end(data);
+				return res;
+			}
+
 			if (data.data && data.status) {
 				if (data.status === 'INVALID_PARAMS') data.status = 'BAD_REQUEST';
 
