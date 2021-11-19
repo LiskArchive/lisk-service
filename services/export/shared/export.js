@@ -109,6 +109,27 @@ const exportTransactionsCSV = async (params) => {
 	return csv;
 };
 
+const scheduleTransactionHistoryExport = async (params) => {
+	const exportResponse = {
+		data: {},
+		meta: {
+			ready: false,
+		},
+	};
+
+	const { publicKey, interval } = params;
+	const address = params.address || getBase32AddressFromPublicKey(publicKey);
+
+	exportResponse.data = {
+		address,
+		publicKey,
+		interval,
+	};
+
+	return exportResponse;
+};
+
 module.exports = {
 	exportTransactionsCSV,
+	scheduleTransactionHistoryExport,
 };
