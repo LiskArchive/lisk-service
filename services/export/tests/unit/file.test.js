@@ -46,7 +46,8 @@ describe('Test filesystem interface', () => {
 
 	it('init() method', async () => {
 		await init({ dirPath });
-		expect(exists(dirPath)).toBe(true);
+		const isExists = await exists(dirPath);
+		expect(isExists).toBe(true);
 	});
 
 	it('write() method', async () => {
@@ -70,8 +71,12 @@ describe('Test filesystem interface', () => {
 
 	it('remove() method', async () => {
 		const filePath = `${dirPath}/testfile.json`;
-		expect(exists(filePath)).toBe(true);
-		await remove(filePath).then(() => expect(exists(filePath)).toBe(false));
+		let isExists = await exists(filePath);
+		expect(isExists).toBe(true);
+
+		await remove(filePath);
+		isExists = await exists(filePath);
+		expect(isExists).toBe(false);
 	});
 
 	it('list() method', async () => {
