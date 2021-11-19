@@ -42,7 +42,8 @@ module.exports = {
 	// 		'export',
 	// 		this.params,
 	// 	);
-	// 	exportSchema[this.swaggerApiPath].get.summary = 'Requests to schedule export of transaction history for a given account';
+	// 	exportSchema[this.swaggerApiPath]
+	// 		.get.summary = 'Requests to schedule export of transaction history for a given account';
 	// 	exportSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 	// 		rpcMethod: this.rpcMethod,
 	// 		description: 'Returns account data',

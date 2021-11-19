@@ -126,6 +126,13 @@ const scheduleTransactionHistoryExport = async (params) => {
 		interval,
 	};
 
+	// TODO: Check if request already processed (file available in cache)
+	// return the file details
+	// set exportResponse.meta.ready = true;
+
+	// TODO: Add scheduling logic
+
+	if (!exportResponse.meta.ready) exportResponse.status = 'ACCEPTED';
 	return exportResponse;
 };
 

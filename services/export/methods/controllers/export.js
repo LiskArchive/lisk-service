@@ -30,6 +30,10 @@ const scheduleTransactionHistoryExport = async (params) => {
 		if (response.data) exportResponse.data = response.data;
 		if (response.meta) exportResponse.meta = response.meta;
 
+		// Custom status handling
+		const { status } = response;
+		if (status) exportResponse.status = status;
+
 		return exportResponse;
 	} catch (err) {
 		let status;
