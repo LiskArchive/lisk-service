@@ -14,7 +14,13 @@
  *
  */
 const {
-	Exceptions: { ServiceUnavailableException },
+	HTTP: {
+		StatusCodes: { NOT_FOUND },
+	},
+	Exceptions: {
+		ServiceUnavailableException,
+		NotFoundException,
+	},
 } = require('lisk-service-framework');
 
 const exportService = require('../../shared/export');
@@ -38,6 +44,7 @@ const scheduleTransactionHistoryExport = async (params) => {
 	} catch (err) {
 		let status;
 		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
+		if (err instanceof NotFoundException) status = NOT_FOUND;
 		if (status) return { status, data: { error: err.message } };
 		throw err;
 	}
