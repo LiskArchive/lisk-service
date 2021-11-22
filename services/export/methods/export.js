@@ -15,7 +15,7 @@
  */
 const {
 	scheduleTransactionHistoryExport,
-	getTransactionHistory,
+	downloadTransactionHistory,
 } = require('./controllers/export');
 
 module.exports = [
@@ -35,6 +35,6 @@ module.exports = [
 		params: {
 			filename: { type: 'string', optional: false },
 		},
-		controller: getTransactionHistory,
+		controller: downloadTransactionHistory,
 	},
 ];

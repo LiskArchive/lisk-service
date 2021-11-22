@@ -50,9 +50,9 @@ const scheduleTransactionHistoryExport = async (params) => {
 	}
 };
 
-const getTransactionHistory = async (params) => {
+const downloadTransactionHistory = async (params) => {
 	try {
-		const csv = await exportService.getTransactionHistory(params);
+		const csv = await exportService.downloadTransactionHistory(params);
 		return csv;
 	} catch (err) {
 		let status;
@@ -64,5 +64,5 @@ const getTransactionHistory = async (params) => {
 
 module.exports = {
 	scheduleTransactionHistoryExport,
-	getTransactionHistory,
+	downloadTransactionHistory,
 };

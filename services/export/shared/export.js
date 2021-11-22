@@ -193,7 +193,7 @@ const scheduleTransactionHistoryExport = async (params) => {
 	return exportResponse;
 };
 
-const getTransactionHistory = async (params) => {
+const downloadTransactionHistory = async (params) => {
 	const csv = {
 		data: {},
 		meta: {
@@ -201,8 +201,8 @@ const getTransactionHistory = async (params) => {
 		},
 	};
 	const staticFilePath = `${path.dirname(__dirname)}/shared/${config.csv.paths.default}/${params.filename}`;
-	const staticFile = await file.read(staticFilePath);
-	csv.data = staticFile;
+
+	csv.data = await file.read(staticFilePath);;
 	csv.meta.filename = params.filename;
 	return csv;
 };
@@ -210,5 +210,5 @@ const getTransactionHistory = async (params) => {
 module.exports = {
 	exportTransactionsCSV,
 	scheduleTransactionHistoryExport,
-	getTransactionHistory,
+	downloadTransactionHistory,
 };
