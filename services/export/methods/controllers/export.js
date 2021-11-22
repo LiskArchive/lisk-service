@@ -19,10 +19,22 @@ const {
 
 const exportService = require('../../shared/export');
 
-const exportTransactionsCSV = async (params) => {
+const scheduleTransactionHistoryExport = async (params) => {
+	const exportResponse = {
+		data: {},
+		meta: {},
+	};
+
 	try {
-		const csv = await exportService.exportTransactionsCSV(params);
-		return csv;
+		const response = await exportService.scheduleTransactionHistoryExport(params);
+		if (response.data) exportResponse.data = response.data;
+		if (response.meta) exportResponse.meta = response.meta;
+
+		// Custom status handling
+		const { status } = response;
+		if (status) exportResponse.status = status;
+
+		return exportResponse;
 	} catch (err) {
 		let status;
 		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
@@ -32,5 +44,5 @@ const exportTransactionsCSV = async (params) => {
 };
 
 module.exports = {
-	exportTransactionsCSV,
+	scheduleTransactionHistoryExport,
 };

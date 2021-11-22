@@ -54,6 +54,24 @@ const parseTransactionsToCsv = (json) => {
 	return parseJsonToCsv(opts, json);
 };
 
+const getCsvFilenameFromParams = async (params) => {
+	const { interval } = params;
+
+	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
+
+	let filename = `transactions_${address}`;
+	if (interval) {
+		if (interval.includes(':')) {
+			const [from, to] = interval.split(':');
+			filename = `${filename}_${from}_${to}`;
+		} else {
+			filename = `${filename}_${interval}`;
+		}
+	}
+
+	return filename.concat('.csv');
+};
+
 const normalizeTransaction = (address, tx) => {
 	const {
 		moduleAssetId,
@@ -90,6 +108,13 @@ const normalizeTransaction = (address, tx) => {
 };
 
 const exportTransactionsCSV = async (params) => {
+	const exportCsvResponse = {
+		data: {},
+		meta: {
+			filename: '',
+		},
+	};
+
 	const MAX_NUM_TRANSACTIONS = 10000;
 	const transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
 
@@ -106,9 +131,42 @@ const exportTransactionsCSV = async (params) => {
 
 	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
 	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
-	return csv;
+
+	// Set the response object
+	exportCsvResponse.data = csv;
+	exportCsvResponse.meta.filename = await getCsvFilenameFromParams(params);
+
+	return exportCsvResponse;
+};
+
+const scheduleTransactionHistoryExport = async (params) => {
+	const exportResponse = {
+		data: {},
+		meta: {
+			ready: false,
+		},
+	};
+
+	const { publicKey, interval } = params;
+	const address = params.address || getBase32AddressFromPublicKey(publicKey);
+
+	exportResponse.data = {
+		address,
+		publicKey,
+		interval,
+	};
+
+	// TODO: Check if request already processed (file available in cache)
+	// return the file details
+	// set exportResponse.meta.ready = true;
+
+	// TODO: Add scheduling logic
+
+	if (!exportResponse.meta.ready) exportResponse.status = 'ACCEPTED';
+	return exportResponse;
 };
 
 module.exports = {
 	exportTransactionsCSV,
+	scheduleTransactionHistoryExport,
 };

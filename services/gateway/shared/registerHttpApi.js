@@ -194,20 +194,33 @@ const registerApi = (apiName, config) => {
 				ctx.meta.$responseHeaders = { 'Cache-Control': gatewayConfig.api.httpCacheControlDirectives };
 			}
 
+			// Set response headers and return CSV data if filename available
+			if (data.data && data.meta && data.meta.filename && data.meta.filename.endsWith('.csv')) {
+				res.setHeader('Content-Disposition', `attachment; filename="${data.meta.filename}"`);
+				res.setHeader('Content-Type', 'text/csv');
+				res.end(data.data);
+				return res;
+			}
+
 			if (data.data && data.status) {
+				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
 				if (data.status === 'INVALID_PARAMS') data.status = 'BAD_REQUEST';
 
 				ctx.meta.$statusCode = StatusCodes[data.status] || data.status;
-				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
-				let message = `The request ended up with error ${data.status}`;
 
-				if (typeof data.data === 'object' && typeof data.data.error === 'string') {
-					message = data.data.error;
+				// 'ACCEPTED' is a successful HTTP code
+				if (data.status !== 'ACCEPTED') {
+					let message = `The request ended up with ${data.status} error`;
+
+					if (typeof data.data === 'object' && typeof data.data.error === 'string') {
+						message = data.data.error;
+					}
+
+					return {
+						error: true,
+						message,
+					};
 				}
-				return {
-					error: true,
-					message,
-				};
 			}
 
 			if (Utils.Data.isEmptyArray(data.data) || Utils.Data.isEmptyObject(data.data)) {
