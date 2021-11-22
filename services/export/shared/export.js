@@ -43,7 +43,7 @@ const {
 	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
-const file = require('./helpers/file');
+const fileStorage = require('./helpers/file');
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -200,9 +200,9 @@ const downloadTransactionHistory = async (params) => {
 			filename: '',
 		},
 	};
-	const staticFilePath = `${path.dirname(__dirname)}/${config.csv.paths.default}/${params.filename}`;
+	const staticFilePath = `${path.dirname(__dirname)}/${config.csv.paths.static}/${params.filename}`;
 
-	csv.data = await file.read(staticFilePath);
+	csv.data = await fileStorage.read(staticFilePath);
 	csv.meta.filename = params.filename;
 	return csv;
 };
