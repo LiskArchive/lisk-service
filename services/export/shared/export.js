@@ -42,6 +42,7 @@ const {
 	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
+// const file = require('./helpers/file');
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -191,7 +192,11 @@ const scheduleTransactionHistoryExport = async (params) => {
 	return exportResponse;
 };
 
+// const getTransactionHistory = async (params) => {
+// };
+
 module.exports = {
 	exportTransactionsCSV,
 	scheduleTransactionHistoryExport,
+	// getTransactionHistory,
 };

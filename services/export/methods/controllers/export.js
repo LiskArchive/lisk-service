@@ -50,6 +50,19 @@ const scheduleTransactionHistoryExport = async (params) => {
 	}
 };
 
+const getTransactionHistory = async (params) => {
+	try {
+		const csv = await exportService.getTransactionHistory(params);
+		return csv;
+	} catch (err) {
+		let status;
+		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
+};
+
 module.exports = {
 	scheduleTransactionHistoryExport,
+	getTransactionHistory,
 };
