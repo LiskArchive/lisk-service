@@ -194,37 +194,23 @@ const registerApi = (apiName, config) => {
 				ctx.meta.$responseHeaders = { 'Cache-Control': gatewayConfig.api.httpCacheControlDirectives };
 			}
 
-			// TODO: Remove endpoint specific logic
-			if (req.parsedUrl === '/api/v2/csv') {
-				const {
-					$params: { address, publicKey, date },
-				} = req;
-
-				let filename = `${address}` || `${publicKey}`;
-				if (date) {
-					if (data.includes(':')) {
-						const [from, to] = date.split(':');
-						filename = `${filename}_${from}_${to}`;
-					} else {
-						filename = `${filename}_${date}`;
-					}
-				}
-
-				res.setHeader('Content-Disposition', `attachment; filename="${filename}.csv"`);
+			// Set response headers and return CSV data if filename available
+			if (data.data && data.meta && data.meta.filename && data.meta.filename.endsWith('.csv')) {
+				res.setHeader('Content-Disposition', `attachment; filename="${data.meta.filename}"`);
 				res.setHeader('Content-Type', 'text/csv');
-				res.end(data);
+				res.end(data.data);
 				return res;
 			}
 
 			if (data.data && data.status) {
+				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
 				if (data.status === 'INVALID_PARAMS') data.status = 'BAD_REQUEST';
 
 				ctx.meta.$statusCode = StatusCodes[data.status] || data.status;
 
-				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
-
+				// 'ACCEPTED' is a successful HTTP code
 				if (data.status !== 'ACCEPTED') {
-					let message = `The request ended up with error ${data.status}`;
+					let message = `The request ended up with ${data.status} error`;
 
 					if (typeof data.data === 'object' && typeof data.data.error === 'string') {
 						message = data.data.error;
