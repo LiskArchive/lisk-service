@@ -41,9 +41,6 @@ module.exports = {
 		exportSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'CSV file',
-				schema: {
-					$ref: '#/definitions/ExportWithEnvelope',
-				},
 			},
 			404: {
 				schema: {

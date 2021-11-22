@@ -17,7 +17,7 @@ const path = require('path');
 const {
 	Exceptions: {
 		NotFoundException,
-	},
+	}
 } = require('lisk-service-framework');
 
 const {
@@ -202,6 +202,7 @@ const downloadTransactionHistory = async (params) => {
 	};
 	const staticFilePath = `${path.dirname(__dirname)}/${config.csv.paths.static}/${params.filename}`;
 
+	if (!await fileStorage.exists(staticFilePath)) throw new NotFoundException(`File ${params.filename} not found.`);
 	csv.data = await fileStorage.read(staticFilePath);
 	csv.meta.filename = params.filename;
 	return csv;
