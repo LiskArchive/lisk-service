@@ -54,7 +54,7 @@ const createDir = (dirPath, options = { recursive: true }) => new Promise((resol
 const init = async (params) => createDir(params.dirPath);
 
 const write = (filePath, content) => new Promise((resolve, reject) => {
-	fs.writeFile(filePath, JSON.stringify(content), (err) => {
+	fs.writeFile(filePath, content, (err) => {
 		if (err) {
 			logger.error(err);
 			return reject(err);
@@ -64,12 +64,12 @@ const write = (filePath, content) => new Promise((resolve, reject) => {
 });
 
 const read = (filePath) => new Promise((resolve, reject) => {
-	fs.readFile(filePath, (err, data) => {
+	fs.readFile(filePath, 'utf8', (err, data) => {
 		if (err) {
 			logger.error(err);
 			return reject(err);
 		}
-		return resolve(JSON.parse(data));
+		return resolve(data);
 	});
 });
 
