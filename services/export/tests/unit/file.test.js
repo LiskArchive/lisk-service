@@ -25,14 +25,13 @@ const {
 	exists,
 } = require('../../shared/helpers/file');
 
+const {
+	dynamicFieldsCustomDelimiter,
+} = require('../constants/csv');
+
 describe('Test filesystem interface', () => {
 	let dirPath;
-	const testData = {
-		a: '1',
-		b: '2',
-		c: '3',
-		d: '4',
-	};
+	const testData = dynamicFieldsCustomDelimiter.expectedCsv;
 
 	beforeAll(async () => {
 		// Test directory
@@ -51,7 +50,7 @@ describe('Test filesystem interface', () => {
 	});
 
 	it('write() method', async () => {
-		const filePath = `${dirPath}/testfile.json`;
+		const filePath = `${dirPath}/testfile.csv`;
 
 		// Write data into the file
 		await write(filePath, testData);
@@ -61,16 +60,15 @@ describe('Test filesystem interface', () => {
 	});
 
 	it('read() method', async () => {
-		const filePath = `${dirPath}/testfile.json`;
+		const filePath = `${dirPath}/testfile.csv`;
 
 		// Read data from file
 		const result = await read(filePath);
-		expect(result).toBeInstanceOf(Object);
 		expect(result).toEqual(testData);
 	});
 
 	it('remove() method', async () => {
-		const filePath = `${dirPath}/testfile.json`;
+		const filePath = `${dirPath}/testfile.csv`;
 		let isExists = await exists(filePath);
 		expect(isExists).toBe(true);
 
@@ -80,8 +78,8 @@ describe('Test filesystem interface', () => {
 	});
 
 	it('list() method', async () => {
-		const filePath1 = `${dirPath}/testfile1.json`;
-		const filePath2 = `${dirPath}/testfile2.json`;
+		const filePath1 = `${dirPath}/testfile1.csv`;
+		const filePath2 = `${dirPath}/testfile2.csv`;
 
 		await write(filePath1, testData);
 		await write(filePath2, testData);
