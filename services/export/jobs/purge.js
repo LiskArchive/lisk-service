@@ -13,16 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const logger = require('lisk-service-framework').Logger();
+const logger = require('lisk-service-framework').Logger();
+const FileStorage = require('../shared/helpers/file');
+
+const config = require('../config');
+
+const partials = FileStorage(config.cache.partials);
+const staticFiles = FileStorage(config.cache.exports);
 
 module.exports = [
 	{
-		name: 'job.1',
-		description: 'Generic job template',
-		schedule: '* * * * *', // Every 1 min
+		name: 'job.purge.cache',
+		description: 'Cache maintenance',
+		schedule: '4 45 * * *',
 		controller: () => {
-			// const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			// logger.info(`Dummy job is done, processed ${operationResult.length} items`);
+			logger.info('Performing cache maintenance');
+			partials.purge();
+			staticFiles.purge();
 		},
 	},
 ];
