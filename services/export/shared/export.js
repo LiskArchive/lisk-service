@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const moment = require('moment');
+
 const {
 	requestRpc,
 } = require('./rpcBroker');
@@ -97,8 +99,14 @@ const normalizeTransaction = (address, tx) => {
 const exportTransactionsCSV = async (params) => {
 	const MAX_NUM_TRANSACTIONS = 10000;
 
+	let { address, from, to } = params;
+
+	if (!from) from = '2016-01-01';
+	if (!to) to = moment().format('YYYY-MM-DD');
+
+	// TODO: This function allows empty param address and throws an error
 	let csv;
-	const file = `${params.address}_current.csv`;
+	const file = `${address}_${from}_${to}.csv`;
 
 	if (await staticFiles.exists(file)) csv = await staticFiles.read(file);
 	else {
@@ -115,7 +123,7 @@ const exportTransactionsCSV = async (params) => {
 			}
 		});
 
-		const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
+		address = params.address || getBase32AddressFromPublicKey(params.publicKey);
 		csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
 		staticFiles.write(file, csv);
 	}
