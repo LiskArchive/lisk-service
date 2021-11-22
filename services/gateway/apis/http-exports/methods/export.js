@@ -15,7 +15,7 @@
  */
 const exportSource = require('../../../sources/version2/export');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
-// const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -34,42 +34,42 @@ module.exports = {
 		['address', 'interval'],
 		['publicKey', 'interval'],
 	],
-	// get schema() {
-	// 	const exportSchema = {};
-	// 	exportSchema[this.swaggerApiPath] = { get: {} };
-	// 	exportSchema[this.swaggerApiPath].get.tags = this.tags;
-	// 	exportSchema[this.swaggerApiPath].get.parameters = transformParams(
-	// 		'export',
-	// 		this.params,
-	// 	);
-	// 	exportSchema[this.swaggerApiPath]
-	// 		.get.summary = 'Requests to schedule export of transaction history for a given account';
-	// 	exportSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
-	// 		rpcMethod: this.rpcMethod,
-	// 		description: 'Returns account data',
-	// 	});
-	// 	exportSchema[this.swaggerApiPath].get.responses = {
-	// 		200: {
-	// 			description: 'CSV file to download',
-	// 			schema: {
-	// 				$ref: '#/definitions/ExportFileUrlWithEnvelope',
-	// 			},
-	// 		},
-	// 		202: {
-	// 			description: 'schedule transaction history export',
-	// 			schema: {
-	// 				$ref: '#/definitions/ExportScheduledWithEnvelope',
-	// 			},
-	// 		},
-	// 		404: {
-	// 			schema: {
-	// 				$ref: '#/responses/notFound',
-	// 			},
-	// 		},
-	// 	};
-	// 	Object.assign(exportSchema[this.swaggerApiPath].get.responses, response);
-	// 	return exportSchema;
-	// },
+	get schema() {
+		const exportSchema = {};
+		exportSchema[this.swaggerApiPath] = { get: {} };
+		exportSchema[this.swaggerApiPath].get.tags = this.tags;
+		exportSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'export',
+			this.params,
+		);
+		exportSchema[this.swaggerApiPath]
+			.get.summary = 'Requests to schedule export of transaction history for a given account';
+		exportSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns transaction history export scheduling information',
+		});
+		exportSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'CSV file to download',
+				schema: {
+					$ref: '#/definitions/ExportFileUrlWithEnvelope',
+				},
+			},
+			202: {
+				description: 'Schedule transaction history export',
+				schema: {
+					$ref: '#/definitions/ExportScheduledWithEnvelope',
+				},
+			},
+			404: {
+				schema: {
+					$ref: '#/responses/notFound',
+				},
+			},
+		};
+		Object.assign(exportSchema[this.swaggerApiPath].get.responses, response);
+		return exportSchema;
+	},
 	source: exportSource,
 	envelope,
 };
