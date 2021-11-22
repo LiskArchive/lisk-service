@@ -17,7 +17,7 @@ const path = require('path');
 const {
 	Exceptions: {
 		NotFoundException,
-	}
+	},
 } = require('lisk-service-framework');
 
 const {
