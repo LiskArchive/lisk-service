@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Exceptions: {
 		NotFoundException,
@@ -42,7 +43,7 @@ const {
 	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
-// const file = require('./helpers/file');
+const file = require('./helpers/file');
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -192,11 +193,22 @@ const scheduleTransactionHistoryExport = async (params) => {
 	return exportResponse;
 };
 
-// const getTransactionHistory = async (params) => {
-// };
+const getTransactionHistory = async (params) => {
+	const csv = {
+		data: {},
+		meta: {
+			filename: '',
+		},
+	};
+	const staticFilePath = `${path.dirname(__dirname)}/shared/${config.csv.paths.default}/${params.filename}`;
+	const staticFile = await file.read(staticFilePath);
+	csv.data = staticFile;
+	csv.meta.filename = params.filename;
+	return csv;
+};
 
 module.exports = {
 	exportTransactionsCSV,
 	scheduleTransactionHistoryExport,
-	// getTransactionHistory,
+	getTransactionHistory,
 };
