@@ -2,6 +2,7 @@ version: '3'
 services:
   lisk-core:
     image: lisk/core:3.0.2
+    platform: linux/amd64
     volumes:
       - ./snapshots/:/tmp/snapshots
       - ./config/:/tmp/config
