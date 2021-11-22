@@ -53,6 +53,7 @@ const getAllTransactions = async (params) => requestRpc(
 	{
 		senderIdOrRecipientId: params.address,
 		sort: 'timestamp:asc',
+		timestamp: params.timestamp,
 	},
 );
 
@@ -110,7 +111,11 @@ const exportTransactionsCSV = async (params) => {
 
 	if (await staticFiles.exists(file)) csv = await staticFiles.read(file);
 	else {
-		const transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
+		const queryParams = {
+			address,
+			timestamp: `${moment(from).unix()}:${moment(to).unix()}`,
+		};
+		const transactions = await requestAll(getAllTransactions, queryParams, MAX_NUM_TRANSACTIONS);
 
 		// Sort transactions in ascending by their timestamp
 		// Redundant, remove it???
