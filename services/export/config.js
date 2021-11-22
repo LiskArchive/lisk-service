@@ -20,8 +20,8 @@ config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
 config.cache = {};
-config.cache.partials = { dirPath: process.env.SERVICE_EXPORT_PARTIALS || './data/partials' };
-config.cache.exports = { dirPath: process.env.SERVICE_EXPORT_STATIC || './data/static' };
+config.cache.partials = { dirPath: process.env.SERVICE_EXPORT_PARTIALS || './data/partials', retentionInDays: 30 };
+config.cache.exports = { dirPath: process.env.SERVICE_EXPORT_STATIC || './data/static', retentionInDays: 30 };
 
 // Logging
 config.log = {};

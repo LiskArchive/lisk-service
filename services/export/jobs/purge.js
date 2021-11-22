@@ -14,7 +14,7 @@
  *
  */
 const logger = require('lisk-service-framework').Logger();
-const FileStorage = require('../shared/helpers/file');
+const FileStorage = require('../shared/csvCache');
 
 const config = require('../config');
 
@@ -25,7 +25,7 @@ module.exports = [
 	{
 		name: 'job.purge.cache',
 		description: 'Cache maintenance',
-		schedule: '4 45 * * *',
+		schedule: '45 4 * * *',
 		controller: () => {
 			logger.info('Performing cache maintenance');
 			partials.purge();
