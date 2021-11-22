@@ -200,7 +200,7 @@ const downloadTransactionHistory = async (params) => {
 			filename: '',
 		},
 	};
-	const staticFilePath = `${path.dirname(__dirname)}/shared/${config.csv.paths.default}/${params.filename}`;
+	const staticFilePath = `${path.dirname(__dirname)}/${config.csv.paths.default}/${params.filename}`;
 
 	csv.data = await file.read(staticFilePath);
 	csv.meta.filename = params.filename;

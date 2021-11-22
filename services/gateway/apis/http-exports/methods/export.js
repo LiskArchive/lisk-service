@@ -15,7 +15,7 @@
  */
 const exportSource = require('../../../sources/version2/export');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
-// const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -24,6 +24,36 @@ module.exports = {
 		filename: { optional: false, type: 'string' },
 	},
 	tags: ['Transaction Export'],
+	get schema() {
+		const exportSchema = {};
+		exportSchema[this.swaggerApiPath] = { get: {} };
+		exportSchema[this.swaggerApiPath].get.tags = this.tags;
+		exportSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'export',
+			this.params,
+		);
+		exportSchema[this.swaggerApiPath]
+			.get.summary = 'Requests transaction history for a given account';
+		exportSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns transaction history',
+		});
+		exportSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'CSV file',
+				schema: {
+					$ref: '#/definitions/ExportWithEnvelope',
+				},
+			},
+			404: {
+				schema: {
+					$ref: '#/responses/notFound',
+				},
+			},
+		};
+		Object.assign(exportSchema[this.swaggerApiPath].get.responses, response);
+		return exportSchema;
+	},
 	source: exportSource,
 	envelope,
 };
