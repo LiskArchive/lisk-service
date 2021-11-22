@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const exportTransactionsSource = require('../../../sources/version2/export');
+const exportSource = require('../../../sources/version2/export');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
 // const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
@@ -24,6 +24,6 @@ module.exports = {
 		filename: { optional: false, type: 'string' },
 	},
 	tags: ['Transaction Export'],
-	source: exportTransactionsSource,
+	source: exportSource,
 	envelope,
 };

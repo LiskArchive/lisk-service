@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const exportSource = require('../../../sources/version2/scheduleExport');
+const scheduleExport = require('../../../sources/version2/scheduleExport');
 const envelope = require('../../../sources/version2/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
@@ -70,6 +70,6 @@ module.exports = {
 		Object.assign(exportSchema[this.swaggerApiPath].get.responses, response);
 		return exportSchema;
 	},
-	source: exportSource,
+	source: scheduleExport,
 	envelope,
 };
