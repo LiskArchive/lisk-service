@@ -38,15 +38,44 @@ const genDocs = ctx => {
 	if (!config.api.versions[ctx.endpoint.baseUrl]) return {
 		info: { description: `This route offers no specs for ${ctx.endpoint.baseUrl}` },
 	};
-	const httpVersion = config.api.versions[ctx.endpoint.baseUrl];
-	const { apiJson, parameters, definitions, responses } = requireAllJson(httpVersion);
-	return {
-		...apiJson,
-		parameters,
-		definitions,
-		responses,
-		paths: createApiDocs(httpVersion, apiJson.paths),
-	};
+
+	const finalDoc = {};
+
+	const apis = Array.isArray(config.api.versions[ctx.endpoint.baseUrl])
+		? config.api.versions[ctx.endpoint.baseUrl]
+		: [config.api.versions[ctx.endpoint.baseUrl]];
+
+	apis.forEach((api) => {
+		const { apiJson, parameters, definitions, responses } = requireAllJson(api);
+
+		const params = finalDoc.parameters || {};
+		Object.assign(params, parameters);
+
+		const defs = finalDoc.definitions || {};
+		Object.assign(defs, definitions);
+
+		const allResponses = finalDoc.responses || {};
+		Object.assign(allResponses, responses);
+
+		const tags = finalDoc.tags || [];
+		apiJson.tags.forEach(tag => tags.push(tag));
+
+		const paths = finalDoc.paths || {};
+		Object.assign(paths, createApiDocs(api, apiJson.paths));
+
+		Object.assign(finalDoc,
+			{
+				...apiJson,
+				parameters: params,
+				definitions: defs,
+				responses: allResponses,
+				tags,
+				paths,
+			},
+		);
+	});
+
+	return finalDoc;
 };
 
 module.exports = {
