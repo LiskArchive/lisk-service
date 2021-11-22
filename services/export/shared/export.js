@@ -14,6 +14,12 @@
  *
  */
 const {
+	Exceptions: {
+		NotFoundException,
+	},
+} = require('lisk-service-framework');
+
+const {
 	requestRpc,
 } = require('./rpcBroker');
 
@@ -40,6 +46,8 @@ const config = require('../config');
 const fields = require('./csvFieldMappings');
 
 const requestAll = require('./requestAll');
+
+const getAccounts = async (params) => requestRpc('core.accounts', params);
 
 const getAllTransactions = async (params) => requestRpc(
 	'core.transactions',
@@ -70,6 +78,15 @@ const getCsvFilenameFromParams = async (params) => {
 	}
 
 	return filename.concat('.csv');
+};
+
+// eslint-disable-next-line no-unused-vars
+const getCsvFileUrlFromParams = async (params) => {
+	const filename = await getCsvFilenameFromParams(params);
+
+	// TODO: Base URL on config for filesystem or S3
+	const url = `/api/v2/exports/${filename}`;
+	return url;
 };
 
 const normalizeTransaction = (address, tx) => {
@@ -150,6 +167,12 @@ const scheduleTransactionHistoryExport = async (params) => {
 	const { publicKey, interval } = params;
 	const address = params.address || getBase32AddressFromPublicKey(publicKey);
 
+	// Validate if account exists
+	const accResponse = await getAccounts({ address }).catch(_ => _);
+	if (!accResponse.data || !accResponse.data.length) {
+		throw new NotFoundException(`Account ${address} not found.`);
+	}
+
 	exportResponse.data = {
 		address,
 		publicKey,
@@ -157,8 +180,10 @@ const scheduleTransactionHistoryExport = async (params) => {
 	};
 
 	// TODO: Check if request already processed (file available in cache)
-	// return the file details
+	// set exportResponse.data.fileName = await getCsvFilenameFromParams(params);
+	// set exportResponse.data.fileUrl = await getCsvFileUrlFromParams(params);
 	// set exportResponse.meta.ready = true;
+	// return the file details
 
 	// TODO: Add scheduling logic
 
