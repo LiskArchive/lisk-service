@@ -49,6 +49,8 @@ const requestAll = require('./requestAll');
 
 const getAccounts = async (params) => requestRpc('core.accounts', params);
 
+const getAddressFromParams = (params) => params.address || getBase32AddressFromPublicKey(params.publicKey);
+
 const getAllTransactions = async (params) => requestRpc(
 	'core.transactions',
 	{
@@ -65,7 +67,7 @@ const parseTransactionsToCsv = (json) => {
 const getCsvFilenameFromParams = async (params) => {
 	const { interval } = params;
 
-	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
+	const address = getAddressFromParams(params);
 
 	let filename = `transactions_${address}`;
 	if (interval) {
@@ -146,7 +148,7 @@ const exportTransactionsCSV = async (params) => {
 		}
 	});
 
-	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
+	const address = getAddressFromParams(params);
 	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
 
 	// Set the response object
