@@ -45,8 +45,7 @@ const fields = require('./csvFieldMappings');
 
 const requestAll = require('./requestAll');
 
-// const partials = FilesystemCache(config.cache.partials);
-const staticFiles = FilesystemCache(config.cache.exports);
+const partials = FilesystemCache(config.cache.partials);
 
 const getAllTransactions = async (params) => requestRpc(
 	'core.transactions',
@@ -148,14 +147,14 @@ const exportTransactionsCSV = async (params) => {
 	let pastTransactions = [];
 	let todayTransactions = [];
 
-	if (await staticFiles.exists(file)) pastTransactions = JSON.parse(await staticFiles.read(file));
+	if (await partials.exists(file)) pastTransactions = JSON.parse(await partials.read(file));
 	else {
 		pastTransactions = await getTransactions({
 			address,
 			timestamp: `${from.unix()}:${moment(to).subtract(1, 'days').unix()}`,
 		});
 
-		staticFiles.write(file, JSON.stringify(pastTransactions));
+		partials.write(file, JSON.stringify(pastTransactions));
 	}
 
 	if (to.format(DATE_FORMAT) === getToday().format(DATE_FORMAT)) {
