@@ -51,7 +51,8 @@ const getAccounts = async (params) => requestRpc('core.accounts', params);
 
 const getTransactions = async (params) => requestRpc('core.transactions', params);
 
-const getAddressFromParams = (params) => params.address || getBase32AddressFromPublicKey(params.publicKey);
+const getAddressFromParams = (params) => params.address
+	|| getBase32AddressFromPublicKey(params.publicKey);
 
 const getTransactionsInAsc = async (params) => getTransactions({
 	senderIdOrRecipientId: getAddressFromParams(params),
@@ -59,6 +60,14 @@ const getTransactionsInAsc = async (params) => getTransactions({
 	limit: params.limit || 10,
 	offset: params.offset || 0,
 });
+
+const getIfAccountHasTransactions = async (params) => {
+	const response = await getTransactions({
+		senderIdOrRecipientId: getAddressFromParams(params),
+		limit: 1,
+	});
+	return !!response.data.length;
+};
 
 const parseTransactionsToCsv = (json) => {
 	const opts = { delimiter: config.csv.delimiter, fields };
@@ -168,12 +177,18 @@ const scheduleTransactionHistoryExport = async (params) => {
 	};
 
 	const { publicKey, interval } = params;
-	const address = params.address || getBase32AddressFromPublicKey(publicKey);
+	const address = getAddressFromParams(params);
 
 	// Validate if account exists
 	const accResponse = await getAccounts({ address }).catch(_ => _);
 	if (!accResponse.data || !accResponse.data.length) {
 		throw new NotFoundException(`Account ${address} not found.`);
+	}
+
+	// Validate if account has transactions
+	const isAccountHasTransactions = await getIfAccountHasTransactions({ address });
+	if (!isAccountHasTransactions) {
+		throw new NotFoundException(`Account ${address} has no transactions.`);
 	}
 
 	exportResponse.data = {
