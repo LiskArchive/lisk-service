@@ -116,7 +116,6 @@ const purge = (dirPath, days) => new Promise((resolve, reject) => {
 					if (currentTime > expirationTime) await remove(path.join(dirPath, file));
 				} catch (error) {
 					logger.error(err);
-					throw error;
 				}
 			},
 			{ concurrency: files.length },
