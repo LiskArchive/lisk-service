@@ -78,10 +78,7 @@ const parseTransactionsToCsv = (json) => {
 	return parseJsonToCsv(opts, json);
 };
 
-const getCsvFilenameFromParams = async (params) => {
-	const { interval } = params;
-
-	let filename;
+const standardizeIntervalFromParams = async ({ interval }) => {
 	let from;
 	let to;
 	if (interval && interval.includes(':')) {
@@ -93,9 +90,14 @@ const getCsvFilenameFromParams = async (params) => {
 		from = '2016-01-01'; // TODO: Start date of the blockchain
 		to = moment().format(config.csv.dateFormat);
 	}
+	return `${from}:${to}`;
+};
 
+const getCsvFilenameFromParams = async (params) => {
 	const address = getAddressFromParams(params);
-	filename = `transactions_${address}_${from}_${to}.csv`;
+	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
+
+	const filename = `transactions_${address}_${from}_${to}.csv`;
 	return filename;
 };
 
@@ -204,7 +206,7 @@ const scheduleTransactionHistoryExport = async (params) => {
 		},
 	};
 
-	const { publicKey, interval } = params;
+	const { publicKey } = params;
 	const address = getAddressFromParams(params);
 
 	// Validate if account exists
@@ -219,21 +221,21 @@ const scheduleTransactionHistoryExport = async (params) => {
 		throw new NotFoundException(`Account ${address} has no transactions.`);
 	}
 
-	exportResponse.data = {
-		address,
-		publicKey,
-		interval,
-	};
+	exportResponse.data.address = address;
+	exportResponse.data.publicKey = publicKey;
+	exportResponse.data.interval = await standardizeIntervalFromParams(params);
 
-	// TODO: Check if request already processed (file available in cache)
-	// set exportResponse.data.fileName = await getCsvFilenameFromParams(params);
-	// set exportResponse.data.fileUrl = await getCsvFileUrlFromParams(params);
-	// set exportResponse.meta.ready = true;
-	// return the file details
+	const fileName = await getCsvFilenameFromParams(params);
+	if (await staticFiles.exists(fileName)) {
+		exportResponse.data.fileName = fileName;
+		exportResponse.data.fileUrl = await getCsvFileUrlFromParams(params);
+		exportResponse.meta.ready = true;
+	} else {
+		// TODO: Add scheduling logic
+		exportTransactionsCSV(params);
+		exportResponse.status = 'ACCEPTED';
+	}
 
-	// TODO: Add scheduling logic
-
-	if (!exportResponse.meta.ready) exportResponse.status = 'ACCEPTED';
 	return exportResponse;
 };
 
