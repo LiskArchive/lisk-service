@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const moment = require('moment');
+
 const {
-	Exceptions: {
-		NotFoundException,
-	},
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const {
@@ -46,6 +46,10 @@ const config = require('../config');
 const fields = require('./csvFieldMappings');
 
 const requestAll = require('./requestAll');
+const FilesystemCache = require('./csvCache');
+
+// const partials = FilesystemCache(config.cache.partials);
+const staticFiles = FilesystemCache(config.cache.exports);
 
 const getAccounts = async (params) => requestRpc('core.accounts', params);
 
@@ -77,19 +81,22 @@ const parseTransactionsToCsv = (json) => {
 const getCsvFilenameFromParams = async (params) => {
 	const { interval } = params;
 
-	const address = getAddressFromParams(params);
-
-	let filename = `transactions_${address}`;
-	if (interval) {
-		if (interval.includes(':')) {
-			const [from, to] = interval.split(':');
-			filename = `${filename}_${from}_${to}`;
-		} else {
-			filename = `${filename}_${interval}`;
-		}
+	let filename;
+	let from;
+	let to;
+	if (interval && interval.includes(':')) {
+		[from, to] = interval.split(':');
+	} else if (interval) {
+		from = interval;
+		to = moment().format(config.csv.dateFormat);
+	} else {
+		from = '2016-01-01'; // TODO: Start date of the blockchain
+		to = moment().format(config.csv.dateFormat);
 	}
 
-	return filename.concat('.csv');
+	const address = getAddressFromParams(params);
+	filename = `transactions_${address}_${from}_${to}.csv`;
+	return filename;
 };
 
 // eslint-disable-next-line no-unused-vars
@@ -144,22 +151,43 @@ const exportTransactionsCSV = async (params) => {
 		},
 	};
 
-	const MAX_NUM_TRANSACTIONS = 10000;
-	const transactions = await requestAll(getTransactionsInAsc, params, MAX_NUM_TRANSACTIONS);
-
-	// Sort transactions in ascending by their timestamp
-	// Redundant, remove it???
-	transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
-
-	// Add duplicate entry with zero fees for self token transfer transactions
-	transactions.forEach((tx, i, arr) => {
-		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
-			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
-		}
-	});
-
 	const address = getAddressFromParams(params);
-	const csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
+
+	// Validate if account exists
+	const accResponse = await getAccounts({ address }).catch(_ => _);
+	if (!accResponse.data || !accResponse.data.length) {
+		throw new NotFoundException(`Account ${address} not found.`);
+	}
+
+	// Validate if account has transactions
+	const isAccountHasTransactions = await getIfAccountHasTransactions({ address });
+	if (!isAccountHasTransactions) {
+		throw new NotFoundException(`Account ${address} has no transactions.`);
+	}
+
+	let csv;
+	const MAX_NUM_TRANSACTIONS = 10000;
+	const file = await getCsvFilenameFromParams(params);
+
+	if (await staticFiles.exists(file)) csv = await staticFiles.read(file);
+	else {
+		const transactions = await requestAll(getTransactionsInAsc, params, MAX_NUM_TRANSACTIONS);
+
+		// Sort transactions in ascending by their timestamp
+		// Redundant, remove it???
+		transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
+
+		// Add duplicate entry with zero fees for self token transfer transactions
+		transactions.forEach((tx, i, arr) => {
+			if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
+				arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
+			}
+		});
+
+		const address = getAddressFromParams(params);
+		csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
+		staticFiles.write(file, csv);
+	}
 
 	// Set the response object
 	exportCsvResponse.data = csv;

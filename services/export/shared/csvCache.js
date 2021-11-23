@@ -13,16 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const logger = require('lisk-service-framework').Logger();
+const FileStorage = require('./helpers/file');
 
-module.exports = [
-	{
-		name: 'job.1',
-		description: 'Generic job template',
-		schedule: '* * * * *', // Every 1 min
-		controller: () => {
-			// const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			// logger.info(`Dummy job is done, processed ${operationResult.length} items`);
-		},
-	},
-];
+const CsvCache = (params) => {
+	const { init, write, read, exists, purge } = FileStorage;
+	const { dirPath, retentionInDays } = params;
+
+	init({ dirPath });
+
+	return {
+		write: (filename, content) => write(`${dirPath}/${filename}`, content),
+		read: (filename) => read(`${dirPath}/${filename}`),
+		exists: (filename) => exists(`${dirPath}/${filename}`),
+		purge: () => purge(dirPath, retentionInDays),
+	};
+};
+
+module.exports = CsvCache;
