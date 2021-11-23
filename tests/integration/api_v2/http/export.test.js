@@ -18,7 +18,6 @@ const { api } = require('../../../helpers/api');
 
 const {
 	notFoundSchema,
-	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
