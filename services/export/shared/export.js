@@ -65,7 +65,13 @@ const getTransactionsInAsc = async (params) => getTransactions({
 	offset: params.offset || 0,
 });
 
-const getIfAccountHasTransactions = async (params) => {
+const validateIfAccountExists = async (params) => {
+	const address = getAddressFromParams(params);
+	const accResponse = await getAccounts({ address }).catch(_ => _);
+	return (!accResponse.data || !accResponse.data.length);
+};
+
+const validateIfAccountHasTransactions = async (params) => {
 	const response = await getTransactions({
 		senderIdOrRecipientId: getAddressFromParams(params),
 		limit: 1,
@@ -156,16 +162,12 @@ const exportTransactionsCSV = async (params) => {
 	const address = getAddressFromParams(params);
 
 	// Validate if account exists
-	const accResponse = await getAccounts({ address }).catch(_ => _);
-	if (!accResponse.data || !accResponse.data.length) {
-		throw new NotFoundException(`Account ${address} not found.`);
-	}
+	const isAccountExists = await validateIfAccountExists(params);
+	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
 
 	// Validate if account has transactions
-	const isAccountHasTransactions = await getIfAccountHasTransactions({ address });
-	if (!isAccountHasTransactions) {
-		throw new NotFoundException(`Account ${address} has no transactions.`);
-	}
+	const isAccountHasTransactions = await validateIfAccountHasTransactions({ address });
+	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
 
 	let csv;
 	const MAX_NUM_TRANSACTIONS = 10000;
@@ -186,7 +188,6 @@ const exportTransactionsCSV = async (params) => {
 			}
 		});
 
-		const address = getAddressFromParams(params);
 		csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
 		staticFiles.write(file, csv);
 	}
@@ -210,16 +211,12 @@ const scheduleTransactionHistoryExport = async (params) => {
 	const address = getAddressFromParams(params);
 
 	// Validate if account exists
-	const accResponse = await getAccounts({ address }).catch(_ => _);
-	if (!accResponse.data || !accResponse.data.length) {
-		throw new NotFoundException(`Account ${address} not found.`);
-	}
+	const isAccountExists = await validateIfAccountExists(params);
+	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
 
 	// Validate if account has transactions
-	const isAccountHasTransactions = await getIfAccountHasTransactions({ address });
-	if (!isAccountHasTransactions) {
-		throw new NotFoundException(`Account ${address} has no transactions.`);
-	}
+	const isAccountHasTransactions = await validateIfAccountHasTransactions({ address });
+	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
 
 	exportResponse.data.address = address;
 	exportResponse.data.publicKey = publicKey;
