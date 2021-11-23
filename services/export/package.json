@@ -25,8 +25,9 @@
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
-    "watch": "supervisor -w . -i ./node_modules app.js",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
+    "test": "npm run test:unit",
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
+    "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {
     "@liskhq/lisk-cryptography": "^3.2.0",

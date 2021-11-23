@@ -53,43 +53,10 @@ const filterApis = (requiredApis, availableApis) => {
 };
 
 module.exports = filterApis(config.api.http, {
-	'http-version1': () => registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
-	'http-version2': () => registerApi('http-version2', { ...defaultConfig, path: '/v2' }),
-	'http-version1-compat': () => registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
 	'http-test': () => registerApi('http-test', { ...defaultConfig, path: '/test' }),
 	'http-status': () => registerApi('http-status', { ...defaultConfig, path: '/' }),
-	'http-exports': () => ({
-		...defaultConfig,
-		path: '/v2',
-
-		whitelist: [
-			'export.csv',
-		],
-
-		aliases: {
-			'GET /csv': 'export.csv',
-		},
-
-		onAfterCall(ctx, route, req, res, data) {
-			const {
-				$params: { address, publicKey, date },
-			} = req;
-
-			let filename = `${address}` || `${publicKey}`;
-			if (date) {
-				if (data.includes(':')) {
-					const [from, to] = date.split(':');
-					filename = `${filename}_${from}_${to}`;
-				} else {
-					filename = `${filename}_${date}`;
-				}
-			}
-
-			res.setHeader('Content-Disposition', `attachment; filename="${filename}.csv"`);
-			res.setHeader('Content-Type', 'text/csv');
-			res.end(data);
-		},
-
-		autoAliases: false,
-	}),
+	'http-version1': () => registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
+	'http-version1-compat': () => registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
+	'http-version2': () => registerApi('http-version2', { ...defaultConfig, path: '/v2' }),
+	'http-exports': () => registerApi('http-exports', { ...defaultConfig, path: '/v2' }),
 });

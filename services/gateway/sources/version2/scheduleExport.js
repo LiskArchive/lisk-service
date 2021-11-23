@@ -13,16 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const logger = require('lisk-service-framework').Logger();
+const exportInfo = require('./mappings/scheduleExport');
 
-module.exports = [
-	{
-		name: 'job.1',
-		description: 'Generic job template',
-		schedule: '* * * * *', // Every 1 min
-		controller: () => {
-			// const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			// logger.info(`Dummy job is done, processed ${operationResult.length} items`);
-		},
+module.exports = {
+	type: 'moleculer',
+	method: 'export.transactions.export',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		interval: '=,string',
 	},
-];
+	definition: {
+		data: exportInfo,
+		meta: {
+			ready: '=,boolean',
+		},
+		links: {},
+	},
+};

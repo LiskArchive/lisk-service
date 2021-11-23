@@ -64,6 +64,7 @@ services:
 
   mysql_core:
     image: mysql:8
+    platform: linux/amd64
     command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - mysql-data-core:/var/lib/mysql
@@ -161,6 +162,7 @@ services:
 
   mysql_newsfeed:
     image: mysql:8
+    platform: linux/amd64
     command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - mysql-data-newsfeed:/var/lib/mysql
