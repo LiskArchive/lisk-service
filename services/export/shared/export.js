@@ -238,20 +238,23 @@ const scheduleTransactionHistoryExport = async (params) => {
 	return exportResponse;
 };
 
-const downloadTransactionHistory = async (params) => {
-	const csv = {
+const downloadTransactionHistory = async ({ filename }) => {
+	const csvResponse = {
 		data: {},
 		meta: {
 			filename: '',
 		},
 	};
-	const dirPath = path.join(config.cache.exports.dirPath);
-	const staticFilePath = `${dirPath}/${params.filename}`;
 
-	if (!await fileStorage.exists(staticFilePath)) throw new NotFoundException(`File ${params.filename} not found.`);
-	csv.data = await fileStorage.read(staticFilePath);
-	csv.meta.filename = params.filename;
-	return csv;
+	const dirPath = path.join(config.cache.exports.dirPath);
+	const staticFilePath = `${dirPath}/${filename}`;
+
+	const isFileExists = await fileStorage.exists(staticFilePath);
+	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
+
+	csvResponse.data = await fileStorage.read(staticFilePath);
+	csvResponse.meta.filename = filename;
+	return csvResponse;
 };
 
 module.exports = {
