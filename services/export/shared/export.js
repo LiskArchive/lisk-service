@@ -14,6 +14,7 @@
  *
  */
 const moment = require('moment');
+const path = require('path');
 
 const {
 	Exceptions: { NotFoundException },
@@ -42,6 +43,7 @@ const {
 	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
+const fileStorage = require('./helpers/file');
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -236,7 +238,24 @@ const scheduleTransactionHistoryExport = async (params) => {
 	return exportResponse;
 };
 
+const downloadTransactionHistory = async (params) => {
+	const csv = {
+		data: {},
+		meta: {
+			filename: '',
+		},
+	};
+	const dirPath = path.join(__dirname, `${config.csv.paths.static}`);
+	const staticFilePath = `${dirPath}/${params.filename}`;
+
+	if (!await fileStorage.exists(staticFilePath)) throw new NotFoundException(`File ${params.filename} not found.`);
+	csv.data = await fileStorage.read(staticFilePath);
+	csv.meta.filename = params.filename;
+	return csv;
+};
+
 module.exports = {
 	exportTransactionsCSV,
 	scheduleTransactionHistoryExport,
+	downloadTransactionHistory,
 };

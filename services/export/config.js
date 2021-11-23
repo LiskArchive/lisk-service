@@ -56,5 +56,9 @@ config.csv = {};
 config.csv.delimiter = ';';
 config.csv.dateFormat = 'YYYY-MM-DD';
 config.csv.timeFormat = 'hh:mm:ss';
+config.csv.paths = {
+	partials: 'data/partials',
+	static: 'data/exports',
+};
 
 module.exports = config;

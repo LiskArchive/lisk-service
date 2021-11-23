@@ -13,10 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const exportInfo = require('./mappings/scheduleExport');
+
 module.exports = {
 	type: 'moleculer',
-	method: 'export.transactions.csv',
+	method: 'export.transactions.export',
 	params: {
-		filename: '=,string',
+		address: '=,string',
+		publicKey: '=,string',
+		interval: '=,string',
+	},
+	definition: {
+		data: exportInfo,
+		meta: {
+			ready: '=,boolean',
+		},
+		links: {},
 	},
 };

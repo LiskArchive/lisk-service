@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { scheduleTransactionHistoryExport } = require('./controllers/export');
+const {
+	scheduleTransactionHistoryExport,
+	downloadTransactionHistory,
+} = require('./controllers/export');
 
 module.exports = [
 	{
@@ -25,5 +28,13 @@ module.exports = [
 			interval: { type: 'string', optional: true },
 		},
 		controller: scheduleTransactionHistoryExport,
+	},
+	{
+		name: 'transactions.csv',
+		description: 'Get transaction history',
+		params: {
+			filename: { type: 'string', optional: false },
+		},
+		controller: downloadTransactionHistory,
 	},
 ];
