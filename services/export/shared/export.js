@@ -97,12 +97,12 @@ const normalizeTransaction = (address, tx) => {
 	};
 };
 
-const getDefaultStartDate = async () => '2016-01-01';
-
-const getToday = () => moment().format('YYYY-MM-DD');
-// const getYesterday = () => moment().subtract(1, 'days').format('YYYY-MM-DD');
-
+const DATE_FORMAT = 'YYYY-MM-DD';
 const MAX_NUM_TRANSACTIONS = 10000;
+
+const getDefaultStartDate = async () => moment('2016-01-01');
+
+const getToday = () => moment();
 
 const getTransactions = (queryParams) => requestAll(getAllTransactions,
 	queryParams, MAX_NUM_TRANSACTIONS);
@@ -125,20 +125,39 @@ const exportTransactionsCSV = async (params) => {
 	if (!from) from = await getDefaultStartDate();
 	if (!to) to = getToday();
 
-	let csv;
-	const file = `${address}_${from}_${to}.csv`;
+	from = moment(from);
+	to = moment(to);
 
-	if (await staticFiles.exists(file)) csv = await staticFiles.read(file);
+	let file = `${address}_${from.format(DATE_FORMAT)}_${to.format(DATE_FORMAT)}.json`;
+
+	if (to === getToday()) {
+		file = `${address}_${from.format(DATE_FORMAT)}_${moment(to).subtract(1, 'days').format('YYYY-MM-DD')}.json`;
+	}
+
+	let pastTransactions = [];
+	let todayTransactions = [];
+
+	if (await staticFiles.exists(file)) pastTransactions = JSON.parse(await staticFiles.read(file));
 	else {
-		const transactions = await getTransactions({
+		pastTransactions = await getTransactions({
 			address,
-			timestamp: `${moment(from).unix()}:${moment(to).unix()}`,
+			timestamp: `${from.unix()}:${moment(to).subtract(1, 'days').unix()}`,
 		});
 
-		csv = transactionsToCSV(transactions, address);
-
-		staticFiles.write(file, csv);
+		staticFiles.write(file, JSON.stringify(pastTransactions));
 	}
+
+	if (to.format(DATE_FORMAT) === getToday().format(DATE_FORMAT)) {
+		todayTransactions = await getTransactions({
+			address,
+			// Add 1 second to avoid overlapping time periods
+			timestamp: `${moment(from).subtract(1, 'days').add(1, 'second').unix()}:${to.unix()}`,
+		});
+	}
+
+	pastTransactions.push(...todayTransactions);
+
+	const csv = transactionsToCSV(pastTransactions);
 
 	return csv;
 };
