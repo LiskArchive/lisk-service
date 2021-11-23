@@ -68,7 +68,7 @@ const getTransactionsInAsc = async (params) => getTransactions({
 const validateIfAccountExists = async (params) => {
 	const address = getAddressFromParams(params);
 	const accResponse = await getAccounts({ address }).catch(_ => _);
-	return (!accResponse.data || !accResponse.data.length);
+	return (accResponse.data && accResponse.data.length);
 };
 
 const validateIfAccountHasTransactions = async (params) => {
