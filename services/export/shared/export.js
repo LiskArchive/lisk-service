@@ -57,6 +57,14 @@ const getAllTransactions = async (params) => requestRpc(
 	},
 );
 
+const getFirstBlock = async () => requestRpc(
+	'core.blocks',
+	{
+		limit: 1,
+		sort: 'height:asc',
+	},
+);
+
 const parseTransactionsToCsv = (json) => {
 	const opts = { delimiter: config.csv.delimiter, fields };
 	return parseJsonToCsv(opts, json);
@@ -100,7 +108,10 @@ const normalizeTransaction = (address, tx) => {
 const DATE_FORMAT = 'YYYY-MM-DD';
 const MAX_NUM_TRANSACTIONS = 10000;
 
-const getDefaultStartDate = async () => moment('2016-01-01');
+const getDefaultStartDate = async () => {
+	const block = await getFirstBlock();
+	return moment(block.data[0].timestamp * 1000);
+};
 
 const getToday = () => moment();
 
