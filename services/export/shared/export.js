@@ -49,15 +49,16 @@ const requestAll = require('./requestAll');
 
 const getAccounts = async (params) => requestRpc('core.accounts', params);
 
+const getTransactions = async (params) => requestRpc('core.transactions', params);
+
 const getAddressFromParams = (params) => params.address || getBase32AddressFromPublicKey(params.publicKey);
 
-const getAllTransactions = async (params) => requestRpc(
-	'core.transactions',
-	{
-		senderIdOrRecipientId: params.address,
-		sort: 'timestamp:asc',
-	},
-);
+const getTransactionsInAsc = async (params) => getTransactions({
+	senderIdOrRecipientId: getAddressFromParams(params),
+	sort: 'timestamp:asc',
+	limit: params.limit || 10,
+	offset: params.offset || 0,
+});
 
 const parseTransactionsToCsv = (json) => {
 	const opts = { delimiter: config.csv.delimiter, fields };
@@ -135,7 +136,7 @@ const exportTransactionsCSV = async (params) => {
 	};
 
 	const MAX_NUM_TRANSACTIONS = 10000;
-	const transactions = await requestAll(getAllTransactions, params, MAX_NUM_TRANSACTIONS);
+	const transactions = await requestAll(getTransactionsInAsc, params, MAX_NUM_TRANSACTIONS);
 
 	// Sort transactions in ascending by their timestamp
 	// Redundant, remove it???
