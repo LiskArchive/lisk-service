@@ -14,6 +14,11 @@
  *
  */
 const moment = require('moment');
+const path = require('path');
+
+const {
+	Exceptions: { NotFoundException },
+} = require('lisk-service-framework');
 
 const {
 	requestRpc,
@@ -32,29 +37,28 @@ const {
 	timeFromTimestamp,
 } = require('./helpers/time');
 
-const FilesystemCache = require('./csvCache');
-
 const {
 	normalizeTransactionAmount,
 	normalizeTransactionFee,
 	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
+const fileStorage = require('./helpers/file');
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
 const requestAll = require('./requestAll');
+const FilesystemCache = require('./csvCache');
 
 const partials = FilesystemCache(config.cache.partials);
+const staticFiles = FilesystemCache(config.cache.exports);
 
-const getAllTransactions = async (params) => requestRpc(
-	'core.transactions',
-	{
-		senderIdOrRecipientId: params.address,
-		sort: 'timestamp:asc',
-		timestamp: params.timestamp,
-	},
-);
+const DATE_FORMAT = config.csv.dateFormat;
+const MAX_NUM_TRANSACTIONS = 10000;
+
+const getAccounts = async (params) => requestRpc('core.accounts', params);
+
+const getTransactions = async (params) => requestRpc('core.transactions', params);
 
 const getFirstBlock = async () => requestRpc(
 	'core.blocks',
@@ -64,9 +68,77 @@ const getFirstBlock = async () => requestRpc(
 	},
 );
 
-const parseTransactionsToCsv = (json) => {
-	const opts = { delimiter: config.csv.delimiter, fields };
-	return parseJsonToCsv(opts, json);
+const getAddressFromParams = (params) => params.address
+	|| getBase32AddressFromPublicKey(params.publicKey);
+
+const getTransactionsInAsc = async (params) => getTransactions({
+	senderIdOrRecipientId: getAddressFromParams(params),
+	sort: 'timestamp:asc',
+	timestamp: params.timestamp,
+	limit: params.limit || 10,
+	offset: params.offset || 0,
+});
+
+const validateIfAccountExists = async (params) => {
+	const address = getAddressFromParams(params);
+	const accResponse = await getAccounts({ address }).catch(_ => _);
+	return (accResponse.data && accResponse.data.length);
+};
+
+const validateIfAccountHasTransactions = async (params) => {
+	const response = await getTransactions({
+		senderIdOrRecipientId: getAddressFromParams(params),
+		limit: 1,
+	});
+	return !!response.data.length;
+};
+
+const getDefaultStartDate = async () => {
+	const { data: [block] } = await getFirstBlock();
+	return moment(block.timestamp * 1000).format(DATE_FORMAT);
+};
+
+const getToday = () => moment().format(DATE_FORMAT);
+
+const standardizeIntervalFromParams = async ({ interval }) => {
+	let from;
+	let to;
+	if (interval && interval.includes(':')) {
+		[from, to] = interval.split(':');
+	} else if (interval) {
+		from = interval;
+		to = getToday();
+	} else {
+		from = await getDefaultStartDate();
+		to = getToday();
+	}
+	return `${from}:${to}`;
+};
+
+const getPartialFilenameFromParams = async (params) => {
+	const address = getAddressFromParams(params);
+	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
+
+	const filename = (to === getToday())
+		? `${address}_${from}_${moment(to, DATE_FORMAT).subtract(1, 'days').format(DATE_FORMAT)}.json`
+		: `${address}_${from}_${to}.json`;
+	return filename;
+};
+
+const getCsvFilenameFromParams = async (params) => {
+	const address = getAddressFromParams(params);
+	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
+
+	const filename = `transactions_${address}_${from}_${to}.csv`;
+	return filename;
+};
+
+const getCsvFileUrlFromParams = async (params) => {
+	const filename = await getCsvFilenameFromParams(params);
+
+	// TODO: Base URL on config for filesystem or S3
+	const url = `/api/v2/exports/${filename}`;
+	return url;
 };
 
 const normalizeTransaction = (address, tx) => {
@@ -104,18 +176,10 @@ const normalizeTransaction = (address, tx) => {
 	};
 };
 
-const DATE_FORMAT = 'YYYY-MM-DD';
-const MAX_NUM_TRANSACTIONS = 10000;
-
-const getDefaultStartDate = async () => {
-	const block = await getFirstBlock();
-	return moment(block.data[0].timestamp * 1000);
+const parseTransactionsToCsv = (json) => {
+	const opts = { delimiter: config.csv.delimiter, fields };
+	return parseJsonToCsv(opts, json);
 };
-
-const getToday = () => moment();
-
-const getTransactions = (queryParams) => requestAll(getAllTransactions,
-	queryParams, MAX_NUM_TRANSACTIONS);
 
 const transactionsToCSV = (transactions, address) => {
 	// Add duplicate entry with zero fees for self token transfer transactions
@@ -129,49 +193,126 @@ const transactionsToCSV = (transactions, address) => {
 };
 
 const exportTransactionsCSV = async (params) => {
-	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
-	let { from, to } = params;
+	const exportCsvResponse = {
+		data: {},
+		meta: {},
+	};
 
-	if (!from) from = await getDefaultStartDate();
-	if (!to) to = getToday();
+	const address = getAddressFromParams(params);
 
-	from = moment(from);
-	to = moment(to);
+	// Validate if account exists
+	const isAccountExists = await validateIfAccountExists(params);
+	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
 
-	let file = `${address}_${from.format(DATE_FORMAT)}_${to.format(DATE_FORMAT)}.json`;
-
-	if (to === getToday()) {
-		file = `${address}_${from.format(DATE_FORMAT)}_${moment(to).subtract(1, 'days').format('YYYY-MM-DD')}.json`;
-	}
+	// Validate if account has transactions
+	const isAccountHasTransactions = await validateIfAccountHasTransactions({ address });
+	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
 
 	let pastTransactions = [];
 	let todayTransactions = [];
 
-	if (await partials.exists(file)) pastTransactions = JSON.parse(await partials.read(file));
-	else {
-		pastTransactions = await getTransactions({
-			address,
-			timestamp: `${from.unix()}:${moment(to).subtract(1, 'days').unix()}`,
-		});
+	const partialFilename = await getPartialFilenameFromParams(params);
+	if (await partials.exists(partialFilename)) {
+		pastTransactions = JSON.parse(await partials.read(partialFilename));
+	} else {
+		const interval = await standardizeIntervalFromParams(params);
+		const [from, to] = interval.split(':');
 
-		partials.write(file, JSON.stringify(pastTransactions));
-	}
+		const fromTimestampPast = moment(from, DATE_FORMAT).unix();
+		const toTimestampPast = moment(to, DATE_FORMAT).subtract(1, 'days').unix();
+		pastTransactions = await requestAll(
+			getTransactionsInAsc,
+			{
+				...params,
+				timestamp: `${fromTimestampPast}:${toTimestampPast}`,
+			},
+			MAX_NUM_TRANSACTIONS,
+		);
+		partials.write(partialFilename, JSON.stringify(pastTransactions));
 
-	if (to.format(DATE_FORMAT) === getToday().format(DATE_FORMAT)) {
-		todayTransactions = await getTransactions({
-			address,
+		if (to === getToday()) {
 			// Add 1 second to avoid overlapping time periods
-			timestamp: `${moment(from).subtract(1, 'days').add(1, 'second').unix()}:${to.unix()}`,
-		});
+			const fromTimestampToday = moment(from, DATE_FORMAT).subtract(1, 'days').add(1, 'second').unix();
+			const toTimestampToday = moment(to, DATE_FORMAT).unix();
+			todayTransactions = await requestAll(
+				getTransactionsInAsc,
+				{
+					...params,
+					timestamp: `${fromTimestampToday}:${toTimestampToday}`,
+				},
+				MAX_NUM_TRANSACTIONS,
+			);
+			pastTransactions.push(...todayTransactions);
+		}
 	}
 
-	pastTransactions.push(...todayTransactions);
-
+	const csvFilename = await getCsvFilenameFromParams(params);
 	const csv = transactionsToCSV(pastTransactions);
+	staticFiles.write(csvFilename, csv);
 
-	return csv;
+	// Set the response object
+	exportCsvResponse.data = csv;
+	exportCsvResponse.meta.filename = csvFilename;
+
+	return exportCsvResponse;
+};
+
+const scheduleTransactionHistoryExport = async (params) => {
+	const exportResponse = {
+		data: {},
+		meta: {
+			ready: false,
+		},
+	};
+
+	const { publicKey } = params;
+	const address = getAddressFromParams(params);
+
+	// Validate if account exists
+	const isAccountExists = await validateIfAccountExists(params);
+	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
+
+	// Validate if account has transactions
+	const isAccountHasTransactions = await validateIfAccountHasTransactions({ address });
+	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
+
+	exportResponse.data.address = address;
+	exportResponse.data.publicKey = publicKey;
+	exportResponse.data.interval = await standardizeIntervalFromParams(params);
+
+	const csvFilename = await getCsvFilenameFromParams(params);
+	if (await staticFiles.exists(csvFilename)) {
+		exportResponse.data.fileName = csvFilename;
+		exportResponse.data.fileUrl = await getCsvFileUrlFromParams(params);
+		exportResponse.meta.ready = true;
+	} else {
+		// TODO: Add scheduling logic
+		exportTransactionsCSV(params);
+		exportResponse.status = 'ACCEPTED';
+	}
+
+	return exportResponse;
+};
+
+const downloadTransactionHistory = async ({ filename }) => {
+	const csvResponse = {
+		data: {},
+		meta: {},
+	};
+
+	const dirPath = path.join(config.cache.exports.dirPath);
+	const staticFilePath = `${dirPath}/${filename}`;
+
+	const isFileExists = await fileStorage.exists(staticFilePath);
+	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
+
+	csvResponse.data = await fileStorage.read(staticFilePath);
+	csvResponse.meta.filename = filename;
+	return csvResponse;
 };
 
 module.exports = {
 	exportTransactionsCSV,
+	scheduleTransactionHistoryExport,
+	downloadTransactionHistory,
 };

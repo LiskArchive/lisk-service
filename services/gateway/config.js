@@ -69,8 +69,8 @@ config.api.ws = process.env.ENABLE_WS_API || 'rpc,rpc-v1,blockchain,rpc-v2';
  * API versions
  */
 config.api.versions = {
-	'/api/v1': 'http-version1',
-	'/api/v2': 'http-version2',
+	'/api/v1': ['http-version1'],
+	'/api/v2': ['http-version2', 'http-exports'],
 };
 
 /**

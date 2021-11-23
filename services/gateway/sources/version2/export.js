@@ -13,24 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { ServiceUnavailableException },
-} = require('lisk-service-framework');
-
-const exportService = require('../../shared/csvExport');
-
-const exportTransactionsCSV = async (params) => {
-	try {
-		const csv = await exportService.exportTransactionsCSV(params);
-		return csv;
-	} catch (err) {
-		let status;
-		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
-		if (status) return { status, data: { error: err.message } };
-		throw err;
-	}
-};
-
 module.exports = {
-	exportTransactionsCSV,
+	type: 'moleculer',
+	method: 'export.transactions.csv',
+	params: {
+		filename: '=,string',
+	},
 };
