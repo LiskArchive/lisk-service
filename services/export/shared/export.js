@@ -97,39 +97,46 @@ const normalizeTransaction = (address, tx) => {
 	};
 };
 
+const getDefaultStartDate = async () => '2016-01-01';
+
+const getToday = () => moment().format('YYYY-MM-DD');
+// const getYesterday = () => moment().subtract(1, 'days').format('YYYY-MM-DD');
+
+const MAX_NUM_TRANSACTIONS = 10000;
+
+const getTransactions = (queryParams) => requestAll(getAllTransactions,
+	queryParams, MAX_NUM_TRANSACTIONS);
+
+const transactionsToCSV = (transactions, address) => {
+	// Add duplicate entry with zero fees for self token transfer transactions
+	transactions.forEach((tx, i, arr) => {
+		if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
+			arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
+		}
+	});
+
+	return parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
+};
+
 const exportTransactionsCSV = async (params) => {
-	const MAX_NUM_TRANSACTIONS = 10000;
+	const address = params.address || getBase32AddressFromPublicKey(params.publicKey);
+	let { from, to } = params;
 
-	let { address, from, to } = params;
+	if (!from) from = await getDefaultStartDate();
+	if (!to) to = getToday();
 
-	if (!from) from = '2016-01-01';
-	if (!to) to = moment().format('YYYY-MM-DD');
-
-	// TODO: This function allows empty param address and throws an error
 	let csv;
 	const file = `${address}_${from}_${to}.csv`;
 
 	if (await staticFiles.exists(file)) csv = await staticFiles.read(file);
 	else {
-		const queryParams = {
+		const transactions = await getTransactions({
 			address,
 			timestamp: `${moment(from).unix()}:${moment(to).unix()}`,
-		};
-		const transactions = await requestAll(getAllTransactions, queryParams, MAX_NUM_TRANSACTIONS);
-
-		// Sort transactions in ascending by their timestamp
-		// Redundant, remove it???
-		transactions.sort((t1, t2) => t1.unixTimestamp - t2.unixTimestamp);
-
-		// Add duplicate entry with zero fees for self token transfer transactions
-		transactions.forEach((tx, i, arr) => {
-			if (checkIfSelfTokenTransfer(tx) && !tx.isSelfTokenTransferCredit) {
-				arr.splice(i + 1, 0, { ...tx, fee: '0', isSelfTokenTransferCredit: true });
-			}
 		});
 
-		address = params.address || getBase32AddressFromPublicKey(params.publicKey);
-		csv = parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
+		csv = transactionsToCSV(transactions, address);
+
 		staticFiles.write(file, csv);
 	}
 
