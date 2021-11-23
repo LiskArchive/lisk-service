@@ -200,7 +200,8 @@ const downloadTransactionHistory = async (params) => {
 			filename: '',
 		},
 	};
-	const staticFilePath = path.join(__dirname, `${config.csv.paths.static}/${params.filename}`);
+	const dirPath = path.join(__dirname, `${config.csv.paths.static}`);
+	const staticFilePath = `${dirPath}/${params.filename}`;
 
 	if (!await fileStorage.exists(staticFilePath)) throw new NotFoundException(`File ${params.filename} not found.`);
 	csv.data = await fileStorage.read(staticFilePath);
