@@ -19,6 +19,12 @@ const config = {};
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
+/**
+ * External endpoints
+ */
+config.endpoints = {};
+config.endpoints.redis = process.env.SERVICE_EXPORT_REDIS || 'redis://localhost:6379/3';
+
 config.cache = {};
 config.cache.partials = { dirPath: process.env.SERVICE_EXPORT_PARTIALS || './data/partials', retentionInDays: 30 };
 config.cache.exports = { dirPath: process.env.SERVICE_EXPORT_STATIC || './data/static', retentionInDays: 30 };
@@ -56,5 +62,16 @@ config.csv = {};
 config.csv.delimiter = ';';
 config.csv.dateFormat = 'YYYY-MM-DD';
 config.csv.timeFormat = 'hh:mm:ss';
+
+config.queue = {
+	defaults: {
+		defaultJobOptions: {
+			attempts: 5,
+			timeout: 5 * 60 * 1000, // millisecs
+			removeOnComplete: true,
+		},
+		settings: {},
+	},
+};
 
 module.exports = config;
