@@ -124,13 +124,14 @@ const read = async (fileName) => new Promise((resolve, reject) => {
 		});
 });
 
-const remove = async (fileName) => new Promise((resolve, reject) => {
-	minioClient.removeObject(
+const remove = async (file) => new Promise((resolve, reject) => {
+	const files = Array.isArray(file) ? file : [file];
+	minioClient.removeObjects(
 		AWS_S3_BUCKET_NAME,
-		fileName,
+		files,
 		(err) => {
-			if (err) return reject(`Unable to remove file ${fileName}`);
-			resolve(`Successfully to removed file ${fileName}`);
+			if (err) return reject('Unable to removed the requested file(s)');
+			resolve('Successfully to removed reqzested the file(s)');
 		});
 });
 
@@ -163,7 +164,7 @@ const purge = async (dirPath, days) => new Promise((resolve, reject) => {
 	stream.on('error', (err) => reject(`Error while purging: ${err}`));
 	stream.on('end', async () => {
 		const eligibleFiles = await filterEligibleFilesForPurging(fileInfoList, days);
-		Promise.all(eligibleFiles.map(f => remove(f)))
+		remove(eligibleFiles)
 			.then(() => resolve(`Successfully removed ${eligibleFiles.length} files.`))
 			.catch((err) => reject(err));
 	});
@@ -179,12 +180,12 @@ const init = async (params) => createDir(params.dirPath);
 
 // TODO: Remove test code
 // createDir()
-// write('test.json', { a: 1 })
-// read('test1.json')
-// remove('test1.json')
-// list()
-// exists('test1.json')
-purge('', 0)
+write('test.json', { a: 1 })
+	// read('test.json')
+	// remove('test1.json')
+	// list()
+	// exists('test.json')
+	// purge('', 0)
 	.then(res => console.log(typeof res, res))
 	.catch(err => console.error(err));
 
