@@ -67,16 +67,16 @@ const createDir = async (dirPath, options) => new Promise((resolve, reject) => {
 	minioClient.bucketExists(
 		AWS_S3_BUCKET_NAME,
 		(errBucketExists, isExists) => {
-			if (errBucketExists) reject(errBucketExists);
-			if (isExists) resolve(`Bucket ${AWS_S3_BUCKET_NAME} already exists in region '${AWS_S3_REGION}'.`);
+			if (errBucketExists) return reject(errBucketExists);
+			if (isExists) return resolve(`Bucket ${AWS_S3_BUCKET_NAME} already exists in region '${AWS_S3_REGION}'.`);
 
-			minioClient.makeBucket(
+			return minioClient.makeBucket(
 				AWS_S3_BUCKET_NAME,
 				AWS_S3_REGION,
 				(errMakeBucket, data) => {
-					if (errMakeBucket) reject(errMakeBucket);
+					if (errMakeBucket) return reject(errMakeBucket);
 					logger.info(data);
-					resolve(`Bucket '${AWS_S3_BUCKET_NAME}' created successfully in region '${AWS_S3_REGION}'.`);
+					return resolve(`Bucket '${AWS_S3_BUCKET_NAME}' created successfully in region '${AWS_S3_REGION}'.`);
 				},
 			);
 		},
@@ -99,8 +99,8 @@ const write = async (fileName, content) => new Promise((resolve, reject) => {
 		fileName,
 		stream,
 		(err, objInfo) => {
-			if (err) reject(err);
-			resolve(`Successfully wrote file ${fileName}`, objInfo);
+			if (err) return reject(err);
+			return resolve(`Successfully wrote file ${fileName}`, objInfo);
 		},
 	);
 });
@@ -111,16 +111,17 @@ const read = async (fileName) => new Promise((resolve, reject) => {
 		fileName,
 		(errGetObject, stream) => {
 			if (errGetObject) reject(errGetObject);
-
-			const chunks = [];
-			stream.on('data', (chunk) => chunks.push(chunk));
-			stream.on('error', (errorStream) => reject(errorStream));
-			stream.on('end', () => {
-				const contentString = Buffer.concat(chunks).toString('utf8');
-				new Promise((innerResolve) => innerResolve(JSON.parse(contentString)))
-					.then(json => resolve(json))
-					.catch(() => resolve(contentString));
-			});
+			else {
+				const chunks = [];
+				stream.on('data', (chunk) => chunks.push(chunk));
+				stream.on('error', (errorStream) => reject(errorStream));
+				stream.on('end', () => {
+					const contentString = Buffer.concat(chunks).toString('utf8');
+					new Promise((innerResolve) => innerResolve(JSON.parse(contentString)))
+						.then(json => resolve(json))
+						.catch(() => resolve(contentString));
+				});
+			}
 		});
 });
 
