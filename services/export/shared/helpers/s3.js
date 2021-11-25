@@ -66,17 +66,17 @@ const createDir = async (dirPath, options) => new Promise((resolve, reject) => {
 	// Check if bucket exists, create if not exist
 	minioClient.bucketExists(
 		AWS_S3_BUCKET_NAME,
-		(err, isExists) => {
-			if (err) return reject('Error creating bucket.', err);
-			if (isExists) return resolve(`Bucket ${AWS_S3_BUCKET_NAME} already exists in region '${AWS_S3_REGION}'.`);
+		(errBucketExists, isExists) => {
+			if (errBucketExists) reject(errBucketExists);
+			if (isExists) resolve(`Bucket ${AWS_S3_BUCKET_NAME} already exists in region '${AWS_S3_REGION}'.`);
 
 			minioClient.makeBucket(
 				AWS_S3_BUCKET_NAME,
 				AWS_S3_REGION,
-				(err, data) => {
-					if (err) return reject('Error creating bucket.', err);
+				(errMakeBucket, data) => {
+					if (errMakeBucket) reject(errMakeBucket);
 					logger.info(data);
-					return resolve(`Bucket '${AWS_S3_BUCKET_NAME}' created successfully in region '${AWS_S3_REGION}'`);
+					resolve(`Bucket '${AWS_S3_BUCKET_NAME}' created successfully in region '${AWS_S3_REGION}'.`);
 				},
 			);
 		},
@@ -99,8 +99,8 @@ const write = async (fileName, content) => new Promise((resolve, reject) => {
 		fileName,
 		stream,
 		(err, objInfo) => {
-			if (err) return reject(err);
-			return resolve(`Successfully wrote file ${fileName}`, objInfo);
+			if (err) reject(err);
+			resolve(`Successfully wrote file ${fileName}`, objInfo);
 		},
 	);
 });
@@ -109,17 +109,17 @@ const read = async (fileName) => new Promise((resolve, reject) => {
 	minioClient.getObject(
 		AWS_S3_BUCKET_NAME,
 		fileName,
-		(err, stream) => {
-			if (err) return reject(err);
+		(errGetObject, stream) => {
+			if (errGetObject) reject(errGetObject);
 
 			const chunks = [];
 			stream.on('data', (chunk) => chunks.push(chunk));
-			stream.on('error', (err) => reject(err));
+			stream.on('error', (errorStream) => reject(errorStream));
 			stream.on('end', () => {
 				const contentString = Buffer.concat(chunks).toString('utf8');
 				new Promise((innerResolve) => innerResolve(JSON.parse(contentString)))
 					.then(json => resolve(json))
-					.catch(_ => resolve(contentString));
+					.catch(() => resolve(contentString));
 			});
 		});
 });
@@ -130,8 +130,8 @@ const remove = async (file) => new Promise((resolve, reject) => {
 		AWS_S3_BUCKET_NAME,
 		files,
 		(err) => {
-			if (err) return reject('Unable to removed the requested file(s)');
-			resolve('Successfully to removed reqzested the file(s)');
+			if (err) reject(err);
+			resolve('Successfully to removed the requested file(s)');
 		});
 });
 
@@ -149,7 +149,7 @@ const filterEligibleFilesForPurging = async (fileInfoList, days) => {
 
 	// Filter out files older than `days` days
 	const filteredFileInfoList = fileInfoList
-		.filter(file => deleteBeforeMoment.diff(moment(file.lastModified)) >= 0 ? true : false);
+		.filter(file => deleteBeforeMoment.diff(moment(file.lastModified)) >= 0);
 	const eligibleFiles = filteredFileInfoList.map(f => f.name);
 	return eligibleFiles;
 };
@@ -161,7 +161,7 @@ const purge = async (dirPath, days) => new Promise((resolve, reject) => {
 	const fileInfoList = [];
 	const stream = minioClient.listObjects(AWS_S3_BUCKET_NAME);
 	stream.on('data', (info) => fileInfoList.push(info));
-	stream.on('error', (err) => reject(`Error while purging: ${err}`));
+	stream.on('error', (err) => reject(err));
 	stream.on('end', async () => {
 		const eligibleFiles = await filterEligibleFilesForPurging(fileInfoList, days);
 		remove(eligibleFiles)
@@ -179,11 +179,13 @@ const exists = async (fileName) => new Promise((resolve) => {
 const init = async (params) => createDir(params.dirPath);
 
 // TODO: Remove test code
+/* eslint-disable no-console */
+
 // createDir()
-write('test.json', { a: 1 })
-	// read('test.json')
-	// remove('test1.json')
-	// list()
+// write('test.json', { a: 1 })
+// read('test.json')
+// remove('test2.json')
+list()
 	// exists('test.json')
 	// purge('', 0)
 	.then(res => console.log(typeof res, res))
