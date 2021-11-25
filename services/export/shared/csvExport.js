@@ -27,6 +27,8 @@ const {
 	requestRpc,
 } = require('./rpcBroker');
 
+const Queue = require('./queue');
+
 const {
 	getBase32AddressFromPublicKey,
 } = require('./helpers/account');
@@ -195,7 +197,8 @@ const transactionsToCSV = (transactions, address) => {
 	return parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
 };
 
-const exportTransactionsCSV = async (params) => {
+const exportTransactionsCSV = async (job) => {
+	const { params } = job.data;
 	const exportCsvResponse = {
 		data: {},
 		meta: {},
@@ -268,6 +271,8 @@ const exportTransactionsCSV = async (params) => {
 	return exportCsvResponse;
 };
 
+const scheduleTransactionQueue = Queue('scheduleTransactionQueue', exportTransactionsCSV, 50);
+
 const scheduleTransactionHistoryExport = async (params) => {
 	const exportResponse = {
 		data: {},
@@ -298,7 +303,8 @@ const scheduleTransactionHistoryExport = async (params) => {
 		exportResponse.meta.ready = true;
 	} else {
 		// TODO: Add scheduling logic
-		exportTransactionsCSV(params);
+		await scheduleTransactionQueue.add({ params });
+		// exportTransactionsCSV(params);
 		exportResponse.status = 'ACCEPTED';
 	}
 
