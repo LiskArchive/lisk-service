@@ -57,4 +57,13 @@ config.csv.delimiter = ';';
 config.csv.dateFormat = 'YYYY-MM-DD';
 config.csv.timeFormat = 'hh:mm:ss';
 
+// Amazon S3 config
+config.s3 = {};
+config.s3.endPoint = process.env.EXPORT_S3_ENDPOINT || 's3.amazonaws.com'; // Optional
+config.s3.accessKey = process.env.EXPORT_S3_ACCESS_KEY;
+config.s3.secretKey = process.env.EXPORT_S3_SECRET_KEY; // Optional
+config.s3.sessionToken = process.env.EXPORT_S3_SESSION_TOKEN;
+config.s3.region = process.env.EXPORT_S3_REGION || 'eu-central-1'; // Default: Europe (Frankfurt)
+config.s3.bucketName = process.env.EXPORT_S3_BUCKET_NAME || 'export';
+
 module.exports = config;
