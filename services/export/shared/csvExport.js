@@ -17,7 +17,10 @@ const moment = require('moment');
 const path = require('path');
 
 const {
-	Exceptions: { NotFoundException },
+	Exceptions: {
+		NotFoundException,
+		ValidationException,
+	},
 } = require('lisk-service-framework');
 
 const {
@@ -104,6 +107,7 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 	let to;
 	if (interval && interval.includes(':')) {
 		[from, to] = interval.split(':');
+		if (from && to && (moment(to).diff(moment(from))) < 0) throw new ValidationException('Invalid interval');
 	} else if (interval) {
 		from = interval;
 		to = getToday();
