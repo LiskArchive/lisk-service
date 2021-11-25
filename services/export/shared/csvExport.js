@@ -43,7 +43,6 @@ const {
 	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
-const fileStorage = require('./helpers/file');
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -303,10 +302,10 @@ const downloadTransactionHistory = async ({ filename }) => {
 	const dirPath = path.join(config.cache.exports.dirPath);
 	const staticFilePath = `${dirPath}/${filename}`;
 
-	const isFileExists = await fileStorage.exists(staticFilePath);
+	const isFileExists = await staticFiles.exists(staticFilePath);
 	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
 
-	csvResponse.data = await fileStorage.read(staticFilePath);
+	csvResponse.data = await staticFiles.read(staticFilePath);
 	csvResponse.meta.filename = filename;
 	return csvResponse;
 };
