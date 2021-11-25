@@ -218,11 +218,19 @@ const exportTransactionsCSV = async (params) => {
 	if (await partials.exists(partialFilename)) {
 		pastTransactions = JSON.parse(await partials.read(partialFilename));
 	} else {
+		let fromTimestampPast;
+		let toTimestampPast;
 		const interval = await standardizeIntervalFromParams(params);
 		const [from, to] = interval.split(':');
 
-		const fromTimestampPast = moment(from, DATE_FORMAT).unix();
-		const toTimestampPast = moment(to, DATE_FORMAT).subtract(1, 'days').unix();
+		if (from === to) {
+			fromTimestampPast = moment(fromTimestampPast).startOf('day').unix();
+			toTimestampPast = moment(toTimestampPast).endOf('day').unix();
+		} else {
+			fromTimestampPast = moment(from, DATE_FORMAT).unix();
+			toTimestampPast = moment(to, DATE_FORMAT).subtract(1, 'days').unix();
+		}
+
 		pastTransactions = await requestAll(
 			getTransactionsInAsc,
 			{
