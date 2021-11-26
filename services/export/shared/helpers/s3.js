@@ -29,13 +29,13 @@ const config = require('../../config');
 
 const logger = Logger();
 
-// Necessary constants
+// Necessary constants/variables
 const AWS_S3_ENDPOINT = config.s3.endPoint;
 const AWS_S3_ACCESS_KEY = config.s3.accessKey;
 const AWS_S3_SECRET_KEY = config.s3.secretKey;
 const AWS_S3_SESSION_TOKEN = config.s3.sessionToken;
 const AWS_S3_REGION = config.s3.region;
-const AWS_S3_BUCKET_NAME = config.s3.bucketName;
+let AWS_S3_BUCKET_NAME = config.s3.bucketNameDefault;
 
 // Set up the Minio client
 const minioClientParams = {
@@ -177,20 +177,10 @@ const exists = async (fileName) => new Promise((resolve) => {
 		.catch(() => resolve(false));
 });
 
-const init = async (params) => createDir(params.dirPath);
-
-// TODO: Remove test code
-/* eslint-disable no-console */
-
-// createDir()
-// write('test.json', { a: 1 })
-// read('test.json')
-// remove('test2.json')
-list()
-	// exists('test.json')
-	// purge('', 0)
-	.then(res => console.log(typeof res, res))
-	.catch(err => console.error(err));
+const init = async ({ s3 }) => {
+	if (s3 && s3.bucketName) AWS_S3_BUCKET_NAME = s3.bucketName;
+	return createDir();
+};
 
 module.exports = {
 	write,
