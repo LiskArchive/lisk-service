@@ -14,7 +14,6 @@
  *
  */
 const moment = require('moment');
-const path = require('path');
 
 const {
 	Exceptions: {
@@ -204,16 +203,6 @@ const exportTransactionsCSV = async (job) => {
 		meta: {},
 	};
 
-	const address = getAddressFromParams(params);
-
-	// Validate if account exists
-	const isAccountExists = await validateIfAccountExists(params);
-	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
-
-	// Validate if account has transactions
-	const isAccountHasTransactions = await validateIfAccountHasTransactions({ address });
-	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
-
 	let pastTransactions = [];
 	let todayTransactions = [];
 
@@ -317,13 +306,10 @@ const downloadTransactionHistory = async ({ filename }) => {
 		meta: {},
 	};
 
-	const dirPath = path.join(config.cache.exports.dirPath);
-	const staticFilePath = `${dirPath}/${filename}`;
-
-	const isFileExists = await staticFiles.exists(staticFilePath);
+	const isFileExists = await staticFiles.exists(filename);
 	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
 
-	csvResponse.data = await staticFiles.read(staticFilePath);
+	csvResponse.data = await staticFiles.read(filename);
 	csvResponse.meta.filename = filename;
 	return csvResponse;
 };
