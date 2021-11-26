@@ -108,7 +108,9 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 	let to;
 	if (interval && interval.includes(':')) {
 		[from, to] = interval.split(':');
-		if (from && to && (moment(to).diff(moment(from))) < 0) throw new ValidationException('Invalid interval');
+		if ((moment(to, DATE_FORMAT).diff(moment(from, DATE_FORMAT))) < 0) {
+			throw new ValidationException(`Invalid interval: ${interval}`);
+		}
 	} else if (interval) {
 		from = interval;
 		to = getToday();
@@ -198,10 +200,6 @@ const transactionsToCSV = (transactions, address) => {
 
 const exportTransactionsCSV = async (job) => {
 	const { params } = job.data;
-	const exportCsvResponse = {
-		data: {},
-		meta: {},
-	};
 
 	let pastTransactions = [];
 	let todayTransactions = [];
@@ -210,18 +208,12 @@ const exportTransactionsCSV = async (job) => {
 	if (await partials.exists(partialFilename)) {
 		pastTransactions = JSON.parse(await partials.read(partialFilename));
 	} else {
-		let fromTimestampPast;
-		let toTimestampPast;
 		const interval = await standardizeIntervalFromParams(params);
 		const [from, to] = interval.split(':');
-
-		if (from === to) {
-			fromTimestampPast = moment(fromTimestampPast).startOf('day').unix();
-			toTimestampPast = moment(toTimestampPast).endOf('day').unix();
-		} else {
-			fromTimestampPast = moment(from, DATE_FORMAT).unix();
-			toTimestampPast = moment(to, DATE_FORMAT).subtract(1, 'days').unix();
-		}
+		const fromTimestampPast = moment(from, DATE_FORMAT).unix();
+		const toTimestampPast = (from === to)
+			? moment(to, DATE_FORMAT).endOf('day').unix()
+			: moment(to, DATE_FORMAT).subtract(1, 'days').endOf('day').unix();
 
 		pastTransactions = await requestAll(
 			getTransactionsInAsc,
@@ -231,12 +223,12 @@ const exportTransactionsCSV = async (job) => {
 			},
 			MAX_NUM_TRANSACTIONS,
 		);
-		partials.write(partialFilename, JSON.stringify(pastTransactions));
+		await partials.write(partialFilename, JSON.stringify(pastTransactions));
 
 		if (to === getToday()) {
 			// Add 1 second to avoid overlapping time periods
 			const fromTimestampToday = moment(from, DATE_FORMAT).subtract(1, 'days').add(1, 'second').unix();
-			const toTimestampToday = moment(to, DATE_FORMAT).unix();
+			const toTimestampToday = moment(to, DATE_FORMAT).endOf('day').unix();
 			todayTransactions = await requestAll(
 				getTransactionsInAsc,
 				{
@@ -251,13 +243,7 @@ const exportTransactionsCSV = async (job) => {
 
 	const csvFilename = await getCsvFilenameFromParams(params);
 	const csv = transactionsToCSV(pastTransactions);
-	staticFiles.write(csvFilename, csv);
-
-	// Set the response object
-	exportCsvResponse.data = csv;
-	exportCsvResponse.meta.filename = csvFilename;
-
-	return exportCsvResponse;
+	await staticFiles.write(csvFilename, csv);
 };
 
 const scheduleTransactionQueue = Queue('scheduleTransactionQueue', exportTransactionsCSV, 50);
