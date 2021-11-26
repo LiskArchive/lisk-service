@@ -63,6 +63,8 @@ const getAccounts = async (params) => requestRpc('core.accounts', params);
 
 const getTransactions = async (params) => requestRpc('core.transactions', params);
 
+const isBlockchainIndexReady = async () => requestRpc('gateway.isBlockchainIndexReady', {});
+
 const getFirstBlock = async () => requestRpc(
 	'core.blocks',
 	{
@@ -246,9 +248,12 @@ const exportTransactionsCSV = async (job) => {
 	await staticFiles.write(csvFilename, csv);
 };
 
-const scheduleTransactionQueue = Queue('scheduleTransactionQueue', exportTransactionsCSV, 50);
+const scheduleTransactionExportQueue = Queue('scheduleTransactionExportQueue', exportTransactionsCSV, 50);
 
 const scheduleTransactionHistoryExport = async (params) => {
+	// Schedule only when index is completely built
+	if (!await isBlockchainIndexReady()) throw new ValidationException('Blocks index is not yet ready');
+
 	const exportResponse = {
 		data: {},
 		meta: {
@@ -277,9 +282,7 @@ const scheduleTransactionHistoryExport = async (params) => {
 		exportResponse.data.fileUrl = await getCsvFileUrlFromParams(params);
 		exportResponse.meta.ready = true;
 	} else {
-		// TODO: Add scheduling logic
-		await scheduleTransactionQueue.add({ params });
-		// exportTransactionsCSV(params);
+		await scheduleTransactionExportQueue.add({ params });
 		exportResponse.status = 'ACCEPTED';
 	}
 
