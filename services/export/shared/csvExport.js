@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const moment = require('moment');
+const Moment = require('moment');
+const MomentRange = require('moment-range');
+
+const moment = MomentRange.extendMoment(Moment);
 
 const {
 	Exceptions: {
@@ -63,7 +66,7 @@ const getAccounts = async (params) => requestRpc('core.accounts', params);
 
 const getTransactions = async (params) => requestRpc('core.transactions', params);
 
-const isBlockchainIndexReady = async () => requestRpc('gateway.isBlockchainIndexReady', {});
+// const isBlockchainIndexReady = async () => requestRpc('gateway.isBlockchainIndexReady', {});
 
 const getFirstBlock = async () => requestRpc(
 	'core.blocks',
@@ -126,10 +129,7 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 const getPartialFilenameFromParams = async (params) => {
 	const address = getAddressFromParams(params);
 	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
-
-	const filename = (to === getToday())
-		? `${address}_${from}_${moment(to, DATE_FORMAT).subtract(1, 'days').format(DATE_FORMAT)}.json`
-		: `${address}_${from}_${to}.json`;
+	const filename = `${address}_${from}_${to}.json`;
 	return filename;
 };
 
@@ -203,48 +203,39 @@ const transactionsToCSV = (transactions, address) => {
 const exportTransactionsCSV = async (job) => {
 	const { params } = job.data;
 
-	let pastTransactions = [];
-	let todayTransactions = [];
+	const allTransactions = [];
 
-	const partialFilename = await getPartialFilenameFromParams(params);
-	if (await partials.exists(partialFilename)) {
-		pastTransactions = JSON.parse(await partials.read(partialFilename));
-	} else {
-		const interval = await standardizeIntervalFromParams(params);
-		const [from, to] = interval.split(':');
-		const fromTimestampPast = moment(from, DATE_FORMAT).unix();
-		const toTimestampPast = (from === to)
-			? moment(to, DATE_FORMAT).endOf('day').unix()
-			: moment(to, DATE_FORMAT).subtract(1, 'days').endOf('day').unix();
+	const interval = await standardizeIntervalFromParams(params);
+	const [from, to] = interval.split(':');
+	const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
+	const arrayOfDates = Array.from(range.by('day'));
+	arrayOfDates.forEach(async date => {
+		const day = date.format(DATE_FORMAT);
+		const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
+		const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
 
-		pastTransactions = await requestAll(
-			getTransactionsInAsc,
-			{
-				...params,
-				timestamp: `${fromTimestampPast}:${toTimestampPast}`,
-			},
-			MAX_NUM_TRANSACTIONS,
-		);
-		await partials.write(partialFilename, JSON.stringify(pastTransactions));
+		// Store partials per day
+		const partialFilename = await getPartialFilenameFromParams({ ...params, interval: `${day}:${day}` });
 
-		if (to === getToday()) {
-			// Add 1 second to avoid overlapping time periods
-			const fromTimestampToday = moment(from, DATE_FORMAT).subtract(1, 'days').add(1, 'second').unix();
-			const toTimestampToday = moment(to, DATE_FORMAT).endOf('day').unix();
-			todayTransactions = await requestAll(
+		if (await partials.exists(partialFilename)) {
+			const transactions = JSON.parse(await partials.read(partialFilename));
+			allTransactions.push(...transactions);
+		} else {
+			const transactions = await requestAll(
 				getTransactionsInAsc,
 				{
 					...params,
-					timestamp: `${fromTimestampToday}:${toTimestampToday}`,
+					timestamp: `${fromTimestampPast}:${toTimestampPast}`,
 				},
 				MAX_NUM_TRANSACTIONS,
 			);
-			pastTransactions.push(...todayTransactions);
+			allTransactions.push(...transactions);
+			if (day !== getToday() ) partials.write(partialFilename, JSON.stringify(transactions));
 		}
-	}
+	});
 
 	const csvFilename = await getCsvFilenameFromParams(params);
-	const csv = transactionsToCSV(pastTransactions);
+	const csv = transactionsToCSV(allTransactions);
 	await staticFiles.write(csvFilename, csv);
 };
 
@@ -252,7 +243,9 @@ const scheduleTransactionExportQueue = Queue('scheduleTransactionExportQueue', e
 
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built
-	if (!await isBlockchainIndexReady()) throw new ValidationException('Blocks index is not yet ready');
+	// 	// if (!await isBlockchainIndexReady()) {
+	// 	throw new ValidationException('Blocks index is not yet ready');
+	// }
 
 	const exportResponse = {
 		data: {},
