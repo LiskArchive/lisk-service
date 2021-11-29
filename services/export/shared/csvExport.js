@@ -230,7 +230,8 @@ const exportTransactionsCSV = async (job) => {
 				MAX_NUM_TRANSACTIONS,
 			);
 			allTransactions.push(...transactions);
-			if (day !== getToday() ) partials.write(partialFilename, JSON.stringify(transactions));
+			if (day !== getToday() && transactions.length) partials
+				.write(partialFilename, JSON.stringify(transactions));
 		}
 	});
 
