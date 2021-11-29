@@ -190,4 +190,7 @@ module.exports = {
 	purge,
 	exists,
 	init,
+
+	// For functional tests teardown
+	minioClient,
 };
