@@ -66,7 +66,7 @@ const getAccounts = async (params) => requestRpc('core.accounts', params);
 
 const getTransactions = async (params) => requestRpc('core.transactions', params);
 
-// const isBlockchainIndexReady = async () => requestRpc('gateway.isBlockchainIndexReady', {});
+const isBlockchainIndexReady = async () => requestRpc('gateway.isBlockchainIndexReady', {});
 
 const getFirstBlock = async () => requestRpc(
 	'core.blocks',
@@ -244,9 +244,7 @@ const scheduleTransactionExportQueue = Queue('scheduleTransactionExportQueue', e
 
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built
-	// 	// if (!await isBlockchainIndexReady()) {
-	// 	throw new ValidationException('Blocks index is not yet ready');
-	// }
+	if (!await isBlockchainIndexReady()) throw new ValidationException('Blocks index is not yet ready');
 
 	const exportResponse = {
 		data: {},
