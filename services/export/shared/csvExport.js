@@ -247,7 +247,7 @@ const exportTransactionsCSV = async (params) => {
 	}
 
 	const csvFilename = await getCsvFilenameFromParams(params);
-	const csv = transactionsToCSV(pastTransactions);
+	const csv = transactionsToCSV(pastTransactions, getAddressFromParams(params));
 	staticFiles.write(csvFilename, csv);
 
 	// Set the response object
@@ -315,4 +315,17 @@ module.exports = {
 	exportTransactionsCSV,
 	scheduleTransactionHistoryExport,
 	downloadTransactionHistory,
+
+	// For unit tests
+	getAddressFromParams,
+	getToday,
+	normalizeTransaction,
+	parseTransactionsToCsv,
+	transactionsToCSV,
+
+	// For functional tests
+	standardizeIntervalFromParams,
+	getPartialFilenameFromParams,
+	getCsvFilenameFromParams,
+	getCsvFileUrlFromParams,
 };
