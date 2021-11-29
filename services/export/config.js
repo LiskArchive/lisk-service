@@ -65,7 +65,7 @@ config.csv.timeFormat = 'hh:mm:ss';
 
 config.queue = {
 	defaults: {
-		defaultJobOptions: {
+		jobOptions: {
 			attempts: 5,
 			timeout: 5 * 60 * 1000, // millisecs
 			removeOnComplete: true,

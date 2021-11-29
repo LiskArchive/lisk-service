@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -33,7 +33,7 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 			config.endpoints.redis,
 			{
 				prefix: `queue-${packageJson.name}`,
-				defaultJobOptions: options.defaultJobOptions,
+				defaultJobOptions: options.jobOptions,
 				settings: options.settings,
 				limiter: options.limiter,
 			});

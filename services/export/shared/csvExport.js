@@ -114,7 +114,7 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 	if (interval && interval.includes(':')) {
 		[from, to] = interval.split(':');
 		if ((moment(to, DATE_FORMAT).diff(moment(from, DATE_FORMAT))) < 0) {
-			throw new ValidationException(`Invalid interval: ${interval}`);
+			throw new ValidationException(`Invalid interval supplied: ${interval}`);
 		}
 	} else if (interval) {
 		from = interval;
@@ -126,10 +126,9 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 	return `${from}:${to}`;
 };
 
-const getPartialFilenameFromParams = async (params) => {
+const getPartialFilenameFromParams = async (params, day) => {
 	const address = getAddressFromParams(params);
-	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
-	const filename = `${address}_${from}_${to}.json`;
+	const filename = `${address}_${day}.json`;
 	return filename;
 };
 
@@ -215,7 +214,7 @@ const exportTransactionsCSV = async (job) => {
 		const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
 
 		// Store partials per day
-		const partialFilename = await getPartialFilenameFromParams({ ...params, interval: `${day}:${day}` });
+		const partialFilename = await getPartialFilenameFromParams(params, day);
 
 		if (await partials.exists(partialFilename)) {
 			const transactions = JSON.parse(await partials.read(partialFilename));
@@ -244,7 +243,7 @@ const scheduleTransactionExportQueue = Queue('scheduleTransactionExportQueue', e
 
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built
-	if (!await isBlockchainIndexReady()) throw new ValidationException('Blocks index is not yet ready');
+	if (!await isBlockchainIndexReady()) throw new ValidationException('Blockchain index is not yet ready.');
 
 	const exportResponse = {
 		data: {},
