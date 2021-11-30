@@ -31,7 +31,7 @@ const routes = require('./routes');
 const namespaces = require('./namespaces');
 const packageJson = require('./package.json');
 const { getStatus } = require('./shared/status');
-const { getReady, updateSvcStatus } = require('./shared/ready');
+const { getReady, updateSvcStatus, getIndexStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
@@ -75,6 +75,7 @@ const gatewayConfig = {
 		spec(ctx) { return genDocs(ctx); },
 		status() { return getStatus(this.broker); },
 		ready() { return getReady(this.broker); },
+		isBlockchainIndexReady() { return getIndexStatus(); },
 	},
 	settings: {
 		host,

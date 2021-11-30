@@ -13,16 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const moment = require('moment');
-const path = require('path');
+const Moment = require('moment');
+const MomentRange = require('moment-range');
+
+const moment = MomentRange.extendMoment(Moment);
 
 const {
-	Exceptions: { NotFoundException },
+	CacheRedis,
+	Exceptions: {
+		NotFoundException,
+		ValidationException,
+	},
 } = require('lisk-service-framework');
 
 const {
 	requestRpc,
 } = require('./rpcBroker');
+
+const Queue = require('./queue');
 
 const {
 	getBase32AddressFromPublicKey,
@@ -33,6 +41,7 @@ const {
 } = require('./helpers/csv');
 
 const {
+	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,
 } = require('./helpers/time');
@@ -43,7 +52,6 @@ const {
 	checkIfSelfTokenTransfer,
 } = require('./helpers/transaction');
 
-const fileStorage = require('./helpers/file');
 const config = require('../config');
 const fields = require('./csvFieldMappings');
 
@@ -53,12 +61,16 @@ const FilesystemCache = require('./csvCache');
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
 
+const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volatileRedis);
+
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
 
 const getAccounts = async (params) => requestRpc('core.accounts', params);
 
 const getTransactions = async (params) => requestRpc('core.transactions', params);
+
+const isBlockchainIndexReady = async () => requestRpc('gateway.isBlockchainIndexReady', {});
 
 const getFirstBlock = async () => requestRpc(
 	'core.blocks',
@@ -105,6 +117,9 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 	let to;
 	if (interval && interval.includes(':')) {
 		[from, to] = interval.split(':');
+		if ((moment(to, DATE_FORMAT).diff(moment(from, DATE_FORMAT))) < 0) {
+			throw new ValidationException(`Invalid interval supplied: ${interval}`);
+		}
 	} else if (interval) {
 		from = interval;
 		to = getToday();
@@ -115,13 +130,9 @@ const standardizeIntervalFromParams = async ({ interval }) => {
 	return `${from}:${to}`;
 };
 
-const getPartialFilenameFromParams = async (params) => {
+const getPartialFilenameFromParams = async (params, day) => {
 	const address = getAddressFromParams(params);
-	const [from, to] = (await standardizeIntervalFromParams(params)).split(':');
-
-	const filename = (to === getToday())
-		? `${address}_${from}_${moment(to, DATE_FORMAT).subtract(1, 'days').format(DATE_FORMAT)}.json`
-		: `${address}_${from}_${to}.json`;
+	const filename = `${address}_${day}.json`;
 	return filename;
 };
 
@@ -192,72 +203,60 @@ const transactionsToCSV = (transactions, address) => {
 	return parseTransactionsToCsv(transactions.map(t => normalizeTransaction(address, t)));
 };
 
-const exportTransactionsCSV = async (params) => {
-	const exportCsvResponse = {
-		data: {},
-		meta: {},
-	};
+const exportTransactionsCSV = async (job) => {
+	const { params } = job.data;
 
-	const address = getAddressFromParams(params);
+	const allTransactions = [];
 
-	// Validate if account exists
-	const isAccountExists = await validateIfAccountExists(params);
-	if (!isAccountExists) throw new NotFoundException(`Account ${address} not found.`);
+	const interval = await standardizeIntervalFromParams(params);
+	const [from, to] = interval.split(':');
+	const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
+	const arrayOfDates = (Array.from(range.by('day'))).map(d => d.format(DATE_FORMAT));
 
-	// Validate if account has transactions
-	const isAccountHasTransactions = await validateIfAccountHasTransactions({ address });
-	if (!isAccountHasTransactions) throw new NotFoundException(`Account ${address} has no transactions.`);
-
-	let pastTransactions = [];
-	let todayTransactions = [];
-
-	const partialFilename = await getPartialFilenameFromParams(params);
-	if (await partials.exists(partialFilename)) {
-		pastTransactions = JSON.parse(await partials.read(partialFilename));
-	} else {
-		const interval = await standardizeIntervalFromParams(params);
-		const [from, to] = interval.split(':');
-
-		const fromTimestampPast = moment(from, DATE_FORMAT).unix();
-		const toTimestampPast = moment(to, DATE_FORMAT).subtract(1, 'days').unix();
-		pastTransactions = await requestAll(
-			getTransactionsInAsc,
-			{
-				...params,
-				timestamp: `${fromTimestampPast}:${toTimestampPast}`,
-			},
-			MAX_NUM_TRANSACTIONS,
-		);
-		partials.write(partialFilename, JSON.stringify(pastTransactions));
-
-		if (to === getToday()) {
-			// Add 1 second to avoid overlapping time periods
-			const fromTimestampToday = moment(from, DATE_FORMAT).subtract(1, 'days').add(1, 'second').unix();
-			const toTimestampToday = moment(to, DATE_FORMAT).unix();
-			todayTransactions = await requestAll(
+	for (let i = 0; i < arrayOfDates.length; i++) {
+		/* eslint-disable no-await-in-loop */
+		const day = arrayOfDates[i];
+		const partialFilename = await getPartialFilenameFromParams(params, day);
+		if (await partials.exists(partialFilename)) {
+			const transactions = JSON.parse(await partials.read(partialFilename));
+			allTransactions.push(...transactions);
+		} else if (await noTransactionsCache.get(partialFilename) !== true) {
+			const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
+			const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
+			const transactions = await requestAll(
 				getTransactionsInAsc,
 				{
 					...params,
-					timestamp: `${fromTimestampToday}:${toTimestampToday}`,
+					timestamp: `${fromTimestampPast}:${toTimestampPast}`,
 				},
 				MAX_NUM_TRANSACTIONS,
 			);
-			pastTransactions.push(...todayTransactions);
+			allTransactions.push(...transactions);
+
+			if (day !== getToday()) {
+				if (transactions.length) {
+					partials.write(partialFilename, JSON.stringify(transactions));
+				} else {
+					// Flag to prevent unnecessary calls to core/storage space usage on the file cache
+					const RETENTION_PERIOD = getDaysInMilliseconds(config.cache.partials.retentionInDays);
+					await noTransactionsCache.set(partialFilename, true, RETENTION_PERIOD);
+				}
+			}
 		}
+		/* eslint-enable no-await-in-loop */
 	}
 
 	const csvFilename = await getCsvFilenameFromParams(params);
-	const csv = transactionsToCSV(pastTransactions, getAddressFromParams(params));
-	staticFiles.write(csvFilename, csv);
-
-	// Set the response object
-	exportCsvResponse.data = csv;
-	exportCsvResponse.meta.filename = csvFilename;
-
-	return exportCsvResponse;
+	const csv = transactionsToCSV(allTransactions, getAddressFromParams(params));
+	await staticFiles.write(csvFilename, csv);
 };
 
+const scheduleTransactionExportQueue = Queue('scheduleTransactionExportQueue', exportTransactionsCSV, 50);
+
 const scheduleTransactionHistoryExport = async (params) => {
+	// Schedule only when index is completely built
+	if (!await isBlockchainIndexReady()) throw new ValidationException('Blockchain index is not yet ready.');
+
 	const exportResponse = {
 		data: {},
 		meta: {
@@ -286,8 +285,7 @@ const scheduleTransactionHistoryExport = async (params) => {
 		exportResponse.data.fileUrl = await getCsvFileUrlFromParams(params);
 		exportResponse.meta.ready = true;
 	} else {
-		// TODO: Add scheduling logic
-		exportTransactionsCSV(params);
+		await scheduleTransactionExportQueue.add({ params });
 		exportResponse.status = 'ACCEPTED';
 	}
 
@@ -300,14 +298,19 @@ const downloadTransactionHistory = async ({ filename }) => {
 		meta: {},
 	};
 
-	const dirPath = path.join(config.cache.exports.dirPath);
-	const staticFilePath = `${dirPath}/${filename}`;
-
-	const isFileExists = await fileStorage.exists(staticFilePath);
+	const isFileExists = await staticFiles.exists(filename);
 	if (!isFileExists) throw new NotFoundException(`File ${filename} not found.`);
 
-	csvResponse.data = await fileStorage.read(staticFilePath);
+	csvResponse.data = await staticFiles.read(filename);
 	csvResponse.meta.filename = filename;
+
+	// Remove the static file if end date is current date
+	// TODO: Implement a better solution
+	const regex = /_|\./g;
+	const splits = filename.split(regex);
+	const endDate = splits[splits.length - 2];
+	if (endDate === getToday()) staticFiles.remove(filename);
+
 	return csvResponse;
 };
 
