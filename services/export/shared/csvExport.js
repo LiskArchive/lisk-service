@@ -291,6 +291,14 @@ const downloadTransactionHistory = async ({ filename }) => {
 
 	csvResponse.data = await staticFiles.read(filename);
 	csvResponse.meta.filename = filename;
+
+	// Remove the static file if end date is current date
+	// TODO: Implement a better solution
+	const regex = /_|\./g;
+	const splits = filename.split(regex);
+	const endDate = splits[splits.length - 2];
+	if (endDate === getToday()) staticFiles.remove(filename);
+
 	return csvResponse;
 };
 

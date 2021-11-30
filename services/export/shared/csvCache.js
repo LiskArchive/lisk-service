@@ -16,7 +16,7 @@
 const FileStorage = require('./helpers/file');
 
 const CsvCache = (params) => {
-	const { init, write, read, exists, purge } = FileStorage;
+	const { init, write, read, exists, remove, purge } = FileStorage;
 	const { dirPath, retentionInDays } = params;
 
 	init({ dirPath });
@@ -25,6 +25,7 @@ const CsvCache = (params) => {
 		write: (filename, content) => write(`${dirPath}/${filename}`, content),
 		read: (filename) => read(`${dirPath}/${filename}`),
 		exists: (filename) => exists(`${dirPath}/${filename}`),
+		remove: (filename) => remove(`${dirPath}/${filename}`),
 		purge: () => purge(dirPath, retentionInDays),
 	};
 };
