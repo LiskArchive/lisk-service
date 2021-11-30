@@ -80,7 +80,7 @@ config.cache.partials = {
 };
 
 config.cache.exports = {
-	driver: 's3-minio', // Accepted values: ['filesystem', 's3-minio']
+	driver: 'filesystem', // Accepted values: ['filesystem', 's3-minio']
 	dirPath: process.env.SERVICE_EXPORT_STATIC || './data/static',
 	retentionInDays: 30,
 	s3: { bucketName: process.env.EXPORT_S3_BUCKET_NAME_EXPORTS || 'exports' },
