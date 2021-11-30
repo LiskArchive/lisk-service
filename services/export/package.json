@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-export",
-  "version": "0.6.0-alpha.0",
+  "version": "0.6.0-beta.0",
   "description": "Lisk Service Export",
   "keywords": [
     "lisk",
@@ -26,7 +26,8 @@
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:unit",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
+    "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
+    "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit",
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {
@@ -37,6 +38,7 @@
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
     "moment": "^2.29.1",
     "moment-range": "^4.0.2",
+    "minio": "^7.0.21",
     "node-cron": "=2.0.3"
   },
   "devDependencies": {
