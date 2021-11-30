@@ -28,7 +28,7 @@ const DRIVERS = {
 };
 
 const objectCacheFS = (params) => {
-	const { init, write, read, exists, purge } = FileStorage;
+	const { init, write, read, exists, remove, purge } = FileStorage;
 	const { dirPath, retentionInDays } = params;
 
 	init({ dirPath });
@@ -37,12 +37,13 @@ const objectCacheFS = (params) => {
 		write: (filename, content) => write(`${dirPath}/${filename}`, content),
 		read: (filename) => read(`${dirPath}/${filename}`),
 		exists: (filename) => exists(`${dirPath}/${filename}`),
+		remove: (filename) => remove(`${dirPath}/${filename}`),
 		purge: () => purge(dirPath, retentionInDays),
 	};
 };
 
 const objectCacheS3 = (params) => {
-	const { init, write, read, exists, purge } = S3Storage;
+	const { init, write, read, exists, remove, purge } = S3Storage;
 	const { retentionInDays } = params;
 
 	init(params);
@@ -51,6 +52,7 @@ const objectCacheS3 = (params) => {
 		write: (filename, content) => write(filename, content),
 		read: (filename) => read(filename),
 		exists: (filename) => exists(filename),
+		remove: (filename) => remove(filename),
 		purge: () => purge('', retentionInDays),
 	};
 };
