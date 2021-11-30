@@ -319,14 +319,13 @@ module.exports = {
 	scheduleTransactionHistoryExport,
 	downloadTransactionHistory,
 
-	// For unit tests
+	// For functional tests
 	getAddressFromParams,
 	getToday,
 	normalizeTransaction,
 	parseTransactionsToCsv,
 	transactionsToCSV,
 
-	// For functional tests
 	standardizeIntervalFromParams,
 	getPartialFilenameFromParams,
 	getCsvFilenameFromParams,
