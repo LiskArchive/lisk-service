@@ -19,10 +19,6 @@ const config = {};
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
-config.cache = {};
-config.cache.partials = { dirPath: process.env.SERVICE_EXPORT_PARTIALS || './data/partials', retentionInDays: 30 };
-config.cache.exports = { dirPath: process.env.SERVICE_EXPORT_STATIC || './data/static', retentionInDays: 30 };
-
 // Logging
 config.log = {};
 /**
@@ -56,5 +52,30 @@ config.csv = {};
 config.csv.delimiter = ';';
 config.csv.dateFormat = 'YYYY-MM-DD';
 config.csv.timeFormat = 'hh:mm:ss';
+
+// CSV cache config
+config.cache = {};
+config.cache.partials = {
+	driver: 'filesystem', // Accepted values: ['filesystem', 's3-minio']
+	dirPath: process.env.SERVICE_EXPORT_PARTIALS || './data/partials',
+	retentionInDays: 30,
+	s3: { bucketName: process.env.EXPORT_S3_BUCKET_NAME_PARTIALS || 'partials' },
+};
+
+config.cache.exports = {
+	driver: 's3-minio', // Accepted values: ['filesystem', 's3-minio']
+	dirPath: process.env.SERVICE_EXPORT_STATIC || './data/static',
+	retentionInDays: 30,
+	s3: { bucketName: process.env.EXPORT_S3_BUCKET_NAME_EXPORTS || 'exports' },
+};
+
+// Amazon S3 config
+config.s3 = {};
+config.s3.endPoint = process.env.EXPORT_S3_ENDPOINT || 's3.amazonaws.com'; // Optional
+config.s3.accessKey = process.env.EXPORT_S3_ACCESS_KEY;
+config.s3.secretKey = process.env.EXPORT_S3_SECRET_KEY; // Optional
+config.s3.sessionToken = process.env.EXPORT_S3_SESSION_TOKEN;
+config.s3.region = process.env.EXPORT_S3_REGION || 'eu-central-1'; // Default: Europe (Frankfurt)
+config.s3.bucketNameDefault = process.env.EXPORT_S3_BUCKET_NAME || 'export';
 
 module.exports = config;
