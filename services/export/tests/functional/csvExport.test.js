@@ -26,7 +26,7 @@ const config = require('../../config');
 
 describe('CSV export utils', () => {
 	const standardizedIntervalRegex = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)):((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\b$/g;
-	const partialFileNameRegex = /^\b(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.json\b$/g;
+	const partialFileNameRegex = /^\b(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.json\b$/g;
 	const csvFileNameRegex = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/g;
 	const csvFileUrlRegex = /^\/api\/v2\/exports\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/g;
 	const address = 'lskeqretdgm6855pqnnz69ahpojk5yxfsv2am34et';
@@ -66,49 +66,17 @@ describe('CSV export utils', () => {
 	});
 
 	describe('getPartialFilenameFromParams', () => {
-		it('with address and complete interval with start and end date supplied', async () => {
+		it('with address', async () => {
 			const params = { address, interval: interval.startEnd };
-			const partialFilename = await getPartialFilenameFromParams(params);
+			const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
 			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
 			expect(partialFilename).toContain(address);
 			expect(partialFilename).toMatch(partialFileNameRegex);
 		});
 
-		it('with publicKey and complete interval with start and end date supplied', async () => {
-			const params = { publicKey, interval: interval.startEnd };
-			const partialFilename = await getPartialFilenameFromParams(params);
-			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
-			expect(partialFilename).toContain(address);
-			expect(partialFilename).toMatch(partialFileNameRegex);
-		});
-
-		it('with address and interval with only start date supplied', async () => {
-			const params = { address, interval: interval.onlyStart };
-			const partialFilename = await getPartialFilenameFromParams(params);
-			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
-			expect(partialFilename).toContain(address);
-			expect(partialFilename).toMatch(partialFileNameRegex);
-		});
-
-		it('with publicKey and interval with only start date supplied', async () => {
+		it('with publicKey', async () => {
 			const params = { publicKey, interval: interval.onlyStart };
-			const partialFilename = await getPartialFilenameFromParams(params);
-			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
-			expect(partialFilename).toContain(address);
-			expect(partialFilename).toMatch(partialFileNameRegex);
-		});
-
-		xit('with address and no interval supplied', async () => {
-			const params = { address };
-			const partialFilename = await getPartialFilenameFromParams(params);
-			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
-			expect(partialFilename).toContain(address);
-			expect(partialFilename).toMatch(partialFileNameRegex);
-		});
-
-		xit('with publicKey and no interval supplied', async () => {
-			const params = { publicKey };
-			const partialFilename = await getPartialFilenameFromParams(params);
+			const partialFilename = await getPartialFilenameFromParams(params, interval.onlyStart);
 			expect(partialFilename.endsWith(partialFilenameExtension)).toBeTruthy();
 			expect(partialFilename).toContain(address);
 			expect(partialFilename).toMatch(partialFileNameRegex);
