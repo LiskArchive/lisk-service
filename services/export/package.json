@@ -26,7 +26,8 @@
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:unit",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
+    "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
+    "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit",
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {

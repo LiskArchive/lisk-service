@@ -79,6 +79,11 @@ const selfTokenTransferTransaction = {
 	amount: '20000000000',
 };
 
+const interval = {
+	startEnd: '2021-06-07:2021-09-19',
+	onlyStart: '2021-06-07',
+};
+
 module.exports = {
 	generateExcpectedCsv,
 	tokenTransfer: {
@@ -91,4 +96,5 @@ module.exports = {
 			sender: tokenTransferTransaction.senderId,
 		},
 	},
+	interval,
 };
