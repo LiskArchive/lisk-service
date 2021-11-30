@@ -207,19 +207,18 @@ const exportTransactionsCSV = async (job) => {
 	const interval = await standardizeIntervalFromParams(params);
 	const [from, to] = interval.split(':');
 	const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
-	const arrayOfDates = Array.from(range.by('day'));
-	const promises = arrayOfDates.map(async date => {
-		const day = date.format(DATE_FORMAT);
-		const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
-		const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
+	const arrayOfDates = (Array.from(range.by('day'))).map(d => d.format(DATE_FORMAT));
 
-		// Store partials per day
+	for (let i = 0; i < arrayOfDates.length; i++) {
+		/* eslint-disable no-await-in-loop */
+		const day = arrayOfDates[i];
 		const partialFilename = await getPartialFilenameFromParams(params, day);
-
 		if (await partials.exists(partialFilename)) {
 			const transactions = JSON.parse(await partials.read(partialFilename));
 			allTransactions.push(...transactions);
 		} else {
+			const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
+			const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
 			const transactions = await requestAll(
 				getTransactionsInAsc,
 				{
@@ -229,12 +228,13 @@ const exportTransactionsCSV = async (job) => {
 				MAX_NUM_TRANSACTIONS,
 			);
 			allTransactions.push(...transactions);
-			if (day !== getToday() && transactions.length) partials
-				.write(partialFilename, JSON.stringify(transactions));
+			if (day !== getToday() && transactions.length) {
+				partials.write(partialFilename, JSON.stringify(transactions));
+			}
 		}
-	});
+		/* eslint-enable no-await-in-loop */
+	}
 
-	await Promise.all(promises);
 	const csvFilename = await getCsvFilenameFromParams(params);
 	const csv = transactionsToCSV(allTransactions);
 	await staticFiles.write(csvFilename, csv);
