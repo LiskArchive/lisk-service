@@ -25,5 +25,14 @@
         "format": "interval",
         "minLength": 10,
         "maxLength": 21
+    },
+    "filename": {
+        "name": "filename",
+        "in": "path",
+        "description": "Filename",
+        "required": true,
+        "type": "string",
+        "minLength": 80,
+        "maxLength": 80
     }
 }

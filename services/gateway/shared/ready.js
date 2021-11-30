@@ -65,8 +65,10 @@ const updateSvcStatus = data => {
 	currentStatus.delegatesStatus = isDelegatesReady;
 };
 
+const getIndexStatus = async () => currentStatus.indexReadyStatus;
 
 module.exports = {
 	getReady,
 	updateSvcStatus,
+	getIndexStatus,
 };

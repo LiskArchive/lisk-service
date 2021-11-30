@@ -17,7 +17,7 @@ const {
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
 
-const exportService = require('../../shared/export');
+const exportService = require('../../shared/csvExport');
 
 const exportTransactionsCSV = async (params) => {
 	try {

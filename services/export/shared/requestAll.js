@@ -25,6 +25,7 @@ const requestAll = async (fn, params, limit) => {
 		},
 	});
 	const { data } = firstRequest;
+	if (data.error && data.error.includes('Not found')) return [];
 	const maxAmount = !firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
 		? defaultMaxAmount
 		: firstRequest.meta.total;
