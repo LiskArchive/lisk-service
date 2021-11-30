@@ -24,6 +24,7 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in se
  */
 config.endpoints = {};
 config.endpoints.redis = process.env.SERVICE_EXPORT_REDIS || 'redis://localhost:6379/3';
+config.endpoints.volatileRedis = process.env.SERVICE_EXPORT_REDIS_VOLATILE || 'redis://localhost:6379/4';
 
 // Logging
 config.log = {};

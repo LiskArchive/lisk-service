@@ -19,6 +19,7 @@ const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
 const {
+	CacheRedis,
 	Exceptions: {
 		NotFoundException,
 		ValidationException,
@@ -40,6 +41,7 @@ const {
 } = require('./helpers/csv');
 
 const {
+	getDaysInMilliseconds,
 	dateFromTimestamp,
 	timeFromTimestamp,
 } = require('./helpers/time');
@@ -58,6 +60,8 @@ const FilesystemCache = require('./csvCache');
 
 const partials = FilesystemCache(config.cache.partials);
 const staticFiles = FilesystemCache(config.cache.exports);
+
+const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volatileRedis);
 
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
@@ -216,7 +220,7 @@ const exportTransactionsCSV = async (job) => {
 		if (await partials.exists(partialFilename)) {
 			const transactions = JSON.parse(await partials.read(partialFilename));
 			allTransactions.push(...transactions);
-		} else {
+		} else if (await noTransactionsCache.get(partialFilename) !== true) {
 			const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
 			const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
 			const transactions = await requestAll(
@@ -228,8 +232,15 @@ const exportTransactionsCSV = async (job) => {
 				MAX_NUM_TRANSACTIONS,
 			);
 			allTransactions.push(...transactions);
-			if (day !== getToday() && transactions.length) {
-				partials.write(partialFilename, JSON.stringify(transactions));
+
+			if (day !== getToday()) {
+				if (transactions.length) {
+					partials.write(partialFilename, JSON.stringify(transactions));
+				} else {
+					// Flag to prevent unnecessary calls to core/storage space usage on the file cache
+					const RETENTION_PERIOD = getDaysInMilliseconds(config.cache.partials.retentionInDays);
+					await noTransactionsCache.set(partialFilename, true, RETENTION_PERIOD);
+				}
 			}
 		}
 		/* eslint-enable no-await-in-loop */
