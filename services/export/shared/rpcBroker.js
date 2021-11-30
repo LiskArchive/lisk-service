@@ -22,7 +22,9 @@ let ServiceBroker;
 const setBrokerHandle = (h) => ServiceBroker = h;
 
 const requestRpc = (method, params) => new Promise((resolve, reject) => {
-	ServiceBroker.call(method, params).then(res => resolve(res))
+	ServiceBroker
+		.call(method, params)
+		.then(res => resolve(res))
 		.catch(err => {
 			logger.error(`Error occurred! ${err.message}`);
 			reject(err);
