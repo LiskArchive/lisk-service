@@ -19,6 +19,13 @@ const config = {};
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
+/**
+ * External endpoints
+ */
+config.endpoints = {};
+config.endpoints.redis = process.env.SERVICE_EXPORT_REDIS || 'redis://localhost:6379/3';
+config.endpoints.volatileRedis = process.env.SERVICE_EXPORT_REDIS_VOLATILE || 'redis://localhost:6379/4';
+
 // Logging
 config.log = {};
 /**
@@ -53,6 +60,17 @@ config.csv.delimiter = ';';
 config.csv.dateFormat = 'YYYY-MM-DD';
 config.csv.timeFormat = 'hh:mm:ss';
 
+config.queue = {
+	defaults: {
+		jobOptions: {
+			attempts: 5,
+			timeout: 5 * 60 * 1000, // millisecs
+			removeOnComplete: true,
+		},
+		settings: {},
+	},
+};
+
 // CSV cache config
 config.cache = {};
 config.cache.partials = {
@@ -63,7 +81,7 @@ config.cache.partials = {
 };
 
 config.cache.exports = {
-	driver: 's3-minio', // Accepted values: ['filesystem', 's3-minio']
+	driver: 'filesystem', // Accepted values: ['filesystem', 's3-minio']
 	dirPath: process.env.SERVICE_EXPORT_STATIC || './data/static',
 	retentionInDays: 30,
 	s3: { bucketName: process.env.EXPORT_S3_BUCKET_NAME_EXPORTS || 'exports' },

@@ -16,14 +16,17 @@
 const BluebirdPromise = require('bluebird');
 const path = require('path');
 const fs = require('fs');
+
 const {
 	Logger,
 	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
-const logger = Logger();
+const {
+	getDaysInMilliseconds,
+} = require('./time');
 
-const getDaysInMilliseconds = days => days * 86400 * 1000;
+const logger = Logger();
 
 const getFileStats = filePath => new Promise((resolve, reject) => {
 	fs.stat(filePath, (err, stat) => {

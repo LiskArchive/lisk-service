@@ -23,7 +23,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const exportService = require('../../shared/export');
+const exportService = require('../../shared/csvExport');
 
 const scheduleTransactionHistoryExport = async (params) => {
 	const exportResponse = {

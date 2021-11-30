@@ -25,7 +25,7 @@ module.exports = {
 	params: {
 		address: { optional: true, type: 'string', min: 3, max: 41, pattern: /^lsk[a-hjkm-z2-9]{38}$/ },
 		publicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
-		interval: { optional: true, type: 'string', min: 10, max: 21, pattern: /^\b((\d{4})-((1[012])|(0?[1-9]))-([012][1-9])|([123]0)|31)(:(\d{4})-((1[012])|(0?[1-9]))-([012][1-9])|([123]0)|31)?\b$/g },
+		interval: { optional: true, type: 'string', min: 10, max: 21, pattern: /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g },
 	},
 	paramsRequired: true,
 	validParamPairings: [
