@@ -208,7 +208,7 @@ const exportTransactionsCSV = async (job) => {
 	const [from, to] = interval.split(':');
 	const range = moment.range(moment(from, DATE_FORMAT), moment(to, DATE_FORMAT));
 	const arrayOfDates = Array.from(range.by('day'));
-	arrayOfDates.forEach(async date => {
+	const promises = arrayOfDates.map(async date => {
 		const day = date.format(DATE_FORMAT);
 		const fromTimestampPast = moment(day, DATE_FORMAT).startOf('day').unix();
 		const toTimestampPast = moment(day, DATE_FORMAT).endOf('day').unix();
@@ -234,6 +234,7 @@ const exportTransactionsCSV = async (job) => {
 		}
 	});
 
+	await Promise.all(promises);
 	const csvFilename = await getCsvFilenameFromParams(params);
 	const csv = transactionsToCSV(allTransactions);
 	await staticFiles.write(csvFilename, csv);
