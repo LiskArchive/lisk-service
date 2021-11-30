@@ -65,7 +65,7 @@ config.ttl = {
 /**
  * External endpoints
  */
-config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/2';
+config.endpoints.redis = process.env.SERVICE_MARKET_REDIS || 'redis://localhost:6379/5';
 
 /**
  * Market prices config
