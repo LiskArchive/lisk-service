@@ -19,17 +19,20 @@ const { api } = require('../../../helpers/api');
 const {
 	metaSchema,
 	exportSchema,
+	exportSchemaAccepted,
 	goodRequestSchema,
 } = require('../../../schemas/api_v2/export.schema');
 
 const {
 	notFoundSchema,
+	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
 
 describe('Export API', () => {
+	const interval = '2021-01-01:2021-11-30';
 	let refTransaction;
 	beforeAll(async () => {
 		const response1 = await api.get(`${baseUrlV2}/transactions?limit=1&moduleAssetId=2:0`);
@@ -39,12 +42,34 @@ describe('Export API', () => {
 	describe('Schedule file export', () => {
 		it('Schedule file export -> return 202 Accepted', async () => {
 			const expected = { ready: false };
-			const response = await api.get(`${baseUrlV2}/transactions/export?address=${refTransaction.sender.address}`, 202);
+			const response = await api.get(`${baseUrlV2}/transactions/export?address=${refTransaction.sender.address}&interval=${interval}`, 202);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Object);
-			expect(response.data).toMap(exportSchema);
+			expect(response.data).toMap(exportSchemaAccepted);
 			expect(response.meta).toMap(metaSchema);
 			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('File not exists -> 404 NOT_FOUND', async () => {
+			const invalidFile = 'invalid.csv';
+			const response = await api.get(`${baseUrlV2}/exports/${invalidFile}`, 404);
+			expect(response).toMap(notFoundSchema);
+		});
+
+		it('Schedule file export -> 400 when no address', async () => {
+			const response = await api.get(`${baseUrlV2}/transactions/export`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid address', async () => {
+			const response = await api.get(`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid interval', async () => {
+			const invalidInterval = '20-10-2021:20-11-2021';
+			const response = await api.get(`${baseUrlV2}/transactions/export?address=${refTransaction.sender.address}&interval=${invalidInterval}`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 
 		it('File is ready to export -> return 200 OK', async () => {
@@ -57,16 +82,10 @@ describe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		// it('download csv file -> 200 OK', async () => {
-		// 	const validFile = 'test.csv';
-		// 	const response = await api.get(`${endpoint}/${validFile}`, 200);
-		// 	expect(response).toEqual(expectedResponse);
-		// });
-
-		it('File not exists -> 404 NOT_FOUND', async () => {
-			const invalidFile = 'invalid.csv';
-			const response = await api.get(`${baseUrlV2}/exports/${invalidFile}`, 404);
-			expect(response).toMap(notFoundSchema);
+		it('Download csv file -> 200 OK', async () => {
+			const validFileName = `transactions_${refTransaction.sender.address}_${interval}.csv`;
+			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, 200);
+			expect(response).toEqual();
 		});
 	});
 });

@@ -15,11 +15,18 @@
  */
 import Joi from 'joi';
 
-const exportSchema = {
+const exportSchemaAccepted = {
 	address: Joi.string().required(),
 	interval: Joi.string().required(),
 	fileName: Joi.string().optional(),
 	fileUrl: Joi.string().optional(),
+};
+
+const exportSchema = {
+	address: Joi.string().required(),
+	interval: Joi.string().required(),
+	fileName: Joi.string().required(),
+	fileUrl: Joi.string().required(),
 };
 
 const metaSchema = {
@@ -34,6 +41,7 @@ const goodRequestSchema = {
 
 module.exports = {
 	metaSchema: Joi.object(metaSchema).required(),
+	exportSchemaAccepted: Joi.object(exportSchemaAccepted).required(),
 	exportSchema: Joi.object(exportSchema).required(),
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 };
