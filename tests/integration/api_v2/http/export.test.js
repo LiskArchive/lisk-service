@@ -38,6 +38,13 @@ const {
 	isStringCsvParseable,
 } = require('../../../helpers/utils');
 
+const httpStatus = {
+	OK: 200,
+	ACCEPTED: 202,
+	NOT_FOUND: 404,
+	BAD_REQUEST: 400,
+};
+
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
 
@@ -57,7 +64,10 @@ describe('Export API', () => {
 	describe('Schedule file export', () => {
 		it('Schedule file export from account address -> return 202 Accepted', async () => {
 			const expected = { ready: false };
-			const response = await api.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`, 202);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				httpStatus.ACCEPTED,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Object);
 			expect(response.data).toMap(exportSchemaAccepted);
@@ -67,7 +77,10 @@ describe('Export API', () => {
 
 		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
 			const expected = { ready: false };
-			const response = await api.get(`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`, 202);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				httpStatus.ACCEPTED,
+			);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Object);
 			expect(response.data).toMap(exportSchemaAccepted);
@@ -79,7 +92,10 @@ describe('Export API', () => {
 	describe('File is ready to export', () => {
 		it('scheduled from account address -> return 200 OK', async () => {
 			const scheduleExport = async () => api
-				.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`, 200);
+				.get(
+					`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+					httpStatus.OK,
+				);
 			const response = await waitForSuccess(scheduleExport);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchema);
@@ -91,7 +107,10 @@ describe('Export API', () => {
 
 		it('scheduled from account from publicKey -> return 200 OK', async () => {
 			const scheduleExport = async () => api
-				.get(`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`, 200);
+				.get(
+					`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+					httpStatus.OK,
+				);
 			const response = await waitForSuccess(scheduleExport);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchema);
@@ -107,58 +126,76 @@ describe('Export API', () => {
 
 		it('scheduled from account address -> 200 OK', async () => {
 			const validFileName = `transactions_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;
-			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, 200);
+			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, httpStatus.OK);
 			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});
 
 		it('scheduled from account publicKey -> 200 OK', async () => {
 			const validFileName = `transactions_${refTransaction2.sender.address}_${startDate}_${endDate}.csv`;
-			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, 200);
+			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, httpStatus.OK);
 			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});
 	});
 
 	describe('Invalid params/request', () => {
 		it('Schedule file export -> 400 when no params', async () => {
-			const response = await api.get(`${baseUrlV2}/transactions/export`, 400);
+			const response = await api.get(`${baseUrlV2}/transactions/export`, httpStatus.BAD_REQUEST);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('Schedule file export -> 400 when invalid address', async () => {
-			const response = await api.get(`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`, 400);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`,
+				httpStatus.BAD_REQUEST,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('Schedule file export -> 400 when invalid publicKey', async () => {
-			const response = await api.get(`${baseUrlV2}/transactions/export?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4`, 400);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4`,
+				httpStatus.BAD_REQUEST,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('Schedule file export -> 400 when address with invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
-			const response = await api.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${invalidInterval}`, 400);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${invalidInterval}`,
+				httpStatus.BAD_REQUEST,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('Schedule file export -> 400 when publicKey with invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
-			const response = await api.get(`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${invalidInterval}`, 400);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${invalidInterval}`,
+				httpStatus.BAD_REQUEST,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('Schedule file export -> 400 when invalid address with interval', async () => {
-			const response = await api.get(`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm&interval=${startDate}:${endDate}`, 400);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm&interval=${startDate}:${endDate}`,
+				httpStatus.BAD_REQUEST,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('Schedule file export -> 400 when invalid publicKey with interval', async () => {
-			const response = await api.get(`${baseUrlV2}/transactions/export?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4&interval=${startDate}:${endDate}`, 400);
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4&interval=${startDate}:${endDate}`,
+				httpStatus.BAD_REQUEST,
+			);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('File not exists -> 404 NOT_FOUND', async () => {
 			const invalidFile = 'invalid.csv';
-			const response = await api.get(`${baseUrlV2}/exports/${invalidFile}`, 404);
+			const response = await api.get(`${baseUrlV2}/exports/${invalidFile}`, httpStatus.NOT_FOUND);
 			expect(response).toMap(notFoundSchema);
 		});
 	});
