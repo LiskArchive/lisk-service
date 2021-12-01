@@ -104,7 +104,7 @@ const validateParams = async params => {
 const getPendingTransactions = async params => {
 	const pendingTransactions = {
 		data: [],
-		meta: {},
+		meta: { total: 0 },
 	};
 
 	const offset = Number(params.offset) || 0;
