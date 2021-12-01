@@ -15,18 +15,18 @@
  */
 import Joi from 'joi';
 
-const exportSchemaAccepted = {
-	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
-	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).optional(),
-	interval: Joi.string().pattern(/^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/).required(),
-};
-
 const exportSchema = {
 	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
 	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).optional(),
 	interval: Joi.string().pattern(/^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/).required(),
 	fileName: Joi.string().required(),
 	fileUrl: Joi.string().required(),
+};
+
+const exportSchemaAccepted = {
+	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
+	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).optional(),
+	interval: Joi.string().pattern(/^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/).required(),
 };
 
 const metaSchema = {
@@ -40,8 +40,8 @@ const goodRequestSchema = {
 };
 
 module.exports = {
-	metaSchema: Joi.object(metaSchema).required(),
-	exportSchemaAccepted: Joi.object(exportSchemaAccepted).required(),
 	exportSchema: Joi.object(exportSchema).required(),
+	exportSchemaAccepted: Joi.object(exportSchemaAccepted).required(),
+	metaSchema: Joi.object(metaSchema).required(),
 	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 };
