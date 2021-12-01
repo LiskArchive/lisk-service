@@ -179,8 +179,7 @@ const resolveAccountInfo = async accounts => BluebirdPromise.map(
 	async account => {
 		account.dpos.unlocking = await BluebirdPromise.map(
 			account.dpos.unlocking
-				.sort((a, b) => b - a)
-				.slice(0, 5),
+				.sort((a, b) => b - a),
 			async unlock => {
 				const delegateHexAddress = unlock.delegateAddress;
 				unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
