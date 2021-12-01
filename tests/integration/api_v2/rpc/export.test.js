@@ -36,17 +36,21 @@ const requestTransactions = async (params) => request(wsRpcUrl, 'get.transaction
 describe('Export API', () => {
 	const startDate = '2021-01-10';
 	const endDate = '2021-11-30';
-	let refTransaction;
+	let refTransaction1;
+	let refTransaction2;
 	beforeAll(async () => {
-		const response = await requestTransactions({ limit: 1 });
-		[refTransaction] = response.result.data;
+		const response1 = await requestTransactions({ limit: 1 });
+		[refTransaction1] = response1.result.data;
+
+		const response2 = await requestTransactions({ limit: 1, offset: 1 });
+		[refTransaction2] = response2.result.data;
 	});
 
 	describe('Schedule file export', () => {
-		it('Schedule file export -> return 202 Accepted', async () => {
+		it('Schedule file export from account address -> return 202 Accepted', async () => {
 			const expected = { ready: false };
 			const response = await requestTransactionExport({
-				address: refTransaction.sender.address,
+				address: refTransaction1.sender.address,
 				interval: `${startDate}:${endDate}`,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -57,35 +61,29 @@ describe('Export API', () => {
 			expect(result.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export -> return INVALID_REQUEST when no address', async () => {
-			const response = await requestTransactionExport();
-			expect(response).toMap(invalidRequestSchema);
-		});
-
-		it('Schedule file export -> return INVALID_PARAMS when invalid address', async () => {
+		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
+			const expected = { ready: false };
 			const response = await requestTransactionExport({
-				address: 'lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm',
+				publicKey: refTransaction2.sender.publicKey,
 				interval: `${startDate}:${endDate}`,
 			});
-			expect(response).toMap(invalidParamsSchema);
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchema);
+			expect(result.data).toMap(exportSchemaAccepted);
+			expect(result.meta).toMap(metaSchema);
+			expect(result.meta).toEqual(expect.objectContaining(expected));
 		});
+	});
 
-		it('Schedule file export -> return INVALID_PARAMS when invalid interval', async () => {
-			const invalidInterval = '20-10-2021:20-11-2021';
-			const response = await requestTransactionExport({
-				address: refTransaction.sender.address,
-				interval: invalidInterval,
-			});
-			expect(response).toMap(invalidParamsSchema);
-		});
-
-		it('File is ready to export -> return 200 OK', async () => {
+	describe('File is ready to export', () => {
+		it('scheduled from account address -> return 200 OK', async () => {
 			// Add delay of 10 seconds
 			await new Promise(resolve => setTimeout(resolve, 10000));
 
 			const expected = { ready: true };
 			const response = await requestTransactionExport({
-				address: refTransaction.sender.address,
+				address: refTransaction1.sender.address,
 				interval: `${startDate}:${endDate}`,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -94,6 +92,55 @@ describe('Export API', () => {
 			expect(result.data).toMap(exportSchema);
 			expect(result.meta).toMap(metaSchema);
 			expect(result.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('scheduled from account publicKey -> return 200 OK', async () => {
+			// Add delay of 10 seconds
+			await new Promise(resolve => setTimeout(resolve, 10000));
+
+			const expected = { ready: true };
+			const response = await requestTransactionExport({
+				publicKey: refTransaction2.sender.publicKey,
+				interval: `${startDate}:${endDate}`,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchema);
+			expect(result.data).toMap(exportSchema);
+			expect(result.meta).toMap(metaSchema);
+			expect(result.meta).toEqual(expect.objectContaining(expected));
+		});
+	});
+
+	describe('Invalid params/request', () => {
+		it('return INVALID_REQUEST when no address', async () => {
+			const response = await requestTransactionExport();
+			expect(response).toMap(invalidRequestSchema);
+		});
+
+		it('return INVALID_PARAMS when invalid address', async () => {
+			const response = await requestTransactionExport({
+				address: 'lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm',
+				interval: `${startDate}:${endDate}`,
+			});
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('return INVALID_PARAMS when invalid publicKey', async () => {
+			const response = await requestTransactionExport({
+				publicKey: 'd517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4',
+				interval: `${startDate}:${endDate}`,
+			});
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('return INVALID_PARAMS when invalid interval', async () => {
+			const invalidInterval = '20-10-2021:20-11-2021';
+			const response = await requestTransactionExport({
+				address: refTransaction1.sender.address,
+				interval: invalidInterval,
+			});
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 });
