@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { parse } = require('csv-parse');
+
 const waitForSuccess = (fn, successValidator, intervalMs = 500) => new Promise((resolve) => {
 	const intervalId = setInterval(
 		() => fn()
@@ -25,6 +27,13 @@ const waitForSuccess = (fn, successValidator, intervalMs = 500) => new Promise((
 	);
 });
 
+const isStringCsvParseable = (string, params) => parse(
+	string,
+	params,
+	(err) => !err,
+);
+
 module.exports = {
 	waitForSuccess,
+	isStringCsvParseable,
 };

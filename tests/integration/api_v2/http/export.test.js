@@ -14,7 +14,6 @@
  *
  */
 const moment = require('moment');
-
 const config = require('../../../config');
 const exportConfig = require('../../../../services/export/config');
 
@@ -34,7 +33,10 @@ const {
 	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
-const { waitForSuccess } = require('../../../helpers/utils');
+const {
+	waitForSuccess,
+	isStringCsvParseable,
+} = require('../../../helpers/utils');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
@@ -101,14 +103,18 @@ describe('Export API', () => {
 	});
 
 	describe('Download csv file -> returns 200 OK', () => {
+		const parseParams = { delimiter: exportConfig.csv.delimiter };
+
 		it('scheduled from account address -> 200 OK', async () => {
 			const validFileName = `transactions_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;
-			await api.get(`${baseUrlV2}/exports/${validFileName}`, 200);
+			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, 200);
+			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});
 
 		it('scheduled from account publicKey -> 200 OK', async () => {
 			const validFileName = `transactions_${refTransaction2.sender.address}_${startDate}_${endDate}.csv`;
-			await api.get(`${baseUrlV2}/exports/${validFileName}`, 200);
+			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, 200);
+			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
 		});
 	});
 
