@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "chai": "^4.3.4",
+    "csv-parse": "^5.0.3",
     "express": "^4.17.1",
     "http-proxy": "^1.18.1",
     "http-status-codes": "^1.4.0",
