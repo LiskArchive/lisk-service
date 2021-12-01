@@ -13,15 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const config = require('../../../config');
-const { request } = require('../../../helpers/socketIoRpcRequest');
+const moment = require('moment');
 
+const config = require('../../../config');
+const exportConfig = require('../../../../services/export/config');
+const {
+	request,
+} = require('../../../helpers/socketIoRpcRequest');
 const {
 	jsonRpcEnvelopeSchema,
 	invalidParamsSchema,
 	invalidRequestSchema,
 } = require('../../../schemas/rpcGenerics.schema');
-
 const {
 	metaSchema,
 	exportSchema,
@@ -29,13 +32,14 @@ const {
 	goodRequestSchema,
 } = require('../../../schemas/api_v2/export.schema');
 
+const { waitForSuccess } = require('../../../helpers/utils');
+
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const requestTransactionExport = async (params) => request(wsRpcUrl, 'get.transactions.export', params);
 const requestTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
-
 describe('Export API', () => {
-	const startDate = '2021-01-10';
-	const endDate = '2021-11-30';
+	const startDate = moment('2021-01-10').format(exportConfig.csv.dateFormat);
+	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
 	let refTransaction1;
 	let refTransaction2;
 	beforeAll(async () => {
@@ -77,15 +81,15 @@ describe('Export API', () => {
 	});
 
 	describe('File is ready to export', () => {
-		it('scheduled from account address -> return 200 OK', async () => {
-			// Add delay of 10 seconds
-			await new Promise(resolve => setTimeout(resolve, 10000));
+		const successValidator = (response) => response.result.meta.ready;
 
-			const expected = { ready: true };
-			const response = await requestTransactionExport({
+		it('scheduled from account address -> return 200 OK', async () => {
+			const scheduleExport = async () => requestTransactionExport({
 				address: refTransaction1.sender.address,
 				interval: `${startDate}:${endDate}`,
 			});
+			const response = await waitForSuccess(scheduleExport, successValidator);
+			const expected = { ready: true };
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(goodRequestSchema);
@@ -95,14 +99,12 @@ describe('Export API', () => {
 		});
 
 		it('scheduled from account publicKey -> return 200 OK', async () => {
-			// Add delay of 10 seconds
-			await new Promise(resolve => setTimeout(resolve, 10000));
-
-			const expected = { ready: true };
-			const response = await requestTransactionExport({
-				publicKey: refTransaction2.sender.publicKey,
+			const scheduleExport = async () => requestTransactionExport({
+				address: refTransaction1.sender.address,
 				interval: `${startDate}:${endDate}`,
 			});
+			const response = await waitForSuccess(scheduleExport, successValidator);
+			const expected = { ready: true };
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(goodRequestSchema);

@@ -15,18 +15,23 @@
  */
 import Joi from 'joi';
 
-const exportSchema = {
-	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
-	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).optional(),
-	interval: Joi.string().pattern(/^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/).required(),
-	fileName: Joi.string().required(),
-	fileUrl: Joi.string().required(),
+const regex = {
+	address: /^lsk[a-hjkm-z2-9]{38}$/,
+	publicKey: /^([A-Fa-f0-9]{2}){32}$/,
+	interval: /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/,
+	fileName: /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/,
+	fileUrl: /^\/api\/v2\/exports\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/,
 };
 
 const exportSchemaAccepted = {
-	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
-	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).optional(),
-	interval: Joi.string().pattern(/^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/).required(),
+	address: Joi.string().pattern(regex.address).required(),
+	publicKey: Joi.string().pattern(regex.publicKey).optional(),
+	interval: Joi.string().pattern(regex.interval).required(),
+};
+const exportSchema = {
+	...exportSchemaAccepted,
+	fileName: Joi.string().pattern(regex.fileName).required(),
+	fileUrl: Joi.string().pattern(regex.fileUrl).required(),
 };
 
 const metaSchema = {
@@ -35,7 +40,7 @@ const metaSchema = {
 
 const goodRequestSchema = {
 	data: Joi.object().required(),
-	meta: Joi.object().required(),
+	meta: Joi.object(metaSchema).required(),
 	links: Joi.object().optional(),
 };
 

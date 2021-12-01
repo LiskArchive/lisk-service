@@ -13,8 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const moment = require('moment');
+
 const config = require('../../../config');
-const { api } = require('../../../helpers/api');
+const exportConfig = require('../../../../services/export/config');
+
+const {
+	api,
+} = require('../../../helpers/api');
 
 const {
 	metaSchema,
@@ -28,12 +34,14 @@ const {
 	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
+const { waitForSuccess } = require('../../../helpers/utils');
+
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
 
 describe('Export API', () => {
-	const startDate = '2021-01-10';
-	const endDate = '2021-11-30';
+	const startDate = moment('2021-01-10').format(exportConfig.csv.dateFormat);
+	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
 	let refTransaction1;
 	let refTransaction2;
 	beforeAll(async () => {
@@ -68,11 +76,10 @@ describe('Export API', () => {
 
 	describe('File is ready to export', () => {
 		it('scheduled from account address -> return 200 OK', async () => {
-			// Add delay of 10 seconds
-			await new Promise(resolve => setTimeout(resolve, 10000));
-
+			const scheduleExport = async () => api
+				.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`, 200);
+			const response = await waitForSuccess(scheduleExport);
 			const expected = { ready: true };
-			const response = await api.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`, 200);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Object);
 			expect(response.data).toMap(exportSchema);
@@ -81,11 +88,10 @@ describe('Export API', () => {
 		});
 
 		it('scheduled from account from publicKey -> return 200 OK', async () => {
-			// Add delay of 10 seconds
-			await new Promise(resolve => setTimeout(resolve, 10000));
-
+			const scheduleExport = async () => api
+				.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`, 200);
+			const response = await waitForSuccess(scheduleExport);
 			const expected = { ready: true };
-			const response = await api.get(`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`, 200);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Object);
 			expect(response.data).toMap(exportSchema);
