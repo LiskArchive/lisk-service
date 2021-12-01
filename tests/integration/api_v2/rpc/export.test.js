@@ -136,11 +136,36 @@ describe('Export API', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('return INVALID_PARAMS when invalid interval', async () => {
+		it('return INVALID_PARAMS when address with invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await requestTransactionExport({
 				address: refTransaction1.sender.address,
 				interval: invalidInterval,
+			});
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('return INVALID_PARAMS when publicKey with invalid interval', async () => {
+			const invalidInterval = '20-10-2021:20-11-2021';
+			const response = await requestTransactionExport({
+				publicKey: refTransaction2.sender.publicKey,
+				interval: invalidInterval,
+			});
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('return INVALID_PARAMS when invalid address with interval', async () => {
+			const response = await requestTransactionExport({
+				address: 'lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm',
+				interval: `${startDate}:${endDate}`,
+			});
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('return INVALID_PARAMS when invalid publicKey with interval', async () => {
+			const response = await requestTransactionExport({
+				publicKey: 'd517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4',
+				interval: `${startDate}:${endDate}`,
 			});
 			expect(response).toMap(invalidParamsSchema);
 		});

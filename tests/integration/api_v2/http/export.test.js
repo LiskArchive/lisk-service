@@ -128,9 +128,25 @@ describe('Export API', () => {
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('Schedule file export -> 400 when invalid interval', async () => {
+		it('Schedule file export -> 400 when address with invalid interval', async () => {
 			const invalidInterval = '20-10-2021:20-11-2021';
 			const response = await api.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${invalidInterval}`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when publicKey with invalid interval', async () => {
+			const invalidInterval = '20-10-2021:20-11-2021';
+			const response = await api.get(`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${invalidInterval}`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid address with interval', async () => {
+			const response = await api.get(`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm&interval=${startDate}:${endDate}`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid publicKey with interval', async () => {
+			const response = await api.get(`${baseUrlV2}/transactions/export?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4&interval=${startDate}:${endDate}`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
