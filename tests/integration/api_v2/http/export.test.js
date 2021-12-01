@@ -89,7 +89,7 @@ describe('Export API', () => {
 
 		it('scheduled from account from publicKey -> return 200 OK', async () => {
 			const scheduleExport = async () => api
-				.get(`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`, 200);
+				.get(`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`, 200);
 			const response = await waitForSuccess(scheduleExport);
 			const expected = { ready: true };
 			expect(response).toMap(goodRequestSchema);

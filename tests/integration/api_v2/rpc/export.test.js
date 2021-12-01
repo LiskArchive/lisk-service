@@ -100,7 +100,7 @@ describe('Export API', () => {
 
 		it('scheduled from account publicKey -> return 200 OK', async () => {
 			const scheduleExport = async () => requestTransactionExport({
-				address: refTransaction1.sender.address,
+				publicKey: refTransaction2.sender.publicKey,
 				interval: `${startDate}:${endDate}`,
 			});
 			const response = await waitForSuccess(scheduleExport, successValidator);
