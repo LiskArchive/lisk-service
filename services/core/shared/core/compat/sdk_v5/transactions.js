@@ -15,7 +15,11 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
-	Exceptions: { InvalidParamsException, NotFoundException },
+	Exceptions: {
+		InvalidParamsException,
+		NotFoundException,
+		ValidationException,
+	},
 } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
@@ -149,33 +153,48 @@ const getTransactionsByIDs = async ids => {
 };
 
 const validateParams = async params => {
+	if (params.amount && params.amount.includes(':')) {
+		const { amount, ...remParams } = params;
+		params = remParams;
+
+		const [from, to] = amount.split(':');
+		if (from && to && from > to) throw new ValidationException('From amount cannot be greater than to amount');
+
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
+			property: 'amount',
+			from,
+			to,
+		});
+	}
+
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
+		const { height, ...remParams } = params;
+		params = remParams;
+
+		const [from, to] = height.split(':');
+		if (from && to && from > to) throw new ValidationException('From height cannot be greater than to height');
+
+		if (!params.propBetweens) params.propBetweens = [];
+		params.propBetweens.push({
+			property: 'height',
+			from,
+			to,
+		});
+	}
+
 	if (params.timestamp && params.timestamp.includes(':')) {
 		const { timestamp, ...remParams } = params;
 		params = remParams;
 
-		[params.fromTimestamp, params.toTimestamp] = timestamp.split(':');
-	}
-
-	if (params.amount && params.amount.includes(':')) {
-		const { amount, ...remParams } = params;
-		params = remParams;
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'amount',
-			from: amount.split(':')[0],
-			to: amount.split(':')[1],
-		});
-	}
-
-	if (params.fromTimestamp || params.toTimestamp) {
-		const { fromTimestamp, toTimestamp, ...remParams } = params;
-		params = remParams;
+		const [from, to] = timestamp.split(':');
+		if (from && to && from > to) throw new ValidationException('From timestamp cannot be greater than to timestamp');
 
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({
 			property: 'timestamp',
-			from: fromTimestamp,
-			to: toTimestamp,
+			from,
+			to,
 		});
 	}
 
