@@ -22,8 +22,7 @@
         "name": "height",
         "in": "query",
         "description": "Query for block(s) by height or a height range (fromHeight:toHeight, both inclusive)",
-        "type": "integer",
-        "format": "int32",
+        "type": "string",
         "minimum": 1
     },
     "timestamp": {
@@ -31,7 +30,7 @@
         "in": "query",
         "description": "Range fromTimestamp:toTimestamp",
         "type": "string",
-        "minimum": 0
+        "minimum": 1
     },
     "address": {
         "name": "address",
