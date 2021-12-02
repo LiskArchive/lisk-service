@@ -15,11 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
-	Exceptions: {
-		InvalidParamsException,
-		NotFoundException,
-		ValidationException,
-	},
+	Exceptions: { InvalidParamsException, NotFoundException },
 } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
@@ -37,6 +33,10 @@ const {
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
 } = require('./accounts');
+
+const {
+	normalizeRangeParam,
+} = require('./paramUtils');
 
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -150,19 +150,6 @@ const getTransactionByID = async id => {
 const getTransactionsByIDs = async ids => {
 	const response = await requestApi(coreApi.getTransactionsByIDs, ids);
 	return normalizeTransaction(response.data);
-};
-
-const normalizeRangeParam = (params, property) => {
-	if (typeof params[property] === 'string' && params[property].includes(':')) {
-		const [from, to] = params[property].split(':');
-		if (from && to && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
-
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({ property, from, to });
-
-		delete params[property];
-	}
-	return params;
 };
 
 const validateParams = async params => {

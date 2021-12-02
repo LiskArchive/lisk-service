@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 const {
 	CacheRedis,
 	Logger,
-	Exceptions: { ValidationException, NotFoundException },
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
@@ -26,6 +26,10 @@ const config = require('../../../../config');
 const {
 	getIndexedAccountInfo,
 } = require('./accounts');
+
+const {
+	normalizeRangeParam,
+} = require('./paramUtils');
 
 const {
 	getApiClient,
@@ -165,19 +169,6 @@ const isQueryFromIndex = params => {
 		|| (paramProps.length === 3 && params.limit === 1 && params.offset === 0 && sortOrder === 'desc');
 
 	return !isDirectQuery && !isLatestBlockFetch;
-};
-
-const normalizeRangeParam = (params, property) => {
-	if (typeof params[property] === 'string' && params[property].includes(':')) {
-		const [from, to] = params[property].split(':');
-		if (from && to && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
-
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({ property, from, to });
-
-		delete params[property];
-	}
-	return params;
 };
 
 const getBlocks = async params => {
