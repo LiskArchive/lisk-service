@@ -152,50 +152,30 @@ const getTransactionsByIDs = async ids => {
 	return normalizeTransaction(response.data);
 };
 
-const validateParams = async params => {
-	if (params.amount && params.amount.includes(':')) {
-		const { amount, ...remParams } = params;
-		params = remParams;
-
-		const [from, to] = amount.split(':');
-		if (from && to && from > to) throw new ValidationException('From amount cannot be greater than to amount');
+const normalizeRangeParam = (params, property) => {
+	if (typeof params[property] === 'string' && params[property].includes(':')) {
+		const [from, to] = params[property].split(':');
+		if (from && to && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
 
 		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'amount',
-			from,
-			to,
-		});
+		params.propBetweens.push({ property, from, to });
+
+		delete params[property];
+	}
+	return params;
+};
+
+const validateParams = async params => {
+	if (params.amount && params.amount.includes(':')) {
+		params = normalizeRangeParam(params, 'amount');
 	}
 
 	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-		const { height, ...remParams } = params;
-		params = remParams;
-
-		const [from, to] = height.split(':');
-		if (from && to && from > to) throw new ValidationException('From height cannot be greater than to height');
-
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'height',
-			from,
-			to,
-		});
+		params = normalizeRangeParam(params, 'height');
 	}
 
 	if (params.timestamp && params.timestamp.includes(':')) {
-		const { timestamp, ...remParams } = params;
-		params = remParams;
-
-		const [from, to] = timestamp.split(':');
-		if (from && to && from > to) throw new ValidationException('From timestamp cannot be greater than to timestamp');
-
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'timestamp',
-			from,
-			to,
-		});
+		params = normalizeRangeParam(params, 'timestamp');
 	}
 
 	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
