@@ -13,29 +13,215 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const moment = require('moment');
 const config = require('../../../config');
-const { api } = require('../../../helpers/api');
+const exportConfig = require('../../../../services/export/config');
+
+const {
+	api,
+} = require('../../../helpers/api');
+
+const {
+	metaSchema,
+	exportSchema,
+	exportSchemaAccepted,
+	goodRequestSchema,
+} = require('../../../schemas/api_v2/export.schema');
 
 const {
 	notFoundSchema,
+	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
+
+const {
+	waitForSuccess,
+	isStringCsvParseable,
+} = require('../../../helpers/utils');
+
+const httpStatus = {
+	OK: 200,
+	ACCEPTED: 202,
+	NOT_FOUND: 404,
+	BAD_REQUEST: 400,
+};
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
-const endpoint = `${baseUrlV2}/exports`;
 
-const expectedResponse = '"Date";"Time";"Amount LSK";"Fee LSK";"Module:Asset";"Module:Asset Name";"Sender";"Recipient";"Sender Public Key";"Recipient Public Key";"Block Height";"Note";"Transaction ID"\n"2021-08-20";"10:53:06";"10.00000000";"0.00000000";"2:0";"token:transfer";"lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt";"lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd";"0fe9a3f1a21b5530f27f87a414b549e79a940bf24fdf2b2f05e7f22aeeecc86a";"10bdf57ee21ff657ab617395acab81814c3983f608bf6f0be6e626298225331d";413;;"28fcc24bdbdf25e4ae6350fdac6af5c08f5a13bece10a34f27478f07569ecef0"\n"2021-08-20";"10:54:56";"165.00000000";"0.00119000";"1000:0";"legacyAccount:reclaimLSK";"lskqz6gpqfu9tb5yc2jtqmqvqp3x8ze35g99u2zfd";;"10bdf57ee21ff657ab617395acab81814c3983f608bf6f0be6e626298225331d";;424;;"6cff643daaa2bd1112d1b4591abef3e62f9e4f6e37a260fcd7508ce6a06f061c"\n';
-
-describe('Account history export API', () => {
-	it('return csv file -> 200 OK', async () => {
-		const validFile = 'test.csv';
-		const response = await api.get(`${endpoint}/${validFile}`, 200);
-		expect(response).toEqual(expectedResponse);
+describe('Export API', () => {
+	const startDate = moment('2021-01-10').format(exportConfig.csv.dateFormat);
+	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
+	let refTransaction1;
+	let refTransaction2;
+	let refTransaction3;
+	let refTransaction4;
+	beforeAll(async () => {
+		const response = await api.get(`${baseUrlV2}/transactions?limit=4`);
+		[refTransaction1, refTransaction2, refTransaction3, refTransaction4] = response.data;
 	});
 
-	it('File not exists -> 404 NOT_FOUND', async () => {
-		const invalidFile = 'invalid.csv';
-		const response = await api.get(`${endpoint}/${invalidFile}`, 404);
-		expect(response).toMap(notFoundSchema);
+	describe('Schedule file export', () => {
+		it('Schedule file export from account address with interval -> return 202 Accepted', async () => {
+			const expected = { ready: false };
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+				httpStatus.ACCEPTED,
+			);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchemaAccepted);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('Schedule file export from account publicKey with interval -> return 202 Accepted', async () => {
+			const expected = { ready: false };
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				httpStatus.ACCEPTED,
+			);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchemaAccepted);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('Schedule file export from account address -> return 202 Accepted', async () => {
+			const expected = { ready: false };
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=${refTransaction3.sender.address}`,
+				httpStatus.ACCEPTED,
+			);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchemaAccepted);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
+			const expected = { ready: false };
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=${refTransaction4.sender.publicKey}`,
+				httpStatus.ACCEPTED,
+			);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchemaAccepted);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+	});
+
+	describe('File is ready to export', () => {
+		it('scheduled from account address -> return 200 OK', async () => {
+			const scheduleExport = async () => api
+				.get(
+					`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
+					httpStatus.OK,
+				);
+			const response = await waitForSuccess(scheduleExport);
+			const expected = { ready: true };
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchema);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('scheduled from account from publicKey -> return 200 OK', async () => {
+			const scheduleExport = async () => api
+				.get(
+					`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+					httpStatus.OK,
+				);
+			const response = await waitForSuccess(scheduleExport);
+			const expected = { ready: true };
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchema);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+	});
+
+	describe('Download csv file -> returns 200 OK', () => {
+		const parseParams = { delimiter: exportConfig.csv.delimiter };
+
+		it('scheduled from account address -> 200 OK', async () => {
+			const validFileName = `transactions_${refTransaction1.sender.address}_${startDate}_${endDate}.csv`;
+			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, httpStatus.OK);
+			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
+		});
+
+		it('scheduled from account publicKey -> 200 OK', async () => {
+			const validFileName = `transactions_${refTransaction2.sender.address}_${startDate}_${endDate}.csv`;
+			const response = await api.get(`${baseUrlV2}/exports/${validFileName}`, httpStatus.OK);
+			expect(isStringCsvParseable(response, parseParams)).toBeTruthy();
+		});
+	});
+
+	describe('Invalid params/request', () => {
+		it('Schedule file export -> 400 when no params', async () => {
+			const response = await api.get(`${baseUrlV2}/transactions/export`, httpStatus.BAD_REQUEST);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid address', async () => {
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm`,
+				httpStatus.BAD_REQUEST,
+			);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid publicKey', async () => {
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4`,
+				httpStatus.BAD_REQUEST,
+			);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when address with invalid interval', async () => {
+			const invalidInterval = '20-10-2021:20-11-2021';
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${invalidInterval}`,
+				httpStatus.BAD_REQUEST,
+			);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when publicKey with invalid interval', async () => {
+			const invalidInterval = '20-10-2021:20-11-2021';
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${invalidInterval}`,
+				httpStatus.BAD_REQUEST,
+			);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid address with interval', async () => {
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=lsknww5x4dv93x3euds4w72d99ouwnqojyw5qrm&interval=${startDate}:${endDate}`,
+				httpStatus.BAD_REQUEST,
+			);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('Schedule file export -> 400 when invalid publicKey with interval', async () => {
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=d517f9d9ac10a61b57d1959b88f8b5c6e8824d27a5349ec7ece44c4a027c4&interval=${startDate}:${endDate}`,
+				httpStatus.BAD_REQUEST,
+			);
+			expect(response).toMap(badRequestSchema);
+		});
+
+		it('File not exists -> 404 NOT_FOUND', async () => {
+			const invalidFile = 'invalid.csv';
+			const response = await api.get(`${baseUrlV2}/exports/${invalidFile}`, httpStatus.NOT_FOUND);
+			expect(response).toMap(notFoundSchema);
+		});
 	});
 });
