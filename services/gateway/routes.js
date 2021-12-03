@@ -55,8 +55,6 @@ const filterApis = (requiredApis, availableApis) => {
 module.exports = filterApis(config.api.http, {
 	'http-test': () => registerApi('http-test', { ...defaultConfig, path: '/test' }),
 	'http-status': () => registerApi('http-status', { ...defaultConfig, path: '/' }),
-	'http-version1': () => registerApi('http-version1', { ...defaultConfig, path: '/v1' }),
-	'http-version1-compat': () => registerApi('http-version1-compat', { ...defaultConfig, path: '/v1' }),
 	'http-version2': () => registerApi('http-version2', { ...defaultConfig, path: '/v2' }),
 	'http-exports': () => registerApi('http-exports', { ...defaultConfig, path: '/v2' }),
 });
