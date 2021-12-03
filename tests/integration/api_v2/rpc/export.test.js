@@ -42,16 +42,24 @@ describe('Export API', () => {
 	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
 	let refTransaction1;
 	let refTransaction2;
+	let refTransaction3;
+	let refTransaction4;
 	beforeAll(async () => {
 		const response1 = await requestTransactions({ limit: 1 });
 		[refTransaction1] = response1.result.data;
 
 		const response2 = await requestTransactions({ limit: 1, offset: 1 });
 		[refTransaction2] = response2.result.data;
+
+		const response3 = await requestTransactions({ limit: 1, offset: 2 });
+		[refTransaction3] = response3.result.data;
+
+		const response4 = await requestTransactions({ limit: 1, offset: 3 });
+		[refTransaction4] = response4.result.data;
 	});
 
 	describe('Schedule file export', () => {
-		it('Schedule file export from account address -> return 202 Accepted', async () => {
+		it('Schedule file export from account address with interval', async () => {
 			const expected = { ready: false };
 			const response = await requestTransactionExport({
 				address: refTransaction1.sender.address,
@@ -65,11 +73,37 @@ describe('Export API', () => {
 			expect(result.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
+		it('Schedule file export from account publicKey with interval', async () => {
 			const expected = { ready: false };
 			const response = await requestTransactionExport({
 				publicKey: refTransaction2.sender.publicKey,
 				interval: `${startDate}:${endDate}`,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchema);
+			expect(result.data).toMap(exportSchemaAccepted);
+			expect(result.meta).toMap(metaSchema);
+			expect(result.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('Schedule file export from account address', async () => {
+			const expected = { ready: false };
+			const response = await requestTransactionExport({
+				address: refTransaction3.sender.address,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(goodRequestSchema);
+			expect(result.data).toMap(exportSchemaAccepted);
+			expect(result.meta).toMap(metaSchema);
+			expect(result.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('Schedule file export from account publicKey', async () => {
+			const expected = { ready: false };
+			const response = await requestTransactionExport({
+				publicKey: refTransaction4.sender.publicKey,
 			});
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -83,7 +117,7 @@ describe('Export API', () => {
 	describe('File is ready to export', () => {
 		const successValidator = (response) => response.result.meta.ready;
 
-		it('scheduled from account address -> return 200 OK', async () => {
+		it('scheduled from account address', async () => {
 			const scheduleExport = async () => requestTransactionExport({
 				address: refTransaction1.sender.address,
 				interval: `${startDate}:${endDate}`,
@@ -98,7 +132,7 @@ describe('Export API', () => {
 			expect(result.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('scheduled from account publicKey -> return 200 OK', async () => {
+		it('scheduled from account publicKey', async () => {
 			const scheduleExport = async () => requestTransactionExport({
 				publicKey: refTransaction2.sender.publicKey,
 				interval: `${startDate}:${endDate}`,

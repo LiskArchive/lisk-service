@@ -53,16 +53,24 @@ describe('Export API', () => {
 	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
 	let refTransaction1;
 	let refTransaction2;
+	let refTransaction3;
+	let refTransaction4;
 	beforeAll(async () => {
 		const response1 = await api.get(`${baseUrlV2}/transactions?limit=1`);
 		[refTransaction1] = response1.data;
 
 		const response2 = await api.get(`${baseUrlV2}/transactions?limit=1&offset=1`);
 		[refTransaction2] = response2.data;
+
+		const response3 = await api.get(`${baseUrlV2}/transactions?limit=1&offset=2`);
+		[refTransaction3] = response3.data;
+
+		const response4 = await api.get(`${baseUrlV2}/transactions?limit=1&offset=3`);
+		[refTransaction4] = response4.data;
 	});
 
 	describe('Schedule file export', () => {
-		it('Schedule file export from account address -> return 202 Accepted', async () => {
+		it('Schedule file export from account address with interval -> return 202 Accepted', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
 				`${baseUrlV2}/transactions/export?address=${refTransaction1.sender.address}&interval=${startDate}:${endDate}`,
@@ -75,10 +83,36 @@ describe('Export API', () => {
 			expect(response.meta).toEqual(expect.objectContaining(expected));
 		});
 
-		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
+		it('Schedule file export from account publicKey with interval -> return 202 Accepted', async () => {
 			const expected = { ready: false };
 			const response = await api.get(
 				`${baseUrlV2}/transactions/export?publicKey=${refTransaction2.sender.publicKey}&interval=${startDate}:${endDate}`,
+				httpStatus.ACCEPTED,
+			);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchemaAccepted);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('Schedule file export from account address -> return 202 Accepted', async () => {
+			const expected = { ready: false };
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?address=${refTransaction3.sender.address}`,
+				httpStatus.ACCEPTED,
+			);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Object);
+			expect(response.data).toMap(exportSchemaAccepted);
+			expect(response.meta).toMap(metaSchema);
+			expect(response.meta).toEqual(expect.objectContaining(expected));
+		});
+
+		it('Schedule file export from account publicKey -> return 202 Accepted', async () => {
+			const expected = { ready: false };
+			const response = await api.get(
+				`${baseUrlV2}/transactions/export?publicKey=${refTransaction4.sender.publicKey}`,
 				httpStatus.ACCEPTED,
 			);
 			expect(response).toMap(goodRequestSchema);
