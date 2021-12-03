@@ -33,7 +33,7 @@ const filterApis = (requiredApis, availableApis) => {
 };
 
 module.exports = filterApis(config.api.ws, {
-	'/rpc-v2': () => registerApi(['http-version2'], { ...defaultConfig }),
+	'/rpc-v2': () => registerApi(['http-version2', 'http-exports'], { ...defaultConfig }),
 	'/rpc-test': () => registerApi('http-test', { ...defaultConfig }),
 	'/blockchain': () => ({
 		events: {

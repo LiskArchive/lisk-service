@@ -19,7 +19,7 @@ const { transformParams, response, getSwaggerDescription } = require('../../../s
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/exports/:filename',
+	swaggerApiPath: '/exports/{filename}',
 	params: {
 		filename: { optional: false, type: 'string' },
 	},
