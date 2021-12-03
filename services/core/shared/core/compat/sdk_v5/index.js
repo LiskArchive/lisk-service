@@ -102,7 +102,6 @@ const init = async () => {
 };
 
 module.exports = {
-	...require('../sdk_v4'),
 	...require('./coreCache'),
 
 	events,

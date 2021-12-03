@@ -17,9 +17,6 @@ const semver = require('semver');
 const { getCoreVersion } = require('./common');
 
 const sdkMappers = {
-	'1.0.0-alpha.0': 'sdk_v2',
-	'3.0.0-alpha.0': 'sdk_v3',
-	'3.0.0-beta.1': 'sdk_v4',
 	'3.0.0-beta.2': 'sdk_v5',
 };
 
