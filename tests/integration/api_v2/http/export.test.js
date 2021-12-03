@@ -56,17 +56,8 @@ describe('Export API', () => {
 	let refTransaction3;
 	let refTransaction4;
 	beforeAll(async () => {
-		const response1 = await api.get(`${baseUrlV2}/transactions?limit=1`);
-		[refTransaction1] = response1.data;
-
-		const response2 = await api.get(`${baseUrlV2}/transactions?limit=1&offset=1`);
-		[refTransaction2] = response2.data;
-
-		const response3 = await api.get(`${baseUrlV2}/transactions?limit=1&offset=2`);
-		[refTransaction3] = response3.data;
-
-		const response4 = await api.get(`${baseUrlV2}/transactions?limit=1&offset=3`);
-		[refTransaction4] = response4.data;
+		const response = await api.get(`${baseUrlV2}/transactions?limit=4`);
+		[refTransaction1, refTransaction2, refTransaction3, refTransaction4] = response.data;
 	});
 
 	describe('Schedule file export', () => {
