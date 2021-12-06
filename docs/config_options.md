@@ -45,8 +45,6 @@ ENABLE_HTTP_API=http-status,http-version2
 ENABLE_WS_API=blockchain,rpc-v2
 ```
 
-Note: Since the SDK version 5 the HTTP APIs `http-version1,http-version1-compat` and WebSocket APIs `rpc,rpc-v1` are considered deprecated. Please use only `version2` APIs when connecting to the SDKv5-based node.
-
 ### Caching
 
 ```bash
