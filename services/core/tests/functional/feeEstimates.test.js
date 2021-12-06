@@ -20,7 +20,7 @@ const {
 	VoteTransaction,
 	UnlockTransaction,
 	ProofOfMisbehaviorTransaction,
-} = require('@liskhq/lisk-transactions-v5');
+} = require('@liskhq/lisk-transactions');
 
 const {
 	emptyBlock,
