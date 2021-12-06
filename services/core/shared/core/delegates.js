@@ -296,7 +296,7 @@ const updateDelegateListEveryBlock = () => {
 						if (delegateIndex === -1) delegateList.push(delegate);
 						else {
 							// Re-assign the current delegate status before updating the delegateList
-							// Avoid re-calculation of the delegate status
+							// Delegate status can change only at the beginning of a new round
 							const { status } = delegateList[delegateIndex];
 							delegateList[delegateIndex] = { ...delegate, status };
 						}
