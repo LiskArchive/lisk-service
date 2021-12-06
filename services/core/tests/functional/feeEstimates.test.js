@@ -53,7 +53,7 @@ const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
 const moderateTrafficMockup = require('../blockGenerator/moderateTraffic.json');
 const highTrafficMockup = require('../blockGenerator/highTraffic.json');
 
-
+// TODO: Update fee estimate test cases using sdk_v5 implementation
 describe('Fee estimation tests', () => {
 	describe('getTransactionInstanceByType', () => {
 		it('TransferTransaction', async () => {
