@@ -25,7 +25,14 @@ const normalizeRangeParam = (params, property) => {
 		if (!params.propBetweens) params.propBetweens = [];
 		params.propBetweens.push({ property, from, to });
 
-		delete params[property];
+		const normalizedParams = Object.keys(params).reduce(
+			(acc, key) => {
+				if (key !== property) acc[key] = params[key];
+				return acc;
+			},
+			{},
+		);
+		return normalizedParams;
 	}
 	return params;
 };
