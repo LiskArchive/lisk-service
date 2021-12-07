@@ -1,9 +1,0 @@
-{
-    "searchQuery": {
-        "in": "query",
-        "name": "q",
-        "required": true,
-        "description": "Search query",
-        "type": "string"
-    }
-}

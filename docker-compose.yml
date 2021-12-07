@@ -184,12 +184,14 @@ services:
     depends_on:
       - redis_common
       - redis_export
+      - redis_export_volatile
     networks:
       - services_network
       - export_network
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
       - SERVICE_EXPORT_REDIS=redis://redis_export:6379/0
+      - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_export_volatile:6379/0
     restart: always
 
   redis_export:
@@ -197,6 +199,17 @@ services:
     volumes:
       - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
       - redis-data-export:/data
+    networks:
+      - export_network
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping
+
+  redis_export_volatile:
+    image: redis:5-alpine
+    volumes:
+      - ./docker/redis.volatile.conf:/etc/redis/redis.conf:ro
     networks:
       - export_network
     restart: always
