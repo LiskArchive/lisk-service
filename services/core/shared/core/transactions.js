@@ -39,13 +39,20 @@ const mergeTransactions = async (params) => {
 		meta: {},
 	};
 
-	const { offset, limit, ...remParams } = params;
-	params = remParams;
-
 	const pendingTxs = await getPendingTransactions(params);
+
 	// Handle pending txs When call with `transactionId`
 	// In case of error from core, returns pendingTxs
+	const { offset, limit } = params;
 	try {
+		// Adjust the `limit` and `offset` as per the response from getPendingTransactions
+		const numTotalPendingTx = pendingTxs.meta.total;
+		params = {
+			...params,
+			limit: Math.max(1, limit - (numTotalPendingTx - pendingTxs.data.length)),
+			offset: Math.max(0, offset - numTotalPendingTx),
+		};
+
 		const response = await coreApi.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
@@ -55,13 +62,13 @@ const mergeTransactions = async (params) => {
 		transactions.meta.total = transactions.meta.total || 0;
 	}
 
-	allTransactions.data = pendingTxs.data.concat(transactions.data).slice(offset, offset + limit);
+	allTransactions.data = pendingTxs.data.length === limit
+		? pendingTxs.data
+		: pendingTxs.data.concat(transactions.data).slice(0, limit);
 
 	allTransactions.meta.count = allTransactions.data.length;
 	allTransactions.meta.offset = offset;
-	allTransactions.meta.total = pendingTxs.meta.total
-		? (pendingTxs.meta.total + transactions.meta.total)
-		: transactions.meta.total;
+	allTransactions.meta.total = pendingTxs.meta.total + transactions.meta.total;
 
 	return allTransactions;
 };
