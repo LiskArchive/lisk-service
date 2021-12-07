@@ -49,7 +49,6 @@ setBrokerHandle(app.getBroker());
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
-app.addEvents(path.join(__dirname, 'events'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
