@@ -138,8 +138,7 @@ const insertToDb = async (statsList, date) => {
 
 const fetchTransactions = async (date) => {
 	const params = {
-		fromTimestamp: moment.unix(date).unix(),
-		toTimestamp: moment.unix(date).add(1, 'day').unix(),
+		timestamp: `${moment.unix(date).unix()}:${moment.unix(date).add(1, 'day').unix()}`,
 	};
 	const maxCount = (await getTransactions({ ...params, limit: 1 })).meta.total;
 	const transactions = await requestAll(getTransactions, params, maxCount);

@@ -25,7 +25,7 @@ const config = require('../../../../config');
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
-let coreVersion = '1.0.0-alpha.0';
+let coreVersion = '3.0.0-beta.2';
 let constants;
 let readyStatus;
 let registeredLiskModuleAssets;

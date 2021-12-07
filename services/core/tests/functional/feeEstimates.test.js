@@ -20,7 +20,7 @@ const {
 	VoteTransaction,
 	UnlockTransaction,
 	ProofOfMisbehaviorTransaction,
-} = require('@liskhq/lisk-transactions-v4');
+} = require('@liskhq/lisk-transactions');
 
 const {
 	emptyBlock,
@@ -46,14 +46,14 @@ const {
 	calculateFeePerByte,
 	EMAcalc,
 	getEstimateFeeByteForBlock,
-} = require('../../shared/core/compat/sdk_v4/dynamicFees');
+} = require('../../shared/core/compat/sdk_v5/dynamicFees');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
 const moderateTrafficMockup = require('../blockGenerator/moderateTraffic.json');
 const highTrafficMockup = require('../blockGenerator/highTraffic.json');
 
-
+// TODO: Update fee estimate test cases using sdk_v5 implementation
 describe('Fee estimation tests', () => {
 	describe('getTransactionInstanceByType', () => {
 		it('TransferTransaction', async () => {
