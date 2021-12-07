@@ -1,16 +1,11 @@
 version: "3"
 services:
 
-  redis_common:
-    image: redis:5-alpine
-    volumes:
-      - ./docker/redis.volatile.conf:/etc/redis/redis.conf:ro
+  nats:
+    image: nats:2.6-alpine
     networks:
       - services_network
     restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
 
   redis_persistent:
     image: redis:5-alpine
@@ -38,7 +33,7 @@ services:
   core:
     image: lisk/service_core
     depends_on:
-      - redis_common
+      - nats
       - redis_persistent
       - redis_volatile
       - mysql_core
@@ -46,7 +41,7 @@ services:
       - services_network
       - core_network
     environment:
-      - SERVICE_BROKER=redis://redis_common:6379/0
+      - SERVICE_BROKER=nats://nats:4222
       - SERVICE_CORE_REDIS=redis://redis_persistent:6379/0
       - SERVICE_CORE_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_CORE_MYSQL=mysql://lisk:password@mysql_core:3306/lisk
@@ -84,14 +79,14 @@ services:
   gateway:
     image: lisk/service_gateway
     depends_on:
-      - redis_common
+      - nats
       - redis_volatile
       - core
     networks:
       - services_network
       - gateway_network
     environment:
-      - SERVICE_BROKER=redis://redis_common:6379/0
+      - SERVICE_BROKER=nats://nats:4222
       - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
       - ENABLE_HTTP_API=${ENABLE_HTTP_API}
       - ENABLE_WS_API=${ENABLE_WS_API}
@@ -109,13 +104,13 @@ services:
   market:
     image: lisk/service_market
     depends_on:
-      - redis_common
+      - nats
       - redis_persistent
     networks:
       - services_network
       - market_network
     environment:
-      - SERVICE_BROKER=redis://redis_common:6379/0
+      - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
       - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
       - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
@@ -124,13 +119,13 @@ services:
   newsfeed:
     image: lisk/service_newsfeed
     depends_on:
-      - redis_common
+      - nats
       - mysql_newsfeed
     networks:
       - services_network
       - newsfeed_network
     environment:
-      - SERVICE_BROKER=redis://redis_common:6379/0
+      - SERVICE_BROKER=nats://nats:4222
       - SERVICE_NEWSFEED_MYSQL=mysql://lisk:password@mysql_newsfeed:3306/lisk
       - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
       - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
@@ -160,14 +155,14 @@ services:
   export:
     image: lisk/service_export
     depends_on:
-      - redis_common
+      - nats
       - redis_persistent
       - redis_volatile
     networks:
       - services_network
       - export_network
     environment:
-      - SERVICE_BROKER=redis://redis_common:6379/0
+      - SERVICE_BROKER=nats://nats:4222
       - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
       - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_volatile:6379/3
     restart: always
