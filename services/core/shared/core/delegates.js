@@ -294,7 +294,12 @@ const updateDelegateListEveryBlock = () => {
 					// Update delegate list on newBlock event
 					if (delegate.isDelegate) {
 						if (delegateIndex === -1) delegateList.push(delegate);
-						else delegateList[delegateIndex] = delegate;
+						else {
+							// Re-assign the current delegate status before updating the delegateList
+							// Delegate status can change only at the beginning of a new round
+							const { status } = delegateList[delegateIndex];
+							delegateList[delegateIndex] = { ...delegate, status };
+						}
 						// Remove delegate from list when deleteBlock event contains delegate registration tx
 					} else if (delegateIndex !== -1) {
 						delegateList.splice(delegateIndex, 1);
@@ -329,6 +334,7 @@ const updateDelegateListEveryBlock = () => {
 	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
 
+// Updates the account details of the delegates
 const updateDelegateListOnAccountsUpdate = () => {
 	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
 		hexAddresses.forEach(async hexAddress => {

@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 const {
 	CacheRedis,
 	Logger,
-	Exceptions: { ValidationException, NotFoundException },
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
@@ -26,6 +26,10 @@ const config = require('../../../../config');
 const {
 	getIndexedAccountInfo,
 } = require('./accounts');
+
+const {
+	normalizeRangeParam,
+} = require('./paramUtils');
 
 const {
 	getApiClient,
@@ -198,29 +202,11 @@ const getBlocks = async params => {
 	}
 
 	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-		const { height, ...remParams } = params;
-		params = remParams;
-		const [from, to] = height.split(':');
-		if (from && to && from > to) throw new ValidationException('From height cannot be greater than to height');
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'height',
-			from,
-			to,
-		});
+		params = normalizeRangeParam(params, 'height');
 	}
 
 	if (params.timestamp && params.timestamp.includes(':')) {
-		const { timestamp, ...remParams } = params;
-		params = remParams;
-		const [from, to] = timestamp.split(':');
-		if (from && to && from > to) throw new ValidationException('From timestamp cannot be greater than to timestamp');
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'timestamp',
-			from,
-			to,
-		});
+		params = normalizeRangeParam(params, 'timestamp');
 	}
 
 	const total = await blocksDB.count(params);

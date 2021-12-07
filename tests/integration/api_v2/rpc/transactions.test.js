@@ -228,6 +228,62 @@ describe('Method get.transactions', () => {
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
+
+		it('Blocks with min...max height -> ok', async () => {
+			const minHeight = refTransaction.block.height;
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await getTransactions({ height: `${minHeight}:${maxHeight}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((transaction) => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeGreaterThanOrEqual(minHeight);
+				expect(transaction.block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Blocks with min... height -> ok', async () => {
+			const minHeight = refTransaction.block.height;
+			const response = await getTransactions({ height: `${minHeight}:` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((transaction) => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeGreaterThanOrEqual(minHeight);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Blocks with ...max height -> ok', async () => {
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await getTransactions({ height: `:${maxHeight}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((transaction) => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Blocks with max...min height -> empty response', async () => {
+			const minHeight = refTransaction.block.height;
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await getTransactions({ height: `${maxHeight}:${minHeight}` });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
 	});
 
 	describe('is able to retrieve list of transactions using timestamps', () => {

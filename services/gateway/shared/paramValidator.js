@@ -86,7 +86,7 @@ const validateInputParams = (rawInputParams = {}, specs) => {
 			if (routeParams[cur].default !== undefined) acc[cur] = routeParams[cur].default;
 			if (requestParams[cur] !== undefined) {
 				if (paramDatatype === 'number') {
-					acc[cur] = requestParams[cur] === '' ? acc[cur] : requestParams[cur];
+					acc[cur] = requestParams[cur] === '' ? acc[cur] : Number(requestParams[cur]);
 				} else {
 					acc[cur] = requestParams[cur];
 				}

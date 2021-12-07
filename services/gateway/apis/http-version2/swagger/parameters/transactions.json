@@ -69,7 +69,7 @@
         "name": "amount",
         "in": "query",
         "description": "Amount range of from:to amount",
-        "type": "integer",
+        "type": "string",
         "minimum": 0
     },
     "transaction": {

@@ -34,6 +34,10 @@ const {
 	resolveMultisignatureMemberships,
 } = require('./accounts');
 
+const {
+	normalizeRangeParam,
+} = require('./paramUtils');
+
 const { getRegisteredModuleAssets } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
 const { getTableInstance } = require('../../../indexdb/mysql');
@@ -149,34 +153,16 @@ const getTransactionsByIDs = async ids => {
 };
 
 const validateParams = async params => {
-	if (params.timestamp && params.timestamp.includes(':')) {
-		const { timestamp, ...remParams } = params;
-		params = remParams;
-
-		[params.fromTimestamp, params.toTimestamp] = timestamp.split(':');
-	}
-
 	if (params.amount && params.amount.includes(':')) {
-		const { amount, ...remParams } = params;
-		params = remParams;
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'amount',
-			from: amount.split(':')[0],
-			to: amount.split(':')[1],
-		});
+		params = normalizeRangeParam(params, 'amount');
 	}
 
-	if (params.fromTimestamp || params.toTimestamp) {
-		const { fromTimestamp, toTimestamp, ...remParams } = params;
-		params = remParams;
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
+		params = normalizeRangeParam(params, 'height');
+	}
 
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'timestamp',
-			from: fromTimestamp,
-			to: toTimestamp,
-		});
+	if (params.timestamp && params.timestamp.includes(':')) {
+		params = normalizeRangeParam(params, 'timestamp');
 	}
 
 	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {

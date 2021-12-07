@@ -327,6 +327,60 @@ describe('Transactions API', () => {
 		});
 	});
 
+	describe('Retrieve transaction list within height range', () => {
+		it('transactions within set heights are returned', async () => {
+			const minHeight = refTransaction.block.height;
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeGreaterThanOrEqual(minHeight);
+				expect(transaction.block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('transactions with half bounded range: fromHeight', async () => {
+			const minHeight = refTransaction.block.height;
+			const response = await api.get(`${endpoint}?height=${minHeight}:&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeGreaterThanOrEqual(minHeight);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('transactions with half bounded range: toHeight', async () => {
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await api.get(`${endpoint}?height=:${maxHeight}&limit=100`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.forEach(transaction => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('transactions with minHeight greater than maxHeight -> BAD_REQUEST', async () => {
+			const expectedStatusCode = 400;
+			const minHeight = refTransaction.block.height;
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await api.get(`${endpoint}?height=${maxHeight}:${minHeight}&limit=100`, expectedStatusCode);
+			expect(response).toMap(badRequestSchema);
+		});
+	});
+
 	describe('Retrieve transaction list within amount range', () => {
 		it('transactions within set amount range are returned', async () => {
 			const minAmount = 0;
