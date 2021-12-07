@@ -30,21 +30,40 @@ services:
     healthcheck:
       test: redis-cli ping
 
+  mysql:
+    image: mysql:8
+    platform: linux/amd64
+    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql-data:/var/lib/mysql
+    restart: always
+    networks:
+      - services_network
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=lisk
+      - MYSQL_PASSWORD=password
+    volumes:
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-hlocalhost", "-ppassword"]
+      timeout: 20s
+      retries: 10
+
   core:
     image: lisk/service_core
     depends_on:
       - nats
       - redis_persistent
       - redis_volatile
-      - mysql_core
+      - mysql
     networks:
       - services_network
-      - core_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_CORE_REDIS=redis://redis_persistent:6379/0
       - SERVICE_CORE_REDIS_VOLATILE=redis://redis_volatile:6379/0
-      - SERVICE_CORE_MYSQL=mysql://lisk:password@mysql_core:3306/lisk
+      - SERVICE_CORE_MYSQL=mysql://lisk:password@mysql:3306/lisk
       - LISK_STATIC=${LISK_STATIC}
       - GEOIP_JSON=${GEOIP_JSON}
       - INDEX_N_BLOCKS=${INDEX_N_BLOCKS}
@@ -57,26 +76,6 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  mysql_core:
-    image: mysql:8
-    platform: linux/amd64
-    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    volumes:
-      - mysql-data-core:/var/lib/mysql
-    restart: always
-    networks:
-      - core_network
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_USER=lisk
-      - MYSQL_PASSWORD=password
-    volumes:
-      - ./docker/mysql-init:/docker-entrypoint-initdb.d
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-hlocalhost", "-ppassword"]
-      timeout: 20s
-      retries: 10
-
   gateway:
     image: lisk/service_gateway
     depends_on:
@@ -85,7 +84,6 @@ services:
       - core
     networks:
       - services_network
-      - gateway_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
@@ -109,7 +107,6 @@ services:
       - redis_persistent
     networks:
       - services_network
-      - market_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
@@ -121,37 +118,17 @@ services:
     image: lisk/service_newsfeed
     depends_on:
       - nats
-      - mysql_newsfeed
+      - mysql
     networks:
       - services_network
-      - newsfeed_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_NEWSFEED_MYSQL=mysql://lisk:password@mysql_newsfeed:3306/lisk
+      - SERVICE_NEWSFEED_MYSQL=mysql://lisk:password@mysql:3306/newsfeed
       - TWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}
       - TWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}
       - TWITTER_ACCESS_TOKEN_KEY=${TWITTER_ACCESS_TOKEN_KEY}
       - TWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}
     restart: always
-
-  mysql_newsfeed:
-    image: mysql:8
-    platform: linux/amd64
-    command: mysqld --default-authentication-plugin=mysql_native_password
-    volumes:
-      - mysql-data-newsfeed:/var/lib/mysql
-    restart: always
-    networks:
-      - newsfeed_network
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=lisk
-      - MYSQL_USER=lisk
-      - MYSQL_PASSWORD=password
-    healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-hlocalhost", "-ppassword"]
-      timeout: 20s
-      retries: 10
 
   export:
     image: lisk/service_export
@@ -161,7 +138,6 @@ services:
       - redis_volatile
     networks:
       - services_network
-      - export_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
@@ -169,14 +145,8 @@ services:
     restart: always
 
 networks:
-  newsfeed_network:
   services_network:
-  market_network:
-  core_network:
-  gateway_network:
-  export_network:
 
 volumes:
-  mysql-data-newsfeed:
-  mysql-data-core:
+  mysql-data:
   redis-data:
