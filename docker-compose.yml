@@ -12,20 +12,43 @@ services:
     healthcheck:
       test: redis-cli ping
 
+  redis_persistent:
+    image: redis:5-alpine
+    volumes:
+      - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
+      - redis-data:/data
+    networks:
+      - services_network
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping
+
+  redis_volatile:
+    image: redis:5-alpine
+    volumes:
+      - ./docker/redis.volatile.conf:/etc/redis/redis.conf:ro
+    networks:
+      - services_network
+    restart: always
+    command: redis-server /etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping
+
   core:
     image: lisk/service_core
     depends_on:
       - redis_common
-      - redis_core_persistent
-      - redis_core_volatile
+      - redis_persistent
+      - redis_volatile
       - mysql_core
     networks:
       - services_network
       - core_network
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
-      - SERVICE_CORE_REDIS=redis://redis_core_persistent:6379/0
-      - SERVICE_CORE_REDIS_VOLATILE=redis://redis_core_volatile:6379/0
+      - SERVICE_CORE_REDIS=redis://redis_persistent:6379/0
+      - SERVICE_CORE_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_CORE_MYSQL=mysql://lisk:password@mysql_core:3306/lisk
       - LISK_STATIC=${LISK_STATIC}
       - GEOIP_JSON=${GEOIP_JSON}
@@ -38,29 +61,6 @@ services:
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
-  redis_core_persistent:
-    image: redis:5-alpine
-    volumes:
-      - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
-      - redis-data-core:/data
-    networks:
-      - core_network
-    restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
-
-  redis_core_volatile:
-    image: redis:5-alpine
-    volumes:
-      - ./docker/redis.volatile.conf:/etc/redis/redis.conf:ro
-    networks:
-      - core_network
-    restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
 
   mysql_core:
     image: mysql:8
@@ -84,14 +84,15 @@ services:
   gateway:
     image: lisk/service_gateway
     depends_on:
-      - redis_gateway_volatile
+      - redis_common
+      - redis_volatile
       - core
     networks:
       - services_network
       - gateway_network
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
-      - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_gateway_volatile:6379/0
+      - SERVICE_GATEWAY_REDIS_VOLATILE=redis://redis_volatile:6379/1
       - ENABLE_HTTP_API=${ENABLE_HTTP_API}
       - ENABLE_WS_API=${ENABLE_WS_API}
       - ENABLE_HTTP_CACHE_CONTROL=${ENABLE_HTTP_CACHE_CONTROL}
@@ -105,43 +106,20 @@ services:
     healthcheck:
       test: curl --fail http://gateway:9901/api/v2/transactions
 
-  redis_gateway_volatile:
-    image: redis:5-alpine
-    volumes:
-      - ./docker/redis.volatile.conf:/etc/redis/redis.conf:ro
-    networks:
-      - gateway_network
-    restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
-
   market:
     image: lisk/service_market
     depends_on:
       - redis_common
-      - redis_market
+      - redis_persistent
     networks:
       - services_network
       - market_network
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
-      - SERVICE_MARKET_REDIS=redis://redis_market:6379/0
+      - SERVICE_MARKET_REDIS=redis://redis_persistent:6379/2
       - SERVICE_MARKET_FIAT_CURRENCIES=${SERVICE_MARKET_FIAT_CURRENCIES}
       - SERVICE_MARKET_TARGET_PAIRS=${SERVICE_MARKET_TARGET_PAIRS}
     restart: always
-
-  redis_market:
-    image: redis:5-alpine
-    volumes:
-      - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
-      - redis-data-market:/data
-    networks:
-      - market_network
-    restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
 
   newsfeed:
     image: lisk/service_newsfeed
@@ -183,39 +161,16 @@ services:
     image: lisk/service_export
     depends_on:
       - redis_common
-      - redis_export
-      - redis_export_volatile
+      - redis_persistent
+      - redis_volatile
     networks:
       - services_network
       - export_network
     environment:
       - SERVICE_BROKER=redis://redis_common:6379/0
-      - SERVICE_EXPORT_REDIS=redis://redis_export:6379/0
-      - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_export_volatile:6379/0
+      - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
+      - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_volatile:6379/3
     restart: always
-
-  redis_export:
-    image: redis:5-alpine
-    volumes:
-      - ./docker/redis.persistent.conf:/etc/redis/redis.conf:ro
-      - redis-data-export:/data
-    networks:
-      - export_network
-    restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
-
-  redis_export_volatile:
-    image: redis:5-alpine
-    volumes:
-      - ./docker/redis.volatile.conf:/etc/redis/redis.conf:ro
-    networks:
-      - export_network
-    restart: always
-    command: redis-server /etc/redis/redis.conf
-    healthcheck:
-      test: redis-cli ping
 
 networks:
   newsfeed_network:
@@ -228,6 +183,4 @@ networks:
 volumes:
   mysql-data-newsfeed:
   mysql-data-core:
-  redis-data-core:
-  redis-data-market:
-  redis-data-export:
+  redis-data:
