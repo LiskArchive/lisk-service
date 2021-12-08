@@ -18,7 +18,7 @@ pipeline {
 	agent none
 	triggers {
 		// Triggers every week at midnight on Sunday morning
-		cron('0 0 * * 0')
+		cron('0 1 * * 0')
 		}
 	stages {
 		stage('Readiness check') {

@@ -34,7 +34,7 @@ pipeline {
 				ansiColor('xterm') {
 					dir('./') {
 						sh 'make down'
-						sh 'make up-custom-core3-cd'
+						sh 'make up'
 						sh 'make print-config'
 					}
 				}
