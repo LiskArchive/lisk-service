@@ -6,7 +6,7 @@
 
 Lisk Service 0.6.0 allows to export transactions in CSV format.
 
-To enable this feature make sure your PM2 config has the lisk-service-export microservice started. Docker script enables it automatically, however the gateway needs a param to enable it to the public.
+To enable this feature ensure that your PM2 config has the lisk-service-export microservice started. The Docker script enables it automatically, however, the gateway needs a param to enable it to the public.
 
 Consider adding the `http-exports` string to `ENABLE_HTTP_API` in order to make this feature available for users.
 
@@ -14,16 +14,16 @@ Consider adding the `http-exports` string to `ENABLE_HTTP_API` in order to make 
 
 ### Blockchain index
 
-Starting from `0.6.0` you do not need to rebuild the index every release. This will save much time during migrations and allow minimal interruptions of the Lisk Service availabilty.
+Starting from `0.6.0` it is not necessary to rebuild the index for every release. This significantly reduces the time required during migrations, therefore minimizing disruption of the Lisk Service availability.
 
-To make a snapshot on the `0.5.0` instance the following steps are needed.
+To create a snapshot on the `0.5.0` instance, execute the following commands below: 
 
 ```bash
 docker-compose stop core
 docker-compose exec -T mysql_core mysqldump --no-create-db lisk -u root -ppassword > mysql_core_index.sql
 ```
 
-Then you can stop Lisk Service and destroy old containers.
+Now it is possible to stop Lisk Service and destroy the old containers.
 
 ```bash
 make down
@@ -56,6 +56,6 @@ make start-core    # Start the core microservice
 
 Now the index will catch up with the recently produced blocks.
 
-It will also cause account re-indexing, this operation takes around 10 minutes. In the meantime the blockchain index will reach 100% and you can consider Lisk Service as fully operational. Once the 100% is reach CSV exports are possible.
+This will also cause account re-indexing and will take around 10 minutes. In the meantime, the blockchain index will reach 100% and at this point, Lisk Service will then be fully operational. Once 100% is reached CSV exports are then possible.
 
-We are working on making this procedure integrated with a standard Lisk Service procedure, stay tuned for updates.
+We are currently working on integrating this into a standard Lisk Service procedure, stay tuned for further updates.
