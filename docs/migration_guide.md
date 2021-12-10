@@ -49,8 +49,8 @@ Then restore the backup in the `0.6.0` instance.
 ```bash
 make up            # Start the new Lisk Service
 make stop-core     # Stop the core microservice
-make flush-index   # Drops the new empty index
-make restore       # Restore the index from the snapshot
+make flush-db      # Drops the new empty index
+make restore-db    # Restore the index from the snapshot
 make start-core    # Start the core microservice
 ```
 

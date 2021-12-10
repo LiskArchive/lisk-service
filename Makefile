@@ -12,13 +12,13 @@ down:
 restart: 
 	$(compose) restart
 
-backup:
+backup-db:
 	$(compose) exec -T mysql mysqldump --no-create-db lisk -u root -ppassword > mysql_core_index.sql
 
-restore:
+restore-db:
 	$(compose) exec -T mysql mysql lisk -u root -ppassword < mysql_core_index.sql
 
-flush-index:
+flush-db:
 	 echo "DROP DATABASE lisk; CREATE DATABASE lisk;" | $(compose) exec -T mysql mysql -u root -ppassword
 
 stop-%:
