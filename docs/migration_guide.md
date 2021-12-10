@@ -32,8 +32,9 @@ make down
 Alternatively, you can download the snapshot online.
 
 ```bash
-wget https://snapshots.lisk.io/mainnet/service-core-snapshot.sql.gz -O mysql_core_index.sql.gz
-gzip -d mysql_core_index.sql.gz
+wget https://snapshots.lisk.io/mainnet/service-core-snapshot.sql.gz -O service-core-snapshot.sql.gz
+wget https://snapshots.lisk.io/mainnet/service-core-snapshot.sql.gz.SHA256 -O- | sha256sum -c
+gzip -dc service-core-snapshot.sql.gz > mysql_core_index.sql
 ```
 
 Now switch to the `0.6.0` tag.
