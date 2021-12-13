@@ -12,6 +12,21 @@ down:
 restart: 
 	$(compose) restart
 
+backup-db:
+	$(compose) exec -T mysql mysqldump --no-create-db lisk -u root -ppassword > mysql_core_index.sql
+
+restore-db:
+	$(compose) exec -T mysql mysql lisk -u root -ppassword < mysql_core_index.sql
+
+flush-db:
+	 echo "DROP DATABASE lisk; CREATE DATABASE lisk;" | $(compose) exec -T mysql mysql -u root -ppassword
+
+stop-%:
+	$(compose) stop $*
+
+start-%:
+	$(compose) start $*
+
 ready:
 	$(compose) exec -T tests curl --silent --fail 'http://gateway:9901/api/ready' >/dev/null
 

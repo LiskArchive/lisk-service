@@ -72,3 +72,8 @@ docker/graylog/data*
 
 # Custom Docker env file
 .env
+
+# Database snapshots
+*.gz
+*.sql
+*.zst
