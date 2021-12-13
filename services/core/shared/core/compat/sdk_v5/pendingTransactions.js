@@ -99,6 +99,11 @@ const validateParams = async params => {
 		validatedParams.minAmount = Number(minAmount);
 		validatedParams.maxAmount = Number(maxAmount);
 	}
+
+	if (params.id) validatedParams.id = params.id;
+
+	if (params.sort) validatedParams.sort = params.sort;
+
 	return validatedParams;
 };
 
