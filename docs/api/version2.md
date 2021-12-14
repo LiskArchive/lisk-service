@@ -1012,6 +1012,7 @@ No params required.
 ```jsonc
 {
   "data": {
+    "genesisHeight": 16270293,
     "height": 16550779,
     "finalizedHeight": 16550609,
     "networkVersion": "3.0",
