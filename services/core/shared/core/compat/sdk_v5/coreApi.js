@@ -31,7 +31,6 @@ const {
 } = require('../common/wsRequest');
 
 const delay = require('../../../delay');
-const config = require('../../../../config');
 
 const blockchainStore = require('./blockchainStore');
 
@@ -57,20 +56,13 @@ const getNetworkStatus = async () => {
 };
 
 const updateGenesisHeight = async () => {
-	let genesisHeight = 0;
 	try {
-		// Determine genesis height
-		if (process.env.GENESIS_HEIGHT) {
-			genesisHeight = config.genesisHeight;
-		} else {
-			const { data: { networkIdentifier } } = await getNetworkStatus();
-			const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
-			genesisHeight = networkConfig ? networkConfig.genesisHeight : 0;
-		}
+		// Get genesis height
+		const { data: { genesisHeight } } = await getNetworkStatus();
 		await setGenesisHeight(genesisHeight);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getGenesisHeight\'');
+			throw new TimeoutException('Request timed out when calling \'updateGenesisHeight\'');
 		}
 		throw err;
 	}

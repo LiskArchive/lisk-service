@@ -39,20 +39,17 @@ config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:passwor
 /**
  * Network-related settings
  */
-config.genesisHeight = Number(process.env.GENESIS_HEIGHT || 0);
 config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL || '';
 
 config.networks = [
 	{
 		name: 'mainnet',
 		identifier: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99',
-		genesisHeight: 16270293,
 		genesisBlockUrl: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
 	},
 	{
 		name: 'testnet',
 		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
-		genesisHeight: 14075260,
 		genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
 	},
 ];
