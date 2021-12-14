@@ -23,6 +23,12 @@ module.exports = {
 
 			let requestID = req.headers['x-request-id'];
 			if (req.headers['x-correlation-id']) requestID = req.headers['x-correlation-id'];
+
+			// Manually set request origin to `http + host` if not exists
+			// to ensure proper `Access-Control-*` response headers
+			// TODO: Check for security implications
+			if (!req.headers.origin) req.headers.origin = `http://${req.headers.host}`;
+
 			const options = { requestID };
 			if (this.settings.rootCallOptions) {
 				if (_.isPlainObject(this.settings.rootCallOptions)) {
