@@ -16,8 +16,9 @@
 import Joi from 'joi';
 
 const networkStatusSchema = {
-	height: Joi.number().integer().required(),
-	finalizedHeight: Joi.number().integer().required(),
+	genesisHeight: Joi.number().integer().min(0).required(),
+	height: Joi.number().integer().min(0).required(),
+	finalizedHeight: Joi.number().min(0).integer().required(),
 	networkVersion: Joi.string().required(),
 	networkIdentifier: Joi.string().required(),
 	milestone: Joi.string().required(),
