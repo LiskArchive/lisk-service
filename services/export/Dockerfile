@@ -18,6 +18,7 @@ RUN adduser -D lisk
 
 COPY ./ /home/lisk/lisk-service/export/
 RUN chown -R lisk:lisk /home/lisk/
+RUN mkdir /home/lisk/lisk-service/export/data
 COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/export/node_modules/
 
 USER lisk
