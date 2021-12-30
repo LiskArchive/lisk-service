@@ -142,6 +142,10 @@ services:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_EXPORT_REDIS=redis://redis_persistent:6379/3
       - SERVICE_EXPORT_REDIS_VOLATILE=redis://redis_volatile:6379/3
+      - SERVICE_EXPORT_PARTIALS=/home/lisk/lisk-service/export/data/partials
+      - SERVICE_EXPORT_STATIC=/home/lisk/lisk-service/export/data/static
+    volumes:
+      - export-data:/home/lisk/lisk-service/export/data
     restart: always
 
 networks:
@@ -150,3 +154,4 @@ networks:
 volumes:
   mysql-data:
   redis-data:
+  export-data:
