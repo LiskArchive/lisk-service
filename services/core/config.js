@@ -46,11 +46,14 @@ config.networks = [
 		name: 'mainnet',
 		identifier: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99',
 		genesisBlockUrl: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
+		indexSnapshotUrl: process.env.INDEX_SNAPSHOT_URL_MAINENET || 'https://snapshots.lisk.io/mainnet/service-core-snapshot.sql.gz',
+
 	},
 	{
 		name: 'testnet',
 		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
 		genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
+		indexSnapshotUrl: process.env.INDEX_SNAPSHOT_URL_TESTNET || 'https://snapshots.lisk.io/testnet/service-core-snapshot.sql.gz',
 	},
 ];
 
@@ -132,5 +135,9 @@ config.queue = {
  * Lisk Core jobs configs
  */
 config.jobs = {};
+
+config.snapshot = {
+	fullIndexingEnabled: Boolean(String(process.env.ENABLE_FEE_ESTIMATOR_FULL).toLowerCase() === 'true'),
+};
 
 module.exports = config;
