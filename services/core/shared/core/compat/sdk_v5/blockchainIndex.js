@@ -339,7 +339,7 @@ const indexGenesisAccounts = async () => {
 	const isGenesisAccountsAlreadyIndexed = async () => {
 		const keyValueDB = await getKeyValueStoreIndex();
 		const [{ value: isAlreadyIndexed } = {}] = await keyValueDB.find(
-			{ key: isGenesisAccountIndexingFinished },
+			{ key: isGenesisAccountIndexingFinished, limit: 1 },
 			['value'],
 		);
 		return isAlreadyIndexed === String(true); // since 'value' is of type 'string'
