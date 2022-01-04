@@ -34,19 +34,19 @@ const config = require('../../../../config');
 const logger = Logger();
 
 let readStream;
-let indexSnapshotUrl;
-let indexSnapshotFilePath;
+let snapshotUrl;
+let snapshotFilePath;
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
 // const parseStream = json.createParseStream();
 
 const downloadSnapshot = async () => {
-	const directoryPath = path.dirname(indexSnapshotFilePath);
+	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
 	return new Promise((resolve, reject) => {
-		https.get(indexSnapshotUrl, (response) => {
+		https.get(snapshotUrl, (response) => {
 			if (response.statusCode === 200) {
 				response.pipe(tar.extract({ cwd: directoryPath }));
 				response.on('error', async (err) => reject(err));
@@ -65,20 +65,25 @@ const downloadSnapshot = async () => {
 };
 
 const initSnapshot = async () => {
+	if (config.snapshot.enable === false) {
+		logger.info('Index snapshot application has been disabled');
+		return;
+	}
+
 	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
 
 	const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
 	if (networkConfig) {
-		indexSnapshotUrl = networkConfig.indexSnapshotUrl;
-		indexSnapshotFilePath = `./data/${networkIdentifier}/blockchainIndex.json`;
+		snapshotUrl = networkConfig.snapshotUrl;
+		snapshotFilePath = `./data/${networkIdentifier}/blockchainIndex.json`;
 	} else {
 		logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
 		return;
 	}
 
-	if (!(await exists(indexSnapshotFilePath))) {
+	if (!(await exists(snapshotFilePath))) {
 		await downloadSnapshot();
-		readStream = fs.createReadStream(indexSnapshotFilePath);
+		readStream = fs.createReadStream(snapshotFilePath);
 	}
 };
 
