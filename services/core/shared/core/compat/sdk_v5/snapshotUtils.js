@@ -75,7 +75,7 @@ const initSnapshot = async () => {
 	const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
 	if (networkConfig) {
 		snapshotUrl = networkConfig.snapshotUrl;
-		snapshotFilePath = `./data/${networkIdentifier}/blockchainIndex.json`;
+		snapshotFilePath = `./data/${networkIdentifier}/service-core-snapshot.sql`;
 	} else {
 		logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
 		return;
