@@ -72,6 +72,7 @@ const transactionsIndexSchema = require('./schema/transactions');
 const votesIndexSchema = require('./schema/votes');
 const multisignatureIndexSchema = require('./schema/multisignature');
 const votesAggregateIndexSchema = require('./schema/votesAggregate');
+const keyValueStoreSchema = require('./schema/keyValueStore');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
@@ -79,6 +80,7 @@ const getMultisignatureIndex = () => getTableInstance('multisignature', multisig
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
+const getKeyValueStoreIndex = () => getTableInstance('key_value_store', keyValueStoreSchema);
 
 const blockchainStore = require('./blockchainStore');
 
@@ -98,6 +100,10 @@ const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 const setIndexDiff = (height) => blockchainStore.set('indexStatus', height);
 const getIndexDiff = () => blockchainStore.get('indexStatus');
 
+// Constants for the KV-store
+const genesisAccountPageCached = 'genesisAccountPageCached';
+const isGenesisAccountIndexingScheduled = 'isGenesisAccountIndexingScheduled';
+const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -290,7 +296,6 @@ const performGenesisAccountsIndexing = async () => {
 	const genesisAccountsToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length === 40)
 		.map(account => account.address);
-	const genesisAccountPageCached = 'genesisAccountPageCached';
 
 	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 
@@ -312,6 +317,17 @@ const performGenesisAccountsIndexing = async () => {
 			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
 			if (accounts.length) await accountsDB.upsert(accounts);
 			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+
+			// Update MySQL based KV-store to avoid re-indexing of the genesis accounts
+			// after applying the DB snapshots
+			if (pageNum === NUM_PAGES - 1) {
+				logger.info('Setting genesis account indexing completion status in MySQL DB');
+				const keyValueDB = await getKeyValueStoreIndex();
+				await keyValueDB.upsert({
+					key: isGenesisAccountIndexingFinished,
+					value: String(true),
+				});
+			}
 		} else {
 			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 		}
@@ -320,9 +336,18 @@ const performGenesisAccountsIndexing = async () => {
 };
 
 const indexGenesisAccounts = async () => {
-	const isScheduled = await genesisAccountsCache.get('isGenesisAccountIndexingScheduled');
+	const isGenesisAccountsAlreadyIndexed = async () => {
+		const keyValueDB = await getKeyValueStoreIndex();
+		const [{ value: isAlreadyIndexed } = {}] = await keyValueDB.find(
+			{ key: isGenesisAccountIndexingFinished },
+			['value'],
+		);
+		return isAlreadyIndexed === String(true); // since 'value' is of type 'string'
+	};
 
-	if (isScheduled === true) {
+	const isScheduled = await genesisAccountsCache.get(isGenesisAccountIndexingScheduled);
+
+	if (isScheduled === true || await isGenesisAccountsAlreadyIndexed()) {
 		logger.info('Skipping genesis account index update (one-time operation, already indexed)');
 		return;
 	}
@@ -330,8 +355,8 @@ const indexGenesisAccounts = async () => {
 	try {
 		logger.info('Attempting to update genesis account index (one-time operation)');
 		await performGenesisAccountsIndexing();
-		await genesisAccountsCache.set('isGenesisAccountIndexingScheduled', true);
-		await genesisAccountsCache.set('genesisAccountPageCached', 0);
+		await genesisAccountsCache.set(isGenesisAccountIndexingScheduled, true);
+		await genesisAccountsCache.set(genesisAccountPageCached, 0);
 	} catch (err) {
 		logger.fatal('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
 		logger.fatal(err.message);
