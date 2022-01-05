@@ -45,7 +45,8 @@ const getSelector = (params) => {
 	return {
 		propBetweens: [result],
 		sort: 'date:desc',
-		limit: params.limit || 366, // max supported limit of days
+		// max supported limit of days * types of transactions (with buffer)
+		limit: params.limit || 366 * 10,
 	};
 };
 
