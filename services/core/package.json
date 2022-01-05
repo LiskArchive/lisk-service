@@ -47,6 +47,7 @@
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
     "mysql": "^2.18.1",
+    "mysql-import": "^5.0.21",
     "semver": "^7.3.5",
     "signals": "^1.0.0",
     "split": "^1.0.1",
