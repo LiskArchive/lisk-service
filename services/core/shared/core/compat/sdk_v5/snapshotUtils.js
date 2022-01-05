@@ -17,6 +17,7 @@ const fs = require('fs');
 const https = require('https');
 const path = require('path');
 const tar = require('tar');
+const Importer = require('mysql-import');
 
 const {
 	CacheRedis,
@@ -64,6 +65,19 @@ const downloadSnapshot = async () => {
 	});
 };
 
+const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
+	const [userName, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
+	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
+	const importer = new Importer({ hostPort, userName, password, dbName });
+
+	importer.import(snapshotFilePath).then(() => {
+		const filesImported = importer.getImported();
+		logger.info(`${filesImported.length} SQL file(s) imported.`);
+	}).catch(err => {
+		logger.error(err);
+	});
+};
+
 const initSnapshot = async () => {
 	if (config.snapshot.enable === false) {
 		logger.info('Index snapshot application has been disabled');
@@ -85,6 +99,7 @@ const initSnapshot = async () => {
 		await downloadSnapshot();
 		readStream = fs.createReadStream(snapshotFilePath);
 	}
+	await applySnapshot();
 };
 
 module.exports = {
