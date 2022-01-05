@@ -66,9 +66,10 @@ const downloadSnapshot = async () => {
 };
 
 const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
-	const [userName, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
-	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
-	const importer = new Importer({ hostPort, userName, password, dbName });
+	const [user, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
+	const [hostPort, database] = connEndpoint.split('@')[1].split('/');
+	const host = hostPort.split(':')[0];
+	const importer = new Importer({ host, user, password, database });
 
 	importer.import(snapshotFilePath).then(() => {
 		const filesImported = importer.getImported();
