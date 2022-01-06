@@ -14,15 +14,12 @@
  *
  */
 const fs = require('fs');
-const https = require('https');
 const path = require('path');
-const tar = require('tar');
 const Importer = require('mysql-import');
 
 const {
 	CacheRedis,
 	Logger,
-	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const {
@@ -31,6 +28,9 @@ const {
 } = require('../../../fsUtils');
 
 const config = require('../../../../config');
+const {
+	downloadZip,
+} = require('../../../downloadFile');
 
 const logger = Logger();
 
@@ -45,24 +45,7 @@ const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 const downloadSnapshot = async () => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-
-	return new Promise((resolve, reject) => {
-		https.get(snapshotUrl, (response) => {
-			if (response.statusCode === 200) {
-				response.pipe(tar.extract({ cwd: directoryPath }));
-				response.on('error', async (err) => reject(err));
-				response.on('end', async () => {
-					logger.info('Snapshot downloaded successfully');
-					return setTimeout(resolve, 500);
-				});
-			} else {
-				const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
-				logger.error(errMessage);
-				if (response.statusCode === 404) throw new NotFoundException(errMessage);
-				throw new Error(errMessage);
-			}
-		});
-	});
+	await downloadZip(snapshotUrl, directoryPath);
 };
 
 const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
@@ -90,7 +73,7 @@ const initSnapshot = async () => {
 	const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
 	if (networkConfig) {
 		snapshotUrl = networkConfig.snapshotUrl;
-		snapshotFilePath = `./data/${networkIdentifier}/service-core-snapshot.sql`;
+		snapshotFilePath = `./data/${networkIdentifier}/genesis_block.json`;
 	} else {
 		logger.info(`Network is neither defined in the config, nor in the environment variable (${networkIdentifier})`);
 		return;
