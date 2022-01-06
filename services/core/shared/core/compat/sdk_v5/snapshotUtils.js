@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const fs = require('fs');
 const path = require('path');
 const Importer = require('mysql-import');
 
@@ -34,13 +33,10 @@ const {
 
 const logger = Logger();
 
-let readStream;
 let snapshotUrl;
 let snapshotFilePath;
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
-
-// const parseStream = json.createParseStream();
 
 const downloadSnapshot = async () => {
 	const directoryPath = path.dirname(snapshotFilePath);
@@ -81,7 +77,6 @@ const initSnapshot = async () => {
 
 	if (!(await exists(snapshotFilePath))) {
 		await downloadSnapshot();
-		readStream = fs.createReadStream(snapshotFilePath);
 	}
 	await applySnapshot();
 };
