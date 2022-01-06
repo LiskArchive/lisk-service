@@ -93,9 +93,8 @@ const downloadGenesisBlock = async () => {
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
 
 	return new Promise((resolve, reject) => {
-		if (genesisBlockUrl.endsWith('.tar.gz')) {
-			downloadZip(genesisBlockUrl, directoryPath);
-		} else {
+		if (genesisBlockUrl.endsWith('.tar.gz')) downloadZip(genesisBlockUrl, directoryPath);
+		else {
 			request(genesisBlockUrl)
 				.then(async response => {
 					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
