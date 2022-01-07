@@ -189,7 +189,15 @@ const validateParams = async params => {
 
 		const account = await getIndexedAccountInfo({ address: senderAddress, limit: 1 }, ['publicKey']);
 		if (!account) throw new NotFoundException(`Account ${senderAddress} not found.`);
-		params.senderPublicKey = account.publicKey;
+		if (
+			// Only when 'senderIdOrRecipientId' is supplied with other params
+			params.orWhere.recipientId
+			&& Object.keys(params).some((prop) => !['offset', 'limit', 'sort', 'orWhere'].includes(prop))
+		) {
+			params.whereIn = { property: 'senderPublicKey', values: [account.publicKey] };
+		} else {
+			params.senderPublicKey = account.publicKey;
+		}
 	}
 
 	if (params.senderUsername) {
