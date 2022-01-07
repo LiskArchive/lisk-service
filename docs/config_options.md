@@ -194,3 +194,11 @@ FEE_EST_EMA_BATCH_SIZE=20
 FEE_EST_EMA_DECAY_RATE=0.5
 FEE_EST_WAVG_DECAY_PERCENTAGE=10
 ```
+
+### Account transaction exports
+
+```bash
+# Required for exports to work properly
+SERVICE_EXPORT_REDIS=redis://localhost:6379/3
+SERVICE_EXPORT_REDIS_VOLATILE=redis://localhost:6379/4
+```
