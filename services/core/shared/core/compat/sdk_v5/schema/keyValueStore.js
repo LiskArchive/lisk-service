@@ -21,7 +21,6 @@ module.exports = {
 	},
 	indexes: {
 		key: { type: 'key' },
-		value: { type: 'key' },
 	},
 	purge: {},
 };
