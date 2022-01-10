@@ -50,6 +50,11 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	const host = hostPort.split(':')[0];
 	const importer = new Importer({ host, user, password, database });
 
+	importer.onProgress(progress => {
+		var importProgress = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
+		logger.info(`${importProgress}% Completed`);
+	});
+
 	importer.import(snapshotFilePath).then(() => {
 		const filesImported = importer.getImported();
 		logger.info(`${filesImported.length} SQL file(s) imported.`);
@@ -66,7 +71,7 @@ const initSnapshot = async () => {
 
 	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
 
-	const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+	const [networkConfig] = config.netxworks.filter(c => networkIdentifier === c.identifier);
 	if (networkConfig) {
 		snapshotUrl = networkConfig.snapshotUrl;
 		snapshotFilePath = `./data/${networkIdentifier}/service-core-snapshot.sql`;
