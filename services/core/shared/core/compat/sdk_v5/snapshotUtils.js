@@ -51,7 +51,8 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	const importer = new Importer({ host, user, password, database });
 
 	importer.onProgress(progress => {
-		var importProgress = Math.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
+		const importProgress = Math
+			.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
 		logger.info(`${importProgress}% Completed`);
 	});
 
