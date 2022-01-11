@@ -191,7 +191,7 @@ const validateParams = async params => {
 		if (!account) throw new NotFoundException(`Account ${senderAddress} not found.`);
 		if (
 			// Only when 'senderIdOrRecipientId' is supplied with other params
-			params.orWhere.recipientId
+			params.orWhere && params.orWhere.recipientId
 			&& Object.keys(params).some((prop) => !['offset', 'limit', 'sort', 'orWhere'].includes(prop))
 		) {
 			params.whereIn = { property: 'senderPublicKey', values: [account.publicKey] };
