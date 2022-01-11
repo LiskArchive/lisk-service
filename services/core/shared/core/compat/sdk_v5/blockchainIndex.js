@@ -359,8 +359,12 @@ const indexGenesisAccounts = async () => {
 	}
 
 	try {
+		// Ensure genesis accounts indexing continues even after the Api client is re-instantiated
+		// Remove the listener after the genesis accounts are successfully indexed
 		logger.info('Attempting to update genesis account index (one-time operation)');
+		Signals.get('newApiClient').add(performGenesisAccountsIndexing);
 		await performGenesisAccountsIndexing();
+		Signals.get('newApiClient').remove(performGenesisAccountsIndexing);
 	} catch (err) {
 		logger.fatal('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
 		logger.fatal(err.message);
