@@ -318,7 +318,7 @@ const performGenesisAccountsIndexing = async () => {
 		if (pageNum >= lastCachedPage) {
 			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
 
-			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+			logger.info(`Attempting retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
 			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
 			if (accounts.length) await accountsDB.upsert(accounts);
