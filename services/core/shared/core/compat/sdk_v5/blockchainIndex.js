@@ -66,6 +66,8 @@ const {
 	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 
+const keyValueDB = require('../../../indexdb/mysqlKVStore');
+
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 const blocksIndexSchema = require('./schema/blocks');
@@ -74,7 +76,6 @@ const transactionsIndexSchema = require('./schema/transactions');
 const votesIndexSchema = require('./schema/votes');
 const multisignatureIndexSchema = require('./schema/multisignature');
 const votesAggregateIndexSchema = require('./schema/votesAggregate');
-const keyValueStoreSchema = require('./schema/keyValueStore');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
@@ -82,7 +83,6 @@ const getMultisignatureIndex = () => getTableInstance('multisignature', multisig
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
-const getKeyValueStoreIndex = () => getTableInstance('key_value_store', keyValueStoreSchema);
 
 const blockchainStore = require('./blockchainStore');
 
@@ -292,7 +292,6 @@ const cacheLegacyAccountInfo = async () => {
 
 const performGenesisAccountsIndexing = async () => {
 	const accountsDB = await getAccountsIndex();
-	const keyValueDB = await getKeyValueStoreIndex();
 
 	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 	const genesisAccountsToIndex = genesisBlock.asset.accounts
@@ -301,11 +300,7 @@ const performGenesisAccountsIndexing = async () => {
 
 	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 
-	const [{ value: lastCachedPageStr } = {}] = await keyValueDB.find(
-		{ key: genesisAccountPageCached, limit: 1 },
-		['value'],
-	);
-	const lastCachedPage = Number(lastCachedPageStr) || 0;
+	const lastCachedPage = await keyValueDB.get(genesisAccountPageCached) || 0;
 
 	const PAGE_SIZE = 1000;
 	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
@@ -322,19 +317,13 @@ const performGenesisAccountsIndexing = async () => {
 
 			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
 			if (accounts.length) await accountsDB.upsert(accounts);
-			await keyValueDB.upsert({
-				key: genesisAccountPageCached,
-				value: String(pageNum),
-			});
+			await keyValueDB.set(genesisAccountPageCached, pageNum);
 
 			// Update MySQL based KV-store to avoid re-indexing of the genesis accounts
 			// after applying the DB snapshots
 			if (pageNum === NUM_PAGES - 1) {
-				logger.info('Setting genesis account indexing completion status in MySQL DB');
-				await keyValueDB.upsert({
-					key: isGenesisAccountIndexingFinished,
-					value: String(true),
-				});
+				logger.info('Setting genesis account indexing completion status');
+				await keyValueDB.set(isGenesisAccountIndexingFinished, true);
 			}
 		} else {
 			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
@@ -344,16 +333,7 @@ const performGenesisAccountsIndexing = async () => {
 };
 
 const indexGenesisAccounts = async () => {
-	const isGenesisAccountsAlreadyIndexed = async () => {
-		const keyValueDB = await getKeyValueStoreIndex();
-		const [{ value: isAlreadyIndexed } = {}] = await keyValueDB.find(
-			{ key: isGenesisAccountIndexingFinished, limit: 1 },
-			['value'],
-		);
-		return isAlreadyIndexed === String(true); // since 'value' is of type 'string'
-	};
-
-	if (await isGenesisAccountsAlreadyIndexed()) {
+	if (await keyValueDB.get(isGenesisAccountIndexingFinished)) {
 		logger.info('Skipping genesis account index update (one-time operation, already indexed)');
 		return;
 	}
