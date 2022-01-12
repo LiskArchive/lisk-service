@@ -243,7 +243,8 @@ describe('Test MySQL', () => {
 			await commitDbTransaction(trx1);
 
 			// Start a new transaction, perform upsert/delete and rollback
-			await testTable.upsert([{ ...emptyBlock, height, size: emptyBlock.timestamp + 100 }], trx2);
+			await testTable
+				.upsert([{ ...emptyBlock, height, timestamp: emptyBlock.timestamp + 100 }], trx2);
 			const numRowsAffected = await testTable.deleteIds([height], trx2);
 			expect(numRowsAffected).toEqual(1);
 
