@@ -153,54 +153,55 @@ const indexBlocks = async job => {
 		if (votes.length) await votesDB.upsert(votes, trx);
 
 		// Update producedBlocks & rewards
-		await BluebirdPromise.map(
-			generatorPkInfoArray,
-			async pkInfoArray => {
-				if (!pkInfoArray.isBlockIndexed) {
-					const incrementParam = {
-						increment: {
-							rewards: BigInt(pkInfoArray.reward),
-							producedBlocks: 1,
-						},
-						where: {
-							property: 'address',
-							value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-						},
-					};
-
-					// If no rows are affected with increment, insert the row
-					const numRowsAffected = await accountsDB.increment(incrementParam, trx);
-					if (numRowsAffected === 0) {
-						await accountsDB.upsert({
-							address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-							publicKey: pkInfoArray.publicKey,
-							producedBlocks: 1,
-							rewards: pkInfoArray.reward,
-						}, trx);
-					}
-				}
-			},
-		);
-
-		// Update the aggregated votes information
-		await BluebirdPromise.map(
-			votesToAggregateArray,
-			async voteToAggregate => {
+		for (let i = 0; i < generatorPkInfoArray.length; i++) {
+			/* eslint-disable no-await-in-loop */
+			const pkInfoArray = generatorPkInfoArray[i];
+			if (!pkInfoArray.isBlockIndexed) {
 				const incrementParam = {
 					increment: {
-						amount: BigInt(voteToAggregate.amount),
+						rewards: BigInt(pkInfoArray.reward),
+						producedBlocks: 1,
 					},
 					where: {
-						property: 'id',
-						value: voteToAggregate.id,
+						property: 'address',
+						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
 					},
 				};
-				const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
+
+				// If no rows are affected with increment, insert the row
+				const numRowsAffected = await accountsDB.increment(incrementParam, trx);
 				if (numRowsAffected === 0) {
-					await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+					await accountsDB.upsert({
+						address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+						publicKey: pkInfoArray.publicKey,
+						producedBlocks: 1,
+						rewards: pkInfoArray.reward,
+					}, trx);
 				}
-			},
-		);
+			}
+			/* eslint-enable no-await-in-loop */
+		}
+
+		// Update the aggregated votes information
+		for (let j = 0; j < votesToAggregateArray.length; j++) {
+			/* eslint-disable no-await-in-loop */
+			const voteToAggregate = votesToAggregateArray[j];
+			const incrementParam = {
+				increment: {
+					amount: BigInt(voteToAggregate.amount),
+				},
+				where: {
+					property: 'id',
+					value: voteToAggregate.id,
+				},
+			};
+
+			const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
+			if (numRowsAffected === 0) {
+				await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+			}
+			/* eslint-enable no-await-in-loop */
+		}
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
