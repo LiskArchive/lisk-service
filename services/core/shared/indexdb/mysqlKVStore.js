@@ -55,12 +55,19 @@ const get = async (key) => {
 	if (type === 'number') return Number(value);
 	if (type === 'bigint') return BigInt(value);
 	if (type === 'string') return String(value);
+	if (type === 'undefined') return undefined;
 
-	// type: ['undefined', 'symbol', 'function', 'object']
+	// type: ['symbol', 'function', 'object'], should be unreachable
 	return value;
+};
+
+const deleteEntry = async (key) => {
+	const keyValueDB = await getKeyValueStoreIndex();
+	return keyValueDB.deleteIds([key]);
 };
 
 module.exports = {
 	set,
 	get,
+	delete: deleteEntry,
 };
