@@ -22,9 +22,7 @@ const keyValueStoreSchema = {
 		value: { type: 'string' },
 		type: { type: 'string' },
 	},
-	indexes: {
-		key: { type: 'key' },
-	},
+	indexes: {},
 	purge: {},
 };
 
