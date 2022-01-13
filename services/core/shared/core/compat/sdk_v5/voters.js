@@ -125,20 +125,27 @@ const getVoters = async params => {
 
 	let resultSet;
 	if (params.aggregate) {
-		resultSet = await votesAggregateDB.find({
-			sort: 'timestamp:desc',
-			receivedAddress: params.receivedAddress,
-			propBetweens: [{
-				property: 'amount',
-				greaterThan: '0',
-			}],
-		}, Object.keys(votesAggregateIndexSchema.schema));
+		resultSet = await votesAggregateDB.find(
+			{
+				sort: 'timestamp:desc',
+				receivedAddress: params.receivedAddress,
+				propBetweens: [{
+					property: 'amount',
+					greaterThan: '0',
+				}],
+				limit: await votesAggregateDB.count({ receivedAddress: params.receivedAddress }),
+			},
+			Object.keys(votesAggregateIndexSchema.schema),
+		);
 	} else {
-		resultSet = await votesDB.find({
-			sort: 'timestamp:desc',
-			receivedAddress: params.receivedAddress,
-		},
-		Object.keys(votesIndexSchema.schema));
+		resultSet = await votesDB.find(
+			{
+				sort: 'timestamp:desc',
+				receivedAddress: params.receivedAddress,
+				limit: await votesDB.count({ receivedAddress: params.receivedAddress }),
+			},
+			Object.keys(votesIndexSchema.schema),
+		);
 	}
 	if (resultSet.length) votes.data.votes = resultSet;
 
