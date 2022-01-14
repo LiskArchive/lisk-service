@@ -43,6 +43,7 @@ const {
 const {
 	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
+	getHexAddressFromBase32,
 } = require('./accountUtils');
 
 const {
@@ -118,6 +119,7 @@ module.exports = {
 	getAccounts,
 	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
+	getHexAddressFromBase32,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	validateAddress,

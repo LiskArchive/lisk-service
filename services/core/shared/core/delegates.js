@@ -44,7 +44,8 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== 0) return Number(diff);
-	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
+	return Buffer.from(coreApi.getHexAddressFromBase32(a.account.address))
+		.compare(Buffer.from(coreApi.getHexAddressFromBase32(b.account.address)));
 };
 
 const computeDelegateRank = async () => {
