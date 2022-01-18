@@ -14,7 +14,8 @@
  *
  */
 const path = require('path');
-const Importer = require('mysql-import');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
 
 const {
 	CacheRedis,
@@ -34,7 +35,7 @@ const {
 const logger = Logger();
 
 let snapshotUrl;
-let snapshotFilePath;
+let snapshotFilePath = '/home/lisk/lisk-service/core/shared/core/compat/sdk_v5/mysql_core_index.sql';
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
@@ -46,22 +47,16 @@ const downloadSnapshot = async () => {
 
 const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	const [user, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
-	const [hostPort, database] = connEndpoint.split('@')[1].split('/');
-	const host = hostPort.split(':')[0];
-	const importer = new Importer({ host, user, password, database });
+	const [_, database] = connEndpoint.split('@')[1].split('/');
 
-	importer.onProgress(progress => {
-		const importProgress = Math
-			.floor(progress.bytes_processed / progress.total_bytes * 10000) / 100;
-		logger.info(`${importProgress}% Completed`);
-	});
-
-	importer.import(snapshotFilePath).then(() => {
-		const filesImported = importer.getImported();
-		logger.info(`${filesImported.length} SQL file(s) imported.`);
-	}).catch(err => {
-		logger.error(err);
-	});
+	try {
+		const { stdout, stderr } = await exec(`docker-compose -f ../../docker-compose.yml exec -T mysql mysql ${database} -u ${user} -p${password} < ${snapshotFilePath}`);
+		logger.info(stdout);
+		logger.info(stderr);
+		logger.info('SQL file(s) imported.');
+	} catch (error) {
+		logger.error(error);
+	}
 };
 
 const initSnapshot = async () => {
@@ -89,4 +84,5 @@ const initSnapshot = async () => {
 
 module.exports = {
 	initSnapshot,
+	applySnapshot,
 };
