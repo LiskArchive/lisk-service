@@ -42,7 +42,10 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-nodeStatus.waitForNode().then(async () => {
+const snapshotUtils = require('./shared/core/compat/sdk_v5/snapshotUtils');
+
+snapshotUtils.initSnapshot().then(async () => {
+	await nodeStatus.waitForNode();
 	logger.info('Found a node, initiating Lisk Core...');
 
 	const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
@@ -63,3 +66,25 @@ nodeStatus.waitForNode().then(async () => {
 		process.exit(1);
 	});
 });
+
+// nodeStatus.waitForNode().then(async () => {
+// 	logger.info('Found a node, initiating Lisk Core...');
+
+// 	const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
+// 	await blockchainStore.initializeSearchIndex();
+
+// 	app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
+// 	app.addEvents(path.join(__dirname, 'events'));
+// 	app.addJobs(path.join(__dirname, 'jobs'));
+
+// 	app.run().then(() => {
+// 		logger.info(`Service started ${packageJson.name}`);
+
+// 		const coreApi = require('./shared/core');
+// 		coreApi.init();
+// 	}).catch(err => {
+// 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+// 		logger.fatal(err.stack);
+// 		process.exit(1);
+// 	});
+// });
