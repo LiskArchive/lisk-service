@@ -47,7 +47,7 @@ const downloadSnapshot = async () => {
 
 const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	const [user, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
-	const [_, database] = connEndpoint.split('@')[1].split('/');
+	const database = connEndpoint.split('@')[1].split('/')[1];
 
 	try {
 		const { stdout, stderr } = await exec(`docker-compose -f ../../docker-compose.yml exec -T mysql mysql ${database} -u ${user} -p${password} < ${snapshotFilePath}`);
