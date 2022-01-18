@@ -35,7 +35,7 @@ const {
 const logger = Logger();
 
 let snapshotUrl;
-let snapshotFilePath = '/home/lisk/lisk-service/core/shared/core/compat/sdk_v5/mysql_core_index.sql';
+let snapshotFilePath;
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
