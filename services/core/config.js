@@ -138,6 +138,7 @@ config.jobs = {};
 
 config.snapshot = {
 	url: process.env.INDEX_SNAPSHOT_URL,
+	importCommand: process.env.SNAPSHOT_IMPORT_COMMAND || 'docker-compose -f ../../docker-compose.yml exec -T mysql mysql',
 	enable: Boolean(String(process.env.ENABLE_APPLY_SNAPSHOT).toLowerCase() !== 'false'), // Enable by default
 };
 
