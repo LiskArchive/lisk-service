@@ -50,10 +50,10 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	const database = connEndpoint.split('@')[1].split('/')[1];
 
 	try {
-		const { stdout, stderr } = await exec(`docker-compose -f ../../docker-compose.yml exec -T mysql mysql ${database} -u ${user} -p${password} < ${snapshotFilePath}`);
+		const { stdout, stderr } = await exec(`${config.snapshot.importCommand} ${database} -u ${user} -p${password} < ${snapshotFilePath}`);
 		logger.info(stdout);
 		logger.info(stderr);
-		logger.info('SQL file(s) imported.');
+		logger.info('SQL file(s) imported successfully');
 	} catch (error) {
 		logger.error(error);
 	}
