@@ -44,9 +44,9 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-snapshotUtils.applySnapshot()
-	.then(logger.info('Successfully applied the downloaded snapshot'))
-	.catch(err => logger.warn(`Unable to apply the snapshot:\n${err.message}`))
+snapshotUtils.initSnapshot()
+	.then(logger.info('Successfully downloaded and applied the snapshot'))
+	.catch(err => logger.warn(`Unable to apply snapshot:\n${err.message}`))
 	.finally(async () => {
 		await nodeStatus.waitForNode();
 		logger.info('Found a node, initiating Lisk Core...');
