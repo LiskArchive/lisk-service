@@ -45,17 +45,32 @@ const downloadSnapshot = async () => {
 	await downloadZip(snapshotUrl, directoryPath);
 };
 
-const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
+const resolveSnapshotRestoreCommand = async (connEndpoint) => {
+	const composeFile = config.snapshot.composeFilePath;
+	const dockerServiceName = config.snapshot.serviceName;
+
 	const [user, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
 	const database = connEndpoint.split('@')[1].split('/')[1];
+	const mysqlSnapshotCommand = `mysql ${database} -u ${user} -p${password} < ${snapshotFilePath}`;
+	if (!composeFile && !dockerServiceName) return mysqlSnapshotCommand;
 
+	if (composeFile) {
+		if (!dockerServiceName) throw new Error('Docker service name required');
+		return `docker-compose -f ${composeFile} exec -T ${dockerServiceName} ${mysqlSnapshotCommand}`;
+	}
+	throw new Error('Snapshot restore command cannot be resolved');
+};
+
+const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	try {
-		const { stdout, stderr } = await exec(`docker-compose -f ${config.snapshot.composeFilePath} exec -T mysql mysql ${database} -u ${user} -p${password} < ${snapshotFilePath}`);
+		const snapshotRestoreCommand = await resolveSnapshotRestoreCommand(connEndpoint);
+		const { stdout, stderr } = await exec(snapshotRestoreCommand);
 		logger.info(stdout);
-		logger.info(stderr);
+		logger.warn(stderr);
 		logger.info('SQL file(s) imported successfully');
 	} catch (error) {
 		logger.error(error);
+		throw error;
 	}
 };
 

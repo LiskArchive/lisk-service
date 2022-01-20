@@ -138,7 +138,8 @@ config.jobs = {};
 
 config.snapshot = {
 	url: process.env.INDEX_SNAPSHOT_URL,
-	composeFilePath: process.env.SNAPSHOT_COMPOSE_FILEPATH || '../../docker-compose.yml',
+	composeFilePath: process.env.DOCKER_COMPOSE_FILEPATH,
+	serviceName: process.env.DOCKER_SERVICE_NAME,
 	enable: Boolean(String(process.env.ENABLE_APPLY_SNAPSHOT).toLowerCase() !== 'false'), // Enable by default
 };
 
