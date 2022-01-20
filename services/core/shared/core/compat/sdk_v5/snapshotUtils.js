@@ -45,7 +45,14 @@ const downloadSnapshot = async () => {
 	await downloadZip(snapshotUrl, directoryPath);
 };
 
+const checkCommandAvailability = async () => {
+	const { stdout: mysqlAvailable } = await exec('which mysql');
+	const { stdout: dockerComposeAvailable } = await exec('which docker-compose');
+	if (!mysqlAvailable && !dockerComposeAvailable) throw new Error('Both mysql and docker-compose are unavailable in PATH');
+};
+
 const resolveSnapshotRestoreCommand = async (connEndpoint) => {
+	await checkCommandAvailability();
 	const composeFile = config.snapshot.composeFilePath;
 	const dockerServiceName = config.snapshot.serviceName;
 
