@@ -91,7 +91,7 @@ const cast = (val, type) => {
 
 const resolveQueryParams = (params) => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -205,6 +205,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
+		query.where(queryParams);
+
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -228,12 +230,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		}
 
 		if (params.orWhere) {
-			const { orWhere } = params;
+			const { orWhere, orWhereWith } = params;
 			query.where(function () {
-				this.where(queryParams).orWhere(orWhere);
+				this.where(orWhere).orWhere(orWhereWith);
 			});
-		} else {
-			query.where(queryParams);
 		}
 
 		if (params.orWhereIn) {
@@ -247,7 +247,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		}
 
 		if (params.aggregate) {
-			query.where(queryParams).sum(`${params.aggregate} as total`);
+			query.sum(`${params.aggregate} as total`);
 		}
 
 		if (params.limit) {
@@ -296,6 +296,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
+		query.where(queryParams);
+
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -318,12 +320,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		}
 
 		if (params.orWhere) {
-			const { orWhere } = params;
+			const { orWhere, orWhereWith } = params;
 			query.where(function () {
-				this.where(queryParams).orWhere(orWhere);
+				this.where(orWhere).orWhere(orWhereWith);
 			});
-		} else {
-			query.where(queryParams);
 		}
 
 		if (params.orWhereIn) {
