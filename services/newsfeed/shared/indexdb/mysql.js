@@ -214,6 +214,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const query = knex.select(columns).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
+		query.where(queryParams);
+
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -237,12 +239,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 
 		if (params.orWhere) {
-			const { orWhere } = params;
+			const { orWhere, orWhereWith } = params;
 			query.where(function () {
-				this.where(queryParams).orWhere(orWhere);
+				this.where(orWhere).orWhere(orWhereWith);
 			});
-		} else {
-			query.where(queryParams);
 		}
 
 		if (params.orWhereIn) {
@@ -256,7 +256,7 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 
 		if (params.aggregate) {
-			query.where(queryParams).sum(`${params.aggregate} as total`);
+			query.sum(`${params.aggregate} as total`);
 		}
 
 		if (params.limit) {
@@ -294,6 +294,8 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
 		const queryParams = resolveQueryParams(params);
 
+		query.where(queryParams);
+
 		if (params.propBetweens) {
 			const { propBetweens } = params;
 			propBetweens.forEach(
@@ -316,12 +318,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 		}
 
 		if (params.orWhere) {
-			const { orWhere } = params;
+			const { orWhere, orWhereWith } = params;
 			query.where(function () {
-				this.where(queryParams).orWhere(orWhere);
+				this.where(orWhere).orWhere(orWhereWith);
 			});
-		} else {
-			query.where(queryParams);
 		}
 
 		if (params.orWhereIn) {
