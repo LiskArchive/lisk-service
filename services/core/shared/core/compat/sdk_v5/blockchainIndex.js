@@ -123,9 +123,67 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	return pkInfoArray;
 };
 
+const updateProducedBlocksAndRewards = async (generatorPkInfoArray, trx) => {
+	const accountsDB = await getAccountsIndex();
+
+	// Update producedBlocks & rewards
+	for (let i = 0; i < generatorPkInfoArray.length; i++) {
+		/* eslint-disable no-await-in-loop */
+		const pkInfoArray = generatorPkInfoArray[i];
+		if (!pkInfoArray.isBlockIndexed) {
+			const incrementParam = {
+				increment: {
+					rewards: BigInt(pkInfoArray.reward),
+					producedBlocks: 1,
+				},
+				where: {
+					property: 'address',
+					value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+				},
+			};
+
+			// If no rows are affected with increment, insert the row
+			const numRowsAffected = await accountsDB.increment(incrementParam, trx);
+			if (numRowsAffected === 0) {
+				await accountsDB.upsert({
+					address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+					publicKey: pkInfoArray.publicKey,
+					producedBlocks: 1,
+					rewards: pkInfoArray.reward,
+				}, trx);
+			}
+		}
+		/* eslint-enable no-await-in-loop */
+	}
+};
+
+const updateVoteAggregates = async (votesToAggregateArray, trx) => {
+	const votesAggregateDB = await getVotesAggregateIndex();
+
+	// Update the aggregated votes information
+	for (let j = 0; j < votesToAggregateArray.length; j++) {
+		/* eslint-disable no-await-in-loop */
+		const voteToAggregate = votesToAggregateArray[j];
+		const incrementParam = {
+			increment: {
+				amount: BigInt(voteToAggregate.amount),
+			},
+			where: {
+				property: 'id',
+				value: voteToAggregate.id,
+			},
+		};
+
+		const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
+		if (numRowsAffected === 0) {
+			await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+		}
+		/* eslint-enable no-await-in-loop */
+	}
+};
+
 const indexBlocks = async job => {
 	const blocksDB = await getBlocksIndex();
-	const votesAggregateDB = await getVotesAggregateIndex();
 	const blocks = await getBlocksByHeightBetween(job.data.from, job.data.to);
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
@@ -152,56 +210,8 @@ const indexBlocks = async job => {
 			.upsert(multisignatureInfoToIndex, trx);
 		if (votes.length) await votesDB.upsert(votes, trx);
 
-		// Update producedBlocks & rewards
-		for (let i = 0; i < generatorPkInfoArray.length; i++) {
-			/* eslint-disable no-await-in-loop */
-			const pkInfoArray = generatorPkInfoArray[i];
-			if (!pkInfoArray.isBlockIndexed) {
-				const incrementParam = {
-					increment: {
-						rewards: BigInt(pkInfoArray.reward),
-						producedBlocks: 1,
-					},
-					where: {
-						property: 'address',
-						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-					},
-				};
-
-				// If no rows are affected with increment, insert the row
-				const numRowsAffected = await accountsDB.increment(incrementParam, trx);
-				if (numRowsAffected === 0) {
-					await accountsDB.upsert({
-						address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-						publicKey: pkInfoArray.publicKey,
-						producedBlocks: 1,
-						rewards: pkInfoArray.reward,
-					}, trx);
-				}
-			}
-			/* eslint-enable no-await-in-loop */
-		}
-
-		// Update the aggregated votes information
-		for (let j = 0; j < votesToAggregateArray.length; j++) {
-			/* eslint-disable no-await-in-loop */
-			const voteToAggregate = votesToAggregateArray[j];
-			const incrementParam = {
-				increment: {
-					amount: BigInt(voteToAggregate.amount),
-				},
-				where: {
-					property: 'id',
-					value: voteToAggregate.id,
-				},
-			};
-
-			const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
-			if (numRowsAffected === 0) {
-				await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
-			}
-			/* eslint-enable no-await-in-loop */
-		}
+		await updateProducedBlocksAndRewards(generatorPkInfoArray, trx);
+		await updateVoteAggregates(votesToAggregateArray, trx);
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
