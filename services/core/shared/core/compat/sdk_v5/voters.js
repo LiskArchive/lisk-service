@@ -123,23 +123,37 @@ const getVoters = async params => {
 		params.receivedAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
 	}
 
-	let resultSet;
-	if (params.aggregate) {
-		resultSet = await votesAggregateDB.find({
-			sort: 'timestamp:desc',
+	const numVotesReceived = params.aggregate
+		? await votesAggregateDB.count({
 			receivedAddress: params.receivedAddress,
 			propBetweens: [{
 				property: 'amount',
 				greaterThan: '0',
 			}],
-		}, Object.keys(votesAggregateIndexSchema.schema));
-	} else {
-		resultSet = await votesDB.find({
-			sort: 'timestamp:desc',
-			receivedAddress: params.receivedAddress,
-		},
-		Object.keys(votesIndexSchema.schema));
-	}
+		})
+		: await votesDB.count({ receivedAddress: params.receivedAddress });
+
+	const resultSet = params.aggregate
+		? await votesAggregateDB.find(
+			{
+				sort: 'timestamp:desc',
+				receivedAddress: params.receivedAddress,
+				propBetweens: [{
+					property: 'amount',
+					greaterThan: '0',
+				}],
+				limit: numVotesReceived,
+			},
+			Object.keys(votesAggregateIndexSchema.schema),
+		)
+		: await votesDB.find(
+			{
+				sort: 'timestamp:desc',
+				receivedAddress: params.receivedAddress,
+				limit: numVotesReceived,
+			},
+			Object.keys(votesIndexSchema.schema),
+		);
 	if (resultSet.length) votes.data.votes = resultSet;
 
 	votes.data.votes = await BluebirdPromise.map(
@@ -157,15 +171,7 @@ const getVoters = async params => {
 	votes.data.account = {
 		address: params.receivedAddress,
 		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
-		votesReceived: params.aggregate
-			? await votesAggregateDB.count({
-				receivedAddress: params.receivedAddress,
-				propBetweens: [{
-					property: 'amount',
-					greaterThan: '0',
-				}],
-			})
-			: await votesDB.count({ receivedAddress: params.receivedAddress }),
+		votesReceived: numVotesReceived,
 	};
 	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
 	votes.meta.total = votes.data.account.votesReceived;
