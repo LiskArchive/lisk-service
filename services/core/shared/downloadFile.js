@@ -13,18 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const fs = require('fs');
 const https = require('https');
 const tar = require('tar');
 
 const {
 	Logger,
 	Exceptions: { NotFoundException },
+	HTTP: { request },
 } = require('lisk-service-framework');
 
 const logger = Logger();
 
 
-const downloadZip = (snapshotUrl, directoryPath) => new Promise((resolve, reject) => {
+const downloadAndExtractTarball = (snapshotUrl, directoryPath) => new Promise((resolve, reject) => {
 	https.get(snapshotUrl, (response) => {
 		if (response.statusCode === 200) {
 			response.pipe(tar.extract({ cwd: directoryPath }));
@@ -42,6 +44,19 @@ const downloadZip = (snapshotUrl, directoryPath) => new Promise((resolve, reject
 	});
 });
 
+const downloadJSONFile = (fileUrl, directoryPath) => new Promise((resolve, reject) => {
+	request(fileUrl)
+		.then(async response => {
+			const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
+			fs.writeFile(directoryPath, JSON.stringify(block), () => {
+				logger.info('File downloaded successfully');
+				return resolve();
+			});
+		})
+		.catch(err => reject(err));
+});
+
 module.exports = {
-	downloadZip,
+	downloadAndExtractTarball,
+	downloadJSONFile,
 };

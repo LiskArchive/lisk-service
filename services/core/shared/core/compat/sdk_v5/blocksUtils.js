@@ -20,7 +20,6 @@ const path = require('path');
 const {
 	CacheRedis,
 	Logger,
-	HTTP: { request },
 } = require('lisk-service-framework');
 
 const {
@@ -29,7 +28,8 @@ const {
 } = require('../../../fsUtils');
 
 const {
-	downloadZip,
+	downloadAndExtractTarball,
+	downloadJSONFile,
 } = require('../../../downloadFile');
 
 const config = require('../../../../config');
@@ -92,20 +92,10 @@ const downloadGenesisBlock = async () => {
 
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
 
-	return new Promise((resolve, reject) => {
-		if (genesisBlockUrl.endsWith('.tar.gz')) downloadZip(genesisBlockUrl, directoryPath);
-		else {
-			request(genesisBlockUrl)
-				.then(async response => {
-					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
-					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => {
-						logger.info('Genesis block downloaded successfully');
-						return resolve();
-					});
-				})
-				.catch(err => reject(err));
-		}
-	});
+	if (genesisBlockUrl.endsWith('.tar.gz')) downloadAndExtractTarball(genesisBlockUrl, directoryPath);
+	else {
+		downloadJSONFile(genesisBlockUrl, directoryPath);
+	}
 };
 
 const getGenesisBlockFromFS = async () => {

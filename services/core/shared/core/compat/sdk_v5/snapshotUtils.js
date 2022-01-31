@@ -15,7 +15,7 @@
  */
 const path = require('path');
 const util = require('util');
-const exec = util.promisify(require('child_process').exec);
+const execInShell = util.promisify(require('child_process').exec);
 
 const {
 	CacheRedis,
@@ -29,7 +29,7 @@ const {
 
 const config = require('../../../../config');
 const {
-	downloadZip,
+	downloadAndExtractTarball,
 } = require('../../../downloadFile');
 
 const logger = Logger();
@@ -42,12 +42,12 @@ const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 const downloadSnapshot = async () => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-	await downloadZip(snapshotUrl, directoryPath);
+	await downloadAndExtractTarball(snapshotUrl, directoryPath);
 };
 
 const checkCommandAvailability = async () => {
-	const { stdout: mysqlAvailable } = await exec('which mysql');
-	const { stdout: dockerComposeAvailable } = await exec('which docker-compose');
+	const { stdout: mysqlAvailable } = await execInShell('which mysql');
+	const { stdout: dockerComposeAvailable } = await execInShell('which docker-compose');
 	if (!mysqlAvailable && !dockerComposeAvailable) throw new Error('Both mysql and docker-compose are unavailable in PATH');
 };
 
@@ -71,7 +71,7 @@ const resolveSnapshotRestoreCommand = async (connEndpoint) => {
 const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	try {
 		const snapshotRestoreCommand = await resolveSnapshotRestoreCommand(connEndpoint);
-		const { stdout, stderr } = await exec(snapshotRestoreCommand);
+		const { stdout, stderr } = await execInShell(snapshotRestoreCommand);
 		logger.info(stdout);
 		logger.warn(stderr);
 		logger.info('SQL file(s) imported successfully');
@@ -82,14 +82,14 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 };
 
 const initSnapshot = async () => {
-	if (config.snapshot.enable === false) {
+	if (config.snapshot.enable !== true) {
 		logger.info('Index snapshot application has been disabled');
 		return;
 	}
 
 	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
 
-	const [networkConfig] = config.netxworks.filter(c => networkIdentifier === c.identifier);
+	const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
 	if (networkConfig) {
 		snapshotUrl = networkConfig.snapshotUrl;
 		snapshotFilePath = `./data/${networkIdentifier}/service-core-snapshot.sql`;
@@ -100,8 +100,8 @@ const initSnapshot = async () => {
 
 	if (!(await exists(snapshotFilePath))) {
 		await downloadSnapshot();
+		await applySnapshot();
 	}
-	await applySnapshot();
 };
 
 module.exports = {
