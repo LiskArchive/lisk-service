@@ -18,27 +18,49 @@ const path = require('path');
 
 const {
 	downloadAndExtractTarball,
-	// downloadJSONFile,
+	downloadJSONFile,
 } = require('../../shared/downloadFile');
 
 const config = require('../../config');
 
-const directoryPath = path.join(__dirname);
+const directoryPath = path.join(__dirname, 'testDir');
 
 describe('downloadFile utility tests', () => {
-	describe('downloadAndExtractTarball', () => {
-		it('downloadAndExtractTarball -> valid url', async () => {
-			const url = config.networks.filter(acc => acc.name === 'testnet')[0];
-			const filePath = `${directoryPath}/genesis_block.json`;
-			await downloadAndExtractTarball(url.genesisBlockUrl, directoryPath);
-			const result = !!(await fs.promises.stat(filePath).catch(() => null));
-			expect(result).toEqual(true);
-			await fs.unlinkSync(filePath);
-		});
+	beforeAll(async () => {
+		// Create test directory
+		await fs.mkdirSync(directoryPath);
+	});
 
-		it('downloadAndExtractTarball -> invalid url', async () => {
-			const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block1.json.tar.gz';
-			expect(downloadAndExtractTarball(url, directoryPath)).rejects.toThrow();
-		});
+	afterAll(async () => {
+		// Remove files from test directory
+		await fs.readdirSync(directoryPath).forEach(file => fs.unlinkSync(`${directoryPath}/${file}`));
+		// Remove test directory
+		await fs.rmdirSync(directoryPath);
+	});
+
+	it('downloadAndExtractTarball -> valid url', async () => {
+		const url = config.networks.filter(acc => acc.name === 'testnet')[0];
+		const filePath = `${directoryPath}/genesis_block.json`;
+		await downloadAndExtractTarball(url.genesisBlockUrl, directoryPath);
+		const result = !!(await fs.promises.stat(filePath).catch(() => null));
+		expect(result).toEqual(true);
+	});
+
+	it('downloadAndExtractTarball -> invalid url', async () => {
+		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block1.json.tar.gz';
+		expect(downloadAndExtractTarball(url, directoryPath)).rejects.toThrow();
+	});
+
+	xit('downloadJSONFile -> valid url', async () => {
+		const url = 'https://github.com/LiskHQ/lisk-service/blob/development/known_accounts/networks.json';
+		const filePath = `${directoryPath}/networks.json`;
+		await downloadJSONFile(url, directoryPath);
+		const result = !!(await fs.promises.stat(filePath).catch(() => null));
+		expect(result).toEqual(true);
+	});
+
+	it('downloadJSONFile -> invalid url', async () => {
+		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block.json';
+		expect(downloadJSONFile(url, directoryPath)).rejects.toThrow();
 	});
 });
