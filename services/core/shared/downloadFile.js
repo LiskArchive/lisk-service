@@ -26,14 +26,14 @@ const {
 const logger = Logger();
 
 
-const downloadAndExtractTarball = (snapshotUrl, directoryPath) => new Promise((resolve, reject) => {
-	https.get(snapshotUrl, (response) => {
+const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
+	https.get(url, (response) => {
 		if (response.statusCode === 200) {
 			response.pipe(tar.extract({ cwd: directoryPath }));
 			response.on('error', async (err) => reject(err));
 			response.on('end', async () => {
 				logger.info('File downloaded successfully');
-				return setTimeout(resolve, 500);
+				return resolve;
 			});
 		} else {
 			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
