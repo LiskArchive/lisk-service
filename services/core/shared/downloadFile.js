@@ -33,7 +33,7 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 			response.on('error', async (err) => reject(err));
 			response.on('end', async () => {
 				logger.info('File downloaded successfully');
-				return resolve;
+				return setImmediate(resolve, 500);
 			});
 		} else {
 			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
