@@ -101,8 +101,8 @@ const initSnapshot = async () => {
 
 	if (!(await exists(snapshotFilePath))) {
 		await downloadSnapshot();
-		await applySnapshot();
 	}
+	await applySnapshot();
 };
 
 module.exports = {

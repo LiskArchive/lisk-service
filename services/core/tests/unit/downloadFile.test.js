@@ -47,15 +47,15 @@ describe('downloadFile utility tests', () => {
 	});
 
 	it('downloadAndExtractTarball -> valid url', async () => {
-		const url = config.networks.filter(acc => acc.name === 'testnet')[0];
+		const [{ genesisBlockUrl }] = config.networks.filter(acc => acc.name === 'testnet');
 		const filePath = `${directoryPath}/genesis_block.json`;
-		await downloadAndExtractTarball(url.genesisBlockUrl, directoryPath);
+		await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
 		const result = !!(await fs.promises.stat(filePath).catch(() => null));
 		expect(result).toEqual(true);
 	});
 
 	it('downloadAndExtractTarball -> invalid url', async () => {
-		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block1.json.tar.gz';
+		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block_invalid.json';
 		expect(downloadAndExtractTarball(url, directoryPath)).rejects.toThrow();
 	});
 
