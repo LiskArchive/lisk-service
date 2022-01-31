@@ -44,7 +44,10 @@ const {
 	getAllDelegates,
 } = require('./accounts');
 
-const { getBase32AddressFromPublicKey } = require('./accountUtils');
+const {
+	getBase32AddressFromPublicKey,
+} = require('./accountUtils');
+
 const {
 	getVoteIndexingInfo,
 	getVotesByTransactionIDs,
@@ -55,9 +58,6 @@ const {
 	getTransactionsByBlockIDs,
 } = require('./transactions');
 
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
-const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
-
 const {
 	getDbConnection,
 	getTableInstance,
@@ -65,6 +65,10 @@ const {
 	commitDbTransaction,
 	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
+
+const keyValueDB = require('../../../indexdb/mysqlKVStore');
+
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 const blocksIndexSchema = require('./schema/blocks');
 const accountsIndexSchema = require('./schema/accounts');
@@ -98,6 +102,9 @@ const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 const setIndexDiff = (height) => blockchainStore.set('indexStatus', height);
 const getIndexDiff = () => blockchainStore.get('indexStatus');
 
+// Key constants for the KV-store
+const genesisAccountPageCached = 'genesisAccountPageCached';
+const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -123,9 +130,67 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	return pkInfoArray;
 };
 
+const updateProducedBlocksAndRewards = async (generatorPkInfoArray, trx) => {
+	const accountsDB = await getAccountsIndex();
+
+	// Update producedBlocks & rewards
+	for (let i = 0; i < generatorPkInfoArray.length; i++) {
+		/* eslint-disable no-await-in-loop */
+		const pkInfoArray = generatorPkInfoArray[i];
+		if (!pkInfoArray.isBlockIndexed) {
+			const incrementParam = {
+				increment: {
+					rewards: BigInt(pkInfoArray.reward),
+					producedBlocks: 1,
+				},
+				where: {
+					property: 'address',
+					value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+				},
+			};
+
+			// If no rows are affected with increment, insert the row
+			const numRowsAffected = await accountsDB.increment(incrementParam, trx);
+			if (numRowsAffected === 0) {
+				await accountsDB.upsert({
+					address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+					publicKey: pkInfoArray.publicKey,
+					producedBlocks: 1,
+					rewards: pkInfoArray.reward,
+				}, trx);
+			}
+		}
+		/* eslint-enable no-await-in-loop */
+	}
+};
+
+const updateVoteAggregates = async (votesToAggregateArray, trx) => {
+	const votesAggregateDB = await getVotesAggregateIndex();
+
+	// Update the aggregated votes information
+	for (let j = 0; j < votesToAggregateArray.length; j++) {
+		/* eslint-disable no-await-in-loop */
+		const voteToAggregate = votesToAggregateArray[j];
+		const incrementParam = {
+			increment: {
+				amount: BigInt(voteToAggregate.amount),
+			},
+			where: {
+				property: 'id',
+				value: voteToAggregate.id,
+			},
+		};
+
+		const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
+		if (numRowsAffected === 0) {
+			await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+		}
+		/* eslint-enable no-await-in-loop */
+	}
+};
+
 const indexBlocks = async job => {
 	const blocksDB = await getBlocksIndex();
-	const votesAggregateDB = await getVotesAggregateIndex();
 	const blocks = await getBlocksByHeightBetween(job.data.from, job.data.to);
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
@@ -152,55 +217,8 @@ const indexBlocks = async job => {
 			.upsert(multisignatureInfoToIndex, trx);
 		if (votes.length) await votesDB.upsert(votes, trx);
 
-		// Update producedBlocks & rewards
-		await BluebirdPromise.map(
-			generatorPkInfoArray,
-			async pkInfoArray => {
-				if (!pkInfoArray.isBlockIndexed) {
-					const incrementParam = {
-						increment: {
-							rewards: BigInt(pkInfoArray.reward),
-							producedBlocks: 1,
-						},
-						where: {
-							property: 'address',
-							value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-						},
-					};
-
-					// If no rows are affected with increment, insert the row
-					const numRowsAffected = await accountsDB.increment(incrementParam, trx);
-					if (numRowsAffected === 0) {
-						await accountsDB.upsert({
-							address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-							publicKey: pkInfoArray.publicKey,
-							producedBlocks: 1,
-							rewards: pkInfoArray.reward,
-						}, trx);
-					}
-				}
-			},
-		);
-
-		// Update the aggregated votes information
-		await BluebirdPromise.map(
-			votesToAggregateArray,
-			async voteToAggregate => {
-				const incrementParam = {
-					increment: {
-						amount: BigInt(voteToAggregate.amount),
-					},
-					where: {
-						property: 'id',
-						value: voteToAggregate.id,
-					},
-				};
-				const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
-				if (numRowsAffected === 0) {
-					await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
-				}
-			},
-		);
+		await updateProducedBlocksAndRewards(generatorPkInfoArray, trx);
+		await updateVoteAggregates(votesToAggregateArray, trx);
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
@@ -285,16 +303,15 @@ const cacheLegacyAccountInfo = async () => {
 
 const performGenesisAccountsIndexing = async () => {
 	const accountsDB = await getAccountsIndex();
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 
+	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 	const genesisAccountsToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length === 40)
 		.map(account => account.address);
-	const genesisAccountPageCached = 'genesisAccountPageCached';
 
 	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 
-	const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
+	const lastCachedPage = await keyValueDB.get(genesisAccountPageCached) || 0;
 
 	const PAGE_SIZE = 1000;
 	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
@@ -307,11 +324,18 @@ const performGenesisAccountsIndexing = async () => {
 		if (pageNum >= lastCachedPage) {
 			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
 
-			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+			logger.info(`Attempting retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
 			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
 			if (accounts.length) await accountsDB.upsert(accounts);
-			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+			await keyValueDB.set(genesisAccountPageCached, pageNum);
+
+			// Update MySQL based KV-store to avoid re-indexing of the genesis accounts
+			// after applying the DB snapshots
+			if (pageNum === NUM_PAGES - 1) {
+				logger.info('Setting genesis account indexing completion status');
+				await keyValueDB.set(isGenesisAccountIndexingFinished, true);
+			}
 		} else {
 			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 		}
@@ -320,18 +344,18 @@ const performGenesisAccountsIndexing = async () => {
 };
 
 const indexGenesisAccounts = async () => {
-	const isScheduled = await genesisAccountsCache.get('isGenesisAccountIndexingScheduled');
-
-	if (isScheduled === true) {
+	if (await keyValueDB.get(isGenesisAccountIndexingFinished)) {
 		logger.info('Skipping genesis account index update (one-time operation, already indexed)');
 		return;
 	}
 
 	try {
+		// Ensure genesis accounts indexing continues even after the Api client is re-instantiated
+		// Remove the listener after the genesis accounts are successfully indexed
 		logger.info('Attempting to update genesis account index (one-time operation)');
+		Signals.get('newApiClient').add(performGenesisAccountsIndexing);
 		await performGenesisAccountsIndexing();
-		await genesisAccountsCache.set('isGenesisAccountIndexingScheduled', true);
-		await genesisAccountsCache.set('genesisAccountPageCached', 0);
+		Signals.get('newApiClient').remove(performGenesisAccountsIndexing);
 	} catch (err) {
 		logger.fatal('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
 		logger.fatal(err.message);

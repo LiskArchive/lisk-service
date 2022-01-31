@@ -28,7 +28,7 @@ propose changes to this document in a pull request.
 This project and everyone participating in it is governed by the
 [Lisk Service Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are
 expected to uphold this code. Please report unacceptable behavior to
-[info@lisk.com](mailto:info@lisk.com).
+[admin@lisk.com](mailto:admin@lisk.com).
 
 ## Project License
 
