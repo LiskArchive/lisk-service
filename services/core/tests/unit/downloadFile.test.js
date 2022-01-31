@@ -51,10 +51,10 @@ describe('downloadFile utility tests', () => {
 		expect(downloadAndExtractTarball(url, directoryPath)).rejects.toThrow();
 	});
 
-	xit('downloadJSONFile -> valid url', async () => {
-		const url = 'https://github.com/LiskHQ/lisk-service/blob/development/known_accounts/networks.json';
-		const filePath = `${directoryPath}/networks.json`;
-		await downloadJSONFile(url, directoryPath);
+	it('downloadJSONFile -> valid url', async () => {
+		const url = 'https://service.lisk.io/api/v2/spec';
+		const filePath = `${directoryPath}/spec.json`;
+		await downloadJSONFile(url, filePath);
 		const result = !!(await fs.promises.stat(filePath).catch(() => null));
 		expect(result).toEqual(true);
 	});

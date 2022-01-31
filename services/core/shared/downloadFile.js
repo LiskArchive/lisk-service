@@ -44,11 +44,11 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 	});
 });
 
-const downloadJSONFile = (fileUrl, directoryPath) => new Promise((resolve, reject) => {
+const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
 	request(fileUrl)
 		.then(async response => {
 			const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
-			fs.writeFile(directoryPath, JSON.stringify(block), () => {
+			fs.writeFile(filePath, JSON.stringify(block), () => {
 				logger.info('File downloaded successfully');
 				return resolve();
 			});
