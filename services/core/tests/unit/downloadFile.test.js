@@ -47,7 +47,7 @@ describe('downloadFile utility tests', () => {
 	});
 
 	it('downloadAndExtractTarball -> valid url', async () => {
-		const [{ genesisBlockUrl }] = config.networks.filter(acc => acc.name === 'testnet');
+		const [{ genesisBlockUrl }] = config.networks.filter(network => network.name === 'testnet');
 		const filePath = `${directoryPath}/genesis_block.json`;
 		await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
 		const result = !!(await fs.promises.stat(filePath).catch(() => null));

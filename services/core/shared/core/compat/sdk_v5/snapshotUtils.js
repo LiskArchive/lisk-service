@@ -99,9 +99,7 @@ const initSnapshot = async () => {
 		return;
 	}
 
-	if (!(await exists(snapshotFilePath))) {
-		await downloadSnapshot();
-	}
+	if (!(await exists(snapshotFilePath))) await downloadSnapshot();
 	await applySnapshot();
 };
 
