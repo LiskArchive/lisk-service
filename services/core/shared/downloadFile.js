@@ -25,7 +25,6 @@ const {
 
 const logger = Logger();
 
-
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
 	https.get(url, (response) => {
 		if (response.statusCode === 200) {
@@ -33,13 +32,13 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 			response.on('error', async (err) => reject(err));
 			response.on('end', async () => {
 				logger.info('File downloaded successfully');
-				return setImmediate(resolve, 500);
+				return resolve();
 			});
 		} else {
 			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
 			logger.error(errMessage);
-			if (response.statusCode === 404) throw new NotFoundException(errMessage);
-			throw new Error(errMessage);
+			if (response.statusCode === 404) return reject(new NotFoundException(errMessage));
+			return reject(new Error(errMessage));
 		}
 	});
 });

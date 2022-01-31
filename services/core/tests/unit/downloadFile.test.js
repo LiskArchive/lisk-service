@@ -15,6 +15,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const { Logger } = require('lisk-service-framework');
 
 const {
 	downloadAndExtractTarball,
@@ -23,19 +24,26 @@ const {
 
 const config = require('../../config');
 
+const logger = Logger();
+
 const directoryPath = path.join(__dirname, 'testDir');
 
 describe('downloadFile utility tests', () => {
 	beforeAll(async () => {
 		// Create test directory
-		await fs.mkdirSync(directoryPath);
+		await fs.mkdir(directoryPath, (err) => logger.error(err));
 	});
 
 	afterAll(async () => {
-		// Remove files from test directory
-		await fs.readdirSync(directoryPath).forEach(file => fs.unlinkSync(`${directoryPath}/${file}`));
-		// Remove test directory
-		await fs.rmdirSync(directoryPath);
+		// Remove test directory and its content
+		await fs.rmdir(
+			directoryPath,
+			{
+				recursive: true,
+				force: true,
+			},
+			(err) => logger.error(err),
+		);
 	});
 
 	it('downloadAndExtractTarball -> valid url', async () => {
@@ -52,8 +60,8 @@ describe('downloadFile utility tests', () => {
 	});
 
 	it('downloadJSONFile -> valid url', async () => {
-		const url = 'https://service.lisk.io/api/v2/spec';
-		const filePath = `${directoryPath}/spec.json`;
+		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
+		const filePath = `${directoryPath}/networks.json`;
 		await downloadJSONFile(url, filePath);
 		const result = !!(await fs.promises.stat(filePath).catch(() => null));
 		expect(result).toEqual(true);
