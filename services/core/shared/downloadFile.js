@@ -52,7 +52,7 @@ const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) =>
 				resolve();
 			});
 		})
-		.catch(err => reject(err));
+		.catch(err => reject(new Error(err)));
 });
 
 module.exports = {
