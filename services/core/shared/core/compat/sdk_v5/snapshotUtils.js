@@ -57,8 +57,9 @@ const resolveSnapshotRestoreCommand = async (connEndpoint) => {
 	const dockerServiceName = config.snapshot.serviceName;
 
 	const [user, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
-	const database = connEndpoint.split('@')[1].split('/')[1];
-	const mysqlSnapshotCommand = `mysql ${database} -u ${user} -p${password} < ${snapshotFilePath}`;
+	const [hostPort, database] = connEndpoint.split('@')[1].split('/');
+	const [host, port] = hostPort.split(':');
+	const mysqlSnapshotCommand = `mysql ${database} -h ${host} -P ${port} -u ${user} -p${password} < ${snapshotFilePath}`;
 	if (!composeFile && !dockerServiceName) return mysqlSnapshotCommand;
 
 	if (composeFile) {
