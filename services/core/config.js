@@ -47,7 +47,6 @@ config.networks = [
 		identifier: '4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99',
 		genesisBlockUrl: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
 		snapshotUrl: 'https://snapshots.lisk.io/mainnet/service-core-snapshot.sql.gz',
-
 	},
 	{
 		name: 'testnet',
