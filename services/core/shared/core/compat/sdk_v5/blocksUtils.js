@@ -93,7 +93,7 @@ const downloadGenesisBlock = async () => {
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
 
 	if (genesisBlockUrl.endsWith('.tar.gz')) await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
-	else await downloadJSONFile(genesisBlockUrl, directoryPath);
+	else await downloadJSONFile(genesisBlockUrl, genesisBlockFilePath);
 };
 
 const getGenesisBlockFromFS = async () => {
