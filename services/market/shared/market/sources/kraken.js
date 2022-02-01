@@ -39,7 +39,7 @@ const fetchAllMarketTickers = async () => {
 		const tradingPairs = Object.values(symbolMap).join(',');
 		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
 		if (typeof response === 'string') return JSON.parse(response).data.result;
-		return response.data.result;
+		if (response) return response.data.result;
 	} catch (err) {
 		logger.error(err.message);
 		logger.error(err.stack);
@@ -83,11 +83,13 @@ const getFromCache = async () => {
 const reload = async () => {
 	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
-		const transformedPrices = standardizeTickers(tickers);
+		if (tickers) {
+			const transformedPrices = standardizeTickers(tickers);
 
-		// Serialize individual price item and write to the cache
-		await BluebirdPromise.all(transformedPrices
-			.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+			// Serialize individual price item and write to the cache
+			await BluebirdPromise.all(transformedPrices
+				.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+		}
 	}
 };
 
