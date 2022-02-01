@@ -29,7 +29,7 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 	https.get(url, (response) => {
 		if (response.statusCode === 200) {
 			response.pipe(tar.extract({ cwd: directoryPath }));
-			response.on('error', async (err) => reject(err));
+			response.on('error', async (err) => reject(new Error(err)));
 			response.on('end', async () => {
 				logger.info('File downloaded successfully');
 				resolve();

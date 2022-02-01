@@ -20,6 +20,7 @@ const execInShell = util.promisify(require('child_process').exec);
 const {
 	CacheRedis,
 	Logger,
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const {
@@ -48,7 +49,7 @@ const downloadSnapshot = async () => {
 const checkCommandAvailability = async () => {
 	const { stdout: mysqlAvailable } = await execInShell('which mysql');
 	const { stdout: dockerComposeAvailable } = await execInShell('which docker-compose');
-	if (!mysqlAvailable && !dockerComposeAvailable) throw new Error('Both mysql and docker-compose are unavailable in PATH');
+	if (!mysqlAvailable && !dockerComposeAvailable) throw new NotFoundException('Both mysql and docker-compose are unavailable in PATH');
 };
 
 const resolveSnapshotRestoreCommand = async (connEndpoint) => {
@@ -57,8 +58,7 @@ const resolveSnapshotRestoreCommand = async (connEndpoint) => {
 	const dockerServiceName = config.snapshot.serviceName;
 
 	const [user, password] = connEndpoint.split('//')[1].split('@')[0].split(':');
-	const [hostPort, database] = connEndpoint.split('@')[1].split('/');
-	const [host, port] = hostPort.split(':');
+	const [host, port, database] = connEndpoint.split('@')[1].split(new RegExp('/|:', 'g'));
 	const mysqlSnapshotCommand = `mysql ${database} -h ${host} -P ${port} -u ${user} -p${password} < ${snapshotFilePath}`;
 	if (!composeFile && !dockerServiceName) return mysqlSnapshotCommand;
 
@@ -71,7 +71,10 @@ const resolveSnapshotRestoreCommand = async (connEndpoint) => {
 
 const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 	try {
+		logger.debug('Attempting to resolve the snapshot command');
 		const snapshotRestoreCommand = await resolveSnapshotRestoreCommand(connEndpoint);
+		logger.debug(`Resolved snapshot command to: ${snapshotRestoreCommand}`);
+		logger.info('Attempting to apply snapshot');
 		const { stdout, stderr } = await execInShell(snapshotRestoreCommand);
 		logger.info(stdout);
 		logger.warn(stderr);
