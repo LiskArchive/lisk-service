@@ -50,8 +50,8 @@ describe('downloadFile utility tests', () => {
 		const [{ genesisBlockUrl }] = config.networks.filter(network => network.name === 'testnet');
 		const filePath = `${directoryPath}/genesis_block.json`;
 		await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
-		const result = !!(await fs.promises.stat(filePath).catch(() => null));
-		expect(result).toEqual(true);
+		const isFileExists = !!(await fs.promises.stat(filePath).catch(() => null));
+		expect(isFileExists).toEqual(true);
 	});
 
 	it('downloadAndExtractTarball -> invalid url', async () => {
@@ -63,8 +63,8 @@ describe('downloadFile utility tests', () => {
 		const url = 'https://raw.githubusercontent.com/LiskHQ/lisk-service/v0.6.0/known_accounts/known_mainnet.json';
 		const filePath = `${directoryPath}/networks.json`;
 		await downloadJSONFile(url, filePath);
-		const result = !!(await fs.promises.stat(filePath).catch(() => null));
-		expect(result).toEqual(true);
+		const isFileExists = !!(await fs.promises.stat(filePath).catch(() => null));
+		expect(isFileExists).toEqual(true);
 	});
 
 	it('downloadJSONFile -> invalid url', async () => {
