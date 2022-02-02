@@ -48,13 +48,13 @@ const symbolMap = {
 const fetchAllMarketTickers = async () => {
 	try {
 		const response = await requestLib(`${apiEndpoint}/ticker/price`);
+		if (response === undefined) throw new Error('Data from Binance is unavailable');
 		if (typeof response === 'string') return JSON.parse(response).data;
-		if (!response) return new Error('Data is not available from binance');
 		return response.data;
 	} catch (err) {
 		logger.error(err.message);
 		logger.error(err.stack);
-		return err;
+		throw err;
 	}
 };
 
@@ -99,7 +99,7 @@ const getFromCache = async () => {
 const reload = async () => {
 	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
-		if (tickers) {
+		if (tickers && Array.isArray(tickers)) {
 			const filteredTickers = filterTickers(tickers);
 			const transformedPrices = standardizeTickers(filteredTickers);
 

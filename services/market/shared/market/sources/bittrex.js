@@ -37,13 +37,13 @@ const symbolMap = {
 const fetchAllMarketTickers = async () => {
 	try {
 		const response = await requestLib(`${apiEndpoint}/markets/tickers`);
+		if (response === undefined) throw new Error('Data from Bittrex is unavailable');
 		if (typeof response === 'string') return JSON.parse(response).data;
-		if (!response) return new Error('Data is not available from bittrex');
 		return response.data;
 	} catch (err) {
 		logger.error(err.message);
 		logger.error(err.stack);
-		return err;
+		throw err;
 	}
 };
 
@@ -88,7 +88,7 @@ const getFromCache = async () => {
 const reload = async () => {
 	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
-		if (tickers) {
+		if (tickers && Array.isArray(tickers)) {
 			const filteredTickers = filterTickers(tickers);
 			const transformedPrices = standardizeTickers(filteredTickers);
 

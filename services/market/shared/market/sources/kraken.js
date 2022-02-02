@@ -38,13 +38,13 @@ const fetchAllMarketTickers = async () => {
 	try {
 		const tradingPairs = Object.values(symbolMap).join(',');
 		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
+		if (response === undefined) throw new Error('Data from Kraken is unavailable');
 		if (typeof response === 'string') return JSON.parse(response).data.result;
-		if (!response) return new Error('Data is not available from kraken');
 		return response.data.result;
 	} catch (err) {
 		logger.error(err.message);
 		logger.error(err.stack);
-		return err;
+		throw err;
 	}
 };
 
@@ -84,7 +84,7 @@ const getFromCache = async () => {
 const reload = async () => {
 	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
-		if (tickers) {
+		if (tickers && Array.isArray(tickers)) {
 			const transformedPrices = standardizeTickers(tickers);
 
 			// Serialize individual price item and write to the cache
