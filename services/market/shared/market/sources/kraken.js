@@ -39,7 +39,8 @@ const fetchAllMarketTickers = async () => {
 		const tradingPairs = Object.values(symbolMap).join(',');
 		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
 		if (typeof response === 'string') return JSON.parse(response).data.result;
-		if (response) return response.data.result;
+		if (!response) return new Error('Data is not available from kraken');
+		return response.data.result;
 	} catch (err) {
 		logger.error(err.message);
 		logger.error(err.stack);

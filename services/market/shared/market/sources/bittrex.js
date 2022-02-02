@@ -38,7 +38,8 @@ const fetchAllMarketTickers = async () => {
 	try {
 		const response = await requestLib(`${apiEndpoint}/markets/tickers`);
 		if (typeof response === 'string') return JSON.parse(response).data;
-		if (response) return response.data;
+		if (!response) return new Error('Data is not available from bittrex');
+		return response.data;
 	} catch (err) {
 		logger.error(err.message);
 		logger.error(err.stack);

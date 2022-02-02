@@ -49,7 +49,8 @@ const fetchAllMarketTickers = async () => {
 	try {
 		const response = await requestLib(`${apiEndpoint}/ticker/price`);
 		if (typeof response === 'string') return JSON.parse(response).data;
-		if (response) return response.data;
+		if (!response) return new Error('Data is not available from binance');
+		return response.data;
 	} catch (err) {
 		logger.error(err.message);
 		logger.error(err.stack);
