@@ -30,7 +30,7 @@ const {
 
 const config = require('../../../../config');
 const {
-	downloadAndExtractTarball,
+	downloadAndUnzipFile,
 } = require('../../../downloadFile');
 
 const logger = Logger();
@@ -43,7 +43,7 @@ const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 const downloadSnapshot = async () => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-	await downloadAndExtractTarball(snapshotUrl, directoryPath);
+	await downloadAndUnzipFile(snapshotUrl, snapshotFilePath);
 };
 
 const checkCommandAvailability = async () => {
