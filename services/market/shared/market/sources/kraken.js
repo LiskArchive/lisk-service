@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
+const {
+	HTTP,
+	Logger,
+	CacheRedis,
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
@@ -38,7 +43,7 @@ const fetchAllMarketTickers = async () => {
 	try {
 		const tradingPairs = Object.values(symbolMap).join(',');
 		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
-		if (response === undefined) throw new Error('Data from Kraken is unavailable');
+		if (response === undefined) throw new ServiceUnavailableException('Data from Kraken is currently unavailable');
 		if (typeof response === 'string') return JSON.parse(response).data.result;
 		return response.data.result;
 	} catch (err) {

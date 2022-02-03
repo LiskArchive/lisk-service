@@ -13,8 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const {
+	Exceptions: { ServiceUnavailableException },
+	Logger,
+} = require('lisk-service-framework');
+
 const { reload } = require('../shared/market/sources/bittrex');
+
+const logger = Logger();
+
+const reloadMarketPrices = async () => reload()
+	.catch(err => {
+		if (err instanceof ServiceUnavailableException) {
+			logger.warn('Unable to fetch market prices from Bittrex. Will retry again later.');
+		}
+		throw err;
+	});
 
 module.exports = [
 	{
@@ -23,11 +37,11 @@ module.exports = [
 		schedule: '* * * * *',
 		init: async () => {
 			logger.debug('Initializing market prices from Bittrex');
-			await reload();
+			await reloadMarketPrices();
 		},
 		controller: async () => {
 			logger.debug('Updating market prices from Bittrex');
-			await reload();
+			await reloadMarketPrices();
 		},
 	},
 ];

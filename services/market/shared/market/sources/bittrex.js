@@ -13,7 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
+const {
+	HTTP,
+	Logger,
+	CacheRedis,
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
@@ -37,7 +42,7 @@ const symbolMap = {
 const fetchAllMarketTickers = async () => {
 	try {
 		const response = await requestLib(`${apiEndpoint}/markets/tickers`);
-		if (response === undefined) throw new Error('Data from Bittrex is unavailable');
+		if (response === undefined) throw new ServiceUnavailableException('Data from Bittrex is currently unavailable');
 		if (typeof response === 'string') return JSON.parse(response).data;
 		return response.data;
 	} catch (err) {
