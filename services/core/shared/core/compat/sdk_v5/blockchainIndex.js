@@ -190,11 +190,20 @@ const updateVoteAggregates = async (votesToAggregateArray, trx) => {
 };
 
 const indexBlocks = async job => {
+	const fromHeight = job.data.from;
+	const toHeight = job.data.to;
+
 	const blocksDB = await getBlocksIndex();
-	const blocks = await getBlocksByHeightBetween(job.data.from, job.data.to);
+	const blocks = await getBlocksByHeightBetween(fromHeight, toHeight);
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${job.data.from}-${job.data.to} }`);
+
+	const transactionStartLogMessage = fromHeight === toHeight
+		? `Created new MySQL transaction to index block at height ${fromHeight}`
+		: `Created new MySQL transaction to index blocks in height range ${fromHeight}-${fromHeight}`;
+	logger.debug(transactionStartLogMessage);
+
+	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${fromHeight}-${toHeight} }`);
 	try {
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
@@ -224,6 +233,17 @@ const indexBlocks = async job => {
 		await commitDbTransaction(trx);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
+		const transactionRollbackLogMessage = fromHeight === toHeight
+			? `Rolled back MySQL transaction to index block at height ${fromHeight}`
+			: `Rolled back MySQL transaction to index blocks in height range ${fromHeight}-${fromHeight}`;
+		logger.debug(transactionRollbackLogMessage);
+
+		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+			const errMessage = fromHeight === toHeight
+				? `Deadlock encountered while indexing block at height ${fromHeight}`
+				: `Deadlock encountered while indexing blocks in height range ${fromHeight} - ${toHeight}`;
+			throw new Error(`${errMessage}. Will retry later.`);
+		}
 		throw error;
 	}
 };
