@@ -40,17 +40,13 @@ const symbolMap = {
 };
 
 const fetchAllMarketTickers = async () => {
-	try {
-		const tradingPairs = Object.values(symbolMap).join(',');
-		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
-		if (response === undefined) throw new ServiceUnavailableException('Data from Kraken is currently unavailable');
+	const tradingPairs = Object.values(symbolMap).join(',');
+	const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
+	if (response && response.status === 200) {
 		if (typeof response === 'string') return JSON.parse(response).data.result;
 		return response.data.result;
-	} catch (err) {
-		logger.error(err.message);
-		logger.error(err.stack);
-		throw err;
 	}
+	throw new ServiceUnavailableException('Data from Kraken is currently unavailable');
 };
 
 const standardizeTickers = (tickers) => {

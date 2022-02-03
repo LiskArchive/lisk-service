@@ -40,7 +40,7 @@ module.exports = [
 			await reloadMarketPrices();
 		},
 		controller: async () => {
-			logger.debug('Updating market prices from Bittrex');
+			logger.debug('Job scheduled to update prices from Bittrex');
 			await reloadMarketPrices();
 		},
 	},

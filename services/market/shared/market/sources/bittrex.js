@@ -40,16 +40,12 @@ const symbolMap = {
 };
 
 const fetchAllMarketTickers = async () => {
-	try {
-		const response = await requestLib(`${apiEndpoint}/markets/tickers`);
-		if (response === undefined) throw new ServiceUnavailableException('Data from Bittrex is currently unavailable');
+	const response = await requestLib(`${apiEndpoint}/markets/tickers`);
+	if (response && response.status === 200) {
 		if (typeof response === 'string') return JSON.parse(response).data;
 		return response.data;
-	} catch (err) {
-		logger.error(err.message);
-		logger.error(err.stack);
-		throw err;
 	}
+	throw new ServiceUnavailableException('Data from Bittrex is currently unavailable');
 };
 
 const filterTickers = (tickers) => {

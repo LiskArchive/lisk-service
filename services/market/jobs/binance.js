@@ -36,7 +36,7 @@ module.exports = [
 		description: 'Fetches up-to-date market prices from Binance',
 		schedule: '* * * * *',
 		init: async () => {
-			logger.debug('Initializing market prices');
+			logger.debug('Initializing market prices from Binance');
 			await reloadMarketPrices();
 		},
 		controller: async () => {

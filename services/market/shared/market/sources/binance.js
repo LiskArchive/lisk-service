@@ -51,16 +51,12 @@ const symbolMap = {
 };
 
 const fetchAllMarketTickers = async () => {
-	try {
-		const response = await requestLib(`${apiEndpoint}/ticker/price`);
-		if (response === undefined) throw new ServiceUnavailableException('Data from Binance is currently unavailable');
+	const response = await requestLib(`${apiEndpoint}/ticker/price`);
+	if (response && response.status === 200) {
 		if (typeof response === 'string') return JSON.parse(response).data;
 		return response.data;
-	} catch (err) {
-		logger.error(err.message);
-		logger.error(err.stack);
-		throw err;
 	}
+	throw new ServiceUnavailableException('Data from Binance is currently unavailable');
 };
 
 const filterTickers = (tickers) => {
