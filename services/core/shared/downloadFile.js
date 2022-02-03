@@ -16,6 +16,7 @@
 const fs = require('fs');
 const https = require('https');
 const tar = require('tar');
+const zlib = require('zlib');
 
 const {
 	Logger,
@@ -55,7 +56,29 @@ const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) =>
 		.catch(err => reject(new Error(err)));
 });
 
+
+const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
+	https.get(fileUrl, (response) => {
+		if (response.statusCode === 200) {
+			const unzip = zlib.createUnzip();
+			const writeFile = fs.createWriteStream(filePath);
+			response.pipe(unzip).pipe(writeFile);
+			response.on('error', async (err) => reject(new Error(err)));
+			response.on('end', async () => {
+				logger.info('File downloaded successfully');
+				resolve();
+			});
+		} else {
+			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
+			logger.error(errMessage);
+			if (response.statusCode === 404) reject(new NotFoundException(errMessage));
+			reject(new Error(errMessage));
+		}
+	});
+});
+
 module.exports = {
 	downloadAndExtractTarball,
 	downloadJSONFile,
+	downloadAndUnzipFile,
 };
