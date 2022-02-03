@@ -26,6 +26,7 @@ const reloadMarketPrices = async () => reload()
 	.catch(err => {
 		if (err instanceof ServiceUnavailableException) {
 			logger.warn('Unable to fetch market prices from Kraken right now. Will retry later.');
+			return;
 		}
 		throw err;
 	});
