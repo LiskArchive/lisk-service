@@ -24,6 +24,10 @@ const {
 } = require('lisk-service-framework');
 
 const {
+	getNetworkConstants,
+} = require('../common/constants');
+
+const {
 	exists,
 	mkdir,
 } = require('../../../fsUtils');
@@ -47,8 +51,8 @@ const downloadSnapshot = async () => {
 };
 
 const checkCommandAvailability = async () => {
-	const { stdout: mysqlAvailable } = await execInShell('which mysql');
-	const { stdout: dockerComposeAvailable } = await execInShell('which docker-compose');
+	const { stdout: mysqlAvailable } = await execInShell('which mysql').catch(() => ({}));
+	const { stdout: dockerComposeAvailable } = await execInShell('which docker-compose').catch(() => ({}));
 	if (!mysqlAvailable && !dockerComposeAvailable) throw new NotFoundException('Both mysql and docker-compose are unavailable in PATH');
 };
 
@@ -91,7 +95,10 @@ const initSnapshot = async () => {
 		return;
 	}
 
-	const { data: { networkIdentifier } } = JSON.parse(await constantsCache.get('networkConstants'));
+	const cachedNetworkConstants = await constantsCache.get('networkConstants');
+	const {
+		data: { networkIdentifier },
+	} = cachedNetworkConstants ? JSON.parse(cachedNetworkConstants) : await getNetworkConstants();
 
 	const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
 	if (networkConfig) {

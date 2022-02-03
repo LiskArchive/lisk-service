@@ -83,8 +83,8 @@ describe('downloadFile utility tests', () => {
 	});
 
 	it('downloadAndUnzipFile -> invalid url', async () => {
-		const url = 'https://downloads.lisk.com/lisk/testnet/service_core_invalid.sql';
-		const filePath = `${directoryPath}/service-core-snapshot.sql`;
+		const url = 'https://downloads.lisk.com/lisk/testnet/service-core-snapshot-invalid.sql.gz';
+		const filePath = `${directoryPath}/service-core-snapshot-invalid.sql`;
 		expect(downloadAndUnzipFile(url, filePath)).rejects.toThrow();
 	});
 });
