@@ -20,6 +20,7 @@ const { Logger } = require('lisk-service-framework');
 const {
 	downloadAndExtractTarball,
 	downloadJSONFile,
+	downloadAndUnzipFile,
 } = require('../../shared/downloadFile');
 
 const config = require('../../config');
@@ -69,6 +70,21 @@ describe('downloadFile utility tests', () => {
 
 	it('downloadJSONFile -> invalid url', async () => {
 		const url = 'https://downloads.lisk.com/lisk/testnet/genesis_block.json';
-		expect(downloadJSONFile(url, directoryPath)).rejects.toThrow();
+		const filePath = `${directoryPath}/genesis_block.json`;
+		expect(downloadJSONFile(url, filePath)).rejects.toThrow();
+	});
+
+	it('downloadAndUnzipFile -> valid url', async () => {
+		const [{ snapshotUrl }] = config.networks.filter(network => network.name === 'testnet');
+		const filePath = `${directoryPath}/service-core-snapshot.sql`;
+		await downloadAndUnzipFile(snapshotUrl, filePath);
+		const isFileExists = !!(await fs.promises.stat(filePath).catch(() => null));
+		expect(isFileExists).toEqual(true);
+	});
+
+	it('downloadAndUnzipFile -> invalid url', async () => {
+		const url = 'https://downloads.lisk.com/lisk/testnet/service_core_invalid.sql';
+		const filePath = `${directoryPath}/service-core-snapshot.sql`;
+		expect(downloadAndUnzipFile(url, filePath)).rejects.toThrow();
 	});
 });
