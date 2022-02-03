@@ -15,7 +15,6 @@
  */
 const {
 	HTTP,
-	Logger,
 	CacheRedis,
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
@@ -26,7 +25,6 @@ const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const requestLib = HTTP.request;
-const logger = Logger();
 
 const { apiEndpoint, allowRefreshAfter } = config.market.sources.bittrex;
 const expireMiliseconds = config.ttl.bittrex;

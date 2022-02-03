@@ -15,7 +15,6 @@
  */
 const {
 	HTTP,
-	Logger,
 	CacheRedis,
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
@@ -23,7 +22,6 @@ const {
 const BluebirdPromise = require('bluebird');
 
 const requestLib = HTTP.request;
-const logger = Logger();
 
 const { validateEntries } = require('./common');
 const config = require('../../../config.js');
