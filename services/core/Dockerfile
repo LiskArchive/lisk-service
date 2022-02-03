@@ -13,7 +13,7 @@ RUN npm ci
 
 FROM node:14-alpine
 
-RUN apk add --no-cache curl mysql
+RUN apk add --no-cache curl mysql-client
 RUN adduser -D lisk
 
 COPY ./ /home/lisk/lisk-service/core/
