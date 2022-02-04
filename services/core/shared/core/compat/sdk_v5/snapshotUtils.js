@@ -47,6 +47,7 @@ const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 const downloadSnapshot = async () => {
 	const directoryPath = path.dirname(snapshotFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
+	logger.info('Attempting to download the snapshot file');
 	await downloadAndUnzipFile(snapshotUrl, snapshotFilePath);
 };
 
@@ -78,7 +79,7 @@ const applySnapshot = async (connEndpoint = config.endpoints.mysql) => {
 		logger.debug('Attempting to resolve the snapshot command');
 		const snapshotRestoreCommand = await resolveSnapshotRestoreCommand(connEndpoint);
 		logger.debug(`Resolved snapshot command to: ${snapshotRestoreCommand}`);
-		logger.info('Attempting to apply snapshot');
+		logger.info(`Attempting to apply the snapshot file available at: ${snapshotFilePath}`);
 		const { stdout, stderr } = await execInShell(snapshotRestoreCommand);
 		logger.info(stdout);
 		logger.warn(stderr);
@@ -95,6 +96,7 @@ const initSnapshot = async () => {
 		return;
 	}
 
+	logger.info('Initialising the automatic index snapshot application process');
 	const cachedNetworkConstants = await constantsCache.get('networkConstants');
 	const {
 		data: { networkIdentifier },

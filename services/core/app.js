@@ -44,7 +44,11 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
+// TODO: Remove after logging issues with 'sdk_v5/snapshotUtils.js' are resolved
+if (config.snapshot.enable) logger.info('Initialising the automatic index snapshot application process');
+
 snapshotUtils.initSnapshot()
+	.then(() => { if (config.snapshot.enable) logger.info('Successfully downloaded and applied the snapshot'); })
 	.catch(err => logger.warn(`Unable to apply snapshot:\n${err.message}`))
 	.finally(async () => {
 		await nodeStatus.waitForNode();
