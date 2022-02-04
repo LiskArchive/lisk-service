@@ -13,7 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
+const {
+	HTTP,
+	CacheRedis,
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
@@ -21,7 +25,6 @@ const { validateEntries } = require('./common');
 const config = require('../../../config.js');
 
 const requestLib = HTTP.request;
-const logger = Logger();
 
 const { apiEndpoint, allowRefreshAfter } = config.market.sources.kraken;
 const expireMiliseconds = config.ttl.kraken;
@@ -35,16 +38,13 @@ const symbolMap = {
 };
 
 const fetchAllMarketTickers = async () => {
-	try {
-		const tradingPairs = Object.values(symbolMap).join(',');
-		const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
+	const tradingPairs = Object.values(symbolMap).join(',');
+	const response = await requestLib(`${apiEndpoint}/public/Ticker?pair=${tradingPairs}`);
+	if (response && response.status === 200) {
 		if (typeof response === 'string') return JSON.parse(response).data.result;
 		return response.data.result;
-	} catch (err) {
-		logger.error(err.message);
-		logger.error(err.stack);
-		return err;
 	}
+	throw new ServiceUnavailableException('Data from Kraken is currently unavailable');
 };
 
 const standardizeTickers = (tickers) => {
@@ -83,11 +83,13 @@ const getFromCache = async () => {
 const reload = async () => {
 	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
-		const transformedPrices = standardizeTickers(tickers);
+		if (tickers && Array.isArray(tickers)) {
+			const transformedPrices = standardizeTickers(tickers);
 
-		// Serialize individual price item and write to the cache
-		await BluebirdPromise.all(transformedPrices
-			.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+			// Serialize individual price item and write to the cache
+			await BluebirdPromise.all(transformedPrices
+				.map(item => krakenCache.set(`kraken_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+		}
 	}
 };
 
