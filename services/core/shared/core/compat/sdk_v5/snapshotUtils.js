@@ -101,17 +101,15 @@ const initSnapshot = async () => {
 	} = cachedNetworkConstants ? JSON.parse(cachedNetworkConstants) : await getNetworkConstants();
 
 	snapshotFilePath = `./data/${networkIdentifier}/service-core-snapshot.sql`;
+	const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
+	if (networkConfig) snapshotUrl = networkConfig.snapshotUrl;
+
 	if (config.snapshot.url) {
+		// Override if custom snapshot URL is specified
 		snapshotUrl = config.snapshot.url;
-	} else {
-		logger.info('Snapshot URL is not defined. Checking the config file for auto-resolution');
-		const [networkConfig] = config.networks.filter(c => networkIdentifier === c.identifier);
-		if (networkConfig) {
-			snapshotUrl = networkConfig.snapshotUrl;
-		} else {
-			logger.info(`Snapshot URL for network (${networkIdentifier}) unavailable in the config. Cannot apply snapshot`);
-			return;
-		}
+	} else if (!snapshotUrl) {
+		logger.info(`Cannot apply snapshot. Snapshot URL for network (${networkIdentifier}) is unavailable.\nTry updating the config file or setting the 'INDEX_SNAPSHOT_URL' environment variable`);
+		return;
 	}
 
 	if (!(await exists(snapshotFilePath))) await downloadSnapshot();
