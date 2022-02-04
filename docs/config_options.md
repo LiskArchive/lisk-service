@@ -167,12 +167,11 @@ ENABLE_APPLY_SNAPSHOT=true
 # Custom snapshot url (Expected to end with sql.gz)
 INDEX_SNAPSHOT_URL='https://snapshots.lisk.io/mainnet/service.sql.gz'
 
-# In case when MySql is running from docker-compose file, set the following:
-
+# When the MySql is hosted as a docker-compose service, set the following environment variables:
 # Set docker-compose file path (use absolute path)
 DOCKER_COMPOSE_FILEPATH='/Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml'
 
-# Set mysql service name
+# Set mysql service name as defined in the above docker-compose file
 DOCKER_MYSQL_SERVICE_NAME=mysql
 ```
 

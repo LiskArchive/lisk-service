@@ -45,9 +45,6 @@ const app = Microservice({
 });
 
 snapshotUtils.initSnapshot()
-	.then(() => {
-		if (config.snapshot.enable) logger.info('Successfully downloaded and applied the snapshot');
-	})
 	.catch(err => logger.warn(`Unable to apply snapshot:\n${err.message}`))
 	.finally(async () => {
 		await nodeStatus.waitForNode();
