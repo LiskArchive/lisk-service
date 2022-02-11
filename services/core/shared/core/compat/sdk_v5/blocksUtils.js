@@ -14,22 +14,23 @@
  *
  */
 const fs = require('fs');
-const https = require('https');
 const json = require('big-json');
 const path = require('path');
-const tar = require('tar');
 
 const {
 	CacheRedis,
 	Logger,
-	HTTP: { request },
-	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const {
 	exists,
 	mkdir,
 } = require('../../../fsUtils');
+
+const {
+	downloadAndExtractTarball,
+	downloadJSONFile,
+} = require('../../../downloadFile');
 
 const config = require('../../../../config');
 
@@ -91,35 +92,8 @@ const downloadGenesisBlock = async () => {
 
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
 
-	return new Promise((resolve, reject) => {
-		if (genesisBlockUrl.endsWith('.tar.gz')) {
-			https.get(genesisBlockUrl, (response) => {
-				if (response.statusCode === 200) {
-					response.pipe(tar.extract({ cwd: directoryPath }));
-					response.on('error', async (err) => reject(err));
-					response.on('end', async () => {
-						logger.info('Genesis block downloaded successfully');
-						return setTimeout(resolve, 500);
-					});
-				} else {
-					const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
-					logger.error(errMessage);
-					if (response.statusCode === 404) throw new NotFoundException(errMessage);
-					throw new Error(errMessage);
-				}
-			});
-		} else {
-			request(genesisBlockUrl)
-				.then(async response => {
-					const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
-					fs.writeFile(genesisBlockFilePath, JSON.stringify(block), () => {
-						logger.info('Genesis block downloaded successfully');
-						return resolve();
-					});
-				})
-				.catch(err => reject(err));
-		}
-	});
+	if (genesisBlockUrl.endsWith('.tar.gz')) await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
+	else await downloadJSONFile(genesisBlockUrl, genesisBlockFilePath);
 };
 
 const getGenesisBlockFromFS = async () => {

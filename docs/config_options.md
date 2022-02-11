@@ -158,6 +158,23 @@ GEOIP_JSON=https://geoip.lisk.com/json
 INDEX_N_BLOCKS=202
 ```
 
+### Mysql Snapshot settings
+
+```bash
+# Enable or disable apply snapshot feature
+ENABLE_APPLY_SNAPSHOT=true
+
+# Custom snapshot url (Expected to end with sql.gz)
+INDEX_SNAPSHOT_URL='https://snapshots.lisk.io/mainnet/service.sql.gz'
+
+# When the MySql is hosted as a docker-compose service, set the following environment variables:
+# Set docker-compose file path (use absolute path)
+DOCKER_COMPOSE_FILEPATH='/Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml'
+
+# Set mysql service name as defined in the above docker-compose file
+DOCKER_MYSQL_SERVICE_NAME=mysql
+```
+
 ### Transaction statistics
 
 ```bash
