@@ -75,6 +75,7 @@ services:
       - LISK_CORE_WS=${LISK_CORE_WS}
       - ENABLE_APPLY_SNAPSHOT=${ENABLE_APPLY_SNAPSHOT}
       - INDEX_SNAPSHOT_URL=${INDEX_SNAPSHOT_URL}
+      - SNAPSHOT_ALLOW_INSECURE_HTTP=${SNAPSHOT_ALLOW_INSECURE_HTTP}
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"

@@ -114,9 +114,12 @@ const initSnapshot = async () => {
 		return;
 	}
 
+	if (!snapshotUrl.startsWith('https') && !config.snapshot.allowInsecureHttp) {
+		throw new Error(`Please consider using a secured source (HTTPS). To continue to download snapshot from ${snapshotUrl}, set 'SNAPSHOT_ALLOW_INSECURE_HTTP' env variable`);
+	}
+
 	if (!(await exists(snapshotFilePath))) await downloadSnapshot();
 	await applySnapshot();
-	logger.info('Successfully downloaded and applied the snapshot');
 };
 
 module.exports = {

@@ -14,6 +14,7 @@
  *
  */
 const fs = require('fs');
+const http = require('http');
 const https = require('https');
 const tar = require('tar');
 const zlib = require('zlib');
@@ -26,8 +27,10 @@ const {
 
 const logger = Logger();
 
+const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
+
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
-	https.get(url, (response) => {
+	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
 			response.pipe(tar.extract({ cwd: directoryPath }));
 			response.on('error', async (err) => reject(new Error(err)));
@@ -58,7 +61,7 @@ const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) =>
 
 
 const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
-	https.get(fileUrl, (response) => {
+	getHTTPProtocolByURL(fileUrl).get(fileUrl, (response) => {
 		if (response.statusCode === 200) {
 			const unzip = zlib.createUnzip();
 			const writeFile = fs.createWriteStream(filePath);
