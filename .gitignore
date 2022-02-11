@@ -75,5 +75,9 @@ docker/graylog/data*
 
 # Database snapshots
 *.gz
+*.gz.*
 *.sql
 *.zst
+
+# Legacy configs
+*.old
