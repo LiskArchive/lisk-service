@@ -1,7 +1,7 @@
 {
   "name": "lisk-service-framework",
-  "version": "1.2.4",
-  "description": "Lisk Serivce Framework",
+  "version": "1.2.5",
+  "description": "Lisk Service Framework",
   "keywords": [
     "lisk",
     "blockchain"
@@ -37,7 +37,7 @@
     "json-colorizer": "^2.2.2",
     "keyv": "^4.0.3",
     "keyv-lru": "^3.0.4",
-    "log4js": "^6.4.0",
+    "log4js": "^6.4.1",
     "moleculer": "^0.14.13",
     "moleculer-web": "^0.9.1",
     "moment": "^2.29.1",
@@ -46,7 +46,7 @@
     "prettyjson": "^1.2.1",
     "require-all": "^3.0.0",
     "signals": "^1.0.0",
-    "socket.io": "^4.0.1",
+    "socket.io": "^4.4.1",
     "socket.io-client": "^4.0.1",
     "stack-trace": "0.0.10"
   },
