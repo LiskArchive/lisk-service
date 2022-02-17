@@ -58,11 +58,13 @@ const computeDelegateRank = async () => {
 	}
 };
 
+const lskToBeddows = (amount) => BigInt(amount) * BigInt(100000000);
+
 const computeDelegateStatus = async () => {
 	// TODO: These feature should be handled by the compatibility layer
 	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
 
-	const MIN_ELIGIBLE_VOTE_WEIGHT = BigInt(1000);
+	const MIN_ELIGIBLE_VOTE_WEIGHT = lskToBeddows(1000);
 
 	const lastestBlock = getLastBlock();
 	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
