@@ -68,8 +68,8 @@ const BASE_FEES = Object.freeze([{
 	baseFee: '1000000000',
 }]);
 
-const getTxnAssetSchema = async (trx) => {
-	const moduleAssetId = String(trx.moduleID).concat(':').concat(trx.assetID);
+const getTxnAssetSchema = async ({ moduleID, assetID }) => {
+	const moduleAssetId = String(moduleID).concat(':').concat(assetID);
 	const { data: [{ schema }] } = await getTransactionsSchemas({ moduleAssetId });
 	return schema;
 };
