@@ -14,6 +14,8 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+
+const { computeMinFee } = require('@liskhq/lisk-transactions');
 const {
 	CacheRedis,
 	Logger,
@@ -23,23 +25,12 @@ const {
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
-const {
-	getIndexedAccountInfo,
-} = require('./accounts');
-
-const {
-	normalizeRangeParam,
-} = require('./paramUtils');
-
-const {
-	getApiClient,
-} = require('../common');
-
+const { getIndexedAccountInfo } = require('./accounts');
+const { getTransactionsSchemas } = require('./transactionsSchemas');
+const { normalizeRangeParam } = require('./paramUtils');
+const { getApiClient } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-
-const {
-	getTableInstance,
-} = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 
 const blocksIndexSchema = require('./schema/blocks');
 
@@ -71,6 +62,18 @@ const updateFinalizedHeight = async () => {
 	return result;
 };
 
+const BASE_FEES = Object.freeze([{
+	moduleID: 5,
+	assetID: 0,
+	baseFee: '1000000000',
+}]);
+
+const getTxnAssetSchema = async (trx) => {
+	const moduleAssetId = String(trx.moduleID).concat(':').concat(trx.assetID);
+	const { data: [{ schema }] } = await getTransactionsSchemas({ moduleAssetId });
+	return schema;
+};
+
 const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 	const apiClient = await getApiClient();
 
@@ -90,17 +93,29 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 			block.totalBurnt = BigInt('0');
 			block.totalFee = BigInt('0');
 
-			block.payload.forEach(txn => {
-				txn.size = apiClient.transaction.encode(txn).length;
-				txn.minFee = apiClient.transaction.computeMinFee(txn);
+			await BluebirdPromise.map(
+				block.payload,
+				async (txn) => {
+					txn.size = apiClient.transaction.encode(txn).length;
+					txn.minFee = computeMinFee(
+						await getTxnAssetSchema(txn),
+						txn,
+						{
+							baseFees: BASE_FEES,
+							numberOfSignatures: txn.signatures.length,
+							numberOfEmptySignatures: txn.signatures.filter(s => !s.length).length,
+						},
+					);
 
-				block.size += txn.size;
+					block.size += txn.size;
 
-				const txnMinFee = BigInt(txn.minFee);
-				block.totalForged += BigInt(txn.fee);
-				block.totalBurnt += txnMinFee;
-				block.totalFee += BigInt(txn.fee) - txnMinFee;
-			});
+					const txnMinFee = BigInt(txn.minFee);
+					block.totalForged += BigInt(txn.fee);
+					block.totalBurnt += txnMinFee;
+					block.totalFee += BigInt(txn.fee) - txnMinFee;
+				},
+				{ concurrency: 1 },
+			);
 
 			if (includeGenesisAccounts !== true) {
 				const {
