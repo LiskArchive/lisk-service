@@ -17,7 +17,16 @@ const coreApi = require('./coreApi');
 
 const requestApi = coreApi.requestRetry;
 
-let allTransactionSchemas;
+let allTransactionSchemasCache;
+
+const getTransactionsSchemasFromCore = async () => requestApi(coreApi.getTransactionsSchemas);
+
+const getAllTransactionSchemasFromCache = async () => {
+	if (!allTransactionSchemasCache) {
+		allTransactionSchemasCache = await getTransactionsSchemasFromCore();
+	}
+	return allTransactionSchemasCache;
+};
 
 const getTransactionsSchemas = async params => {
 	const transactionsSchemas = {
@@ -25,17 +34,15 @@ const getTransactionsSchemas = async params => {
 		meta: {},
 	};
 
-	if (!allTransactionSchemas) {
-		const response = await requestApi(coreApi.getTransactionsSchemas);
+	const response = await getAllTransactionSchemasFromCache();
 
-		allTransactionSchemas = response.transactionsAssets.map(txAsset => {
-			const formattedTxAsset = {};
-			formattedTxAsset.moduleAssetId = String(txAsset.moduleID).concat(':').concat(txAsset.assetID);
-			formattedTxAsset.moduleAssetName = String(txAsset.moduleName).concat(':').concat(txAsset.assetName);
-			formattedTxAsset.schema = txAsset.schema;
-			return formattedTxAsset;
-		});
-	}
+	allTransactionSchemas = response.transactionsAssets.map(txAsset => {
+		const formattedTxAsset = {};
+		formattedTxAsset.moduleAssetId = String(txAsset.moduleID).concat(':').concat(txAsset.assetID);
+		formattedTxAsset.moduleAssetName = String(txAsset.moduleName).concat(':').concat(txAsset.assetName);
+		formattedTxAsset.schema = txAsset.schema;
+		return formattedTxAsset;
+	});
 
 	const { moduleAssetId, moduleAssetName } = params;
 
