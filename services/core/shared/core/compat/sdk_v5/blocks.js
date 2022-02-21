@@ -15,7 +15,6 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { computeMinFee } = require('@liskhq/lisk-transactions');
 const {
 	CacheRedis,
 	Logger,
@@ -26,6 +25,7 @@ const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
 const { getIndexedAccountInfo } = require('./accounts');
+const { getGenesisConfig } = require('./network');
 const { getTransactionsSchemas } = require('./transactionsSchemas');
 const { normalizeRangeParam } = require('./paramUtils');
 const { getApiClient } = require('../common');
@@ -62,16 +62,13 @@ const updateFinalizedHeight = async () => {
 	return result;
 };
 
-const BASE_FEES = Object.freeze([{
-	moduleID: 5,
-	assetID: 0,
-	baseFee: '1000000000',
-}]);
+const calculateMinFee = async ({ size, moduleID, assetID }) => {
+	const { baseFees, minFeePerByte } = await getGenesisConfig();
+	const [baseFeeEntry] = baseFees.filter(entry => entry.moduleID === moduleID && entry.assetID === assetID);
+	const applicableBaseFee = baseFeeEntry ? BigInt(baseFeeEntry.baseFee) : BigInt('0');
 
-const getTxnAssetSchema = async ({ moduleID, assetID }) => {
-	const moduleAssetId = String(moduleID).concat(':').concat(assetID);
-	const { data: [{ schema }] } = await getTransactionsSchemas({ moduleAssetId });
-	return schema;
+	const minFee = BigInt(size) * BigInt(minFeePerByte) + applicableBaseFee;
+	return minFee;
 };
 
 const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
@@ -97,15 +94,11 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 				block.payload,
 				async (txn) => {
 					txn.size = apiClient.transaction.encode(txn).length;
-					txn.minFee = computeMinFee(
-						await getTxnAssetSchema(txn),
-						txn,
-						{
-							baseFees: BASE_FEES,
-							numberOfSignatures: txn.signatures.length,
-							numberOfEmptySignatures: txn.signatures.filter(s => !s.length).length,
-						},
-					);
+
+					// TODO: Use apiCLient for minFee calculation once SDK fixes the following issue:
+					// https://github.com/liskhq/lisk-sdk/issues/7010
+					// txn.minFee = apiClient.transaction.computeMinFee(txn);
+					txn.minFee = await calculateMinFee(txn);
 
 					block.size += txn.size;
 
