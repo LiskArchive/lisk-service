@@ -106,9 +106,9 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 					txn.minFee = await getTxnMinFee(txn);
 
 					block.size += txn.size;
-					block.totalForged += BigInt(txn.fee);
+					block.totalForged += txn.fee;
 					block.totalBurnt += txn.minFee;
-					block.totalFee += BigInt(txn.fee) - txn.minFee;
+					block.totalFee += txn.fee - txn.minFee;
 				},
 				{ concurrency: 1 },
 			);
