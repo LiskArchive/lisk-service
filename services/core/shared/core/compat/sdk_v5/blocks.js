@@ -26,7 +26,6 @@ const config = require('../../../../config');
 
 const { getIndexedAccountInfo } = require('./accounts');
 const { getGenesisConfig } = require('./network');
-const { getTransactionsSchemas } = require('./transactionsSchemas');
 const { normalizeRangeParam } = require('./paramUtils');
 const { getApiClient } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -64,7 +63,8 @@ const updateFinalizedHeight = async () => {
 
 const calculateMinFee = async ({ size, moduleID, assetID }) => {
 	const { baseFees, minFeePerByte } = await getGenesisConfig();
-	const [baseFeeEntry] = baseFees.filter(entry => entry.moduleID === moduleID && entry.assetID === assetID);
+	const [baseFeeEntry] = baseFees
+		.filter(entry => entry.moduleID === moduleID && entry.assetID === assetID);
 	const applicableBaseFee = baseFeeEntry ? BigInt(baseFeeEntry.baseFee) : BigInt('0');
 
 	const minFee = BigInt(size) * BigInt(minFeePerByte) + applicableBaseFee;

@@ -36,7 +36,7 @@ const getTransactionsSchemas = async params => {
 
 	const response = await getAllTransactionSchemasFromCache();
 
-	allTransactionSchemas = response.transactionsAssets.map(txAsset => {
+	const allTransactionSchemas = response.transactionsAssets.map(txAsset => {
 		const formattedTxAsset = {};
 		formattedTxAsset.moduleAssetId = String(txAsset.moduleID).concat(':').concat(txAsset.assetID);
 		formattedTxAsset.moduleAssetName = String(txAsset.moduleName).concat(':').concat(txAsset.assetName);
