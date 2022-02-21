@@ -15,7 +15,6 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { computeMinFee } = require('@liskhq/lisk-transactions');
 const {
 	CacheRedis,
 	Logger,
@@ -26,8 +25,7 @@ const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
 const { getIndexedAccountInfo } = require('./accounts');
-const { getGenesisConfig } = require('./network');
-const { getTransactionsSchemas } = require('./transactionsSchemas');
+const { getTxnMinFee } = require('./transactionsUtils');
 const { normalizeRangeParam } = require('./paramUtils');
 const { getApiClient } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -62,23 +60,6 @@ const updateFinalizedHeight = async () => {
 	await setFinalizedHeight(result.data.finalizedHeight);
 	return result;
 };
-
-const getTxnAssetSchema = async (trx) => {
-	const moduleAssetId = String(trx.moduleID).concat(':').concat(trx.assetID);
-	const { data: [{ schema }] } = await getTransactionsSchemas({ moduleAssetId });
-	return schema;
-};
-
-const getTxnMinFee = async (txn) => computeMinFee(
-	await getTxnAssetSchema(txn),
-	txn,
-	{
-		minFeePerByte: (await getGenesisConfig()).minFeePerByte,
-		baseFees: (await getGenesisConfig()).baseFees,
-		numberOfSignatures: txn.signatures.filter(s => s.length).length,
-		numberOfEmptySignatures: txn.signatures.filter(s => !s.length).length,
-	},
-);
 
 const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 	const apiClient = await getApiClient();
