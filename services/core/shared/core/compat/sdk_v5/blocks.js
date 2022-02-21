@@ -61,7 +61,7 @@ const updateFinalizedHeight = async () => {
 	return result;
 };
 
-const calculateMinFee = async ({ size, moduleID, assetID }) => {
+const calculateTxnMinFee = async ({ size, moduleID, assetID }) => {
 	const { baseFees, minFeePerByte } = await getGenesisConfig();
 	const [baseFeeEntry] = baseFees
 		.filter(entry => entry.moduleID === moduleID && entry.assetID === assetID);
@@ -98,7 +98,7 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 					// TODO: Use apiCLient for minFee calculation once SDK fixes the following issue:
 					// https://github.com/liskhq/lisk-sdk/issues/7010
 					// txn.minFee = apiClient.transaction.computeMinFee(txn);
-					txn.minFee = await calculateMinFee(txn);
+					txn.minFee = await calculateTxnMinFee(txn);
 
 					block.size += txn.size;
 
