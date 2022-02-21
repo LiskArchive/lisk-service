@@ -69,6 +69,17 @@ const getTxnAssetSchema = async (trx) => {
 	return schema;
 };
 
+const getTxnMinFee = async (txn) => computeMinFee(
+	await getTxnAssetSchema(txn),
+	txn,
+	{
+		minFeePerByte: (await getGenesisConfig()).minFeePerByte,
+		baseFees: (await getGenesisConfig()).baseFees,
+		numberOfSignatures: txn.signatures.filter(s => s.length).length,
+		numberOfEmptySignatures: txn.signatures.filter(s => !s.length).length,
+	},
+);
+
 const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 	const apiClient = await getApiClient();
 
@@ -92,23 +103,12 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 				block.payload,
 				async (txn) => {
 					txn.size = apiClient.transaction.encode(txn).length;
-					txn.minFee = computeMinFee(
-						await getTxnAssetSchema(txn),
-						txn,
-						{
-							minFeePerByte: (await getGenesisConfig()).minFeePerByte,
-							baseFees: (await getGenesisConfig()).baseFees,
-							numberOfSignatures: txn.signatures.filter(s => s.length).length,
-							numberOfEmptySignatures: txn.signatures.filter(s => !s.length).length,
-						},
-					);
+					txn.minFee = await getTxnMinFee(txn);
 
 					block.size += txn.size;
-
-					const txnMinFee = BigInt(txn.minFee);
 					block.totalForged += BigInt(txn.fee);
-					block.totalBurnt += txnMinFee;
-					block.totalFee += BigInt(txn.fee) - txnMinFee;
+					block.totalBurnt += txn.minFee;
+					block.totalFee += BigInt(txn.fee) - txn.minFee;
 				},
 				{ concurrency: 1 },
 			);
