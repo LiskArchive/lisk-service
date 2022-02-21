@@ -15,6 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 
+const { computeMinFee } = require('@liskhq/lisk-transactions');
 const {
 	CacheRedis,
 	Logger,
@@ -26,6 +27,7 @@ const config = require('../../../../config');
 
 const { getIndexedAccountInfo } = require('./accounts');
 const { getGenesisConfig } = require('./network');
+const { getTransactionsSchemas } = require('./transactionsSchemas');
 const { normalizeRangeParam } = require('./paramUtils');
 const { getApiClient } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
@@ -61,14 +63,10 @@ const updateFinalizedHeight = async () => {
 	return result;
 };
 
-const calculateTxnMinFee = async ({ size, moduleID, assetID }) => {
-	const { baseFees, minFeePerByte } = await getGenesisConfig();
-	const [baseFeeEntry] = baseFees
-		.filter(entry => entry.moduleID === moduleID && entry.assetID === assetID);
-	const applicableBaseFee = baseFeeEntry ? BigInt(baseFeeEntry.baseFee) : BigInt('0');
-
-	const minFee = BigInt(size) * BigInt(minFeePerByte) + applicableBaseFee;
-	return minFee;
+const getTxnAssetSchema = async (trx) => {
+	const moduleAssetId = String(trx.moduleID).concat(':').concat(trx.assetID);
+	const { data: [{ schema }] } = await getTransactionsSchemas({ moduleAssetId });
+	return schema;
 };
 
 const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
@@ -94,11 +92,16 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 				block.payload,
 				async (txn) => {
 					txn.size = apiClient.transaction.encode(txn).length;
-
-					// TODO: Use apiCLient for minFee calculation once SDK fixes the following issue:
-					// https://github.com/liskhq/lisk-sdk/issues/7010
-					// txn.minFee = apiClient.transaction.computeMinFee(txn);
-					txn.minFee = await calculateTxnMinFee(txn);
+					txn.minFee = computeMinFee(
+						await getTxnAssetSchema(txn),
+						txn,
+						{
+							minFeePerByte: (await getGenesisConfig()).minFeePerByte,
+							baseFees: (await getGenesisConfig()).baseFees,
+							numberOfSignatures: txn.signatures.filter(s => s.length).length,
+							numberOfEmptySignatures: txn.signatures.filter(s => !s.length).length,
+						},
+					);
 
 					block.size += txn.size;
 
