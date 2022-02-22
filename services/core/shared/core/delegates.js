@@ -64,7 +64,7 @@ const computeDelegateStatus = async () => {
 	// TODO: These feature should be handled by the compatibility layer
 	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
 
-	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows(1000);
+	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
 	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);

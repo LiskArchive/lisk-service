@@ -19,6 +19,16 @@ const { parseToJSONCompatObj } = require('../../../jsonTools');
 
 const requestApi = coreApi.requestRetry;
 
+let genesisConfig;
+
+const getGenesisConfig = async () => {
+	if (!genesisConfig) {
+		const networkStatus = await requestApi(coreApi.getNetworkStatus);
+		genesisConfig = networkStatus.data.genesisConfig;
+	}
+	return genesisConfig;
+};
+
 // As in https://github.com/LiskHQ/lisk-sdk/blob/v5.1.4/elements/lisk-chain/src/block_reward.ts
 const calculateMilestone = (height, blockRewardArgs) => {
 	const distance = Math.floor(blockRewardArgs.distance);
@@ -66,4 +76,5 @@ const getNetworkStatus = async () => {
 
 module.exports = {
 	getNetworkStatus,
+	getGenesisConfig,
 };
