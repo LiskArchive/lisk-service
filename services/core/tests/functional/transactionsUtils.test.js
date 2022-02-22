@@ -25,7 +25,7 @@ const { when } = require('jest-when');
 
 const { getTxnMinFee } = require('../../shared/core/compat/sdk_v5/transactionsUtils');
 const { transactions, minFees } = require('../constants/transactionsMinFee');
-const transctionSchemas = require('../constants/schemas');
+const { transactionsAssets } = require('../constants/schemas');
 
 const getGenesisConfig = () => ({
 	blockTime: 10,
@@ -61,11 +61,8 @@ const getGenesisConfig = () => ({
 });
 
 const getTxnAssetSchema = ({ moduleID, assetID }) => {
-	const [{ schema }] = transctionSchemas.transactionsAssets.filter(
-		txSchema => (!moduleID && !assetID)
-			|| txSchema.moduleID === moduleID
-			|| txSchema.assetID === assetID,
-	);
+	const { schema } = transactionsAssets
+		.find(entry => entry.moduleID === moduleID && entry.assetID === assetID);
 	return schema;
 };
 
