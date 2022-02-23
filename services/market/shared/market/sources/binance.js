@@ -13,12 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Logger, CacheRedis } = require('lisk-service-framework');
+const {
+	HTTP,
+	CacheRedis,
+	Exceptions: { ServiceUnavailableException },
+} = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
 
 const requestLib = HTTP.request;
-const logger = Logger();
 
 const { validateEntries } = require('./common');
 const config = require('../../../config.js');
@@ -46,15 +49,12 @@ const symbolMap = {
 };
 
 const fetchAllMarketTickers = async () => {
-	try {
-		const response = await requestLib(`${apiEndpoint}/ticker/price`);
+	const response = await requestLib(`${apiEndpoint}/ticker/price`);
+	if (response && response.status === 200) {
 		if (typeof response === 'string') return JSON.parse(response).data;
 		return response.data;
-	} catch (err) {
-		logger.error(err.message);
-		logger.error(err.stack);
-		return err;
 	}
+	throw new ServiceUnavailableException('Data from Binance is currently unavailable');
 };
 
 const filterTickers = (tickers) => {
@@ -98,12 +98,14 @@ const getFromCache = async () => {
 const reload = async () => {
 	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
-		const filteredTickers = filterTickers(tickers);
-		const transformedPrices = standardizeTickers(filteredTickers);
+		if (tickers && Array.isArray(tickers)) {
+			const filteredTickers = filterTickers(tickers);
+			const transformedPrices = standardizeTickers(filteredTickers);
 
-		// Serialize individual price item and write to the cache
-		await BluebirdPromise.all(transformedPrices
-			.map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+			// Serialize individual price item and write to the cache
+			await BluebirdPromise.all(transformedPrices
+				.map(item => binanceCache.set(`binance_${item.code}`, JSON.stringify(item), expireMiliseconds)));
+		}
 	}
 };
 

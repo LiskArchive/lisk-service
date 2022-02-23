@@ -35,6 +35,7 @@
     "start": "node app.js"
   },
   "dependencies": {
+    "async": "^3.2.3",
     "chai": "^4.3.4",
     "csv-parse": "^5.0.3",
     "express": "^4.17.1",
@@ -43,7 +44,7 @@
     "jest-watch-toggle-config": "^1.0.2",
     "jest-watch-typeahead": "^0.4.2",
     "jsome": "^2.5.0",
-    "log4js": "^4.3.1",
+    "log4js": "^6.4.0",
     "mockserver": "^3.1.1",
     "multimatch": "^3.0.0",
     "popsicle": "^10.0.1",

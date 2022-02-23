@@ -281,10 +281,12 @@ const validateTransactionStatistics = async historyLengthDays => {
 	const verifyStatistics = await BluebirdPromise.map(
 		Object.keys(distributionByType),
 		async type => {
+			const fromTimestamp = Math.floor((moment.unix(dateFrom).unix()) / 1000);
+			const toTimestamp = Math.floor((moment.unix(dateTo).unix()) / 1000);
+
 			const { meta: { total } } = await getTransactions({
 				moduleAssetId: type,
-				fromTimestamp: (moment.unix(dateFrom).unix()) / 1000,
-				toTimestamp: (moment.unix(dateTo).unix()) / 1000,
+				timestamp: `${fromTimestamp}:${toTimestamp}`,
 			});
 			return total === distributionByType[type];
 		},

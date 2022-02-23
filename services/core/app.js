@@ -25,6 +25,8 @@ const packageJson = require('./package.json');
 
 const nodeStatus = require('./shared/nodeStatus');
 
+const snapshotUtils = require('./shared/core/compat/sdk_v5/snapshotUtils');
+
 const loggerConf = {
 	...config.log,
 	name: packageJson.name,
@@ -42,24 +44,32 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-nodeStatus.waitForNode().then(async () => {
-	logger.info('Found a node, initiating Lisk Core...');
+nodeStatus.waitForNode()
+	.then(async () => {
+		logger.info('Found a node, initiating Lisk Core...');
 
-	const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
-	await blockchainStore.initializeSearchIndex();
+		// TODO: Remove after logging issues with 'sdk_v5/snapshotUtils.js' are resolved
+		if (config.snapshot.enable) logger.info('Initialising the automatic index snapshot application process');
 
-	app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
-	app.addEvents(path.join(__dirname, 'events'));
-	app.addJobs(path.join(__dirname, 'jobs'));
+		await snapshotUtils.initSnapshot()
+			.then(() => { if (config.snapshot.enable) logger.info('Successfully downloaded and applied the snapshot'); })
+			.catch(err => logger.warn(`Unable to apply snapshot:\n${err.message}`));
 
-	app.run().then(() => {
-		logger.info(`Service started ${packageJson.name}`);
+		const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
+		await blockchainStore.initializeSearchIndex();
 
-		const coreApi = require('./shared/core');
-		coreApi.init();
-	}).catch(err => {
-		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-		logger.fatal(err.stack);
-		process.exit(1);
+		app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
+		app.addEvents(path.join(__dirname, 'events'));
+		app.addJobs(path.join(__dirname, 'jobs'));
+
+		app.run().then(() => {
+			logger.info(`Service started ${packageJson.name}`);
+
+			const coreApi = require('./shared/core');
+			coreApi.init();
+		}).catch(err => {
+			logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+			logger.fatal(err.stack);
+			process.exit(1);
+		});
 	});
-});
