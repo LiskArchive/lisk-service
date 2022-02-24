@@ -60,10 +60,9 @@ module.exports = {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				LISK_CORE_WS: 'ws://localhost:5001',
-				GENESIS_HEIGHT: '250',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
 				SERVICE_CORE_REDIS_VOLATILE: 'redis://localhost:6379/8',
-				SERVICE_CORE_MYSQL: 'mysql://root:password@localhost:3306/lisk',
+				SERVICE_CORE_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
 				GEOIP_JSON: '',
 				INDEX_N_BLOCKS: '0',
