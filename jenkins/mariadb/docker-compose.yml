@@ -6,7 +6,7 @@ services:
 
   mariadb:
     image: mariadb:10.6
-    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4
+    command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - db-data:/var/lib/mysql
       - ./mysql-healthcheck.sh:/healthcheck.sh
