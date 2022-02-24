@@ -333,7 +333,7 @@ const nonDelegate = {
 			{
 				summary: {
 					address: 'lskqrzzhkcd4qw3c2rbzztwgytrhf9otyczk3cbr9',
-					balance: '9979703000',
+					balance: '8079557000',
 					username: '',
 					publicKey: 'bd2b11d1b36f14883d9899285926b4ede7bb71704ff616470a57ac0225934a73',
 					isDelegate: false,
@@ -342,10 +342,10 @@ const nonDelegate = {
 					legacyAddress: '9326477068202836140L',
 				},
 				token: {
-					balance: '9979703000',
+					balance: '8079557000',
 				},
 				sequence: {
-					nonce: '2',
+					nonce: '3',
 				},
 				keys: {
 					numberOfSignatures: 0,
@@ -398,10 +398,10 @@ const delegate = {
 				dpos: {
 					delegate: {
 						username: 'genesis_37',
-						consecutiveMissedBlocks: 0,
+						consecutiveMissedBlocks: 53,
 						registrationHeight: 14075260,
 						lastForgedHeight: 14075260,
-						isBanned: false,
+						isBanned: true,
 						voteWeight: '0',
 						totalVotesReceived: '0',
 						producedBlocks: 0,
@@ -446,10 +446,10 @@ const delegateWithIsDelegate = {
 				dpos: {
 					delegate: {
 						username: 'genesis_37',
-						consecutiveMissedBlocks: 0,
+						consecutiveMissedBlocks: 53,
 						registrationHeight: 14075260,
 						lastForgedHeight: 14075260,
-						isBanned: false,
+						isBanned: true,
 						voteWeight: '0',
 						totalVotesReceived: '0',
 						producedBlocks: 0,
