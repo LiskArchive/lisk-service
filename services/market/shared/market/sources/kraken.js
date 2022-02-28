@@ -83,7 +83,7 @@ const getFromCache = async () => {
 const reload = async () => {
 	if (validateEntries(await getFromCache(), allowRefreshAfter)) {
 		const tickers = await fetchAllMarketTickers();
-		if (tickers && Array.isArray(tickers)) {
+		if (tickers && Object.getOwnPropertyNames(tickers).length) {
 			const transformedPrices = standardizeTickers(tickers);
 
 			// Serialize individual price item and write to the cache
