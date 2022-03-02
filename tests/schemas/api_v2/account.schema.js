@@ -32,7 +32,8 @@ const delegateSchema = {
 	status: Joi.string().valid(...validDelegateStatuses).optional(),
 	pomHeights: Joi.array().items(pomHeightSchema).optional(),
 	registrationHeight: Joi.number().integer().min(0).optional(),
-	lastForgedHeight: Joi.number().integer().min(0).allow(null).optional(),
+	lastForgedHeight: Joi.number().integer().min(0).allow(null)
+		.optional(),
 	consecutiveMissedBlocks: Joi.number().integer().optional(),
 	totalVotesReceived: Joi.string().optional(),
 };
