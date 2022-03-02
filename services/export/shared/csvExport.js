@@ -146,9 +146,7 @@ const getCsvFilenameFromParams = async (params) => {
 
 const getCsvFileUrlFromParams = async (params) => {
 	const filename = await getCsvFilenameFromParams(params);
-
-	// TODO: Base URL on config for filesystem or S3
-	const url = `/api/v2/exports/${filename}`;
+	const url = `${config.csv.baseUrl}/${filename}`;
 	return url;
 };
 

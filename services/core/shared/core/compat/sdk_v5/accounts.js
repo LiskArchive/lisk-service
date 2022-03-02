@@ -80,6 +80,9 @@ const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 const requestApi = coreApi.requestRetry;
 
+const numOfForgers = 103;
+const getNumberOfForgers = () => numOfForgers;
+
 const indexAccounts = async job => {
 	const { accounts } = job.data;
 	const accountsDB = await getAccountsIndex();
@@ -636,4 +639,5 @@ module.exports = {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
+	getNumberOfForgers,
 };

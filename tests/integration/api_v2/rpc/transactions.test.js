@@ -602,8 +602,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Re-enable after test blockchain update with transaction data
-		xit('returns transactions when queried with data', async () => {
+		it('returns transactions when queried with data', async () => {
 			const response = await getTransactions({ data: refTransaction.asset.data });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -618,8 +617,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Re-enable after test blockchain update with transaction data
-		xit('returns transactions when queried with data, limit and offset', async () => {
+		it('returns transactions when queried with data, limit and offset', async () => {
 			try {
 				const response = await getTransactions({
 					data: refTransaction.asset.data,

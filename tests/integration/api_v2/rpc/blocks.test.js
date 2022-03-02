@@ -33,7 +33,7 @@ const {
 
 const {
 	blockSchemaVersion5,
-} = require('../../../schemas/block.schema');
+} = require('../../../schemas/api_v2/block.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getBlocks = async params => request(wsRpcUrl, 'get.blocks', params);
