@@ -94,7 +94,7 @@ const computeDelegateStatus = async () => {
 				delegate.status = delegateStatus.PUNISHED;
 			} else if (activeNextForgersList.includes(delegate.account.address)) {
 				delegate.status = delegateStatus.ACTIVE;
-			} else if (delegate.delegateWeight >= MIN_ELIGIBLE_VOTE_WEIGHT) {
+			} else if (BigInt(delegate.delegateWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 				delegate.status = delegateStatus.STANDBY;
 			}
 		}
