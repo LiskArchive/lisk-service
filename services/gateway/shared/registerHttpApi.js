@@ -115,7 +115,6 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
-
 const registerApi = (apiName, config) => {
 	const { aliases, whitelist, methodPaths } = configureApi(apiName, config.path);
 

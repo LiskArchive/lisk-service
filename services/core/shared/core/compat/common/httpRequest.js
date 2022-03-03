@@ -14,7 +14,7 @@
  *
  */
 const { HTTP, Logger } = require('lisk-service-framework');
-const config = require('../../../../config.js');
+const config = require('../../../../config');
 
 const logger = Logger('CustomAPI');
 const requestLib = HTTP.request;

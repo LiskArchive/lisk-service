@@ -23,7 +23,6 @@ const getNetworkStatus = async () => {
 	};
 };
 
-
 module.exports = {
 	getNetworkStatus,
 };
