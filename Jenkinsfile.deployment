@@ -2,8 +2,8 @@
 pipeline {
 	agent none
 	triggers {
-		// Triggers every day at 12 am
-		cron('0 0 * * *')
+		// Triggers every day at 11 PM
+		cron('0 23 * * *')
 		}
 	stages {
 		stage('Build docker images') {
