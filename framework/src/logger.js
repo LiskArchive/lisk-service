@@ -116,7 +116,7 @@ const configure = config => {
 				},
 				appendCategory: 'category',
 				level: 'trace', // log all events
-				layout: { type: 'gelfLayout' }, // Custom layouts not supported by GELF
+				layout: { type: 'gelfLayout' },
 			};
 		} catch (e) {
 			console.log(`Could not enable GELF output for ${config.gelf}`);
