@@ -16,7 +16,6 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-
 const { getIndexedAccountInfo } = require('./accounts');
 const { getBase32AddressFromHex } = require('./accountUtils');
 

@@ -22,7 +22,7 @@ const {
 const BluebirdPromise = require('bluebird');
 
 const { validateEntries } = require('./common');
-const config = require('../../../config.js');
+const config = require('../../../config');
 
 const requestLib = HTTP.request;
 

@@ -24,7 +24,7 @@ const BluebirdPromise = require('bluebird');
 const requestLib = HTTP.request;
 
 const { validateEntries } = require('./common');
-const config = require('../../../config.js');
+const config = require('../../../config');
 
 const binanceCache = CacheRedis('binance_prices', config.endpoints.redis);
 

@@ -20,7 +20,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const { setBrokerHandle } = require('./shared/rpcBroker.js');
+const { setBrokerHandle } = require('./shared/rpcBroker');
 
 const config = require('./config');
 const packageJson = require('./package.json');
