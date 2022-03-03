@@ -15,28 +15,10 @@
  */
 import Joi from 'joi';
 
-const voterSchema = {
-	address: Joi.string().required(),
-	amount: Joi.string().optional(),
-	publicKey: Joi.string().required(),
-	balance: Joi.string().required(),
-	username: Joi.string().optional(),
-};
-
-const metaSchema = {
-	count: Joi.number().integer().min(0).required(),
-	limit: Joi.number().integer().min(0).optional(),
-	total: Joi.number().integer().min(0).optional(),
-	offset: Joi.number().integer().min(0).required(),
-	address: Joi.string().required(),
-	publicKey: Joi.string().optional(),
-	username: Joi.string().optional(),
-};
-
 const account = {
 	address: Joi.string().required(),
 	username: Joi.string().optional(),
-	votesReceived: Joi.number().required(),
+	votesUsed: Joi.number().required(),
 };
 
 const votes = {
@@ -45,13 +27,11 @@ const votes = {
 	amount: Joi.string().required(),
 };
 
-const voterSchemaVersion5 = {
+const voteSchemaVersion5 = {
 	account: Joi.object(account).required(),
 	votes: Joi.array().items(votes).optional(),
 };
 
 module.exports = {
-	voterSchema: Joi.object(voterSchema).required(),
-	voterSchemaVersion5: Joi.object(voterSchemaVersion5).required(),
-	metaSchema: Joi.object(metaSchema).required(),
+	voteSchemaVersion5: Joi.object(voteSchemaVersion5).required(),
 };

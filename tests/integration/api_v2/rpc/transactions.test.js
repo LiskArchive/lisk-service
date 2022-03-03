@@ -29,7 +29,7 @@ const {
 
 const {
 	transactionSchemaVersion5,
-} = require('../../../schemas/transaction.schema');
+} = require('../../../schemas/api_v2/transaction.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);

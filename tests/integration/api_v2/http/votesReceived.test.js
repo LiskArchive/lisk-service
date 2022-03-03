@@ -28,7 +28,7 @@ const {
 
 const {
 	voterSchemaVersion5,
-} = require('../../../schemas/voter.schema');
+} = require('../../../schemas/api_v2/voter.schema');
 
 [
 	`${baseUrlV2}/votes_received`,
