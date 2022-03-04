@@ -32,8 +32,6 @@ const reloadNewsFromDrupal = async drupalSources => {
 	const newsfeedDB = await getNewsFeedIndex();
 
 	drupalSources.forEach(async source => {
-		if (source.name === 'drupal_lisk_general') source.filter = item => item.category !== 'Announcement' && item.description !== '';
-		source.filter = item => item.description !== '';
 		const response = await requestLib(source.url);
 		const normalizedData = normalizeData(source, response.data);
 		await newsfeedDB.upsert(normalizedData);

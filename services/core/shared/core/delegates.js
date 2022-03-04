@@ -61,7 +61,7 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const numActiveForgers = coreApi.getNumberOfForgers();
+	const numActiveForgers = await coreApi.getNumberOfForgers();
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
@@ -128,7 +128,7 @@ const loadAllDelegates = async () => {
 };
 
 const loadAllNextForgers = async () => {
-	const maxCount = coreApi.getNumberOfForgers();
+	const maxCount = await coreApi.getNumberOfForgers();
 	if (sdkVersion <= 4) {
 		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
 	} else {
