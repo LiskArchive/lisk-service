@@ -108,7 +108,7 @@ describe('Test microservice', () => {
 		it('Return false when when no controller defined', async () => {
 			const testMethod = {
 				name: 'test.method',
-				description: 'Return true',
+				description: 'Return false',
 			};
 			expect(app.addMethod(testMethod)).toBe(false);
 		});
@@ -127,7 +127,7 @@ describe('Test microservice', () => {
 		it('Return false when when no controller defined', async () => {
 			const testEvent = {
 				name: 'test.event',
-				description: 'Return true',
+				description: 'Return false',
 			};
 			expect(app.addEvent(testEvent)).toBe(false);
 		});

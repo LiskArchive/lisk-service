@@ -116,6 +116,7 @@ const configure = config => {
 				},
 				appendCategory: 'category',
 				level: 'trace', // log all events
+				// Custom layouts not supported by GELF
 				layout: { type: 'gelfLayout' },
 			};
 		} catch (e) {
