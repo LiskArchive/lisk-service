@@ -18,7 +18,7 @@ const { HTTP, CacheRedis, Logger } = require('lisk-service-framework');
 const requestLib = HTTP.request;
 const logger = Logger();
 
-const config = require('../config.js');
+const config = require('../config');
 
 const GEOIP_TTL = 12 * 60 * 60 * 1000; // ms
 const REQUEST_LATENCY = 2000; // ms

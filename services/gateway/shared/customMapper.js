@@ -71,7 +71,6 @@ const mapObject = (rootObj, definition, subObj = rootObj) => Object.keys(definit
 		return acc;
 	}, {});
 
-
 const mapArray = (rootObj, definition) => definition.reduce((acc, item, i) => {
 	if (i === 0 && !isObject(item)) acc.push(item);
 	if (i === 0 && isObject(item)) acc.push(mapObject(rootObj, item));

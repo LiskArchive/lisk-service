@@ -1,4 +1,4 @@
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 
 RUN apk add --no-cache alpine-sdk python2 git
 RUN adduser -D builder
@@ -11,7 +11,7 @@ COPY ./package-lock.json ./package.json ./
 RUN npm ci
 
 
-FROM node:14-alpine
+FROM node:16-alpine
 
 RUN apk add --no-cache curl
 RUN adduser -D lisk

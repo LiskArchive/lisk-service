@@ -503,7 +503,6 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-
 const getLastFinalBlockHeight = async () => {
 	// Returns the highest finalized block available within the index
 	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
