@@ -397,7 +397,6 @@ function translateHttpToRpcCode(code) {
 	return SERVER_ERROR[0];
 }
 
-
 function makeHandler(svc, handlerItem) {
 	svc.logger.debug('makeHandler:', handlerItem);
 	return async function (requests, respond) {

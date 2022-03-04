@@ -35,7 +35,7 @@ const {
 	calculateEstimateFeeByteQuick,
 } = require('./dynamicFees');
 
-const config = require('../../config.js');
+const config = require('../../config');
 
 const logger = Logger();
 

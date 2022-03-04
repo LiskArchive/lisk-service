@@ -17,7 +17,7 @@ const {
 	Exceptions: { ServiceUnavailableException },
 } = require('lisk-service-framework');
 
-const { getNewsfeedArticles } = require('../../shared/newsfeed.js');
+const { getNewsfeedArticles } = require('../../shared/newsfeed');
 
 const getNewsfeed = async params => {
 	const news = {

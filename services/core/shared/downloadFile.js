@@ -59,7 +59,6 @@ const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) =>
 		.catch(err => reject(new Error(err)));
 });
 
-
 const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
 	getHTTPProtocolByURL(fileUrl).get(fileUrl, (response) => {
 		if (response.statusCode === 200) {

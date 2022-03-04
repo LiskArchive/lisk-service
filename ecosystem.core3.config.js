@@ -32,6 +32,7 @@ module.exports = {
 				PORT: '9901',
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/5',
 				WS_RATE_LIMIT_ENABLE: false,
 				WS_RATE_LIMIT_CONNECTIONS: 5,
 				WS_RATE_LIMIT_DURATION: 1, // in seconds

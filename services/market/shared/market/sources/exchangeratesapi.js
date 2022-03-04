@@ -20,7 +20,7 @@ const requestLib = HTTP.request;
 const logger = Logger();
 
 const { validateEntries } = require('./common');
-const config = require('../../../config.js');
+const config = require('../../../config');
 
 const exchangeratesapiCache = CacheRedis('exchangeratesapi_prices', config.endpoints.redis);
 

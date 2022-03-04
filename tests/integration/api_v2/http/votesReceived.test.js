@@ -91,7 +91,6 @@ const {
 				expect(response.meta).toMap(metaSchema);
 			});
 
-
 			it('Returns BAD_REQUEST (400) when requested with limit = 0', async () => {
 				const response = await api.get(`${endpoint}?limit=0`, 400);
 				expect(response).toMap(badRequestSchema);
