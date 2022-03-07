@@ -27,7 +27,7 @@ const {
 
 const {
 	forgerSchema,
-} = require('../../../schemas/forger.schema');
+} = require('../../../schemas/api_v2/forger.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 

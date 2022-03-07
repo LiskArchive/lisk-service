@@ -93,13 +93,43 @@ describe('Test microservice', () => {
 			}
 			expect(app.addJob(job)).toBe(false);
 		});
-
-		describe('addMethods()', () => {
-			it.todo('Add tests for addMethods');
-		})
-
-		describe('addEvents()', () => {
-			it.todo('Add tests for addEvents');
-		})
 	});
+
+	describe('addMethods()', () => {
+		it('Return true when method is registered', async () => {
+			const testMethod = {
+				name: 'test.method',
+				description: 'Return true',
+				controller: async () => true,
+			};
+			expect(app.addMethod(testMethod)).toBe(true);
+		});
+
+		it('Return false when when no controller defined', async () => {
+			const testMethod = {
+				name: 'test.method',
+				description: 'Return false',
+			};
+			expect(app.addMethod(testMethod)).toBe(false);
+		});
+	})
+
+	describe('addEvents()', () => {
+		it('Return true when event is registered', async () => {
+			const testEvent = {
+				name: 'test.event',
+				description: 'Return true',
+				controller: async () => true,
+			};
+			expect(app.addEvent(testEvent)).toBe(true);
+		});
+
+		it('Return false when when no controller defined', async () => {
+			const testEvent = {
+				name: 'test.event',
+				description: 'Return false',
+			};
+			expect(app.addEvent(testEvent)).toBe(false);
+		});
+	})
 });

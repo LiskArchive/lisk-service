@@ -25,7 +25,6 @@ describe('Signals tests', () => {
 			});
 		});
 
-		it.todo('Failing test case for dispatched event');
 	});
 
 	describe('signal.add()', () => {

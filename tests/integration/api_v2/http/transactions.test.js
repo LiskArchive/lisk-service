@@ -27,7 +27,7 @@ const {
 
 const {
 	transactionSchemaVersion5,
-} = require('../../../schemas/transaction.schema');
+} = require('../../../schemas/api_v2/transaction.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;
@@ -590,8 +590,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Re-enable after test blockchain update with transaction data
-		xit('returns transactions when queried with data', async () => {
+		it('returns transactions when queried with data', async () => {
 			const response = await api.get(`${endpoint}?data=${refTransaction.asset.data}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
@@ -605,8 +604,7 @@ describe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		// TODO: Re-enable after test blockchain update with transaction data
-		xit('returns transactions when queried with data, limit and offset', async () => {
+		it('returns transactions when queried with data, limit and offset', async () => {
 			try {
 				const response = await api.get(`${endpoint}?data=${refTransaction.asset.data}&limit=5&offset=1`);
 				expect(response).toMap(goodRequestSchema);

@@ -29,6 +29,7 @@ const getIndex = () => mysqlIndex(tableName, testschema);
 
 const { news, drupalData } = require('../constants/newsfeed');
 
+// Update test cases when mysql implementation is updated with the latest
 describe('Test mysql', () => {
 	let db;
 	beforeAll(async () => {
@@ -58,8 +59,6 @@ describe('Test mysql', () => {
 			}),
 		);
 	});
-
-	it.todo('Update invalid schema test cases when proper error handling is implemented');
 
 	it('Invalid schema: Missing primary key', async () => {
 		const getInvalidIndex = () => mysqlIndex(

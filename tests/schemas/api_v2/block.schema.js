@@ -15,27 +15,6 @@
  */
 import Joi from 'joi';
 
-const blockSchema = {
-	id: Joi.string().required(),
-	height: Joi.number().integer().min(1).required(),
-	version: Joi.number().required(),
-	timestamp: Joi.number().integer().min(1).required(),
-	generatorAddress: Joi.string().required(),
-	generatorPublicKey: Joi.string().required(),
-	generatorUsername: Joi.string().required(),
-	payloadLength: Joi.number().integer().min(0).required(),
-	payloadHash: Joi.string().required(),
-	blockSignature: Joi.string().required(),
-	confirmations: Joi.number().integer().min(0).required(),
-	previousBlockId: Joi.string().required(),
-	numberOfTransactions: Joi.number().integer().min(0).required(),
-	totalAmount: Joi.string().required(),
-	totalFee: Joi.string().required(),
-	reward: Joi.string().required(),
-	totalForged: Joi.string().required(),
-	isFinal: Joi.boolean().optional(),
-};
-
 const blockSchemaVersion5 = {
 	id: Joi.string().required(),
 	height: Joi.number().integer().min(0).required(),
@@ -59,6 +38,5 @@ const blockSchemaVersion5 = {
 };
 
 module.exports = {
-	blockSchema: Joi.object(blockSchema),
 	blockSchemaVersion5: Joi.object(blockSchemaVersion5),
 };

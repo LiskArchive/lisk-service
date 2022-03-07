@@ -18,7 +18,8 @@ const moment = require('moment');
 const mysqlIndex = require('../../shared/indexdb/mysql');
 const schema = require('../../shared/schema/newsfeed');
 
-const getIndex = () => mysqlIndex('newsfeedTestSchema', schema);
+const tableName = 'newsfeedTestSchema';
+const getIndex = () => mysqlIndex(tableName, schema);
 
 const { normalizedTwitterData } = require('../constants/newsfeed');
 const { prune } = require('../../shared/dbMaintenance');
@@ -32,9 +33,9 @@ describe('Test DB Maintenance', () => {
 	});
 
 	afterAll(async () => {
-		// TODO: Drop table
 		const result = await db.find();
 		await db.deleteIds(result.map(r => r[`${schema.primaryKey}`]));
+		db.rawQuery(`DROP TABLE IF EXISTS ${tableName} CASCADE`);
 	});
 
 	it('Purge works', async () => {

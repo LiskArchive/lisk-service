@@ -27,7 +27,7 @@ const {
 
 const {
 	voterSchemaVersion5,
-} = require('../../../schemas/voter.schema');
+} = require('../../../schemas/api_v2/voter.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 // const getVoters = async params => request(wsRpcUrl, 'get.votes_received', params);

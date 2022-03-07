@@ -24,7 +24,7 @@ const {
 
 const {
 	forgerSchema,
-} = require('../../../schemas/forger.schema');
+} = require('../../../schemas/api_v2/forger.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api/v2`;

@@ -61,8 +61,7 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	// TODO: These feature should be handled by the compatibility layer
-	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
+	const numActiveForgers = await coreApi.getNumberOfForgers();
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
@@ -129,14 +128,9 @@ const loadAllDelegates = async () => {
 };
 
 const loadAllNextForgers = async () => {
-	// TODO: These feature should be handled by the compatibility layer
-	const maxCount = (sdkVersion < 4) ? 101 : 103;
-	if (sdkVersion <= 4) {
-		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
-	} else {
-		const { data } = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
-		rawNextForgers = data;
-	}
+	const maxCount = await coreApi.getNumberOfForgers();
+	const { data } = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
+	rawNextForgers = data;
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
 

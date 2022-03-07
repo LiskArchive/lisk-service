@@ -102,8 +102,6 @@ const events = {
 				if (config.feeEstimates.quickAlgorithmEnabled) {
 					logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
 					const feeEstimate = await calculateEstimateFeeByteQuick();
-
-					// TODO: Make a better control over the estimate process
 					logger.debug(`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============`);
 					Signals.get('newFeeEstimate').dispatch(feeEstimate);
 				}

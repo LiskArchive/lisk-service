@@ -36,6 +36,8 @@ const {
 	getBase32AddressFromPublicKey,
 } = require('./accountUtils');
 
+const { getGenesisConfig } = require('./network');
+
 const {
 	getIsSyncFullBlockchain,
 	getIndexReadyStatus,
@@ -79,6 +81,11 @@ const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
 
 const requestApi = coreApi.requestRetry;
+
+const getNumberOfForgers = async () => {
+	const genesisConfig = await getGenesisConfig();
+	return genesisConfig.activeDelegates + genesisConfig.standbyDelegates;
+};
 
 const indexAccounts = async job => {
 	const { accounts } = job.data;
@@ -636,4 +643,5 @@ module.exports = {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
+	getNumberOfForgers,
 };

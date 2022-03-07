@@ -15,13 +15,23 @@
  */
 import Joi from 'joi';
 
-const searchItemSchema = {
-	score: Joi.number().required(),
-	description: Joi.string().optional(),
-	id: Joi.string().required(),
-	type: Joi.string().required(),
+const account = {
+	address: Joi.string().required(),
+	username: Joi.string().optional(),
+	votesUsed: Joi.number().required(),
+};
+
+const votes = {
+	address: Joi.string().required(),
+	username: Joi.string().optional(),
+	amount: Joi.string().required(),
+};
+
+const voteSchemaVersion5 = {
+	account: Joi.object(account).required(),
+	votes: Joi.array().items(votes).optional(),
 };
 
 module.exports = {
-	searchItemSchema: Joi.object(searchItemSchema).required(),
+	voteSchemaVersion5: Joi.object(voteSchemaVersion5).required(),
 };

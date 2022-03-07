@@ -23,7 +23,7 @@ const {
 
 const {
 	pendingTransactionSchemaVersion5,
-} = require('../../../schemas/transaction.schema');
+} = require('../../../schemas/api_v2/transaction.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV2 = `${baseUrl}/api/v2`;

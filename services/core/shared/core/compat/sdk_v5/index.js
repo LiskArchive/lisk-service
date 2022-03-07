@@ -38,6 +38,7 @@ const {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	validateAddress,
+	getNumberOfForgers,
 } = require('./accounts');
 
 const {
@@ -123,6 +124,7 @@ module.exports = {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	validateAddress,
+	getNumberOfForgers,
 
 	getNetworkStatus,
 
