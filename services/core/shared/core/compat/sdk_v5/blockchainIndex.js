@@ -35,7 +35,6 @@ const {
 const {
 	getCurrentHeight,
 	getBlockByHeight,
-	getBlocksByHeightBetween,
 } = require('./blocks');
 
 const {
@@ -130,123 +129,173 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	return pkInfoArray;
 };
 
-const updateProducedBlocksAndRewards = async (generatorPkInfoArray, trx) => {
+const updateBlockRewards = async (job) => {
+	const { generatorPkInfoArray, revert } = job.data;
 	const accountsDB = await getAccountsIndex();
 
-	// Update producedBlocks & rewards
-	for (let i = 0; i < generatorPkInfoArray.length; i++) {
-		/* eslint-disable no-await-in-loop */
-		const pkInfoArray = generatorPkInfoArray[i];
-		if (!pkInfoArray.isBlockIndexed) {
-			const incrementParam = {
-				increment: {
-					rewards: BigInt(pkInfoArray.reward),
-					producedBlocks: 1,
-				},
-				where: {
-					property: 'address',
-					value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-				},
-			};
-
-			// If no rows are affected with increment, insert the row
-			const numRowsAffected = await accountsDB.increment(incrementParam, trx);
-			if (numRowsAffected === 0) {
-				await accountsDB.upsert({
-					address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-					publicKey: pkInfoArray.publicKey,
-					producedBlocks: 1,
-					rewards: pkInfoArray.reward,
-				}, trx);
-			}
-		}
-		/* eslint-enable no-await-in-loop */
-	}
-};
-
-const updateVoteAggregates = async (votesToAggregateArray, trx) => {
-	const votesAggregateDB = await getVotesAggregateIndex();
-
-	// Update the aggregated votes information
-	for (let j = 0; j < votesToAggregateArray.length; j++) {
-		/* eslint-disable no-await-in-loop */
-		const voteToAggregate = votesToAggregateArray[j];
-		const incrementParam = {
-			increment: {
-				amount: BigInt(voteToAggregate.amount),
-			},
-			where: {
-				property: 'id',
-				value: voteToAggregate.id,
-			},
-		};
-
-		const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
-		if (numRowsAffected === 0) {
-			await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
-		}
-		/* eslint-enable no-await-in-loop */
-	}
-};
-
-const indexBlocks = async job => {
-	const fromHeight = job.data.from;
-	const toHeight = job.data.to;
-
-	const blocksDB = await getBlocksIndex();
-	const blocks = await getBlocksByHeightBetween(fromHeight, toHeight);
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
 
-	const transactionStartLogMessage = fromHeight === toHeight
-		? `Created new MySQL transaction to index block at height ${fromHeight}`
-		: `Created new MySQL transaction to index blocks in height range ${fromHeight}-${fromHeight}`;
-	logger.debug(transactionStartLogMessage);
-
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${fromHeight}-${toHeight} }`);
 	try {
+		// Update producedBlocks & rewards
+		for (let i = 0; i < generatorPkInfoArray.length; i++) {
+			/* eslint-disable no-await-in-loop */
+			const pkInfoArray = generatorPkInfoArray[i];
+			if (!pkInfoArray.isBlockIndexed) {
+				const params = {
+					where: {
+						property: 'address',
+						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+					},
+				};
+				const amount = { rewards: BigInt(pkInfoArray.reward), producedBlocks: 1 };
+
+				if (revert === true) params.decrement = amount;
+				else params.increment = amount;
+
+				// If no rows are affected with increment, insert the row
+				const numRowsAffected = await accountsDB.increment(params, trx);
+				if (numRowsAffected === 0) {
+					await accountsDB.upsert({
+						address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+						publicKey: pkInfoArray.publicKey,
+						producedBlocks: 1,
+						rewards: pkInfoArray.reward,
+					});
+				}
+			}
+			/* eslint-enable no-await-in-loop */
+		}
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+
+		logger.debug('Rolled back MySQL transaction (vote aggregates)');
+
+		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+			throw new Error('Deadlock encountered while updating vote aggregates. Will retry later.');
+		}
+		throw error;
+	}
+};
+
+const updateVoteAggregates = async (job) => {
+	const { votesToAggregateArray, revert } = job.data;
+
+	const votesAggregateDB = await getVotesAggregateIndex();
+
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+
+	try {
+		// Update the aggregated votes information
+		for (let j = 0; j < votesToAggregateArray.length; j++) {
+			/* eslint-disable no-await-in-loop */
+			const voteToAggregate = votesToAggregateArray[j];
+			const params = {
+				where: {
+					property: 'id',
+					value: voteToAggregate.id,
+				},
+			};
+
+			const amount = { amount: BigInt(voteToAggregate.amount) };
+
+			if (revert === true) params.decrement = amount;
+			else params.increment = amount;
+
+			const numRowsAffected = await votesAggregateDB.increment(params, trx);
+			if (numRowsAffected === 0) {
+				await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+			}
+			/* eslint-enable no-await-in-loop */
+		}
+		await commitDbTransaction(trx);
+	} catch (error) {
+		await rollbackDbTransaction(trx);
+
+		logger.debug('Rolled back MySQL transaction (vote aggregates)');
+
+		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+			throw new Error('Deadlock encountered while updating vote aggregates. Will retry later.');
+		}
+		throw error;
+	}
+};
+
+const updateAccountInfo = async (job) => {
+	const { blocks, accountsFromTransactions } = job.data;
+	const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+
+	const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
+	const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
+	if (allAccounts.length) {
 		const accountsDB = await getAccountsIndex();
+		await accountsDB.upsert(allAccounts);
+	}
+};
+
+const accountUpdateQueue = Queue('accountQueue', updateAccountInfo, 1);
+const voteAggregatesQueue = Queue('votingQueue', updateVoteAggregates, 1);
+const blockRewardsQueue = Queue('blockRewardsQueue', updateBlockRewards, 1);
+
+const indexBlock = async job => {
+	const { height } = job.data;
+
+	const blocksDB = await getBlocksIndex();
+	const blocks = await getBlockByHeight(height);
+	const connection = await getDbConnection();
+	const trx = await startDbTransaction(connection);
+
+	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
+
+	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
+	try {
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
 		const multisignatureDB = await getMultisignatureIndex();
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 
-		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
 			multisignatureInfoToIndex,
 		} = await getTransactionIndexingInfo(blocks);
 
-		const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
-		if (allAccounts.length) await accountsDB.upsert(allAccounts, trx);
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
-		if (votes.length) await votesDB.upsert(votes, trx);
 
-		await updateProducedBlocksAndRewards(generatorPkInfoArray, trx);
-		await updateVoteAggregates(votesToAggregateArray, trx);
+		accountUpdateQueue.add({ blocks, accountsFromTransactions });
+
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		blockRewardsQueue.add({ generatorPkInfoArray });
+
+		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
+		if (votes.length) await votesDB.upsert(votes, trx);
+		voteAggregatesQueue.add({ votesToAggregateArray });
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
-		const transactionRollbackLogMessage = fromHeight === toHeight
-			? `Rolled back MySQL transaction to index block at height ${fromHeight}`
-			: `Rolled back MySQL transaction to index blocks in height range ${fromHeight}-${fromHeight}`;
-		logger.debug(transactionRollbackLogMessage);
+
+		// Revert rewards
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		blockRewardsQueue.add({ generatorPkInfoArray, revert: true });
+
+		// Revert votes
+		const { votesToAggregateArray } = await getVoteIndexingInfo(blocks);
+		voteAggregatesQueue.add({ votesToAggregateArray, revert: true });
+
+		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			const errMessage = fromHeight === toHeight
-				? `Deadlock encountered while indexing block at height ${fromHeight}`
-				: `Deadlock encountered while indexing blocks in height range ${fromHeight} - ${toHeight}`;
-			throw new Error(`${errMessage}. Will retry later.`);
+			throw new Error(`Deadlock encountered while indexing blocks in height range ${height}. Will retry later.`);
 		}
 		throw error;
 	}
 };
+
 
 const updateBlockIndex = async job => {
 	const blocksDB = await getBlocksIndex();
@@ -295,7 +344,7 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 25);
+const indexBlocksQueue = Queue('indexBlocksQueue', indexBlock, 30);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
@@ -419,7 +468,9 @@ const buildIndex = async (from, to) => {
 		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
 		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
 
-		await indexBlocksQueue.add({ from: batchFromHeight, to: batchToHeight });
+		for (let height = batchFromHeight; height <= batchToHeight; height++) {
+			await indexBlocksQueue.add({ height });
+		}
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished scheduling the block index build (${from}-${to})`);
@@ -434,7 +485,7 @@ const indexNewBlocks = async blocks => {
 		const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
 		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
 			// Index if doesn't exist, or update if it isn't set to final
-			await indexBlocksQueue.add({ from: block.height, to: block.height });
+			await indexBlocksQueue.add({ height: block.height });
 
 			// Update block finality status
 			const finalizedBlockHeight = await getFinalizedHeight();
