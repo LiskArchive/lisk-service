@@ -22,9 +22,9 @@ const {
 } = require('../../shared/core/compat/sdk_v5/paramUtils');
 
 describe('paramUtils tests', () => {
+    const property = 'amount';
 	it('Return normalizedParams params in case of valid range', async () => {
 		const params = { amount: '11:100' };
-		const property = 'amount';
 		const normalizedParams = normalizeRangeParam(params, property);
 		expect(typeof normalizedParams).toBe('object');
 		expect(normalizedParams.propBetweens).toEqual(
@@ -41,10 +41,10 @@ describe('paramUtils tests', () => {
 	it('Throw error in case of invalid range', async () => {
 		try {
 			const params = { amount: '1000:100' };
-			const property = 'amount';
 			normalizeRangeParam(params, property);
 		} catch (error) {
 			expect(error).toBeInstanceOf(ValidationException);
+            expect(error).toHaveProperty('message', `From ${property} cannot be greater than to ${property}.`);
 		}
 	});
 });
