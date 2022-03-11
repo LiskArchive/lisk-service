@@ -38,13 +38,23 @@ describe('paramUtils tests', () => {
 		);
 	});
 
-	it('Throw error in case of invalid range', async () => {
+	it('Throw error in case of invalid (numeric) range', async () => {
 		try {
 			const params = { amount: '1000:100' };
 			normalizeRangeParam(params, property);
 		} catch (error) {
 			expect(error).toBeInstanceOf(ValidationException);
 			expect(error).toHaveProperty('message', `From ${property} cannot be greater than to ${property}.`);
+		}
+	});
+
+	it('Throw error in case of invalid (non-numeric) range', async () => {
+		const params = { amount: 'Str:100' };
+		try {
+			normalizeRangeParam(params, property);
+		} catch (error) {
+			expect(error).toBeInstanceOf(ValidationException);
+			expect(error).toHaveProperty('message', `Invalid (non-numeric) '${property}' range values supplied: ${params[property]}.`);
 		}
 	});
 });
