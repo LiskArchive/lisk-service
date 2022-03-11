@@ -23,7 +23,7 @@ const {
 
 describe('paramUtils tests', () => {
 	const property = 'amount';
-	it('Return normalizedParams params in case of valid range', async () => {
+	it('Return normalized params in case of valid range', async () => {
 		const params = { amount: '11:100' };
 		const normalizedParams = normalizeRangeParam(params, property);
 		expect(typeof normalizedParams).toBe('object');
