@@ -20,7 +20,7 @@ const {
 const normalizeRangeParam = (params, property) => {
 	if (typeof params[property] === 'string' && params[property].includes(':')) {
 		const [fromStr, toStr] = params[property].split(':');
-		
+
 		const from = Number(fromStr);
 		const to = Number(toStr);
 
