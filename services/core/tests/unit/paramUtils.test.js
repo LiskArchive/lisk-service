@@ -22,7 +22,7 @@ const {
 } = require('../../shared/core/compat/sdk_v5/paramUtils');
 
 describe('paramUtils tests', () => {
-    const property = 'amount';
+	const property = 'amount';
 	it('Return normalizedParams params in case of valid range', async () => {
 		const params = { amount: '11:100' };
 		const normalizedParams = normalizeRangeParam(params, property);
@@ -44,7 +44,7 @@ describe('paramUtils tests', () => {
 			normalizeRangeParam(params, property);
 		} catch (error) {
 			expect(error).toBeInstanceOf(ValidationException);
-            expect(error).toHaveProperty('message', `From ${property} cannot be greater than to ${property}.`);
+			expect(error).toHaveProperty('message', `From ${property} cannot be greater than to ${property}.`);
 		}
 	});
 });
