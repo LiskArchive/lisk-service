@@ -19,7 +19,8 @@ const {
 
 const normalizeRangeParam = (params, property) => {
 	if (typeof params[property] === 'string' && params[property].includes(':')) {
-		const [from, to] = params[property].split(':');
+		const from = Number(params[property].split(':')[0]);
+		const to = Number(params[property].split(':')[1]);
 		if (from && to && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
 
 		if (!params.propBetweens) params.propBetweens = [];
