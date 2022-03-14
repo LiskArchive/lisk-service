@@ -134,32 +134,29 @@ describe('Test microservice', () => {
 	})
 
 	describe('requestRpc()', () => {
-		it('Return result when call with valid method name and params', async () => {
-			const testFunc = async () => {
-				return {
-					address: "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-					balance: "95589969000000",
-				}
+		it('Return result when call with registered method name', async () => {
+			const testData = {
+				address: "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+				balance: "95589969000000",
 			};
 
+			const testFunc = async () => testData;
+
 			const testMethod = {
-				name: 'service.method',
-				description: 'Return true',
+				name: 'registered.method',
+				description: 'Return data',
 				controller: testFunc,
 			};
 
 			app.addMethod(testMethod);
 			await app.run();
 
-			const result = await app.requestRpc('test-service.service.method', {});
-			expect(result).toEqual(expect.objectContaining({
-				address: "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-				balance: "95589969000000",
-			}));
+			const result = await app.requestRpc('test-service.registered.method', {});
+			expect(result).toMatchObject(testData);
 		});
 
 		it('Throw error when method is not registered', async () => {
-			expect(app.requestRpc('test-service.method', {})).rejects.toThrow();
+			expect(app.requestRpc('test-service.unregistered.method', {})).rejects.toThrow();
 		});
 	})
 });
