@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-framework",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Lisk Service Framework",
   "keywords": [
     "lisk",
@@ -41,7 +41,7 @@
     "json-colorizer": "^2.2.2",
     "keyv": "^4.0.3",
     "keyv-lru": "^3.0.4",
-    "log4js": "^6.4.1",
+    "log4js": "^6.4.3",
     "moleculer": "^0.14.13",
     "moleculer-web": "^0.9.1",
     "moment": "^2.29.1",
