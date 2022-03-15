@@ -24,6 +24,7 @@ const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
 let clientCache;
+let instantiationBeginTime;
 let isInstantiating = false;
 
 // eslint-disable-next-line consistent-return
@@ -32,6 +33,7 @@ const instantiateClient = async () => {
 		if (!isInstantiating) {
 			if (!clientCache || !clientCache._channel.isAlive) {
 				isInstantiating = true;
+				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();
 				clientCache = await createWSClient(`${liskAddress}/ws`);
 				isInstantiating = false;
@@ -42,6 +44,7 @@ const instantiateClient = async () => {
 			}
 			return clientCache;
 		}
+		if (isInstantiating && (Date.now() - instantiationBeginTime) > 500) isInstantiating = false;
 	} catch (err) {
 		logger.error(`Error instantiating WS client to ${liskAddress}`);
 		logger.error(err.message);
