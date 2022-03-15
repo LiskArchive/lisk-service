@@ -64,7 +64,7 @@ const MAX_NUM_TRANSACTIONS = 10000;
 
 let app;
 
-const setApp = (h) => app = h;
+const setAppContext = (h) => app = h;
 
 const getAccounts = async (params) => app.requestRpc('core.accounts', params);
 
@@ -328,5 +328,5 @@ module.exports = {
 	getPartialFilenameFromParams,
 	getCsvFilenameFromParams,
 	getCsvFileUrlFromParams,
-	setApp,
+	setAppContext,
 };

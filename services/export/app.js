@@ -20,7 +20,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const { setApp } = require('./shared/csvExport');
+const { setAppContext } = require('./shared/csvExport');
 
 const config = require('./config');
 const packageJson = require('./package.json');
@@ -45,7 +45,7 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-setApp(app);
+setAppContext(app);
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
