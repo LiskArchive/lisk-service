@@ -25,7 +25,16 @@ const queuePool = {};
 
 const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
-const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, redisEndpoint, options) => {
+const defaultOptions = {
+	defaultJobOptions: {
+		attempts: 5,
+		timeout: 5 * 60 * 1000, // millisecs
+		removeOnComplete: true,
+	},
+	settings: {},
+};
+
+const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, redisEndpoint, options = defaultOptions) => {
 	const queueName = 'defaultQueue';
 
 	if (!queuePool[queueName]) {
