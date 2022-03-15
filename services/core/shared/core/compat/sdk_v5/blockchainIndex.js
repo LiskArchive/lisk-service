@@ -58,6 +58,12 @@ const {
 } = require('./transactions');
 
 const {
+	indexAccountByPublicKey,
+	indexAccountByAddress,
+	triggerAccountUpdates,
+} = require('./accountIndex');
+
+const {
 	getDbConnection,
 	getTableInstance,
 	startDbTransaction,
@@ -223,21 +229,22 @@ const updateVoteAggregates = async (job) => {
 	}
 };
 
-const updateAccountInfo = async (job) => {
-	const { blocks, accountsFromTransactions } = job.data;
-	const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+// const updateAccountInfo = async (job) => {
+// 	const { blocks, accountsFromTransactions } = job.data;
+// 	const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 
-	const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-	const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
-	if (allAccounts.length) {
-		const accountsDB = await getAccountsIndex();
-		await accountsDB.upsert(allAccounts);
-	}
-};
+// 	const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
+// 	const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
+// 	if (allAccounts.length) {
+// 		const accountsDB = await getAccountsIndex();
+// 		await accountsDB.upsert(allAccounts);
+// 	}
+// };
 
-const accountUpdateQueue = Queue('accountQueue', updateAccountInfo, 1);
 const voteAggregatesQueue = Queue('votingQueue', updateVoteAggregates, 1);
 const blockRewardsQueue = Queue('blockRewardsQueue', updateBlockRewards, 1);
+
+const ensureArray = (e) => Array.isArray(e) ? e : [e];
 
 const indexBlock = async job => {
 	const { height } = job.data;
@@ -265,7 +272,12 @@ const indexBlock = async job => {
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 
-		accountUpdateQueue.add({ blocks, accountsFromTransactions });
+		const addresses = ensureArray(accountsFromTransactions).filter(a => a.publicKey).map(a => a.publicKey);
+		const publicKeys = ensureArray(accountsFromTransactions).filter(a => !a.publicKey).map(a => a.address);
+
+		blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
+		publicKeys.forEach(pk => indexAccountByPublicKey(pk));
+		addresses.forEach(a => indexAccountByAddress(a));
 
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		blockRewardsQueue.add({ generatorPkInfoArray });
@@ -745,16 +757,21 @@ const init = async () => {
 		// Download genesis block
 		await getBlockByHeight(await getGenesisHeight());
 
+		// Start the indexing process (accounts)
+		await indexGenesisAccounts();
+		await cacheLegacyAccountInfo();
+
 		// Index all the delegate accounts first
 		await indexAllDelegateAccounts();
+
+		// Start the previously scheduled account updates
+		await triggerAccountUpdates();
 
 		// Start the indexing process (blocks)
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
-		// Start the indexing process (accounts)
-		await cacheLegacyAccountInfo();
-		await indexGenesisAccounts();
+		setInterval(triggerAccountUpdates, 15 * 1000); // ms
 
 		logger.info('Finished all blockchain index startup tasks');
 	} catch (err) {
