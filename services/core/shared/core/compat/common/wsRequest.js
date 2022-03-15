@@ -43,7 +43,9 @@ const instantiateClient = async () => {
 				Signals.get('newApiClient').dispatch();
 			}
 			return clientCache;
-		} else if ((Date.now() - instantiationBeginTime) > 500) {
+		}
+
+		if ((Date.now() - instantiationBeginTime) > 500) {
 			// Waited too long, reset the flag to re-attempt client instantiation
 			isInstantiating = false;
 		}
