@@ -43,8 +43,10 @@ const instantiateClient = async () => {
 				Signals.get('newApiClient').dispatch();
 			}
 			return clientCache;
+		} else if ((Date.now() - instantiationBeginTime) > 500) {
+			// Waited too long, reset the flag to re-attempt client instantiation
+			isInstantiating = false;
 		}
-		if (isInstantiating && (Date.now() - instantiationBeginTime) > 500) isInstantiating = false;
 	} catch (err) {
 		logger.error(`Error instantiating WS client to ${liskAddress}`);
 		logger.error(err.message);
