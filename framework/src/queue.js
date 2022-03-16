@@ -34,7 +34,7 @@ const defaultOptions = {
 	settings: {},
 };
 
-const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, redisEndpoint, options = defaultOptions) => {
+const queueInstance = (redisEndpoint, jobName = 'defaultJob', jobFn, concurrency = 1, options = defaultOptions) => {
 	const queueName = 'defaultQueue';
 
 	if (!queuePool[queueName]) {

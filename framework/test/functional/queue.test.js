@@ -17,27 +17,28 @@ const Queue = require('../../src/queue');
 
 describe('Test queue', () => {
 	let queue;
-	const testFunc = (a, b) => a + b;
 	const redisEndpoint = 'redis://localhost:6379/0';
 
 	it('Should create a queue with a given redis instance', async () => {
-		queue = Queue('testQueue', testFunc, 1, redisEndpoint);
+		const testFunc = async (a, b) => a + b;
+		queue = Queue(redisEndpoint, 'testQueue', testFunc, 1);
 
-		expect(queue.queue.client.options.host).toEqual('localhost');
-		expect(queue.queue.client.options.port).toEqual(6379);
-
-		expect(queue).toMatchObject({
+		expect(queue).toEqual({
 			resume: expect.any(Function),
 			pause: expect.any(Function),
 			add: expect.any(Function),
+			queue: expect.any(Object),
 		})
+
+		expect(queue.queue.client.options.host).toEqual('localhost');
+		expect(queue.queue.client.options.port).toEqual(6379);
 	});
 
 	it('Add job to the queue', async () => {
-		await queue.add({ a: 1, b: 2 }).then(async job => {
+		const data = { a: 1, b: 2 }
+		await queue.add(data).then(job => {
 			expect(job.id).not.toBe(undefined);
-			expect(job.data.a).toEqual(1);
-			expect(job.data.b).toEqual(2);
+			expect(job.data).toEqual(data);
 		});
 	});
 });
