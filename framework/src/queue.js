@@ -28,7 +28,7 @@ const STATS_INTERVAL = 1 * 60 * 1000; // ms
 const defaultOptions = {
 	defaultJobOptions: {
 		attempts: 5,
-		timeout: 5 * 60 * 1000, // millisecs
+		timeout: 5 * 60 * 1000, // ms
 		removeOnComplete: true,
 	},
 	settings: {},

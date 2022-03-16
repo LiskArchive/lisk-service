@@ -13,28 +13,28 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const queueInstance = require('../../src/queue');
+const Queue = require('../../src/queue');
 
 describe('Test queue', () => {
+	let queue;
 	const testFunc = (a, b) => a + b;
-
 	const redisEndpoint = 'redis://localhost:6379/0';
 
-	const queue = queueInstance('testQueue', testFunc, 1, redisEndpoint);
-
 	it('Should create a queue with a given redis instance', async () => {
+		queue = Queue('testQueue', testFunc, 1, redisEndpoint);
+
+		expect(queue.queue.client.options.host).toEqual('localhost');
+		expect(queue.queue.client.options.port).toEqual(6379);
+
 		expect(queue).toMatchObject({
 			resume: expect.any(Function),
 			pause: expect.any(Function),
 			add: expect.any(Function),
 		})
-
-		expect(queue.queue.client.options.host).toEqual('localhost');
-		expect(queue.queue.client.options.port).toEqual(6379);
 	});
 
 	it('Add job to the queue', async () => {
-		await queue.add({ a: 1, b: 2 }).then(job => {
+		await queue.add({ a: 1, b: 2 }).then(async job => {
 			expect(job.id).not.toBe(undefined);
 			expect(job.data.a).toEqual(1);
 			expect(job.data.b).toEqual(2);
