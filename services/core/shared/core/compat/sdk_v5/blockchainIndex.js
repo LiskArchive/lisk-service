@@ -16,6 +16,7 @@
 const {
 	CacheRedis,
 	Logger,
+	Queue,
 } = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
@@ -24,7 +25,6 @@ const logger = Logger();
 
 const config = require('../../../../config');
 const Signals = require('../../../signals');
-const Queue = require('../../queue');
 
 const {
 	getIndexReadyStatus,
@@ -295,9 +295,9 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 1);
-const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+const indexBlocksQueue = Queue(config.endpoints.redis, 'indexBlocksQueue', indexBlocks, 1);
+const updateBlockIndexQueue = Queue(config.endpoints.redis, 'updateBlockIndexQueue', updateBlockIndex, 1);
+const deleteIndexedBlocksQueue = Queue(config.endpoints.redis, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
 const cacheLegacyAccountInfo = async () => {
 	// Cache the legacy account reclaim balance information

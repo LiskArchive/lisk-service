@@ -15,6 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 const {
+	Queue,
 	CacheRedis,
 	Exceptions: {
 		NotFoundException,
@@ -42,8 +43,6 @@ const {
 	getIsSyncFullBlockchain,
 	getIndexReadyStatus,
 } = require('../common');
-
-const Queue = require('../../queue');
 
 const {
 	dropDuplicates,
@@ -93,7 +92,7 @@ const indexAccounts = async job => {
 	await accountsDB.upsert(accounts);
 };
 
-const indexAccountsQueue = Queue('indexAccountsQueue', indexAccounts, 4);
+const indexAccountsQueue = Queue(config.endpoints.redis, 'indexAccountsQueue', indexAccounts, 4);
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
