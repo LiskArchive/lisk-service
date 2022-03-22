@@ -172,20 +172,20 @@ const Microservice = (config = {}) => {
 		};
 
 		Object.keys(items)
-			.forEach(itemGroup => items[itemGroup]
+			.forEach(async itemGroup => (await items[itemGroup])
 				.forEach(item => fnMap[type].call(this, item)));
 	};
 
-	const addMethods = folderPath => {
-		_addItems(folderPath, 'method');
+	const addMethods = async folderPath => {
+		await _addItems(folderPath, 'method');
 	};
 
-	const addEvents = folderPath => {
-		_addItems(folderPath, 'event');
+	const addEvents = async folderPath => {
+		await _addItems(folderPath, 'event');
 	};
 
-	const addJobs = folderPath => {
-		_addItems(folderPath, 'job');
+	const addJobs = async folderPath => {
+		await _addItems(folderPath, 'job');
 	};
 
 	const run = () => {
