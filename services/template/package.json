@@ -30,7 +30,7 @@
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/fd16d55072965e76bb6ec10525a91bb3fdb9c7c7/framework/dist/lisk-service-framework-1.2.5.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/97b577c8efb02c2400178c1e04cb16018e5b7a9d/framework/dist/lisk-service-framework-1.2.6.tgz",
     "node-cron": "=2.0.3"
   },
   "devDependencies": {}

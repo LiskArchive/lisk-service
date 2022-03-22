@@ -198,6 +198,16 @@ const Microservice = (config = {}) => {
 		return broker.start();
 	};
 
+	const requestRpc = (method, params) => new Promise((resolve, reject) => {
+		broker
+			.call(method, params)
+			.then(res => resolve(res))
+			.catch(err => {
+				logger.error(`Error occurred! ${err.message}`);
+				reject(err);
+			});
+	});
+
 	return {
 		addMethods,
 		addEvents,
@@ -207,6 +217,7 @@ const Microservice = (config = {}) => {
 		addJob,
 		getBroker,
 		run,
+		requestRpc,
 	};
 };
 
