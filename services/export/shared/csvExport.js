@@ -24,9 +24,8 @@ const {
 		NotFoundException,
 		ValidationException,
 	},
+	Queue,
 } = require('lisk-service-framework');
-
-const Queue = require('./queue');
 
 const {
 	getBase32AddressFromPublicKey,
@@ -249,7 +248,7 @@ const exportTransactionsCSV = async (job) => {
 	await staticFiles.write(csvFilename, csv);
 };
 
-const scheduleTransactionExportQueue = Queue('scheduleTransactionExportQueue', exportTransactionsCSV, 50);
+const scheduleTransactionExportQueue = Queue(config.endpoints.redis, 'scheduleTransactionExportQueue', exportTransactionsCSV, 50);
 
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built

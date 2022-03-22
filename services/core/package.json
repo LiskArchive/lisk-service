@@ -43,7 +43,7 @@
     "debug": "=4.1.1",
     "ioredis": "^4.27.1",
     "knex": "^0.95.4",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/97b577c8efb02c2400178c1e04cb16018e5b7a9d/framework/dist/lisk-service-framework-1.2.6.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/40d95aa6b201763dd9fa9e5c3988aa0f4406bd7a/framework/dist/lisk-service-framework-1.3.0.tgz",
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
     "mysql": "^2.18.1",
