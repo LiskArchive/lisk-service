@@ -140,9 +140,6 @@ const updateBlockRewards = async (job) => {
 	const { generatorProps, revert } = job.data;
 	const accountsDB = await getAccountsIndex();
 
-	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
-
 	try {
 		// Update producedBlocks & rewards
 		const pkInfoArray = generatorProps;
@@ -159,7 +156,7 @@ const updateBlockRewards = async (job) => {
 			else params.increment = amount;
 
 			// If no rows are affected with increment, insert the row
-			const numRowsAffected = await accountsDB.increment(params, trx);
+			const numRowsAffected = await accountsDB.increment(params);
 			if (numRowsAffected === 0) {
 				await accountsDB.upsert({
 					address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
@@ -169,15 +166,9 @@ const updateBlockRewards = async (job) => {
 				});
 			}
 		}
-		await commitDbTransaction(trx);
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		logger.debug('Error during vote aggregates update)');
 
-		logger.debug('Rolled back MySQL transaction (vote aggregates)');
-
-		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			throw new Error('Deadlock encountered while updating vote aggregates. Will retry later.');
-		}
 		throw error;
 	}
 };
