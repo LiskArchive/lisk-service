@@ -137,7 +137,7 @@ const getGeneratorPkInfoArray = async (blocks) => {
 };
 
 const updateBlockRewards = async (job) => {
-	const { generatorPkInfoArray, revert } = job.data;
+	const { generatorProps, revert } = job.data;
 	const accountsDB = await getAccountsIndex();
 
 	const connection = await getDbConnection();
@@ -145,33 +145,29 @@ const updateBlockRewards = async (job) => {
 
 	try {
 		// Update producedBlocks & rewards
-		for (let i = 0; i < generatorPkInfoArray.length; i++) {
-			/* eslint-disable no-await-in-loop */
-			const pkInfoArray = generatorPkInfoArray[i];
-			if (!pkInfoArray.isBlockIndexed) {
-				const params = {
-					where: {
-						property: 'address',
-						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-					},
-				};
-				const amount = { rewards: BigInt(pkInfoArray.reward), producedBlocks: 1 };
+		const pkInfoArray = generatorProps;
+		if (!pkInfoArray.isBlockIndexed) {
+			const params = {
+				where: {
+					property: 'address',
+					value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+				},
+			};
+			const amount = { rewards: BigInt(pkInfoArray.reward), producedBlocks: 1 };
 
-				if (revert === true) params.decrement = amount;
-				else params.increment = amount;
+			if (revert === true) params.decrement = amount;
+			else params.increment = amount;
 
-				// If no rows are affected with increment, insert the row
-				const numRowsAffected = await accountsDB.increment(params, trx);
-				if (numRowsAffected === 0) {
-					await accountsDB.upsert({
-						address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-						publicKey: pkInfoArray.publicKey,
-						producedBlocks: 1,
-						rewards: pkInfoArray.reward,
-					});
-				}
+			// If no rows are affected with increment, insert the row
+			const numRowsAffected = await accountsDB.increment(params, trx);
+			if (numRowsAffected === 0) {
+				await accountsDB.upsert({
+					address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+					publicKey: pkInfoArray.publicKey,
+					producedBlocks: 1,
+					rewards: pkInfoArray.reward,
+				});
 			}
-			/* eslint-enable no-await-in-loop */
 		}
 		await commitDbTransaction(trx);
 	} catch (error) {
@@ -187,45 +183,30 @@ const updateBlockRewards = async (job) => {
 };
 
 const updateVoteAggregates = async (job) => {
-	const { votesToAggregateArray, revert } = job.data;
+	const { voteToAggregate, revert } = job.data;
 
 	const votesAggregateDB = await getVotesAggregateIndex();
 
-	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
-
 	try {
 		// Update the aggregated votes information
-		for (let j = 0; j < votesToAggregateArray.length; j++) {
-			/* eslint-disable no-await-in-loop */
-			const voteToAggregate = votesToAggregateArray[j];
-			const params = {
-				where: {
-					property: 'id',
-					value: voteToAggregate.id,
-				},
-			};
+		const params = {
+			where: {
+				property: 'id',
+				value: voteToAggregate.id,
+			},
+		};
 
-			const amount = { amount: BigInt(voteToAggregate.amount) };
+		const amount = { amount: BigInt(voteToAggregate.amount) };
 
-			if (revert === true) params.decrement = amount;
-			else params.increment = amount;
+		if (revert === true) params.decrement = amount;
+		else params.increment = amount;
 
-			const numRowsAffected = await votesAggregateDB.increment(params, trx);
-			if (numRowsAffected === 0) {
-				await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
-			}
-			/* eslint-enable no-await-in-loop */
+		const numRowsAffected = await votesAggregateDB.increment(params);
+		if (numRowsAffected === 0) {
+			await votesAggregateDB.upsert(voteToAggregate.voteObject);
 		}
-		await commitDbTransaction(trx);
 	} catch (error) {
-		await rollbackDbTransaction(trx);
-
-		logger.debug('Rolled back MySQL transaction (vote aggregates)');
-
-		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			throw new Error('Deadlock encountered while updating vote aggregates. Will retry later.');
-		}
+		logger.error('Error during vote aggregate updates');
 		throw error;
 	}
 };
@@ -287,27 +268,29 @@ const indexBlock = async job => {
 		// publicKeys.forEach(pk => indexAccountByPublicKey(pk));
 		// addresses.forEach(a => indexAccountByAddress(a));
 
+		ensureArray(generatorPkInfoArray)
+			.forEach(generatorProps => blockRewardsQueue.add({ generatorProps }));
+
 		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
-
-		// const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		// blockRewardsQueue.add({ generatorPkInfoArray });
-
-		// const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
-		// if (votes.length) await votesDB.upsert(votes, trx);
-		// voteAggregatesQueue.add({ votesToAggregateArray });
+		if (votes.length) await votesDB.upsert(votes, trx);
+		ensureArray(votesToAggregateArray)
+			.forEach(voteToAggregate => voteAggregatesQueue.add({ voteToAggregate }));
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
+
 		await commitDbTransaction(trx);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
 
 		// Revert rewards
-		// const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		// blockRewardsQueue.add({ generatorPkInfoArray, revert: true });
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		ensureArray(generatorPkInfoArray)
+			.forEach(generatorProps => blockRewardsQueue.add({ generatorProps, revert: true }));
 
 		// Revert votes
-		// const { votesToAggregateArray } = await getVoteIndexingInfo(blocks);
-		// voteAggregatesQueue.add({ votesToAggregateArray, revert: true });
+		const { votesToAggregateArray } = await getVoteIndexingInfo(blocks);
+		ensureArray(votesToAggregateArray)
+			.forEach(voteToAggregate => voteAggregatesQueue.add({ voteToAggregate, revert: true }));
 
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
 
