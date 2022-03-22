@@ -61,6 +61,7 @@ const {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
 	triggerAccountUpdates,
+	indexAccountWithData,
 } = require('./accountIndex');
 
 const {
@@ -268,23 +269,32 @@ const indexBlock = async job => {
 			multisignatureInfoToIndex,
 		} = await getTransactionIndexingInfo(blocks);
 
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
+		ensureArray(accountsByPublicKey).forEach(a => indexAccountWithData(a));
+		ensureArray(accountsFromTransactions).forEach(a => indexAccountWithData(a));
+
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 
-		const addresses = ensureArray(accountsFromTransactions).filter(a => a.publicKey).map(a => a.publicKey);
-		const publicKeys = ensureArray(accountsFromTransactions).filter(a => !a.publicKey).map(a => a.address);
+		// const addresses = ensureArray(accountsFromTransactions)
+		// 	.filter(a => a.publicKey).map(a => a.publicKey);
+		// const publicKeys = ensureArray(accountsFromTransactions)
+		// 	.filter(a => !a.publicKey).map(a => a.address);
 
-		blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
-		publicKeys.forEach(pk => indexAccountByPublicKey(pk));
-		addresses.forEach(a => indexAccountByAddress(a));
-
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		blockRewardsQueue.add({ generatorPkInfoArray });
+		// blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
+		// publicKeys.forEach(pk => indexAccountByPublicKey(pk));
+		// addresses.forEach(a => indexAccountByAddress(a));
 
 		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
-		if (votes.length) await votesDB.upsert(votes, trx);
-		voteAggregatesQueue.add({ votesToAggregateArray });
+
+		// const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		// blockRewardsQueue.add({ generatorPkInfoArray });
+
+		// const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
+		// if (votes.length) await votesDB.upsert(votes, trx);
+		// voteAggregatesQueue.add({ votesToAggregateArray });
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
@@ -292,12 +302,12 @@ const indexBlock = async job => {
 		await rollbackDbTransaction(trx);
 
 		// Revert rewards
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		blockRewardsQueue.add({ generatorPkInfoArray, revert: true });
+		// const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		// blockRewardsQueue.add({ generatorPkInfoArray, revert: true });
 
 		// Revert votes
-		const { votesToAggregateArray } = await getVoteIndexingInfo(blocks);
-		voteAggregatesQueue.add({ votesToAggregateArray, revert: true });
+		// const { votesToAggregateArray } = await getVoteIndexingInfo(blocks);
+		// voteAggregatesQueue.add({ votesToAggregateArray, revert: true });
 
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
 

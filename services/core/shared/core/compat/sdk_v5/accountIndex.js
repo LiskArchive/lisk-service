@@ -33,17 +33,17 @@ const {
 
 const {
 	getAccountsByAddress,
-	getAccountsByPublicKey,
+	getAccountsByPublicKey2,
 } = require('./accounts');
 
-const getPublicKeyByAddress = async (address) => {
-	try {
-		const account = await getAccountsByAddress([address]);
-		return account;
-	} catch (err) {
-		return null;
-	}
-};
+// const getPublicKeyByAddress = async (address) => {
+// 	try {
+// 		const account = await getAccountsByAddress([address]);
+// 		return account;
+// 	} catch (err) {
+// 		return null;
+// 	}
+// };
 
 const config = require('../../../../config');
 
@@ -54,9 +54,9 @@ const accountsIndexSchema = require('./schema/accounts');
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 
 const updateAccountInfoPk = async (job) => {
-	const { publicKey } = job.data;
+	const publicKey = job.data;
 
-	const account = await getAccountsByPublicKey([publicKey]);
+	const account = await getAccountsByPublicKey2([publicKey]);
 	if (account.length) {
 		const accountsDB = await getAccountIndex();
 		await accountsDB.upsert(account);
@@ -64,7 +64,7 @@ const updateAccountInfoPk = async (job) => {
 };
 
 const updateAccountInfoAddr = async (job) => {
-	const { address } = job.data;
+	const address = job.data;
 
 	const account = await getAccountsByAddress([address]);
 	if (account.length) {
@@ -73,8 +73,16 @@ const updateAccountInfoAddr = async (job) => {
 	}
 };
 
+const updateAccountWithData = async (job) => {
+	const accounts = job.data;
+
+	const accountsDB = await getAccountIndex();
+	await accountsDB.upsert(accounts);
+};
+
 const accountPkUpdateQueue = Queue('accountQueueByPublicKey', updateAccountInfoPk, 1);
 const accountAddrUpdateQueue = Queue('accountQueueByAddress', updateAccountInfoAddr, 1);
+const accountDirectUpdateQueue = Queue('accountQueueDirect', updateAccountWithData, 1);
 
 const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
 
@@ -101,8 +109,11 @@ const triggerAccountUpdates = async () => {
 	});
 };
 
+const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
+
 module.exports = {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
+	indexAccountWithData,
 	triggerAccountUpdates,
 };
