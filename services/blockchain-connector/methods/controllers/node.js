@@ -15,7 +15,7 @@
  */
 const actions = require('../../src/sdk_v5/actions');
 
-const invokeAction = async (action, params) => actions.invokeAction(action, params);
+const invokeAction = async ({ action, params }) => actions.invokeAction(action, params);
 
 const getSchema = async () => actions.getSchema();
 
