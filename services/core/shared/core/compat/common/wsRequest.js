@@ -23,7 +23,10 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
+const MAX_INSTANTIATION_WAIT_TIME = 50;
+
 let clientCache;
+let instantiationBeginTime;
 let isInstantiating = false;
 
 // eslint-disable-next-line consistent-return
@@ -32,6 +35,7 @@ const instantiateClient = async () => {
 		if (!isInstantiating) {
 			if (!clientCache || !clientCache._channel.isAlive) {
 				isInstantiating = true;
+				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();
 				clientCache = await createWSClient(`${liskAddress}/ws`);
 				isInstantiating = false;
@@ -41,6 +45,11 @@ const instantiateClient = async () => {
 				Signals.get('newApiClient').dispatch();
 			}
 			return clientCache;
+		}
+
+		if ((Date.now() - instantiationBeginTime) > MAX_INSTANTIATION_WAIT_TIME) {
+			// Waited too long, reset the flag to re-attempt client instantiation
+			isInstantiating = false;
 		}
 	} catch (err) {
 		logger.error(`Error instantiating WS client to ${liskAddress}`);
