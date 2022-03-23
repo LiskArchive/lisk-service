@@ -17,9 +17,8 @@ const { codec } = require('@liskhq/lisk-codec');
 const { getApiClient } = require('./client');
 // const { getSchema, getNodeInfo } = require('./actions');
 
-
 // ================================================================================================
-// Remove from here
+// Remove from here -- added to avoid cyclic dependency on actions.js
 // ================================================================================================
 
 // Constants
@@ -99,13 +98,10 @@ const getBlockHeaderSchema = async () => {
 	return allSchemas.blockHeader;
 };
 
-const getBlockHeaderAssetSchema = async (isGenesisBlock = false) => {
+const getBlockHeaderAssetSchema = async (blockHeaderVersion) => {
 	const allSchemas = await getSchema();
 	const { blockHeadersAssets } = allSchemas;
-	const blockHeaderAssetSchema = isGenesisBlock
-		? blockHeadersAssets[0]
-		: blockHeadersAssets[2];
-	return blockHeaderAssetSchema;
+	return blockHeadersAssets[blockHeaderVersion];
 };
 
 const getTransactionSchema = async () => {
@@ -123,28 +119,32 @@ const getTransactionAssetSchema = async (transaction) => {
 	return schema;
 };
 
-const decodeAccount = async (encodedAccount, isBinaryEncoded = false) => {
+const decodeAccount = async (encodedAccount) => {
 	const accountSchema = await getAccountSchema();
-	const accountBinary = isBinaryEncoded ? encodedAccount : Buffer.from(encodedAccount, 'hex');
-	const decodedAccount = codec.decode(accountSchema, accountBinary);
+	const accountBuffer = Buffer.isBuffer(encodedAccount)
+		? encodedAccount
+		: Buffer.from(encodedAccount, 'hex');
+	const decodedAccount = codec.decode(accountSchema, accountBuffer);
 	return decodedAccount;
 };
 
-const decodeBlock = async (hexEncodedBlock) => {
+const decodeBlock = async (encodedBlock) => {
 	const blockSchema = await getBlockSchema();
-	const blockBinary = Buffer.from(hexEncodedBlock, 'hex');
-	const block = codec.decode(blockSchema, blockBinary);
+	const blockBuffer = Buffer.isBuffer(encodedBlock)
+		? encodedBlock
+		: Buffer.from(encodedBlock, 'hex');
+	const block = codec.decode(blockSchema, blockBuffer);
 
 	const blockHeaderSchema = await getBlockHeaderSchema();
 	const blockHeader = codec.decode(blockHeaderSchema, block.header);
 
 	const isGenesisBlock = (await getGenesisHeight()) === blockHeader.height;
-	const blockHeadersAssetsSchema = await getBlockHeaderAssetSchema(isGenesisBlock);
+	const blockHeadersAssetsSchema = await getBlockHeaderAssetSchema(blockHeader.version);
 	const blockHeaderAsset = codec.decode(blockHeadersAssetsSchema, blockHeader.asset);
 	if (isGenesisBlock) {
 		// Test genesis block
 		blockHeaderAsset.accounts = await Promise.all(
-			blockHeaderAsset.accounts.map(acc => decodeAccount(acc, true)),
+			blockHeaderAsset.accounts.map(acc => decodeAccount(acc)),
 		);
 	}
 
@@ -160,10 +160,12 @@ const decodeBlock = async (hexEncodedBlock) => {
 	return decodedBlock;
 };
 
-const decodeTransaction = async (hexEncodedTransaction) => {
+const decodeTransaction = async (encodedTransaction) => {
 	const txSchema = await getTransactionSchema();
-	const transactionBinary = Buffer.from(hexEncodedTransaction, 'hex');
-	const transaction = codec.decode(txSchema, transactionBinary);
+	const transactionBuffer = Buffer.isBuffer(encodedTransaction)
+		? encodedTransaction
+		: Buffer.from(encodedTransaction, 'hex');
+	const transaction = codec.decode(txSchema, transactionBuffer);
 
 	const txAssetSchema = await getTransactionAssetSchema(transaction);
 	const transactionAsset = codec.decode(txAssetSchema, transaction.asset);

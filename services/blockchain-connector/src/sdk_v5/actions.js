@@ -173,11 +173,6 @@ const updateForgingStatus = async (config) => {
 	}
 };
 
-// const decodeAccount = async (acc) => {
-// 	const apiClient = await getApiClient();
-// 	return apiClient.account.decode(Buffer.from(acc, 'hex'));
-// };
-
 const getAccount = async (address) => {
 	try {
 		const encodedAccount = await invokeAction('app:getAccount', { address });
@@ -276,11 +271,6 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		throw err;
 	}
 };
-
-// const decodeTransaction = async (transaction) => {
-// 	const apiClient = await getApiClient();
-// 	return apiClient.transaction.decode(Buffer.from(transaction, 'hex'));
-// };
 
 const getTransactionByID = async (id) => {
 	try {
