@@ -34,16 +34,6 @@ let genesisBlock = { header: {} };
 
 const parseStream = json.createParseStream();
 
-let genesisHeight;
-
-const getGenesisHeight = async () => {
-	if (!genesisHeight) {
-		const nodeInfo = await getNodeInfo();
-		genesisHeight = nodeInfo.genesisHeight;
-	}
-	return genesisHeight;
-};
-
 const setGenesisBlock = (block) => genesisBlock = block;
 
 const getGenesisBlock = () => genesisBlock;
@@ -116,7 +106,6 @@ const getGenesisBlockFromFS = async () => {
 };
 
 module.exports = {
-	getGenesisHeight,
 	getGenesisBlockId,
 	getGenesisBlockFromFS,
 };

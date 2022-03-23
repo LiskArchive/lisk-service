@@ -31,6 +31,8 @@ const {
 	getNodeInfo,
 } = require('./actions_1');
 const { getApiClient, invokeAction } = require('./client');
+const { getGenesisBlockFromFS } = require('./helper/blocksUtils');
+const { encodeBlock } = require('./helper/encoder');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./helper/decoder');
 const { parseToJSONCompatObj } = require('../utils/jsonTools');
 
@@ -38,6 +40,26 @@ const logger = Logger();
 
 // Constants
 const timeoutMessage = 'Response not received in';
+
+let genesisHeight;
+let genesisBlockID;
+
+const getGenesisHeight = async () => {
+	if (!genesisHeight) {
+		const nodeInfo = await getNodeInfo();
+		genesisHeight = nodeInfo.genesisHeight;
+	}
+	return genesisHeight;
+};
+
+const getGenesisBlockID = async () => {
+	if (!genesisBlockID) {
+		// eslint-disable-next-line no-use-before-define
+		const genesisBlock = await getBlockByHeight(await getGenesisHeight());
+		genesisBlockID = genesisBlock.header.height;
+	}
+	return genesisBlockID;
+};
 
 const getConnectedPeers = async () => {
 	try {
@@ -137,40 +159,18 @@ const getLastBlock = async () => {
 	}
 };
 
-const getBlockByID = async (id) => {
-	try {
-		const encodedBlock = await invokeAction('app:getBlockByID', { id });
-		const block = await decodeBlock(encodedBlock);
-		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getBlocksByID' for ID: ${id}`);
-		}
-		throw err;
-	}
-};
-
-const getBlocksByIDs = async (ids) => {
-	try {
-		const encodedBlocks = await invokeAction('app:getBlocksByIDs', { ids });
-		const blocks = await BluebirdPromise.map(
-			encodedBlocks,
-			async (block) => ({
-				...(await decodeBlock(block)),
-				_raw: block,
-			}),
-			{ concurrency: encodedBlocks.length },
-		);
-		return parseToJSONCompatObj(blocks);
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}`);
-		}
-		throw err;
-	}
-};
-
 const getBlockByHeight = async (height) => {
+	try {
+		// File based Genesis block handling
+		if (Number(height) === await getGenesisHeight()) {
+			const genesisBlock = await getGenesisBlockFromFS();
+			const encodedGenesisBlock = await encodeBlock(genesisBlock);
+			return { ...genesisBlock, _raw: encodedGenesisBlock };
+		}
+	} catch (err) {
+		logger.debug('Genesis block snapshot retrieval was not possible, attempting to retrieve directly from the node.');
+	}
+
 	try {
 		const encodedBlock = await invokeAction('app:getBlockByHeight', { height });
 		const block = await decodeBlock(encodedBlock);
@@ -185,7 +185,73 @@ const getBlockByHeight = async (height) => {
 
 const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
-		const encodedBlocks = await invokeAction('app:getBlocksByHeightBetween', { from, to });
+		const gHeight = await getGenesisHeight();
+		const blocks = [[], []];
+
+		if (from < gHeight) {
+			throw new Error(`'from' cannot be lower than the genesis height (${gHeight})`);
+		}
+
+		// File based Genesis block handling
+		if (Number(from) === gHeight) {
+			blocks[0] = await getBlockByHeight(gHeight);
+			from++;
+		}
+
+		if (from <= to) {
+			const encodedBlocks = await invokeAction('app:getBlocksByHeightBetween', { from, to });
+			blocks[1] = await BluebirdPromise.map(
+				encodedBlocks,
+				async (block) => ({
+					...(await decodeBlock(block)),
+					_raw: block,
+				}),
+				{ concurrency: encodedBlocks.length },
+			);
+		}
+
+		return parseToJSONCompatObj([blocks[0], ...blocks[1]]);
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
+		}
+		throw err;
+	}
+};
+
+const getBlockByID = async (id) => {
+	try {
+		// File based Genesis block handling
+		if (id === await getGenesisBlockID()) {
+			return getBlockByHeight(await getGenesisHeight());
+		}
+
+		const encodedBlock = await invokeAction('app:getBlockByID', { id });
+		const block = await decodeBlock(encodedBlock);
+		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException(`Request timed out when calling 'getBlockByID' for ID: ${id}`);
+		}
+		throw err;
+	}
+};
+
+const getBlocksByIDs = async (ids) => {
+	try {
+		// File based Genesis block handling
+		const genesisBlockId = await getGenesisBlockID();
+		const genesisBlockIndex = ids.indexOf(genesisBlockId);
+		if (genesisBlockIndex !== -1) {
+			const remainingIDs = ids.filter(id => id !== genesisBlockId);
+			const genesisBlock = await getBlockByID(genesisBlockId);
+			if (remainingIDs.length === 0) return [genesisBlock];
+
+			const remainingBlocks = await getBlocksByIDs(remainingIDs);
+			return remainingBlocks.splice(genesisBlockIndex, 0, genesisBlock);
+		}
+
+		const encodedBlocks = await invokeAction('app:getBlocksByIDs', { ids });
 		const blocks = await BluebirdPromise.map(
 			encodedBlocks,
 			async (block) => ({
@@ -197,7 +263,7 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		return parseToJSONCompatObj(blocks);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
+			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}`);
 		}
 		throw err;
 	}
