@@ -14,64 +14,7 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
-const { getApiClient } = require('./client');
-// const { getSchema, getNodeInfo } = require('./actions');
-
-// ================================================================================================
-// Remove from here -- added to avoid cyclic dependency on actions.js
-// ================================================================================================
-
-// Constants
-const timeoutMessage = 'Response not received in';
-const NUM_REQUEST_RETRIES = 5;
-let schema;
-
-// eslint-disable-next-line consistent-return
-const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
-	const apiClient = await getApiClient();
-	let retries = numRetries;
-	do {
-		/* eslint-disable no-await-in-loop */
-		try {
-			const response = await apiClient._channel.invoke(action, params);
-			return response;
-		} catch (err) {
-			if (retries && err instanceof TimeoutException) await delay(10);
-			else throw err;
-		}
-		/* eslint-enable no-await-in-loop */
-	} while (retries--);
-};
-
-const getSchema = async () => {
-	try {
-		if (!schema) {
-			schema = await invokeAction('app:getSchema');
-		}
-		return schema;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSchema\'');
-		}
-		throw err;
-	}
-};
-
-const getNodeInfo = async () => {
-	try {
-		const nodeInfo = await invokeAction('app:getNodeInfo');
-		return nodeInfo;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNodeInfo\'');
-		}
-		throw err;
-	}
-};
-
-// ================================================================================================
-// Remove until here
-// ================================================================================================
+const { getSchema, getNodeInfo } = require('./actions_1');
 
 let genesisHeight;
 
@@ -112,10 +55,8 @@ const getTransactionSchema = async () => {
 const getTransactionAssetSchema = async (transaction) => {
 	const allSchemas = await getSchema();
 	const transactionAssetSchemas = allSchemas.transactionsAssets;
-	const { schema } = transactionAssetSchemas.find(schema =>
-		schema.moduleID === transaction.moduleID
-		&& schema.assetID === transaction.assetID,
-	);
+	const { schema } = transactionAssetSchemas
+		.find(s => s.moduleID === transaction.moduleID && s.assetID === transaction.assetID);
 	return schema;
 };
 
@@ -126,6 +67,24 @@ const decodeAccount = async (encodedAccount) => {
 		: Buffer.from(encodedAccount, 'hex');
 	const decodedAccount = codec.decode(accountSchema, accountBuffer);
 	return decodedAccount;
+};
+
+const decodeTransaction = async (encodedTransaction) => {
+	const txSchema = await getTransactionSchema();
+	const transactionBuffer = Buffer.isBuffer(encodedTransaction)
+		? encodedTransaction
+		: Buffer.from(encodedTransaction, 'hex');
+	const transaction = codec.decode(txSchema, transactionBuffer);
+
+	const txAssetSchema = await getTransactionAssetSchema(transaction);
+	const transactionAsset = codec.decode(txAssetSchema, transaction.asset);
+
+	const decodedTransaction = {
+		...transaction,
+		asset: transactionAsset,
+	};
+
+	return decodedTransaction;
 };
 
 const decodeBlock = async (encodedBlock) => {
@@ -158,24 +117,6 @@ const decodeBlock = async (encodedBlock) => {
 		payload: blockPayload,
 	};
 	return decodedBlock;
-};
-
-const decodeTransaction = async (encodedTransaction) => {
-	const txSchema = await getTransactionSchema();
-	const transactionBuffer = Buffer.isBuffer(encodedTransaction)
-		? encodedTransaction
-		: Buffer.from(encodedTransaction, 'hex');
-	const transaction = codec.decode(txSchema, transactionBuffer);
-
-	const txAssetSchema = await getTransactionAssetSchema(transaction);
-	const transactionAsset = codec.decode(txAssetSchema, transaction.asset);
-
-	const decodedTransaction = {
-		...transaction,
-		asset: transactionAsset,
-	};
-
-	return decodedTransaction;
 };
 
 module.exports = {

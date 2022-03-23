@@ -13,16 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
 const { createWSClient } = require('@liskhq/lisk-api-client');
 
+const delay = require('../utils/delay');
 const waitForIt = require('../utils/waitForIt');
 const config = require('../../config');
 
 const logger = Logger();
 
+// Constants
+
 const liskAddress = config.endpoints.liskWs;
 const MAX_INSTANTIATION_WAIT_TIME = 50; // in ms
+const RETRY_INTERVAL = 50; // ms
+const NUM_REQUEST_RETRIES = 5;
+
+// Caching and flags
 
 let clientCache;
 let instantiationBeginTime;
@@ -58,8 +65,6 @@ const instantiateClient = async () => {
 	}
 };
 
-const RETRY_INTERVAL = 50; // ms
-
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
 	return (apiClient && apiClient._channel && apiClient._channel.invoke)
@@ -67,6 +72,24 @@ const getApiClient = async () => {
 		: getApiClient();
 };
 
+// eslint-disable-next-line consistent-return
+const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
+	const apiClient = await getApiClient();
+	let retries = numRetries;
+	do {
+		/* eslint-disable no-await-in-loop */
+		try {
+			const response = await apiClient._channel.invoke(action, params);
+			return response;
+		} catch (err) {
+			if (retries && err instanceof TimeoutException) await delay(10);
+			else throw err;
+		}
+		/* eslint-enable no-await-in-loop */
+	} while (retries--);
+};
+
 module.exports = {
 	getApiClient,
+	invokeAction,
 };

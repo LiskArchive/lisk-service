@@ -21,108 +21,21 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { getApiClient } = require('./client');
+const {
+	getSchema,
+	getRegisteredActions,
+	getRegisteredEvents,
+	getRegisteredModules,
+	getNodeInfo,
+} = require('./actions_1');
+const { getApiClient, invokeAction } = require('./client');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../utils/jsonTools');
 
-const delay = require('../utils/delay');
+const logger = Logger();
 
 // Constants
 const timeoutMessage = 'Response not received in';
-const NUM_REQUEST_RETRIES = 5;
-
-const logger = Logger();
-
-// Caching for constants from SDK application
-let schema;
-let registeredActions;
-let registeredEvents;
-let registeredModules;
-
-// eslint-disable-next-line consistent-return
-const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
-	const apiClient = await getApiClient();
-	let retries = numRetries;
-	do {
-		/* eslint-disable no-await-in-loop */
-		try {
-			const response = await apiClient._channel.invoke(action, params);
-			return response;
-		} catch (err) {
-			if (retries && err instanceof TimeoutException) await delay(10);
-			else throw err;
-		}
-		/* eslint-enable no-await-in-loop */
-	} while (retries--);
-};
-
-const getSchema = async () => {
-	try {
-		if (!schema) {
-			schema = await invokeAction('app:getSchema');
-		}
-		return schema;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getSchema\'');
-		}
-		throw err;
-	}
-};
-
-const getRegisteredActions = async () => {
-	try {
-		if (!registeredActions) {
-			registeredActions = await invokeAction('app:getRegisteredActions');
-		}
-		return registeredActions;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredActions\'');
-		}
-		throw err;
-	}
-};
-
-const getRegisteredEvents = async () => {
-	try {
-		if (!registeredEvents) {
-			registeredEvents = await invokeAction('app:getRegisteredEvents');
-		}
-		return registeredEvents;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredEvents\'');
-		}
-		throw err;
-	}
-};
-
-const getRegisteredModules = async () => {
-	try {
-		if (!registeredModules) {
-			registeredModules = await invokeAction('app:getRegisteredModules');
-		}
-		return registeredModules;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getRegisteredModules\'');
-		}
-		throw err;
-	}
-};
-
-const getNodeInfo = async () => {
-	try {
-		const nodeInfo = await invokeAction('app:getNodeInfo');
-		return nodeInfo;
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getNodeInfo\'');
-		}
-		throw err;
-	}
-};
 
 const getConnectedPeers = async () => {
 	try {
@@ -201,11 +114,6 @@ const getAccounts = async (addresses) => {
 		throw err;
 	}
 };
-
-// const decodeBlock = async (block) => {
-// 	const apiClient = await getApiClient();
-// 	return apiClient.block.decode(Buffer.from(block, 'hex'));
-// };
 
 const getLastBlock = async () => {
 	try {
