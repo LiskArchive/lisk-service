@@ -14,17 +14,7 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
-const { getSchema, getNodeInfo } = require('./actions_1');
-
-let genesisHeight;
-
-const getGenesisHeight = async () => {
-	if (!genesisHeight) {
-		const nodeInfo = await getNodeInfo();
-		genesisHeight = nodeInfo.genesisHeight;
-	}
-	return genesisHeight;
-};
+const { getSchema } = require('../actions_1');
 
 const getAccountSchema = async () => {
 	const allSchemas = await getSchema();
@@ -97,10 +87,9 @@ const decodeBlock = async (encodedBlock) => {
 	const blockHeaderSchema = await getBlockHeaderSchema();
 	const blockHeader = codec.decode(blockHeaderSchema, block.header);
 
-	const isGenesisBlock = (await getGenesisHeight()) === blockHeader.height;
-	const blockHeadersAssetsSchema = await getBlockHeaderAssetSchema(blockHeader.version);
-	const blockHeaderAsset = codec.decode(blockHeadersAssetsSchema, blockHeader.asset);
-	if (isGenesisBlock) {
+	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(blockHeader.version);
+	const blockHeaderAsset = codec.decode(blockHeaderAssetSchema, blockHeader.asset);
+	if (Array.isArray(blockHeader.asset.accounts)) {
 		// Test genesis block
 		blockHeaderAsset.accounts = await Promise.all(
 			blockHeaderAsset.accounts.map(acc => decodeAccount(acc)),
@@ -110,6 +99,7 @@ const decodeBlock = async (encodedBlock) => {
 	const blockPayload = await Promise.all(block.payload.map(tx => decodeTransaction(tx)));
 
 	const decodedBlock = {
+		...block,
 		header: {
 			...blockHeader,
 			asset: blockHeaderAsset,
@@ -120,6 +110,13 @@ const decodeBlock = async (encodedBlock) => {
 };
 
 module.exports = {
+	getAccountSchema,
+	getBlockSchema,
+	getBlockHeaderSchema,
+	getBlockHeaderAssetSchema,
+	getTransactionSchema,
+	getTransactionAssetSchema,
+
 	decodeAccount,
 	decodeBlock,
 	decodeTransaction,

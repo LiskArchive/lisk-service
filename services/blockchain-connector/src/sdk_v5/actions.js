@@ -31,7 +31,7 @@ const {
 	getNodeInfo,
 } = require('./actions_1');
 const { getApiClient, invokeAction } = require('./client');
-const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
+const { decodeAccount, decodeBlock, decodeTransaction } = require('./helper/decoder');
 const { parseToJSONCompatObj } = require('../utils/jsonTools');
 
 const logger = Logger();
