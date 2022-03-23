@@ -23,7 +23,7 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
-const MAX_INSTANTIATION_WAIT_TIME = 50;
+const MAX_INSTANTIATION_WAIT_TIME = 50; // in ms
 
 let clientCache;
 let instantiationBeginTime;

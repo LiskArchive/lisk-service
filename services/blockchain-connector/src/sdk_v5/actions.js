@@ -22,6 +22,7 @@ const {
 } = require('lisk-service-framework');
 
 const { getApiClient } = require('./client');
+const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../utils/jsonTools');
 
 const delay = require('../utils/delay');
@@ -172,10 +173,10 @@ const updateForgingStatus = async (config) => {
 	}
 };
 
-const decodeAccount = async (acc) => {
-	const apiClient = await getApiClient();
-	return apiClient.account.decode(Buffer.from(acc, 'hex'));
-};
+// const decodeAccount = async (acc) => {
+// 	const apiClient = await getApiClient();
+// 	return apiClient.account.decode(Buffer.from(acc, 'hex'));
+// };
 
 const getAccount = async (address) => {
 	try {
@@ -206,10 +207,10 @@ const getAccounts = async (addresses) => {
 	}
 };
 
-const decodeBlock = async (block) => {
-	const apiClient = await getApiClient();
-	return apiClient.block.decode(Buffer.from(block, 'hex'));
-};
+// const decodeBlock = async (block) => {
+// 	const apiClient = await getApiClient();
+// 	return apiClient.block.decode(Buffer.from(block, 'hex'));
+// };
 
 const getLastBlock = async () => {
 	try {
@@ -276,10 +277,10 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 	}
 };
 
-const decodeTransaction = async (transaction) => {
-	const apiClient = await getApiClient();
-	return apiClient.transaction.decode(Buffer.from(transaction, 'hex'));
-};
+// const decodeTransaction = async (transaction) => {
+// 	const apiClient = await getApiClient();
+// 	return apiClient.transaction.decode(Buffer.from(transaction, 'hex'));
+// };
 
 const getTransactionByID = async (id) => {
 	try {

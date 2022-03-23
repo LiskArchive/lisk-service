@@ -22,6 +22,8 @@ const config = require('../../config');
 const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
+const MAX_INSTANTIATION_WAIT_TIME = 50; // in ms
+
 let clientCache;
 let instantiationBeginTime;
 let isInstantiating = false;
@@ -40,7 +42,7 @@ const instantiateClient = async () => {
 			return clientCache;
 		}
 
-		if ((Date.now() - instantiationBeginTime) > 500) {
+		if ((Date.now() - instantiationBeginTime) > MAX_INSTANTIATION_WAIT_TIME) {
 			// Waited too long, reset the flag to re-attempt client instantiation
 			isInstantiating = false;
 		}
