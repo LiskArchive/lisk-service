@@ -90,7 +90,6 @@ const decodeBlock = async (encodedBlock) => {
 	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(blockHeader.version);
 	const blockHeaderAsset = codec.decode(blockHeaderAssetSchema, blockHeader.asset);
 	if (Array.isArray(blockHeader.asset.accounts)) {
-		// Test genesis block
 		blockHeaderAsset.accounts = await Promise.all(
 			blockHeaderAsset.accounts.map(acc => decodeAccount(acc)),
 		);
@@ -99,7 +98,6 @@ const decodeBlock = async (encodedBlock) => {
 	const blockPayload = await Promise.all(block.payload.map(tx => decodeTransaction(tx)));
 
 	const decodedBlock = {
-		...block,
 		header: {
 			...blockHeader,
 			asset: blockHeaderAsset,
