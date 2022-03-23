@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const {
 	Logger,
 	Exceptions: {
@@ -105,7 +107,14 @@ const getAccount = async (address) => {
 const getAccounts = async (addresses) => {
 	try {
 		const encodedAccounts = await invokeAction('app:getAccounts', { address: addresses });
-		const accounts = await Promise.all(encodedAccounts.map(acc => decodeAccount(acc)));
+		const accounts = await BluebirdPromise.map(
+			encodedAccounts,
+			async (account) => ({
+				...(await decodeAccount(account)),
+				_raw: account,
+			}),
+			{ concurrency: encodedAccounts.length },
+		);
 		return parseToJSONCompatObj(accounts);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -119,7 +128,7 @@ const getLastBlock = async () => {
 	try {
 		const encodedBlock = await invokeAction('app:getLastBlock');
 		const block = await decodeBlock(encodedBlock);
-		return parseToJSONCompatObj(block);
+		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getLastBlock\'');
@@ -132,7 +141,7 @@ const getBlockByID = async (id) => {
 	try {
 		const encodedBlock = await invokeAction('app:getBlockByID', { id });
 		const block = await decodeBlock(encodedBlock);
-		return parseToJSONCompatObj(block);
+		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByID' for ID: ${id}`);
@@ -144,7 +153,14 @@ const getBlockByID = async (id) => {
 const getBlocksByIDs = async (ids) => {
 	try {
 		const encodedBlocks = await invokeAction('app:getBlocksByIDs', { ids });
-		const blocks = await Promise.all(encodedBlocks.map(blk => decodeBlock(blk)));
+		const blocks = await BluebirdPromise.map(
+			encodedBlocks,
+			async (block) => ({
+				...(await decodeBlock(block)),
+				_raw: block,
+			}),
+			{ concurrency: encodedBlocks.length },
+		);
 		return parseToJSONCompatObj(blocks);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -158,7 +174,7 @@ const getBlockByHeight = async (height) => {
 	try {
 		const encodedBlock = await invokeAction('app:getBlockByHeight', { height });
 		const block = await decodeBlock(encodedBlock);
-		return parseToJSONCompatObj(block);
+		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
@@ -170,7 +186,14 @@ const getBlockByHeight = async (height) => {
 const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
 		const encodedBlocks = await invokeAction('app:getBlocksByHeightBetween', { from, to });
-		const blocks = await Promise.all(encodedBlocks.map(blk => decodeBlock(blk)));
+		const blocks = await BluebirdPromise.map(
+			encodedBlocks,
+			async (block) => ({
+				...(await decodeBlock(block)),
+				_raw: block,
+			}),
+			{ concurrency: encodedBlocks.length },
+		);
 		return parseToJSONCompatObj(blocks);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -184,7 +207,7 @@ const getTransactionByID = async (id) => {
 	try {
 		const encodedTransaction = await invokeAction('app:getTransactionByID', { id });
 		const transaction = await decodeTransaction(encodedTransaction);
-		return parseToJSONCompatObj(transaction);
+		return { ...parseToJSONCompatObj(transaction), _raw: encodedTransaction };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionByID' for ID: ${id}`);
@@ -196,7 +219,14 @@ const getTransactionByID = async (id) => {
 const getTransactionsByIDs = async (ids) => {
 	try {
 		const encodedTransactions = await invokeAction('app:getTransactionsByIDs', { ids });
-		const transactions = await Promise.all(encodedTransactions.map(tx => decodeTransaction(tx)));
+		const transactions = await BluebirdPromise.map(
+			encodedTransactions,
+			async (tx) => ({
+				...(await decodeTransaction(tx)),
+				_raw: tx,
+			}),
+			{ concurrency: encodedTransactions.length },
+		);
 		return parseToJSONCompatObj(transactions);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
