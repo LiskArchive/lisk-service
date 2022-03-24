@@ -47,6 +47,10 @@ nodeStatus.waitForNode().then(async () => {
 	await app.addMethods(path.join(__dirname, 'methods'));
 	await app.addEvents(path.join(__dirname, 'events'));
 
+	// Dynamically register all the available SDK actions
+	const sdkRegisteredActionsMethods = await require('./methods_sdk/allActions');
+	sdkRegisteredActionsMethods.map(m => app.addMethod(m));
+
 	app.run()
 		.then(() => {
 			// TODO: Add application init logic
