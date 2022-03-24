@@ -25,8 +25,7 @@
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
-    "test": "npm run test:unit",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
+    "test": "echo \"Error: no test specified\""
   },
   "dependencies": {
     "@liskhq/lisk-api-client": "^5.1.3",
