@@ -14,6 +14,7 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
+const { hash } = require('@liskhq/lisk-cryptography');
 const { getSchema } = require('../actions_1');
 
 const getAccountSchema = async () => {
@@ -65,6 +66,8 @@ const decodeTransaction = async (encodedTransaction) => {
 		? encodedTransaction
 		: Buffer.from(encodedTransaction, 'hex');
 	const transaction = codec.decode(txSchema, transactionBuffer);
+	transaction.id = hash(transactionBuffer);
+	transaction.size = transactionBuffer.length;
 
 	const txAssetSchema = await getTransactionAssetSchema(transaction);
 	const transactionAsset = codec.decode(txAssetSchema, transaction.asset);
@@ -86,6 +89,7 @@ const decodeBlock = async (encodedBlock) => {
 
 	const blockHeaderSchema = await getBlockHeaderSchema();
 	const blockHeader = codec.decode(blockHeaderSchema, block.header);
+	blockHeader.id = hash(block.header);
 
 	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(blockHeader.version);
 	const blockHeaderAsset = codec.decode(blockHeaderAssetSchema, blockHeader.asset);
