@@ -338,6 +338,46 @@ const indexBlocksQueue = Queue('indexBlocksQueue', indexBlock, 30);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
+const verifyAndIndexBlock = async data => {
+	const { block } = data.data;
+
+	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
+
+	const blocksDB = await getBlocksIndex();
+	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
+	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
+		// Index if doesn't exist, or update if it isn't set to final
+		await indexBlocksQueue.add({ height: block.height });
+
+		// Update block finality status
+		const finalizedBlockHeight = await getFinalizedHeight();
+		const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
+			Object.keys(blocksIndexSchema.schema));
+		await updateBlockIndexQueue.add({
+			blocks: nonFinalBlocks
+				.filter(b => b.height <= finalizedBlockHeight)
+				.map(b => ({ ...b, isFinal: true })),
+		});
+
+		if (blockInfo && blockInfo.id !== block.id) {
+			// Fork detected
+
+			const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+			const blocksToRemove = await blocksDB.find({
+				propBetweens: [{
+					property: 'height',
+					from: block.height + 1,
+					to: highestIndexedBlock.height,
+				}],
+				limit: highestIndexedBlock.height - block.height,
+			}, ['id']);
+			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
+		}
+	}
+};
+
+const verifyBlocksQueue = Queue('verifyBlocksQueue', verifyAndIndexBlock, 1);
+
 const cacheLegacyAccountInfo = async () => {
 	// Cache the legacy account reclaim balance information
 	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
@@ -466,44 +506,9 @@ const buildIndex = async (from, to) => {
 	logger.info(`Finished scheduling the block index build (${from}-${to})`);
 };
 
-const indexNewBlocks = async blocks => {
-	const blocksDB = await getBlocksIndex();
-	if (blocks.data.length === 1) {
-		const [block] = blocks.data;
-		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
-
-		const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
-		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
-			// Index if doesn't exist, or update if it isn't set to final
-			await indexBlocksQueue.add({ height: block.height });
-
-			// Update block finality status
-			const finalizedBlockHeight = await getFinalizedHeight();
-			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
-				Object.keys(blocksIndexSchema.schema));
-			await updateBlockIndexQueue.add({
-				blocks: nonFinalBlocks
-					.filter(b => b.height <= finalizedBlockHeight)
-					.map(b => ({ ...b, isFinal: true })),
-			});
-
-			if (blockInfo && blockInfo.id !== block.id) {
-				// Fork detected
-
-				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-				const blocksToRemove = await blocksDB.find({
-					propBetweens: [{
-						property: 'height',
-						from: block.height + 1,
-						to: highestIndexedBlock.height,
-					}],
-					limit: highestIndexedBlock.height - block.height,
-				}, ['id']);
-				await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
-			}
-		}
-	}
-};
+const indexNewBlocks = async blocks => blocks.data.forEach(async block => {
+	await verifyBlocksQueue.add({ block });
+});
 
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	let result = [];
