@@ -13,37 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const {
-// 	// CacheRedis,
-// 	Logger,
-// } = require('lisk-service-framework');
-
-// const BluebirdPromise = require('bluebird');
 const Redis = require('ioredis');
 
 const Queue = require('../../queue');
 
 const {
-	// getDbConnection,
 	getTableInstance,
-	// startDbTransaction,
-	// commitDbTransaction,
-	// rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
 
 const {
 	getAccountsByAddress,
 	getAccountsByPublicKey2,
 } = require('./accounts');
-
-// const getPublicKeyByAddress = async (address) => {
-// 	try {
-// 		const account = await getAccountsByAddress([address]);
-// 		return account;
-// 	} catch (err) {
-// 		return null;
-// 	}
-// };
 
 const config = require('../../../../config');
 
@@ -85,15 +66,6 @@ const accountAddrUpdateQueue = Queue('accountQueueByAddress', updateAccountInfoA
 const accountDirectUpdateQueue = Queue('accountQueueDirect', updateAccountWithData, 1);
 
 const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
-
-// const indexAccountByAddress = async (address) => {
-// 	const publicKey = await getPublicKeyByAddress(address);
-// 	if (typeof publicKey === 'string') {
-// 		indexAccountByPublicKey(publicKey);
-// 	} else {
-// 		redis.sadd('pendingAccountsByAddress', address);
-// 	}
-// };
 
 const indexAccountByAddress = async (address) => redis.sadd('pendingAccountsByAddress', address);
 

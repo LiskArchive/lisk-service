@@ -108,6 +108,10 @@ const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 const setIndexDiff = (height) => blockchainStore.set('indexStatus', height);
 const getIndexDiff = () => blockchainStore.get('indexStatus');
 
+// Key-based account update
+// There is a bug that does not update public keys
+const KEY_BASED_ACCOUNT_UPDATE = false;
+
 // Key constants for the KV-store
 const genesisAccountPageCached = 'genesisAccountPageCached';
 const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
@@ -202,18 +206,6 @@ const updateVoteAggregates = async (job) => {
 	}
 };
 
-// const updateAccountInfo = async (job) => {
-// 	const { blocks, accountsFromTransactions } = job.data;
-// 	const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-
-// 	const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-// 	const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
-// 	if (allAccounts.length) {
-// 		const accountsDB = await getAccountsIndex();
-// 		await accountsDB.upsert(allAccounts);
-// 	}
-// };
-
 const voteAggregatesQueue = Queue('votingQueue', updateVoteAggregates, 1);
 const blockRewardsQueue = Queue('blockRewardsQueue', updateBlockRewards, 1);
 
@@ -250,14 +242,16 @@ const indexBlock = async job => {
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 
-		// const addresses = ensureArray(accountsFromTransactions)
-		// 	.filter(a => a.publicKey).map(a => a.publicKey);
-		// const publicKeys = ensureArray(accountsFromTransactions)
-		// 	.filter(a => !a.publicKey).map(a => a.address);
+		if (KEY_BASED_ACCOUNT_UPDATE === true) {
+			const addresses = ensureArray(accountsFromTransactions)
+				.filter(a => a.publicKey).map(a => a.publicKey);
+			const publicKeys = ensureArray(accountsFromTransactions)
+				.filter(a => !a.publicKey).map(a => a.address);
 
-		// blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
-		// publicKeys.forEach(pk => indexAccountByPublicKey(pk));
-		// addresses.forEach(a => indexAccountByAddress(a));
+			blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
+			publicKeys.forEach(pk => indexAccountByPublicKey(pk));
+			addresses.forEach(a => indexAccountByAddress(a));
+		}
 
 		ensureArray(generatorPkInfoArray)
 			.forEach(generatorProps => blockRewardsQueue.add({ generatorProps }));
@@ -755,7 +749,9 @@ const init = async () => {
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
-		setInterval(triggerAccountUpdates, 15 * 1000); // ms
+		if (KEY_BASED_ACCOUNT_UPDATE === true) {
+			setInterval(triggerAccountUpdates, 15 * 1000); // ms
+		}
 
 		logger.info('Finished all blockchain index startup tasks');
 	} catch (err) {
