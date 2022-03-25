@@ -15,11 +15,17 @@
  */
 const actions = require('../../src/sdk_v5/actions');
 
+const getPeers = async () => [
+	...(await actions.getConnectedPeers()),
+	...(await actions.getDisconnectedPeers()),
+];
+
 const getConnectedPeers = async () => actions.getConnectedPeers();
 
 const getDisconnectedPeers = async () => actions.getDisconnectedPeers();
 
 module.exports = {
+	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
 };

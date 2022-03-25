@@ -14,11 +14,17 @@
  *
  */
 const {
+	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
 } = require('./controllers/peers');
 
 module.exports = [
+	{
+		name: 'getPeers',
+		controller: getPeers,
+		params: {},
+	},
 	{
 		name: 'getConnectedPeers',
 		controller: getConnectedPeers,
