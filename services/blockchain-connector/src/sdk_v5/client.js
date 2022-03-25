@@ -16,21 +16,20 @@
 const { Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
 const { createWSClient } = require('@liskhq/lisk-api-client');
 
+const config = require('../../config');
 const delay = require('../utils/delay');
 const waitForIt = require('../utils/waitForIt');
-const config = require('../../config');
+const Signals = require('../utils/signals');
 
 const logger = Logger();
 
 // Constants
-
 const liskAddress = config.endpoints.liskWs;
-const MAX_INSTANTIATION_WAIT_TIME = 50; // in ms
-const RETRY_INTERVAL = 50; // ms
+const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
+const RETRY_INTERVAL = 500; // ms
 const NUM_REQUEST_RETRIES = 5;
 
 // Caching and flags
-
 let clientCache;
 let instantiationBeginTime;
 let isInstantiating = false;
@@ -46,6 +45,10 @@ const instantiateClient = async () => {
 				clientCache = await createWSClient(`${liskAddress}/ws`);
 				isInstantiating = false;
 			}
+
+			// Inform listeners about the newly created ApiClient
+			Signals.get('newApiClient').dispatch();
+
 			return clientCache;
 		}
 
