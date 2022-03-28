@@ -13,11 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+const Redis = require('ioredis');
+
 const {
 	Queue,
+	CacheRedis,
+	Logger,
 } = require('lisk-service-framework');
-
-const Redis = require('ioredis');
 
 const {
 	// getDbConnection,
@@ -32,6 +35,16 @@ const {
 	getAccountsByPublicKey2,
 } = require('./accounts');
 
+const {
+	getBlockByHeight,
+} = require('./blocks');
+
+const {
+	getGenesisHeight,
+} = require('./constants');
+
+const { getAppContext } = require('../utils/appContext');
+
 const config = require('../../config');
 
 const redis = new Redis(config.endpoints.redis);
@@ -39,6 +52,10 @@ const redis = new Redis(config.endpoints.redis);
 const accountsIndexSchema = require('./schema/accounts');
 
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
+
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+
+const logger = Logger();
 
 const updateAccountInfoPk = async (job) => {
 	const publicKey = job.data;
@@ -89,9 +106,49 @@ const triggerAccountUpdates = async () => {
 
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
+const indexAllDelegateAccounts = async () => {
+	const app = await getAppContext();
+	const accountsDB = await getAccountIndex();
+	const allDelegatesInfo = await app.requestRpc('connector.invokeAction', { action: 'dpos:getAllDelegates' });
+	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
+	const PAGE_SIZE = 1000;
+	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
+		/* eslint-disable no-await-in-loop */
+		const accounts = await getAccountsByAddress(allDelegateAddresses
+			.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
+		await accountsDB.upsert(accounts);
+		/* eslint-enable no-await-in-loop */
+	}
+	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
+};
+
+const cacheLegacyAccountInfo = async () => {
+	// Cache the legacy account reclaim balance information
+	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
+	const unregisteredAccounts = genesisBlock.asset.accounts
+		.filter(account => account.address.length !== 40);
+
+	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
+	logger.info('Starting to cache legacy account reclaim balance information');
+	await BluebirdPromise.map(
+		unregisteredAccounts,
+		async account => {
+			const legacyAccountInfo = {
+				address: account.address,
+				balance: account.token.balance,
+			};
+			await legacyAccountCache.set(account.address, JSON.stringify(legacyAccountInfo));
+		},
+		{ concurrency: 1000 },
+	);
+	logger.info('Finished caching legacy account reclaim balance information');
+};
+
 module.exports = {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
 	indexAccountWithData,
 	triggerAccountUpdates,
+	indexAllDelegateAccounts,
+	cacheLegacyAccountInfo,
 };

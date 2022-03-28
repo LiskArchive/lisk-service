@@ -24,7 +24,8 @@ const votesIndexSchema = require('./schema/votes');
 // const votesAggregateIndexSchema = require('./schema/votesAggregate');
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
-// const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
+// const getVotesAggregateIndex = () => getTableInstance(
+// 	'votes_aggregate', votesAggregateIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;

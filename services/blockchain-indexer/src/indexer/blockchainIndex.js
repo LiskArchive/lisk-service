@@ -16,7 +16,6 @@
 const {
 	Logger,
 	Queue,
-	CacheRedis,
 } = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
@@ -30,7 +29,6 @@ const {
 } = require('./blocks');
 
 const {
-	getAccountsByAddress,
 	getAccountsByPublicKey,
 } = require('./accounts');
 
@@ -55,9 +53,11 @@ const {
 	indexAccountWithData,
 } = require('./accountIndex');
 
-const { getFinalizedHeight, getCurrentHeight, getGenesisHeight } = require('./constants');
-
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const {
+	getFinalizedHeight,
+	getCurrentHeight,
+	getGenesisHeight,
+} = require('./constants');
 
 const {
 	getDbConnection,
@@ -80,7 +80,7 @@ const getMultisignatureIndex = () => getTableInstance('multisignature', multisig
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
-const { getAppContext } = require('../utils/appContext');
+
 const blockchainStore = require('./blockchainStore');
 
 // Height below which there are no missing blocks in the index
@@ -198,6 +198,10 @@ const indexBlock = async job => {
 	const { height } = job.data;
 
 	const blocksDB = await getBlocksIndex();
+	const transactionsDB = await getTransactionsIndex();
+	const votesDB = await getVotesIndex();
+	const multisignatureDB = await getMultisignatureIndex();
+
 	const blocks = await getBlockByHeight(height);
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
@@ -206,10 +210,6 @@ const indexBlock = async job => {
 
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
 	try {
-		const transactionsDB = await getTransactionsIndex();
-		const votesDB = await getVotesIndex();
-		const multisignatureDB = await getMultisignatureIndex();
-
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
@@ -465,44 +465,6 @@ const indexMissingBlocks = async (params = {}) => {
 	}
 };
 
-const indexAllDelegateAccounts = async () => {
-	const app = await getAppContext();
-	const accountsDB = await getAccountsIndex();
-	const allDelegatesInfo = await app.requestRpc('connector.invokeAction', { action: 'dpos:getAllDelegates' });
-	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
-	const PAGE_SIZE = 1000;
-	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
-		/* eslint-disable no-await-in-loop */
-		const accounts = await getAccountsByAddress(allDelegateAddresses
-			.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
-		await accountsDB.upsert(accounts);
-		/* eslint-enable no-await-in-loop */
-	}
-	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
-};
-
-const cacheLegacyAccountInfo = async () => {
-	// Cache the legacy account reclaim balance information
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-	const unregisteredAccounts = genesisBlock.asset.accounts
-		.filter(account => account.address.length !== 40);
-
-	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
-	logger.info('Starting to cache legacy account reclaim balance information');
-	await BluebirdPromise.map(
-		unregisteredAccounts,
-		async account => {
-			const legacyAccountInfo = {
-				address: account.address,
-				balance: account.token.balance,
-			};
-			await legacyAccountCache.set(account.address, JSON.stringify(legacyAccountInfo));
-		},
-		{ concurrency: 1000 },
-	);
-	logger.info('Finished caching legacy account reclaim balance information');
-};
-
 const getNonFinalHeights = async () => {
 	const blocksDB = await getBlocksIndex();
 
@@ -530,6 +492,4 @@ module.exports = {
 	indexNewBlocks,
 	indexMissingBlocks,
 	updateNonFinalBlocks,
-	indexAllDelegateAccounts,
-	cacheLegacyAccountInfo,
 };
