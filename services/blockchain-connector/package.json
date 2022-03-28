@@ -25,7 +25,8 @@
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
-    "test": "echo \"Error: no test specified\""
+    "test": "npm run test:unit",
+    "test:unit": "echo \"Error: no test specified\""
   },
   "dependencies": {
     "@liskhq/lisk-api-client": "^5.1.3",
