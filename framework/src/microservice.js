@@ -163,7 +163,7 @@ const Microservice = (config = {}) => {
 		return true;
 	};
 
-	const _addItems = (folderPath, type) => {
+	const _addItems = async (folderPath, type) => {
 		const items = requireAllJs(folderPath);
 		const fnMap = {
 			method: addMethod,

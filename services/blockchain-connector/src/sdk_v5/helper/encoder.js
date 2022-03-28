@@ -47,6 +47,7 @@ const encodeBlock = async (block) => {
 	const { header, payload } = block;
 	const blockPayloadBuffer = await Promise.all(payload.map(tx => encodeTransaction(tx)));
 
+	// TODO: Implement auto-transformer for Buffer/BigInt props based on the schema-object
 	if (Array.isArray(header.asset.accounts)) {
 		header.asset.initDelegates = header.asset.initDelegates.map(a => Buffer.from(a, 'hex'));
 		header.asset.accounts = header.asset.accounts.map(acc => {

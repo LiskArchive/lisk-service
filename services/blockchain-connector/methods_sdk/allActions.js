@@ -19,7 +19,7 @@ const exportAllMethods = async () => {
 	const registeredActions = await actions.getRegisteredActions();
 	const allMethods = registeredActions.map(action => {
 		const genericController = (regAction) => (params) => actions.invokeAction(regAction, params);
-		const controller = genericController.call(null, action);
+		const controller = genericController(action);
 		return {
 			name: action,
 			description: `Action: ${action}`,

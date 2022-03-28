@@ -29,7 +29,7 @@ const exportAllEvents = async () => {
 			const eventListener = (payload) => cb(payload);
 			Signals.get(regEvent).add(eventListener);
 		};
-		const controller = genericController.call(null, event);
+		const controller = genericController(event);
 
 		return {
 			name: event,
