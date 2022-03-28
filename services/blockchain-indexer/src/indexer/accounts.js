@@ -60,7 +60,7 @@ const getAccountsFromCore = async (params) => {
 		? await app.requestRpc('connector.getAccounts', params)
 		: await app.requestRpc('connector.getAccount', params);
 
-	if (response) {
+	if (Object.getOwnPropertyNames(response).length) {
 		accounts.data = [normalizeAccount(response)];
 	}
 	if (response.meta) accounts.meta = response.meta;

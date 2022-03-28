@@ -50,11 +50,11 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 			await BluebirdPromise.map(
 				block.payload,
 				async (txn) => {
-					// txn.minFee = await getTxnMinFee(txn);
+					txn.minFee = await getTxnMinFee(txn);
 					block.size += txn.size;
-					// block.totalForged += txn.fee;
-					// block.totalBurnt += txn.minFee;
-					// block.totalFee += txn.fee - txn.minFee;
+					block.totalForged += txn.fee;
+					block.totalBurnt += txn.minFee;
+					block.totalFee += txn.fee - txn.minFee;
 				},
 				{ concurrency: 1 },
 			);
