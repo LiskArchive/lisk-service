@@ -18,7 +18,7 @@ const {
 	getBase32AddressFromAddress,
 } = require('@liskhq/lisk-cryptography');
 
-const accountsIndexSchema = require('./schema/accounts');
+const accountsIndexSchema = require('../indexer/schema/accounts');
 
 const { getTableInstance } = require('../database/mysql');
 

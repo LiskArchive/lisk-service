@@ -34,15 +34,15 @@ const updateFinalizedHeight = async () => {
 
 const getCurrentHeight = async () => {
 	const app = await getAppContext();
-	const currentHeight = (await app.requestRpc('connector.getNodeInfo', {})).height;
+	const currentHeight = (await app.requestRpc('connector.getNodeInfo', {})).height; // TODO: Replace when network constants implemented in connector
 	return currentHeight;
 };
 
 const getGenesisConfig = async () => {
 	const app = await getAppContext();
 	if (!genesisConfig) {
-		const networkStatus = await app.requestRpc('connector.getNodeInfo', {});
-		genesisConfig = networkStatus.genesisConfig; // TODO: Replace when network constants implemented in connector
+		const networkStatus = await app.requestRpc('connector.getNodeInfo', {}); // TODO: Replace when network constants implemented in connector
+		genesisConfig = networkStatus.genesisConfig;
 	}
 	return genesisConfig;
 };

@@ -15,7 +15,7 @@
 //  */
 const {
 	getBase32AddressFromHex,
-} = require('./accountUtils');
+} = require('../utils/accountUtils');
 
 const {
 	getAccountsByAddress,

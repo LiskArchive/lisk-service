@@ -14,7 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getIndexedAccountInfo } = require('./accountUtils');
+const { getIndexedAccountInfo } = require('../utils/accountUtils');
 const { getTxnMinFee } = require('../utils/transactionsUtils');
 const { parseToJSONCompatObj } = require('../utils/jsonTools');
 

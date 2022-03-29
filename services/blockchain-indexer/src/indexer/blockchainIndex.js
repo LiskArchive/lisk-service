@@ -34,7 +34,7 @@ const {
 
 const {
 	getBase32AddressFromPublicKey,
-} = require('./accountUtils');
+} = require('../utils/accountUtils');
 
 const {
 	getVoteIndexingInfo,
@@ -47,9 +47,8 @@ const {
 } = require('./transactions');
 
 const {
-	// indexAccountByPublicKey,
-	// indexAccountByAddress,
-	// triggerAccountUpdates,
+	indexAccountByPublicKey,
+	indexAccountByAddress,
 	indexAccountWithData,
 } = require('./accountIndex');
 
@@ -82,6 +81,10 @@ const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
 
 const blockchainStore = require('./blockchainStore');
+
+// Key-based account update
+// There is a bug that does not update public keys
+const KEY_BASED_ACCOUNT_UPDATE = false;
 
 // Height below which there are no missing blocks in the index
 const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
@@ -177,18 +180,6 @@ const updateVoteAggregates = async (job) => {
 	}
 };
 
-// const updateAccountInfo = async (job) => {
-// 	const { blocks, accountsFromTransactions } = job.data;
-// 	const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-
-// 	const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-// 	const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
-// 	if (allAccounts.length) {
-// 		const accountsDB = await getAccountsIndex();
-// 		await accountsDB.upsert(allAccounts);
-// 	}
-// };
-
 const voteAggregatesQueue = Queue(config.endpoints.redis, 'votingQueue', updateVoteAggregates, 1);
 const blockRewardsQueue = Queue(config.endpoints.redis, 'blockRewardsQueue', updateBlockRewards, 1);
 
@@ -198,10 +189,6 @@ const indexBlock = async job => {
 	const { height } = job.data;
 
 	const blocksDB = await getBlocksIndex();
-	const transactionsDB = await getTransactionsIndex();
-	const votesDB = await getVotesIndex();
-	const multisignatureDB = await getMultisignatureIndex();
-
 	const blocks = await getBlockByHeight(height);
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
@@ -210,6 +197,10 @@ const indexBlock = async job => {
 
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
 	try {
+		const transactionsDB = await getTransactionsIndex();
+		const votesDB = await getVotesIndex();
+		const multisignatureDB = await getMultisignatureIndex();
+
 		const {
 			accounts: accountsFromTransactions,
 			transactions,
@@ -225,14 +216,16 @@ const indexBlock = async job => {
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 
-		// const addresses = ensureArray(accountsFromTransactions)
-		// 	.filter(a => a.publicKey).map(a => a.publicKey);
-		// const publicKeys = ensureArray(accountsFromTransactions)
-		// 	.filter(a => !a.publicKey).map(a => a.address);
+		if (KEY_BASED_ACCOUNT_UPDATE === true) {
+			const addresses = ensureArray(accountsFromTransactions)
+				.filter(a => a.publicKey).map(a => a.publicKey);
+			const publicKeys = ensureArray(accountsFromTransactions)
+				.filter(a => !a.publicKey).map(a => a.address);
 
-		// blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
-		// publicKeys.forEach(pk => indexAccountByPublicKey(pk));
-		// addresses.forEach(a => indexAccountByAddress(a));
+			blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
+			publicKeys.forEach(pk => indexAccountByPublicKey(pk));
+			addresses.forEach(a => indexAccountByAddress(a));
+		}
 
 		ensureArray(generatorPkInfoArray)
 			.forEach(generatorProps => blockRewardsQueue.add({ generatorProps }));

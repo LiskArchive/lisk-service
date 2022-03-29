@@ -20,7 +20,7 @@ const {
 	getHexAddressFromPublicKey,
 	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
-} = require('./accountUtils');
+} = require('../utils/accountUtils');
 
 const {
 	dropDuplicates,
@@ -113,7 +113,7 @@ const getAccountsByPublicKey = async (accountInfoArray) => {
 const getAccountsByPublicKey2 = async (accountInfoArray) => {
 	const accounts = await BluebirdPromise.map(
 		accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
+			.map(publicKey => getHexAddressFromPublicKey(publicKey)),
 		async address => {
 			const { data: [account] } = await getAccountsFromCore({ address });
 			const [accountInfo] = accountInfoArray
