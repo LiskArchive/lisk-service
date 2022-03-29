@@ -48,6 +48,9 @@ const app = Microservice({
 	// Run the application
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
+
+		const blockchainStore = require('./src/indexer/indexStatus');
+		await blockchainStore.initializeSearchIndex();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);
