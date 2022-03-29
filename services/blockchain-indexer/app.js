@@ -21,7 +21,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { updateGenesisHeight } = require('./src/indexer/constants');
+const { updateGenesisHeight } = require('./src/constants');
 const { setAppContext } = require('./src/utils/appContext');
 
 const loggerConf = {
