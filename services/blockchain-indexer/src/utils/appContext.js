@@ -20,7 +20,13 @@ const setAppContext = async (h) => app = h;
 
 const getAppContext = async () => app;
 
+const requestRpc = async (method, params = {}) => {
+	const data = await app.requestRpc(`connector.${method}`, params);
+	return data;
+};
+
 module.exports = {
 	setAppContext,
 	getAppContext,
+	requestRpc,
 };

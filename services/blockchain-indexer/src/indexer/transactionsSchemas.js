@@ -13,13 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAppContext } = require('../utils/appContext');
+const { requestRpc } = require('../utils/appContext');
 
 let allTransactionSchemasCache;
 
 const getTransactionsSchemasFromCore = async () => {
-	const app = await getAppContext();
-	const schemas = await app.requestRpc('connector.getSchema', {});
+	const schemas = await requestRpc('getSchema', {});
 	return schemas;
 };
 

@@ -40,7 +40,7 @@ const {
 	getGenesisHeight,
 } = require('./constants');
 
-const { getAppContext } = require('../utils/appContext');
+const { requestRpc } = require('../utils/appContext');
 
 const config = require('../../config');
 
@@ -104,9 +104,8 @@ const triggerAccountUpdates = async () => {
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
 const indexAllDelegateAccounts = async () => {
-	const app = await getAppContext();
 	const accountsDB = await getAccountIndex();
-	const allDelegatesInfo = await app.requestRpc('connector.invokeAction', { action: 'dpos:getAllDelegates' });
+	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates' });
 	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
 	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {

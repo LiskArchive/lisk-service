@@ -30,7 +30,7 @@ const {
 	parseToJSONCompatObj,
 } = require('../utils/jsonTools');
 
-const { getAppContext } = require('../utils/appContext');
+const { requestRpc } = require('../utils/appContext');
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
@@ -50,15 +50,13 @@ const normalizeAccount = account => {
 };
 
 const getAccountsFromCore = async (params) => {
-	const app = await getAppContext();
-
 	const accounts = {
 		data: [],
 		meta: {},
 	};
 	const response = params.addresses
-		? await app.requestRpc('connector.getAccounts', params)
-		: await app.requestRpc('connector.getAccount', params);
+		? await requestRpc('getAccounts', params)
+		: await requestRpc('getAccount', params);
 
 	if (Object.getOwnPropertyNames(response).length) {
 		accounts.data = [normalizeAccount(response)];

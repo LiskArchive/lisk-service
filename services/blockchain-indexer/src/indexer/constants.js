@@ -14,7 +14,7 @@
  *
  */
 const blockchainStore = require('./blockchainStore');
-const { getAppContext } = require('../utils/appContext');
+const { requestRpc } = require('../utils/appContext');
 
 const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);
 const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
@@ -25,32 +25,26 @@ const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 let genesisConfig;
 
 const updateFinalizedHeight = async () => {
-	const app = await getAppContext();
-	// Get genesis height
-	const { data: { finalizedHeight } } = await app
-		.requestRpc('connector.getNodeInfo', {}); // TODO: Replace when network constants implemented in connector
+	const finalizedHeight = await requestRpc('getNodeInfo').finalizedHeight; // TODO: Replace when network constants implemented in connector
 	await setFinalizedHeight(finalizedHeight);
 };
 
 const getCurrentHeight = async () => {
-	const app = await getAppContext();
-	const currentHeight = (await app.requestRpc('connector.getNodeInfo', {})).height; // TODO: Replace when network constants implemented in connector
+	const currentHeight = (await await requestRpc('getNodeInfo')).height; // TODO: Replace when network constants implemented in connector
 	return currentHeight;
 };
 
 const getGenesisConfig = async () => {
-	const app = await getAppContext();
 	if (!genesisConfig) {
-		const networkStatus = await app.requestRpc('connector.getNodeInfo', {}); // TODO: Replace when network constants implemented in connector
+		const networkStatus = await requestRpc('getNodeInfo'); // TODO: Replace when network constants implemented in connector
 		genesisConfig = networkStatus.genesisConfig;
 	}
 	return genesisConfig;
 };
 
 const updateGenesisHeight = async () => {
-	const app = await getAppContext();
 	// Get genesis height
-	const data = await app.requestRpc('connector.getNodeInfo', {}); // TODO: Replace when network constants implemented in connector
+	const data = await requestRpc('getNodeInfo'); // TODO: Replace when network constants implemented in connector
 	await setGenesisHeight(data.genesisHeight);
 };
 

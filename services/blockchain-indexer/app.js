@@ -21,6 +21,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
+const { updateGenesisHeight } = require('./src/indexer/constants');
 const { setAppContext } = require('./src/utils/appContext');
 
 const loggerConf = {
@@ -51,6 +52,7 @@ const app = Microservice({
 
 		const blockchainStore = require('./src/indexer/indexStatus');
 		await blockchainStore.initializeSearchIndex();
+		await updateGenesisHeight();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);

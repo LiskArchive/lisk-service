@@ -21,7 +21,7 @@ const { parseToJSONCompatObj } = require('../utils/jsonTools');
 const { getCurrentHeight } = require('./constants');
 
 const blockchainStore = require('./blockchainStore');
-const { getAppContext } = require('../utils/appContext');
+const { requestRpc } = require('../utils/appContext');
 
 // Genesis height can be greater that 0
 // Blockchain starts form a non-zero block height
@@ -79,8 +79,7 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 };
 
 const getBlockByHeight = async (height, includeGenesisAccounts = false) => {
-	const app = await getAppContext();
-	const response = await app.requestRpc('connector.getBlockByHeight', { height });
+	const response = await requestRpc('getBlockByHeight', { height });
 	return normalizeBlocks([response], includeGenesisAccounts);
 };
 
