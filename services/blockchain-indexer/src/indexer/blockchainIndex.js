@@ -376,7 +376,9 @@ const buildIndex = async (from, to) => {
 		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
 		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
 
-		await indexBlocksQueue.add({ from: batchFromHeight, to: batchToHeight });
+		for (let height = batchFromHeight; height <= batchToHeight; height++) {
+			await indexBlocksQueue.add({ height });
+		}
 		/* eslint-enable no-await-in-loop */
 	}
 	logger.info(`Finished scheduling the block index build (${from}-${to})`);

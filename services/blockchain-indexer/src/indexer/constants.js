@@ -27,13 +27,14 @@ let genesisConfig;
 const updateFinalizedHeight = async () => {
 	const app = await getAppContext();
 	// Get genesis height
-	const { data: { finalizedHeight } } = await app.requestRpc('connector.getNodeInfo', {}); // TODO: Replace with network constants once implemented
+	const { data: { finalizedHeight } } = await app
+		.requestRpc('connector.getNodeInfo', {}); // TODO: Replace when network constants implemented in connector
 	await setFinalizedHeight(finalizedHeight);
 };
 
 const getCurrentHeight = async () => {
 	const app = await getAppContext();
-	const currentHeight = (await app.requestRpc('connector.getNodeInfo', {})).data.height;
+	const currentHeight = (await app.requestRpc('connector.getNodeInfo', {})).height;
 	return currentHeight;
 };
 
@@ -41,7 +42,7 @@ const getGenesisConfig = async () => {
 	const app = await getAppContext();
 	if (!genesisConfig) {
 		const networkStatus = await app.requestRpc('connector.getNodeInfo', {});
-		genesisConfig = networkStatus.data.genesisConfig;
+		genesisConfig = networkStatus.genesisConfig; // TODO: Replace when network constants implemented in connector
 	}
 	return genesisConfig;
 };
@@ -49,8 +50,8 @@ const getGenesisConfig = async () => {
 const updateGenesisHeight = async () => {
 	const app = await getAppContext();
 	// Get genesis height
-	const { data: { genesisHeight } } = await app.requestRpc('connector.getNodeInfo', {}); // TODO: Replace with network constants once implemented
-	await setGenesisHeight(genesisHeight);
+	const data = await app.requestRpc('connector.getNodeInfo', {}); // TODO: Replace when network constants implemented in connector
+	await setGenesisHeight(data.genesisHeight);
 };
 
 module.exports = {

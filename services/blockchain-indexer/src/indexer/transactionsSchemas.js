@@ -19,7 +19,7 @@ let allTransactionSchemasCache;
 
 const getTransactionsSchemasFromCore = async () => {
 	const app = await getAppContext();
-	const schemas = await app.requestRpc('connector.getTransactionsSchemas', {});
+	const schemas = await app.requestRpc('connector.getSchema', {});
 	return schemas;
 };
 
