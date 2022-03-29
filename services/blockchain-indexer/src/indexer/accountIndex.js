@@ -30,15 +30,15 @@ const {
 const {
 	getAccountsByAddress,
 	getAccountsByPublicKey2,
-} = require('./accounts');
+} = require('../accounts');
 
 const {
 	getBlockByHeight,
-} = require('./blocks');
+} = require('../blocks');
 
 const {
 	getGenesisHeight,
-} = require('./constants');
+} = require('../constants');
 
 const { requestRpc } = require('../utils/appContext');
 

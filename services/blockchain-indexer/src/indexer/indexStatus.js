@@ -23,7 +23,7 @@ const logger = Logger();
 
 const {
 	getCurrentHeight,
-} = require('./constants');
+} = require('../constants');
 
 const {
 	getTableInstance,

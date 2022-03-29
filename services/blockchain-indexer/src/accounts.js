@@ -20,17 +20,17 @@ const {
 	getHexAddressFromPublicKey,
 	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
-} = require('../utils/accountUtils');
+} = require('./utils/accountUtils');
 
 const {
 	dropDuplicates,
-} = require('../utils/arrayUtils');
+} = require('./utils/arrayUtils');
 
 const {
 	parseToJSONCompatObj,
-} = require('../utils/jsonTools');
+} = require('./utils/jsonTools');
 
-const { requestRpc } = require('../utils/appContext');
+const { requestRpc } = require('./utils/appContext');
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));

@@ -22,13 +22,13 @@ const logger = Logger();
 
 const {
 	getBlockByHeight,
-} = require('./blocks');
+} = require('../blocks');
 
 const {
 	getAccountsByAddress,
-} = require('./accounts');
+} = require('../accounts');
 
-const { getGenesisHeight } = require('./constants');
+const { getGenesisHeight } = require('../constants');
 
 const {
 	getTableInstance,

@@ -79,18 +79,6 @@ const getVoteIndexingInfo = async (blocks) => {
 	return { votes, votesToAggregateArray };
 };
 
-const getVotesByTransactionIDs = async transactionIDs => {
-	const votesDB = await getVotesIndex();
-	const votes = await votesDB.find({
-		whereIn: {
-			property: 'id',
-			values: transactionIDs,
-		},
-	}, ['tempId']);
-	return votes;
-};
-
 module.exports = {
 	getVoteIndexingInfo,
-	getVotesByTransactionIDs,
 };

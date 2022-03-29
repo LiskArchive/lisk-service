@@ -21,13 +21,7 @@ const {
 	getAccountsByAddress,
 	getAccountsByPublicKey,
 	resolveMultisignatureMemberships,
-} = require('./accounts');
-
-const { getTableInstance } = require('../database/mysql');
-
-const transactionsIndexSchema = require('./schema/transactions');
-
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
+} = require('../accounts');
 
 // const { requestRpc } = require('./appContext');
 
@@ -78,19 +72,6 @@ const getTransactionIndexingInfo = async (blocks) => {
 	};
 };
 
-const getTransactionsByBlockIDs = async blockIDs => {
-	const transactionsDB = await getTransactionsIndex();
-	const transactions = await transactionsDB.find({
-		whereIn: {
-			property: 'blockId',
-			values: blockIDs,
-		},
-	}, ['id']);
-	const transactionsIds = transactions.map(t => t.id);
-	return transactionsIds;
-};
-
 module.exports = {
 	getTransactionIndexingInfo,
-	getTransactionsByBlockIDs,
 };

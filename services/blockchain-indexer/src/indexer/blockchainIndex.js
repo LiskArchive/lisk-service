@@ -26,25 +26,31 @@ const config = require('../../config');
 
 const {
 	getBlockByHeight,
-} = require('./blocks');
+} = require('../blocks');
 
 const {
 	getAccountsByPublicKey,
-} = require('./accounts');
+} = require('../accounts');
 
 const {
 	getBase32AddressFromPublicKey,
 } = require('../utils/accountUtils');
 
 const {
-	getVoteIndexingInfo,
 	getVotesByTransactionIDs,
-} = require('./voters');
+} = require('../voters');
+
+const {
+	getVoteIndexingInfo,
+} = require('./votersIndex');
+
+const {
+	getTransactionsByBlockIDs,
+} = require('../transactions');
 
 const {
 	getTransactionIndexingInfo,
-	getTransactionsByBlockIDs,
-} = require('./transactions');
+} = require('./transactionIndex');
 
 const {
 	indexAccountByPublicKey,
@@ -56,7 +62,7 @@ const {
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisHeight,
-} = require('./constants');
+} = require('../constants');
 
 const {
 	getDbConnection,

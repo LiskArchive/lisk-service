@@ -15,7 +15,7 @@
  */
 const { computeMinFee } = require('@liskhq/lisk-transactions');
 
-const { getGenesisConfig } = require('../indexer/constants');
+const { getGenesisConfig } = require('../constants');
 const { getTransactionsSchemas } = require('../indexer/transactionsSchemas');
 
 const getTxnAssetSchema = async (trx) => {
