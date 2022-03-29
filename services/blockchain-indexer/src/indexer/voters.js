@@ -16,16 +16,12 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-// const { getIndexedAccountInfo } = require('./accounts');
 const { getBase32AddressFromHex } = require('../utils/accountUtils');
 
 const { getTableInstance } = require('../database/mysql');
 const votesIndexSchema = require('./schema/votes');
-// const votesAggregateIndexSchema = require('./schema/votesAggregate');
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
-// const getVotesAggregateIndex = () => getTableInstance(
-// 	'votes_aggregate', votesAggregateIndexSchema);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;

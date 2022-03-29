@@ -18,6 +18,7 @@ const Redis = require('ioredis');
 
 const {
 	Queue,
+	Signals,
 	CacheRedis,
 	Logger,
 } = require('lisk-service-framework');
@@ -139,6 +140,17 @@ const cacheLegacyAccountInfo = async () => {
 	);
 	logger.info('Finished caching legacy account reclaim balance information');
 };
+
+const keepAccountsCacheUpdated = async () => {
+	const accountsDB = await getAccountIndex();
+	const updateAccountsCacheListener = async (address) => {
+		const accounts = await getAccountsByAddress(address);
+		await accountsDB.upsert(accounts);
+	};
+	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
+};
+
+Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
 
 module.exports = {
 	indexAccountByPublicKey,
