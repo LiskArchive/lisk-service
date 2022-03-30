@@ -23,12 +23,7 @@ const {
 	resolveMultisignatureMemberships,
 } = require('../accounts');
 
-// const { requestRpc } = require('./appContext');
-
-// const availableLiskModuleAssets = async () => {
-// 	const registeredModules = await requestRpc('getRegisteredModules', {});
-// 	return registeredModules;
-// };
+const { availableLiskModuleAssets } = require('../constants');
 
 const getTransactionIndexingInfo = async (blocks) => {
 	const multisignatureModuleAssetId = '4:0';
@@ -37,10 +32,8 @@ const getTransactionIndexingInfo = async (blocks) => {
 	const recipientAddressesToIndex = [];
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
-			const [{ id }] = 'N/A';
-			// TODO: Update when getRegisteredModules is updated in connector
-			// const [{ id }] = availableLiskModuleAssets
-			// .filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			const [{ id }] = availableLiskModuleAssets
+				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 			tx.height = block.height;
 			tx.blockId = block.id;
 			tx.moduleAssetId = id;
