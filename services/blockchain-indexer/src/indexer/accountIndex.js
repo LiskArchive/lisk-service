@@ -110,8 +110,8 @@ const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
 const indexAllDelegateAccounts = async () => {
 	const accountsDB = await getAccountIndex();
-	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates' });
-	const allDelegateAddresses = allDelegatesInfo.data.map(({ address }) => address);
+	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
+	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
 	const PAGE_SIZE = 1000;
 	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
 		/* eslint-disable no-await-in-loop */

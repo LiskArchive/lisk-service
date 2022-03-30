@@ -488,8 +488,8 @@ const updateNonFinalBlocks = async () => {
 	}
 };
 
-const getMissingBlocksListByRange = async (from, to) => {
-	const missingBlockRanges = await findMissingBlocksInRange(from, to);
+const getMissingBlocksListByRange = async (params) => {
+	const missingBlockRanges = await findMissingBlocksInRange(params.from, params.to);
 
 	const convertRangesToArr = missingBlockRanges
 		.map(range => Array(range.to - range.from + 1)
