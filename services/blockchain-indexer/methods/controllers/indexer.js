@@ -31,6 +31,8 @@ const indexNewBlocks = async ({ block }) => blocks.indexNewBlocks(block);
 
 const indexMissingBlocks = async () => blocks.indexMissingBlocks();
 
+const getMissingBlocksListByRange = async (params) => blocks.getMissingBlocksListByRange(params);
+
 const reportIndexStatus = async () => status.reportIndexStatus();
 
 const getIndexStats = async () => status.getIndexStats();
@@ -43,6 +45,7 @@ module.exports = {
 
 	indexNewBlocks,
 	indexMissingBlocks,
+	getMissingBlocksListByRange,
 
 	reportIndexStatus,
 	getIndexStats,

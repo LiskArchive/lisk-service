@@ -20,6 +20,7 @@ const {
 	indexGenesisAccounts,
 	indexNewBlocks,
 	indexMissingBlocks,
+	getMissingBlocksListByRange,
 	reportIndexStatus,
 	getIndexStats,
 } = require('./controllers/indexer');
@@ -35,6 +36,14 @@ module.exports = [
 		controller: indexNewBlocks,
 		params: {
 			block: { optional: false, type: 'any' },
+		},
+	},
+	{
+		name: 'getMissingBlocksList',
+		controller: getMissingBlocksListByRange,
+		params: {
+			from: { optional: false, type: 'any' },
+			to: { optional: false, type: 'any' },
 		},
 	},
 	{

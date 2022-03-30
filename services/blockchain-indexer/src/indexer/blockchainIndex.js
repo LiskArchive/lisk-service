@@ -488,9 +488,25 @@ const updateNonFinalBlocks = async () => {
 	}
 };
 
+const getMissingBlocksListByRange = async (from, to) => {
+	const missingBlockRanges = await findMissingBlocksInRange(from, to);
+
+	const convertRangesToArr = missingBlockRanges
+		.map(range => Array(range.to - range.from + 1)
+			.fill()
+			.map((_, acc) => range.from + acc));
+
+	const listOfMissingBlocks = convertRangesToArr
+		.reduce((acc, curr) => acc
+			.push(...curr) && acc, []);
+
+	return listOfMissingBlocks;
+};
+
 module.exports = {
 	indexBlock,
 	indexNewBlocks,
 	indexMissingBlocks,
 	updateNonFinalBlocks,
+	getMissingBlocksListByRange,
 };
