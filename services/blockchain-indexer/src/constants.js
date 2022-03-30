@@ -25,26 +25,22 @@ const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 let genesisConfig;
 
 const updateFinalizedHeight = async () => {
-	const finalizedHeight = await requestRpc('getNodeInfo').finalizedHeight; // TODO: Replace when network constants implemented in connector
+	const { finalizedHeight } = await requestRpc('getNodeInfo');
 	await setFinalizedHeight(finalizedHeight);
 };
 
 const updateGenesisHeight = async () => {
-	// Get genesis height
-	const genesisHeight = await requestRpc('getNodeInfo').genesisHeight; // TODO: Replace when network constants implemented in connector
+	const { genesisHeight } = await requestRpc('getNodeInfo');
 	await setGenesisHeight(genesisHeight);
 };
 
 const getCurrentHeight = async () => {
-	const currentHeight = (await requestRpc('getNodeInfo')).height; // TODO: Replace when network constants implemented in connector
+	const currentHeight = (await requestRpc('getNodeInfo')).height;
 	return currentHeight;
 };
 
 const getGenesisConfig = async () => {
-	if (!genesisConfig) {
-		const networkStatus = await requestRpc('getNodeInfo'); // TODO: Replace when network constants implemented in connector
-		genesisConfig = networkStatus.genesisConfig;
-	}
+	if (!genesisConfig) genesisConfig = (await requestRpc('getNodeInfo')).genesisConfig;
 	return genesisConfig;
 };
 
