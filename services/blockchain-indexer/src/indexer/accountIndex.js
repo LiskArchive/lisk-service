@@ -86,9 +86,9 @@ const updateAccountWithData = async (job) => {
 	await accountsDB.upsert(accounts);
 };
 
-const accountPkUpdateQueue = Queue('accountQueueByPublicKey', updateAccountInfoPk, 1);
-const accountAddrUpdateQueue = Queue('accountQueueByAddress', updateAccountInfoAddr, 1);
-const accountDirectUpdateQueue = Queue('accountQueueDirect', updateAccountWithData, 1);
+const accountPkUpdateQueue = Queue(config.endpoints.redis, 'accountQueueByPublicKey', updateAccountInfoPk, 1);
+const accountAddrUpdateQueue = Queue(config.endpoints.redis, 'accountQueueByAddress', updateAccountInfoAddr, 1);
+const accountDirectUpdateQueue = Queue(config.endpoints.redis, 'accountQueueDirect', updateAccountWithData, 1);
 
 const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
 
