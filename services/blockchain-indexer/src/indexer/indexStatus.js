@@ -16,8 +16,9 @@
 const BluebirdPromise = require('bluebird');
 const {
 	Logger,
-	Signals,
 } = require('lisk-service-framework');
+
+const Signals = require('../utils/signals');
 
 const logger = Logger();
 

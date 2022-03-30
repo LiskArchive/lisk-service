@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -41,10 +42,11 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
+setAppContext(app);
+
 (async () => {
-	await setAppContext(app);
 	// Add routes, events & jobs
-	// await app.addMethods(path.join(__dirname, 'methods'));
+	await app.addMethods(path.join(__dirname, 'methods'));
 
 	// Run the application
 	app.run().then(async () => {

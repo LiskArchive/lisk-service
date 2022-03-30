@@ -16,9 +16,9 @@
 
 let app;
 
-const setAppContext = async (h) => app = h;
+const setAppContext = (h) => app = h;
 
-const getAppContext = async () => app;
+const getAppContext = () => app;
 
 const requestRpc = async (method, params = {}) => {
 	const data = await app.requestRpc(`connector.${method}`, params);

@@ -471,7 +471,7 @@ const getNonFinalHeights = async () => {
 
 	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
 		sort: 'height:asc',
-		limit: 5000,
+		limit: 5000, // TODO: Check later for improvements
 		isFinal: false,
 	}, ['height']);
 
