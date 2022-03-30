@@ -20,7 +20,7 @@ const { parseToJSONCompatObj } = require('./utils/jsonTools');
 
 const { getCurrentHeight } = require('./constants');
 
-const blockchainStore = require('./indexer/blockchainStore');
+const blockchainStore = require('./database/blockchainStore');
 const { requestRpc } = require('./utils/appContext');
 
 // Genesis height can be greater that 0

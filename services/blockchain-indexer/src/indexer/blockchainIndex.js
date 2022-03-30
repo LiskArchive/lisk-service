@@ -86,7 +86,7 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
 
-const blockchainStore = require('./blockchainStore');
+const blockchainStore = require('../database/blockchainStore');
 
 // Key-based account update
 // There is a bug that does not update public keys

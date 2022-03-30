@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blockchainStore = require('./indexer/blockchainStore');
+const blockchainStore = require('./database/blockchainStore');
 const { requestRpc } = require('./utils/appContext');
 
 const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);

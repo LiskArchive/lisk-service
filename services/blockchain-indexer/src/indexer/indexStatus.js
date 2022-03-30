@@ -34,7 +34,7 @@ const blocksIndexSchema = require('./schema/blocks');
 
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
 
-const blockchainStore = require('./blockchainStore');
+const blockchainStore = require('../database/blockchainStore');
 
 // Genesis height can be greater that 0
 // Blockchain starts form a non-zero block height
