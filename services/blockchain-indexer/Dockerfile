@@ -16,10 +16,10 @@ FROM node:16-alpine
 RUN apk add --no-cache curl mysql-client
 RUN adduser -D lisk
 
-COPY ./ /home/lisk/lisk-service/blockchain-connector/
+COPY ./ /home/lisk/lisk-service/blockchain-indexer/
 RUN chown -R lisk:lisk /home/lisk/
-COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/blockchain-connector/node_modules/
+COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/blockchain-indexer/node_modules/
 
 USER lisk
-WORKDIR /home/lisk/lisk-service/blockchain-connector
+WORKDIR /home/lisk/lisk-service/blockchain-indexer
 CMD ["node", "app.js"]
