@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peerInfo = require('../../src/peers');
+const peerInfo = require('../../src/sdk_v5/peers');
 
 const getPeers = async params => {
 	const response = await peerInfo.getPeers(params);

@@ -14,12 +14,15 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-
-const Signals = require('./utils/signals');
-
-const { peerStates, getPeers } = require('./sdk_v5/peers');
+const actions = require('./actions');
+const Signals = require('../utils/signals');
 
 const logger = Logger();
+
+const peerStates = {
+	CONNECTED: 'connected',
+	DISCONNECTED: 'disconnected',
+};
 
 const peerStore = {
 	peers: [],
@@ -36,6 +39,31 @@ const peerStore = {
 const get = (type = 'peers') => new Promise((resolve) => {
 	resolve(peerStore[type]);
 });
+
+const refactorPeer = (orgPeer, state) => {
+	const { ipAddress, options: { height } = {}, ...peer } = orgPeer;
+	peer.state = state;
+	peer.height = height;
+	peer.ip = ipAddress;
+	return peer;
+};
+
+const getPeers = async () => {
+	const connectedPeers = await actions.getConnectedPeers();
+	connectedPeers.data = connectedPeers
+		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
+
+	const disconnectedPeers = await actions.getDisconnectedPeers();
+	disconnectedPeers.data = disconnectedPeers
+		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
+
+	const data = [
+		...connectedPeers.data,
+		...disconnectedPeers.data,
+	];
+	const meta = { count: data.length };
+	return { data, meta };
+};
 
 const refreshStatistics = async () => {
 	const basicStats = {};
