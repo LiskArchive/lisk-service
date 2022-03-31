@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const MessageQueue = require('bull');
+
 const {
 	Logger,
 	Queue,
@@ -56,6 +58,7 @@ const {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
 	indexAccountWithData,
+	indexGenesisAccounts,
 } = require('./accountIndex');
 
 const {
@@ -95,6 +98,8 @@ const KEY_BASED_ACCOUNT_UPDATE = false;
 // Height below which there are no missing blocks in the index
 const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
 const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
+
+const messageQueue = new MessageQueue('Coordinator', 'redis://localhost:6379/6');
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -503,10 +508,29 @@ const getMissingBlocksListByRange = async (params) => {
 	return listOfMissingBlocks;
 };
 
+const isGenesisBlockIndexed = async () => {
+	const blocksDB = await getBlocksIndex();
+	const genesisHeight = await getGenesisHeight();
+	const [block] = await blocksDB.find({ height: genesisHeight, limit: 1 }, ['height']);
+	return !!block;
+};
+
+messageQueue.process(async (job) => {
+	const genesisHeight = await getGenesisHeight();
+
+	const { height } = job.data;
+	await indexBlocksQueue.add({ height });
+
+	if (height === genesisHeight) {
+		await indexGenesisAccounts();
+	}
+});
+
 module.exports = {
 	indexBlock,
 	indexNewBlocks,
 	indexMissingBlocks,
 	updateNonFinalBlocks,
 	getMissingBlocksListByRange,
+	isGenesisBlockIndexed,
 };
