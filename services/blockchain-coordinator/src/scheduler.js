@@ -23,7 +23,9 @@ const messageQueue = new Queue('Coordinator', config.endpoints.redis);
 let enabledModules;
 
 const getEnabledModules = async () => {
-	if (!enabledModules) enabledModules = await requestRpc('connector', 'getRegisteredModules');
+	if (!enabledModules) {
+		enabledModules = await requestRpc('connector', 'getRegisteredModules');
+	}
 	return enabledModules;
 };
 
@@ -37,29 +39,39 @@ const scheduleGenesisBlockIndexing = async () => {
 	messageQueue.add({ height: genesisHeight });
 };
 
-const scheduleBlocksIndexing = async (blocksToIndex) => {
-	blocksToIndex.forEach((height) => {
-		messageQueue.add({ height });
-	});
+const scheduleBlocksIndexing = async (blocksHeightToIndex) => {
+	blocksHeightToIndex
+		.forEach((height) => messageQueue
+			.add({ height }));
 };
 
 const init = async () => {
 	// Retrieve enabled modules from connector
 	await getEnabledModules();
 
-	// Check genesis block is already indexed and schedule indexing it if not indexed
+	// Check if genesis block is already indexed and schedule indexing if it is not indexed
 	const isGenesisBlockIndexed = await isGenesisBlockIndex();
-	if (!isGenesisBlockIndexed) await scheduleGenesisBlockIndexing();
+	if (!isGenesisBlockIndexed) {
+		await scheduleGenesisBlockIndexing();
+	}
+
+	// Retrieve current height
+	const {
+		currentChainHeight: currentHeight,
+		genesisHeight,
+	} = await requestRpc('indexer', 'getIndexStats');
 
 	// Check for missing blocks and schedule indexing
-	const { currentChainHeight: currentHeight, genesisHeight } = await requestRpc('indexer', 'getIndexStats');
-	const missingBlocksList = await requestRpc('indexer', 'getMissingBlocksList',
+	const listOfMssingBlocksHeight = await requestRpc('indexer', 'getMissingBlocksList',
 		{
 			from: genesisHeight,
 			to: currentHeight,
 		});
+
 	// Schedule block indexing
-	if (missingBlocksList.length) scheduleBlocksIndexing(missingBlocksList);
+	if (listOfMssingBlocksHeight.length) {
+		await scheduleBlocksIndexing(listOfMssingBlocksHeight);
+	}
 };
 
 module.exports = {

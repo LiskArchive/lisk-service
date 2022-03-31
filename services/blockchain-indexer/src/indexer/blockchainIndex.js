@@ -521,6 +521,7 @@ messageQueue.process(async (job) => {
 	const { height } = job.data;
 	await indexBlocksQueue.add({ height });
 
+	// Index genesis accounts if height of block is genesis height
 	if (height === genesisHeight) {
 		await indexGenesisAccounts();
 	}
