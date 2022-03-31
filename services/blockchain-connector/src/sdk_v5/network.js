@@ -69,24 +69,24 @@ const getNetworkStatus = async () => {
 	const status = await getNodeInfo();
 
 	// Ensure 'milestones' are in correct order
-	status.data.genesisConfig.rewards.milestones.sort((a, b) => Number(BigInt(b) - BigInt(a)));
-	status.data.milestone = calculateMilestone(
-		status.data.height,
-		status.data.genesisConfig.rewards,
+	status.genesisConfig.rewards.milestones.sort((a, b) => Number(BigInt(b) - BigInt(a)));
+	status.milestone = calculateMilestone(
+		status.height,
+		status.genesisConfig.rewards,
 	);
-	status.data.currentReward = calculateDefaultReward(
-		status.data.height,
-		status.data.genesisConfig.rewards,
+	status.currentReward = calculateDefaultReward(
+		status.height,
+		status.genesisConfig.rewards,
 	);
-	status.data.moduleAssets = resolvemoduleAssets(status.data.registeredModules);
-	status.data.registeredModules = status.data.registeredModules.map(item => item.name);
+	status.moduleAssets = resolvemoduleAssets(status.registeredModules);
+	status.registeredModules = status.registeredModules.map(item => item.name);
 
-	status.data.lastUpdate = Math.floor(Date.now() / 1000);
+	status.lastUpdate = Math.floor(Date.now() / 1000);
 
 	// Required to fetch knownAccounts
-	status.data.constants = { nethash: status.data.networkIdentifier };
+	status.constants = { nethash: status.networkIdentifier };
 
-	return parseToJSONCompatObj(status);
+	return { data: parseToJSONCompatObj(status) };
 };
 
 module.exports = {

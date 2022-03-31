@@ -45,6 +45,7 @@ nodeStatus.waitForNode().then(async () => {
 	logger.info(`Found a node, starting service ${packageJson.name.toUpperCase()}...`);
 
 	await app.addMethods(path.join(__dirname, 'methods'));
+	await app.addJobs(path.join(__dirname, 'jobs'));
 
 	// Dynamically register all the available SDK actions/events
 	const sdkRegisteredActionsMethods = await require('./methods_sdk/allActions');

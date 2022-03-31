@@ -13,19 +13,47 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const actions = require('../../src/sdk_v5/actions');
+const peerInfo = require('../../src/peers');
 
-const getPeers = async () => [
-	...(await actions.getConnectedPeers()),
-	...(await actions.getDisconnectedPeers()),
-];
+const getPeers = async params => {
+	const response = await peerInfo.getPeers(params);
 
-const getConnectedPeers = async () => actions.getConnectedPeers();
+	return {
+		data: response.data,
+		meta: response.meta,
+	};
+};
 
-const getDisconnectedPeers = async () => actions.getDisconnectedPeers();
+const getConnectedPeers = async params => {
+	const response = await peerInfo.getConnectedPeers(params);
+
+	return {
+		data: response.data,
+		meta: response.meta,
+	};
+};
+
+const getDisconnectedPeers = async params => {
+	const response = await peerInfo.getDisconnectedPeers(params);
+
+	return {
+		data: response.data,
+		meta: response.meta,
+	};
+};
+
+const getPeersStatistics = async () => {
+	const response = await peerInfo.getPeersStatistics();
+
+	return {
+		data: response.data,
+		meta: response.meta,
+	};
+};
 
 module.exports = {
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
+	getPeersStatistics,
 };
