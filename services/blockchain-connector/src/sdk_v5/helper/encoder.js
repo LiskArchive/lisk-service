@@ -22,7 +22,7 @@ const {
 	getBlockHeaderAssetSchema,
 	getTransactionSchema,
 	getTransactionAssetSchema,
-} = require('./decoder');
+} = require('./schema');
 
 const encodeAccount = async (account) => {
 	const accountSchema = await getAccountSchema();
