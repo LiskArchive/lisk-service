@@ -99,7 +99,7 @@ const KEY_BASED_ACCOUNT_UPDATE = false;
 const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
 const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 
-const messageQueue = new MessageQueue('Coordinator', 'redis://localhost:6379/6');
+const messageQueue = new MessageQueue('Coordinator', config.endpoints.redisCoordinator);
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);

@@ -16,50 +16,52 @@
 const Queue = require('bull');
 const { requestRpc } = require('./utils/appContext');
 
-const messageQueue = new Queue('Coordinator', 'redis://localhost:6379/6');
+const config = require('../config');
+
+const messageQueue = new Queue('Coordinator', config.endpoints.redis);
 
 let enabledModules;
 
 const getEnabledModules = async () => {
-    if (!enabledModules) enabledModules = await requestRpc('connector', 'getRegisteredModules');
-    return enabledModules;
+	if (!enabledModules) enabledModules = await requestRpc('connector', 'getRegisteredModules');
+	return enabledModules;
 };
 
 const isGenesisBlockIndex = async () => {
-    const isIndexed = await requestRpc('indexer', 'isGenesisBlockIndexed');
-    return isIndexed;
+	const isIndexed = await requestRpc('indexer', 'isGenesisBlockIndexed');
+	return isIndexed;
 };
 
 const scheduleGenesisBlockIndexing = async () => {
-    const { genesisHeight } = await requestRpc('indexer', 'getIndexStats');
-    messageQueue.add({ height: genesisHeight });
+	const { genesisHeight } = await requestRpc('indexer', 'getIndexStats');
+	messageQueue.add({ height: genesisHeight });
 };
 
 const scheduleBlocksIndexing = async (blocksToIndex) => {
-    blocksToIndex.forEach((height) => {
-        messageQueue.add({ height });
-    });
+	blocksToIndex.forEach((height) => {
+		messageQueue.add({ height });
+	});
 };
 
 const init = async () => {
-    // Retrieve enabled modules from connector
-    await getEnabledModules();
+	// Retrieve enabled modules from connector
+	await getEnabledModules();
 
-    // Check genesis block is already indexed and schedule indexing it if not indexed
-    const isGenesisBlockIndexed = await isGenesisBlockIndex();
-    if (!isGenesisBlockIndexed) await scheduleGenesisBlockIndexing();
+	// Check genesis block is already indexed and schedule indexing it if not indexed
+	const isGenesisBlockIndexed = await isGenesisBlockIndex();
+	if (!isGenesisBlockIndexed) await scheduleGenesisBlockIndexing();
 
-    // Check for missing blocks and schedule indexing
-    const { currentChainHeight: currentHeight, genesisHeight } = await requestRpc('indexer', 'getIndexStats');
-    const missingBlocksList = await requestRpc('indexer', 'getMissingBlocksList',
-        {
-            from: genesisHeight,
-            to: currentHeight,
-        });
-    // Schedule block indexing
-    if (missingBlocksList.length) scheduleBlocksIndexing(missingBlocksList);
+	// Check for missing blocks and schedule indexing
+	const { currentChainHeight: currentHeight, genesisHeight } = await requestRpc('indexer', 'getIndexStats');
+	const missingBlocksList = await requestRpc('indexer', 'getMissingBlocksList',
+		{
+			from: genesisHeight,
+			to: currentHeight,
+		});
+	// Schedule block indexing
+	if (missingBlocksList.length) scheduleBlocksIndexing(missingBlocksList);
 };
 
 module.exports = {
-    init,
+	init,
 };

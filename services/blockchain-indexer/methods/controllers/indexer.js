@@ -19,8 +19,6 @@ const blocks = require('../../src/indexer/blockchainIndex');
 
 const status = require('../../src/indexer/indexStatus');
 
-const constants = require('../../src/constants');
-
 const triggerAccountUpdates = async () => accounts.triggerAccountUpdates();
 
 const indexAllDelegateAccounts = async () => accounts.indexAllDelegateAccounts();
@@ -51,6 +49,4 @@ module.exports = {
 	isGenesisBlockIndexed,
 
 	getIndexStats,
-
-	getGenesisHeight,
 };
