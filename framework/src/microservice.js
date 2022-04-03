@@ -176,9 +176,10 @@ const Microservice = (config = {}) => {
 			job: addJob,
 		};
 
-		Object.keys(items)
-			.forEach(async itemGroup => (await items[itemGroup])
-				.forEach(item => fnMap[type].call(this, item)));
+		await Promise.all(Object.keys(items)
+			.map(async itemGroup => (await items[itemGroup])
+				.forEach(item => fnMap[type].call(this, item)))
+		);
 	};
 
 	const addMethods = async folderPath => {
