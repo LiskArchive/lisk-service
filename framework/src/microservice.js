@@ -178,7 +178,8 @@ const Microservice = (config = {}) => {
 
 		await Promise.all(Object.keys(items)
 			.map(async itemGroup => (await items[itemGroup])
-				.forEach(item => fnMap[type].call(this, item)))
+				.forEach(item => fnMap[type].call(this, item)),
+			),
 		);
 	};
 
