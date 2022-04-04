@@ -99,6 +99,11 @@ const initializeSearchIndex = async () => {
 	Signals.get('searchIndexInitialized').dispatch();
 };
 
+const init = async () => {
+	await initializeSearchIndex();
+	setInterval(reportIndexStatus, 15 * 1000); // ms
+};
+
 module.exports = {
-	initializeSearchIndex,
+	init,
 };
