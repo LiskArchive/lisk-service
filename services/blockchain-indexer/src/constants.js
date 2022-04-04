@@ -63,7 +63,7 @@ const resolvemoduleAssets = (data) => {
 	return result;
 };
 
-const availableLiskModuleAssets = async () => {
+const getAvailableLiskModuleAssets = async () => {
 	const registeredModules = await requestRpc('getRegisteredModules', {});
 	return resolvemoduleAssets(registeredModules);
 };
@@ -75,5 +75,5 @@ module.exports = {
 	getGenesisConfig,
 	getGenesisHeight,
 	updateGenesisHeight,
-	availableLiskModuleAssets,
+	getAvailableLiskModuleAssets,
 };

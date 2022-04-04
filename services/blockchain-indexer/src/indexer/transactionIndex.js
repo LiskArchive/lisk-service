@@ -23,13 +23,14 @@ const {
 	resolveMultisignatureMemberships,
 } = require('../accounts');
 
-const { availableLiskModuleAssets } = require('../constants');
+const { getAvailableLiskModuleAssets } = require('../constants');
 
 const getTransactionIndexingInfo = async (blocks) => {
 	const multisignatureModuleAssetId = '4:0';
 	let multisignatureInfoToIndex = [];
 	const publicKeysToIndex = [];
 	const recipientAddressesToIndex = [];
+	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.payload.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
