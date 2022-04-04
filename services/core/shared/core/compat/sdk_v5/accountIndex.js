@@ -37,20 +37,20 @@ const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const updateAccountInfoPk = async (job) => {
 	const publicKey = job.data;
 
-	const account = await getAccountsByPublicKey2([publicKey]);
-	if (account.length) {
+	const accounts = await getAccountsByPublicKey2([publicKey]);
+	if (accounts.length) {
 		const accountsDB = await getAccountIndex();
-		await accountsDB.upsert(account);
+		await accountsDB.upsert(accounts);
 	}
 };
 
 const updateAccountInfoAddr = async (job) => {
 	const address = job.data;
 
-	const account = await getAccountsByAddress([address]);
-	if (account.length) {
+	const accounts = await getAccountsByAddress([address]);
+	if (accounts.length) {
 		const accountsDB = await getAccountIndex();
-		await accountsDB.upsert(account);
+		await accountsDB.upsert(accounts);
 	}
 };
 
