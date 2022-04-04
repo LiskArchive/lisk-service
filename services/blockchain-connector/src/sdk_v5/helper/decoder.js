@@ -15,41 +15,15 @@
  */
 const { codec } = require('@liskhq/lisk-codec');
 const { hash } = require('@liskhq/lisk-cryptography');
-const { getSchema } = require('../actions_1');
 
-const getAccountSchema = async () => {
-	const allSchemas = await getSchema();
-	return allSchemas.account;
-};
-
-const getBlockSchema = async () => {
-	const allSchemas = await getSchema();
-	return allSchemas.block;
-};
-
-const getBlockHeaderSchema = async () => {
-	const allSchemas = await getSchema();
-	return allSchemas.blockHeader;
-};
-
-const getBlockHeaderAssetSchema = async (blockHeaderVersion) => {
-	const allSchemas = await getSchema();
-	const { blockHeadersAssets } = allSchemas;
-	return blockHeadersAssets[blockHeaderVersion];
-};
-
-const getTransactionSchema = async () => {
-	const allSchemas = await getSchema();
-	return allSchemas.transaction;
-};
-
-const getTransactionAssetSchema = async (transaction) => {
-	const allSchemas = await getSchema();
-	const transactionAssetSchemas = allSchemas.transactionsAssets;
-	const { schema } = transactionAssetSchemas
-		.find(s => s.moduleID === transaction.moduleID && s.assetID === transaction.assetID);
-	return schema;
-};
+const {
+	getAccountSchema,
+	getBlockSchema,
+	getBlockHeaderSchema,
+	getBlockHeaderAssetSchema,
+	getTransactionSchema,
+	getTransactionAssetSchema,
+} = require('./schema');
 
 const decodeAccount = async (encodedAccount) => {
 	const accountSchema = await getAccountSchema();
@@ -112,13 +86,6 @@ const decodeBlock = async (encodedBlock) => {
 };
 
 module.exports = {
-	getAccountSchema,
-	getBlockSchema,
-	getBlockHeaderSchema,
-	getBlockHeaderAssetSchema,
-	getTransactionSchema,
-	getTransactionAssetSchema,
-
 	decodeAccount,
 	decodeBlock,
 	decodeTransaction,

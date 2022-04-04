@@ -110,7 +110,12 @@ const Microservice = (config = {}) => {
 		}
 
 		event.controller(data => {
-			broker.emit(event.name, data, 'gateway');
+			const { broadcast, target } = event;
+			if (broadcast === true) {
+				broker.broadcast(event.name, data, target);
+			} else {
+				broker.emit(event.name, data, target);
+			}
 		});
 		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
 		return true;
@@ -171,9 +176,11 @@ const Microservice = (config = {}) => {
 			job: addJob,
 		};
 
-		Object.keys(items)
-			.forEach(async itemGroup => (await items[itemGroup])
-				.forEach(item => fnMap[type].call(this, item)));
+		await Promise.all(Object.keys(items)
+			.map(async itemGroup => (await items[itemGroup])
+				.forEach(item => fnMap[type].call(this, item)),
+			),
+		);
 	};
 
 	const addMethods = async folderPath => {
