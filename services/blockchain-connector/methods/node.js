@@ -20,12 +20,12 @@ const {
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
-} = require('./controllers/node');
+} = require('../shared/sdk/actions');
 
 module.exports = [
 	{
 		name: 'invokeAction',
-		controller: invokeAction,
+		controller: async ({ action, params }) => invokeAction(action, params),
 		params: {
 			action: { optional: false, type: 'any' },
 			params: { optional: false, type: 'any' },

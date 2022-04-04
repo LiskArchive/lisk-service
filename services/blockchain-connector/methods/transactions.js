@@ -18,19 +18,19 @@ const {
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
-} = require('./controllers/transactions');
+} = require('../shared/sdk/actions');
 
 module.exports = [
 	{
 		name: 'getTransactionByID',
-		controller: getTransactionByID,
+		controller: async ({ id }) => getTransactionByID(id),
 		params: {
 			id: { optional: false, type: 'any' },
 		},
 	},
 	{
 		name: 'getTransactionsByIDs',
-		controller: getTransactionsByIDs,
+		controller: async ({ ids }) => getTransactionsByIDs(ids),
 		params: {
 			ids: { optional: false, type: 'any' },
 		},
@@ -42,7 +42,7 @@ module.exports = [
 	},
 	{
 		name: 'postTransaction',
-		controller: postTransaction,
+		controller: async ({ transaction }) => postTransaction(transaction),
 		params: {
 			transaction: { optional: false, type: 'any' },
 		},

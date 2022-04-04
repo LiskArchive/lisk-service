@@ -14,15 +14,14 @@
  *
  */
 const {
-	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
-} = require('./controllers/peers');
+} = require('../shared/sdk/actions');
 
 module.exports = [
 	{
 		name: 'getPeers',
-		controller: getPeers,
+		controller: async () => [...(await getConnectedPeers()), ...(await getDisconnectedPeers())],
 		params: {},
 	},
 	{
