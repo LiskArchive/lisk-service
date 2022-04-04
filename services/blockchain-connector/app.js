@@ -44,6 +44,7 @@ const app = Microservice({
 nodeStatus.waitForNode().then(async () => {
 	logger.info(`Found a node, starting service ${packageJson.name.toUpperCase()}...`);
 
+	// Add routes, events & jobs
 	await app.addMethods(path.join(__dirname, 'methods'));
 	await app.addJobs(path.join(__dirname, 'jobs'));
 
@@ -53,6 +54,7 @@ nodeStatus.waitForNode().then(async () => {
 
 	const sdkRegisteredEventsMethods = await require('./events_sdk/allEvents');
 	sdkRegisteredEventsMethods.map(e => app.addEvent(e));
+	await app.addEvents(path.join(__dirname, 'events'));
 
 	app.run()
 		.then(() => {
