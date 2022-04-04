@@ -46,15 +46,8 @@ nodeStatus.waitForNode().then(async () => {
 
 	// Add routes, events & jobs
 	await app.addMethods(path.join(__dirname, 'methods'));
-	await app.addJobs(path.join(__dirname, 'jobs'));
-
-	// Dynamically register all the available SDK actions/events
-	const sdkRegisteredActionsMethods = await require('./methods_sdk/allActions');
-	sdkRegisteredActionsMethods.map(m => app.addMethod(m));
-
-	const sdkRegisteredEventsMethods = await require('./events_sdk/allEvents');
-	sdkRegisteredEventsMethods.map(e => app.addEvent(e));
 	await app.addEvents(path.join(__dirname, 'events'));
+	await app.addJobs(path.join(__dirname, 'jobs'));
 
 	app.run()
 		.then(() => {

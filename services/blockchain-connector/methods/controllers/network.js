@@ -15,13 +15,7 @@
  */
 const networkInfo = require('../../src/sdk_v5/network');
 
-const getNetworkStatus = async () => {
-	const result = await networkInfo.getNetworkStatus();
-	return {
-		data: result.data,
-		meta: {},
-	};
-};
+const getNetworkStatus = async () => networkInfo.getNetworkStatus();
 
 module.exports = {
 	getNetworkStatus,

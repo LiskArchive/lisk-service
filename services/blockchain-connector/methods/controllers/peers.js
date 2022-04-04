@@ -15,41 +15,13 @@
  */
 const peerInfo = require('../../src/sdk_v5/peers');
 
-const getPeers = async params => {
-	const response = await peerInfo.getPeers(params);
+const getPeers = async params => peerInfo.getPeers(params);
 
-	return {
-		data: response.data,
-		meta: response.meta,
-	};
-};
+const getConnectedPeers = async params => peerInfo.getConnectedPeers(params);
 
-const getConnectedPeers = async params => {
-	const response = await peerInfo.getConnectedPeers(params);
+const getDisconnectedPeers = async params => peerInfo.getDisconnectedPeers(params);
 
-	return {
-		data: response.data,
-		meta: response.meta,
-	};
-};
-
-const getDisconnectedPeers = async params => {
-	const response = await peerInfo.getDisconnectedPeers(params);
-
-	return {
-		data: response.data,
-		meta: response.meta,
-	};
-};
-
-const getPeersStatistics = async () => {
-	const response = await peerInfo.getPeersStatistics();
-
-	return {
-		data: response.data,
-		meta: response.meta,
-	};
-};
+const getPeersStatistics = async () => peerInfo.getPeersStatistics();
 
 module.exports = {
 	getPeers,
