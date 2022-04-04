@@ -40,14 +40,23 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
+const coordinatorConfig = {
+	name: 'coordinator',
+	events: {
+		'app:block:new': (payload) => { },
+	},
+};
+
 setAppContext(app);
+const broker = app.getBroker();
 
 (async () => {
 	// Add routes, events & jobs
 	// await app.addMethods(path.join(__dirname, 'methods'));
 
 	// Run the application
-	app.run().then(async () => {
+	broker.createService(coordinatorConfig);
+	broker.start().then(async () => {
 		const { init } = require('./src/scheduler');
 		logger.info(`Service started ${packageJson.name}`);
 
