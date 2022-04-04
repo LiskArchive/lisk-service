@@ -20,10 +20,10 @@ const path = require('path');
 const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('../actions_1');
-const { exists, mkdir } = require('../../utils/fsUtils');
-const { downloadAndExtractTarball, downloadJSONFile } = require('../../utils/downloadFile');
+const { exists, mkdir } = require('../../../utils/fsUtils');
+const { downloadAndExtractTarball, downloadJSONFile } = require('../../../utils/downloadFile');
 
-const config = require('../../../config');
+const config = require('../../../../config');
 
 const logger = Logger();
 

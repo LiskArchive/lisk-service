@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const actions = require('../../src/sdk_v5/actions');
+const actions = require('../../shared/app/sdk_v5/actions');
 
 const invokeAction = async ({ action, params }) => actions.invokeAction(action, params);
 

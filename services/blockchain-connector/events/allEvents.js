@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRegisteredEvents } = require('../src/sdk_v5/actions');
-const { subscribeToAllRegisteredEvents } = require('../src/sdk_v5/events');
+const { getRegisteredEvents } = require('../shared/app/sdk_v5/actions');
+const { subscribeToAllRegisteredEvents } = require('../shared/app/sdk_v5/events');
 
-const Signals = require('../src/utils/signals');
+const Signals = require('../shared/utils/signals');
 
 const exportAllEvents = async () => {
 	// Re-subscribe to the events when apiClient is re-instantiated
