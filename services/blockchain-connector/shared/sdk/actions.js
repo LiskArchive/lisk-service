@@ -31,10 +31,10 @@ const {
 	getNodeInfo,
 } = require('./actions_1');
 const { getApiClient, invokeAction } = require('./client');
-const { getGenesisBlockFromFS } = require('./helper/blocksUtils');
-const { encodeBlock } = require('./helper/encoder');
-const { decodeAccount, decodeBlock, decodeTransaction } = require('./helper/decoder');
-const { parseToJSONCompatObj } = require('../../utils/jsonTools');
+const { getGenesisBlockFromFS } = require('./blocksUtils');
+const { encodeBlock } = require('./encoder');
+const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
+const { parseToJSONCompatObj } = require('../jsonTools');
 
 const logger = Logger();
 

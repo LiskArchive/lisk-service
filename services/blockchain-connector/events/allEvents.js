@@ -13,14 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRegisteredEvents } = require('../shared/app/sdk_v5/actions');
-const { subscribeToAllRegisteredEvents } = require('../shared/app/sdk_v5/events');
+const { getRegisteredEvents } = require('../shared/sdk/actions');
+const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
 
-const Signals = require('../shared/utils/signals');
+const Signals = require('../shared/signals');
 
 const exportAllEvents = async () => {
 	// Re-subscribe to the events when apiClient is re-instantiated
 	// Currently throws 'RangeError: Maximum call stack size exceeded'
+	// Signals.get('newApiClient').add(subscribeToAllRegisteredEvents);
 	await subscribeToAllRegisteredEvents();
 
 	const registeredEvents = await getRegisteredEvents();

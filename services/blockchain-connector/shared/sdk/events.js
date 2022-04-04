@@ -16,7 +16,7 @@
 const { getRegisteredEvents } = require('./actions');
 const { getApiClient } = require('./client');
 
-const Signals = require('../../utils/signals');
+const Signals = require('../signals');
 
 const subscribeToAllRegisteredEvents = async () => {
 	const apiClient = await getApiClient();

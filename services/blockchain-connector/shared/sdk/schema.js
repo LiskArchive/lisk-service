@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getSchema } = require('../actions_1');
+const { getSchema } = require('./actions_1');
 
 const getAccountSchema = async () => {
 	const allSchemas = await getSchema();
