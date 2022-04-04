@@ -100,7 +100,5 @@ const initializeSearchIndex = async () => {
 };
 
 module.exports = {
-	getIndexStats,
-	reportIndexStatus,
 	initializeSearchIndex,
 };

@@ -17,8 +17,6 @@ const accounts = require('../../src/indexer/accountIndex');
 
 const blocks = require('../../src/indexer/blockchainIndex');
 
-const status = require('../../src/indexer/indexStatus');
-
 const triggerAccountUpdates = async () => accounts.triggerAccountUpdates();
 
 const indexAllDelegateAccounts = async () => accounts.indexAllDelegateAccounts();
@@ -33,10 +31,6 @@ const indexMissingBlocks = async () => blocks.indexMissingBlocks();
 
 const getMissingBlocksListByRange = async (params) => blocks.getMissingBlocksListByRange(params);
 
-const reportIndexStatus = async () => status.reportIndexStatus();
-
-const getIndexStats = async () => status.getIndexStats();
-
 module.exports = {
 	triggerAccountUpdates,
 	indexAllDelegateAccounts,
@@ -46,7 +40,4 @@ module.exports = {
 	indexNewBlocks,
 	indexMissingBlocks,
 	getMissingBlocksListByRange,
-
-	reportIndexStatus,
-	getIndexStats,
 };

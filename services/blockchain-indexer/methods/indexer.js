@@ -21,8 +21,6 @@ const {
 	indexNewBlocks,
 	indexMissingBlocks,
 	getMissingBlocksListByRange,
-	reportIndexStatus,
-	getIndexStats,
 } = require('./controllers/indexer');
 
 module.exports = [
@@ -64,16 +62,6 @@ module.exports = [
 	{
 		name: 'cacheLegacyAccountInfo',
 		controller: cacheLegacyAccountInfo,
-		params: {},
-	},
-	{
-		name: 'getIndexStats',
-		controller: getIndexStats,
-		params: {},
-	},
-	{
-		name: 'reportIndexStatus',
-		controller: reportIndexStatus,
 		params: {},
 	},
 ];

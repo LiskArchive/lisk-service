@@ -39,8 +39,8 @@ describe('Test indexer methods', () => {
 			const accountsDB = await getAccountIndex();
 			expect(broker.call('indexer.indexAllDelegateAccounts', {})).resolves.not.toThrow();
 
-			const delegates = await accountsDB.find();
-			expect(delegates.length).toBeGreaterThanOrEqual(233); // Delegate accounts on test blockchain
+			const delegateCount = await accountsDB.count({ isDelegate: true });
+			expect(delegateCount).toBeGreaterThanOrEqual(233); // Delegate accounts on test blockchain
 		});
 
 		it('Call indexer.indexGenesisAccounts', async () => {
