@@ -59,7 +59,7 @@ const init = async () => {
 	// Check if genesis block is already indexed and schedule indexing if it is not indexed
 	const isGenesisBlockIndexed = await isGenesisBlockIndex();
 	if (!isGenesisBlockIndexed) {
-		await scheduleGenesisBlockIndexing();
+		scheduleGenesisBlockIndexing();
 	}
 
 	// Retrieve current height
@@ -77,7 +77,7 @@ const init = async () => {
 
 	// Schedule block indexing
 	if (listOfMssingBlocksHeight.length) {
-		await scheduleBlocksIndexing(listOfMssingBlocksHeight);
+		scheduleBlocksIndexing(listOfMssingBlocksHeight);
 	}
 };
 

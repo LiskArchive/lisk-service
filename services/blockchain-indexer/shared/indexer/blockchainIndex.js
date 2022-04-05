@@ -97,6 +97,9 @@ const KEY_BASED_ACCOUNT_UPDATE = false;
 
 const messageQueue = new MessageQueue('Coordinator', config.endpoints.redisCoordinator);
 
+let isDelegatesIndexed = false;
+let isLegacyAccountCached = false;
+
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
 
@@ -465,27 +468,37 @@ const isGenesisBlockIndexed = async () => {
 	return !!block;
 };
 
-messageQueue.process(async (job) => {
-	await indexAllDelegateAccounts();
-	await cacheLegacyAccountInfo();
+const initProcess = (async () => {
+	messageQueue.process(async (job) => {
+		if (!isDelegatesIndexed) {
+			await indexAllDelegateAccounts();
+			isDelegatesIndexed = true;
+		}
 
-	const genesisHeight = await getGenesisHeight();
+		if (!isLegacyAccountCached) {
+			await cacheLegacyAccountInfo();
+			isLegacyAccountCached = true;
+		}
 
-	const { height, isNewBlock } = job.data;
+		const genesisHeight = await getGenesisHeight();
 
-	if (isNewBlock) {
-		await indexNewBlock(height);
-	} else {
-		await indexBlocksQueue.add({ height });
-	}
+		const { height, isNewBlock } = job.data;
 
-	// Index genesis accounts if height of block is genesis height
-	if (height === genesisHeight) {
-		await indexGenesisAccounts();
-	}
-});
+		if (isNewBlock) {
+			await indexNewBlock(height);
+		} else {
+			await indexBlocksQueue.add({ height });
+		}
+
+		// Index genesis accounts if height of block is genesis height
+		if (height === genesisHeight) {
+			await indexGenesisAccounts();
+		}
+	});
+})();
 
 module.exports = {
+	initProcess,
 	indexBlock,
 	indexNewBlock,
 	updateNonFinalBlocks,
