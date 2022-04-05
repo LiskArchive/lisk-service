@@ -319,7 +319,7 @@ const deleteIndexedBlocksQueue = Queue(config.endpoints.redis, 'deleteIndexedBlo
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
-	const block = await getBlockByHeight(height);
+	const [block] = await getBlockByHeight(height);
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
