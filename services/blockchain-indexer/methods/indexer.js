@@ -18,7 +18,7 @@ const {
 	indexAllDelegateAccounts,
 	cacheLegacyAccountInfo,
 	indexGenesisAccounts,
-	indexNewBlocks,
+	indexNewBlock,
 	indexMissingBlocks,
 	getMissingBlocksListByRange,
 } = require('./controllers/indexer');
@@ -30,10 +30,10 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'indexNewBlocks',
-		controller: indexNewBlocks,
+		name: 'indexNewBlock',
+		controller: indexNewBlock,
 		params: {
-			block: { optional: false, type: 'any' },
+			height: { optional: false, type: 'any' },
 		},
 	},
 	{
