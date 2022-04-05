@@ -16,6 +16,12 @@
 const MessageQueue = require('bull');
 
 const {
+	Logger,
+} = require('lisk-service-framework');
+
+const logger = Logger();
+
+const {
 	buildLegacyAccountCache,
 	addAccountToAddrUpdateQueue,
 } = require('./indexer/accountIndex');
@@ -34,24 +40,29 @@ const accountIndexQueue = new MessageQueue('Accounts', config.endpoints.redisCoo
 let isLegacyAccountCached = false;
 
 const initProcess = async () => {
-	blockIndexQueue.process(async (job) => {
+	await blockIndexQueue.process(async (job) => {
+		logger.debug('Subscribed to block index message queue');
 		const { height, isNewBlock } = job.data;
 
 		if (isNewBlock) {
 			await indexNewBlock(height);
 		} else {
 			await addBlockToQueue(height);
+			logger.info(`Index block at height: ${height}`);
 		}
 	});
 
-	accountIndexQueue.process(async (job) => {
+	await accountIndexQueue.process(async (job) => {
+		logger.debug('Subsribed to block index message queue');
 		if (!isLegacyAccountCached) {
 			await buildLegacyAccountCache();
 			isLegacyAccountCached = true;
+			logger.info('Legacy accounts caching is done.');
 		}
 
 		const { address } = job.data;
 		await addAccountToAddrUpdateQueue(address);
+		logger.info(`Index account with address: ${address}`);
 	});
 };
 

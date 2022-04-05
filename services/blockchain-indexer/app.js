@@ -52,9 +52,9 @@ setAppContext(app);
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
 
+		await updateGenesisHeight();
 		const processor = require('./shared/processor');
 		await processor.init();
-		await updateGenesisHeight();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);

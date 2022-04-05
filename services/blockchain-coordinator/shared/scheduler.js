@@ -16,6 +16,12 @@
 const Queue = require('bull');
 
 const {
+	Logger,
+} = require('lisk-service-framework');
+
+const logger = Logger();
+
+const {
 	getEnabledModules,
 	isGenesisBlockAlreadyIndexed,
 	isGenesisAccountAlreadyIndexed,
@@ -38,28 +44,41 @@ const getRegisteredModuleAssets = () => registeredLiskModules;
 
 const scheduleGenesisBlockIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
-	blockIndexQueue.add({ height: genesisHeight });
+	await blockIndexQueue.add({ height: genesisHeight });
+	logger.info('Finished scheduling of genesis block indexing');
 };
 
 const scheduleBlocksIndexing = async (blocksHeightToIndex) => {
-	blocksHeightToIndex
-		.forEach((height) => blockIndexQueue
-			.add({ height }));
+	await Promise.all(blocksHeightToIndex
+		.map(async height => blockIndexQueue
+			.add({ height }),
+		),
+	);
+	logger.info('Finished scheduling of missing blocks indexing');
 };
 
-const scheduleNewBlockIndexing = async (block) => blockIndexQueue
-	.add({ height: block.height, isNewBlock: true });
+const scheduleNewBlockIndexing = async (block) => {
+	await blockIndexQueue
+		.add({ height: block.height, isNewBlock: true });
+	logger.info(`Finished scheduling of new block indexing at height ${block.height}`);
+};
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {
-	addresses
-		.forEach((address) => accountIndexQueue
-			.add({ address }));
+	await Promise.all(addresses
+		.map(async (address) => accountIndexQueue
+			.add({ address }),
+		),
+	);
+	logger.info('Finished scheduling of delegate accounts indexing');
 };
 
 const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
-	accountAddressesToIndex
-		.forEach((address) => accountIndexQueue
-			.add({ address }));
+	await Promise.all(accountAddressesToIndex
+		.map(async (address) => accountIndexQueue
+			.add({ address }),
+		),
+	);
+	logger.info('Finished scheduling of genesis accounts indexing');
 };
 
 const init = async () => {
@@ -84,18 +103,18 @@ const init = async () => {
 	// Check for missing blocks and schedule indexing
 	const currentHeight = await getCurrentHeight();
 	const genesisHeight = await getGenesisHeight();
-	const listOfMssingBlocksHeight = await getMissingblocks(currentHeight, genesisHeight);
+	const listOfMssingBlocksHeight = await getMissingblocks(genesisHeight, currentHeight);
 
 	// Schedule block indexing
 	if (listOfMssingBlocksHeight.length) {
-		scheduleBlocksIndexing(listOfMssingBlocksHeight);
+		await scheduleBlocksIndexing(listOfMssingBlocksHeight);
 	}
 
 	// Schedule genesis accounts indexing
 	const isGenesisAccountIndexed = await isGenesisAccountAlreadyIndexed();
 	if (!isGenesisAccountIndexed) {
 		const genesisAccountAddresses = await getGenesisAccounts();
-		scheduleGenesisAccountsIndexing(genesisAccountAddresses);
+		await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
 	}
 };
 
