@@ -123,7 +123,7 @@ const indexAllDelegateAccounts = async () => {
 	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
 };
 
-const cacheLegacyAccountInfo = async () => {
+const buildLegacyAccountCache = async () => {
 	// Cache the legacy account reclaim balance information
 	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 	const unregisteredAccounts = genesisBlock.asset.accounts
@@ -207,6 +207,14 @@ const indexGenesisAccounts = async () => {
 	}
 };
 
+const getDelegateAccounts = async () => {
+	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
+	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
+	return allDelegateAddresses;
+};
+
+const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add({ address });
+
 const keepAccountsCacheUpdated = async () => {
 	const accountsDB = await getAccountIndex();
 	const updateAccountsCacheListener = async (address) => {
@@ -224,6 +232,8 @@ module.exports = {
 	indexAccountWithData,
 	triggerAccountUpdates,
 	indexAllDelegateAccounts,
-	cacheLegacyAccountInfo,
+	buildLegacyAccountCache,
 	indexGenesisAccounts,
+	getDelegateAccounts,
+	addAccountToAddrUpdateQueue,
 };

@@ -19,7 +19,8 @@ const { requestRpc } = require('./utils/appContext');
 const config = require('../config');
 const Signals = require('./signals');
 
-const messageQueue = new Queue('Coordinator', config.endpoints.redis);
+const blockIndexQueue = new Queue('Blocks', config.endpoints.redis);
+const accountIndexQueue = new Queue('Accounts', config.endpoints.redis);
 
 let enabledModules;
 
@@ -37,19 +38,31 @@ const isGenesisBlockIndex = async () => {
 
 const scheduleGenesisBlockIndexing = async () => {
 	const { genesisHeight } = await requestRpc('indexer', 'getIndexStats');
-	messageQueue.add({ height: genesisHeight });
+	blockIndexQueue.add({ height: genesisHeight });
 };
 
 const scheduleBlocksIndexing = async (blocksHeightToIndex) => {
 	blocksHeightToIndex
-		.forEach((height) => messageQueue
+		.forEach((height) => blockIndexQueue
 			.add({ height }));
 };
 
-const scheduleNewBlockIndexing = async (block) => messageQueue
+const scheduleNewBlockIndexing = async (block) => blockIndexQueue
 	.add({ height: block.height, isNewBlock: true });
 
+const scheduleDelegateAccountsIndexing = async (addresses) => {
+	addresses
+		.forEach((address) => accountIndexQueue
+			.add({ address }));
+};
+
 const init = async () => {
+	// Get all delegates and schedule indexing
+	const delegates = await requestRpc('indexer', 'getDelegateAccounts');
+	if (delegates.length) {
+		await scheduleDelegateAccountsIndexing(delegates);
+	}
+
 	// Schedule indexing new block
 	Signals.get('newBlock').add(block => scheduleNewBlockIndexing(block.header));
 
@@ -69,7 +82,7 @@ const init = async () => {
 	} = await requestRpc('indexer', 'getIndexStats');
 
 	// Check for missing blocks and schedule indexing
-	const listOfMssingBlocksHeight = await requestRpc('indexer', 'getMissingBlocksList',
+	const listOfMssingBlocksHeight = await requestRpc('indexer', 'getMissingBlocks',
 		{
 			from: genesisHeight,
 			to: currentHeight,

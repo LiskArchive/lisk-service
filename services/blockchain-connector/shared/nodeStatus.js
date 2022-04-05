@@ -22,14 +22,14 @@ const waitForIt = require('./waitForIt');
 
 const logger = Logger();
 
-const liskCoreAddress = config.endpoints.liskHttp;
+const liskAppAddress = config.endpoints.liskHttp;
 const NODE_DISCOVERY_INTERVAL = 1 * 1000; // ms
 
 const checkStatus = () => new Promise((resolve, reject) => {
 	getNodeInfo()
 		.then(nodeInfo => { resolve(nodeInfo); })
 		.catch(() => {
-			logger.debug(`The node ${liskCoreAddress} not available at the moment.`);
+			logger.debug(`The node ${liskAppAddress} not available at the moment.`);
 			reject();
 		});
 });
