@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,24 +14,33 @@
  *
  */
 module.exports = {
-	primaryKey: 'height',
+	primaryKey: 'id',
+	charset: 'utf8mb4',
 	schema: {
 		id: { type: 'string' },
 		height: { type: 'integer' },
+		moduleAssetId: { type: 'string' },
+		nonce: { type: 'integer' },
+		blockId: { type: 'string' },
 		timestamp: { type: 'integer' },
-		generatorPublicKey: { type: 'string' },
+		senderPublicKey: { type: 'string' },
+		recipientId: { type: 'string' },
+		amount: { type: 'bigInteger' },
+		data: { type: 'string' },
 		size: { type: 'integer' },
-		reward: { type: 'bigInteger' },
-		isFinal: { type: 'boolean', defaultValue: false },
+		fee: { type: 'bigInteger' },
+		minFee: { type: 'bigInteger' },
 	},
 	indexes: {
-		id: { type: 'key' },
 		height: { type: 'range' },
+		moduleAssetId: { type: 'key' },
+		nonce: { type: 'range' },
+		blockId: { type: 'key' },
 		timestamp: { type: 'range' },
-		generatorPublicKey: { type: 'key' },
-		size: { type: 'range' },
-		isFinal: { type: 'key' },
-		reward: { type: 'range' },
+		senderPublicKey: { type: 'key' },
+		recipientId: { type: 'key' },
+		amount: { type: 'range' },
+		data: { type: 'key' },
 	},
 	purge: {},
 };

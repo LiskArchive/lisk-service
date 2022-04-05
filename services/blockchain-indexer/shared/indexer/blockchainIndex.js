@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -322,41 +322,39 @@ const indexBlocksQueue = Queue(config.endpoints.redis, 'indexBlocksQueue', index
 const updateBlockIndexQueue = Queue(config.endpoints.redis, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.redis, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
-const indexNewBlocks = async blocks => {
+const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
-	if (blocks.data.length === 1) {
-		const [block] = blocks.data;
-		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
+	const block = await getBlockByHeight(height);
+	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
-		const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
-		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
-			// Index if doesn't exist, or update if it isn't set to final
-			await indexBlocksQueue.add({ height: block.height });
+	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
+	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
+		// Index if doesn't exist, or update if it isn't set to final
+		await indexBlocksQueue.add({ height: block.height });
 
-			// Update block finality status
-			const finalizedBlockHeight = await getFinalizedHeight();
-			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
-				Object.keys(blocksIndexSchema.schema));
-			await updateBlockIndexQueue.add({
-				blocks: nonFinalBlocks
-					.filter(b => b.height <= finalizedBlockHeight)
-					.map(b => ({ ...b, isFinal: true })),
-			});
+		// Update block finality status
+		const finalizedBlockHeight = await getFinalizedHeight();
+		const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
+			Object.keys(blocksIndexSchema.schema));
+		await updateBlockIndexQueue.add({
+			blocks: nonFinalBlocks
+				.filter(b => b.height <= finalizedBlockHeight)
+				.map(b => ({ ...b, isFinal: true })),
+		});
 
-			if (blockInfo && blockInfo.id !== block.id) {
-				// Fork detected
+		if (blockInfo && blockInfo.id !== block.id) {
+			// Fork detected
 
-				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-				const blocksToRemove = await blocksDB.find({
-					propBetweens: [{
-						property: 'height',
-						from: block.height + 1,
-						to: highestIndexedBlock.height,
-					}],
-					limit: highestIndexedBlock.height - block.height,
-				}, ['id']);
-				await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
-			}
+			const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+			const blocksToRemove = await blocksDB.find({
+				propBetweens: [{
+					property: 'height',
+					from: block.height + 1,
+					to: highestIndexedBlock.height,
+				}],
+				limit: highestIndexedBlock.height - block.height,
+			}, ['id']);
+			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 		}
 	}
 };
@@ -529,7 +527,7 @@ messageQueue.process(async (job) => {
 
 module.exports = {
 	indexBlock,
-	indexNewBlocks,
+	indexNewBlock,
 	indexMissingBlocks,
 	updateNonFinalBlocks,
 	getMissingBlocksListByRange,

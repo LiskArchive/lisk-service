@@ -22,8 +22,8 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { updateGenesisHeight } = require('./src/constants');
-const { setAppContext } = require('./src/utils/appContext');
+const { updateGenesisHeight } = require('./shared/constants');
+const { setAppContext } = require('./shared/utils/appContext');
 
 const loggerConf = {
 	...config.log,
@@ -52,7 +52,7 @@ setAppContext(app);
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
 
-		const blockchainStore = require('./src/indexer/indexStatus');
+		const blockchainStore = require('./shared/indexer/indexStatus');
 		await blockchainStore.init();
 		await updateGenesisHeight();
 	}).catch(err => {

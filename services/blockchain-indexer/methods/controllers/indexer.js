@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const accounts = require('../../src/indexer/accountIndex');
+const accounts = require('../../shared/indexer/accountIndex');
 
-const blocks = require('../../src/indexer/blockchainIndex');
+const blocks = require('../../shared/indexer/blockchainIndex');
 
-const status = require('../../src/indexer/indexStatus');
+const status = require('../../shared/indexer/indexStatus');
 
 const triggerAccountUpdates = async () => accounts.triggerAccountUpdates();
 
@@ -27,7 +27,7 @@ const cacheLegacyAccountInfo = async () => accounts.cacheLegacyAccountInfo();
 
 const indexGenesisAccounts = async () => accounts.indexGenesisAccounts();
 
-const indexNewBlocks = async ({ block }) => blocks.indexNewBlocks(block);
+const indexNewBlock = async ({ height }) => blocks.indexNewBlock(height);
 
 const indexMissingBlocks = async () => blocks.indexMissingBlocks();
 
@@ -43,7 +43,7 @@ module.exports = {
 	cacheLegacyAccountInfo,
 	indexGenesisAccounts,
 
-	indexNewBlocks,
+	indexNewBlock,
 	indexMissingBlocks,
 	getMissingBlocksListByRange,
 	isGenesisBlockIndexed,

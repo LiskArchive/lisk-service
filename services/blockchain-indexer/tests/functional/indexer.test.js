@@ -16,9 +16,9 @@
  */
 const { ServiceBroker } = require('moleculer');
 
-const { getTableInstance } = require('../../src/database/mysql');
-const accountsIndexSchema = require('../../src/indexer/schema/accounts');
-const blocksIndexSchema = require('../../src/indexer/schema/blocks');
+const { getTableInstance } = require('../../shared/database/mysql');
+const accountsIndexSchema = require('../../shared/indexer/schema/accounts');
+const blocksIndexSchema = require('../../shared/indexer/schema/blocks');
 
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
@@ -39,8 +39,8 @@ describe('Test indexer methods', () => {
 			const accountsDB = await getAccountIndex();
 			expect(broker.call('indexer.indexAllDelegateAccounts', {})).resolves.not.toThrow();
 
-			const delegates = await accountsDB.find();
-			expect(delegates.length).toBeGreaterThanOrEqual(233); // Delegate accounts on test blockchain
+			const delegateCount = await accountsDB.count({ isDelegate: true });
+			expect(delegateCount).toBeGreaterThanOrEqual(233); // Delegate accounts on test blockchain
 		});
 
 		it('Call indexer.indexGenesisAccounts', async () => {
