@@ -161,8 +161,7 @@ const getGenesisAccounts = async () => {
 			.filter(account => account.address.length === 40)
 			.map(account => account.address);
 	}
-	const genesisAccountAddresses = genesisAccountsToIndex.map(({ address }) => address);
-	return genesisAccountAddresses;
+	return genesisAccountsToIndex;
 };
 
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);

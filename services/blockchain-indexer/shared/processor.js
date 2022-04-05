@@ -40,7 +40,7 @@ const accountIndexQueue = new MessageQueue('Accounts', config.endpoints.redisCoo
 let isLegacyAccountCached = false;
 
 const initProcess = async () => {
-	await blockIndexQueue.process(async (job) => {
+	blockIndexQueue.process(async (job) => {
 		logger.debug('Subscribed to block index message queue');
 		const { height, isNewBlock } = job.data;
 
@@ -52,8 +52,8 @@ const initProcess = async () => {
 		}
 	});
 
-	await accountIndexQueue.process(async (job) => {
-		logger.debug('Subsribed to block index message queue');
+	accountIndexQueue.process(async (job) => {
+		logger.debug('Subsribed to account index message queue');
 		if (!isLegacyAccountCached) {
 			await buildLegacyAccountCache();
 			isLegacyAccountCached = true;
