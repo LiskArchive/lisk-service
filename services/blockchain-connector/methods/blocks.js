@@ -19,7 +19,7 @@ const {
 	getBlocksByIDs,
 	getBlockByHeight,
 	getBlocksByHeightBetween,
-} = require('./controllers/blocks');
+} = require('../shared/sdk/actions');
 
 module.exports = [
 	{
@@ -29,28 +29,28 @@ module.exports = [
 	},
 	{
 		name: 'getBlockByID',
-		controller: getBlockByID,
+		controller: async ({ id }) => getBlockByID(id),
 		params: {
 			id: { optional: false, type: 'any' },
 		},
 	},
 	{
 		name: 'getBlocksByIDs',
-		controller: getBlocksByIDs,
+		controller: async ({ ids }) => getBlocksByIDs(ids),
 		params: {
 			ids: { optional: false, type: 'any' },
 		},
 	},
 	{
 		name: 'getBlockByHeight',
-		controller: getBlockByHeight,
+		controller: async ({ height }) => getBlockByHeight(height),
 		params: {
 			height: { optional: false, type: 'any' },
 		},
 	},
 	{
 		name: 'getBlocksByHeightBetween',
-		controller: getBlocksByHeightBetween,
+		controller: async ({ from, to }) => getBlocksByHeightBetween({ from, to }),
 		params: {
 			from: { optional: false, type: 'any' },
 			to: { optional: false, type: 'any' },

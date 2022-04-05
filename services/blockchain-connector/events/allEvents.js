@@ -13,20 +13,36 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRegisteredEvents } = require('../src/sdk_v5/actions');
-const { subscribeToAllRegisteredEvents } = require('../src/sdk_v5/events');
+const { getRegisteredEvents } = require('../shared/sdk/actions');
+const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
 
-const Signals = require('../src/utils/signals');
+const Signals = require('../shared/signals');
+
+const toCamelCase = (words) => {
+	let result = '';
+	for (let i = 0; i < words.length; i++) {
+		const word = words[i];
+		const formattedWord = (i !== 0)
+			? word.substr(0, 1).toUpperCase() + word.substr(1)
+			: word.toLowerCase();
+		result = result.concat(formattedWord);
+	}
+	return result;
+};
 
 const exportAllEvents = async () => {
 	// Re-subscribe to the events when apiClient is re-instantiated
 	// Currently throws 'RangeError: Maximum call stack size exceeded'
+	// Signals.get('newApiClient').add(subscribeToAllRegisteredEvents);
 	await subscribeToAllRegisteredEvents();
 
 	const registeredEvents = await getRegisteredEvents();
 	const allMethods = registeredEvents.map(event => {
 		const genericController = (regEvent) => (cb) => {
-			const eventListener = (payload) => cb(payload);
+			const eventListener = (payload) => {
+				Signals.get(toCamelCase(regEvent.split(':'))).dispatch(payload);
+				cb(payload);
+			};
 			Signals.get(regEvent).add(eventListener);
 		};
 		const controller = genericController(event);

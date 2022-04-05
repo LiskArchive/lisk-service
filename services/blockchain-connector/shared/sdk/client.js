@@ -17,9 +17,9 @@ const { Logger, Exceptions: { TimeoutException } } = require('lisk-service-frame
 const { createWSClient } = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
-const delay = require('../utils/delay');
-const waitForIt = require('../utils/waitForIt');
-const Signals = require('../utils/signals');
+const delay = require('../delay');
+const waitForIt = require('../waitForIt');
+const Signals = require('../signals');
 
 const logger = Logger();
 
