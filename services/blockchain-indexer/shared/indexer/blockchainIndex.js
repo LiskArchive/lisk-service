@@ -516,8 +516,13 @@ const isGenesisBlockIndexed = async () => {
 messageQueue.process(async (job) => {
 	const genesisHeight = await getGenesisHeight();
 
-	const { height } = job.data;
-	await indexBlocksQueue.add({ height });
+	const { height, isNewBlock } = job.data;
+
+	if (isNewBlock) {
+		await indexNewBlock(height);
+	} else {
+		await indexBlocksQueue.add({ height });
+	}
 
 	// Index genesis accounts if height of block is genesis height
 	if (height === genesisHeight) {
