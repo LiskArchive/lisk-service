@@ -15,12 +15,14 @@
  */
 const {
 	getMissingBlocks,
+	isGenesisBlockIndexed,
 } = require('../shared/indexer/blockchainIndex');
 
 const {
 	getDelegateAccounts,
 	buildLegacyAccountCache,
-	indexGenesisAccounts,
+	getGenesisAccounts,
+	isGenesisAccountsIndexed,
 } = require('../shared/indexer/accountIndex');
 
 const { getIndexStats } = require('../shared/indexer/indexStatus');
@@ -35,8 +37,18 @@ module.exports = [
 		},
 	},
 	{
-		name: 'indexGenesisAccounts',
-		controller: indexGenesisAccounts,
+		name: 'isGenesisBlockIndexed',
+		controller: isGenesisBlockIndexed,
+		params: {},
+	},
+	{
+		name: 'getGenesisAccounts',
+		controller: getGenesisAccounts,
+		params: {},
+	},
+	{
+		name: 'isGenesisAccountsIndexed',
+		controller: isGenesisAccountsIndexed,
 		params: {},
 	},
 	{
