@@ -207,7 +207,6 @@ const indexGenesisAccounts = async () => {
 	}
 };
 
-
 const getDelegateAccounts = async () => {
 	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
 	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
