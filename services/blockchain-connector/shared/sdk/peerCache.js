@@ -15,7 +15,7 @@
  */
 const { Logger } = require('lisk-service-framework');
 const actions = require('./actions');
-const Signals = require('../utils/signals');
+const Signals = require('../signals');
 
 const logger = Logger();
 
