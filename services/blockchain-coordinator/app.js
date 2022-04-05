@@ -21,7 +21,8 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { setAppContext } = require('./src/utils/appContext');
+const { setAppContext } = require('./shared/utils/appContext');
+const Signals = require('./shared/signals');
 
 const loggerConf = {
 	...config.log,
@@ -43,7 +44,7 @@ const app = Microservice({
 const coordinatorConfig = {
 	name: 'coordinator',
 	events: {
-		'app:block:new': (payload) => { },
+		appBlockNew: (payload) => Signals.get('newBlock').dispatch(payload.block),
 	},
 };
 
@@ -57,7 +58,7 @@ const broker = app.getBroker();
 	// Run the application
 	broker.createService(coordinatorConfig);
 	broker.start().then(async () => {
-		const { init } = require('./src/scheduler');
+		const { init } = require('./shared/scheduler');
 		logger.info(`Service started ${packageJson.name}`);
 
 		await init();

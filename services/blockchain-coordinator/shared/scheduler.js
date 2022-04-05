@@ -17,6 +17,7 @@ const Queue = require('bull');
 const { requestRpc } = require('./utils/appContext');
 
 const config = require('../config');
+const Signals = require('./signals');
 
 const messageQueue = new Queue('Coordinator', config.endpoints.redis);
 
@@ -45,7 +46,12 @@ const scheduleBlocksIndexing = async (blocksHeightToIndex) => {
 			.add({ height }));
 };
 
+const scheduleNewBlockIndexing = async (block) => messageQueue.add({ height: block.height, isNewBlock: true });
+
 const init = async () => {
+	// Schedule indexing new block
+	Signals.get('newBlock').add(block => scheduleNewBlockIndexing(block.header));
+
 	// Retrieve enabled modules from connector
 	await getEnabledModules();
 
