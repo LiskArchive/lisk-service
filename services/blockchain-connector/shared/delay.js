@@ -13,21 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const delay = (ms = 100, val) => new Promise(resolve => setTimeout(resolve.bind(null, val), ms));
 
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
-		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
-	},
-];
+module.exports = delay;

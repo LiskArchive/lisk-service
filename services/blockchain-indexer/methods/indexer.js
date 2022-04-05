@@ -14,31 +14,37 @@
  *
  */
 const {
-	getPeers,
-	getConnectedPeers,
-	getDisconnectedPeers,
-	getPeersStatistics,
-} = require('../shared/sdk/peers');
+	getMissingBlocks,
+} = require('../shared/indexer/blockchainIndex');
+
+const {
+	getDelegateAccounts,
+	buildLegacyAccountCache,
+	indexGenesisAccounts,
+} = require('../shared/indexer/accountIndex');
 
 module.exports = [
 	{
-		name: 'getPeers',
-		controller: getPeers,
+		name: 'getMissingBlocks',
+		controller: getMissingBlocks,
+		params: {
+			from: { optional: false, type: 'any' },
+			to: { optional: false, type: 'any' },
+		},
+	},
+	{
+		name: 'indexGenesisAccounts',
+		controller: indexGenesisAccounts,
 		params: {},
 	},
 	{
-		name: 'getConnectedPeers',
-		controller: getConnectedPeers,
+		name: 'getDelegateAccounts',
+		controller: getDelegateAccounts,
 		params: {},
 	},
 	{
-		name: 'getDisconnectedPeers',
-		controller: getDisconnectedPeers,
-		params: {},
-	},
-	{
-		name: 'getPeersStatistics',
-		controller: getPeersStatistics,
+		name: 'buildLegacyAccountCache',
+		controller: buildLegacyAccountCache,
 		params: {},
 	},
 ];

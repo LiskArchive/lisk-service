@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNetworkStatus } = require('./controllers/network');
+const { getNetworkStatus } = require('../shared/sdk/network');
 
 module.exports = [
 	{

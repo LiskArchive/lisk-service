@@ -13,21 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const {
+	CacheRedis,
+	// Logger,
+} = require('lisk-service-framework');
 
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
-		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
-	},
-];
+const config = require('../../config');
+
+const appStoreDb = CacheRedis('appStore', config.endpoints.redis);
+
+module.exports = appStoreDb;

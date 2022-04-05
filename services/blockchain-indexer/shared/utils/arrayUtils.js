@@ -13,21 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const dropDuplicates = arr => arr.filter((v, i, a) => a.findIndex(t => (t === v)) === i);
 
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
-		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
-	},
-];
+module.exports = {
+	dropDuplicates,
+};

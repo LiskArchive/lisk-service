@@ -13,21 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const { getTableInstance } = require('./database/mysql');
+const votesIndexSchema = require('./indexer/schema/votes');
 
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
+
+const getVotesByTransactionIDs = async transactionIDs => {
+	const votesDB = await getVotesIndex();
+	const votes = await votesDB.find({
+		whereIn: {
+			property: 'id',
+			values: transactionIDs,
 		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
-	},
-];
+	}, ['tempId']);
+	return votes;
+};
+
+module.exports = {
+	getVotesByTransactionIDs,
+};

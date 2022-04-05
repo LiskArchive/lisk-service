@@ -22,7 +22,8 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const nodeStatus = require('./shared/nodeStatus');
+const { updateGenesisHeight } = require('./shared/constants');
+const { setAppContext } = require('./shared/utils/appContext');
 
 const loggerConf = {
 	...config.log,
@@ -35,27 +36,28 @@ LoggerConfig(loggerConf);
 const logger = Logger();
 
 const app = Microservice({
-	name: 'connector',
+	name: 'indexer',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 });
 
-nodeStatus.waitForNode().then(async () => {
-	logger.info(`Found a node, starting service ${packageJson.name.toUpperCase()}...`);
+setAppContext(app);
 
+(async () => {
 	// Add routes, events & jobs
 	await app.addMethods(path.join(__dirname, 'methods'));
-	await app.addEvents(path.join(__dirname, 'events'));
-	await app.addJobs(path.join(__dirname, 'jobs'));
 
-	app.run()
-		.then(() => {
-			// TODO: Add application init logic
-		})
-		.catch(err => {
-			logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-			logger.fatal(err.stack);
-			process.exit(1);
-		});
-});
+	// Run the application
+	app.run().then(async () => {
+		logger.info(`Service started ${packageJson.name}`);
+
+		const blockchainStore = require('./shared/indexer/indexStatus');
+		await blockchainStore.init();
+		await updateGenesisHeight();
+	}).catch(err => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});
+})();

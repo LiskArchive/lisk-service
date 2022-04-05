@@ -13,21 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const { getRegisteredEvents } = require('./actions');
+const { getApiClient } = require('./client');
 
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
-		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
-	},
-];
+const Signals = require('../signals');
+
+const subscribeToAllRegisteredEvents = async () => {
+	const apiClient = await getApiClient();
+	const registeredEvents = await getRegisteredEvents();
+
+	registeredEvents.forEach(event => {
+		apiClient.subscribe(
+			event,
+			payload => Signals.get(event).dispatch(payload),
+		);
+	});
+};
+
+module.exports = { subscribeToAllRegisteredEvents };

@@ -13,21 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const { Logger } = require('lisk-service-framework');
 
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
-		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
-	},
-];
+const logger = Logger();
+
+const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
+	const checkIfReady = async (that) => {
+		try {
+			const result = await fn();
+			clearInterval(that);
+			if (result !== undefined) resolve(result);
+		} catch (err) {
+			logger.debug(`Waiting for ${intervalMs}ms ...`);
+		}
+	};
+	const hInterval = setInterval(checkIfReady, intervalMs, this);
+	checkIfReady(hInterval);
+});
+
+module.exports = waitForIt;

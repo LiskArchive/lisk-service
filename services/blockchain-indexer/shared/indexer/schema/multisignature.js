@@ -13,21 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
-
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
-		},
+module.exports = {
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string' },
+		groupAddress: { type: 'string' },
+		memberAddress: { type: 'string' },
 	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
+	indexes: {
+		id: { type: 'key' },
+		groupAddress: { type: 'key' },
+		memberAddress: { type: 'key' },
 	},
-];
+	purge: {},
+};

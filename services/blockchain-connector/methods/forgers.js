@@ -17,7 +17,7 @@ const {
 	getForgers,
 	getForgingStatus,
 	updateForgingStatus,
-} = require('./controllers/forgers');
+} = require('../shared/sdk/actions');
 
 module.exports = [
 	{
@@ -32,7 +32,7 @@ module.exports = [
 	},
 	{
 		name: 'updateForgingStatus',
-		controller: updateForgingStatus,
+		controller: async (params) => updateForgingStatus(params),
 		params: {
 			address: { optional: false, type: 'any' },
 			password: { optional: false, type: 'any' },

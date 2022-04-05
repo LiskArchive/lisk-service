@@ -13,21 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
 
-module.exports = [
-	{
-		name: 'getAccount',
-		controller: async ({ address }) => getAccount(address),
-		params: {
-			address: { optional: false, type: 'any' },
-		},
-	},
-	{
-		name: 'getAccounts',
-		controller: async ({ addresses }) => getAccounts(addresses),
-		params: {
-			addresses: { optional: false, type: 'any' },
-		},
-	},
-];
+let app;
+
+const setAppContext = (h) => app = h;
+
+const getAppContext = () => app;
+
+const requestRpc = async (method, params = {}) => {
+	const data = await app.requestRpc(`connector.${method}`, params);
+	return data;
+};
+
+module.exports = {
+	setAppContext,
+	getAppContext,
+	requestRpc,
+};
