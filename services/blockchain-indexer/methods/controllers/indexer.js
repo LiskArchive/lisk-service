@@ -27,10 +27,6 @@ const cacheLegacyAccountInfo = async () => accounts.cacheLegacyAccountInfo();
 
 const indexGenesisAccounts = async () => accounts.indexGenesisAccounts();
 
-const indexNewBlock = async ({ height }) => blocks.indexNewBlock(height);
-
-const indexMissingBlocks = async () => blocks.indexMissingBlocks();
-
 const isGenesisBlockIndexed = async () => blocks.isGenesisBlockIndexed();
 
 const getMissingBlocksListByRange = async (params) => blocks.getMissingBlocksListByRange(params);
@@ -43,8 +39,6 @@ module.exports = {
 	cacheLegacyAccountInfo,
 	indexGenesisAccounts,
 
-	indexNewBlock,
-	indexMissingBlocks,
 	getMissingBlocksListByRange,
 	isGenesisBlockIndexed,
 

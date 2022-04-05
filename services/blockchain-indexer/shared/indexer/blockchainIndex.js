@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const MessageQueue = require('bull');
-
 const {
 	Logger,
 	Queue,
@@ -58,7 +56,6 @@ const {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
 	indexAccountWithData,
-	indexGenesisAccounts,
 } = require('./accountIndex');
 
 const {
@@ -89,17 +86,9 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
 
-const blockchainStore = require('../database/blockchainStore');
-
 // Key-based account update
 // There is a bug that does not update public keys
 const KEY_BASED_ACCOUNT_UPDATE = false;
-
-// Height below which there are no missing blocks in the index
-const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
-const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
-
-const messageQueue = new MessageQueue('Coordinator', config.endpoints.redisCoordinator);
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -425,50 +414,6 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-const indexMissingBlocks = async (params = {}) => {
-	const genesisHeight = await getGenesisHeight();
-	const currentHeight = await getCurrentHeight();
-
-	// Missing blocks are being checked during start
-	// By default they are checked from the blockchain's beginning
-	// The param force: true skips the getIndexVerifiedHeight
-	// and makes it check the whole index
-	let lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
-	if (params.force === true) lastScheduledBlock = genesisHeight;
-
-	const minReqHeight = config.indexNumOfBlocks > 0
-		? currentHeight - config.indexNumOfBlocks : genesisHeight;
-
-	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = currentHeight;
-	const blockIndexLowerRange = Math.max(minReqHeight, lastScheduledBlock);
-
-	// Retrieve the list of missing blocks
-	const missingBlockRanges = await findMissingBlocksInRange(
-		blockIndexLowerRange, blockIndexHigherRange);
-
-	// Start building the block index
-	try {
-		if (missingBlockRanges.length === 0) {
-			// Update 'indexVerifiedHeight' when no missing blocks are found
-			const indexVerifiedHeight = await getIndexVerifiedHeight();
-			await setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
-		} else {
-			for (let i = 0; i < missingBlockRanges.length; i++) {
-				const { from, to } = missingBlockRanges[i];
-
-				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from + 1} blocks)`);
-				/* eslint-disable-next-line no-await-in-loop */
-				await buildIndex(from, to);
-				/* eslint-disable-next-line no-await-in-loop */
-				await setIndexVerifiedHeight(to + 1);
-			}
-		}
-	} catch (err) {
-		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
-	}
-};
-
 const getNonFinalHeights = async () => {
 	const blocksDB = await getBlocksIndex();
 
@@ -513,28 +458,13 @@ const isGenesisBlockIndexed = async () => {
 	return !!block;
 };
 
-messageQueue.process(async (job) => {
-	const genesisHeight = await getGenesisHeight();
-
-	const { height, isNewBlock } = job.data;
-
-	if (isNewBlock) {
-		await indexNewBlock(height);
-	} else {
-		await indexBlocksQueue.add({ height });
-	}
-
-	// Index genesis accounts if height of block is genesis height
-	if (height === genesisHeight) {
-		await indexGenesisAccounts();
-	}
-});
+const addBlockToQueue = async (height) => indexBlocksQueue.add({ height });
 
 module.exports = {
 	indexBlock,
 	indexNewBlock,
-	indexMissingBlocks,
 	updateNonFinalBlocks,
 	getMissingBlocksListByRange,
 	isGenesisBlockIndexed,
+	addBlockToQueue,
 };

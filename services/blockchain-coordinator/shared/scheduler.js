@@ -46,7 +46,8 @@ const scheduleBlocksIndexing = async (blocksHeightToIndex) => {
 			.add({ height }));
 };
 
-const scheduleNewBlockIndexing = async (block) => messageQueue.add({ height: block.height, isNewBlock: true });
+const scheduleNewBlockIndexing = async (block) => messageQueue
+	.add({ height: block.height, isNewBlock: true });
 
 const init = async () => {
 	// Schedule indexing new block
