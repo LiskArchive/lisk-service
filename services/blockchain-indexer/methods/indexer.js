@@ -14,31 +14,19 @@
  *
  */
 const {
-	triggerAccountUpdates,
-	indexAllDelegateAccounts,
-	cacheLegacyAccountInfo,
+	getMissingBlocks,
+} = require('../shared/indexer/blockchainIndex');
+
+const {
+	getDelegateAccounts,
+	buildLegacyAccountCache,
 	indexGenesisAccounts,
-	indexNewBlock,
-	indexMissingBlocks,
-	getMissingBlocksListByRange,
-} = require('./controllers/indexer');
+} = require('../shared/indexer/accountIndex');
 
 module.exports = [
 	{
-		name: 'indexMissingBlocks',
-		controller: indexMissingBlocks,
-		params: {},
-	},
-	{
-		name: 'indexNewBlock',
-		controller: indexNewBlock,
-		params: {
-			height: { optional: false, type: 'any' },
-		},
-	},
-	{
-		name: 'getMissingBlocksList',
-		controller: getMissingBlocksListByRange,
+		name: 'getMissingBlocks',
+		controller: getMissingBlocks,
 		params: {
 			from: { optional: false, type: 'any' },
 			to: { optional: false, type: 'any' },
@@ -50,18 +38,13 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'triggerAccountUpdates',
-		controller: triggerAccountUpdates,
+		name: 'getDelegateAccounts',
+		controller: getDelegateAccounts,
 		params: {},
 	},
 	{
-		name: 'indexAllDelegateAccounts',
-		controller: indexAllDelegateAccounts,
-		params: {},
-	},
-	{
-		name: 'cacheLegacyAccountInfo',
-		controller: cacheLegacyAccountInfo,
+		name: 'buildLegacyAccountCache',
+		controller: buildLegacyAccountCache,
 		params: {},
 	},
 ];

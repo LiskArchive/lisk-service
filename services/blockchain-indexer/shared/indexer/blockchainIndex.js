@@ -486,7 +486,7 @@ const updateNonFinalBlocks = async () => {
 	}
 };
 
-const getMissingBlocksListByRange = async (params) => {
+const getMissingBlocks = async (params) => {
 	const missingBlockRanges = await findMissingBlocksInRange(params.from, params.to);
 
 	const convertRangesToArr = missingBlockRanges
@@ -506,5 +506,5 @@ module.exports = {
 	indexNewBlock,
 	indexMissingBlocks,
 	updateNonFinalBlocks,
-	getMissingBlocksListByRange,
+	getMissingBlocks,
 };
