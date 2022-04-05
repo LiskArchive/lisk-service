@@ -52,8 +52,8 @@ setAppContext(app);
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
 
-		const blockchainStore = require('./shared/indexer/indexStatus');
-		await blockchainStore.init();
+		const processor = require('./shared/processor');
+		await processor.init();
 		await updateGenesisHeight();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);

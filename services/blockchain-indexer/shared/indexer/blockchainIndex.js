@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const MessageQueue = require('bull');
-
 const {
 	Logger,
 	Queue,
@@ -58,9 +56,6 @@ const {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
 	indexAccountWithData,
-	indexGenesisAccounts,
-	indexAllDelegateAccounts,
-	cacheLegacyAccountInfo,
 } = require('./accountIndex');
 
 const {
@@ -94,11 +89,6 @@ const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAg
 // Key-based account update
 // There is a bug that does not update public keys
 const KEY_BASED_ACCOUNT_UPDATE = false;
-
-const messageQueue = new MessageQueue('Coordinator', config.endpoints.redisCoordinator);
-
-let isDelegatesIndexed = false;
-let isLegacyAccountCached = false;
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -468,40 +458,13 @@ const isGenesisBlockIndexed = async () => {
 	return !!block;
 };
 
-const initProcess = (async () => {
-	messageQueue.process(async (job) => {
-		if (!isDelegatesIndexed) {
-			await indexAllDelegateAccounts();
-			isDelegatesIndexed = true;
-		}
-
-		if (!isLegacyAccountCached) {
-			await cacheLegacyAccountInfo();
-			isLegacyAccountCached = true;
-		}
-
-		const genesisHeight = await getGenesisHeight();
-
-		const { height, isNewBlock } = job.data;
-
-		if (isNewBlock) {
-			await indexNewBlock(height);
-		} else {
-			await indexBlocksQueue.add({ height });
-		}
-
-		// Index genesis accounts if height of block is genesis height
-		if (height === genesisHeight) {
-			await indexGenesisAccounts();
-		}
-	});
-})();
+const addBlockToQueue = async height => indexBlocksQueue.add({ height });
 
 module.exports = {
-	initProcess,
 	indexBlock,
 	indexNewBlock,
 	updateNonFinalBlocks,
 	getMissingBlocksListByRange,
 	isGenesisBlockIndexed,
+	addBlockToQueue,
 };
