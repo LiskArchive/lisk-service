@@ -16,7 +16,6 @@
 const MessageQueue = require('bull');
 
 const {
-	indexGenesisAccounts,
 	buildLegacyAccountCache,
 	addAccountToAddrUpdateQueue,
 } = require('./indexer/accountIndex');
@@ -27,8 +26,6 @@ const {
 } = require('./indexer/blockchainIndex');
 const status = require('./indexer/indexStatus');
 
-const { getGenesisHeight } = require('./constants');
-
 const config = require('../config');
 
 const blockIndexQueue = new MessageQueue('Blocks', config.endpoints.redisCoordinator);
@@ -38,19 +35,12 @@ let isLegacyAccountCached = false;
 
 const initProcess = async () => {
 	blockIndexQueue.process(async (job) => {
-		const genesisHeight = await getGenesisHeight();
-
 		const { height, isNewBlock } = job.data;
 
 		if (isNewBlock) {
 			await indexNewBlock(height);
 		} else {
 			await addBlockToQueue(height);
-		}
-
-		// Index genesis accounts if height of block is genesis height
-		if (height === genesisHeight) {
-			await indexGenesisAccounts();
 		}
 	});
 
@@ -60,8 +50,8 @@ const initProcess = async () => {
 			isLegacyAccountCached = true;
 		}
 
-		const { accountAddress } = job.data;
-		await addAccountToAddrUpdateQueue(accountAddress);
+		const { address } = job.data;
+		await addAccountToAddrUpdateQueue(address);
 	});
 };
 

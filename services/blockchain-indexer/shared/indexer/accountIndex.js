@@ -54,8 +54,8 @@ const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 // Key constants for the KV-store
-const genesisAccountPageCached = 'genesisAccountPageCached';
 const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
+let genesisAccountsToIndex;
 
 const logger = Logger();
 
@@ -108,21 +108,6 @@ const triggerAccountUpdates = async () => {
 
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
-const indexAllDelegateAccounts = async () => {
-	const accountsDB = await getAccountIndex();
-	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
-	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
-	const PAGE_SIZE = 1000;
-	for (let i = 0; i < Math.ceil(allDelegateAddresses.length / PAGE_SIZE); i++) {
-		/* eslint-disable no-await-in-loop */
-		const accounts = await getAccountsByAddress(allDelegateAddresses
-			.slice(i * PAGE_SIZE, (i + 1) * PAGE_SIZE));
-		await accountsDB.upsert(accounts);
-		/* eslint-enable no-await-in-loop */
-	}
-	logger.info(`Indexed ${allDelegateAddresses.length} delegate accounts`);
-};
-
 const buildLegacyAccountCache = async () => {
 	// Cache the legacy account reclaim balance information
 	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
@@ -145,66 +130,16 @@ const buildLegacyAccountCache = async () => {
 	logger.info('Finished caching legacy account reclaim balance information');
 };
 
-const performGenesisAccountsIndexing = async () => {
-	const accountsDB = await getAccountIndex();
-
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-	const genesisAccountsToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length === 40)
-		.map(account => account.address);
-
-	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
-
-	const lastCachedPage = await keyValueDB.get(genesisAccountPageCached) || 0;
-
-	const PAGE_SIZE = 1000;
-	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
-	for (let pageNum = 0; pageNum < NUM_PAGES; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const currentPage = pageNum * PAGE_SIZE;
-		const nextPage = (pageNum + 1) * PAGE_SIZE;
-		const percentage = (Math.round(((pageNum + 1) / NUM_PAGES) * 1000) / 10).toFixed(1);
-
-		if (pageNum >= lastCachedPage) {
-			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
-
-			logger.info(`Attempting retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
-
-			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
-			if (accounts.length) await accountsDB.upsert(accounts);
-			await keyValueDB.set(genesisAccountPageCached, pageNum);
-
-			// Update MySQL based KV-store to avoid re-indexing of the genesis accounts
-			// after applying the DB snapshots
-			if (pageNum === NUM_PAGES - 1) {
-				logger.info('Setting genesis account indexing completion status');
-				await keyValueDB.set(isGenesisAccountIndexingFinished, true);
-			}
-		} else {
-			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
-		}
-		/* eslint-enable no-await-in-loop */
-	}
-};
-
-const indexGenesisAccounts = async () => {
-	if (await keyValueDB.get(isGenesisAccountIndexingFinished)) {
-		logger.info('Skipping genesis account index update (one-time operation, already indexed)');
-		return;
-	}
-
-	try {
-		// Ensure genesis accounts indexing continues even after the Api client is re-instantiated
-		// Remove the listener after the genesis accounts are successfully indexed
-		logger.info('Attempting to update genesis account index (one-time operation)');
-		Signals.get('newApiClient').add(performGenesisAccountsIndexing);
-		await performGenesisAccountsIndexing();
-		Signals.get('newApiClient').remove(performGenesisAccountsIndexing);
-	} catch (err) {
-		logger.fatal('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
-		logger.fatal(err.message);
-		process.exit(1);
-	}
+const isGenesisAccountsIndexed = async () => {
+	const isIndexed = await keyValueDB.get(isGenesisAccountIndexingFinished);
+	if (!isIndexed) {
+		const accountsDB = await getAccountIndex();
+		const count = await accountsDB.count();
+		if (count > genesisAccountsToIndex.length) {
+			await keyValueDB.set(isGenesisAccountIndexingFinished, true);
+			return true;
+		} return false;
+	} return true;
 };
 
 const getDelegateAccounts = async () => {
@@ -213,7 +148,16 @@ const getDelegateAccounts = async () => {
 	return allDelegateAddresses;
 };
 
-const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add({ address });
+const getGenesisAccounts = async () => {
+	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
+	genesisAccountsToIndex = genesisBlock.asset.accounts
+		.filter(account => account.address.length === 40)
+		.map(account => account.address);
+	const genesisAccountAddresses = genesisAccountsToIndex.map(({ address }) => address);
+	return genesisAccountAddresses;
+};
+
+const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
 
 const keepAccountsCacheUpdated = async () => {
 	const accountsDB = await getAccountIndex();
@@ -231,9 +175,9 @@ module.exports = {
 	indexAccountByAddress,
 	indexAccountWithData,
 	triggerAccountUpdates,
-	indexAllDelegateAccounts,
 	buildLegacyAccountCache,
-	indexGenesisAccounts,
+	isGenesisAccountsIndexed,
 	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
+	getGenesisAccounts,
 };
