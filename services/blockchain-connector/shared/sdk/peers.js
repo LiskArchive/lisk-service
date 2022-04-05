@@ -75,36 +75,14 @@ const getPeers = async params => {
 		return elem;
 	}));
 
-	const meta = {
-		count: dataWithLocation.length,
-		offset: params.offset,
-		total: peers.length,
-	};
-
-	return {
-		data: dataWithLocation,
-		meta,
-	};
+	return dataWithLocation;
 };
 
-const getConnectedPeers = async params => {
-	const response = await getPeers(Object.assign(params, { state: 'connected' }));
-	return response;
-};
+const getConnectedPeers = async params => getPeers(Object.assign(params, { state: 'connected' }));
 
-const getDisconnectedPeers = async params => {
-	const response = await getPeers(Object.assign(params, { state: 'disconnected' }));
-	return response;
-};
+const getDisconnectedPeers = async params => getPeers(Object.assign(params, { state: 'disconnected' }));
 
-const getPeersStatistics = async () => {
-	const response = await peerCache.getStatistics();
-
-	return {
-		data: response,
-		meta: {},
-	};
-};
+const getPeersStatistics = async () => peerCache.getStatistics();
 
 module.exports = {
 	getPeers,

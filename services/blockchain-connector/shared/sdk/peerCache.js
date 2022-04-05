@@ -61,8 +61,7 @@ const getPeers = async () => {
 		...connectedPeers.data,
 		...disconnectedPeers.data,
 	];
-	const meta = { count: data.length };
-	return { data, meta };
+	return data;
 };
 
 const refreshStatistics = async () => {
@@ -114,7 +113,7 @@ const getStatistics = () => peerStore.statistics;
 const reload = async () => {
 	logger.debug('Refreshing peer cache...');
 	try {
-		peerStore.peers = (await getPeers()).data;
+		peerStore.peers = await getPeers();
 		peerStore.connected = peerStore.peers.filter(o => o.state === peerStates.CONNECTED);
 		peerStore.disconnected = peerStore.peers.filter(o => o.state === peerStates.DISCONNECTED);
 		peerStore.statistics = await refreshStatistics();
