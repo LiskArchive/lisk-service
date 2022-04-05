@@ -14,7 +14,17 @@
  *
  */
 const Queue = require('bull');
-const { requestRpc } = require('./utils/appContext');
+
+const {
+	getEnabledModules,
+	isGenesisBlockAlreadyIndexed,
+	isGenesisAccountAlreadyIndexed,
+	getDelegatesAccounts,
+	getGenesisAccounts,
+	getMissingblocks,
+	getCurrentHeight,
+	getGenesisHeight,
+} = require('./sources/indexer');
 
 const config = require('../config');
 const Signals = require('./signals');
@@ -22,27 +32,12 @@ const Signals = require('./signals');
 const blockIndexQueue = new Queue('Blocks', config.endpoints.redis);
 const accountIndexQueue = new Queue('Accounts', config.endpoints.redis);
 
-let enabledModules;
-
-const getEnabledModules = async () => {
-	if (!enabledModules) {
-		enabledModules = await requestRpc('connector', 'getRegisteredModules');
-	}
-	return enabledModules;
-};
-
-const isGenesisBlockIndex = async () => {
-	const isIndexed = await requestRpc('indexer', 'isGenesisBlockIndexed');
-	return isIndexed;
-};
-
-const isGenesisAccountIndex = async () => {
-	const isIndexed = await requestRpc('indexer', 'isGenesisAccountsIndexed');
-	return isIndexed;
-};
+let registeredLiskModules;
+const setRegisteredmodules = modules => registeredLiskModules = modules;
+const getRegisteredModuleAssets = () => registeredLiskModules;
 
 const scheduleGenesisBlockIndexing = async () => {
-	const { genesisHeight } = await requestRpc('indexer', 'getIndexStats');
+	const genesisHeight = await getGenesisHeight();
 	blockIndexQueue.add({ height: genesisHeight });
 };
 
@@ -68,36 +63,28 @@ const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 };
 
 const init = async () => {
-	// Get all delegates and schedule indexing
-	const delegates = await requestRpc('indexer', 'getDelegateAccounts');
-	if (delegates.length) {
-		await scheduleDelegateAccountsIndexing(delegates);
-	}
-
 	// Schedule indexing new block
 	Signals.get('newBlock').add(block => scheduleNewBlockIndexing(block.header));
 
 	// Retrieve enabled modules from connector
-	await getEnabledModules();
+	setRegisteredmodules(await getEnabledModules());
+
+	// Get all delegates and schedule indexing
+	const delegates = await getDelegatesAccounts();
+	if (delegates.length) {
+		await scheduleDelegateAccountsIndexing(delegates);
+	}
 
 	// Check if genesis block is already indexed and schedule indexing if it is not indexed
-	const isGenesisBlockIndexed = await isGenesisBlockIndex();
+	const isGenesisBlockIndexed = await isGenesisBlockAlreadyIndexed();
 	if (!isGenesisBlockIndexed) {
 		scheduleGenesisBlockIndexing();
 	}
 
-	// Retrieve current height
-	const {
-		currentChainHeight: currentHeight,
-		genesisHeight,
-	} = await requestRpc('indexer', 'getIndexStats');
-
 	// Check for missing blocks and schedule indexing
-	const listOfMssingBlocksHeight = await requestRpc('indexer', 'getMissingBlocks',
-		{
-			from: genesisHeight,
-			to: currentHeight,
-		});
+	const currentHeight = await getCurrentHeight();
+	const genesisHeight = await getGenesisHeight();
+	const listOfMssingBlocksHeight = await getMissingblocks(currentHeight, genesisHeight);
 
 	// Schedule block indexing
 	if (listOfMssingBlocksHeight.length) {
@@ -105,13 +92,14 @@ const init = async () => {
 	}
 
 	// Schedule genesis accounts indexing
-	const isGenesisAccountIndexed = await isGenesisAccountIndex();
+	const isGenesisAccountIndexed = await isGenesisAccountAlreadyIndexed();
 	if (!isGenesisAccountIndexed) {
-		const genesisAccountAddresses = await requestRpc('indexer', 'getGenesisAccounts');
+		const genesisAccountAddresses = await getGenesisAccounts();
 		scheduleGenesisAccountsIndexing(genesisAccountAddresses);
 	}
 };
 
 module.exports = {
 	init,
+	getRegisteredModuleAssets,
 };

@@ -25,7 +25,10 @@ const {
 	isGenesisAccountsIndexed,
 } = require('../shared/indexer/accountIndex');
 
-const { getIndexStats } = require('../shared/indexer/indexStatus');
+const {
+	getCurrentHeight,
+	getGenesisHeight,
+} = require('../shared/constants');
 
 module.exports = [
 	{
@@ -62,8 +65,13 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getIndexStats',
-		controller: getIndexStats,
+		name: 'getCurrentHeight',
+		controller: getCurrentHeight,
+		params: {},
+	},
+	{
+		name: 'getGenesisHeight',
+		controller: getGenesisHeight,
 		params: {},
 	},
 ];

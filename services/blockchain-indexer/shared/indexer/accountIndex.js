@@ -131,6 +131,12 @@ const buildLegacyAccountCache = async () => {
 };
 
 const isGenesisAccountsIndexed = async () => {
+	if (!genesisAccountsToIndex) {
+		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
+		genesisAccountsToIndex = genesisBlock.asset.accounts
+			.filter(account => account.address.length === 40)
+			.map(account => account.address);
+	}
 	const isIndexed = await keyValueDB.get(isGenesisAccountIndexingFinished);
 	if (!isIndexed) {
 		const accountsDB = await getAccountIndex();
@@ -149,10 +155,12 @@ const getDelegateAccounts = async () => {
 };
 
 const getGenesisAccounts = async () => {
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-	genesisAccountsToIndex = genesisBlock.asset.accounts
-		.filter(account => account.address.length === 40)
-		.map(account => account.address);
+	if (!genesisAccountsToIndex) {
+		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
+		genesisAccountsToIndex = genesisBlock.asset.accounts
+			.filter(account => account.address.length === 40)
+			.map(account => account.address);
+	}
 	const genesisAccountAddresses = genesisAccountsToIndex.map(({ address }) => address);
 	return genesisAccountAddresses;
 };
