@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const MessageQueue = require('bull');
+
 const {
 	Logger,
 	Queue,
@@ -56,6 +58,9 @@ const {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
 	indexAccountWithData,
+	indexGenesisAccounts,
+	indexAllDelegateAccounts,
+	cacheLegacyAccountInfo,
 } = require('./accountIndex');
 
 const {
@@ -89,6 +94,8 @@ const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAg
 // Key-based account update
 // There is a bug that does not update public keys
 const KEY_BASED_ACCOUNT_UPDATE = false;
+
+const messageQueue = new MessageQueue('Coordinator', config.endpoints.redisCoordinator);
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -313,7 +320,7 @@ const deleteIndexedBlocksQueue = Queue(config.endpoints.redis, 'deleteIndexedBlo
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
-	const block = await getBlockByHeight(height);
+	const [block] = await getBlockByHeight(height);
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
@@ -458,7 +465,25 @@ const isGenesisBlockIndexed = async () => {
 	return !!block;
 };
 
-const addBlockToQueue = async (height) => indexBlocksQueue.add({ height });
+messageQueue.process(async (job) => {
+	await indexAllDelegateAccounts();
+	await cacheLegacyAccountInfo();
+
+	const genesisHeight = await getGenesisHeight();
+
+	const { height, isNewBlock } = job.data;
+
+	if (isNewBlock) {
+		await indexNewBlock(height);
+	} else {
+		await indexBlocksQueue.add({ height });
+	}
+
+	// Index genesis accounts if height of block is genesis height
+	if (height === genesisHeight) {
+		await indexGenesisAccounts();
+	}
+});
 
 module.exports = {
 	indexBlock,
@@ -466,5 +491,4 @@ module.exports = {
 	updateNonFinalBlocks,
 	getMissingBlocksListByRange,
 	isGenesisBlockIndexed,
-	addBlockToQueue,
 };
