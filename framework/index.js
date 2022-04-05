@@ -25,6 +25,7 @@ module.exports = {
 	HTTP: require('./src/http'),
 	Signals: require('./src/signals'),
 	SocketClient: require('./src/socketClient'),
+	Queue: require('./src/queue'),
 	mapper: require('./src/mapper'),
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),

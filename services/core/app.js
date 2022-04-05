@@ -58,9 +58,9 @@ nodeStatus.waitForNode()
 		const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
 		await blockchainStore.initializeSearchIndex();
 
-		app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
-		app.addEvents(path.join(__dirname, 'events'));
-		app.addJobs(path.join(__dirname, 'jobs'));
+		await app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
+		await app.addEvents(path.join(__dirname, 'events'));
+		await app.addJobs(path.join(__dirname, 'jobs'));
 
 		app.run().then(() => {
 			logger.info(`Service started ${packageJson.name}`);

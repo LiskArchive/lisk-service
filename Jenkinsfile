@@ -18,6 +18,7 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					dir('./') { sh 'npm i' }
 					dir('./framework') { sh 'npm i' }
+					dir('./services/blockchain-connector') { sh 'npm i' }
 					dir('./services/core') { sh 'npm i' }
 					dir('./services/market') { sh 'npm i' }
 					dir('./services/newsfeed') { sh 'npm i' }
@@ -41,6 +42,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				nvm(getNodejsVersion()) {
 					dir('./framework') { sh "npm run test:unit" }
+					dir('./services/blockchain-connector') { sh "npm run test:unit" }
 					dir('./services/core') { sh "npm run test:unit" }
 					dir('./services/market') { sh "npm run test:unit" }
 					dir('./services/newsfeed') { sh "npm run test:unit" }

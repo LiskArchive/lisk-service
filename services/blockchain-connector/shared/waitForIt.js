@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -17,23 +17,18 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-let ServiceBroker;
-
-const setBrokerHandle = (h) => ServiceBroker = h;
-
-const requestRpc = (method, params) => new Promise((resolve, reject) => {
-	ServiceBroker
-		.call(method, params)
-		.then(res => resolve(res))
-		.catch(err => {
-			logger.error(`Error occurred! ${err.message}`);
-			reject(err);
-		});
+const waitForIt = (fn, intervalMs = 1000) => new Promise((resolve) => {
+	const checkIfReady = async (that) => {
+		try {
+			const result = await fn();
+			clearInterval(that);
+			if (result !== undefined) resolve(result);
+		} catch (err) {
+			logger.debug(`Waiting for ${intervalMs}ms ...`);
+		}
+	};
+	const hInterval = setInterval(checkIfReady, intervalMs, this);
+	checkIfReady(hInterval);
 });
 
-module.exports = {
-	default: requestRpc,
-
-	requestRpc,
-	setBrokerHandle,
-};
+module.exports = waitForIt;
