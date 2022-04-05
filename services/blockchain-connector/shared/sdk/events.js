@@ -13,16 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const actions = require('../../src/sdk_v5/actions');
+const { getRegisteredEvents } = require('./actions');
+const { getApiClient } = require('./client');
 
-const getForgers = async () => actions.getForgers();
+const Signals = require('../signals');
 
-const getForgingStatus = async () => actions.getForgingStatus();
+const subscribeToAllRegisteredEvents = async () => {
+	const apiClient = await getApiClient();
+	const registeredEvents = await getRegisteredEvents();
 
-const updateForgingStatus = async () => actions.updateForgingStatus();
-
-module.exports = {
-	getForgers,
-	getForgingStatus,
-	updateForgingStatus,
+	registeredEvents.forEach(event => {
+		apiClient.subscribe(
+			event,
+			payload => Signals.get(event).dispatch(payload),
+		);
+	});
 };
+
+module.exports = { subscribeToAllRegisteredEvents };

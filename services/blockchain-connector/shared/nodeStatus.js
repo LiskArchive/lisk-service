@@ -15,10 +15,10 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const { getNodeInfo } = require('./sdk_v5/actions');
+const { getNodeInfo } = require('./sdk/actions');
 
 const config = require('../config');
-const waitForIt = require('./utils/waitForIt');
+const waitForIt = require('./waitForIt');
 
 const logger = Logger();
 

@@ -22,7 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const nodeStatus = require('./src/nodeStatus');
+const nodeStatus = require('./shared/nodeStatus');
 
 const loggerConf = {
 	...config.log,

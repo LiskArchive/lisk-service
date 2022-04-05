@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const actions = require('../src/sdk_v5/actions');
+const actions = require('../shared/sdk/actions');
 
 const exportAllMethods = async () => {
 	const registeredActions = await actions.getRegisteredActions();
