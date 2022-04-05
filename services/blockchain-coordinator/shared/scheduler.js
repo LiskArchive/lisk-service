@@ -36,6 +36,11 @@ const isGenesisBlockIndex = async () => {
 	return isIndexed;
 };
 
+const isGenesisAccountIndex = async () => {
+	const isIndexed = await requestRpc('indexer', 'isGenesisAccountsIndexed');
+	return isIndexed;
+};
+
 const scheduleGenesisBlockIndexing = async () => {
 	const { genesisHeight } = await requestRpc('indexer', 'getIndexStats');
 	blockIndexQueue.add({ height: genesisHeight });
@@ -52,6 +57,12 @@ const scheduleNewBlockIndexing = async (block) => blockIndexQueue
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {
 	addresses
+		.forEach((address) => accountIndexQueue
+			.add({ address }));
+};
+
+const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
+	accountAddressesToIndex
 		.forEach((address) => accountIndexQueue
 			.add({ address }));
 };
@@ -91,6 +102,13 @@ const init = async () => {
 	// Schedule block indexing
 	if (listOfMssingBlocksHeight.length) {
 		scheduleBlocksIndexing(listOfMssingBlocksHeight);
+	}
+
+	// Schedule genesis accounts indexing
+	const isGenesisAccountIndexed = await isGenesisAccountIndex();
+	if (!isGenesisAccountIndexed) {
+		const genesisAccountAddresses = await requestRpc('indexer', 'getGenesisAccounts');
+		scheduleGenesisAccountsIndexing(genesisAccountAddresses);
 	}
 };
 
