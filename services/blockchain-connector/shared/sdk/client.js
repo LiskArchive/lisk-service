@@ -24,6 +24,7 @@ const Signals = require('../signals');
 const logger = Logger();
 
 // Constants
+const timeoutMessage = 'Response not received in';
 const liskAddress = config.endpoints.liskWs;
 const MAX_INSTANTIATION_WAIT_TIME = 100; // in ms
 const RETRY_INTERVAL = 500; // ms
@@ -93,6 +94,8 @@ const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIE
 };
 
 module.exports = {
+	timeoutMessage,
+
 	getApiClient,
 	invokeAction,
 };

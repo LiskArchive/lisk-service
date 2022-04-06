@@ -60,7 +60,7 @@ module.exports = [
 	},
 	{
 		name: 'getGenesisBlock',
-		controller: getGenesisBlock,
+		controller: async () => getGenesisBlock(),
 		params: {},
 	},
 ];
