@@ -17,7 +17,7 @@ const { requestRpc } = require('../utils/appContext');
 
 const isGenesisBlockAlreadyIndexed = async () => requestRpc('indexer', 'isGenesisBlockIndexed');
 
-const isGenesisAccountAlreadyIndexed = async () => requestRpc('indexer', 'isGenesisAccountsIndexed');
+const getGenesisAccountsIndexingStatus = async () => requestRpc('indexer', 'isGenesisAccountsIndexed');
 
 const getDelegatesAccounts = async () => requestRpc('indexer', 'getDelegateAccounts');
 
@@ -34,7 +34,7 @@ const getGenesisHeight = async () => requestRpc('indexer', 'getGenesisHeight');
 
 module.exports = {
 	isGenesisBlockAlreadyIndexed,
-	isGenesisAccountAlreadyIndexed,
+	getGenesisAccountsIndexingStatus,
 	getDelegatesAccounts,
 	getGenesisAccounts,
 	getMissingblocks,

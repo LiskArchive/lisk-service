@@ -34,8 +34,13 @@ const status = require('./indexer/indexStatus');
 
 const config = require('../config');
 
-const blockIndexQueue = new MessageQueue('Blocks', config.endpoints.redisCoordinator);
-const accountIndexQueue = new MessageQueue('Accounts', config.endpoints.redisCoordinator);
+const blockIndexQueue = new MessageQueue('Blocks', config.endpoints.redisCoordinator, {
+	defaultJobOptions: config.queue.defaultJobOptions,
+});
+
+const accountIndexQueue = new MessageQueue('Accounts', config.endpoints.redisCoordinator, {
+	defaultJobOptions: config.queue.defaultJobOptions,
+});
 
 let isLegacyAccountCached = false;
 

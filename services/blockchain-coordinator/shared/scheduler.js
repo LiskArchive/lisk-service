@@ -23,7 +23,7 @@ const logger = Logger();
 
 const {
 	isGenesisBlockAlreadyIndexed,
-	isGenesisAccountAlreadyIndexed,
+	getGenesisAccountsIndexingStatus,
 	getDelegatesAccounts,
 	getGenesisAccounts,
 	getMissingblocks,
@@ -38,8 +38,13 @@ const {
 const config = require('../config');
 const Signals = require('./signals');
 
-const blockIndexQueue = new Queue('Blocks', config.endpoints.redis);
-const accountIndexQueue = new Queue('Accounts', config.endpoints.redis);
+const blockIndexQueue = new Queue('Blocks', config.endpoints.redis, {
+	defaultJobOptions: config.queue.defaultJobOptions,
+});
+
+const accountIndexQueue = new Queue('Accounts', config.endpoints.redis, {
+	defaultJobOptions: config.queue.defaultJobOptions,
+});
 
 let registeredLiskModules;
 const setRegisteredmodules = modules => registeredLiskModules = modules;
@@ -51,19 +56,17 @@ const scheduleGenesisBlockIndexing = async () => {
 	logger.info('Finished scheduling of genesis block indexing');
 };
 
-const scheduleBlocksIndexing = async (blocksHeightToIndex) => {
-	await Promise.all(blocksHeightToIndex
-		.map(async height => blockIndexQueue
-			.add({ height }),
-		),
-	);
-	logger.info('Finished scheduling of missing blocks indexing');
-};
+const scheduleBlocksIndexing = async (blockHeights, isNewBlock = false) => {
+	const finalBlockHeights = Array.isArray(blockHeights)
+		?	blockHeights
+		:	[blockHeights];
 
-const scheduleNewBlockIndexing = async (block) => {
-	await blockIndexQueue
-		.add({ height: block.height, isNewBlock: true });
-	logger.info(`Finished scheduling of new block indexing at height ${block.height}`);
+	await Promise.all(finalBlockHeights.map(
+		async height => blockIndexQueue.add({ height, isNewBlock }),
+	),
+	);
+
+	logger.info(`Scheduled block indexing for heights: ${finalBlockHeights.join(', ')}`);
 };
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {
@@ -86,38 +89,39 @@ const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 
 const init = async () => {
 	// Schedule indexing new block
-	Signals.get('newBlock').add(block => scheduleNewBlockIndexing(block.header));
+	const newBlockListener = async (block) => scheduleBlocksIndexing(block.header.height, true);
+	Signals.get('newBlock').add(newBlockListener);
 
 	// Retrieve enabled modules from connector
 	setRegisteredmodules(await getEnabledModules());
 
 	// Get all delegates and schedule indexing
 	const delegates = await getDelegatesAccounts();
-	if (delegates && delegates.length) {
+	if (Array.isArray(delegates) && delegates.length) {
 		await scheduleDelegateAccountsIndexing(delegates);
 	}
 
 	// Check if genesis block is already indexed and schedule indexing if it is not indexed
 	const isGenesisBlockIndexed = await isGenesisBlockAlreadyIndexed();
 	if (!isGenesisBlockIndexed) {
-		scheduleGenesisBlockIndexing();
+		await scheduleGenesisBlockIndexing();
 	}
 
 	// Check for missing blocks and schedule indexing
-	const currentHeight = await getCurrentHeight();
 	const genesisHeight = await getGenesisHeight();
-	const listOfMssingBlocksHeight = await getMissingblocks(genesisHeight, currentHeight);
+	const currentHeight = await getCurrentHeight();
+	const missingBlocksByHeight = await getMissingblocks(genesisHeight, currentHeight);
 
-	// Schedule block indexing
-	if (listOfMssingBlocksHeight && listOfMssingBlocksHeight.length) {
-		await scheduleBlocksIndexing(listOfMssingBlocksHeight);
+	// Schedule indexing for the missing blocks
+	if (Array.isArray(missingBlocksByHeight) && missingBlocksByHeight.length) {
+		await scheduleBlocksIndexing(missingBlocksByHeight);
 	}
 
 	// Schedule genesis accounts indexing
-	const isGenesisAccountIndexed = await isGenesisAccountAlreadyIndexed();
-	if (!isGenesisAccountIndexed) {
+	const isGenesisAccountsIndexed = await getGenesisAccountsIndexingStatus();
+	if (!isGenesisAccountsIndexed) {
 		const genesisAccountAddresses = await getGenesisAccounts();
-		if (genesisAccountAddresses && genesisAccountAddresses.length) {
+		if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
 			await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
 		}
 	}
