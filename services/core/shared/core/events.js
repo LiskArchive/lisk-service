@@ -35,6 +35,10 @@ const {
 	calculateEstimateFeeByteQuick,
 } = require('./dynamicFees');
 
+const {
+	debounceLeading,
+} = require('../debounce');
+
 const config = require('../../config');
 
 const logger = Logger();
@@ -45,19 +49,21 @@ const events = {
 			logger.debug(`New block arrived: ${newBlock.id} at height ${newBlock.height}`);
 			performLastBlockUpdate(newBlock);
 
-			logger.debug(`============== Dispatching block to index: ${newBlock.id} at height ${newBlock.height} ==============`);
-			let response;
-			try {
-				response = await getBlocks({ height: newBlock.height });
-			} catch (_) {
-				response = {
-					data: [newBlock],
-					meta: { count: 1, offset: 0, total: await getTotalNumberOfBlocks() },
-				};
-			}
+			debounceLeading(async () => {
+				logger.debug(`============== Dispatching block to index: ${newBlock.id} at height ${newBlock.height} ==============`);
+				let response;
+				try {
+					response = await getBlocks({ height: newBlock.height });
+				} catch (_) {
+					response = {
+						data: [newBlock],
+						meta: { count: 1, offset: 0, total: await getTotalNumberOfBlocks() },
+					};
+				}
 
-			logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
-			Signals.get('newBlock').dispatch(response);
+				logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
+				Signals.get('newBlock').dispatch(response);
+			}, 3000);
 		} catch (err) {
 			logger.error(`Error occured when processing 'newBlock' event:\n${err.stack}`);
 		}
@@ -72,22 +78,26 @@ const events = {
 	},
 	deleteBlock: async (block) => {
 		try {
-			await deleteBlock(block);
-			logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
-			Signals.get('deleteBlock').dispatch({ data: [block] });
+			debounceLeading(async () => {
+				await deleteBlock(block);
+				logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
+				Signals.get('deleteBlock').dispatch({ data: [block] });
+			});
 		} catch (err) {
 			logger.error(`Error occured when processing 'deleteBlock' event:\n${err.stack}`);
 		}
 	},
 	newRound: async () => {
 		try {
-			await reloadDelegateCache();
-			await reloadNextForgersCache();
-			const limit = core.getSDKVersion() >= 4 ? 103 : 101;
-			const nextForgers = await getNextForgers({ limit, offset: 0 });
-			const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
-			logger.debug(`============== 'newRound' signal: ${Signals.get('newRound')} ==============`);
-			Signals.get('newRound').dispatch(response);
+			debounceLeading(async () => {
+				await reloadDelegateCache();
+				await reloadNextForgersCache();
+				const limit = core.getSDKVersion() >= 4 ? 103 : 101;
+				const nextForgers = await getNextForgers({ limit, offset: 0 });
+				const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+				logger.debug(`============== 'newRound' signal: ${Signals.get('newRound')} ==============`);
+				Signals.get('newRound').dispatch(response);
+			});
 		} catch (err) {
 			logger.error(`Error occured when processing 'newRound' event:\n${err.stack}`);
 		}
