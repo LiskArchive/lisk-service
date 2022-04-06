@@ -21,14 +21,14 @@ module.exports = [
 		name: 'getAccount',
 		controller: async ({ address }) => getAccount(address),
 		params: {
-			address: { optional: false, type: 'any' },
+			address: { optional: false, type: 'string' },
 		},
 	},
 	{
 		name: 'getAccounts',
 		controller: async ({ addresses }) => getAccounts(addresses),
 		params: {
-			addresses: { optional: false, type: 'any' },
+			addresses: { optional: false, type: 'array', items: 'string' },
 		},
 	},
 	{
