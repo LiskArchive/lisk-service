@@ -40,8 +40,8 @@ module.exports = [
 		name: 'getGenesisAccounts',
 		controller: async ({ limit, offset }) => getGenesisAccounts(limit, offset),
 		params: {
-			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|(?:10[0-3]))\b$/ },
-			offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 100 },
+			offset: { optional: true, type: 'number', min: 0, default: 0 },
 		},
 	},
 ];
