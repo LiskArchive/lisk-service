@@ -21,6 +21,8 @@ const {
 	getBlocksByHeightBetween,
 } = require('../shared/sdk/actions');
 
+const { getGenesisBlock } = require('../shared/sdk/genesisBlock');
+
 module.exports = [
 	{
 		name: 'getLastBlock',
@@ -55,5 +57,10 @@ module.exports = [
 			from: { optional: false, type: 'any' },
 			to: { optional: false, type: 'any' },
 		},
+	},
+	{
+		name: 'getGenesisBlock',
+		controller: getGenesisBlock,
+		params: {},
 	},
 ];

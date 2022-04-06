@@ -342,6 +342,7 @@ const getForgers = async () => {
 
 module.exports = {
 	invokeAction,
+	getGenesisHeight,
 	getSchema,
 	getRegisteredActions,
 	getRegisteredEvents,

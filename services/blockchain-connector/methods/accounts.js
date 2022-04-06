@@ -14,6 +14,7 @@
  *
  */
 const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const { getNumberOfGenesisAccounts, getGenesisAccounts } = require('../shared/sdk/genesisBlock');
 
 module.exports = [
 	{
@@ -28,6 +29,19 @@ module.exports = [
 		controller: async ({ addresses }) => getAccounts(addresses),
 		params: {
 			addresses: { optional: false, type: 'any' },
+		},
+	},
+	{
+		name: 'getNumberOfGenesisAccounts',
+		controller: getNumberOfGenesisAccounts,
+		params: {},
+	},
+	{
+		name: 'getGenesisAccounts',
+		controller: async ({ limit, offset }) => getGenesisAccounts(limit, offset),
+		params: {
+			limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|(?:10[0-3]))\b$/ },
+			offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
 		},
 	},
 ];
