@@ -15,8 +15,6 @@
  */
 const { requestRpc } = require('../utils/appContext');
 
-const getEnabledModules = async () => requestRpc('connector', 'getRegisteredModules');
-
 const isGenesisBlockAlreadyIndexed = async () => requestRpc('indexer', 'isGenesisBlockIndexed');
 
 const isGenesisAccountAlreadyIndexed = async () => requestRpc('indexer', 'isGenesisAccountsIndexed');
@@ -35,7 +33,6 @@ const getCurrentHeight = async () => requestRpc('indexer', 'getCurrentHeight');
 const getGenesisHeight = async () => requestRpc('indexer', 'getGenesisHeight');
 
 module.exports = {
-	getEnabledModules,
 	isGenesisBlockAlreadyIndexed,
 	isGenesisAccountAlreadyIndexed,
 	getDelegatesAccounts,

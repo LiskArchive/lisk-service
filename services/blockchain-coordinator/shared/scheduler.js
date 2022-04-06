@@ -22,7 +22,6 @@ const {
 const logger = Logger();
 
 const {
-	getEnabledModules,
 	isGenesisBlockAlreadyIndexed,
 	isGenesisAccountAlreadyIndexed,
 	getDelegatesAccounts,
@@ -31,6 +30,10 @@ const {
 	getCurrentHeight,
 	getGenesisHeight,
 } = require('./sources/indexer');
+
+const {
+	getEnabledModules,
+} = require('./sources/connector');
 
 const config = require('../config');
 const Signals = require('./signals');
@@ -90,7 +93,7 @@ const init = async () => {
 
 	// Get all delegates and schedule indexing
 	const delegates = await getDelegatesAccounts();
-	if (delegates.length) {
+	if (delegates && delegates.length) {
 		await scheduleDelegateAccountsIndexing(delegates);
 	}
 
@@ -106,7 +109,7 @@ const init = async () => {
 	const listOfMssingBlocksHeight = await getMissingblocks(genesisHeight, currentHeight);
 
 	// Schedule block indexing
-	if (listOfMssingBlocksHeight.length) {
+	if (listOfMssingBlocksHeight && listOfMssingBlocksHeight.length) {
 		await scheduleBlocksIndexing(listOfMssingBlocksHeight);
 	}
 
@@ -114,7 +117,9 @@ const init = async () => {
 	const isGenesisAccountIndexed = await isGenesisAccountAlreadyIndexed();
 	if (!isGenesisAccountIndexed) {
 		const genesisAccountAddresses = await getGenesisAccounts();
-		await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
+		if (genesisAccountAddresses && genesisAccountAddresses.length) {
+			await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
+		}
 	}
 };
 
