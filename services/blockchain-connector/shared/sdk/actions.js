@@ -34,7 +34,7 @@ const { getApiClient, invokeAction } = require('./client');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
 const { encodeBlock } = require('./encoder');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
-const { parseToJSONCompatObj } = require('../jsonTools');
+const { parseToJSONCompatObj } = require('../parser');
 
 const logger = Logger();
 
