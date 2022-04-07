@@ -34,6 +34,8 @@ const status = require('./indexer/indexStatus');
 
 const config = require('../config');
 
+const STATS_INTERVAL = 1 * 60 * 1000; // ms
+
 const blockIndexQueue = new MessageQueue('Blocks', config.endpoints.redisCoordinator, {
 	defaultJobOptions: config.queue.defaultJobOptions,
 });
@@ -44,6 +46,23 @@ const accountIndexQueue = new MessageQueue('Accounts', config.endpoints.redisCoo
 
 let isLegacyAccountCached = false;
 
+const queueStatus = async (queueInstance) => {
+	setInterval(async () => {
+		const jc = await queueInstance.getJobCounts();
+		if (Number(jc.waiting) > 0 || Number(jc.active) > 0
+            || Number(jc.failed) > 0 || Number(jc.paused) > 0) {
+			logger.info(`Queue counters for ${queueInstance.name}: waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
+		} else {
+			logger.info(`Queue counters for ${queueInstance.name}: All scheduled jobs are done.`);
+		}
+	}, STATS_INTERVAL);
+};
+
+const initQueueStatus = async () => {
+	await queueStatus(blockIndexQueue);
+	await queueStatus(accountIndexQueue);
+};
+
 const initProcess = async () => {
 	blockIndexQueue.process(async (job) => {
 		logger.debug('Subscribed to block index message queue');
@@ -53,7 +72,7 @@ const initProcess = async () => {
 			await indexNewBlock(height);
 		} else {
 			await addBlockToQueue(height);
-			logger.info(`Index block at height: ${height}`);
+			logger.debug(`Index block at height: ${height}`);
 		}
 	});
 
@@ -67,8 +86,10 @@ const initProcess = async () => {
 
 		const { address } = job.data;
 		await addAccountToAddrUpdateQueue(address);
-		logger.info(`Index account with address: ${address}`);
+		logger.debug(`Index account with address: ${address}`);
 	});
+
+	await initQueueStatus();
 };
 
 const init = async () => {
