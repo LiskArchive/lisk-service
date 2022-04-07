@@ -24,7 +24,7 @@ const logger = Logger();
 const {
 	isGenesisBlockAlreadyIndexed,
 	getGenesisAccountsIndexingStatus,
-	getDelegatesAccounts,
+	getDelegateAccounts,
 	getGenesisAccounts,
 	getMissingblocks,
 	getCurrentHeight,
@@ -66,7 +66,7 @@ const scheduleBlocksIndexing = async (blockHeights, isNewBlock = false) => {
 	),
 	);
 
-	logger.info(`Scheduled block indexing for heights: ${finalBlockHeights.join(', ')}`);
+	logger.info('Scheduled block indexing');
 };
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {
@@ -96,18 +96,18 @@ const init = async () => {
 	setRegisteredmodules(await getEnabledModules());
 
 	// Get all delegates and schedule indexing
-	const delegates = await getDelegatesAccounts();
+	const delegates = await getDelegateAccounts();
 	if (Array.isArray(delegates) && delegates.length) {
 		await scheduleDelegateAccountsIndexing(delegates);
 	}
 
-	// Check if genesis block is already indexed and schedule indexing if it is not indexed
+	// Check if genesis block is already indexed and schedule indexing if not indexed
 	const isGenesisBlockIndexed = await isGenesisBlockAlreadyIndexed();
 	if (!isGenesisBlockIndexed) {
 		await scheduleGenesisBlockIndexing();
 	}
 
-	// Check for missing blocks and schedule indexing
+	// Check for missing blocks
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 	const missingBlocksByHeight = await getMissingblocks(genesisHeight, currentHeight);
