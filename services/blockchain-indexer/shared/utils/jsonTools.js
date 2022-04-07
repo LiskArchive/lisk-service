@@ -32,6 +32,40 @@ const parseToJSONCompatObj = obj => {
 	return obj;
 };
 
+const parseInputBySchema = (input, schema) => {
+	const { type: schemaType, dataType: schemaDataType, items: schemaItemsSchema } = schema;
+
+	if (typeof input !== 'object') {
+		if (schemaDataType === 'string') return String(input);
+		if (schemaDataType === 'boolean') return Boolean(input);
+		if (schemaDataType === 'bytes') return Buffer.from(input, 'hex');
+		if (schemaDataType === 'uint32' || schemaDataType === 'sint32') return Number(input);
+		if (schemaDataType === 'uint64' || schemaDataType === 'sint64') return BigInt(input);
+		return input;
+	}
+
+	if (schemaType === 'object') {
+		const formattedObj = Object.keys(input).reduce((acc, key) => {
+			const { type, dataType, items: itemsSchema } = schema.properties[key] || {};
+			const currValue = input[key];
+			if (type === 'array') {
+				acc[key] = currValue.map(item => parseInputBySchema(item, itemsSchema));
+			} else {
+				acc[key] = parseInputBySchema(currValue, { dataType });
+			}
+			return acc;
+		}, {});
+		return formattedObj;
+	} if (schemaType === 'array') {
+		// TODO: Untested code block
+		const formattedArray = input.map(item => parseInputBySchema(item, schemaItemsSchema));
+		return formattedArray;
+	}
+
+	return input;
+};
+
 module.exports = {
 	parseToJSONCompatObj,
+	parseInputBySchema,
 };

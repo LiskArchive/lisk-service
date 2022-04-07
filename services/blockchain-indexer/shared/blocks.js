@@ -16,7 +16,7 @@
 const BluebirdPromise = require('bluebird');
 const { getIndexedAccountInfo } = require('./utils/accountUtils');
 const { getTxnMinFee } = require('./utils/transactionsUtils');
-const { parseToJSONCompatObj } = require('./utils/jsonTools');
+const { parseToJSONCompatObj, parseInputBySchema } = require('./utils/jsonTools');
 
 const { getCurrentHeight } = require('./constants');
 
@@ -50,6 +50,12 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 			await BluebirdPromise.map(
 				block.payload,
 				async (txn) => {
+					const schema = await requestRpc('getSchema');
+					const [assetSchema] = schema.transactionsAssets
+						.filter(s => s.moduleID === txn.moduleID && s.assetID === txn.assetID);
+					const parsedTxAsset = parseInputBySchema(txn.asset, assetSchema.schema);
+					const parsedTx = parseInputBySchema(txn, schema.transaction);
+					txn = { ...parsedTx, asset: parsedTxAsset };
 					txn.minFee = await getTxnMinFee(txn);
 					block.size += txn.size;
 					block.totalForged += txn.fee;
