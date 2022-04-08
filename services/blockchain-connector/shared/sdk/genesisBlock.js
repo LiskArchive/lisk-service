@@ -77,7 +77,6 @@ const getGenesisBlock = async (includeAccounts = false) => {
 
 const getGenesisBlockID = async () => {
 	if (!genesisBlockID) {
-		// eslint-disable-next-line no-use-before-define
 		const genesisBlock = await getGenesisBlock();
 		genesisBlockID = genesisBlock.header.id;
 	}
