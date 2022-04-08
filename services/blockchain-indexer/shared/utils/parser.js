@@ -51,17 +51,19 @@ const parseInputBySchema = (input, schema) => {
 			if (type === 'array') {
 				acc[key] = currValue.map(item => parseInputBySchema(item, itemsSchema));
 			} else {
-				acc[key] = parseInputBySchema(currValue, { dataType });
+				const innerSchema = (typeof currValue === 'object') ? schema.properties[key] : { dataType };
+				acc[key] = parseInputBySchema(currValue, innerSchema);
 			}
 			return acc;
 		}, {});
 		return formattedObj;
 	} if (schemaType === 'array') {
-		// TODO: Untested code block
 		const formattedArray = input.map(item => parseInputBySchema(item, schemaItemsSchema));
 		return formattedArray;
 	}
 
+	// For situations where the schema for a property states 'bytes'
+	// but has already been de-serialized into object, e.g. tx.asset
 	return input;
 };
 
