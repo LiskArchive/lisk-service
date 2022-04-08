@@ -51,7 +51,7 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 				block.payload,
 				async (txn) => {
 					const schema = await requestRpc('getSchema');
-					const [assetSchema] = schema.transactionsAssets
+					const assetSchema = schema.transactionsAssets
 						.find(s => s.moduleID === txn.moduleID && s.assetID === txn.assetID);
 					const parsedTxAsset = parseInputBySchema(txn.asset, assetSchema.schema);
 					const parsedTx = parseInputBySchema(txn, schema.transaction);
