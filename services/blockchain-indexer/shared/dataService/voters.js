@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTableInstance } = require('./database/mysql');
-const votesIndexSchema = require('./indexer/schema/votes');
+const { getTableInstance } = require('../database/mysql');
+const votesIndexSchema = require('../indexer/schema/votes');
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 

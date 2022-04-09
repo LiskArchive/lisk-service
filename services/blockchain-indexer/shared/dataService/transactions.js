@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTableInstance } = require('./database/mysql');
+const { getTableInstance } = require('../database/mysql');
 
-const transactionsIndexSchema = require('./indexer/schema/transactions');
+const transactionsIndexSchema = require('../indexer/schema/transactions');
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 

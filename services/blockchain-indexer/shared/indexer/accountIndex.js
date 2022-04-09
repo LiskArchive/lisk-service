@@ -29,11 +29,11 @@ const {
 const {
 	getAccountsByAddress,
 	getAccountsByPublicKey2,
-} = require('../accounts');
+} = require('../dataService/accounts');
 
 const {
 	getBlockByHeight,
-} = require('../blocks');
+} = require('../dataService/blocks');
 
 const {
 	getGenesisHeight,
@@ -165,6 +165,7 @@ const getGenesisAccounts = async () => {
 };
 
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
+const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
 
 const keepAccountsCacheUpdated = async () => {
 	const accountsDB = await getAccountIndex();
@@ -186,5 +187,6 @@ module.exports = {
 	isGenesisAccountsIndexed,
 	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
+	addAccountToDirectUpdateQueue,
 	getGenesisAccounts,
 };

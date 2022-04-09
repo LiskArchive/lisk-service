@@ -14,14 +14,14 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getIndexedAccountInfo } = require('./utils/accountUtils');
-const { getTxnMinFee } = require('./utils/transactionsUtils');
-const { parseToJSONCompatObj, parseInputBySchema } = require('./utils/parser');
+const { getIndexedAccountInfo } = require('../utils/accountUtils');
+const { getTxnMinFee } = require('../utils/transactionsUtils');
+const { parseToJSONCompatObj, parseInputBySchema } = require('../utils/parser');
 
-const { getCurrentHeight } = require('./constants');
+const { getCurrentHeight } = require('../constants');
 
-const blockchainStore = require('./database/blockchainStore');
-const { requestRpc } = require('./utils/appContext');
+const blockchainStore = require('../database/blockchainStore');
+const { requestRpc } = require('../utils/appContext');
 
 // Genesis height can be greater that 0
 // Blockchain starts form a non-zero block height

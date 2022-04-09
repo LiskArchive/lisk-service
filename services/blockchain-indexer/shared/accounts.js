@@ -15,138 +15,61 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const {
-	getIndexedAccountInfo,
-	getHexAddressFromPublicKey,
-	getBase32AddressFromHex,
-	getBase32AddressFromPublicKey,
-} = require('./utils/accountUtils');
+const accountSource = require('./dataService/accounts');
 
-const {
-	dropDuplicates,
-} = require('./utils/arrayUtils');
+// const { getDelegates } = require('./delegates');
+const { parseToJSONCompatObj } = require('./utils/parser');
+const { getAccountKnowledge } = require('./utils/knownAccounts');
 
-const {
-	parseToJSONCompatObj,
-} = require('./utils/parser');
-
-const { requestRpc } = require('./utils/appContext');
-
-const normalizeAccount = account => {
-	account.address = getBase32AddressFromHex(account.address.toString('hex'));
-	account.isDelegate = !(account.dpos && !account.dpos.delegate.username);
-	account.isMultisignature = !!(account.keys && account.keys.numberOfSignatures);
-	account.token.balance = Number(account.token.balance);
-	account.sequence.nonce = Number(account.sequence.nonce);
-
-	if (account.dpos) account.dpos.sentVotes = account.dpos.sentVotes
-		.map(vote => {
-			vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress.toString('hex'));
-			vote.amount = Number(vote.amount);
-			return vote;
-		});
-
-	return parseToJSONCompatObj(account);
-};
-
-const getAccountsFromCore = async (params) => {
+const getAccounts = async params => {
 	const accounts = {
 		data: [],
 		meta: {},
 	};
-	const response = params.addresses
-		? await requestRpc('getAccounts', params)
-		: await requestRpc('getAccount', params);
-
-	if (Object.getOwnPropertyNames(response).length) {
-		accounts.data = [normalizeAccount(response)];
+	const { status, ...remainingParams } = params;
+	let response;
+	if (status) {
+		// Include delegate info in all accounts requests unless explicitly stated
+		// response = params.isDelegate !== false ? await getDelegates(params) : { data: [] };
+	} else {
+		response = await accountSource.getAccounts(remainingParams);
 	}
+	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
-	return accounts;
-};
 
-const getAccountsByAddress = async (addressesToIndex, isGenesisBlockAccount = false) => {
-	const accounts = await BluebirdPromise.map(
-		dropDuplicates(addressesToIndex),
-		async address => {
-			const { data: [account] } = await getAccountsFromCore({ address });
-			if (isGenesisBlockAccount) account.isGenesisAccount = true;
+	accounts.data = await BluebirdPromise.map(
+		accounts.data,
+		async account => {
+			account.multisignatureGroups = await accountSource.getMultisignatureGroups(account);
+			account.multisignatureMemberships = await accountSource.getMultisignatureMemberships(account);
+			account.knowledge = await getAccountKnowledge(account.address);
 
-			const accountFromDB = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey', 'isGenesisAccount']);
-			if (accountFromDB) {
-				if (accountFromDB.publicKey) account.publicKey = accountFromDB.publicKey;
-				if (accountFromDB.isGenesisAccount) {
-					account.isGenesisAccount = accountFromDB.isGenesisAccount;
-				}
+			if (account.isDelegate === true) {
+				// const delegate = await getDelegates({ address: account.address });
+				// const delegateOrigProps = account.delegate;
+				// const [delegateExtraProps = {}] = delegate.data;
+				// const delegateAccount = {
+				// 	...account,
+				// 	rank: delegateExtraProps.rank,
+				// 	status: delegateExtraProps.status,
+				// 	delegate: { ...delegateOrigProps, ...delegateExtraProps },
+				// };
+				// return delegateAccount;
 			}
-			account.username = account.dpos.delegate.username || null;
-			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
-			account.balance = account.token.balance;
-			return account;
+			const {
+				delegate, approval, missedBlocks, producedBlocks, productivity,
+				rank, rewards, username, vote, isBanned, status: _status, pomHeights,
+				lastForgedHeight, consecutiveMissedBlocks,
+				...nonDelegateAccount
+			} = account;
+			return nonDelegateAccount;
 		},
-		{ concurrency: 10 },
+		{ concurrency: accounts.data.length },
 	);
-	return accounts;
-};
 
-const getAccountsByPublicKey = async (accountInfoArray) => {
-	const accounts = await BluebirdPromise.map(
-		accountInfoArray
-			.map(accountInfo => getHexAddressFromPublicKey(accountInfo.publicKey)),
-		async address => {
-			const { data: [account] } = await getAccountsFromCore({ address });
-			const [accountInfo] = accountInfoArray
-				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
-			account.publicKey = accountInfo.publicKey;
-			account.username = account.dpos.delegate.username || null;
-			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
-			account.balance = account.token.balance;
-			return account;
-		},
-		{ concurrency: 10 },
-	);
-	return accounts;
-};
-
-const getAccountsByPublicKey2 = async (accountInfoArray) => {
-	const accounts = await BluebirdPromise.map(
-		accountInfoArray
-			.map(publicKey => getHexAddressFromPublicKey(publicKey)),
-		async address => {
-			const { data: [account] } = await getAccountsFromCore({ address });
-			const [accountInfo] = accountInfoArray
-				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
-			account.publicKey = accountInfo.publicKey;
-			account.username = account.dpos.delegate.username || null;
-			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
-			account.balance = account.token.balance;
-			return account;
-		},
-		{ concurrency: 10 },
-	);
-	return accounts;
-};
-
-const resolveMultisignatureMemberships = tx => {
-	const multisignatureInfoToIndex = [];
-	const allKeys = tx.asset.mandatoryKeys.concat(tx.asset.optionalKeys);
-
-	allKeys.forEach(key => {
-		const members = {
-			id: getBase32AddressFromPublicKey(tx.senderPublicKey)
-				.concat('_', getBase32AddressFromPublicKey(key)),
-			memberAddress: getBase32AddressFromPublicKey(key),
-			groupAddress: getBase32AddressFromPublicKey(tx.senderPublicKey),
-		};
-		multisignatureInfoToIndex.push(members);
-	});
-
-	return multisignatureInfoToIndex;
+	return parseToJSONCompatObj(accounts);
 };
 
 module.exports = {
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	getAccountsByPublicKey2,
-	resolveMultisignatureMemberships,
+	getAccounts,
 };
