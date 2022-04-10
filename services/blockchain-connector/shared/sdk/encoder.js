@@ -50,9 +50,12 @@ const encodeBlock = async (block) => {
 	// Handle the block payload
 	const blockPayloadBuffer = await Promise.all(payload.map(tx => encodeTransaction(tx)));
 
-	// Handle the block header
+	// Handle the block header asset
 	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(header.version);
-	const blockHeaderAssetBuffer = codec.encode(blockHeaderAssetSchema, parseInputBySchema(header.asset, blockHeaderAssetSchema));
+	const parsedHeaderAsset = parseInputBySchema(header.asset, blockHeaderAssetSchema);
+	const blockHeaderAssetBuffer = codec.encode(blockHeaderAssetSchema, parsedHeaderAsset);
+
+	// Handle the block header
 	const blockHeaderSchema = await getBlockHeaderSchema();
 	const blockHeaderBuffer = codec.encode(
 		blockHeaderSchema,
