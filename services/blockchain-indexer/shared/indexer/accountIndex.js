@@ -55,7 +55,6 @@ const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 // Key constants for the KV-store
 const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
-let genesisAccountsToIndex;
 
 const logger = Logger();
 
@@ -130,38 +129,33 @@ const buildLegacyAccountCache = async () => {
 	logger.info('Finished caching legacy account reclaim balance information');
 };
 
+const getGenesisAccounts = async () => {
+	const genesisAccounts = await requestRpc('getGenesisAccounts');
+	const genesisAccountsToIndex = genesisAccounts
+		.filter(account => account.address.length === 40)
+		.map(account => account.address);
+	return genesisAccountsToIndex;
+};
+
 const isGenesisAccountsIndexed = async () => {
-	if (!genesisAccountsToIndex) {
-		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-		genesisAccountsToIndex = genesisBlock.asset.accounts
-			.filter(account => account.address.length === 40)
-			.map(account => account.address);
-	}
 	const isIndexed = await keyValueDB.get(isGenesisAccountIndexingFinished);
 	if (!isIndexed) {
+		const numberOfGenesisAccounts = await requestRpc('getNumberOfGenesisAccounts');
 		const accountsDB = await getAccountIndex();
 		const count = await accountsDB.count();
-		if (count > genesisAccountsToIndex.length) {
+		if (count >= numberOfGenesisAccounts) {
 			await keyValueDB.set(isGenesisAccountIndexingFinished, true);
 			return true;
-		} return false;
-	} return true;
+		}
+		return false;
+	}
+	return true;
 };
 
 const getDelegateAccounts = async () => {
 	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
 	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
 	return allDelegateAddresses;
-};
-
-const getGenesisAccounts = async () => {
-	if (!genesisAccountsToIndex) {
-		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-		genesisAccountsToIndex = genesisBlock.asset.accounts
-			.filter(account => account.address.length === 40)
-			.map(account => account.address);
-	}
-	return genesisAccountsToIndex;
 };
 
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);

@@ -13,27 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestRpc } = require('../utils/appContext');
+const { requestIndexer } = require('../utils/appContext');
 
-const isGenesisBlockAlreadyIndexed = async () => requestRpc('indexer', 'isGenesisBlockIndexed');
+const isGenesisBlockIndexed = async () => requestIndexer('isGenesisBlockIndexed');
 
-const getGenesisAccountsIndexingStatus = async () => requestRpc('indexer', 'isGenesisAccountsIndexed');
+const getGenesisAccountsIndexingStatus = async () => requestIndexer('isGenesisAccountsIndexed');
 
-const getDelegateAccounts = async () => requestRpc('indexer', 'getDelegateAccounts');
+const getDelegateAccounts = async () => requestIndexer('getDelegateAccounts');
 
-const getGenesisAccounts = async () => requestRpc('indexer', 'getGenesisAccounts');
+const getGenesisAccounts = async () => requestIndexer('getGenesisAccounts');
 
-const getMissingblocks = async (from, to) => requestRpc('indexer', 'getMissingBlocks', {
+const getMissingblocks = async (from, to) => requestIndexer('getMissingBlocks', {
 	from,
 	to,
 });
 
-const getCurrentHeight = async () => requestRpc('indexer', 'getCurrentHeight');
+const getCurrentHeight = async () => requestIndexer('getCurrentHeight');
 
-const getGenesisHeight = async () => requestRpc('indexer', 'getGenesisHeight');
+const getGenesisHeight = async () => requestIndexer('getGenesisHeight');
 
 module.exports = {
-	isGenesisBlockAlreadyIndexed,
+	isGenesisBlockIndexed,
 	getGenesisAccountsIndexingStatus,
 	getDelegateAccounts,
 	getGenesisAccounts,

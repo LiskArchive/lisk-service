@@ -22,7 +22,7 @@ const {
 const logger = Logger();
 
 const {
-	isGenesisBlockAlreadyIndexed,
+	isGenesisBlockIndexed,
 	getGenesisAccountsIndexingStatus,
 	getDelegateAccounts,
 	getGenesisAccounts,
@@ -102,8 +102,8 @@ const init = async () => {
 	}
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
-	const isGenesisBlockIndexed = await isGenesisBlockAlreadyIndexed();
-	if (!isGenesisBlockIndexed) {
+	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
+	if (!isGenesisBlockAlreadyIndexed) {
 		await scheduleGenesisBlockIndexing();
 	}
 

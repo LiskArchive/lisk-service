@@ -13,9 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestRpc } = require('../utils/appContext');
+const { requestConnector } = require('../utils/appContext');
 
-const getEnabledModules = async () => requestRpc('connector', 'getRegisteredModules');
+const getEnabledModules = async () => requestConnector('getRegisteredModules');
 
 module.exports = {
 	getEnabledModules,
