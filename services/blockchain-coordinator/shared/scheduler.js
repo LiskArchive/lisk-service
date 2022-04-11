@@ -71,18 +71,14 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {
 	await Promise.all(addresses
-		.map(async (address) => accountIndexQueue
-			.add({ address }),
-		),
+		.map(async (address) => accountIndexQueue.add({ address })),
 	);
 	logger.info('Finished scheduling of delegate accounts indexing');
 };
 
 const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 	await Promise.all(accountAddressesToIndex
-		.map(async (address) => accountIndexQueue
-			.add({ address }),
-		),
+		.map(async (address) => accountIndexQueue.add({ address })),
 	);
 	logger.info('Finished scheduling of genesis accounts indexing');
 };
