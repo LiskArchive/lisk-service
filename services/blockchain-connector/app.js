@@ -24,6 +24,8 @@ const config = require('./config');
 const packageJson = require('./package.json');
 const nodeStatus = require('./shared/nodeStatus');
 
+const { getGenesisBlock } = require('./shared/sdk/genesisBlock');
+
 const loggerConf = {
 	...config.log,
 	name: packageJson.name,
@@ -47,10 +49,12 @@ nodeStatus.waitForNode().then(async () => {
 	// Add routes, events & jobs
 	await app.addMethods(path.join(__dirname, 'methods'));
 	await app.addEvents(path.join(__dirname, 'events'));
+	await app.addJobs(path.join(__dirname, 'jobs'));
 
 	app.run()
-		.then(() => {
-			// TODO: Add application init logic
+		.then(async () => {
+			// Download the genesis block, if applicable
+			await getGenesisBlock();
 		})
 		.catch(err => {
 			logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);

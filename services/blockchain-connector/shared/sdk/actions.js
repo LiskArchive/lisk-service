@@ -30,36 +30,12 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 } = require('./actions_1');
-const { getApiClient, invokeAction } = require('./client');
-const { getGenesisBlockFromFS } = require('./blocksUtils');
-const { encodeBlock } = require('./encoder');
+const { timeoutMessage, getApiClient, invokeAction } = require('./client');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../parser');
+const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
 const logger = Logger();
-
-// Constants
-const timeoutMessage = 'Response not received in';
-
-let genesisHeight;
-let genesisBlockID;
-
-const getGenesisHeight = async () => {
-	if (!genesisHeight) {
-		const nodeInfo = await getNodeInfo();
-		genesisHeight = nodeInfo.genesisHeight;
-	}
-	return genesisHeight;
-};
-
-const getGenesisBlockID = async () => {
-	if (!genesisBlockID) {
-		// eslint-disable-next-line no-use-before-define
-		const genesisBlock = await getBlockByHeight(await getGenesisHeight());
-		genesisBlockID = genesisBlock.header.height;
-	}
-	return genesisBlockID;
-};
 
 const getConnectedPeers = async () => {
 	try {
@@ -161,17 +137,10 @@ const getLastBlock = async () => {
 
 const getBlockByHeight = async (height) => {
 	try {
-		// File based Genesis block handling
 		if (Number(height) === await getGenesisHeight()) {
-			const genesisBlock = await getGenesisBlockFromFS();
-			const encodedGenesisBlock = await encodeBlock(genesisBlock);
-			return { ...genesisBlock, _raw: encodedGenesisBlock };
+			return getGenesisBlock();
 		}
-	} catch (err) {
-		logger.debug('Genesis block snapshot retrieval was not possible, attempting to retrieve directly from the node.');
-	}
 
-	try {
 		const encodedBlock = await invokeAction('app:getBlockByHeight', { height });
 		const block = await decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
@@ -223,7 +192,7 @@ const getBlockByID = async (id) => {
 	try {
 		// File based Genesis block handling
 		if (id === await getGenesisBlockID()) {
-			return getBlockByHeight(await getGenesisHeight());
+			return getGenesisBlock();
 		}
 
 		const encodedBlock = await invokeAction('app:getBlockByID', { id });
