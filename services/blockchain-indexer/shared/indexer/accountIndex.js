@@ -186,5 +186,6 @@ module.exports = {
 	isGenesisAccountsIndexed,
 	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
+	addAccountToDirectUpdateQueue,
 	getGenesisAccountAddresses,
 };

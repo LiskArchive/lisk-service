@@ -51,6 +51,7 @@ const {
 	parseToJSONCompatObj,
 } = require('../utils/parser');
 
+const { getGenesisConfig } = require('../constants');
 const { getTableInstance } = require('../database/mysql');
 const config = require('../../config');
 const { addAccountToDirectUpdateQueue } = require('../indexer/accountIndex');
@@ -68,6 +69,11 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
+
+const getNumberOfForgers = async () => {
+	const genesisConfig = await getGenesisConfig();
+	return genesisConfig.activeDelegates + genesisConfig.standbyDelegates;
+};
 
 const normalizeAccount = account => {
 	account.address = getBase32AddressFromHex(account.address.toString('hex'));
@@ -598,4 +604,5 @@ module.exports = {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
+	getNumberOfForgers,
 };
