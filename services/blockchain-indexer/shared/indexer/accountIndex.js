@@ -133,7 +133,7 @@ const getNumberOfGenesisAccounts = async () => requestRpc('getNumberOfGenesisAcc
 
 const getGenesisAccountAddresses = async (includeLegacy = false) => {
 	let genesisAccounts = [];
-	const PAGE_SIZE = 1000;
+	const PAGE_SIZE = 100;
 	const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
 
 	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {

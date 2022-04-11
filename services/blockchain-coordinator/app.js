@@ -44,7 +44,7 @@ const app = Microservice({
 const coordinatorConfig = {
 	name: 'coordinator',
 	events: {
-		appBlockNew: (payload) => Signals.get('newBlock').dispatch(payload.block),
+		appBlockNew: ({ block }) => Signals.get('newBlock').dispatch(block),
 	},
 };
 

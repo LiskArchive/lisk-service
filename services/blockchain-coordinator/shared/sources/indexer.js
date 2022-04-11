@@ -15,7 +15,7 @@
  */
 const { requestIndexer } = require('../utils/request');
 
-const isGenesisBlockIndexed = async () => requestIndexer('isGenesisBlockIndexed');
+const getGenesisBlockIndexingStatus = async () => requestIndexer('isGenesisBlockIndexed');
 
 const getGenesisAccountsIndexingStatus = async () => requestIndexer('isGenesisAccountsIndexed');
 
@@ -33,7 +33,7 @@ const getCurrentHeight = async () => requestIndexer('getCurrentHeight');
 const getGenesisHeight = async () => requestIndexer('getGenesisHeight');
 
 module.exports = {
-	isGenesisBlockIndexed,
+	getGenesisBlockIndexingStatus,
 	getGenesisAccountsIndexingStatus,
 	getDelegateAccounts,
 	getGenesisAccountAddresses,
