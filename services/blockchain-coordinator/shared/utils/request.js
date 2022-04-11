@@ -13,13 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	CacheRedis,
-	// Logger,
-} = require('lisk-service-framework');
 
-const config = require('../../config');
+let app;
 
-const appStoreDb = CacheRedis('appStore', config.endpoints.cache);
+const setAppContext = (h) => app = h;
 
-module.exports = appStoreDb;
+const getAppContext = () => app;
+
+const requestRpc = async (service, method, params = {}) => {
+	const data = await getAppContext().requestRpc(`${service}.${method}`, params);
+	return data;
+};
+
+const requestConnector = async (method, params) => requestRpc('connector', method, params);
+
+const requestIndexer = async (method, params) => requestRpc('indexer', method, params);
+
+module.exports = {
+	setAppContext,
+	requestConnector,
+	requestIndexer,
+};

@@ -13,13 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	CacheRedis,
-	// Logger,
-} = require('lisk-service-framework');
+const { requestConnector } = require('../utils/request');
 
-const config = require('../../config');
+const getEnabledModules = async () => requestConnector('getRegisteredModules');
 
-const appStoreDb = CacheRedis('appStore', config.endpoints.cache);
-
-module.exports = appStoreDb;
+module.exports = {
+	getEnabledModules,
+};

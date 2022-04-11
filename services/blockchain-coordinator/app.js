@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -22,8 +21,8 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { updateGenesisHeight } = require('./shared/constants');
-const { setAppContext } = require('./shared/utils/appContext');
+const { setAppContext } = require('./shared/utils/request');
+const Signals = require('./shared/signals');
 
 const loggerConf = {
 	...config.log,
@@ -36,25 +35,34 @@ LoggerConfig(loggerConf);
 const logger = Logger();
 
 const app = Microservice({
-	name: 'indexer',
+	name: 'coordinator',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 });
 
+const coordinatorConfig = {
+	name: 'coordinator',
+	events: {
+		appBlockNew: ({ block }) => Signals.get('newBlock').dispatch(block),
+	},
+};
+
 setAppContext(app);
+const broker = app.getBroker();
 
 (async () => {
 	// Add routes, events & jobs
-	await app.addMethods(path.join(__dirname, 'methods'));
+	// await app.addMethods(path.join(__dirname, 'methods'));
 
 	// Run the application
-	app.run().then(async () => {
+	await broker.createService(coordinatorConfig);
+	await broker.waitForServices('indexer');
+	broker.start().then(async () => {
+		const { init } = require('./shared/scheduler');
 		logger.info(`Service started ${packageJson.name}`);
 
-		await updateGenesisHeight();
-		const processor = require('./shared/processor');
-		await processor.init();
+		await init();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);

@@ -28,7 +28,7 @@ const {
 
 const {
 	parseToJSONCompatObj,
-} = require('./utils/jsonTools');
+} = require('./utils/parser');
 
 const { requestRpc } = require('./utils/appContext');
 

@@ -15,13 +15,20 @@
  */
 const {
 	getMissingBlocks,
+	isGenesisBlockIndexed,
 } = require('../shared/indexer/blockchainIndex');
 
 const {
 	getDelegateAccounts,
 	buildLegacyAccountCache,
-	indexGenesisAccounts,
+	getGenesisAccountAddresses,
+	isGenesisAccountsIndexed,
 } = require('../shared/indexer/accountIndex');
+
+const {
+	getCurrentHeight,
+	getGenesisHeight,
+} = require('../shared/constants');
 
 module.exports = [
 	{
@@ -33,8 +40,20 @@ module.exports = [
 		},
 	},
 	{
-		name: 'indexGenesisAccounts',
-		controller: indexGenesisAccounts,
+		name: 'isGenesisBlockIndexed',
+		controller: isGenesisBlockIndexed,
+		params: {},
+	},
+	{
+		name: 'getGenesisAccountAddresses',
+		controller: async ({ includeLegacy }) => getGenesisAccountAddresses(includeLegacy),
+		params: {
+			includeLegacy: { optional: true, type: 'boolean', defaultValue: false },
+		},
+	},
+	{
+		name: 'isGenesisAccountsIndexed',
+		controller: isGenesisAccountsIndexed,
 		params: {},
 	},
 	{
@@ -45,6 +64,16 @@ module.exports = [
 	{
 		name: 'buildLegacyAccountCache',
 		controller: buildLegacyAccountCache,
+		params: {},
+	},
+	{
+		name: 'getCurrentHeight',
+		controller: getCurrentHeight,
+		params: {},
+	},
+	{
+		name: 'getGenesisHeight',
+		controller: getGenesisHeight,
 		params: {},
 	},
 ];

@@ -86,15 +86,9 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
 
-const blockchainStore = require('../database/blockchainStore');
-
 // Key-based account update
 // There is a bug that does not update public keys
 const KEY_BASED_ACCOUNT_UPDATE = false;
-
-// Height below which there are no missing blocks in the index
-const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
-const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -186,8 +180,8 @@ const updateVoteAggregates = async (job) => {
 	}
 };
 
-const voteAggregatesQueue = Queue(config.endpoints.redis, 'votingQueue', updateVoteAggregates, 1);
-const blockRewardsQueue = Queue(config.endpoints.redis, 'blockRewardsQueue', updateBlockRewards, 1);
+const voteAggregatesQueue = Queue(config.endpoints.cache, 'votingQueue', updateVoteAggregates, 1);
+const blockRewardsQueue = Queue(config.endpoints.cache, 'blockRewardsQueue', updateBlockRewards, 1);
 
 const ensureArray = (e) => Array.isArray(e) ? e : [e];
 
@@ -313,9 +307,9 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(config.endpoints.redis, 'indexBlocksQueue', indexBlock, 30);
-const updateBlockIndexQueue = Queue(config.endpoints.redis, 'updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue(config.endpoints.redis, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 30);
+const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
+const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
@@ -420,50 +414,6 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-const indexMissingBlocks = async (params = {}) => {
-	const genesisHeight = await getGenesisHeight();
-	const currentHeight = await getCurrentHeight();
-
-	// Missing blocks are being checked during start
-	// By default they are checked from the blockchain's beginning
-	// The param force: true skips the getIndexVerifiedHeight
-	// and makes it check the whole index
-	let lastScheduledBlock = await getIndexVerifiedHeight() || genesisHeight;
-	if (params.force === true) lastScheduledBlock = genesisHeight;
-
-	const minReqHeight = config.indexNumOfBlocks > 0
-		? currentHeight - config.indexNumOfBlocks : genesisHeight;
-
-	// Lowest and highest block heights expected to be indexed
-	const blockIndexHigherRange = currentHeight;
-	const blockIndexLowerRange = Math.max(minReqHeight, lastScheduledBlock);
-
-	// Retrieve the list of missing blocks
-	const missingBlockRanges = await findMissingBlocksInRange(
-		blockIndexLowerRange, blockIndexHigherRange);
-
-	// Start building the block index
-	try {
-		if (missingBlockRanges.length === 0) {
-			// Update 'indexVerifiedHeight' when no missing blocks are found
-			const indexVerifiedHeight = await getIndexVerifiedHeight();
-			await setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
-		} else {
-			for (let i = 0; i < missingBlockRanges.length; i++) {
-				const { from, to } = missingBlockRanges[i];
-
-				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from + 1} blocks)`);
-				/* eslint-disable-next-line no-await-in-loop */
-				await buildIndex(from, to);
-				/* eslint-disable-next-line no-await-in-loop */
-				await setIndexVerifiedHeight(to + 1);
-			}
-		}
-	} catch (err) {
-		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
-	}
-};
-
 const getNonFinalHeights = async () => {
 	const blocksDB = await getBlocksIndex();
 
@@ -501,10 +451,20 @@ const getMissingBlocks = async (params) => {
 	return listOfMissingBlocks;
 };
 
+const isGenesisBlockIndexed = async () => {
+	const blocksDB = await getBlocksIndex();
+	const genesisHeight = await getGenesisHeight();
+	const [block] = await blocksDB.find({ height: genesisHeight, limit: 1 }, ['height']);
+	return !!block;
+};
+
+const addBlockToQueue = async height => indexBlocksQueue.add({ height });
+
 module.exports = {
 	indexBlock,
 	indexNewBlock,
-	indexMissingBlocks,
 	updateNonFinalBlocks,
+	isGenesisBlockIndexed,
+	addBlockToQueue,
 	getMissingBlocks,
 };

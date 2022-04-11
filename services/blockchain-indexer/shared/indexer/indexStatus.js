@@ -105,5 +105,6 @@ const init = async () => {
 };
 
 module.exports = {
+	getIndexStats,
 	init,
 };
