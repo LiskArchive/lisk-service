@@ -14,7 +14,7 @@
  *
  */
 const { getNodeInfo } = require('./actions');
-const { parseToJSONCompatObj } = require('../jsonTools');
+const { parseToJSONCompatObj } = require('../parser');
 
 let genesisConfig;
 

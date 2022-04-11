@@ -32,8 +32,8 @@ const {
 } = require('./actions_1');
 const { timeoutMessage, getApiClient, invokeAction } = require('./client');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
+const { parseToJSONCompatObj } = require('../parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
-const { parseToJSONCompatObj } = require('../jsonTools');
 
 const logger = Logger();
 

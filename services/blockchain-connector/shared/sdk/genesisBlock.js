@@ -22,7 +22,7 @@ const { getNodeInfo } = require('./actions_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
 const { timeoutMessage, invokeAction } = require('./client');
 const { decodeBlock } = require('./decoder');
-const { parseToJSONCompatObj } = require('../jsonTools');
+const { parseToJSONCompatObj } = require('../parser');
 
 const logger = Logger();
 
