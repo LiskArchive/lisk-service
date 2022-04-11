@@ -46,8 +46,10 @@ module.exports = [
 	},
 	{
 		name: 'getGenesisAccountAddresses',
-		controller: getGenesisAccountAddresses,
-		params: {},
+		controller: async ({ includeLegacy }) => getGenesisAccountAddresses(includeLegacy),
+		params: {
+			includeLegacy: { optional: true, type: 'any' },
+		},
 	},
 	{
 		name: 'isGenesisAccountsIndexed',
