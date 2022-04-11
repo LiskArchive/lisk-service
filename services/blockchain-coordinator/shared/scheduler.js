@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Queue = require('bull');
+const MessageQueue = require('bull');
 
 const {
 	Logger,
@@ -38,13 +38,17 @@ const {
 const config = require('../config');
 const Signals = require('./signals');
 
-const blockIndexQueue = new Queue('Blocks', config.endpoints.redis, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const blockIndexQueue = new MessageQueue(
+	config.queue.blocks.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
-const accountIndexQueue = new Queue('Accounts', config.endpoints.redis, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const accountIndexQueue = new MessageQueue(
+	config.queue.accounts.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
 let registeredLiskModules;
 const setRegisteredModules = modules => registeredLiskModules = modules;
@@ -58,8 +62,8 @@ const scheduleGenesisBlockIndexing = async () => {
 
 const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 	const blockHeights = Array.isArray(heights)
-		?	heights
-		:	[heights];
+		? heights
+		: [heights];
 
 	await Promise.all(blockHeights.map(async height => blockIndexQueue.add({ height, isNewBlock })));
 	logger.info('Scheduled block indexing');

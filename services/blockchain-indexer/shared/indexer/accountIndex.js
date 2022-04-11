@@ -31,14 +31,6 @@ const {
 	getAccountsByPublicKey2,
 } = require('../accounts');
 
-const {
-	getBlockByHeight,
-} = require('../blocks');
-
-const {
-	getGenesisHeight,
-} = require('../constants');
-
 const { requestRpc } = require('../utils/appContext');
 
 const config = require('../../config');
@@ -107,11 +99,32 @@ const triggerAccountUpdates = async () => {
 
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
+const getNumberOfGenesisAccounts = async () => requestRpc('getNumberOfGenesisAccounts');
+
+const getGenesisAccounts = async () => {
+	let genesisAccounts = [];
+	const PAGE_SIZE = 100;
+	const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
+
+	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		const accounts = await requestRpc('getGenesisAccounts', { limit: PAGE_SIZE, offset: i * PAGE_SIZE });
+		genesisAccounts = genesisAccounts.concat(accounts);
+	}
+	return genesisAccounts;
+};
+
+const getGenesisAccountAddresses = async (includeLegacy = false) => {
+	const accounts = await getGenesisAccounts();
+	const filteredAccounts = accounts.filter(a => includeLegacy || a.address.length === 40);
+	const genesisAccountAddresses = filteredAccounts.map(account => account.address);
+	return genesisAccountAddresses;
+};
+
 const buildLegacyAccountCache = async () => {
 	// Cache the legacy account reclaim balance information
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-	const unregisteredAccounts = genesisBlock.asset.accounts
-		.filter(account => account.address.length !== 40);
+	const genesisAccounts = await getGenesisAccounts();
+	const unregisteredAccounts = genesisAccounts.filter(a => a.address.length !== 40);
 
 	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
 	logger.info('Starting to cache legacy account reclaim balance information');
@@ -127,24 +140,6 @@ const buildLegacyAccountCache = async () => {
 		{ concurrency: 1000 },
 	);
 	logger.info('Finished caching legacy account reclaim balance information');
-};
-
-const getNumberOfGenesisAccounts = async () => requestRpc('getNumberOfGenesisAccounts');
-
-const getGenesisAccountAddresses = async (includeLegacy = false) => {
-	let genesisAccounts = [];
-	const PAGE_SIZE = 100;
-	const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
-
-	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		const accounts = await requestRpc('getGenesisAccounts');
-		const filteredAccounts = accounts.filter(a => includeLegacy || a.address.length === 40);
-		genesisAccounts = genesisAccounts.concat(filteredAccounts);
-	}
-
-	const genesisAccountAddresses = genesisAccounts.map(account => account.address);
-	return genesisAccountAddresses;
 };
 
 const isGenesisAccountsIndexed = async () => {

@@ -53,6 +53,12 @@ config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
  * Message queue options
  */
 config.queue = {
+	accounts: {
+		name: 'Accounts',
+	},
+	blocks: {
+		name: 'Blocks',
+	},
 	defaultJobOptions: {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // millisecs

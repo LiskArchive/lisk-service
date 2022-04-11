@@ -36,13 +36,17 @@ const config = require('../config');
 
 const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
-const blockIndexQueue = new MessageQueue('Blocks', config.endpoints.messageQueue, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const blockIndexQueue = new MessageQueue(
+	config.queue.blocks.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
-const accountIndexQueue = new MessageQueue('Accounts', config.endpoints.messageQueue, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const accountIndexQueue = new MessageQueue(
+	config.queue.accounts.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
 let isLegacyAccountCached = false;
 
