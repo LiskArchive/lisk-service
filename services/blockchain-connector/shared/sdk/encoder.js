@@ -15,6 +15,7 @@
  */
 const { codec } = require('@liskhq/lisk-codec');
 
+const { parseInputBySchema } = require('../parser');
 const {
 	getAccountSchema,
 	getBlockSchema,
@@ -45,38 +46,16 @@ const encodeTransaction = async (transaction) => {
 
 const encodeBlock = async (block) => {
 	const { header, payload } = block;
+
+	// Handle the block payload
 	const blockPayloadBuffer = await Promise.all(payload.map(tx => encodeTransaction(tx)));
 
-	// TODO: Implement auto-transformer for Buffer/BigInt props based on the schema-object
-	if (Array.isArray(header.asset.accounts)) {
-		header.asset.initDelegates = header.asset.initDelegates.map(a => Buffer.from(a, 'hex'));
-		header.asset.accounts = header.asset.accounts.map(acc => {
-			acc.address = Buffer.from(acc.address, 'hex');
-			acc.token.balance = BigInt(acc.token.balance);
-			acc.sequence.nonce = BigInt(acc.sequence.nonce);
-			acc.keys.mandatoryKeys = acc.keys.mandatoryKeys.map(k => Buffer.from(k, 'hex'));
-			acc.keys.optionalKeys = acc.keys.optionalKeys.map(k => Buffer.from(k, 'hex'));
-			acc.dpos.delegate = {
-				...acc.dpos.delegate,
-				totalVotesReceived: BigInt(acc.dpos.delegate.totalVotesReceived),
-			};
-			acc.dpos.sentVotes = acc.dpos.sentVotes.map(v => ({
-				...v,
-				delegateAddress: Buffer.from(v.delegateAddress, 'hex'),
-				amount: BigInt(v.amount),
-			}));
-			acc.dpos.unlocking = acc.dpos.unlocking.map(u => ({
-				...u,
-				delegateAddress: Buffer.from(u.delegateAddress, 'hex'),
-				amount: BigInt(u.amount),
-			}));
-			return acc;
-		});
-	}
-
+	// Handle the block header asset
 	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(header.version);
-	const blockHeaderAssetBuffer = codec.encode(blockHeaderAssetSchema, header.asset);
+	const parsedHeaderAsset = parseInputBySchema(header.asset, blockHeaderAssetSchema);
+	const blockHeaderAssetBuffer = codec.encode(blockHeaderAssetSchema, parsedHeaderAsset);
 
+	// Handle the block header
 	const blockHeaderSchema = await getBlockHeaderSchema();
 	const blockHeaderBuffer = codec.encode(
 		blockHeaderSchema,
