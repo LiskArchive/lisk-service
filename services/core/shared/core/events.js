@@ -35,10 +35,6 @@ const {
 	calculateEstimateFeeByteQuick,
 } = require('./dynamicFees');
 
-const {
-	debounceLeading,
-} = require('../debounce');
-
 const config = require('../../config');
 
 const logger = Logger();
@@ -49,7 +45,7 @@ const events = {
 			logger.debug(`New block arrived: ${newBlock.id} at height ${newBlock.height}`);
 			performLastBlockUpdate(newBlock);
 
-			debounceLeading(async () => {
+			setImmediate(async () => {
 				logger.debug(`============== Dispatching block to index: ${newBlock.id} at height ${newBlock.height} ==============`);
 				let response;
 				try {
@@ -78,7 +74,7 @@ const events = {
 	},
 	deleteBlock: async (block) => {
 		try {
-			debounceLeading(async () => {
+			setImmediate(async () => {
 				await deleteBlock(block);
 				logger.debug(`============== 'deleteBlock' signal: ${Signals.get('deleteBlock')} ==============`);
 				Signals.get('deleteBlock').dispatch({ data: [block] });
@@ -89,7 +85,7 @@ const events = {
 	},
 	newRound: async () => {
 		try {
-			debounceLeading(async () => {
+			setImmediate(async () => {
 				await reloadDelegateCache();
 				await reloadNextForgersCache();
 				const limit = core.getSDKVersion() >= 4 ? 103 : 101;
