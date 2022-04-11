@@ -20,6 +20,6 @@ const {
 
 const config = require('../../config');
 
-const appStoreDb = CacheRedis('appStore', config.endpoints.redis);
+const appStoreDb = CacheRedis('appStore', config.endpoints.cache);
 
 module.exports = appStoreDb;

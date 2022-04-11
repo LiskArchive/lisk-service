@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const Queue = require('bull');
+const MessageQueue = require('bull');
 
 const {
 	Logger,
@@ -22,10 +22,10 @@ const {
 const logger = Logger();
 
 const {
-	isGenesisBlockAlreadyIndexed,
-	getGenesisAccountsIndexingStatus,
+	isGenesisBlockIndexed,
+	isGenesisAccountsIndexed,
 	getDelegateAccounts,
-	getGenesisAccounts,
+	getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
@@ -38,16 +38,20 @@ const {
 const config = require('../config');
 const Signals = require('./signals');
 
-const blockIndexQueue = new Queue('Blocks', config.endpoints.redis, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const blockIndexQueue = new MessageQueue(
+	config.queue.blocks.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
-const accountIndexQueue = new Queue('Accounts', config.endpoints.redis, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const accountIndexQueue = new MessageQueue(
+	config.queue.accounts.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
 let registeredLiskModules;
-const setRegisteredmodules = modules => registeredLiskModules = modules;
+const setRegisteredModules = modules => registeredLiskModules = modules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
 
 const scheduleGenesisBlockIndexing = async () => {
@@ -56,33 +60,25 @@ const scheduleGenesisBlockIndexing = async () => {
 	logger.info('Finished scheduling of genesis block indexing');
 };
 
-const scheduleBlocksIndexing = async (blockHeights, isNewBlock = false) => {
-	const finalBlockHeights = Array.isArray(blockHeights)
-		?	blockHeights
-		:	[blockHeights];
+const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
+	const blockHeights = Array.isArray(heights)
+		? heights
+		: [heights];
 
-	await Promise.all(finalBlockHeights.map(
-		async height => blockIndexQueue.add({ height, isNewBlock }),
-	),
-	);
-
+	await Promise.all(blockHeights.map(async height => blockIndexQueue.add({ height, isNewBlock })));
 	logger.info('Scheduled block indexing');
 };
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {
 	await Promise.all(addresses
-		.map(async (address) => accountIndexQueue
-			.add({ address }),
-		),
+		.map(async (address) => accountIndexQueue.add({ address })),
 	);
 	logger.info('Finished scheduling of delegate accounts indexing');
 };
 
 const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 	await Promise.all(accountAddressesToIndex
-		.map(async (address) => accountIndexQueue
-			.add({ address }),
-		),
+		.map(async (address) => accountIndexQueue.add({ address })),
 	);
 	logger.info('Finished scheduling of genesis accounts indexing');
 };
@@ -93,7 +89,7 @@ const init = async () => {
 	Signals.get('newBlock').add(newBlockListener);
 
 	// Retrieve enabled modules from connector
-	setRegisteredmodules(await getEnabledModules());
+	setRegisteredModules(await getEnabledModules());
 
 	// Get all delegates and schedule indexing
 	const delegates = await getDelegateAccounts();
@@ -102,8 +98,8 @@ const init = async () => {
 	}
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
-	const isGenesisBlockIndexed = await isGenesisBlockAlreadyIndexed();
-	if (!isGenesisBlockIndexed) {
+	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
+	if (!isGenesisBlockAlreadyIndexed) {
 		await scheduleGenesisBlockIndexing();
 	}
 
@@ -118,9 +114,9 @@ const init = async () => {
 	}
 
 	// Schedule genesis accounts indexing
-	const isGenesisAccountsIndexed = await getGenesisAccountsIndexingStatus();
-	if (!isGenesisAccountsIndexed) {
-		const genesisAccountAddresses = await getGenesisAccounts();
+	const isGenesisAccountsAlreadyIndexed = await isGenesisAccountsIndexed();
+	if (!isGenesisAccountsAlreadyIndexed) {
+		const genesisAccountAddresses = await getGenesisAccountAddresses();
 		if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
 			await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
 		}

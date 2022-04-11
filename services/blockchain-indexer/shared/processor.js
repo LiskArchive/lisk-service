@@ -36,13 +36,17 @@ const config = require('../config');
 
 const STATS_INTERVAL = 1 * 60 * 1000; // ms
 
-const blockIndexQueue = new MessageQueue('Blocks', config.endpoints.redisCoordinator, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const blockIndexQueue = new MessageQueue(
+	config.queue.blocks.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
-const accountIndexQueue = new MessageQueue('Accounts', config.endpoints.redisCoordinator, {
-	defaultJobOptions: config.queue.defaultJobOptions,
-});
+const accountIndexQueue = new MessageQueue(
+	config.queue.accounts.name,
+	config.endpoints.messageQueue,
+	{ defaultJobOptions: config.queue.defaultJobOptions },
+);
 
 let isLegacyAccountCached = false;
 
@@ -50,7 +54,7 @@ const queueStatus = async (queueInstance) => {
 	setInterval(async () => {
 		const jc = await queueInstance.getJobCounts();
 		if (Number(jc.waiting) > 0 || Number(jc.active) > 0
-            || Number(jc.failed) > 0 || Number(jc.paused) > 0) {
+			|| Number(jc.failed) > 0 || Number(jc.paused) > 0) {
 			logger.info(`Queue counters for ${queueInstance.name}: waiting: ${jc.waiting}, active: ${jc.active}, failed: ${jc.failed}, paused: ${jc.paused}`);
 		} else {
 			logger.info(`Queue counters for ${queueInstance.name}: All scheduled jobs are done.`);
@@ -69,24 +73,25 @@ const initProcess = async () => {
 		const { height, isNewBlock } = job.data;
 
 		if (isNewBlock) {
+			logger.debug(`Scheduling indexing for new block at height: ${height}`);
 			await indexNewBlock(height);
 		} else {
+			logger.debug(`Scheduling indexing for block at height: ${height}`);
 			await addBlockToQueue(height);
-			logger.debug(`Index block at height: ${height}`);
 		}
 	});
 
 	accountIndexQueue.process(async (job) => {
-		logger.debug('Subsribed to account index message queue');
+		logger.debug('Subscribed to account index message queue');
 		if (!isLegacyAccountCached) {
 			await buildLegacyAccountCache();
 			isLegacyAccountCached = true;
-			logger.info('Legacy accounts caching is done.');
+			logger.info('Finished caching legacy accounts');
 		}
 
 		const { address } = job.data;
+		logger.debug(`Scheduling indexing for account with address: ${address}`);
 		await addAccountToAddrUpdateQueue(address);
-		logger.debug(`Index account with address: ${address}`);
 	});
 
 	await initQueueStatus();

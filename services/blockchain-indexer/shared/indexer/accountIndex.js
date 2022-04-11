@@ -31,31 +31,22 @@ const {
 	getAccountsByPublicKey2,
 } = require('../dataService/accounts');
 
-const {
-	getBlockByHeight,
-} = require('../dataService/blocks');
-
-const {
-	getGenesisHeight,
-} = require('../constants');
-
 const { requestRpc } = require('../utils/appContext');
 
 const config = require('../../config');
 const keyValueDB = require('../database/mysqlKVStore');
 const Signals = require('../utils/signals');
 
-const redis = new Redis(config.endpoints.redis);
+const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('./schema/accounts');
 
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
 
 // Key constants for the KV-store
 const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
-let genesisAccountsToIndex;
 
 const logger = Logger();
 
@@ -86,9 +77,9 @@ const updateAccountWithData = async (job) => {
 	await accountsDB.upsert(accounts);
 };
 
-const accountPkUpdateQueue = Queue(config.endpoints.redis, 'accountQueueByPublicKey', updateAccountInfoPk, 1);
-const accountAddrUpdateQueue = Queue(config.endpoints.redis, 'accountQueueByAddress', updateAccountInfoAddr, 1);
-const accountDirectUpdateQueue = Queue(config.endpoints.redis, 'accountQueueDirect', updateAccountWithData, 1);
+const accountPkUpdateQueue = Queue(config.endpoints.cache, 'accountQueueByPublicKey', updateAccountInfoPk, 1);
+const accountAddrUpdateQueue = Queue(config.endpoints.cache, 'accountQueueByAddress', updateAccountInfoAddr, 1);
+const accountDirectUpdateQueue = Queue(config.endpoints.cache, 'accountQueueDirect', updateAccountWithData, 1);
 
 const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
 
@@ -108,11 +99,32 @@ const triggerAccountUpdates = async () => {
 
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
+const getNumberOfGenesisAccounts = async () => requestRpc('getNumberOfGenesisAccounts');
+
+const getGenesisAccounts = async () => {
+	let genesisAccounts = [];
+	const PAGE_SIZE = 100;
+	const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
+
+	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		const accounts = await requestRpc('getGenesisAccounts', { limit: PAGE_SIZE, offset: i * PAGE_SIZE });
+		genesisAccounts = genesisAccounts.concat(accounts);
+	}
+	return genesisAccounts;
+};
+
+const getGenesisAccountAddresses = async (includeLegacy = false) => {
+	const accounts = await getGenesisAccounts();
+	const filteredAccounts = accounts.filter(a => includeLegacy || a.address.length === 40);
+	const genesisAccountAddresses = filteredAccounts.map(account => account.address);
+	return genesisAccountAddresses;
+};
+
 const buildLegacyAccountCache = async () => {
 	// Cache the legacy account reclaim balance information
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-	const unregisteredAccounts = genesisBlock.asset.accounts
-		.filter(account => account.address.length !== 40);
+	const genesisAccounts = await getGenesisAccounts();
+	const unregisteredAccounts = genesisAccounts.filter(a => a.address.length !== 40);
 
 	logger.info(`${unregisteredAccounts.length} unregistered accounts found in the genesis block`);
 	logger.info('Starting to cache legacy account reclaim balance information');
@@ -131,37 +143,24 @@ const buildLegacyAccountCache = async () => {
 };
 
 const isGenesisAccountsIndexed = async () => {
-	if (!genesisAccountsToIndex) {
-		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-		genesisAccountsToIndex = genesisBlock.asset.accounts
-			.filter(account => account.address.length === 40)
-			.map(account => account.address);
-	}
 	const isIndexed = await keyValueDB.get(isGenesisAccountIndexingFinished);
 	if (!isIndexed) {
+		const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
 		const accountsDB = await getAccountIndex();
 		const count = await accountsDB.count();
-		if (count > genesisAccountsToIndex.length) {
+		if (count >= numOfGenesisAccounts) {
 			await keyValueDB.set(isGenesisAccountIndexingFinished, true);
 			return true;
-		} return false;
-	} return true;
+		}
+		return false;
+	}
+	return true;
 };
 
 const getDelegateAccounts = async () => {
 	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
 	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
 	return allDelegateAddresses;
-};
-
-const getGenesisAccounts = async () => {
-	if (!genesisAccountsToIndex) {
-		const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
-		genesisAccountsToIndex = genesisBlock.asset.accounts
-			.filter(account => account.address.length === 40)
-			.map(account => account.address);
-	}
-	return genesisAccountsToIndex;
 };
 
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
@@ -187,6 +186,5 @@ module.exports = {
 	isGenesisAccountsIndexed,
 	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
-	addAccountToDirectUpdateQueue,
-	getGenesisAccounts,
+	getGenesisAccountAddresses,
 };
