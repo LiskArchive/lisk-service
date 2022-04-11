@@ -22,8 +22,8 @@ const {
 const logger = Logger();
 
 const {
-	getGenesisBlockIndexingStatus,
-	getGenesisAccountsIndexingStatus,
+	isGenesisBlockIndexed,
+	isGenesisAccountsIndexed,
 	getDelegateAccounts,
 	getGenesisAccountAddresses,
 	getMissingblocks,
@@ -47,7 +47,7 @@ const accountIndexQueue = new Queue('Accounts', config.endpoints.redis, {
 });
 
 let registeredLiskModules;
-const setRegisteredmodules = modules => registeredLiskModules = modules;
+const setRegisteredModules = modules => registeredLiskModules = modules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
 
 const scheduleGenesisBlockIndexing = async () => {
@@ -89,7 +89,7 @@ const init = async () => {
 	Signals.get('newBlock').add(newBlockListener);
 
 	// Retrieve enabled modules from connector
-	setRegisteredmodules(await getEnabledModules());
+	setRegisteredModules(await getEnabledModules());
 
 	// Get all delegates and schedule indexing
 	const delegates = await getDelegateAccounts();
@@ -98,8 +98,8 @@ const init = async () => {
 	}
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
-	const isGenesisBlockIndexed = await getGenesisBlockIndexingStatus();
-	if (!isGenesisBlockIndexed) {
+	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
+	if (!isGenesisBlockAlreadyIndexed) {
 		await scheduleGenesisBlockIndexing();
 	}
 
@@ -114,8 +114,8 @@ const init = async () => {
 	}
 
 	// Schedule genesis accounts indexing
-	const isGenesisAccountsIndexed = await getGenesisAccountsIndexingStatus();
-	if (!isGenesisAccountsIndexed) {
+	const isGenesisAccountsAlreadyIndexed = await isGenesisAccountsIndexed();
+	if (!isGenesisAccountsAlreadyIndexed) {
 		const genesisAccountAddresses = await getGenesisAccountAddresses();
 		if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
 			await scheduleGenesisAccountsIndexing(genesisAccountAddresses);

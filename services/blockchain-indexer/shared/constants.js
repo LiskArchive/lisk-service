@@ -44,7 +44,7 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const resolvemoduleAssets = (data) => {
+const resolveModuleAssets = (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.transactionAssets.length) {
@@ -65,7 +65,7 @@ const resolvemoduleAssets = (data) => {
 
 const getAvailableLiskModuleAssets = async () => {
 	const registeredModules = await requestRpc('getRegisteredModules', {});
-	return resolvemoduleAssets(registeredModules);
+	return resolveModuleAssets(registeredModules);
 };
 
 module.exports = {
