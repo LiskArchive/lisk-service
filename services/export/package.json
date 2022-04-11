@@ -36,7 +36,7 @@
     "bull": "^3.29.2",
     "json2csv": "^5.0.6",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/fd16d55072965e76bb6ec10525a91bb3fdb9c7c7/framework/dist/lisk-service-framework-1.2.5.tgz",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "moment-range": "^4.0.2",
     "minio": "^7.0.21",
     "node-cron": "=2.0.3"
