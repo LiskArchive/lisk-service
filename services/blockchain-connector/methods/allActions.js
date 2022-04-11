@@ -25,8 +25,7 @@ const exportAllMethods = async () => {
 			description: `Action: ${action}`,
 			controller,
 			params: {
-				action: { optional: true, type: 'any' },
-				params: { optional: true, type: 'any' },
+				params: { optional: true, type: 'object' },
 			},
 		};
 	});
