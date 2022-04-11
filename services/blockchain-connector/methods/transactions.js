@@ -25,14 +25,14 @@ module.exports = [
 		name: 'getTransactionByID',
 		controller: async ({ id }) => getTransactionByID(id),
 		params: {
-			id: { optional: false, type: 'any' },
+			id: { optional: false, type: 'string' },
 		},
 	},
 	{
 		name: 'getTransactionsByIDs',
 		controller: async ({ ids }) => getTransactionsByIDs(ids),
 		params: {
-			ids: { optional: false, type: 'any' },
+			ids: { optional: false, type: 'array', items: 'string' },
 		},
 	},
 	{
@@ -44,7 +44,7 @@ module.exports = [
 		name: 'postTransaction',
 		controller: async ({ transaction }) => postTransaction(transaction),
 		params: {
-			transaction: { optional: false, type: 'any' },
+			transaction: { optional: false, type: 'string' },
 		},
 	},
 ];

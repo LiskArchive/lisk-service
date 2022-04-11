@@ -21,6 +21,12 @@ const {
 	getBlocksByHeightBetween,
 } = require('../shared/sdk/actions');
 
+const {
+	getGenesisHeight,
+	getGenesisBlockID,
+	getGenesisBlock,
+} = require('../shared/sdk/genesisBlock');
+
 module.exports = [
 	{
 		name: 'getLastBlock',
@@ -31,29 +37,44 @@ module.exports = [
 		name: 'getBlockByID',
 		controller: async ({ id }) => getBlockByID(id),
 		params: {
-			id: { optional: false, type: 'any' },
+			id: { optional: false, type: 'string' },
 		},
 	},
 	{
 		name: 'getBlocksByIDs',
 		controller: async ({ ids }) => getBlocksByIDs(ids),
 		params: {
-			ids: { optional: false, type: 'any' },
+			ids: { optional: false, type: 'array', items: 'string' },
 		},
 	},
 	{
 		name: 'getBlockByHeight',
 		controller: async ({ height }) => getBlockByHeight(height),
 		params: {
-			height: { optional: false, type: 'any' },
+			height: { optional: false, type: 'number' },
 		},
 	},
 	{
 		name: 'getBlocksByHeightBetween',
 		controller: async ({ from, to }) => getBlocksByHeightBetween({ from, to }),
 		params: {
-			from: { optional: false, type: 'any' },
-			to: { optional: false, type: 'any' },
+			from: { optional: false, type: 'number' },
+			to: { optional: false, type: 'number' },
 		},
+	},
+	{
+		name: 'getGenesisHeight',
+		controller: getGenesisHeight,
+		params: {},
+	},
+	{
+		name: 'getGenesisBlockID',
+		controller: getGenesisBlockID,
+		params: {},
+	},
+	{
+		name: 'getGenesisBlock',
+		controller: async () => getGenesisBlock(),
+		params: {},
 	},
 ];
