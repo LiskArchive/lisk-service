@@ -37,13 +37,13 @@ const config = require('../../config');
 const keyValueDB = require('../database/mysqlKVStore');
 const Signals = require('../utils/signals');
 
-const redis = new Redis(config.endpoints.redis);
+const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('./schema/accounts');
 
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
 
 // Key constants for the KV-store
 const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
@@ -77,9 +77,9 @@ const updateAccountWithData = async (job) => {
 	await accountsDB.upsert(accounts);
 };
 
-const accountPkUpdateQueue = Queue(config.endpoints.redis, 'accountQueueByPublicKey', updateAccountInfoPk, 1);
-const accountAddrUpdateQueue = Queue(config.endpoints.redis, 'accountQueueByAddress', updateAccountInfoAddr, 1);
-const accountDirectUpdateQueue = Queue(config.endpoints.redis, 'accountQueueDirect', updateAccountWithData, 1);
+const accountPkUpdateQueue = Queue(config.endpoints.cache, 'accountQueueByPublicKey', updateAccountInfoPk, 1);
+const accountAddrUpdateQueue = Queue(config.endpoints.cache, 'accountQueueByAddress', updateAccountInfoAddr, 1);
+const accountDirectUpdateQueue = Queue(config.endpoints.cache, 'accountQueueDirect', updateAccountWithData, 1);
 
 const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
 

@@ -180,8 +180,8 @@ const updateVoteAggregates = async (job) => {
 	}
 };
 
-const voteAggregatesQueue = Queue(config.endpoints.redis, 'votingQueue', updateVoteAggregates, 1);
-const blockRewardsQueue = Queue(config.endpoints.redis, 'blockRewardsQueue', updateBlockRewards, 1);
+const voteAggregatesQueue = Queue(config.endpoints.cache, 'votingQueue', updateVoteAggregates, 1);
+const blockRewardsQueue = Queue(config.endpoints.cache, 'blockRewardsQueue', updateBlockRewards, 1);
 
 const ensureArray = (e) => Array.isArray(e) ? e : [e];
 
@@ -307,9 +307,9 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(config.endpoints.redis, 'indexBlocksQueue', indexBlock, 30);
-const updateBlockIndexQueue = Queue(config.endpoints.redis, 'updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue(config.endpoints.redis, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 30);
+const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
+const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();

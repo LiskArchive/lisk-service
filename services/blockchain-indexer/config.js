@@ -28,9 +28,9 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 /**
  * External endpoints
  */
+config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://localhost:6379/2';
 config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
 config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
-config.endpoints.redis = process.env.SERVICE_INDEXER_REDIS || 'redis://localhost:6379/2';
 
 /**
  * LOGGING

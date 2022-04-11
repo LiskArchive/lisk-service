@@ -56,7 +56,8 @@ const broker = app.getBroker();
 	// await app.addMethods(path.join(__dirname, 'methods'));
 
 	// Run the application
-	broker.createService(coordinatorConfig);
+	await broker.createService(coordinatorConfig);
+	await broker.waitForServices('indexer');
 	broker.start().then(async () => {
 		const { init } = require('./shared/scheduler');
 		logger.info(`Service started ${packageJson.name}`);
