@@ -21,7 +21,7 @@ const {
 const {
 	getDelegateAccounts,
 	buildLegacyAccountCache,
-	getGenesisAccounts,
+	getGenesisAccountAddresses,
 	isGenesisAccountsIndexed,
 } = require('../shared/indexer/accountIndex');
 
@@ -45,8 +45,8 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'getGenesisAccounts',
-		controller: getGenesisAccounts,
+		name: 'getGenesisAccountAddresses',
+		controller: getGenesisAccountAddresses,
 		params: {},
 	},
 	{

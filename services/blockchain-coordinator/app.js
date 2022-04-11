@@ -21,7 +21,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { setAppContext } = require('./shared/utils/appContext');
+const { setAppContext } = require('./shared/utils/request');
 const Signals = require('./shared/signals');
 
 const loggerConf = {

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestIndexer } = require('../utils/appContext');
+const { requestIndexer } = require('../utils/request');
 
 const isGenesisBlockIndexed = async () => requestIndexer('isGenesisBlockIndexed');
 
@@ -21,7 +21,7 @@ const getGenesisAccountsIndexingStatus = async () => requestIndexer('isGenesisAc
 
 const getDelegateAccounts = async () => requestIndexer('getDelegateAccounts');
 
-const getGenesisAccounts = async () => requestIndexer('getGenesisAccounts');
+const getGenesisAccountAddresses = async () => requestIndexer('getGenesisAccountAddresses');
 
 const getMissingblocks = async (from, to) => requestIndexer('getMissingBlocks', {
 	from,
@@ -36,7 +36,7 @@ module.exports = {
 	isGenesisBlockIndexed,
 	getGenesisAccountsIndexingStatus,
 	getDelegateAccounts,
-	getGenesisAccounts,
+	getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,

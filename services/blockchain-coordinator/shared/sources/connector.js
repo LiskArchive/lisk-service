@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../utils/appContext');
+const { requestConnector } = require('../utils/request');
 
 const getEnabledModules = async () => requestConnector('getRegisteredModules');
 

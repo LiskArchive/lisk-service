@@ -25,7 +25,7 @@ const {
 	isGenesisBlockIndexed,
 	getGenesisAccountsIndexingStatus,
 	getDelegateAccounts,
-	getGenesisAccounts,
+	getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
@@ -56,16 +56,12 @@ const scheduleGenesisBlockIndexing = async () => {
 	logger.info('Finished scheduling of genesis block indexing');
 };
 
-const scheduleBlocksIndexing = async (blockHeights, isNewBlock = false) => {
-	const finalBlockHeights = Array.isArray(blockHeights)
-		?	blockHeights
-		:	[blockHeights];
+const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
+	const blockHeights = Array.isArray(heights)
+		?	heights
+		:	[heights];
 
-	await Promise.all(finalBlockHeights.map(
-		async height => blockIndexQueue.add({ height, isNewBlock }),
-	),
-	);
-
+	await Promise.all(blockHeights.map(async height => blockIndexQueue.add({ height, isNewBlock })));
 	logger.info('Scheduled block indexing');
 };
 
@@ -120,7 +116,7 @@ const init = async () => {
 	// Schedule genesis accounts indexing
 	const isGenesisAccountsIndexed = await getGenesisAccountsIndexingStatus();
 	if (!isGenesisAccountsIndexed) {
-		const genesisAccountAddresses = await getGenesisAccounts();
+		const genesisAccountAddresses = await getGenesisAccountAddresses();
 		if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
 			await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
 		}

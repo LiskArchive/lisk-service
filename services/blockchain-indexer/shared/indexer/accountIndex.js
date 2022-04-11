@@ -129,21 +129,31 @@ const buildLegacyAccountCache = async () => {
 	logger.info('Finished caching legacy account reclaim balance information');
 };
 
-const getGenesisAccounts = async () => {
-	const genesisAccounts = await requestRpc('getGenesisAccounts');
-	const genesisAccountsToIndex = genesisAccounts
-		.filter(account => account.address.length === 40)
-		.map(account => account.address);
-	return genesisAccountsToIndex;
+const getNumberOfGenesisAccounts = async () => requestRpc('getNumberOfGenesisAccounts');
+
+const getGenesisAccountAddresses = async (includeLegacy = false) => {
+	let genesisAccounts = [];
+	const PAGE_SIZE = 1000;
+	const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
+
+	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {
+		// eslint-disable-next-line no-await-in-loop
+		const accounts = await requestRpc('getGenesisAccounts');
+		const filteredAccounts = accounts.filter(a => includeLegacy || a.address.length === 40);
+		genesisAccounts = genesisAccounts.concat(filteredAccounts);
+	}
+
+	const genesisAccountAddresses = genesisAccounts.map(account => account.address);
+	return genesisAccountAddresses;
 };
 
 const isGenesisAccountsIndexed = async () => {
 	const isIndexed = await keyValueDB.get(isGenesisAccountIndexingFinished);
 	if (!isIndexed) {
-		const numberOfGenesisAccounts = await requestRpc('getNumberOfGenesisAccounts');
+		const numOfGenesisAccounts = await getNumberOfGenesisAccounts();
 		const accountsDB = await getAccountIndex();
 		const count = await accountsDB.count();
-		if (count >= numberOfGenesisAccounts) {
+		if (count >= numOfGenesisAccounts) {
 			await keyValueDB.set(isGenesisAccountIndexingFinished, true);
 			return true;
 		}
@@ -180,5 +190,5 @@ module.exports = {
 	isGenesisAccountsIndexed,
 	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
-	getGenesisAccounts,
+	getGenesisAccountAddresses,
 };
