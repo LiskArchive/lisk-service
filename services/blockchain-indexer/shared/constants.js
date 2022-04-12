@@ -16,17 +16,14 @@
 const blockchainStore = require('./database/blockchainStore');
 const { requestRpc } = require('./utils/appContext');
 
-const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);
-const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
-
 const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
 let genesisConfig;
 
-const updateFinalizedHeight = async () => {
+const getFinalizedHeight = async () => {
 	const { finalizedHeight } = await requestRpc('getNodeInfo');
-	await setFinalizedHeight(finalizedHeight);
+	return finalizedHeight;
 };
 
 const updateGenesisHeight = async () => {
@@ -69,7 +66,6 @@ const getAvailableLiskModuleAssets = async () => {
 };
 
 module.exports = {
-	updateFinalizedHeight,
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisConfig,
