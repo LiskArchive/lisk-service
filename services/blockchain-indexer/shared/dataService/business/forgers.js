@@ -27,7 +27,7 @@ const { isProperObject } = ObjectUtilService;
 
 const getForgers = async params => {
 	const forgers = await requestRpc('getForgers', params);
-	forgers.data = forgers.data
+	forgers.data = forgers
 		.map(forger => ({
 			...forger,
 			address: getBase32AddressFromHex(forger.address),

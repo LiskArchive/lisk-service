@@ -19,6 +19,7 @@ const {
 
 const {
 	getForgers,
+	reloadDelegateCache,
 } = require('../shared/dataService/delegates');
 
 module.exports = [
@@ -45,5 +46,10 @@ module.exports = [
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },
 		},
+	},
+	{
+		name: 'reloadDelegateCache',
+		controller: reloadDelegateCache,
+		params: {},
 	},
 ];

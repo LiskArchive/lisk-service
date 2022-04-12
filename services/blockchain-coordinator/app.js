@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -53,7 +54,7 @@ const broker = app.getBroker();
 
 (async () => {
 	// Add routes, events & jobs
-	// await app.addMethods(path.join(__dirname, 'methods'));
+	await app.addJobs(path.join(__dirname, 'jobs'));
 
 	// Run the application
 	broker.createService(coordinatorConfig);

@@ -22,21 +22,6 @@ const {
 	getLegacyAddressFromPublicKey,
 } = require('@liskhq/lisk-cryptography');
 
-const { Utils } = require('lisk-service-framework');
-
-const {
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountByUsername,
-} = require('../dataService/business');
-
-const { getAccounts } = require('../dataService/accounts');
-const { getDelegates } = require('../dataService/delegates');
-
-// Utils & helpers
-const ObjectUtilService = Utils.Data;
-const { isEmptyArray } = ObjectUtilService;
-
 const accountsIndexSchema = require('../indexer/schema/accounts');
 
 const { getTableInstance } = require('../database/mysql');
@@ -104,100 +89,8 @@ const getBase32AddressFromPublicKey = publicKey => {
 	return base32Address;
 };
 
-const confirmAddress = async address => {
-	if (!address || typeof address !== 'string') return false;
-	const account = await getCachedAccountByAddress(parseAddress(address));
-	return account && account.address.toUpperCase() === address;
-};
-
-const confirmUsername = async username => {
-	if (!username || typeof username !== 'string') return false;
-	const result = await getDelegates({ username });
-	if (!Array.isArray(result.data) || isEmptyArray(result.data)) return false;
-	return result.data[0].username === username;
-};
-
-const confirmPublicKey = async publicKey => {
-	if (!publicKey || typeof publicKey !== 'string') return false;
-	const account = await getCachedAccountByPublicKey(publicKey);
-	return account && account.publicKey === publicKey;
-};
-
-const getUsernameByAddress = async address => {
-	const account = await getCachedAccountByAddress(parseAddress(address));
-	return account && account.username;
-};
-
-const getAddressByPublicKey = async publicKey => {
-	if (!publicKey || typeof publicKey !== 'string') return '';
-	const account = await getCachedAccountByPublicKey(publicKey);
-	return account ? account.address : '';
-};
-
-const getAddressByUsername = async username => {
-	if (!username || typeof username !== 'string') return '';
-	const account = await getCachedAccountByUsername(username);
-	return account ? account.address : '';
-};
-
-const getAddressByAny = async param => {
-	const paramNames = {
-		'username:': getAddressByUsername,
-		'address:': parseAddress,
-		'publickey:': getAddressByPublicKey,
-	};
-
-	const hasPrefix = p => !!Object.keys(paramNames).filter(item => p.indexOf(item) === 0).length;
-
-	const separateParam = p => Object.keys(paramNames)
-		.filter(prefix => p.indexOf(prefix) === 0)
-		.reduce((array, prefix) => [...array, prefix, p.slice(prefix.length)], []);
-
-	if (!hasPrefix(param)) {
-		const parsedAddress = parseAddress(param);
-		if (validateAddress(parsedAddress)
-			&& await confirmAddress(parsedAddress)) return parsedAddress;
-	}
-
-	const [prefix, body] = separateParam(param);
-	if (prefix && body) return paramNames[prefix](body);
-	return null;
-};
-
-const getPublicKeyByAddress = async address => {
-	if (!address || typeof address !== 'string') return '';
-	const account = await getAccounts({ address });
-	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
-	return account.data[0].publicKey;
-};
-
-const getPublicKeyByUsername = async username => {
-	if (!username || typeof username !== 'string') return '';
-	const account = await getAccounts({ username });
-	if (!Array.isArray(account.data) || isEmptyArray(account.data)) return '';
-	const { publicKey } = account.data[0];
-	return publicKey;
-};
-
-const getPublicKeyByAny = async param => {
-	if (!param || typeof param !== 'string') return '';
-	if (validatePublicKey(param) && (await confirmPublicKey(param))) return param;
-	if (validateAddress(param)) return getPublicKeyByAddress(param);
-	return getPublicKeyByUsername(param);
-};
-
 module.exports = {
 	parseAddress,
-	confirmAddress,
-	confirmUsername,
-	confirmPublicKey,
-	getUsernameByAddress,
-	getAddressByPublicKey,
-	getAddressByUsername,
-	getAddressByAny,
-	getPublicKeyByAddress,
-	getPublicKeyByUsername,
-	getPublicKeyByAny,
 	validateAddress,
 	validatePublicKey,
 	getIndexedAccountInfo,
