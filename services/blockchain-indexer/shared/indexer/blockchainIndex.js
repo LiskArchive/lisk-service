@@ -311,6 +311,8 @@ const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', index
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
+const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
+
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
 	const [block] = await getBlockByHeight(height);
@@ -467,4 +469,5 @@ module.exports = {
 	isGenesisBlockIndexed,
 	addBlockToQueue,
 	getMissingBlocks,
+	deleteBlock,
 };
