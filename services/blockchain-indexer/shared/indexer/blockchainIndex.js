@@ -26,27 +26,21 @@ const config = require('../../config');
 
 const {
 	getBlockByHeight,
-} = require('../dataService/blocks');
+	getVotesByTransactionIDs,
+	getTransactionsByBlockIDs,
+} = require('../dataService/business');
 
 const {
 	getAccountsByPublicKey,
-} = require('../dataService/accounts');
+} = require('../dataService/business/accounts');
 
 const {
 	getBase32AddressFromPublicKey,
 } = require('../utils/accountUtils');
 
 const {
-	getVotesByTransactionIDs,
-} = require('../dataService/voters');
-
-const {
 	getVoteIndexingInfo,
 } = require('./votersIndex');
-
-const {
-	getTransactionsByBlockIDs,
-} = require('../dataService/transactions');
 
 const {
 	getTransactionIndexingInfo,

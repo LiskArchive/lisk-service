@@ -18,9 +18,9 @@ const { Utils } = require('lisk-service-framework');
 const {
 	getIndexedAccountInfo,
 	getBase32AddressFromHex,
-} = require('../utils/accountUtils');
+} = require('../../utils/accountUtils');
 
-const { requestRpc } = require('../utils/appContext');
+const { requestRpc } = require('../../utils/appContext');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;

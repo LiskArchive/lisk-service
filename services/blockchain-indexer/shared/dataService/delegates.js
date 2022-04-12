@@ -18,21 +18,21 @@ const BluebirdPromise = require('bluebird');
 
 const Transactions = require('@liskhq/lisk-transactions');
 
-const Signals = require('./utils/signals');
-const config = require('../config');
+const Signals = require('../utils/signals');
+const config = require('../../config');
 
 const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
 
 const { getLastBlock } = require('./blocks');
-const { parseToJSONCompatObj } = require('./utils/parser');
-const requestAll = require('./utils/requestAll');
-const dataService = require('./dataService');
+const { parseToJSONCompatObj } = require('../utils/parser');
+const requestAll = require('../utils/requestAll');
+const dataService = require('./business');
 
 const {
 	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
 	getBase32AddressFromHex,
-} = require('./utils/accountUtils');
+} = require('../utils/accountUtils');
 
 const logger = Logger();
 

@@ -29,7 +29,7 @@ const {
 const {
 	getAccountsByAddress,
 	getAccountsByPublicKey2,
-} = require('../dataService/accounts');
+} = require('../dataService/business/accounts');
 
 const { requestRpc } = require('../utils/appContext');
 

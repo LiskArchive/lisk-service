@@ -15,11 +15,11 @@
  */
 const {
 	getAccounts,
-} = require('../shared/accounts');
+} = require('../shared/dataService/accounts');
 
 const {
 	getForgers,
-} = require('../shared/delegates');
+} = require('../shared/dataService/delegates');
 
 module.exports = [
 	{

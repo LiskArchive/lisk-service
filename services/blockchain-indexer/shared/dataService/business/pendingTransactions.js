@@ -21,9 +21,9 @@ const {
 
 const logger = Logger();
 
-const { requestRpc } = require('../utils/appContext');
+const { requestRpc } = require('../../utils/appContext');
 
-const { getHexAddressFromPublicKey, getIndexedAccountInfo } = require('../utils/accountUtils');
+const { getHexAddressFromPublicKey, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { normalizeTransaction } = require('./transactions');
 
 let pendingTransactionsList = [];

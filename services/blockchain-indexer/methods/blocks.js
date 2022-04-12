@@ -17,7 +17,7 @@
 const {
 	getBlocks,
 	getLastBlock,
-} = require('../shared/blocks');
+} = require('../shared/dataService/blocks');
 
 module.exports = [
 	{

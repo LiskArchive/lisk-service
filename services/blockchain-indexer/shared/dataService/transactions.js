@@ -13,315 +13,136 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-const {
-	Exceptions: { InvalidParamsException, NotFoundException },
-} = require('lisk-service-framework');
+const dataService = require('./business');
+const schema = require('../indexer/transactionsSchemas');
 
-const {
-	getHexAddressFromPublicKey,
-	getBase32AddressFromPublicKey,
-	getBase32AddressFromHex,
-	getIndexedAccountInfo,
-	getAccountsBySearch,
-} = require('../utils/accountUtils');
+const getPendingTransactions = async params => {
+	const pendingtransactions = {
+		data: [],
+		meta: {},
+	};
 
-const { requestRpc } = require('../utils/appContext');
-const { parseToJSONCompatObj } = require('../utils/parser');
-const { normalizeRangeParam } = require('../utils/paramUtils');
-const blockSource = require('./blocks');
-const { getTableInstance } = require('../database/mysql');
-const { getAvailableLiskModuleAssets } = require('../constants');
+	const response = await dataService.getPendingTransactions(params);
+	if (response.data) pendingtransactions.data = response.data;
+	if (response.meta) pendingtransactions.meta = response.meta;
 
-const transactionsIndexSchema = require('../indexer/schema/transactions');
-
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
-
-const resolveModuleAsset = async (moduleAssetVal) => {
-	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
-	const [module, asset] = moduleAssetVal.split(':');
-	let response;
-	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(asset))) {
-		const [{ name }] = (availableLiskModuleAssets
-			.filter(moduleAsset => moduleAsset.id === moduleAssetVal));
-		response = name;
-	} else {
-		const [{ id }] = (availableLiskModuleAssets
-			.filter(moduleAsset => moduleAsset.name === moduleAssetVal));
-		response = id;
-	}
-	if ([undefined, null, '']
-		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
-	return response;
+	return pendingtransactions;
 };
 
-const getTransactionsByBlockIDs = async blockIDs => {
-	const transactionsDB = await getTransactionsIndex();
-	const transactions = await transactionsDB.find({
-		whereIn: {
-			property: 'blockId',
-			values: blockIDs,
-		},
-	}, ['id']);
-	const transactionsIds = transactions.map(t => t.id);
-	return transactionsIds;
-};
+const mergeTransactions = async (params) => {
+	const allTransactions = {
+		data: [],
+		meta: {},
+	};
 
-const normalizeTransaction = async txs => {
-	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
-	const normalizedTransactions = await BluebirdPromise.map(
-		txs,
-		async tx => {
-			const [{ id, name }] = availableLiskModuleAssets
-				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
-			tx = parseToJSONCompatObj(tx);
-			tx.moduleAssetId = id;
-			tx.moduleAssetName = name;
-			if (tx.asset.recipientAddress) {
-				tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
-			}
-			if (tx.asset.votes && tx.asset.votes.length) {
-				tx.asset.votes
-					.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
-			}
-			return tx;
-		},
-		{ concurrency: txs.length },
-	);
-	return normalizedTransactions;
-};
-
-const getTransactionByID = async id => {
-	const response = await requestRpc('getTransactionByID', { id });
-	return normalizeTransaction([response]);
-};
-
-const getTransactionsByIDs = async ids => {
-	const response = await requestRpc('getTransactionsByIDs', { ids });
-	return normalizeTransaction(response);
-};
-
-const validateParams = async params => {
-	if (params.amount && params.amount.includes(':')) {
-		params = normalizeRangeParam(params, 'amount');
-	}
-
-	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-		params = normalizeRangeParam(params, 'height');
-	}
-
-	if (params.timestamp && params.timestamp.includes(':')) {
-		params = normalizeRangeParam(params, 'timestamp');
-	}
-
-	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
-		throw new InvalidParamsException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
-	}
-
-	if (params.senderIdOrRecipientId) {
-		const { senderIdOrRecipientId, ...remParams } = params;
-		params = remParams;
-
-		params.senderId = senderIdOrRecipientId;
-		params.orWhere = { recipientId: senderIdOrRecipientId };
-	}
-
-	if (params.senderId) {
-		const { senderId, ...remParams } = params;
-		params = remParams;
-		params.senderAddress = senderId;
-	}
-
-	if (params.senderAddress) {
-		const { senderAddress, ...remParams } = params;
-		params = remParams;
-
-		const account = await getIndexedAccountInfo({ address: senderAddress, limit: 1 }, ['publicKey']);
-		if (!account) throw new NotFoundException(`Account ${senderAddress} not found.`);
-		if (params.orWhere && params.orWhere.recipientId) {
-			params.orWhereWith = { senderPublicKey: account.publicKey };
-		} else {
-			params.senderPublicKey = account.publicKey;
-		}
-	}
-
-	if (params.senderUsername) {
-		const { senderUsername, ...remParams } = params;
-		params = remParams;
-
-		const account = await getIndexedAccountInfo({ username: senderUsername, limit: 1 }, ['publicKey']);
-		if (!account) throw new NotFoundException(`Account ${senderUsername} not found.`);
-		params.senderPublicKey = account.publicKey;
-	}
-
-	if (params.recipientPublicKey) {
-		const { recipientPublicKey, ...remParams } = params;
-		params = remParams;
-
-		const account = await getIndexedAccountInfo({ publicKey: recipientPublicKey, limit: 1 }, ['address']);
-		if (!account) throw new NotFoundException(`Account ${recipientPublicKey} not found.`);
-		params.recipientId = account.address;
-	}
-
-	if (params.recipientUsername) {
-		const { recipientUsername, ...remParams } = params;
-		params = remParams;
-
-		const account = await getIndexedAccountInfo({ username: recipientUsername, limit: 1 }, ['address']);
-		if (!account) throw new NotFoundException(`Account ${recipientUsername} not found.`);
-		params.recipientId = account.address;
-	}
-
-	if (params.search) {
-		const { search, ...remParams } = params;
-		params = remParams;
-
-		const accounts = await getAccountsBySearch('username', search, ['address', 'publicKey']);
-		const publicKeys = accounts.map(account => account.publicKey);
-		const addresses = await BluebirdPromise.map(
-			accounts,
-			async account => {
-				const accountInfo = await getIndexedAccountInfo({ address: account.address, limit: 1 }, ['publicKey']);
-				if (accountInfo && accountInfo.publicKey) publicKeys.push(accountInfo.publicKey);
-				return account.address;
-			},
-			{ concurrency: accounts.length },
-		);
-		params.whereIn = { property: 'senderPublicKey', values: publicKeys };
-		params.orWhereIn = { property: 'recipientId', values: addresses };
-	}
-
-	if (params.data) {
-		const { data, ...remParams } = params;
-		params = remParams;
-
-		params.search = {
-			property: 'data',
-			pattern: data,
-		};
-	}
-
-	if (params.moduleAssetName) {
-		const { moduleAssetName, ...remParams } = params;
-		params = remParams;
-
-		params.moduleAssetId = await resolveModuleAsset(moduleAssetName);
-	}
-
-	return params;
-};
-
-const getTransactions = async params => {
-	const transactionsDB = await getTransactionsIndex();
 	const transactions = {
 		data: [],
 		meta: {},
 	};
 
-	params = await validateParams(params);
+	const pendingTxs = await getPendingTransactions(params);
 
-	const resultSet = await transactionsDB.find(params, ['id', 'timestamp', 'height', 'blockId']);
-	const total = await transactionsDB.count(params);
-	params.ids = resultSet.map(row => row.id);
+	// Handle pending txs When call with `transactionId`
+	// In case of error from core, returns pendingTxs
+	const { offset, limit } = params;
+	try {
+		// Adjust the `limit` and `offset` as per the response from getPendingTransactions
+		const numTotalPendingTx = pendingTxs.meta.total;
+		params = {
+			...params,
+			limit: Math.max(1, limit - (numTotalPendingTx - pendingTxs.data.length)),
+			offset: Math.max(0, offset - numTotalPendingTx),
+		};
 
-	if (params.ids.length) {
-		const BATCH_SIZE = 10;
-		for (let i = 0; i < Math.ceil(params.ids.length / BATCH_SIZE); i++) {
-			transactions.data = transactions.data
-				// eslint-disable-next-line no-await-in-loop
-				.concat(await getTransactionsByIDs(params.ids.slice(i * BATCH_SIZE, (i + 1) * BATCH_SIZE)));
-		}
-	} else if (params.id) {
-		transactions.data = await getTransactionByID(params.id);
-		if ('offset' in params && params.limit) transactions.data = transactions.data.slice(params.offset, params.offset + params.limit);
+		const response = await dataService.getTransactions(params);
+		if (response.data) transactions.data = response.data;
+		if (response.meta) transactions.meta = response.meta;
+	} catch (error) {
+		if (!pendingTxs.data.length) throw error;
+	} finally {
+		transactions.meta.total = transactions.meta.total || 0;
 	}
 
-	transactions.data = await BluebirdPromise.map(
-		transactions.data,
-		async transaction => {
-			const [indexedTxInfo] = resultSet.filter(tx => tx.id === transaction.id);
-			if (indexedTxInfo) {
-				transaction.unixTimestamp = indexedTxInfo.timestamp;
-				transaction.height = indexedTxInfo.height;
-				transaction.blockId = indexedTxInfo.blockId;
-			}
-			const account = await getIndexedAccountInfo({
-				publicKey: transaction.senderPublicKey,
-				limit: 1,
-			}, ['address', 'username']);
-			transaction.senderId = account && account.address ? account.address
-				: getBase32AddressFromHex(getHexAddressFromPublicKey(transaction.senderPublicKey));
-			transaction.username = account && account.username ? account.username : undefined;
-			transaction.isPending = false;
+	allTransactions.data = pendingTxs.data.length === limit
+		? pendingTxs.data
+		: pendingTxs.data.concat(transactions.data).slice(0, limit);
 
-			// For recipient info
-			if (transaction.asset.recipientAddress) {
-				const { recipientAddress, ...asset } = transaction.asset;
-				const recipientInfo = await getIndexedAccountInfo({
-					address: recipientAddress,
-					limit: 1,
-				}, ['address', 'publicKey', 'username']);
-				transaction.asset = asset;
-				transaction.asset.recipient = {};
-				transaction.asset.recipient = {
-					address: recipientInfo
-						&& (recipientInfo.address !== null) ? recipientInfo.address : undefined,
-					publicKey: recipientInfo
-						&& (recipientInfo.publicKey !== null) ? recipientInfo.publicKey : undefined,
-					username: recipientInfo
-						&& (recipientInfo.username !== null) ? recipientInfo.username : undefined,
-				};
-			}
+	allTransactions.meta.count = allTransactions.data.length;
+	allTransactions.meta.offset = offset;
+	allTransactions.meta.total = pendingTxs.meta.total + transactions.meta.total;
 
-			// The two lines below are needed for transaction statistics
-			if (transaction.moduleAssetId) transaction.type = transaction.moduleAssetId;
-			transaction.amount = transaction.asset.amount || 0;
+	return allTransactions;
+};
 
-			return transaction;
-		},
-		{ concurrency: transactions.data.length },
-	);
-	transactions.meta.total = total;
-	transactions.meta.count = transactions.data.length;
-	transactions.meta.offset = params.offset;
+const getTransactions = async params => {
+	const transactions = {
+		data: [],
+		meta: {},
+	};
+
+	const { includePending, ...remParams } = params;
+	params = remParams;
+
+	const response = includePending
+		? await mergeTransactions(params)
+		: await dataService.getTransactions(params);
+	if (response.data) transactions.data = response.data;
+	if (response.meta) transactions.meta = response.meta;
 	return transactions;
 };
 
-const getTransactionsByBlockId = async blockId => {
-	const [block] = await blockSource.getBlockByID(blockId);
-	const transactions = await BluebirdPromise.map(
-		block.payload,
-		async transaction => {
-			transaction.unixTimestamp = block.header.timestamp;
-			transaction.height = block.header.height;
-			transaction.blockId = block.header.id;
-			const account = await getIndexedAccountInfo({
-				publicKey: transaction.senderPublicKey,
-				limit: 1,
-			}, ['address', 'publicKey', 'username']);
-			transaction.senderId = account && account.address
-				? account.address
-				: getBase32AddressFromPublicKey(transaction.senderPublicKey);
-			transaction.username = account && account.username ? account.username : undefined;
-			transaction.isPending = false;
-			return transaction;
-		},
-		{ concurrency: block.payload.length },
-	);
-	return {
-		data: await normalizeTransaction(transactions),
-		meta: {
-			offset: 0,
-			count: transactions.length,
-			total: transactions.length,
-		},
-	};
+const postTransactions = async params => {
+	try {
+		const response = await dataService.postTransactions(params);
+		return {
+			message: 'Transaction payload was successfully passed to the network node',
+			transactionId: response.transactionId,
+		};
+	} catch (err) {
+		if (err.message.includes('ECONNREFUSED')) return {
+			data: { error: 'Unable to reach a network node' },
+			status: 'INTERNAL_SERVER_ERROR',
+		};
+
+		return {
+			data: { error: `Transaction payload was rejected by the network node: ${err.message}` },
+			status: 'BAD_REQUEST',
+		};
+	}
 };
+
+const getTransactionsSchemas = async params => {
+	const transactionsSchemas = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await schema.getTransactionsSchemas(params);
+	if (response.data) transactionsSchemas.data = response.data;
+	if (response.meta) transactionsSchemas.meta = response.meta;
+
+	if (!transactionsSchemas.data.length && (params.moduleAssetId || params.moduleAssetName)) {
+		const errorMessage = params.moduleAssetId
+			? `Schema corresponding moduleAssetId: '${params.moduleAssetId}' not found.`
+			: `Schema corresponding moduleAssetName: '${params.moduleAssetName}' not found.`;
+		return {
+			data: { error: errorMessage },
+			status: 'NOT_FOUND',
+		};
+	}
+
+	return transactionsSchemas;
+};
+
+const initPendingTransactionsList = (() => dataService.loadAllPendingTransactions())();
+
+const reload = () => dataService.loadAllPendingTransactions();
 
 module.exports = {
 	getTransactions,
-	getTransactionsByBlockIDs,
-	getTransactionsByBlockId,
-	getTransactionsByIDs,
-	normalizeTransaction,
+	getPendingTransactions,
+	initPendingTransactionsList,
+	reloadAllPendingTransactions: reload,
+	postTransactions,
+	getTransactionsSchemas,
 };
