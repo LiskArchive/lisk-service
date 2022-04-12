@@ -241,4 +241,5 @@ module.exports = {
 	normalizeBlocks,
 	getLastBlock,
 	getBlockByHeight,
+	getBlockByID,
 };

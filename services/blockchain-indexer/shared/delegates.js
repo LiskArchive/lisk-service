@@ -170,7 +170,7 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	return relevantDelegates.length;
 };
 
-const getNextForgers = async params => {
+const getForgers = async params => {
 	const forgers = {
 		data: [],
 		meta: {},
@@ -363,5 +363,5 @@ module.exports = {
 	getTotalNumberOfDelegates,
 	getDelegates,
 	reloadNextForgersCache,
-	getNextForgers,
+	getForgers,
 };

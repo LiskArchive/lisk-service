@@ -95,13 +95,11 @@ const getBlocks = async (params = {}) => {
 		total = await getTotalNumberOfBlocks();
 	}
 
-	if (getFinalizedHeight()) {
-		const finalHeight = await getFinalizedHeight();
-		const data = blocks.data.map((block) => Object.assign(block,
-			{ isFinal: block.height <= finalHeight },
-		));
-		blocks.data = data;
-	}
+	const finalHeight = await getFinalizedHeight();
+	const data = blocks.data.map((block) => Object.assign(block,
+		{ isFinal: block.height <= finalHeight },
+	));
+	blocks.data = data;
 
 	return {
 		data: blocks.data,

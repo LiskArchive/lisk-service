@@ -18,7 +18,7 @@ const {
 } = require('../shared/accounts');
 
 const {
-	getNextForgers,
+	getForgers,
 } = require('../shared/delegates');
 
 module.exports = [
@@ -39,8 +39,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'getNextForgers',
-		controller: getNextForgers,
+		name: 'getForgers',
+		controller: getForgers,
 		params: {
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },
