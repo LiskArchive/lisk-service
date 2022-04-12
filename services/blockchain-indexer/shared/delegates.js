@@ -21,12 +21,13 @@ const Transactions = require('@liskhq/lisk-transactions');
 const Signals = require('./utils/signals');
 const config = require('../config');
 
-const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
+const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
 
 const { getLastBlock } = require('./blocks');
 const { parseToJSONCompatObj } = require('./utils/parser');
 const requestAll = require('./utils/requestAll');
 const accountSource = require('./dataService/accounts');
+const forgerSource = require('./dataService/forgers');
 
 const {
 	getHexAddressFromBase32,
@@ -44,8 +45,8 @@ const delegateStatus = {
 	NON_ELIGIBLE: 'non-eligible',
 };
 
-const rawNextForgers = [];
-const nextForgers = [];
+let rawNextForgers = [];
+let nextForgers = [];
 let delegateList = [];
 
 const delegateComparator = (a, b) => {
@@ -126,7 +127,7 @@ const loadAllDelegates = async () => {
 
 const loadAllNextForgers = async () => {
 	const maxCount = await accountSource.getNumberOfForgers();
-	const { data } = await getForgers({ limit: maxCount, offset: nextForgers.length });
+	const { data } = await forgerSource.getForgers({ limit: maxCount, offset: nextForgers.length });
 	rawNextForgers = data;
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };

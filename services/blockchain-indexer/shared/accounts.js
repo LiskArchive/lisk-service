@@ -17,7 +17,7 @@ const BluebirdPromise = require('bluebird');
 
 const accountSource = require('./dataService/accounts');
 
-// const { getDelegates } = require('./delegates');
+const { getDelegates } = require('./delegates');
 const { parseToJSONCompatObj } = require('./utils/parser');
 const { getAccountKnowledge } = require('./utils/knownAccounts');
 
@@ -30,7 +30,7 @@ const getAccounts = async params => {
 	let response;
 	if (status) {
 		// Include delegate info in all accounts requests unless explicitly stated
-		// response = params.isDelegate !== false ? await getDelegates(params) : { data: [] };
+		response = params.isDelegate !== false ? await getDelegates(params) : { data: [] };
 	} else {
 		response = await accountSource.getAccounts(remainingParams);
 	}
@@ -45,16 +45,16 @@ const getAccounts = async params => {
 			account.knowledge = await getAccountKnowledge(account.address);
 
 			if (account.isDelegate === true) {
-				// const delegate = await getDelegates({ address: account.address });
-				// const delegateOrigProps = account.delegate;
-				// const [delegateExtraProps = {}] = delegate.data;
-				// const delegateAccount = {
-				// 	...account,
-				// 	rank: delegateExtraProps.rank,
-				// 	status: delegateExtraProps.status,
-				// 	delegate: { ...delegateOrigProps, ...delegateExtraProps },
-				// };
-				// return delegateAccount;
+				const delegate = await getDelegates({ address: account.address });
+				const delegateOrigProps = account.delegate;
+				const [delegateExtraProps = {}] = delegate.data;
+				const delegateAccount = {
+					...account,
+					rank: delegateExtraProps.rank,
+					status: delegateExtraProps.status,
+					delegate: { ...delegateOrigProps, ...delegateExtraProps },
+				};
+				return delegateAccount;
 			}
 			const {
 				delegate, approval, missedBlocks, producedBlocks, productivity,
