@@ -63,6 +63,13 @@ const {
 	getVotesByTransactionIDs,
 } = require('./voters');
 
+const {
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
+} = require('./coreCache');
+
 module.exports = {
 	getAccounts,
 	getDelegates,
@@ -93,4 +100,8 @@ module.exports = {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountBySecondPublicKey,
+	getCachedAccountByUsername,
 };
