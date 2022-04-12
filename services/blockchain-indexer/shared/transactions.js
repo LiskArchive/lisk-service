@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const pendingTxSource = require('./dataService/pendingTransactions');
-const transactionSource = require('./dataService/transactions');
-const postTxSource = require('./dataService/postTransactions');
+const dataService = require('./dataService');
 const schema = require('./indexer/transactionsSchemas');
 
 const getPendingTransactions = async params => {
@@ -24,7 +22,7 @@ const getPendingTransactions = async params => {
 		meta: {},
 	};
 
-	const response = await pendingTxSource.getPendingTransactions(params);
+	const response = await dataService.getPendingTransactions(params);
 	if (response.data) pendingtransactions.data = response.data;
 	if (response.meta) pendingtransactions.meta = response.meta;
 
@@ -56,7 +54,7 @@ const mergeTransactions = async (params) => {
 			offset: Math.max(0, offset - numTotalPendingTx),
 		};
 
-		const response = await transactionSource.getTransactions(params);
+		const response = await dataService.getTransactions(params);
 		if (response.data) transactions.data = response.data;
 		if (response.meta) transactions.meta = response.meta;
 	} catch (error) {
@@ -87,7 +85,7 @@ const getTransactions = async params => {
 
 	const response = includePending
 		? await mergeTransactions(params)
-		: await transactionSource.getTransactions(params);
+		: await dataService.getTransactions(params);
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
 	return transactions;
@@ -95,7 +93,7 @@ const getTransactions = async params => {
 
 const postTransactions = async params => {
 	try {
-		const response = await postTxSource.postTransactions(params);
+		const response = await dataService.postTransactions(params);
 		return {
 			message: 'Transaction payload was successfully passed to the network node',
 			transactionId: response.transactionId,
@@ -136,9 +134,9 @@ const getTransactionsSchemas = async params => {
 	return transactionsSchemas;
 };
 
-const initPendingTransactionsList = (() => pendingTxSource.loadAllPendingTransactions())();
+const initPendingTransactionsList = (() => dataService.loadAllPendingTransactions())();
 
-const reload = () => pendingTxSource.loadAllPendingTransactions();
+const reload = () => dataService.loadAllPendingTransactions();
 
 module.exports = {
 	getTransactions,

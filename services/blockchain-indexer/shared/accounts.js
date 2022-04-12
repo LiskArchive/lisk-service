@@ -15,7 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const accountSource = require('./dataService/accounts');
+const dataService = require('./dataService');
 
 const { getDelegates } = require('./delegates');
 const { parseToJSONCompatObj } = require('./utils/parser');
@@ -32,7 +32,7 @@ const getAccounts = async params => {
 		// Include delegate info in all accounts requests unless explicitly stated
 		response = params.isDelegate !== false ? await getDelegates(params) : { data: [] };
 	} else {
-		response = await accountSource.getAccounts(remainingParams);
+		response = await dataService.getAccounts(remainingParams);
 	}
 	if (response.data) accounts.data = response.data;
 	if (response.meta) accounts.meta = response.meta;
@@ -40,8 +40,8 @@ const getAccounts = async params => {
 	accounts.data = await BluebirdPromise.map(
 		accounts.data,
 		async account => {
-			account.multisignatureGroups = await accountSource.getMultisignatureGroups(account);
-			account.multisignatureMemberships = await accountSource.getMultisignatureMemberships(account);
+			account.multisignatureGroups = await dataService.getMultisignatureGroups(account);
+			account.multisignatureMemberships = await dataService.getMultisignatureMemberships(account);
 			account.knowledge = await getAccountKnowledge(account.address);
 
 			if (account.isDelegate === true) {

@@ -18,7 +18,7 @@ const util = require('util');
 
 const logger = Logger();
 
-const blockSource = require('./dataService/blocks');
+const dataService = require('./dataService');
 const { getGenesisHeight, getFinalizedHeight } = require('./constants');
 const { getUsernameByAddress } = require('./utils/delegateUtils');
 const blockIndexer = require('./indexer/blockchainIndex');
@@ -57,7 +57,7 @@ const getBlocksFromServer = async params => {
 	else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
 	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
 
-	const response = await blockSource.getBlocks(params);
+	const response = await dataService.getBlocks(params);
 	if (response.data) blocks.data = response.data;
 	if (response.meta) blocks.meta = response.meta;
 

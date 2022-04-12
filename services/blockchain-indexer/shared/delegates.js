@@ -26,8 +26,7 @@ const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
 const { getLastBlock } = require('./blocks');
 const { parseToJSONCompatObj } = require('./utils/parser');
 const requestAll = require('./utils/requestAll');
-const accountSource = require('./dataService/accounts');
-const forgerSource = require('./dataService/forgers');
+const dataService = require('./dataService');
 
 const {
 	getHexAddressFromBase32,
@@ -65,7 +64,7 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const numActiveForgers = await accountSource.getNumberOfForgers();
+	const numActiveForgers = await dataService.getNumberOfForgers();
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
@@ -104,7 +103,7 @@ const computeDelegateStatus = async () => {
 const loadAllDelegates = async () => {
 	try {
 		const maxCount = 10000;
-		delegateList = await requestAll(accountSource.getDelegates, { limit: 10 }, maxCount);
+		delegateList = await requestAll(dataService.getDelegates, { limit: 10 }, maxCount);
 		await BluebirdPromise.map(
 			delegateList,
 			async delegate => {
@@ -126,8 +125,8 @@ const loadAllDelegates = async () => {
 };
 
 const loadAllNextForgers = async () => {
-	const maxCount = await accountSource.getNumberOfForgers();
-	const { data } = await forgerSource.getForgers({ limit: maxCount, offset: nextForgers.length });
+	const maxCount = await dataService.getNumberOfForgers();
+	const { data } = await dataService.getForgers({ limit: maxCount, offset: nextForgers.length });
 	rawNextForgers = data;
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
@@ -279,7 +278,7 @@ const updateDelegateListEveryBlock = () => {
 				}
 			});
 			if (updatedDelegateAddresses.length) {
-				const { data: updatedDelegateAccounts } = await accountSource
+				const { data: updatedDelegateAccounts } = await dataService
 					.getAccounts({ addresses: updatedDelegateAddresses });
 
 				updatedDelegateAccounts.forEach(delegate => {
@@ -337,7 +336,7 @@ const updateDelegateListOnAccountsUpdate = () => {
 			if (Object.getOwnPropertyNames(delegate).length) {
 				const {
 					data: [updatedDelegate],
-				} = await accountSource.getDelegates({ address: delegate.address, limit: 1 });
+				} = await dataService.getDelegates({ address: delegate.address, limit: 1 });
 
 				// Update the account details of the affected delegate
 				Object.assign(delegate, parseToJSONCompatObj(updatedDelegate));
