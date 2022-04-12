@@ -50,19 +50,19 @@ module.exports = [
 		},
 	},
 	{
-		name: 'transactions.pending',
+		name: 'getPendingTransactions',
 		controller: getPendingTransactions,
 		params: {},
 	},
 	{
-		name: 'transactions.post',
+		name: 'postTransactions',
 		controller: postTransactions,
 		params: {
 			transaction: { optional: true, type: 'any' },
 		},
 	},
 	{
-		name: 'transactions.schemas',
+		name: 'getTransactionsSchemas',
 		controller: getTransactionsSchemas,
 		params: {
 			moduleAssetId: { optional: true, type: 'any' },

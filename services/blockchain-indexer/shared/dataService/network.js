@@ -13,20 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getVoters,
-} = require('../shared/dataService/voters');
+const { requestRpc } = require('../utils/appContext');
 
-module.exports = [
-	{
-		name: 'getVoters',
-		controller: getVoters,
-		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
-	},
-];
+const getNetworkStatus = async () => {
+	const result = await requestRpc('getNetworkStatus');
+	return {
+		data: result.data,
+		meta: {},
+	};
+};
+
+module.exports = {
+	getNetworkStatus,
+};

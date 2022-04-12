@@ -13,20 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getVoters,
-} = require('../shared/dataService/voters');
+const { getNetworkStatus } = require('../shared/dataService/network');
 
 module.exports = [
 	{
-		name: 'getVoters',
-		controller: getVoters,
-		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
+		name: 'getNetworkStatus',
+		controller: getNetworkStatus,
+		params: {},
 	},
 ];
