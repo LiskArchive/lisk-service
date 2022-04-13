@@ -19,10 +19,11 @@ const { requestIndexer } = require('./utils/request');
 module.exports = {
 	appBlockNew: async (payload) => {
 		const { block, accounts } = payload;
-		Signals.get('newBlock').dispatch(block);
 
 		await requestIndexer('newBlockEvent', { block });
 		await requestIndexer('updateAccountsByAddress', { accounts });
+
+		Signals.get('newBlock').dispatch(block);
 	},
 	appBlockDelete: async (payload) => {
 		const { block, accounts } = payload;
@@ -31,7 +32,7 @@ module.exports = {
 		await requestIndexer('updateAccountsByAddress', { accounts });
 	},
 	appChainValidatorsChange: async (payload) => {
-		const { data } = payload;
-		await requestIndexer('newRoundEvent', { data });
+		const { validators } = payload;
+		await requestIndexer('newRoundEvent', { validators });
 	},
 };

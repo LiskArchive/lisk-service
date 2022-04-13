@@ -17,7 +17,7 @@ const account = require('./mappings/account');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.accounts',
+	method: 'indexer.getAccounts',
 	params: {
 		address: '=',
 		publicKey: '=',

@@ -17,7 +17,7 @@ const forgers = require('./mappings/forgers');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.delegates.next_forgers',
+	method: 'indexer.getForgers',
 	params: {
 		limit: '=',
 		offset: '=',

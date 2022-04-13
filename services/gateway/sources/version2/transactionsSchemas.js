@@ -17,7 +17,7 @@ const transactionsSchema = require('./mappings/transactionsSchema');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions.schemas',
+	method: 'indexer.getTransactionsSchemas',
 	params: {
 		moduleAssetId: '=',
 		moduleAssetName: '=',
