@@ -20,21 +20,20 @@ const {
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
-const { requestRpc } = require('../../utils/appContext');
-const { getIndexedAccountInfo } = require('../../utils/accountUtils');
-const { getTxnMinFee } = require('../../utils/transactionsUtils');
-const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
-const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { getFinalizedHeight } = require('../../constants');
 const { getTableInstance } = require('../../database/mysql');
-
+const blockchainStore = require('../../database/blockchainStore');
 const blocksIndexSchema = require('../../indexer/schema/blocks');
+
+const { getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { requestRpc } = require('../../utils/appContext');
+const { normalizeRangeParam } = require('../../utils/paramUtils');
+const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
+const { getTxnMinFee } = require('../../utils/transactionsUtils');
 
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
 
 const config = require('../../../config');
-
-const blockchainStore = require('../../database/blockchainStore');
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 

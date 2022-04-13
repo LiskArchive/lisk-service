@@ -18,6 +18,12 @@ const {
 	Exceptions: { InvalidParamsException, NotFoundException },
 } = require('lisk-service-framework');
 
+const blockSource = require('./blocks');
+const { getAvailableLiskModuleAssets } = require('../../constants');
+
+const { getTableInstance } = require('../../database/mysql');
+const transactionsIndexSchema = require('../../indexer/schema/transactions');
+
 const {
 	getHexAddressFromPublicKey,
 	getBase32AddressFromPublicKey,
@@ -25,15 +31,9 @@ const {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 } = require('../../utils/accountUtils');
-
 const { requestRpc } = require('../../utils/appContext');
-const { parseToJSONCompatObj } = require('../../utils/parser');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
-const blockSource = require('./blocks');
-const { getTableInstance } = require('../../database/mysql');
-const { getAvailableLiskModuleAssets } = require('../../constants');
-
-const transactionsIndexSchema = require('../../indexer/schema/transactions');
+const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 

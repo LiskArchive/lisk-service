@@ -19,9 +19,12 @@ const util = require('util');
 const logger = Logger();
 
 const dataService = require('./business');
-const { getGenesisHeight, getFinalizedHeight } = require('../constants');
-const { getUsernameByAddress } = require('../utils/delegateUtils');
+const {
+	getGenesisHeight,
+	getFinalizedHeight,
+} = require('../constants');
 const blockIndexer = require('../indexer/blockchainIndex');
+const { getUsernameByAddress } = require('../utils/delegateUtils');
 
 let lastBlock = {};
 
@@ -33,7 +36,7 @@ const setLastBlock = block => {
 const getLastBlock = () => lastBlock;
 
 const getTotalNumberOfBlocks = async () => (getLastBlock()).height
-    - (await getGenesisHeight()) + 1;
+	- (await getGenesisHeight()) + 1;
 
 const waitForLastBlock = () => new Promise((resolve) => {
 	const checkLastBlock = (interval) => {
@@ -89,7 +92,7 @@ const getBlocks = async (params = {}) => {
 	} else if (params.blockId || (params.height && !params.height.includes(':'))) {
 		total = blocks.data.length;
 	} else if ((params.height && params.height.includes(':'))
-        || (params.timestamp && params.timestamp.includes(':'))) {
+		|| (params.timestamp && params.timestamp.includes(':'))) {
 		total = blocks.meta.total;
 	} else {
 		total = await getTotalNumberOfBlocks();

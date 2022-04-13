@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -21,10 +21,12 @@ const {
 
 const logger = Logger();
 
-const { requestRpc } = require('../../utils/appContext');
-
-const { getHexAddressFromPublicKey, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { normalizeTransaction } = require('./transactions');
+const {
+	getHexAddressFromPublicKey,
+	getIndexedAccountInfo,
+} = require('../../utils/accountUtils');
+const { requestRpc } = require('../../utils/appContext');
 
 let pendingTransactionsList = [];
 

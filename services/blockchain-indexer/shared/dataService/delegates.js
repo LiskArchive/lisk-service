@@ -18,21 +18,20 @@ const BluebirdPromise = require('bluebird');
 const { Logger, CacheRedis } = require('lisk-service-framework');
 const Transactions = require('@liskhq/lisk-transactions');
 
-const dataService = require('./business');
-const Signals = require('../utils/signals');
-const config = require('../../config');
-
-const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
-
 const { getLastBlock } = require('./blocks');
-const { parseToJSONCompatObj } = require('../utils/parser');
-const requestAll = require('../utils/requestAll');
+const dataService = require('./business');
 
 const {
 	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
 	getBase32AddressFromHex,
 } = require('../utils/accountUtils');
+const { parseToJSONCompatObj } = require('../utils/parser');
+const requestAll = require('../utils/requestAll');
+const Signals = require('../utils/signals');
+const config = require('../../config');
+
+const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
 
 const logger = Logger();
 

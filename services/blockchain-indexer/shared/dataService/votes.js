@@ -14,9 +14,9 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const dataService = require('./business');
 
 const { getAccounts } = require('./accounts');
+const dataService = require('./business');
 
 const getVotes = async params => {
 	const votes = {

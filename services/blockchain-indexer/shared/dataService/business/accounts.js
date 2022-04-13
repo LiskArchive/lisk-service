@@ -24,6 +24,20 @@ const {
 } = require('lisk-service-framework');
 
 const {
+	standardizeUnlockHeight,
+	standardizePomHeight,
+} = require('./dpos');
+
+const { getGenesisConfig } = require('../../constants');
+const { getTableInstance } = require('../../database/mysql');
+const { addAccountToDirectUpdateQueue } = require('../../indexer/accountIndex');
+
+const accountsIndexSchema = require('../../indexer/schema/accounts');
+const blocksIndexSchema = require('../../indexer/schema/blocks');
+const multisignatureIndexSchema = require('../../indexer/schema/multisignature');
+const transactionsIndexSchema = require('../../indexer/schema/transactions');
+
+const {
 	validateAddress,
 	validatePublicKey,
 	getIndexedAccountInfo,
@@ -36,30 +50,17 @@ const {
 	getBase32AddressFromPublicKey,
 } = require('../../utils/accountUtils');
 
-const {
-	dropDuplicates,
-} = require('../../utils/arrayUtils');
-
 const { requestRpc } = require('../../utils/appContext');
 
 const {
-	standardizeUnlockHeight,
-	standardizePomHeight,
-} = require('./dpos');
+	dropDuplicates,
+} = require('../../utils/arrayUtils');
 
 const {
 	parseToJSONCompatObj,
 } = require('../../utils/parser');
 
-const { getGenesisConfig } = require('../../constants');
-const { getTableInstance } = require('../../database/mysql');
 const config = require('../../../config');
-const { addAccountToDirectUpdateQueue } = require('../../indexer/accountIndex');
-
-const accountsIndexSchema = require('../../indexer/schema/accounts');
-const blocksIndexSchema = require('../../indexer/schema/blocks');
-const multisignatureIndexSchema = require('../../indexer/schema/multisignature');
-const transactionsIndexSchema = require('../../indexer/schema/transactions');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
