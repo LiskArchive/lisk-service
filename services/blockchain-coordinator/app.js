@@ -22,8 +22,8 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const events = require('./shared/eventsScheduler');
 const { setAppContext } = require('./shared/utils/request');
+const Signals = require('./shared/signals');
 
 const loggerConf = {
 	...config.log,
@@ -44,7 +44,11 @@ const app = Microservice({
 
 const coordinatorConfig = {
 	name: 'coordinator',
-	events,
+	events: {
+		appBlockNew: async (payload) => Signals.get('newBlock').dispatch(payload),
+		appBlockDelete: async (payload) => Signals.get('deleteBlock').dispatch(payload),
+		appChainValidatorsChange: async (payload) => Signals.get('newRound').dispatch(payload),
+	},
 };
 
 setAppContext(app);
