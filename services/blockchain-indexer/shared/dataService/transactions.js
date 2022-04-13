@@ -145,4 +145,5 @@ module.exports = {
 	reloadAllPendingTransactions: reload,
 	postTransactions,
 	getTransactionsSchemas,
+	getTransactionsByBlockId: dataService.getTransactionsByBlockId,
 };

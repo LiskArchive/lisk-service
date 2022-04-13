@@ -14,7 +14,7 @@
  *
  */
 const { getTableInstance } = require('../../database/mysql');
-const accountsIndexSchema = require('../../indexer/schema/accounts');
+const accountsIndexSchema = require('../../database/schema/accounts');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 

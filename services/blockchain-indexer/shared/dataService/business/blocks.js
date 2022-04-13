@@ -23,7 +23,7 @@ const {
 const { getFinalizedHeight } = require('../../constants');
 const { getTableInstance } = require('../../database/mysql');
 const blockchainStore = require('../../database/blockchainStore');
-const blocksIndexSchema = require('../../indexer/schema/blocks');
+const blocksIndexSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestRpc } = require('../../utils/appContext');

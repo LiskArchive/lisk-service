@@ -30,12 +30,11 @@ const {
 
 const { getGenesisConfig } = require('../../constants');
 const { getTableInstance } = require('../../database/mysql');
-const { addAccountToDirectUpdateQueue } = require('../../indexer/accountIndex');
 
-const accountsIndexSchema = require('../../indexer/schema/accounts');
-const blocksIndexSchema = require('../../indexer/schema/blocks');
-const multisignatureIndexSchema = require('../../indexer/schema/multisignature');
-const transactionsIndexSchema = require('../../indexer/schema/transactions');
+const accountsIndexSchema = require('../../database/schema/accounts');
+const blocksIndexSchema = require('../../database/schema/blocks');
+const multisignatureIndexSchema = require('../../database/schema/multisignature');
+const transactionsIndexSchema = require('../../database/schema/transactions');
 
 const {
 	validateAddress,
@@ -472,7 +471,7 @@ const getAccounts = async params => {
 				account.isGenesisAccount = indexedAccount.isGenesisAccount;
 				if (paramPublicKey && indexedAccount.address === addressFromParamPublicKey) {
 					account.publicKey = paramPublicKey;
-					await addAccountToDirectUpdateQueue.add({ accounts: [account] });
+					await accountsDB.upsert(account);
 				} else {
 					account.publicKey = indexedAccount.publicKey;
 				}

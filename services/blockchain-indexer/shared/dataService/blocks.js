@@ -114,34 +114,23 @@ const getBlocks = async (params = {}) => {
 	};
 };
 
-const preloadBlocksOneByOne = async (n) => {
-	let blockId = (getLastBlock()).previousBlockId;
-	for (let i = 0; i <= n; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		blockId = (await getBlocks({ blockId })).data[0].previousBlockId;
-	}
-};
-
-const preloadBlocksByPage = async (n) => {
-	const pageSize = 100;
-	const numberOfPages = Math.ceil(n / pageSize);
-
-	const limit = 100;
-	for (let i = 0; i <= numberOfPages; i++) {
-		// eslint-disable-next-line no-await-in-loop
-		await getBlocks({ sort: 'height:desc', offset: (i * limit) + 1, limit });
-	}
-};
-
 const deleteBlock = async (block) => blockIndexer.deleteBlock(block);
+
+const performLastBlockUpdate = (newBlock) => {
+	try {
+		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
+		setLastBlock(newBlock);
+	} catch (err) {
+		logger.error(`Error occured when performing last block update:\n${err.stack}`);
+	}
+};
 
 module.exports = {
 	getBlocks,
-	preloadBlocksOneByOne,
-	preloadBlocksByPage,
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,
 	deleteBlock,
 	getTotalNumberOfBlocks,
+	performLastBlockUpdate,
 };

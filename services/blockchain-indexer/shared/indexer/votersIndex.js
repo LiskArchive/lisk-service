@@ -19,7 +19,7 @@ const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const { getBase32AddressFromHex } = require('../utils/accountUtils');
 
 const { getTableInstance } = require('../database/mysql');
-const votesIndexSchema = require('./schema/votes');
+const votesIndexSchema = require('../database/schema/votes');
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
 

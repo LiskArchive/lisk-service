@@ -47,6 +47,7 @@ setAppContext(app);
 (async () => {
 	// Add routes, events & jobs
 	await app.addMethods(path.join(__dirname, 'methods'));
+	await app.addEvents(path.join(__dirname, 'events'));
 
 	// Run the application
 	app.run().then(async () => {

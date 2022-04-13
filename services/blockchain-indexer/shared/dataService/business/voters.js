@@ -17,8 +17,8 @@ const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
 const { getTableInstance } = require('../../database/mysql');
-const votesIndexSchema = require('../../indexer/schema/votes');
-const votesAggregateIndexSchema = require('../../indexer/schema/votesAggregate');
+const votesIndexSchema = require('../../database/schema/votes');
+const votesAggregateIndexSchema = require('../../database/schema/votesAggregate');
 
 const {
 	getBase32AddressFromHex,

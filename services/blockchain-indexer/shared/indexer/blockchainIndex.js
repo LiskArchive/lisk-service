@@ -28,11 +28,8 @@ const {
 	getBlockByHeight,
 	getVotesByTransactionIDs,
 	getTransactionsByBlockIDs,
-} = require('../dataService/business');
-
-const {
 	getAccountsByPublicKey,
-} = require('../dataService/business/accounts');
+} = require('../dataService/business');
 
 const {
 	getBase32AddressFromPublicKey,
@@ -66,12 +63,12 @@ const {
 	rollbackDbTransaction,
 } = require('../database/mysql');
 
-const blocksIndexSchema = require('./schema/blocks');
-const accountsIndexSchema = require('./schema/accounts');
-const transactionsIndexSchema = require('./schema/transactions');
-const votesIndexSchema = require('./schema/votes');
-const multisignatureIndexSchema = require('./schema/multisignature');
-const votesAggregateIndexSchema = require('./schema/votesAggregate');
+const blocksIndexSchema = require('../database/schema/blocks');
+const accountsIndexSchema = require('../database/schema/accounts');
+const transactionsIndexSchema = require('../database/schema/transactions');
+const votesIndexSchema = require('../database/schema/votes');
+const multisignatureIndexSchema = require('../database/schema/multisignature');
+const votesAggregateIndexSchema = require('../database/schema/votesAggregate');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);

@@ -22,7 +22,7 @@ const blockSource = require('./blocks');
 const { getAvailableLiskModuleAssets } = require('../../constants');
 
 const { getTableInstance } = require('../../database/mysql');
-const transactionsIndexSchema = require('../../indexer/schema/transactions');
+const transactionsIndexSchema = require('../../database/schema/transactions');
 
 const {
 	getHexAddressFromPublicKey,

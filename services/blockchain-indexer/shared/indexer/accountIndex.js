@@ -23,13 +23,13 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	getTableInstance,
-} = require('../database/mysql');
-
-const {
 	getAccountsByAddress,
 	getAccountsByPublicKey2,
-} = require('../dataService/business/accounts');
+} = require('../dataService/business');
+
+const {
+	getTableInstance,
+} = require('../database/mysql');
 
 const { requestRpc } = require('../utils/appContext');
 
@@ -39,7 +39,7 @@ const Signals = require('../utils/signals');
 
 const redis = new Redis(config.endpoints.cache);
 
-const accountsIndexSchema = require('./schema/accounts');
+const accountsIndexSchema = require('../database/schema/accounts');
 
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 

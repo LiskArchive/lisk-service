@@ -22,7 +22,7 @@ const {
 	getLegacyAddressFromPublicKey,
 } = require('@liskhq/lisk-cryptography');
 
-const accountsIndexSchema = require('../indexer/schema/accounts');
+const accountsIndexSchema = require('../database/schema/accounts');
 
 const { getTableInstance } = require('../database/mysql');
 
