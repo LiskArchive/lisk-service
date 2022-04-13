@@ -22,8 +22,8 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
+const events = require('./shared/eventsScheduler');
 const { setAppContext } = require('./shared/utils/request');
-const Signals = require('./shared/signals');
 
 const loggerConf = {
 	...config.log,
@@ -44,9 +44,7 @@ const app = Microservice({
 
 const coordinatorConfig = {
 	name: 'coordinator',
-	events: {
-		appBlockNew: ({ block }) => Signals.get('newBlock').dispatch(block),
-	},
+	events,
 };
 
 setAppContext(app);
