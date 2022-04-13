@@ -18,7 +18,7 @@ const {
 	updateAccountsByAddress,
 	deleteBlockEvent,
 	newRoundEvent,
-} = require('../shared/eventsHandler');
+} = require('../shared/eventsProcessor');
 
 module.exports = [
 	{

@@ -59,6 +59,9 @@ config.queue = {
 	blocks: {
 		name: 'Blocks',
 	},
+	events: {
+		name: 'Events',
+	},
 	defaultJobOptions: {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // millisecs

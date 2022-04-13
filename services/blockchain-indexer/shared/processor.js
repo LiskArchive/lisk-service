@@ -21,6 +21,7 @@ const {
 
 const logger = Logger();
 
+const { initEventsProcess } = require('./eventsProcessor');
 const {
 	buildLegacyAccountCache,
 	addAccountToAddrUpdateQueue,
@@ -100,6 +101,7 @@ const initProcess = async () => {
 const init = async () => {
 	await status.init();
 	await initProcess();
+	await initEventsProcess();
 };
 
 module.exports = {
