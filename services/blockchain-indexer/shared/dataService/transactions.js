@@ -14,7 +14,6 @@
  *
  */
 const dataService = require('./business');
-const schema = require('../indexer/transactionsSchemas');
 
 const getPendingTransactions = async params => {
 	const pendingtransactions = {
@@ -117,7 +116,7 @@ const getTransactionsSchemas = async params => {
 		meta: {},
 	};
 
-	const response = await schema.getTransactionsSchemas(params);
+	const response = await dataService.getTransactionsSchemas(params);
 	if (response.data) transactionsSchemas.data = response.data;
 	if (response.meta) transactionsSchemas.meta = response.meta;
 

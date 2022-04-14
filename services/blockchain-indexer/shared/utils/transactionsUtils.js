@@ -16,7 +16,7 @@
 const { computeMinFee } = require('@liskhq/lisk-transactions');
 
 const { getGenesisConfig } = require('../constants');
-const { getTransactionsSchemas } = require('../indexer/transactionsSchemas');
+const { getTransactionsSchemas } = require('../dataService/business/transactionsSchemas');
 
 const getTxnAssetSchema = async (trx) => {
 	const moduleAssetId = String(trx.moduleID).concat(':').concat(trx.assetID);

@@ -60,6 +60,10 @@ const {
 } = require('./transactions');
 
 const {
+	getTransactionsSchemas,
+} = require('./transactionsSchemas');
+
+const {
 	getVotesByTransactionIDs,
 } = require('./voters');
 
@@ -98,6 +102,7 @@ module.exports = {
 	getTransactionsByBlockIDs,
 	getTransactionsByBlockId,
 	getTransactionsByIDs,
+	getTransactionsSchemas,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
 	getCachedAccountByAddress,

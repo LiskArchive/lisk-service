@@ -67,7 +67,7 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 		: [heights];
 
 	await Promise.all(blockHeights.map(async height => blockIndexQueue.add({ height, isNewBlock })));
-	logger.info('Scheduled block indexing');
+	logger.debug('Scheduled block indexing');
 };
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {

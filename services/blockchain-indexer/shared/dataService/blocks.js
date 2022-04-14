@@ -23,7 +23,6 @@ const {
 	getGenesisHeight,
 	getFinalizedHeight,
 } = require('../constants');
-const blockIndexer = require('../indexer/blockchainIndex');
 const { getUsernameByAddress } = require('../utils/delegateUtils');
 
 let lastBlock = {};
@@ -89,7 +88,7 @@ const getBlocks = async (params = {}) => {
 	let total;
 	if (params.generatorPublicKey) {
 		total = blocks.meta.total || undefined;
-	} else if (params.blockId || (params.height && !params.height.includes(':'))) {
+	} else if (params.blockId || !Number.isNaN(Number(params.height))) {
 		total = blocks.data.length;
 	} else if ((params.height && params.height.includes(':'))
 		|| (params.timestamp && params.timestamp.includes(':'))) {
@@ -98,6 +97,7 @@ const getBlocks = async (params = {}) => {
 		total = await getTotalNumberOfBlocks();
 	}
 
+	// TODO: Remove if unnecessary
 	const finalHeight = await getFinalizedHeight();
 	const data = blocks.data.map((block) => Object.assign(block,
 		{ isFinal: block.height <= finalHeight },
@@ -114,8 +114,6 @@ const getBlocks = async (params = {}) => {
 	};
 };
 
-const deleteBlock = async (block) => blockIndexer.deleteBlock(block);
-
 const performLastBlockUpdate = (newBlock) => {
 	try {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
@@ -130,7 +128,6 @@ module.exports = {
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,
-	deleteBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 };
