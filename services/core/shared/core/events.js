@@ -59,7 +59,7 @@ const events = {
 
 				logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
 				Signals.get('newBlock').dispatch(response);
-			}, 3000);
+			});
 		} catch (err) {
 			logger.error(`Error occured when processing 'newBlock' event:\n${err.stack}`);
 		}

@@ -321,15 +321,13 @@ const getAccountsByPublicKey = async (accountInfoArray) => {
 	return accounts;
 };
 
-const getAccountsByPublicKey2 = async (accountInfoArray) => {
+const getAccountsByPublicKey2 = async (publicKeys) => {
 	const accounts = await BluebirdPromise.map(
-		accountInfoArray
-			.map(publicKey => getHexAddressFromPublicKey(publicKey)),
-		async address => {
+		publicKeys,
+		async publicKey => {
+			const address = getHexAddressFromPublicKey(publicKey);
 			const { data: [account] } = await getAccountsFromCore({ address });
-			const [accountInfo] = accountInfoArray
-				.filter(accInfo => getBase32AddressFromPublicKey(accInfo.publicKey) === account.address);
-			account.publicKey = accountInfo.publicKey;
+			account.publicKey = publicKey;
 			account.username = account.dpos.delegate.username || null;
 			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
 			account.balance = account.token.balance;
