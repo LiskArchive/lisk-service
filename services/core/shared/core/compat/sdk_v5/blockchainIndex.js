@@ -138,19 +138,19 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	return pkInfoArray;
 };
 
-const updateProducedBlocksAndRewards = async (pkInfoArray, trx) => {
+const updateProducedBlocksAndRewards = async (generatorInfo, trx) => {
 	const accountsDB = await getAccountsIndex();
 
 	// Update producedBlocks & rewards
-	if (!pkInfoArray.isBlockIndexed) {
+	if (!generatorInfo.isBlockIndexed) {
 		const incrementParam = {
 			increment: {
-				rewards: BigInt(pkInfoArray.reward),
+				rewards: BigInt(generatorInfo.reward),
 				producedBlocks: 1,
 			},
 			where: {
 				property: 'address',
-				value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
+				value: getBase32AddressFromPublicKey(generatorInfo.publicKey),
 			},
 		};
 
@@ -158,10 +158,10 @@ const updateProducedBlocksAndRewards = async (pkInfoArray, trx) => {
 		const numRowsAffected = await accountsDB.increment(incrementParam, trx);
 		if (numRowsAffected === 0) {
 			await accountsDB.upsert({
-				address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-				publicKey: pkInfoArray.publicKey,
+				address: getBase32AddressFromPublicKey(generatorInfo.publicKey),
+				publicKey: generatorInfo.publicKey,
 				producedBlocks: 1,
-				rewards: pkInfoArray.reward,
+				rewards: generatorInfo.reward,
 			}, trx);
 		}
 	}
