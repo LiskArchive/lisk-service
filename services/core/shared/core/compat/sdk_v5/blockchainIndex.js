@@ -198,7 +198,7 @@ const indexBlock = async job => {
 
 	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
 
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
+	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block at height ${height}`);
 	try {
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
@@ -236,7 +236,6 @@ const indexBlock = async job => {
 		throw error;
 	}
 };
-
 
 const updateBlockIndex = async job => {
 	const blocksDB = await getBlocksIndex();
