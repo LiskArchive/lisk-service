@@ -13,9 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peerCache = require('./peerCache');
 const GeoService = require('../geolocation');
-
 const actions = require('./actions');
 
 const addLocation = async (ipaddress) => {
@@ -49,13 +47,10 @@ const getDisconnectedPeers = async () => {
 	return peersWithLocation;
 };
 
-const getPeers = async () => [...(await getConnectedPeers), ...(await getDisconnectedPeers)];
-
-const getPeersStatistics = async () => peerCache.getStatistics();
+const getPeers = async () => [...(await getConnectedPeers()), ...(await getDisconnectedPeers())];
 
 module.exports = {
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
-	getPeersStatistics,
 };
