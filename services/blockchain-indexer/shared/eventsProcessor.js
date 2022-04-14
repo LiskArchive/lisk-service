@@ -18,22 +18,16 @@ const { Logger } = require('lisk-service-framework');
 const Signals = require('./utils/signals');
 
 const {
-	performLastBlockUpdate,
 	getBlocks,
-	deleteBlock,
-	getTotalNumberOfBlocks,
-} = require('./dataService');
-
-const {
+	performLastBlockUpdate,
 	reloadNextForgersCache,
 	reloadDelegateCache,
 	getForgers,
-} = require('./dataService');
-
-const {
 	getNumberOfForgers,
 	normalizeBlocks,
 } = require('./dataService');
+
+const { deleteBlock } = require('./indexer/blockchainIndex');
 
 const config = require('../config');
 
@@ -45,47 +39,44 @@ const eventsQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
+const newBlockProcessor = async ({ block, addresses }) => {
+	logger.debug(`New block arrived at height ${block.height}`);
+	const [normalizedBlock] = await normalizeBlocks([block]);
+	performLastBlockUpdate(normalizedBlock);
+	const response = await getBlocks({ height: normalizedBlock.height });
+	Signals.get('newBlock').dispatch(response);
+	Signals.get('updateAccountsByAddress').dispatch(addresses);
+};
+
+const deleteBlockProcessor = async ({ block, addresses }) => {
+	logger.debug(`Performing updates on delete block event for the block at height: ${block.header.height}`);
+	await deleteBlock(block);
+	Signals.get('deleteBlock').dispatch({ data: [block] });
+	Signals.get('updateAccountsByAddress').dispatch(addresses);
+};
+
+const newRoundProcessor = async () => {
+	logger.debug('Performing updates on new round');
+	await reloadDelegateCache();
+	await reloadNextForgersCache();
+	const limit = await getNumberOfForgers();
+	const nextForgers = await getForgers({ limit, offset: 0 });
+	const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+	Signals.get('newRound').dispatch(response);
+};
+
 const initEventsProcess = async () => {
 	eventsQueue.process(async (job) => {
 		logger.debug('Subscribed to events');
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
-			const { block: newBlock, addresses } = job.data;
-			logger.debug(`Performing updates on new block at height: ${newBlock.header.height}`);
-			const [block] = await normalizeBlocks([newBlock]);
-			logger.debug(`New block arrived: ${block.id} at height ${block.height}`);
-			performLastBlockUpdate(block);
-			let response;
-			try {
-				response = await getBlocks({ height: block.height });
-			} catch (_) {
-				response = {
-					data: [block],
-					meta: { count: 1, offset: 0, total: await getTotalNumberOfBlocks() },
-				};
-			}
-			Signals.get('newBlock').dispatch(response);
-			Signals.get('updateAccountsByAddress').dispatch(addresses);
-		}
-
-		if (isDeleteBlock) {
 			const { block, addresses } = job.data;
-			await deleteBlock(block);
-			logger.debug(`Performing updates on delete block at height: ${block.header.height}`);
-			Signals.get('deleteBlock').dispatch({ data: [block] });
-			Signals.get('updateAccountsByAddress').dispatch(addresses);
-		}
-
-		if (isNewRound) {
-			logger.debug('Performing updates on new round');
-			await reloadDelegateCache();
-			await reloadNextForgersCache();
-			const limit = await getNumberOfForgers();
-			const nextForgers = await getForgers({ limit, offset: 0 });
-			const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
-			Signals.get('newRound').dispatch(response);
-		}
+			await newBlockProcessor({ block, addresses });
+		} else if (isDeleteBlock) {
+			const { block, addresses } = job.data;
+			await deleteBlockProcessor({ block, addresses });
+		} else if (isNewRound) await newRoundProcessor();
 	});
 };
 
