@@ -20,12 +20,12 @@ const Signals = require('../shared/utils/signals');
 const {
 	reloadAllPendingTransactions,
 	getTransactionsByBlockId,
-} = require('../shared/dataService/transactions');
+} = require('../shared/dataService');
 
 const {
 	reloadNextForgersCache,
 	getForgers,
-} = require('../shared/dataService/delegates');
+} = require('../shared/dataService');
 
 const logger = Logger();
 

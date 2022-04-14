@@ -25,7 +25,7 @@ const {
 const {
 	getAccountsByAddress,
 	getAccountsByPublicKey2,
-} = require('../dataService/business');
+} = require('../dataService');
 
 const {
 	getTableInstance,

@@ -15,12 +15,12 @@
  */
 const {
 	getAccounts,
-} = require('../shared/dataService/accounts');
+} = require('../shared/dataService');
 
 const {
 	getForgers,
 	reloadDelegateCache,
-} = require('../shared/dataService/delegates');
+} = require('../shared/dataService');
 
 module.exports = [
 	{

@@ -22,18 +22,18 @@ const {
 	getBlocks,
 	deleteBlock,
 	getTotalNumberOfBlocks,
-} = require('./dataService/blocks');
+} = require('./dataService');
 
 const {
 	reloadNextForgersCache,
 	reloadDelegateCache,
 	getForgers,
-} = require('./dataService/delegates');
+} = require('./dataService');
 
 const {
 	getNumberOfForgers,
 	normalizeBlocks,
-} = require('./dataService/business');
+} = require('./dataService');
 
 const config = require('../config');
 
@@ -65,8 +65,6 @@ const initEventsProcess = async () => {
 					meta: { count: 1, offset: 0, total: await getTotalNumberOfBlocks() },
 				};
 			}
-
-			logger.debug(`============== 'newBlock' signal: ${Signals.get('newBlock')} ==============`);
 			Signals.get('newBlock').dispatch(response);
 			Signals.get('updateAccountsByAddress').dispatch(addresses);
 		}
@@ -86,7 +84,6 @@ const initEventsProcess = async () => {
 			const limit = await getNumberOfForgers();
 			const nextForgers = await getForgers({ limit, offset: 0 });
 			const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
-			logger.debug(`============== 'newRound' signal: ${Signals.get('newRound')} ==============`);
 			Signals.get('newRound').dispatch(response);
 		}
 	});

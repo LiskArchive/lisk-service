@@ -29,7 +29,7 @@ const {
 	getVotesByTransactionIDs,
 	getTransactionsByBlockIDs,
 	getAccountsByPublicKey,
-} = require('../dataService/business');
+} = require('../dataService');
 
 const {
 	getBase32AddressFromPublicKey,

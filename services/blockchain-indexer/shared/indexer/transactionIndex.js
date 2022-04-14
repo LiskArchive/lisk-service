@@ -21,7 +21,7 @@ const {
 	getAccountsByAddress,
 	getAccountsByPublicKey,
 	resolveMultisignatureMemberships,
-} = require('../dataService/business/accounts');
+} = require('../dataService');
 
 const { getAvailableLiskModuleAssets } = require('../constants');
 

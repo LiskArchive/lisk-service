@@ -84,7 +84,7 @@ const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 	logger.info('Finished scheduling of genesis accounts indexing');
 };
 
-const initIndexingProcess = async () => {
+const initIndexingScheduler = async () => {
 	// Schedule indexing new block
 	const newBlockListener = async ({ block }) => scheduleBlocksIndexing(block.header.height, true);
 	Signals.get('newBlock').add(newBlockListener);
@@ -125,7 +125,7 @@ const initIndexingProcess = async () => {
 };
 
 const init = async () => {
-	await initIndexingProcess();
+	await initIndexingScheduler();
 	await initEventsScheduler();
 };
 

@@ -19,7 +19,7 @@ const { requestRpc } = require('./appContext');
 
 const { isObject } = Utils.Data;
 
-// const { waitForLastBlock } = require('../blocks');
+const { waitForLastBlock } = require('../dataService');
 const config = require('../../config');
 
 const logger = Logger();
@@ -38,7 +38,7 @@ const reloadKnowledge = async () => {
 	logger.debug('Reloading known accounts...');
 
 	try {
-		// await waitForLastBlock();
+		await waitForLastBlock();
 		const netStatus = await requestRpc('getNetworkStatus');
 		const { nethash } = netStatus.data.constants;
 
