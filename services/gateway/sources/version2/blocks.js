@@ -17,7 +17,7 @@ const block = require('./mappings/block');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.getBlocks',
+	method: 'indexer.blocks',
 	params: {
 		blockId: '=,string',
 		height: '=,string',

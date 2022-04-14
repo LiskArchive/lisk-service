@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,42 +14,39 @@
  *
  */
 const {
-	getAccounts,
-} = require('../shared/dataService');
-
-const {
-	getForgers,
-	reloadDelegateCache,
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
 } = require('../shared/dataService');
 
 module.exports = [
 	{
-		name: 'accounts',
-		controller: getAccounts,
+		name: 'peers',
+		controller: getPeers,
 		params: {
-			address: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			isDelegate: { optional: true, type: 'any' },
-			status: { optional: true, type: 'any' },
-			search: { optional: true, type: 'any' },
+			ip: { optional: true, type: 'any' },
+			networkVersion: { optional: true, type: 'any' },
+			state: { optional: true, type: 'any' },
+			height: { optional: true, type: 'any' },
 			limit: { optional: true, type: 'any' },
 			offset: { optional: true, type: 'any' },
 			sort: { optional: true, type: 'any' },
-
 		},
 	},
 	{
-		name: 'forgers',
-		controller: getForgers,
-		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-		},
+		name: 'peers.connected',
+		controller: getConnectedPeers,
+		params: {},
 	},
 	{
-		name: 'reloadDelegateCache',
-		controller: reloadDelegateCache,
+		name: 'peers.disconnected',
+		controller: getDisconnectedPeers,
+		params: {},
+	},
+	{
+		name: 'peers.statistics',
+		controller: getPeersStatistics,
 		params: {},
 	},
 ];

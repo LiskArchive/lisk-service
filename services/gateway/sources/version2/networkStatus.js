@@ -16,7 +16,7 @@
 module.exports = {
 	type: 'moleculer',
 	params: {},
-	method: 'indexer.getNetworkStatus',
+	method: 'indexer.network.status',
 	definition: {
 		data: {
 			genesisHeight: '=,number',

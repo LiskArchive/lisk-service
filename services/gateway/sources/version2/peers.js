@@ -17,7 +17,7 @@ const peer = require('./mappings/peer');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.peers',
+	method: 'indexer.peers',
 	params: {
 		ip: '=,string',
 		networkVersion: '=,string',

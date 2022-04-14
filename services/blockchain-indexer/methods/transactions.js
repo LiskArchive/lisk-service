@@ -23,7 +23,7 @@ const {
 
 module.exports = [
 	{
-		name: 'getTransactions',
+		name: 'transactions',
 		controller: getTransactions,
 		params: {
 			transactionId: { optional: true, type: 'any' },
@@ -50,19 +50,19 @@ module.exports = [
 		},
 	},
 	{
-		name: 'getPendingTransactions',
+		name: 'transactions.pending',
 		controller: getPendingTransactions,
 		params: {},
 	},
 	{
-		name: 'postTransactions',
+		name: 'transactions.post',
 		controller: postTransactions,
 		params: {
 			transaction: { optional: true, type: 'any' },
 		},
 	},
 	{
-		name: 'getTransactionsSchemas',
+		name: 'transactions.schemas',
 		controller: getTransactionsSchemas,
 		params: {
 			moduleAssetId: { optional: true, type: 'any' },

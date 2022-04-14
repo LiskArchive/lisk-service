@@ -62,6 +62,13 @@ const {
 const { getNetworkStatus } = require('./network');
 
 const {
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
+} = require('./peers');
+
+const {
 	getTransactions,
 	getPendingTransactions,
 	reloadAllPendingTransactions,
@@ -91,6 +98,10 @@ module.exports = {
 	getBlockByHeight,
 	getBlockByID,
 	getForgers,
+	getPeers,
+	getConnectedPeers,
+	getDisconnectedPeers,
+	getPeersStatistics,
 	loadAllPendingTransactions,
 	getTransactionsByBlockIDs,
 	getTransactionsByIDs,

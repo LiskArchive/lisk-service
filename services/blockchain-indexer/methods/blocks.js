@@ -21,7 +21,7 @@ const {
 
 module.exports = [
 	{
-		name: 'getBlocks',
+		name: 'blocks',
 		controller: getBlocks,
 		params: {
 			blockId: { optional: true, type: 'any' },
@@ -36,7 +36,7 @@ module.exports = [
 		},
 	},
 	{
-		name: 'getLastBlock',
+		name: 'Block,last',
 		controller: getLastBlock,
 		params: {
 			limit: { optional: true, type: 'any' },

@@ -17,7 +17,7 @@ const { getNetworkStatus } = require('../shared/dataService');
 
 module.exports = [
 	{
-		name: 'getNetworkStatus',
+		name: 'network.status',
 		controller: getNetworkStatus,
 		params: {},
 	},

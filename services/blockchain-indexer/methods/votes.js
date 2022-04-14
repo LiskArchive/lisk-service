@@ -19,7 +19,7 @@ const {
 
 module.exports = [
 	{
-		name: 'getVotes',
+		name: 'votes',
 		controller: getVotes,
 		params: {
 			address: { optional: true, type: 'any' },
