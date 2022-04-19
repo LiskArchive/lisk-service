@@ -93,7 +93,7 @@ const calculateEstimateFeeByteQuick = async () => {
 };
 
 const getEstimateFeeByteQuick = () => cacheRedisFees.get(cacheKeyFeeEstNormal);
-const getEstimateFeeByteNormal = () => cacheRedisFees.get(cacheKeyFeeEstQuick);
+const getEstimateFeeByteFull = () => cacheRedisFees.get(cacheKeyFeeEstQuick);
 
 const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 	if (sdkVersion < 4) { // TODO: Remove this block
@@ -116,7 +116,7 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 			.every(key => Object.keys(feeEstPerByte).includes(key))
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 
-	const cachedFeeEstPerByteNormal = await getEstimateFeeByteNormal();
+	const cachedFeeEstPerByteNormal = await getEstimateFeeByteFull();
 	logger.debug(`Retrieved regular estimate: ${util.inspect(cachedFeeEstPerByteNormal)}`);
 	if (validate(cachedFeeEstPerByteNormal, 15)) return {
 		...cachedFeeEstPerByteNormal,
@@ -139,7 +139,7 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 module.exports = {
 	getEstimateFeeByte,
 	getEstimateFeeByteQuick,
-	getEstimateFeeByteNormal,
+	getEstimateFeeByteFull,
 	calculateEstimateFeeByteNormal,
 	calculateEstimateFeeByteQuick,
 };

@@ -16,7 +16,7 @@
 const {
 	getEstimateFeeByte,
 	getEstimateFeeByteQuick,
-	getEstimateFeeByteNormal,
+	getEstimateFeeByteFull,
 } = require('../shared/dynamicFees');
 
 module.exports = [
@@ -26,13 +26,13 @@ module.exports = [
 		params: {},
 	},
 	{
-		name: 'fee.estimates',
+		name: 'fee.estimates.quick',
 		controller: getEstimateFeeByteQuick,
 		params: {},
 	},
 	{
-		name: 'fee.estimates',
-		controller: getEstimateFeeByteNormal,
+		name: 'fee.estimates.full',
+		controller: getEstimateFeeByteFull,
 		params: {},
 	},
 ];
