@@ -348,7 +348,6 @@ const updateDelegateListOnAccountsUpdate = () => {
 
 updateDelegateListEveryBlock();
 updateDelegateListOnAccountsUpdate();
-refreshDelegateListOnIndexReady();
 
 module.exports = {
 	reloadDelegateCache: reload,
