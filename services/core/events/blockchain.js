@@ -49,7 +49,7 @@ module.exports = [
 						].join('\n'));
 					}
 				} catch (err) {
-					logger.error(`Error occured when processing 'block.change' event:\n${err.stack}`);
+					logger.error(`Error occurred when processing 'block.change' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(newBlockListener);
@@ -70,7 +70,7 @@ module.exports = [
 						}
 					}
 				} catch (err) {
-					logger.error(`Error occured when processing 'transactions.new' event:\n${err.stack}`);
+					logger.error(`Error occurred when processing 'transactions.new' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(newTransactionsListener);
@@ -86,7 +86,7 @@ module.exports = [
 					const forgers = await core.getNextForgers({ limit: 25, offset: 0 });
 					callback(forgers);
 				} catch (err) {
-					logger.error(`Error occured when processing 'forgers.change' event:\n${err.stack}`);
+					logger.error(`Error occurred when processing 'forgers.change' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(forgersChangeListener);
@@ -102,7 +102,7 @@ module.exports = [
 					if (data.timestamp) data.unixtime = await core.getUnixTime(data.timestamp);
 					callback(data);
 				} catch (err) {
-					logger.error(`Error occured when processing 'round.change' event:\n${err.stack}`);
+					logger.error(`Error occurred when processing 'round.change' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newRound').add(newRoundListener);
@@ -118,7 +118,7 @@ module.exports = [
 					const restData = await core.getEstimateFeeByte();
 					callback(restData);
 				} catch (err) {
-					logger.error(`Error occured when processing 'update.fee_estimates' event:\n${err.stack}`);
+					logger.error(`Error occurred when processing 'update.fee_estimates' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newFeeEstimate').add(newFeeEstimateListener);
@@ -134,7 +134,7 @@ module.exports = [
 					const restData = await core.updateFinalizedHeight();
 					callback(restData ? restData.data : null);
 				} catch (err) {
-					logger.error(`Error occured when processing 'update.height_finalized' event:\n${err.stack}`);
+					logger.error(`Error occurred when processing 'update.height_finalized' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(updateFinalizedHeightListener);

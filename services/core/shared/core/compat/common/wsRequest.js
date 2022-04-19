@@ -23,7 +23,7 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const liskAddress = config.endpoints.liskWs;
-const MAX_INSTANTIATION_WAIT_TIME = 50;
+const MAX_INSTANTIATION_WAIT_TIME = 500;
 
 let clientCache;
 let instantiationBeginTime;
@@ -63,7 +63,7 @@ const instantiateClient = async () => {
 	}
 };
 
-const RETRY_INTERVAL = 50; // ms
+const RETRY_INTERVAL = 100; // ms
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);

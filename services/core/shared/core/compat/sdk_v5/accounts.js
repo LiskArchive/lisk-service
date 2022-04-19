@@ -321,6 +321,23 @@ const getAccountsByPublicKey = async (accountInfoArray) => {
 	return accounts;
 };
 
+const getAccountsByPublicKey2 = async (publicKeys) => {
+	const accounts = await BluebirdPromise.map(
+		publicKeys,
+		async publicKey => {
+			const address = getHexAddressFromPublicKey(publicKey);
+			const { data: [account] } = await getAccountsFromCore({ address });
+			account.publicKey = publicKey;
+			account.username = account.dpos.delegate.username || null;
+			account.totalVotesReceived = account.dpos.delegate.totalVotesReceived;
+			account.balance = account.token.balance;
+			return account;
+		},
+		{ concurrency: 10 },
+	);
+	return accounts;
+};
+
 const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
 
@@ -640,6 +657,7 @@ module.exports = {
 	getMultisignatureMemberships,
 	getAccountsByAddress,
 	getAccountsByPublicKey,
+	getAccountsByPublicKey2,
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
