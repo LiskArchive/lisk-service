@@ -19,6 +19,7 @@ const {
 
 const normalizeRangeParam = (params, property) => {
 	if (typeof params[property] === 'string' && params[property].includes(':')) {
+		// TODO: Fix Issue with range based query with the issue https://github.com/LiskHQ/lisk-service/issues/1056
 		const [from, to] = params[property].split(':');
 		if (from && to && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
 

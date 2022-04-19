@@ -16,8 +16,8 @@
 const { requestRpc } = require('../../utils/appContext');
 
 const postTransactions = async params => {
-	const signedTxBinary = params.transaction;
-	const response = await requestRpc('postTransaction', { signedTxBinary });
+	const { transaction } = params;
+	const response = await requestRpc('postTransaction', { transaction });
 	return response;
 };
 

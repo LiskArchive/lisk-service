@@ -49,7 +49,7 @@ const getForgers = async params => {
 		},
 		{ concurrency: forgers.data.length },
 	);
-	return isProperObject(forgers) && Array.isArray(forgers.data) ? forgers : [];
+	return isProperObject(forgers) && Array.isArray(forgers.data) ? forgers.data : [];
 };
 
 module.exports = {

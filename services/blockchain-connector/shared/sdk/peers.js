@@ -14,40 +14,12 @@
  *
  */
 const peerCache = require('./peerCache');
-const GeoService = require('../geolocation');
 
-const addLocation = async (ipaddress) => {
-	try {
-		const result = await GeoService.requestData(ipaddress);
-		return result;
-	} catch (e) {
-		return {};
-	}
-};
+const getConnectedPeers = async () => peerCache.get('connected');
 
-const getConnectedPeers = async () => {
-	const peers = await peerCache.get('connected');
-	const peersWithLocation = await Promise.all(peers.map(
-		async peer => {
-			peer.location = await addLocation(peer.ip);
-			return peer;
-		},
-	));
-	return peersWithLocation;
-};
+const getDisconnectedPeers = async () => peerCache.get('disconnected');
 
-const getDisconnectedPeers = async () => {
-	const peers = await peerCache.get('disconnected');
-	const peersWithLocation = await Promise.all(peers.map(
-		async peer => {
-			peer.location = await addLocation(peer.ip);
-			return peer;
-		},
-	));
-	return peersWithLocation;
-};
-
-const getPeers = async () => [...(await getConnectedPeers()), ...(await getDisconnectedPeers())];
+const getPeers = async () => peerCache.get();
 
 const getPeersStatistics = async () => peerCache.getStatistics();
 
