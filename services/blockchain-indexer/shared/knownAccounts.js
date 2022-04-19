@@ -15,12 +15,12 @@
  */
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
-const { requestRpc } = require('./appContext');
+const { requestRpc } = require('./utils/appContext');
 
 const { isObject } = Utils.Data;
 
-const { waitForLastBlock } = require('../dataService');
-const config = require('../../config');
+const { waitForLastBlock } = require('./dataService');
+const config = require('../config');
 
 const logger = Logger();
 

@@ -18,7 +18,7 @@ const BluebirdPromise = require('bluebird');
 const dataService = require('./business');
 
 const { getDelegates } = require('./delegates');
-const { getAccountKnowledge } = require('../utils/knownAccounts');
+const { getAccountKnowledge } = require('../knownAccounts');
 const { parseToJSONCompatObj } = require('../utils/parser');
 
 const getAccounts = async params => {

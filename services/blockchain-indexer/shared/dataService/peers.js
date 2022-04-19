@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,15 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const peerCache = require('./peerCache');
+const { requestRpc } = require('../utils/appContext');
 
 const getPeers = async params => {
 	let peers;
 
 	const state = params.state ? params.state.toString().toLowerCase() : undefined;
 
-	if (['connected', 'disconnected'].includes(state)) peers = await peerCache.get(state);
-	else peers = await peerCache.get();
+	if (state === 'connected') {
+		peers = await requestRpc('getConnectedPeers');
+	} else if (state === 'disconnected') {
+		peers = await requestRpc('getDisconnectedPeers');
+	} else {
+		peers = await requestRpc('getPeers');
+	}
 
 	const intersect = (a, b) => {
 		const setB = new Set(b);
@@ -83,7 +88,7 @@ const getDisconnectedPeers = async params => {
 };
 
 const getPeersStatistics = async () => {
-	const response = await peerCache.getStatistics();
+	const response = await requestRpc('getPeersStatistics');
 
 	return {
 		data: response,
