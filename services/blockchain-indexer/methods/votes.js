@@ -15,7 +15,7 @@
  */
 const {
 	getVotes,
-} = require('../shared/dataService');
+} = require('./controllers/votes');
 
 module.exports = [
 	{

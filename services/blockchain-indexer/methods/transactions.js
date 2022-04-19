@@ -19,7 +19,7 @@ const {
 	getPendingTransactions,
 	postTransactions,
 	getTransactionsSchemas,
-} = require('../shared/dataService');
+} = require('./controllers/transactions');
 
 module.exports = [
 	{

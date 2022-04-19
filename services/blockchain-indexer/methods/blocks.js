@@ -17,7 +17,7 @@
 const {
 	getBlocks,
 	getLastBlock,
-} = require('../shared/dataService');
+} = require('./controllers/blocks');
 
 module.exports = [
 	{

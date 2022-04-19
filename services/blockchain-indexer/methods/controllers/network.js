@@ -13,20 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getVoters,
-} = require('./controllers/voters');
+const dataService = require('../../shared/dataService');
 
-module.exports = [
-	{
-		name: 'voters',
-		controller: getVoters,
-		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
-	},
-];
+const getNetworkStatus = async () => {
+	const result = await dataService.getNetworkStatus();
+	return {
+		data: result.data,
+		meta: {},
+	};
+};
+
+module.exports = {
+	getNetworkStatus,
+};

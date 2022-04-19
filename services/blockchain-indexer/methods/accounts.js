@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -15,10 +15,10 @@
  */
 const {
 	getAccounts,
-} = require('../shared/dataService');
+	getForgers,
+} = require('./controllers/accounts');
 
 const {
-	getForgers,
 	reloadDelegateCache,
 } = require('../shared/dataService');
 

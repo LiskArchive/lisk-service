@@ -18,7 +18,7 @@ const {
 	getConnectedPeers,
 	getDisconnectedPeers,
 	getPeersStatistics,
-} = require('../shared/dataService');
+} = require('./controllers/peers');
 
 module.exports = [
 	{
