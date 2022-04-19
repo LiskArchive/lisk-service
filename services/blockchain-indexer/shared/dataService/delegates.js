@@ -346,12 +346,6 @@ const updateDelegateListOnAccountsUpdate = () => {
 	Signals.get('updateAccountState').add(updateDelegateListOnAccountsUpdateListener);
 };
 
-// Reload the delegate cache when all the indexes are up-to-date
-const refreshDelegateListOnIndexReady = () => {
-	const reloadDelegateCacheListener = () => reload();
-	Signals.get('blockIndexReady').add(reloadDelegateCacheListener);
-};
-
 updateDelegateListEveryBlock();
 updateDelegateListOnAccountsUpdate();
 refreshDelegateListOnIndexReady();
