@@ -27,6 +27,7 @@ pipeline {
 					dir('./services/export') { sh 'npm i' }
 					dir('./services/gateway') { sh 'npm i' }
 					dir('./services/template') { sh 'npm i' }
+					dir('./services/transaction-statistics') { sh 'npm i' }
 					dir('./tests') { sh 'npm i' }
 				}
 			}
