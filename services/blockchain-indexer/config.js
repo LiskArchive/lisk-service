@@ -69,4 +69,9 @@ config.queue = {
 	},
 };
 
+config.operations = {
+	dataRetrievalMode: Boolean(String(process.env.ENABLE_DATA_RETRIEVAL_MODE).toLowerCase() !== 'false'), // Enabled by default
+	IndexingMode: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
+};
+
 module.exports = config;

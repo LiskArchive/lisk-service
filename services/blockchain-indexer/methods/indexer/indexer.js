@@ -16,19 +16,19 @@
 const {
 	getMissingBlocks,
 	isGenesisBlockIndexed,
-} = require('../shared/indexer/blockchainIndex');
+} = require('../../shared/indexer/blockchainIndex');
 
 const {
 	getDelegateAccounts,
 	buildLegacyAccountCache,
 	getGenesisAccountAddresses,
 	isGenesisAccountsIndexed,
-} = require('../shared/indexer/accountIndex');
+} = require('../../shared/indexer/accountIndex');
 
 const {
 	getCurrentHeight,
 	getGenesisHeight,
-} = require('../shared/constants');
+} = require('../../shared/constants');
 
 module.exports = [
 	{

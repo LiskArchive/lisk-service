@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../shared/dataService');
+const dataService = require('../../../shared/dataService');
 
 const getNetworkStatus = async () => {
 	const result = await dataService.getNetworkStatus();

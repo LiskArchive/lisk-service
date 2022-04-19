@@ -22,7 +22,7 @@ const {
 
 const { StatusCodes: { BAD_REQUEST } } = HTTP;
 
-const dataService = require('../../shared/dataService');
+const dataService = require('../../../shared/dataService');
 
 const ObjectUtilService = Utils.Data;
 const { isEmptyObject } = ObjectUtilService;

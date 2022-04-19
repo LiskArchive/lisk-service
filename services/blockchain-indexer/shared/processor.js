@@ -31,7 +31,6 @@ const {
 	indexNewBlock,
 	addBlockToQueue,
 } = require('./indexer/blockchainIndex');
-const status = require('./indexer/indexStatus');
 
 const config = require('../config');
 
@@ -99,7 +98,6 @@ const initProcess = async () => {
 };
 
 const init = async () => {
-	await status.init();
 	await initProcess();
 	await initEventsProcess();
 };

@@ -18,13 +18,13 @@ const { HTTP, Utils } = require('lisk-service-framework');
 const { StatusCodes: { NOT_FOUND } } = HTTP;
 const { isEmptyObject } = Utils.Data;
 
-const dataService = require('../../shared/dataService');
+const dataService = require('../../../shared/dataService');
 
 const {
 	confirmAnyId,
-} = require('../../shared/accountUtils');
+} = require('../../../shared/accountUtils');
 
-const getVoters = async params => {
+const getVotes = async params => {
 	const isFound = await confirmAnyId(params);
 	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.anyId} not found.` } };
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account ${params.address} not found.` } };
@@ -32,7 +32,7 @@ const getVoters = async params => {
 	if (!isFound && params.publicKey) return { status: NOT_FOUND, data: { error: `Account with a public key ${params.publicKey} not found.` } };
 	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
 
-	const response = await dataService.getVoters(params);
+	const response = await dataService.getVotes(params);
 
 	if (isEmptyObject(response)) {
 		response.data = [];
@@ -49,5 +49,5 @@ const getVoters = async params => {
 };
 
 module.exports = {
-	getVoters,
+	getVotes,
 };

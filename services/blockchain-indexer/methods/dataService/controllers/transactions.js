@@ -26,11 +26,11 @@ const {
 const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 const { isEmptyArray, isEmptyObject } = Utils.Data;
 
-const dataService = require('../../shared/dataService');
+const dataService = require('../../../shared/dataService');
 
 const {
 	getAddressByAny,
-} = require('../../shared/accountUtils');
+} = require('../../../shared/accountUtils');
 
 const getTransactions = async (params) => {
 	const addressParam = [

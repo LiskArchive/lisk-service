@@ -46,16 +46,28 @@ setAppContext(app);
 
 (async () => {
 	// Add routes, events & jobs
-	await app.addMethods(path.join(__dirname, 'methods'));
-	await app.addEvents(path.join(__dirname, 'events'));
+	if (config.operations.IndexingMode) {
+		await app.addMethods(path.join(__dirname, 'methods', 'indexer'));
+		await app.addEvents(path.join(__dirname, 'events'));
+	}
+
+	if (config.operations.dataRetrievalMode) {
+		await app.addMethods(path.join(__dirname, 'methods', 'dataService'));
+	}
 
 	// Run the application
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
 
-		await updateGenesisHeight();
-		const processor = require('./shared/processor');
-		await processor.init();
+		// Init database
+		const status = require('./shared/indexer/indexStatus');
+		await status.init();
+
+		if (config.operations.IndexingMode) {
+			await updateGenesisHeight();
+			const processor = require('./shared/processor');
+			await processor.init();
+		}
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);

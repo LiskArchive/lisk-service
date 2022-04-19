@@ -20,11 +20,11 @@ const {
 
 const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 
-const dataService = require('../../shared/dataService');
+const dataService = require('../../../shared/dataService');
 const {
 	getAddressByUsername,
 	getPublicKeyByAny,
-} = require('../../shared/accountUtils');
+} = require('../../../shared/accountUtils');
 
 const getBlocks = async params => {
 	try {

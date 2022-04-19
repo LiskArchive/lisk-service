@@ -20,7 +20,7 @@ const {
 
 const {
 	reloadDelegateCache,
-} = require('../shared/dataService');
+} = require('../../shared/dataService');
 
 module.exports = [
 	{
