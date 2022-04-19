@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -15,7 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const peerCache = require('../shared/dataService/peerCache');
+const peerCache = require('../shared/sdk/peerCache');
 
 module.exports = [
 	{

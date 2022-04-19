@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const peerCache = require('./peerCache');
 const GeoService = require('../geolocation');
-const actions = require('./actions');
 
 const addLocation = async (ipaddress) => {
 	try {
@@ -26,7 +26,7 @@ const addLocation = async (ipaddress) => {
 };
 
 const getConnectedPeers = async () => {
-	const peers = await actions.getConnectedPeers();
+	const peers = await peerCache.get('connected');
 	const peersWithLocation = await Promise.all(peers.map(
 		async peer => {
 			peer.location = await addLocation(peer.ip);
@@ -37,7 +37,7 @@ const getConnectedPeers = async () => {
 };
 
 const getDisconnectedPeers = async () => {
-	const peers = await actions.getDisconnectedPeers();
+	const peers = await peerCache.get('disconnected');
 	const peersWithLocation = await Promise.all(peers.map(
 		async peer => {
 			peer.location = await addLocation(peer.ip);
@@ -49,8 +49,11 @@ const getDisconnectedPeers = async () => {
 
 const getPeers = async () => [...(await getConnectedPeers()), ...(await getDisconnectedPeers())];
 
+const getPeersStatistics = async () => peerCache.getStatistics();
+
 module.exports = {
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
+	getPeersStatistics,
 };

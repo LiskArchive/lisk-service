@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2020 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,8 +14,8 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const { requestRpc } = require('../utils/appContext');
-const Signals = require('../utils/signals');
+const actions = require('./actions');
+const Signals = require('../signals');
 
 const logger = Logger();
 
@@ -49,11 +49,11 @@ const refactorPeer = (orgPeer, state) => {
 };
 
 const getPeers = async () => {
-	const connectedPeers = await requestRpc('getConnectedPeers');
+	const connectedPeers = await actions.getConnectedPeers();
 	connectedPeers.data = connectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.CONNECTED));
 
-	const disconnectedPeers = await requestRpc('getDisconnectedPeers');
+	const disconnectedPeers = await actions.getDisconnectedPeers();
 	disconnectedPeers.data = disconnectedPeers
 		.map(orgPeer => refactorPeer(orgPeer, peerStates.DISCONNECTED));
 
