@@ -36,10 +36,12 @@
     "@liskhq/lisk-transactions": "^5.1.1",
     "bluebird": "^3.7.2",
     "bull": "^4.8.1",
+    "camelcase": "^6.3.0",
     "ioredis": "^4.27.1",
     "knex": "^0.95.4",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/bed0f631049a36ae9508547de47179c1b56e6f85/framework/dist/lisk-service-framework-1.3.1.tgz",
     "mysql": "^2.18.1",
+    "require-all": "^3.0.0",
     "signals": "^1.0.0"
   },
   "devDependencies": {
