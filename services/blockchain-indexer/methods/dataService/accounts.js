@@ -48,7 +48,7 @@ module.exports = [
 		},
 	},
 	{
-		name: 'reloadDelegateCache',
+		name: 'delegates.reload',
 		controller: reloadDelegateCache,
 		params: {},
 	},

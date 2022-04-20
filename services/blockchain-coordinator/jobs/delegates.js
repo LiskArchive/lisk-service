@@ -25,7 +25,7 @@ module.exports = [
 		init: async () => {
 			logger.debug('Initializing delegate cache...');
 			try {
-				await requestIndexer('reloadDelegateCache');
+				await requestIndexer('delegates.reload');
 				logger.info('Successfully initialized delegate cache');
 			} catch (err) {
 				logger.warn(`Initializing delegate cache failed due to: ${err.message}`);
@@ -34,7 +34,7 @@ module.exports = [
 		controller: async () => {
 			logger.debug('Reloading delegate cache...');
 			try {
-				await requestIndexer('reloadDelegateCache');
+				await requestIndexer('delegates.reload');
 			} catch (err) {
 				logger.warn(`Reloading delegate cache failed due to: ${err.message}`);
 			}
