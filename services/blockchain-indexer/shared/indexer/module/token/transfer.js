@@ -16,9 +16,11 @@
 
 // Asset specific constants
 const assetID = 0;
-const assetName = 'Transfer';
+const assetName = 'transfer';
 
 const processTransaction = async (tx) => {
+	// TODO: Implement
+
 	console.info(tx);
 	return Promise.resolve(tx);
 };

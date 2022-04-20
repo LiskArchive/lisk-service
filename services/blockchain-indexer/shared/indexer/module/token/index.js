@@ -16,7 +16,7 @@
 
 // Module specific constants
 const moduleID = 2;
-const moduleName = 'Transfer';
+const moduleName = 'token';
 
 module.exports = {
 	moduleID,
