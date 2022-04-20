@@ -40,6 +40,9 @@ const app = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
+	dependencies: [
+		'connector',
+	],
 });
 
 setAppContext(app);

@@ -49,6 +49,10 @@ const coordinatorConfig = {
 		appBlockDelete: async (payload) => Signals.get('deleteBlock').dispatch(payload),
 		appChainValidatorsChange: async (payload) => Signals.get('newRound').dispatch(payload),
 	},
+	dependencies: [
+		'connector',
+		'indexer',
+	],
 };
 
 setAppContext(app);
