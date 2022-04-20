@@ -25,10 +25,10 @@ module.exports = [
 		description: 'Keep the transaction statistics up-to-date',
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
-		init: () => {
+		init: async () => {
 			try {
 				logger.debug('Initiating transaction statistics computation.');
-				transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+				await transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 			} catch (err) {
 				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
 			}
@@ -36,7 +36,7 @@ module.exports = [
 		controller: async () => {
 			try {
 				logger.debug('Job scheduled to update transaction statistics.');
-				transactionStatistics.updateTodayStats();
+				await transactionStatistics.updateTodayStats();
 			} catch (err) {
 				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
 			}
