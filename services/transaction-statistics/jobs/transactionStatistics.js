@@ -27,20 +27,16 @@ module.exports = [
 		updateOnInit: true,
 		init: () => {
 			try {
-				// if (config.transactionStatistics.enabled) {
 				logger.debug('Initiating transaction statistics computation.');
 				transactionStatistics.init(config.transactionStatistics.historyLengthDays);
-				// }
 			} catch (err) {
 				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
 			}
 		},
 		controller: async () => {
 			try {
-				if (config.transactionStatistics.enabled) {
-					logger.debug('Job scheduled to update transaction statistics.');
-					transactionStatistics.updateTodayStats();
-				}
+				logger.debug('Job scheduled to update transaction statistics.');
+				transactionStatistics.updateTodayStats();
 			} catch (err) {
 				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
 			}
@@ -52,11 +48,9 @@ module.exports = [
 		schedule: '15 */3 * * *', // Every 3 hours at the 15th minute
 		controller: async () => {
 			try {
-				if (config.transactionStatistics.enabled) {
-					logger.debug('Verifying the transaction stats...');
-					await transactionStatistics
-						.validateTransactionStatistics(config.transactionStatistics.historyLengthDays);
-				}
+				logger.debug('Verifying the transaction stats...');
+				await transactionStatistics
+					.validateTransactionStatistics(config.transactionStatistics.historyLengthDays);
 			} catch (err) {
 				logger.warn(`Verifying transaction statistics failed due to: ${err.message}`);
 			}
