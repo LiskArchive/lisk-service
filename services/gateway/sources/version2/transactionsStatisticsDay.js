@@ -17,7 +17,7 @@ const definition = require('./mappings/transactionsStatistics');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions.statistics.day',
+	method: 'statistics.transactions.statistics.day',
 	params: {
 		offset: '=',
 		limit: '=',
