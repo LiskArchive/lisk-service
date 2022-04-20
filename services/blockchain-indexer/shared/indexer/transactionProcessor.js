@@ -15,23 +15,20 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const ModuleProcessors = require('./module');
+const { processTransaction } = require('./module');
 
 const logger = Logger();
 
 const transactionProcessor = async (tx) => {
 	try {
-		const Processor = ModuleProcessors[tx.moduleName];
-		const { processTransaction, updateAccount } = Processor;
-
 		await processTransaction(tx);
-		await updateAccount(tx);
 	} catch (err) {
 		logger.error(`Error occurred while processing transaction for module: ${tx.moduleName} (moduleID: ${tx.moduleID}): \n${err.message}`);
 		logger.error(err.stack);
 	}
 };
 
+// Example invocation
 transactionProcessor({
 	moduleName: 'Token',
 	assetName: 'Transfer',
