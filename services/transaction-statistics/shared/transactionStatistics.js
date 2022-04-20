@@ -34,6 +34,7 @@ const config = require('../config');
 
 const logger = Logger();
 
+let numTrxTypes;
 const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema);
 
 const getSelector = async (params) => {
@@ -41,8 +42,10 @@ const getSelector = async (params) => {
 	if (params.dateFrom) result.from = params.dateFrom.unix();
 	if (params.dateTo) result.to = params.dateTo.unix();
 
-	const networkStatus = await requestConnector('getNetworkStatus');
-	const numTrxTypes = networkStatus.data.moduleAssets.length;
+	if (!numTrxTypes) {
+		const networkStatus = await requestConnector('getNetworkStatus');
+		numTrxTypes = networkStatus.data.moduleAssets.length;
+	}
 
 	return {
 		propBetweens: [result],
@@ -143,8 +146,8 @@ const fetchTransactions = async (date) => {
 	const params = {
 		timestamp: `${moment.unix(date).unix()}:${moment.unix(date).add(1, 'day').unix()}`,
 	};
-	const maxCount = (await requestIndexer('getTransactions', { ...params, limit: 1 })).meta.total;
-	const transactions = await requestIndexer('getTransactions', { ...params, limit: maxCount });
+	const maxCount = (await requestIndexer('transactions', { ...params, limit: 1 })).meta.total;
+	const { data: transactions } = await requestIndexer('transactions', { ...params, limit: maxCount });
 	return transactions;
 };
 
@@ -246,7 +249,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 			};
 			await transactionStatisticsQueue.add({ date, options });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
-			logger.debug(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 			scheduledDays.push(formattedDate.toString());
 		}
 		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
