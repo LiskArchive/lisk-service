@@ -125,8 +125,7 @@ const loadAllDelegates = async () => {
 
 const loadAllNextForgers = async () => {
 	const maxCount = await dataService.getNumberOfForgers();
-	const { data } = await dataService.getForgers({ limit: maxCount, offset: nextForgers.length });
-	rawNextForgers = data;
+	rawNextForgers = await dataService.getForgers({ limit: maxCount, offset: nextForgers.length });
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
 
