@@ -18,7 +18,7 @@ const { Logger, Queue } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
-const { requestConnector, requestIndexer } = require('./utils/appContext');
+const { requestConnector, requestIndexer } = require('./utils/request');
 const Signals = require('./utils/signals');
 
 const {
