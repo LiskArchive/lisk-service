@@ -27,7 +27,6 @@ const getAllDirectories = async (sourceDirPath) => {
 
 const getAllJSFiles = async (
 	sourceDirPath,
-	isWithExt = true,
 	pascalCase = false,
 	preserveConsecutiveUppercase = true,
 ) => requireAll({
@@ -35,10 +34,7 @@ const getAllJSFiles = async (
 	filter: /(.+)\.js$/,
 	excludeDirs: /^\.(git|svn)$/,
 	recursive: false,
-	map: (fileNameWithExt) => {
-		const fileName = isWithExt ? fileNameWithExt : fileNameWithExt.split('.js')[0];
-
-		// Enforcing camelCase by default does not affect because of the naming standards
+	map: (fileName) => {
 		const formattedFileName = camelCase(
 			fileName,
 			{ pascalCase, preserveConsecutiveUppercase },
