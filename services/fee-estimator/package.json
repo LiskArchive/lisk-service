@@ -29,7 +29,8 @@
     "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/fd16d55072965e76bb6ec10525a91bb3fdb9c7c7/framework/dist/lisk-service-framework-1.2.5.tgz"
+    "@liskhq/lisk-transactions": "^5.1.1",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/bed0f631049a36ae9508547de47179c1b56e6f85/framework/dist/lisk-service-framework-1.3.1.tgz"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",

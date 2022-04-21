@@ -22,6 +22,7 @@ pipeline {
 					dir('./services/blockchain-indexer') { sh 'npm i' }
 					dir('./services/blockchain-coordinator') { sh 'npm i' }
 					dir('./services/core') { sh 'npm i' }
+					dir('./services/fee-estimator') { sh 'npm i' }
 					dir('./services/market') { sh 'npm i' }
 					dir('./services/newsfeed') { sh 'npm i' }
 					dir('./services/export') { sh 'npm i' }

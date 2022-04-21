@@ -46,7 +46,7 @@ const {
 	calculateFeePerByte,
 	EMAcalc,
 	getEstimateFeeByteForBlock,
-} = require('../../shared/core/compat/sdk_v5/dynamicFees');
+} = require('../../shared/dynamicFees');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');
