@@ -21,17 +21,17 @@ const {
 const util = require('util');
 
 const {
-	getSDKVersion,
-	getCoreVersion,
-
-	getEstimateFeeByteForBatch,
 	getNetworkFeeConstants,
-	getLastBlock,
+} = require('./constants');
+
+const {
+	getEstimateFeeByteForBatch,
 } = require('./core');
+
+const { requestConnector } = require('./utils/request');
 
 const config = require('../config');
 
-const sdkVersion = getSDKVersion();
 const logger = Logger();
 
 const cacheRedisFees = CacheRedis('fees', config.endpoints.redis);
@@ -62,7 +62,7 @@ const checkAndProcessExecution = async (fromHeight, toHeight, cacheKey) => {
 };
 
 const calculateEstimateFeeByteNormal = async () => {
-	const latestBlock = getLastBlock();
+	const { header: latestBlock } = await requestConnector('getLastBlock');
 	const fromHeight = config.feeEstimates.defaultStartBlockHeight;
 	const toHeight = latestBlock.height;
 
@@ -79,7 +79,7 @@ const calculateEstimateFeeByteNormal = async () => {
 
 const calculateEstimateFeeByteQuick = async () => {
 	// For the cold start scenario
-	const latestBlock = getLastBlock();
+	const { header: latestBlock } = await requestConnector('getLastBlock');
 	const batchSize = config.feeEstimates.coldStartBatchSize;
 	const toHeight = latestBlock.height;
 	const fromHeight = toHeight - batchSize;
@@ -96,13 +96,6 @@ const getEstimateFeeByteQuick = () => cacheRedisFees.get(cacheKeyFeeEstNormal);
 const getEstimateFeeByteFull = () => cacheRedisFees.get(cacheKeyFeeEstQuick);
 
 const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
-	if (sdkVersion < 4) { // TODO: Remove this block
-		return {
-			data: { error: `Action not supported for Lisk Core version: ${getCoreVersion()}.` },
-			status: 'METHOD_NOT_ALLOWED',
-		};
-	}
-
 	if (!config.feeEstimates.quickAlgorithmEnabled && !config.feeEstimates.fullAlgorithmEnabled) {
 		return {
 			data: { error: 'The dynamic fees algorithm has not been enabled.' },
@@ -110,7 +103,7 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 		};
 	}
 
-	const latestBlock = getLastBlock();
+	const { header: latestBlock } = await requestConnector('getLastBlock');
 	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
 		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
 			.every(key => Object.keys(feeEstPerByte).includes(key))
