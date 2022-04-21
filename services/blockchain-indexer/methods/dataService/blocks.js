@@ -36,7 +36,7 @@ module.exports = [
 		},
 	},
 	{
-		name: 'Block.last',
+		name: 'blocks.last',
 		controller: getLastBlock,
 		params: {
 			limit: { optional: true, type: 'any' },

@@ -40,7 +40,7 @@ const delegateStatus = {
 	STANDBY: 'standby',
 	BANNED: 'banned',
 	PUNISHED: 'punished',
-	NON_ELIGIBLE: 'non-eligible',
+	NON_ELIGIBLE: 'non-eligible', // TODO: Update to 'ineligible' with API v3
 };
 
 let rawNextForgers = [];
