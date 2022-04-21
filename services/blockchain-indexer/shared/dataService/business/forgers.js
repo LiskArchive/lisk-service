@@ -41,10 +41,10 @@ const getForgers = async params => {
 				['address', 'username', 'totalVotesReceived']);
 			forger.username = account && account.username
 				? account.username
-				: undefined;
+				: null;
 			forger.totalVotesReceived = account && account.totalVotesReceived
 				? Number(account.totalVotesReceived)
-				: undefined;
+				: null;
 			return forger;
 		},
 		{ concurrency: forgers.data.length },

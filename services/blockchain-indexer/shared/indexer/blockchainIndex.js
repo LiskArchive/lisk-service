@@ -36,6 +36,10 @@ const {
 } = require('../utils/accountUtils');
 
 const {
+	range,
+} = require('../utils/arrayUtils');
+
+const {
 	getVoteIndexingInfo,
 } = require('./votersIndex');
 
@@ -431,16 +435,9 @@ const updateNonFinalBlocks = async () => {
 
 const getMissingBlocks = async (params) => {
 	const missingBlockRanges = await findMissingBlocksInRange(params.from, params.to);
-
-	const convertRangesToArr = missingBlockRanges
-		.map(range => Array(range.to - range.from + 1)
-			.fill()
-			.map((_, acc) => range.from + acc));
-
-	const listOfMissingBlocks = convertRangesToArr
-		.reduce((acc, curr) => acc
-			.push(...curr) && acc, []);
-
+	const nestedListOfRanges = missingBlockRanges
+		.map(entry => range(entry.from, entry.to + 1)); // 'to + 1' as 'to' is non-inclusive
+	const listOfMissingBlocks = nestedListOfRanges.flat();
 	return listOfMissingBlocks;
 };
 

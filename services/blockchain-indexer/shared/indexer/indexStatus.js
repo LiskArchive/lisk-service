@@ -46,8 +46,7 @@ const getIndexStats = async () => {
 		const currentChainHeight = await getCurrentHeight();
 		const genesisHeight = await getGenesisHeight();
 		const numBlocksIndexed = await blocksDB.count();
-		// TODO: Revert change once microservice dependency feature is ready
-		const [lastIndexedBlock = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 		const chainLength = currentChainHeight - genesisHeight + 1;
 		const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
