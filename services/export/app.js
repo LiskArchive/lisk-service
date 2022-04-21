@@ -20,7 +20,7 @@ const {
 	Logger,
 } = require('lisk-service-framework');
 
-const { setBrokerHandle } = require('./shared/rpcBroker');
+const { setAppContext } = require('./shared/csvExport');
 
 const config = require('./config');
 const packageJson = require('./package.json');
@@ -45,17 +45,19 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-setBrokerHandle(app.getBroker());
+setAppContext(app);
 
-// Add routes, events & jobs
-app.addMethods(path.join(__dirname, 'methods'));
-app.addJobs(path.join(__dirname, 'jobs'));
+(async () => {
+	// Add routes, events & jobs
+	await app.addMethods(path.join(__dirname, 'methods'));
+	await app.addJobs(path.join(__dirname, 'jobs'));
 
-// Run the application
-app.run().then(() => {
-	logger.info(`Service started ${packageJson.name}`);
-}).catch(err => {
-	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-	logger.fatal(err.stack);
-	process.exit(1);
-});
+	// Run the application
+	app.run().then(() => {
+		logger.info(`Service started ${packageJson.name}`);
+	}).catch(err => {
+		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+		logger.fatal(err.stack);
+		process.exit(1);
+	});
+})();

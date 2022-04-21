@@ -24,13 +24,8 @@ const {
 		NotFoundException,
 		ValidationException,
 	},
+	Queue,
 } = require('lisk-service-framework');
-
-const {
-	requestRpc,
-} = require('./rpcBroker');
-
-const Queue = require('./queue');
 
 const {
 	getBase32AddressFromPublicKey,
@@ -66,13 +61,17 @@ const noTransactionsCache = CacheRedis('noTransactions', config.endpoints.volati
 const DATE_FORMAT = config.csv.dateFormat;
 const MAX_NUM_TRANSACTIONS = 10000;
 
-const getAccounts = async (params) => requestRpc('core.accounts', params);
+let app;
 
-const getTransactions = async (params) => requestRpc('core.transactions', params);
+const setAppContext = (h) => app = h;
 
-const isBlockchainIndexReady = async () => requestRpc('gateway.isBlockchainIndexReady', {});
+const getAccounts = async (params) => app.requestRpc('core.accounts', params);
 
-const getFirstBlock = async () => requestRpc(
+const getTransactions = async (params) => app.requestRpc('core.transactions', params);
+
+const isBlockchainIndexReady = async () => app.requestRpc('gateway.isBlockchainIndexReady', {});
+
+const getFirstBlock = async () => app.requestRpc(
 	'core.blocks',
 	{
 		limit: 1,
@@ -249,7 +248,7 @@ const exportTransactionsCSV = async (job) => {
 	await staticFiles.write(csvFilename, csv);
 };
 
-const scheduleTransactionExportQueue = Queue('scheduleTransactionExportQueue', exportTransactionsCSV, 50);
+const scheduleTransactionExportQueue = Queue(config.endpoints.redis, 'scheduleTransactionExportQueue', exportTransactionsCSV, 50);
 
 const scheduleTransactionHistoryExport = async (params) => {
 	// Schedule only when index is completely built
@@ -328,4 +327,5 @@ module.exports = {
 	getPartialFilenameFromParams,
 	getCsvFilenameFromParams,
 	getCsvFileUrlFromParams,
+	setAppContext,
 };

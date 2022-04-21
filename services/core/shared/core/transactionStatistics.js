@@ -14,7 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { Logger } = require('lisk-service-framework');
+const { Logger, Queue } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
@@ -31,9 +31,9 @@ const {
 	rollbackDbTransaction,
 } = require('../indexdb/mysql');
 
-const Queue = require('./queue');
 const requestAll = require('../requestAll');
 const txStatisticsIndexSchema = require('./schemas/transactionStatistics');
+const config = require('../../config');
 
 const logger = Logger();
 
@@ -167,7 +167,7 @@ const queueJob = async (job) => {
 };
 
 const queueName = 'transactionStats';
-const transactionStatisticsQueue = Queue(queueName, queueJob, 1);
+const transactionStatisticsQueue = Queue(config.endpoints.redis, queueName, queueJob, 1);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();

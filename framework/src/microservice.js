@@ -110,7 +110,12 @@ const Microservice = (config = {}) => {
 		}
 
 		event.controller(data => {
-			broker.emit(event.name, data, 'gateway');
+			const { broadcast, target } = event;
+			if (broadcast === true) {
+				broker.broadcast(event.name, data, target);
+			} else {
+				broker.emit(event.name, data, target);
+			}
 		});
 		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
 		return true;
@@ -163,7 +168,7 @@ const Microservice = (config = {}) => {
 		return true;
 	};
 
-	const _addItems = (folderPath, type) => {
+	const _addItems = async (folderPath, type) => {
 		const items = requireAllJs(folderPath);
 		const fnMap = {
 			method: addMethod,
@@ -171,21 +176,23 @@ const Microservice = (config = {}) => {
 			job: addJob,
 		};
 
-		Object.keys(items)
-			.forEach(itemGroup => items[itemGroup]
-				.forEach(item => fnMap[type].call(this, item)));
+		await Promise.all(Object.keys(items)
+			.map(async itemGroup => (await items[itemGroup])
+				.forEach(item => fnMap[type].call(this, item)),
+			),
+		);
 	};
 
-	const addMethods = folderPath => {
-		_addItems(folderPath, 'method');
+	const addMethods = async folderPath => {
+		await _addItems(folderPath, 'method');
 	};
 
-	const addEvents = folderPath => {
-		_addItems(folderPath, 'event');
+	const addEvents = async folderPath => {
+		await _addItems(folderPath, 'event');
 	};
 
-	const addJobs = folderPath => {
-		_addItems(folderPath, 'job');
+	const addJobs = async folderPath => {
+		await _addItems(folderPath, 'job');
 	};
 
 	const run = () => {
@@ -198,6 +205,16 @@ const Microservice = (config = {}) => {
 		return broker.start();
 	};
 
+	const requestRpc = (method, params) => new Promise((resolve, reject) => {
+		broker
+			.call(method, params)
+			.then(res => resolve(res))
+			.catch(err => {
+				logger.error(`Error occurred! ${err.message}`);
+				reject(err);
+			});
+	});
+
 	return {
 		addMethods,
 		addEvents,
@@ -207,6 +224,7 @@ const Microservice = (config = {}) => {
 		addJob,
 		getBroker,
 		run,
+		requestRpc,
 	};
 };
 

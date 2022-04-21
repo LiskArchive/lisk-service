@@ -17,7 +17,7 @@ const transaction = require('./mappings/transaction');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions',
+	method: 'indexer.transactions',
 	params: {
 		id: 'transactionId,string',
 		senderAddress: '=',
