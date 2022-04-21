@@ -88,7 +88,7 @@ const indexSchemas = {
 	transactions: require('../database/schema/transactions'),
 	votes: require('../database/schema/votes'),
 	votes_aggregate: require('../database/schema/votesAggregate'),
-	key_value_store: require('../database/schema/keyValue'),
+	key_value_store: require('../database/schema/kvStore'),
 };
 
 const initializeSearchIndex = async () => {

@@ -21,7 +21,7 @@ const transactionStatistics = require('../shared/transactionStatistics');
 
 module.exports = [
 	{
-		name: 'refresh.transactionstats',
+		name: 'refresh.transactions.statistics',
 		description: 'Keep the transaction statistics up-to-date',
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
@@ -30,7 +30,7 @@ module.exports = [
 				logger.debug('Initiating transaction statistics computation.');
 				await transactionStatistics.init(config.transactionStatistics.historyLengthDays);
 			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
+				logger.warn(`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`);
 			}
 		},
 		controller: async () => {
@@ -38,12 +38,12 @@ module.exports = [
 				logger.debug('Job scheduled to update transaction statistics.');
 				await transactionStatistics.updateTodayStats();
 			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.transactionstats' job:\n${err.stack}`);
+				logger.warn(`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`);
 			}
 		},
 	},
 	{
-		name: 'verify.transaction.statistics',
+		name: 'verify.transactions.statistics',
 		description: 'Verify the accuracy and rebuild the transaction statistics, if necessary',
 		schedule: '15 */3 * * *', // Every 3 hours at the 15th minute
 		controller: async () => {

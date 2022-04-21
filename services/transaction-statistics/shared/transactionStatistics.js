@@ -167,7 +167,13 @@ const queueJob = async (job) => {
 };
 
 const queueName = 'transactionStats';
-const transactionStatisticsQueue = Queue(config.endpoints.redis, queueName, queueJob, 1);
+const transactionStatisticsQueue = Queue(
+	config.endpoints.redis,
+	queueName,
+	queueJob,
+	1,
+	config.Queue.defaultJobOptions,
+);
 
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();

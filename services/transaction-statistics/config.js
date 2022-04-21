@@ -52,15 +52,13 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
 config.queue = {
-	transactionStatisticsQueue: {
-		defaultJobOptions: {
-			attempts: 5,
-			timeout: 5 * 60 * 1000, // millisecs
-			removeOnComplete: true,
-		},
-		settings: {},
-		// limiter: {},
+	defaultJobOptions: {
+		attempts: 5,
+		timeout: 5 * 60 * 1000, // millisecs
+		removeOnComplete: true,
 	},
+	settings: {},
+	// limiter: {},
 };
 
 module.exports = config;

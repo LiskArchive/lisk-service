@@ -15,7 +15,7 @@
  */
 const { getTableInstance } = require('./mysql');
 
-const keyValueStoreSchema = require('./schema/keyValue');
+const keyValueStoreSchema = require('./schema/kvStore');
 
 const ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 

@@ -29,19 +29,13 @@
     "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-api-client": "^5.1.3",
-    "@liskhq/lisk-codec": "^0.2.1",
-    "@liskhq/lisk-cryptography": "^3.2.0",
-    "big-json": "^3.1.0",
     "big-number": "=2.0.0",
     "bluebird": "^3.7.2",
-    "bull": "^4.8.1",
     "knex": "^0.95.4",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/bed0f631049a36ae9508547de47179c1b56e6f85/framework/dist/lisk-service-framework-1.3.1.tgz",
     "moment": "=2.24.0",
     "mysql": "^2.18.1",
-    "signals": "^1.0.0",
-    "tar": "^6.1.11"
+    "signals": "^1.0.0"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",
