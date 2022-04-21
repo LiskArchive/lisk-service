@@ -162,8 +162,7 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 				const block = await requestConnector('getBlockByHeight', {
 					height: prevFeeEstPerByte.blockHeight + 1 - i,
 				});
-				const payload = block.payload.length ? block.paylaod : [];
-				return { ...block.header, payload };
+				return { ...block.header, payload: block.payload };
 			},
 			{ concurrency: 50 },
 		);
