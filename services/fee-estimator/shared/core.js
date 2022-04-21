@@ -159,10 +159,11 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
 			async i => {
-				const { block } = await requestConnector('getBlockByHeight', {
+				const block = await requestConnector('getBlockByHeight', {
 					height: prevFeeEstPerByte.blockHeight + 1 - i,
 				});
-				return block;
+				const payload = block.payload.length ? block.paylaod : [];
+				return { ...block.header, payload };
 			},
 			{ concurrency: 50 },
 		);

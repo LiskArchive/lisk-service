@@ -29,6 +29,7 @@ const {
 } = require('./core');
 
 const { requestConnector } = require('./utils/request');
+const Signals = require('./utils/signals');
 
 const config = require('../config');
 
@@ -128,6 +129,22 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 		status: 'SERVICE_UNAVAILABLE',
 	};
 };
+Signals.get('newBlock').add(async () => {
+	try {
+		if (config.feeEstimates.fullAlgorithmEnabled) {
+			logger.debug('Initiate the dynamic fee estimates computation (full computation)');
+			calculateEstimateFeeByteNormal();
+		}
+		if (config.feeEstimates.quickAlgorithmEnabled) {
+			logger.debug('Initiate the dynamic fee estimates computation (quick algorithm)');
+			const feeEstimate = await calculateEstimateFeeByteQuick();
+			logger.debug(`============== 'newFeeEstimate' signal: ${Signals.get('newFeeEstimate')} ==============`);
+			Signals.get('newFeeEstimate').dispatch(feeEstimate);
+		}
+	} catch (err) {
+		logger.error(`Error occured when processing 'calculateFeeEstimate' event:\n${err.stack}`);
+	}
+});
 
 module.exports = {
 	getEstimateFeeByte,
