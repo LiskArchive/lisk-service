@@ -18,11 +18,11 @@
 const assetID = 0;
 const assetName = 'transfer';
 
-const processTransaction = async (tx) => {
+const processTransaction = async (blockHeader, tx) => {
 	// TODO: Implement
 
-	console.info(tx);
-	return Promise.resolve(tx);
+	console.info(blockHeader, tx);
+	return Promise.resolve({ blockHeader, tx });
 };
 
 module.exports = {

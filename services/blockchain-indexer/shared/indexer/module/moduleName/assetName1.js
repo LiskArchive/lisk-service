@@ -16,10 +16,10 @@
 
 // Declare and export the following asset specific constants
 const assetID = 0;
-const assetName = 'AssetName';
+const assetName = 'assetName';
 
 // Implement the custom logic in the 'processTransaction' method and export it
-const processTransaction = async (tx) => Promise.resolve(tx);
+const processTransaction = async (blockHeader, tx) => Promise.resolve({ blockHeader, tx });
 
 module.exports = {
 	assetID,

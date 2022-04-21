@@ -56,7 +56,7 @@ const buildModuleAssetProcessorMap = async () => {
 	return Promise.all(promises);
 };
 
-const processTransaction = async (tx) => {
+const processTransaction = async (blockHeader, tx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleAssetProcessorMap();
 
 	if (!moduleProcessorMap.has(tx.moduleID)) throw Error(`No processors implemented for transactions related to moduleID: ${tx.moduleID}`);
@@ -65,7 +65,7 @@ const processTransaction = async (tx) => {
 	if (!moduleAssetProcessorMap.has(tx.assetID)) throw Error(`No transaction processor implemented for transactions with moduleID: ${tx.moduleID} and assetID: ${tx.assetID}`);
 	const transactionProcessor = moduleAssetProcessorMap.get(tx.assetID);
 
-	return transactionProcessor(tx);
+	return transactionProcessor(blockHeader, tx);
 };
 
 module.exports = {
