@@ -45,6 +45,7 @@ pipeline {
 				nvm(getNodejsVersion()) {
 					dir('./framework') { sh "npm run test:unit" }
 					dir('./services/blockchain-connector') { sh "npm run test:unit" }
+					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
 					dir('./services/core') { sh "npm run test:unit" }
 					dir('./services/market') { sh "npm run test:unit" }
 					dir('./services/newsfeed') { sh "npm run test:unit" }
