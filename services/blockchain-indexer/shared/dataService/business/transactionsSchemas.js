@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestRpc } = require('../utils/appContext');
+const { requestRpc } = require('../../utils/appContext');
 
 let allTransactionSchemasCache;
 

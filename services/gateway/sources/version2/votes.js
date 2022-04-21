@@ -17,7 +17,7 @@ const vote = require('./mappings/vote');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.votes',
+	method: 'indexer.votes',
 	params: {
 		address: '=,string',
 		username: '=,string',

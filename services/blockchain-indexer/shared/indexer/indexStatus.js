@@ -30,7 +30,7 @@ const {
 	getTableInstance,
 } = require('../database/mysql');
 
-const blocksIndexSchema = require('./schema/blocks');
+const blocksIndexSchema = require('../database/schema/blocks');
 
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
 
@@ -82,12 +82,12 @@ const reportIndexStatus = async () => {
 };
 
 const indexSchemas = {
-	accounts: require('./schema/accounts'),
-	blocks: require('./schema/blocks'),
-	multisignature: require('./schema/multisignature'),
-	transactions: require('./schema/transactions'),
-	votes: require('./schema/votes'),
-	votes_aggregate: require('./schema/votesAggregate'),
+	accounts: require('../database/schema/accounts'),
+	blocks: require('../database/schema/blocks'),
+	multisignature: require('../database/schema/multisignature'),
+	transactions: require('../database/schema/transactions'),
+	votes: require('../database/schema/votes'),
+	votes_aggregate: require('../database/schema/votesAggregate'),
 };
 
 const initializeSearchIndex = async () => {

@@ -26,11 +26,10 @@ const config = require('../../config');
 
 const {
 	getBlockByHeight,
-} = require('../blocks');
-
-const {
+	getVotesByTransactionIDs,
+	getTransactionsByBlockIDs,
 	getAccountsByPublicKey,
-} = require('../accounts');
+} = require('../dataService');
 
 const {
 	getBase32AddressFromPublicKey,
@@ -41,16 +40,8 @@ const {
 } = require('../utils/arrayUtils');
 
 const {
-	getVotesByTransactionIDs,
-} = require('../voters');
-
-const {
 	getVoteIndexingInfo,
 } = require('./votersIndex');
-
-const {
-	getTransactionsByBlockIDs,
-} = require('../transactions');
 
 const {
 	getTransactionIndexingInfo,
@@ -76,12 +67,12 @@ const {
 	rollbackDbTransaction,
 } = require('../database/mysql');
 
-const blocksIndexSchema = require('./schema/blocks');
-const accountsIndexSchema = require('./schema/accounts');
-const transactionsIndexSchema = require('./schema/transactions');
-const votesIndexSchema = require('./schema/votes');
-const multisignatureIndexSchema = require('./schema/multisignature');
-const votesAggregateIndexSchema = require('./schema/votesAggregate');
+const blocksIndexSchema = require('../database/schema/blocks');
+const accountsIndexSchema = require('../database/schema/accounts');
+const transactionsIndexSchema = require('../database/schema/transactions');
+const votesIndexSchema = require('../database/schema/votes');
+const multisignatureIndexSchema = require('../database/schema/multisignature');
+const votesAggregateIndexSchema = require('../database/schema/votesAggregate');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
@@ -315,6 +306,8 @@ const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', index
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
+const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
+
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
 	const [block] = await getBlockByHeight(height);
@@ -464,4 +457,5 @@ module.exports = {
 	isGenesisBlockIndexed,
 	addBlockToQueue,
 	getMissingBlocks,
+	deleteBlock,
 };

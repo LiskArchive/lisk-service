@@ -17,8 +17,8 @@
 const { ServiceBroker } = require('moleculer');
 
 const { getTableInstance } = require('../../shared/database/mysql');
-const accountsIndexSchema = require('../../shared/indexer/schema/accounts');
-const blocksIndexSchema = require('../../shared/indexer/schema/blocks');
+const accountsIndexSchema = require('../../shared/database/schema/accounts');
+const blocksIndexSchema = require('../../shared/database/schema/blocks');
 
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);

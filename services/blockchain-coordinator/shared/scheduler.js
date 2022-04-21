@@ -21,6 +21,7 @@ const {
 
 const logger = Logger();
 
+const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
 	isGenesisAccountsIndexed,
@@ -65,8 +66,10 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 		? heights
 		: [heights];
 
-	await Promise.all(blockHeights.map(async height => blockIndexQueue.add({ height, isNewBlock })));
-	logger.info('Scheduled block indexing');
+	await Promise.all(blockHeights.map(async height => {
+		await blockIndexQueue.add({ height, isNewBlock });
+		logger.debug(`Scheduled indexing for block at height: ${height}`);
+	}));
 };
 
 const scheduleDelegateAccountsIndexing = async (addresses) => {
@@ -83,9 +86,9 @@ const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 	logger.info('Finished scheduling of genesis accounts indexing');
 };
 
-const init = async () => {
+const initIndexingScheduler = async () => {
 	// Schedule indexing new block
-	const newBlockListener = async (block) => scheduleBlocksIndexing(block.header.height, true);
+	const newBlockListener = async ({ block }) => scheduleBlocksIndexing(block.header.height, true);
 	Signals.get('newBlock').add(newBlockListener);
 
 	// Retrieve enabled modules from connector
@@ -121,6 +124,11 @@ const init = async () => {
 			await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
 		}
 	}
+};
+
+const init = async () => {
+	await initIndexingScheduler();
+	await initEventsScheduler();
 };
 
 module.exports = {

@@ -23,13 +23,13 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	getTableInstance,
-} = require('../database/mysql');
-
-const {
 	getAccountsByAddress,
 	getAccountsByPublicKey2,
-} = require('../accounts');
+} = require('../dataService');
+
+const {
+	getTableInstance,
+} = require('../database/mysql');
 
 const { requestRpc } = require('../utils/appContext');
 
@@ -39,7 +39,7 @@ const Signals = require('../utils/signals');
 
 const redis = new Redis(config.endpoints.cache);
 
-const accountsIndexSchema = require('./schema/accounts');
+const accountsIndexSchema = require('../database/schema/accounts');
 
 const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
 
@@ -164,6 +164,7 @@ const getDelegateAccounts = async () => {
 };
 
 const addAccountToAddrUpdateQueue = async address => accountAddrUpdateQueue.add(address);
+const addAccountToDirectUpdateQueue = async accounts => accountDirectUpdateQueue.add(accounts);
 
 const keepAccountsCacheUpdated = async () => {
 	const accountsDB = await getAccountIndex();
@@ -185,5 +186,6 @@ module.exports = {
 	isGenesisAccountsIndexed,
 	getDelegateAccounts,
 	addAccountToAddrUpdateQueue,
+	addAccountToDirectUpdateQueue,
 	getGenesisAccountAddresses,
 };

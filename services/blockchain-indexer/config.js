@@ -59,11 +59,19 @@ config.queue = {
 	blocks: {
 		name: 'Blocks',
 	},
+	events: {
+		name: 'Events',
+	},
 	defaultJobOptions: {
 		attempts: 5,
 		timeout: 5 * 60 * 1000, // millisecs
 		removeOnComplete: true,
 	},
+};
+
+config.operations = {
+	dataRetrievalMode: Boolean(String(process.env.ENABLE_DATA_RETRIEVAL_MODE).toLowerCase() !== 'false'), // Enabled by default
+	IndexingMode: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
 };
 
 module.exports = config;
