@@ -13,20 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dropDuplicates = arr => arr.filter((v, i, a) => a.findIndex(t => (t === v)) === i);
 
-const range = (start = 0, end, step = 1) => {
-	if (!end) {
-		end = start;
-		start = 0;
-	}
-	const arrSize = Math.floor((end - start) / step);
+// Declare and export the following asset specific constants
+export const assetID = 0;
+export const assetName = 'assetName';
 
-	// 'end' is non-inclusive
-	return new Array(arrSize).fill().map((_, index) => start + index * step);
-};
-
-module.exports = {
-	dropDuplicates,
-	range,
-};
+// Implement the custom logic in the 'processTransaction' method and export it
+export const processTransaction = async (blockHeader, tx) => Promise.resolve({ blockHeader, tx });

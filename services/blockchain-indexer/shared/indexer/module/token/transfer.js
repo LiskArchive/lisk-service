@@ -13,20 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dropDuplicates = arr => arr.filter((v, i, a) => a.findIndex(t => (t === v)) === i);
 
-const range = (start = 0, end, step = 1) => {
-	if (!end) {
-		end = start;
-		start = 0;
-	}
-	const arrSize = Math.floor((end - start) / step);
+// Asset specific constants
+const assetID = 0;
+const assetName = 'transfer';
 
-	// 'end' is non-inclusive
-	return new Array(arrSize).fill().map((_, index) => start + index * step);
+const processTransaction = async (blockHeader, tx) => {
+	// TODO: Implement
+
+	console.info(blockHeader, tx);
+	return Promise.resolve({ blockHeader, tx });
 };
 
 module.exports = {
-	dropDuplicates,
-	range,
+	assetID,
+	assetName,
+	processTransaction,
 };

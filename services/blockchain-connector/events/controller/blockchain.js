@@ -21,7 +21,9 @@ const {
 	decodeTransaction,
 } = require('../../shared/sdk/decoder');
 
-const decodeBlockEventPayload = async (payload) => ({
+const { parseToJSONCompatObj } = require('../../shared/parser');
+
+const decodeBlockEventPayload = async (payload) => parseToJSONCompatObj({
 	block: { ...(await decodeBlock(payload.block)), _raw: payload.block },
 	accounts: await Promise.all(
 		payload.accounts.map(async a => ({ ...(await decodeAccount(a)), _raw: a })),

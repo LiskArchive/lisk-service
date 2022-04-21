@@ -22,6 +22,7 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/utils/request');
+const { init } = require('./shared/scheduler');
 const Signals = require('./shared/signals');
 
 const loggerConf = {
@@ -39,29 +40,20 @@ const app = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
-});
-
-const coordinatorConfig = {
-	name: 'coordinator',
 	events: {
 		appBlockNew: ({ block }) => Signals.get('newBlock').dispatch(block),
 	},
-};
+});
 
 setAppContext(app);
-const broker = app.getBroker();
 
 (async () => {
 	// Add routes, events & jobs
 	// await app.addMethods(path.join(__dirname, 'methods'));
 
 	// Run the application
-	await broker.createService(coordinatorConfig);
-	await broker.waitForServices('indexer');
-	broker.start().then(async () => {
-		const { init } = require('./shared/scheduler');
+	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
-
 		await init();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
