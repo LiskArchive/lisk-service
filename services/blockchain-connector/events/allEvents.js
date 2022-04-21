@@ -32,8 +32,7 @@ const toCamelCase = (words) => {
 
 const exportAllEvents = async () => {
 	// Re-subscribe to the events when apiClient is re-instantiated
-	// Currently throws 'RangeError: Maximum call stack size exceeded'
-	// Signals.get('newApiClient').add(subscribeToAllRegisteredEvents);
+	Signals.get('newApiClient').add(subscribeToAllRegisteredEvents);
 	await subscribeToAllRegisteredEvents();
 
 	const registeredEvents = await getRegisteredEvents();
