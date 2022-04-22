@@ -172,7 +172,7 @@ const transactionStatisticsQueue = Queue(
 	queueName,
 	queueJob,
 	1,
-	config.Queue.defaultJobOptions,
+	config.queue.defaultJobOptions,
 );
 
 const getStatsTimeline = async params => {
