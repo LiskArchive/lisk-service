@@ -78,38 +78,6 @@ describe('Fee estimation tests', () => {
 		});
 	});
 
-	xdescribe('calculateFeePerByte for Blocks', () => {
-		it('Empty block', async () => {
-			const feePerByte = await calculateFeePerByte(emptyBlock);
-			expect(feePerByte.low).toBe(0);
-			expect(feePerByte.med).toBe(0);
-			expect(feePerByte.high).toBe(1);
-			expect(feePerByte).toEqual({
-				low: 0,
-				med: 0,
-				high: 1,
-			});
-		});
-
-		it('Non-empty block', async () => {
-			const block = nonEmptyBlock;
-			block.payload = block.payload.map(transaction => {
-				transaction.fee = BigInt(transaction.fee);
-				return transaction;
-			});
-
-			const feePerByte = await calculateFeePerByte(block);
-			expect(feePerByte.low).toBeCloseTo(0);
-			expect(feePerByte.med).toBeCloseTo(36.501497200885304);
-			expect(feePerByte.high).toBeCloseTo(1727.6700292873413);
-			expect(feePerByte).toEqual({
-				low: 0,
-				med: 36.501497200885304,
-				high: 1727.6700292873413,
-			});
-		});
-	});
-
 	describe('EMA computation', () => {
 		it('Zero offset', async () => {
 			const feePerByte = {
@@ -150,6 +118,38 @@ describe('Fee estimation tests', () => {
 				feeEstLow: 0,
 				feeEstMed: 976.222714,
 				feeEstHigh: 2012.411464,
+			});
+		});
+	});
+
+	xdescribe('calculateFeePerByte for Blocks', () => {
+		it('Empty block', async () => {
+			const feePerByte = await calculateFeePerByte(emptyBlock);
+			expect(feePerByte.low).toBe(0);
+			expect(feePerByte.med).toBe(0);
+			expect(feePerByte.high).toBe(1);
+			expect(feePerByte).toEqual({
+				low: 0,
+				med: 0,
+				high: 1,
+			});
+		});
+
+		it('Non-empty block', async () => {
+			const block = nonEmptyBlock;
+			block.payload = block.payload.map(transaction => {
+				transaction.fee = BigInt(transaction.fee);
+				return transaction;
+			});
+
+			const feePerByte = await calculateFeePerByte(block);
+			expect(feePerByte.low).toBeCloseTo(0);
+			expect(feePerByte.med).toBeCloseTo(36.501497200885304);
+			expect(feePerByte.high).toBeCloseTo(1727.6700292873413);
+			expect(feePerByte).toEqual({
+				low: 0,
+				med: 36.501497200885304,
+				high: 1727.6700292873413,
 			});
 		});
 	});

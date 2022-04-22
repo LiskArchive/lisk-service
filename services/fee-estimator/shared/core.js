@@ -18,7 +18,7 @@ const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const { calcAvgFeeByteModes, EMAcalc } = require('./utils/dynamicFees');
 const { parseInputBySchema } = require('./utils/parser');
-const { getTxnMinFee } = require('./utils/transactionsUtils');
+const { getTxnMinFee, getAllTransactionSchemasFromCache } = require('./utils/transactionsUtils');
 const { requestConnector } = require('./utils/request');
 
 const config = require('../config');
@@ -86,8 +86,8 @@ const calculateFeePerByte = async block => {
 	const transactionDetails = await BluebirdPromise.map(
 		block.payload,
 		async tx => {
-			// Calculate minFee from parsed transaction
-			const schema = await requestConnector('getSchema');
+			// Calculate minFee from JSON parsed transaction
+			const schema = await getAllTransactionSchemasFromCache();
 			const assetSchema = schema.transactionsAssets
 				.find(s => s.moduleID === tx.moduleID && s.assetID === tx.assetID);
 			const parsedTxAsset = parseInputBySchema(tx.asset, assetSchema.schema);

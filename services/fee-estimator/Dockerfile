@@ -16,10 +16,10 @@ FROM node:16-alpine
 RUN apk add --no-cache curl
 RUN adduser -D lisk
 
-COPY ./ /home/lisk/lisk-service/fees/
+COPY ./ /home/lisk/lisk-service/fee-estimator/
 RUN chown -R lisk:lisk /home/lisk/
-COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/fees/node_modules/
+COPY --from=builder /home/builder/build/node_modules/ /home/lisk/lisk-service/fee-estimator/node_modules/
 
 USER lisk
-WORKDIR /home/lisk/lisk-service/fees
+WORKDIR /home/lisk/lisk-service/fee-estimator
 CMD ["node", "app.js"]

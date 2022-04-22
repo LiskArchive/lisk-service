@@ -94,6 +94,7 @@ build-local:
 	cd ./framework && npm ci
 	cd ./services/blockchain-connector && npm ci
 	cd ./services/blockchain-indexer && npm ci
+	cd ./services/fee-estimator && npm ci
 	cd ./services/core && npm ci
 	cd ./services/market && npm ci
 	cd ./services/newsfeed && npm ci
@@ -109,6 +110,7 @@ clean-local:
 	cd ./framework && rm -rf node_modules
 	cd ./services/blockchain-connector && rm -rf node_modules
 	cd ./services/blockchain-indexer && rm -rf node_modules
+	cd ./services/fee-estimator && rm -rf node_modules
 	cd ./services/core && rm -rf node_modules
 	cd ./services/market && rm -rf node_modules
 	cd ./services/newsfeed && rm -rf node_modules
@@ -124,6 +126,7 @@ audit:
 	cd ./framework && npm audit; :
 	cd ./services/blockchain-connector && npm audit; :
 	cd ./services/blockchain-indexer && npm audit; :
+	cd ./services/fee-estimator && npm audit; :
 	cd ./services/core && npm audit; :
 	cd ./services/market && npm audit; :
 	cd ./services/newsfeed && npm audit; :
@@ -134,6 +137,7 @@ audit-fix:
 	cd ./framework && npm audit fix; :
 	cd ./services/blockchain-connector && npm audit fix; :
 	cd ./services/blockchain-indexer && npm audit fix; :
+	cd ./services/fee-estimator && npm audit fix; :
 	cd ./services/core && npm audit fix; :
 	cd ./services/market && npm audit fix; :
 	cd ./services/newsfeed && npm audit fix; :
@@ -145,6 +149,7 @@ tag-%:
 	cd services/gateway && npm version --no-git-tag-version --allow-same-version $*
 	cd services/blockchain-connector && npm version --no-git-tag-version --allow-same-version $*
 	cd services/blockchain-indexer && npm version --no-git-tag-version --allow-same-version $*
+	cd services/fee-estimator && npm version --no-git-tag-version --allow-same-version $*
 	cd services/core && npm version --no-git-tag-version --allow-same-version $*
 	cd services/market && npm version --no-git-tag-version --allow-same-version $*
 	cd services/newsfeed && npm version --no-git-tag-version --allow-same-version $*
@@ -153,6 +158,7 @@ tag-%:
 	git add ./services/gateway/package*.json
 	git add ./services/blockchain-connector/package*.json
 	git add ./services/blockchain-indexer/package*.json
+	git add ./services/fee-estimator/package*.json
 	git add ./services/core/package*.json
 	git add ./services/market/package*.json
 	git add ./services/newsfeed/package*.json

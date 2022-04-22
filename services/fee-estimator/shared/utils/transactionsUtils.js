@@ -67,4 +67,5 @@ const getTxnMinFee = async (
 
 module.exports = {
 	getTxnMinFee,
+	getAllTransactionSchemasFromCache,
 };
