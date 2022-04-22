@@ -35,67 +35,55 @@ const randomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min)
 
 const blockData = {
 	id: {
-		function: () => Math.floor(Math.random() * 10 ** 19),
+		function: () => generateHex(64),
 	},
 	height: {
 		faker: 'random.number',
 	},
 	version: {
-		function: () => 1,
+		function: () => 2,
 	},
 	timestamp: {
 		function: () => Math.floor(Date.now() / 1000),
 	},
-	generatorAddress: {
-		function: () => `${Math.floor(Math.random() * 10 ** 19)}L`,
-	},
 	generatorPublicKey: {
 		function: () => generateHex(64),
 	},
-	generatorUsername: {
-		faker: 'name.firstName',
-	},
-	payloadLength: {
-		function: () => Math.floor(Math.random() * 1000),
-	},
-	payloadHash: {
+	transactionRoot: {
 		function: () => generateHex(64),
 	},
-	blockSignature: {
+	signature: {
 		function: () => generateHex(128),
-	},
-	confirmations: {
-		function: () => Math.floor(Math.random() * 10),
 	},
 	previousBlockId: {
 		function: () => Math.floor(Math.random() * 10 ** 19),
 	},
-	numberOfTransactions: {
-		function: () => null,
-	},
-	totalAmount: {
-		function: () => null,
-	},
-	totalFee: {
-		function: () => null,
-	},
 	reward: {
 		function: () => '200000000',
 	},
-	totalForged: {
-		function: () => null,
-	},
-	transactions: {
+	payload: {
 		function: () => [],
+	},
+	asset: {
+		maxHeightPreviouslyForged: {
+			faker: 'random.number',
+		},
+		maxHeightPrevoted: {
+			faker: 'random.number',
+		},
+		seedReveal: {
+			function: () => generateHex(32),
+		},
 	},
 };
 let args = Number(process.argv.slice(2)[0]);
 if (!args) {
 	args = 20;
 }
+
 const noNetworkTraffic = () => {
-	blockData.numberOfTransactions = { function: () => 0 };
-	const res = blockMocker(blockData, args);
+	const payloadLength = 0;
+	const res = blockMocker(blockData, args, payloadLength);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/noTraffic.json`,
 		JSON.stringify(res, null, '\t'),
@@ -103,8 +91,8 @@ const noNetworkTraffic = () => {
 };
 
 const lowNetworkTraffic = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(0, 10) };
-	const res = blockMocker(blockData, args);
+	const payloadLength = randomNumber(0, 20);
+	const res = blockMocker(blockData, args, payloadLength);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/lowTraffic.json`,
 		JSON.stringify(res, null, '\t'),
@@ -112,8 +100,8 @@ const lowNetworkTraffic = () => {
 };
 
 const moderateNetworkTraffic = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(30, 80) };
-	const res = blockMocker(blockData, args);
+	const payloadLength = randomNumber(30, 80);
+	const res = blockMocker(blockData, args, payloadLength);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/moderateTraffic.json`,
 		JSON.stringify(res, null, '\t'),
@@ -121,8 +109,8 @@ const moderateNetworkTraffic = () => {
 };
 
 const highNetworkTraffic = () => {
-	blockData.numberOfTransactions = { function: () => randomNumber(130, 150) };
-	const res = blockMocker(blockData, args);
+	const payloadLength = randomNumber(130, 150);
+	const res = blockMocker(blockData, args, payloadLength);
 	fs.writeFileSync(
 		`${path.dirname(__dirname)}/blockGenerator/highTraffic.json`,
 		JSON.stringify(res, null, '\t'),
