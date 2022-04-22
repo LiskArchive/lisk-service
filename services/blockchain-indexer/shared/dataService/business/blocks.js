@@ -68,7 +68,7 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 					const parsedTxAsset = parseInputBySchema(txn.asset, assetSchema.schema);
 					const parsedTx = parseInputBySchema(txn, schema.transaction);
 					txn = { ...parsedTx, asset: parsedTxAsset };
-					txn.minFee = await getTxnMinFee(txn);
+					txn.minFee = parseToJSONCompatObj(await getTxnMinFee(txn));
 					block.size += txn.size;
 					block.totalForged += txn.fee;
 					block.totalBurnt += txn.minFee;

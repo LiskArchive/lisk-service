@@ -67,8 +67,8 @@ const getMultisignatureIndex = () => getTableInstance('multisignature', multisig
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
-const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
+const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 const getNumberOfForgers = async () => {
 	const genesisConfig = await getGenesisConfig();
