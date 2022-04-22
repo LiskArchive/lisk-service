@@ -39,15 +39,15 @@ const resolveBaseFees = (networkConstants) => {
 
 const setNetworkFeeConstants = async () => {
 	if (!resolvedNetworkFees) {
-		const result = await requestConnector('getNetworkStatus', {});
+		const result = await requestConnector('getNetworkStatus');
 		resolvedNetworkFees = resolveBaseFees(result);
 	}
 };
 
 const setGenesisConfig = async () => {
 	if (!genesisConfig) {
-		const result = await requestConnector('getNetworkStatus', {});
-		genesisConfig = result.genesisConfig;
+		const result = await requestConnector('getNetworkStatus');
+		genesisConfig = result.data.genesisConfig;
 	}
 };
 
