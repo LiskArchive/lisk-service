@@ -31,7 +31,7 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
 config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 config.transactionStatistics = {
-	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 365),
+	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 366),
 };
 
 /**
@@ -57,8 +57,6 @@ config.queue = {
 		timeout: 5 * 60 * 1000, // millisecs
 		removeOnComplete: true,
 	},
-	settings: {},
-	// limiter: {},
 };
 
 module.exports = config;
