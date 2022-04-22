@@ -22,7 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { setNetworkFeeConstants } = require('./shared/constants');
+const { init } = require('./shared/constants');
 const { setAppContext } = require('./shared/utils/request');
 const Signals = require('./shared/utils/signals');
 
@@ -55,7 +55,7 @@ setAppContext(app);
 	// Run the application
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
-		await setNetworkFeeConstants();
+		await init();
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);

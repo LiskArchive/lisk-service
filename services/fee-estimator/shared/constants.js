@@ -16,6 +16,8 @@
 const { requestConnector } = require('./utils/request');
 
 let resolvedNetworkFees;
+let genesisConfig;
+
 const networkFeeConstants = {
 	minFeePerByte: undefined,
 	baseFeeByModuleAssetId: {},
@@ -42,9 +44,24 @@ const setNetworkFeeConstants = async () => {
 	}
 };
 
+const setGenesisConfig = async () => {
+	if (!genesisConfig) {
+		const result = await requestConnector('getNetworkStatus', {});
+		genesisConfig = result.genesisConfig;
+	}
+};
+
 const getNetworkFeeConstants = () => resolvedNetworkFees;
 
+const getGenesisConfig = () => genesisConfig;
+
+const init = async () => {
+	await setGenesisConfig();
+	await setNetworkFeeConstants();
+};
+
 module.exports = {
-	setNetworkFeeConstants,
+	init,
 	getNetworkFeeConstants,
+	getGenesisConfig,
 };
