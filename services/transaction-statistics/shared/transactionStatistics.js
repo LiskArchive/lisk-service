@@ -168,11 +168,11 @@ const queueJob = async (job) => {
 
 const queueName = 'transactionStats';
 const transactionStatisticsQueue = Queue(
-	config.endpoints.redis,
+	config.endpoints.cache,
 	queueName,
 	queueJob,
 	1,
-	config.queue.defaultJobOptions,
+	config.queue.default,
 );
 
 const getStatsTimeline = async params => {

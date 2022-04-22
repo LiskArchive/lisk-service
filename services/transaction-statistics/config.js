@@ -28,7 +28,8 @@ config.httpTimeout = Number(process.env.LISK_CORE_CLIENT_TIMEOUT) || 30; // in s
 /**
  * External endpoints
  */
-config.endpoints.mysql = process.env.SERVICE_CORE_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+config.endpoints.cache = process.env.SERVICE_STATISTICS_CACHE_REDIS || 'redis://localhost:6379/2';
+config.endpoints.mysql = process.env.SERVICE_STATISTICS_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 config.transactionStatistics = {
 	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 366),
@@ -52,10 +53,12 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
 config.queue = {
-	defaultJobOptions: {
-		attempts: 5,
-		timeout: 5 * 60 * 1000, // millisecs
-		removeOnComplete: true,
+	default: {
+		defaultJobOptions: {
+			attempts: 5,
+			timeout: 5 * 60 * 1000, // millisecs
+			removeOnComplete: true,
+		},
 	},
 };
 
