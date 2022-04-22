@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -17,6 +17,8 @@ const BluebirdPromise = require('bluebird');
 const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const { calcAvgFeeByteModes, EMAcalc } = require('./utils/dynamicFees');
+const { parseInputBySchema } = require('./utils/parser');
+const { getTxnMinFee } = require('./utils/transactionsUtils');
 const { requestConnector } = require('./utils/request');
 
 const config = require('../config');
@@ -83,11 +85,20 @@ const calculateFeePerByte = async block => {
 	const feePerByte = {};
 	const transactionDetails = await BluebirdPromise.map(
 		block.payload,
-		async tx => ({
-			id: tx.id,
-			size: tx.size,
-			feePriority: Number(tx.fee - tx.minFee) / tx.size,
-		}),
+		async tx => {
+			// Calculate minFee from parsed transaction
+			const schema = await requestConnector('getSchema');
+			const assetSchema = schema.transactionsAssets
+				.find(s => s.moduleID === tx.moduleID && s.assetID === tx.assetID);
+			const parsedTxAsset = parseInputBySchema(tx.asset, assetSchema.schema);
+			const parsedTx = parseInputBySchema(tx, schema.transaction);
+			const minFee = await getTxnMinFee({ ...parsedTx, asset: parsedTxAsset });
+			return {
+				id: tx.id,
+				size: tx.size,
+				feePriority: Number(tx.fee - minFee) / tx.size,
+			};
+		},
 		{ concurrency: block.payload.length },
 	);
 	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
