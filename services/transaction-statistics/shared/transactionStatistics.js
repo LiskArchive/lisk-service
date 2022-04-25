@@ -147,6 +147,7 @@ const fetchTransactions = async (date) => {
 		timestamp: `${moment.unix(date).unix()}:${moment.unix(date).add(1, 'day').unix()}`,
 	};
 	const maxCount = (await requestIndexer('transactions', { ...params, limit: 1 })).meta.total;
+	// TODO: Use requestAll instead of setting limit to maxCount
 	const { data: transactions } = await requestIndexer('transactions', { ...params, limit: maxCount });
 	return transactions;
 };

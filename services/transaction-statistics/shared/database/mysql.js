@@ -53,7 +53,7 @@ const createDbConnection = async (connEndpoint) => {
 		connection: connEndpoint,
 		useNullAsDefault: true,
 		pool: {
-			max: 100,
+			max: 50,
 			min: 2,
 		},
 		log: {
