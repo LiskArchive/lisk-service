@@ -15,7 +15,7 @@
  */
 const { requestConnector } = require('./utils/request');
 
-let resolvedNetworkFees;
+let networkFees;
 let genesisConfig;
 
 const networkFeeConstants = {
@@ -38,9 +38,9 @@ const resolveBaseFees = (networkConstants) => {
 };
 
 const setNetworkFeeConstants = async () => {
-	if (!resolvedNetworkFees) {
+	if (!networkFees) {
 		const result = await requestConnector('getNetworkStatus');
-		resolvedNetworkFees = resolveBaseFees(result);
+		networkFees = resolveBaseFees(result);
 	}
 };
 
@@ -51,7 +51,7 @@ const setGenesisConfig = async () => {
 	}
 };
 
-const getNetworkFeeConstants = () => resolvedNetworkFees;
+const getNetworkFeeConstants = () => networkFees;
 
 const getGenesisConfig = () => genesisConfig;
 
