@@ -44,6 +44,9 @@ const app = Microservice({
 	events: {
 		appBlockNew: async (payload) => Signals.get('newBlock').dispatch(payload),
 	},
+	dependencies: [
+		'connector',
+	],
 });
 
 setAppContext(app);
