@@ -47,7 +47,6 @@ const {
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,
-	deleteBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 } = require('./blocks');
@@ -57,7 +56,8 @@ const {
 	getTotalNumberOfDelegates,
 	getDelegates,
 	reloadNextForgersCache,
-	getForgers } = require('./delegates');
+	getForgers,
+} = require('./delegates');
 
 const { getNetworkStatus } = require('./network');
 
@@ -117,7 +117,6 @@ module.exports = {
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,
-	deleteBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 	reloadDelegateCache,

@@ -15,7 +15,6 @@
  */
 const config = {
 	endpoints: {},
-	jobs: {},
 	log: {},
 };
 
@@ -28,10 +27,12 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 /**
  * External endpoints
  */
-config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://localhost:6379/2';
-config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://localhost:6379/3';
-config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
-config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+config.endpoints.redis = process.env.SERVICE_STATISTICS_REDIS || 'redis://localhost:6379/2';
+config.endpoints.mysql = process.env.SERVICE_STATISTICS_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+
+config.transactionStatistics = {
+	historyLengthDays: Number(process.env.TRANSACTION_STATS_HISTORY_LENGTH_DAYS || 366),
+};
 
 /**
  * LOGGING
@@ -50,29 +51,14 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.debug = process.env.SERVICE_LOG_LEVEL === 'debug';
 
-/**
- * Message queue options
- */
 config.queue = {
-	accounts: {
-		name: 'Accounts',
+	default: {
+		defaultJobOptions: {
+			attempts: 5,
+			timeout: 5 * 60 * 1000, // millisecs
+			removeOnComplete: true,
+		},
 	},
-	blocks: {
-		name: 'Blocks',
-	},
-	events: {
-		name: 'Events',
-	},
-	defaultJobOptions: {
-		attempts: 5,
-		timeout: 5 * 60 * 1000, // millisecs
-		removeOnComplete: true,
-	},
-};
-
-config.operations = {
-	dataRetrievalMode: Boolean(String(process.env.ENABLE_DATA_RETRIEVAL_MODE).toLowerCase() !== 'false'), // Enabled by default
-	IndexingMode: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
 };
 
 module.exports = config;

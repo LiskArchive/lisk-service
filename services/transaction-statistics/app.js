@@ -22,8 +22,8 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { updateGenesisHeight } = require('./shared/constants');
-const { setAppContext } = require('./shared/utils/appContext');
+const { setAppContext } = require('./shared/utils/request');
+const Signals = require('./shared/utils/signals');
 
 const loggerConf = {
 	...config.log,
@@ -36,11 +36,15 @@ LoggerConfig(loggerConf);
 const logger = Logger();
 
 const app = Microservice({
-	name: 'indexer',
+	name: 'statistics',
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
+	events: {
+		'index.ready': (payload) => Signals.get('blockIndexReady').dispatch(payload),
+	},
 	dependencies: [
+		'indexer',
 		'connector',
 	],
 });
@@ -49,28 +53,12 @@ setAppContext(app);
 
 (async () => {
 	// Add routes, events & jobs
-	if (config.operations.IndexingMode) {
-		await app.addMethods(path.join(__dirname, 'methods', 'indexer'));
-		await app.addEvents(path.join(__dirname, 'events'));
-	}
-
-	if (config.operations.dataRetrievalMode) {
-		await app.addMethods(path.join(__dirname, 'methods', 'dataService'));
-	}
+	await app.addMethods(path.join(__dirname, 'methods'));
+	await app.addJobs(path.join(__dirname, 'jobs'));
 
 	// Run the application
 	app.run().then(async () => {
 		logger.info(`Service started ${packageJson.name}`);
-
-		// Init database
-		const status = require('./shared/indexer/indexStatus');
-		await status.init();
-
-		if (config.operations.IndexingMode) {
-			await updateGenesisHeight();
-			const processor = require('./shared/processor');
-			await processor.init();
-		}
 	}).catch(err => {
 		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
 		logger.fatal(err.stack);

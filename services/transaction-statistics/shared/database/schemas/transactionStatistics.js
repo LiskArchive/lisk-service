@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,14 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const definition = require('./mappings/transactionsStatistics');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'statistics.transactions.statistics.month',
-	params: {
-		offset: '=',
-		limit: '=',
+	primaryKey: 'id',
+	schema: {
+		amount_range: { type: 'string' },
+		count: { type: 'integer' },
+		date: { type: 'integer' },
+		id: { type: 'string' },
+		type: { type: 'string' },
+		volume: { type: 'bigInteger' },
 	},
-	definition,
+	indexes: {
+		date: { type: 'range' },
+	},
 };

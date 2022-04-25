@@ -40,13 +40,17 @@ const blockchainStore = require('../database/blockchainStore');
 // Blockchain starts form a non-zero block height
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
+let isIndexReady = false;
+const setIndexReadyStatus = isReady => isIndexReady = isReady;
+const getIndexReadyStatus = () => isIndexReady;
+
 const getIndexStats = async () => {
 	try {
 		const blocksDB = await getBlocksIndex();
 		const currentChainHeight = await getCurrentHeight();
 		const genesisHeight = await getGenesisHeight();
 		const numBlocksIndexed = await blocksDB.count();
-		const [lastIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+		const [lastIndexedBlock = {}] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
 		const chainLength = currentChainHeight - genesisHeight + 1;
 		const percentage = (Math.floor(((numBlocksIndexed) / chainLength) * 10000) / 100).toFixed(2);
 
@@ -61,6 +65,22 @@ const getIndexStats = async () => {
 	} catch (err) {
 		logger.warn(`Error while checking index readiness: ${err.message}`);
 		return { error: true };
+	}
+};
+
+const validateIndexReadiness = async ({ strict } = {}) => {
+	const { numBlocksIndexed, chainLength } = await getIndexStats();
+	const chainLenToConsider = strict === true ? chainLength : chainLength - 1;
+	return numBlocksIndexed >= chainLenToConsider;
+};
+
+const checkIndexReadiness = async () => {
+	if (!getIndexReadyStatus() // status is set only once
+		&& await validateIndexReadiness()) { // last block is being indexed atm
+		setIndexReadyStatus(true);
+		logger.info('The blockchain index is complete');
+		logger.debug(`'blockIndexReady' signal: ${Signals.get('blockIndexReady')}`);
+		Signals.get('blockIndexReady').dispatch(true);
 	}
 };
 
@@ -88,6 +108,7 @@ const indexSchemas = {
 	transactions: require('../database/schema/transactions'),
 	votes: require('../database/schema/votes'),
 	votes_aggregate: require('../database/schema/votesAggregate'),
+	key_value_store: require('../database/schema/kvStore'),
 };
 
 const initializeSearchIndex = async () => {
@@ -102,6 +123,7 @@ const initializeSearchIndex = async () => {
 const init = async () => {
 	await initializeSearchIndex();
 	setInterval(reportIndexStatus, 15 * 1000); // ms
+	Signals.get('newBlock').add(checkIndexReadiness);
 };
 
 module.exports = {

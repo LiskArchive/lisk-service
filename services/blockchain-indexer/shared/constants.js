@@ -20,6 +20,7 @@ const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
 let genesisConfig;
+let registeredModules;
 
 const getFinalizedHeight = async () => {
 	const { finalizedHeight } = await requestRpc('getNodeInfo');
@@ -61,8 +62,11 @@ const resolveModuleAssets = (data) => {
 };
 
 const getAvailableLiskModuleAssets = async () => {
-	const registeredModules = await requestRpc('getRegisteredModules', {});
-	return resolveModuleAssets(registeredModules);
+	if (!registeredModules) {
+		const response = await requestRpc('getRegisteredModules', {});
+		registeredModules = resolveModuleAssets(response);
+	}
+	return registeredModules;
 };
 
 module.exports = {
