@@ -27,7 +27,7 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 /**
  * External endpoints
  */
-config.endpoints.cache = process.env.SERVICE_STATISTICS_CACHE_REDIS || 'redis://localhost:6379/2';
+config.endpoints.redis = process.env.SERVICE_STATISTICS_REDIS || 'redis://localhost:6379/2';
 config.endpoints.mysql = process.env.SERVICE_STATISTICS_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
 
 config.transactionStatistics = {

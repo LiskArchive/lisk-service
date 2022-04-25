@@ -170,7 +170,7 @@ const queueJob = async (job) => {
 
 const queueName = 'transactionStats';
 const transactionStatisticsQueue = Queue(
-	config.endpoints.cache,
+	config.endpoints.redis,
 	queueName,
 	queueJob,
 	1,
