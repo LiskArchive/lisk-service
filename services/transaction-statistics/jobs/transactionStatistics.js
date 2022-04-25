@@ -31,10 +31,10 @@ module.exports = [
 				try {
 					logger.debug('Initiating transaction statistics computation.');
 					await transactionStatistics.init(config.transactionStatistics.historyLengthDays);
-					Signals.get('blockIndexReady').remove(indexReadyListener);
 				} catch (err) {
 					logger.warn(`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`);
 				}
+				Signals.get('blockIndexReady').remove(indexReadyListener);
 			};
 			Signals.get('blockIndexReady').add(indexReadyListener);
 		},
