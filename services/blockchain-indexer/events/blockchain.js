@@ -115,4 +115,15 @@ module.exports = [
 			Signals.get('newRound').add(newRoundListener);
 		},
 	},
+	{
+		name: 'index.ready',
+		description: 'Returns true when the index is ready',
+		controller: callback => {
+			const indexStatusListener = async (data) => {
+				logger.debug('Dispatching \'index.ready\' event over websocket');
+				callback(data);
+			};
+			Signals.get('blockIndexReady').add(indexStatusListener);
+		},
+	},
 ];

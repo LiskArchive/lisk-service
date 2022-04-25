@@ -23,6 +23,7 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/utils/request');
+const Signals = require('./shared/utils/signals');
 
 const loggerConf = {
 	...config.log,
@@ -39,6 +40,9 @@ const app = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
+	events: {
+		'index.ready': (payload) => Signals.get('blockIndexReady').dispatch(payload),
+	},
 	dependencies: [
 		'indexer',
 		'connector',

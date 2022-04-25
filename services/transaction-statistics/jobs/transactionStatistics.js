@@ -18,6 +18,7 @@ const logger = require('lisk-service-framework').Logger();
 const config = require('../config');
 
 const transactionStatistics = require('../shared/transactionStatistics');
+const Signals = require('../shared/utils/signals');
 
 module.exports = [
 	{
@@ -26,12 +27,16 @@ module.exports = [
 		schedule: '*/30 * * * *', // Every 30 min
 		updateOnInit: true,
 		init: async () => {
-			try {
-				logger.debug('Initiating transaction statistics computation.');
-				await transactionStatistics.init(config.transactionStatistics.historyLengthDays);
-			} catch (err) {
-				logger.warn(`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`);
-			}
+			const indexReadyListener = async () => {
+				try {
+					logger.debug('Initiating transaction statistics computation.');
+					await transactionStatistics.init(config.transactionStatistics.historyLengthDays);
+					Signals.get('blockIndexReady').remove(indexReadyListener);
+				} catch (err) {
+					logger.warn(`Error occurred while running 'refresh.transactions.statistics' job:\n${err.stack}`);
+				}
+			};
+			Signals.get('blockIndexReady').add(indexReadyListener);
 		},
 		controller: async () => {
 			try {
