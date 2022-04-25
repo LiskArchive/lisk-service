@@ -21,7 +21,7 @@ const {
 const {
 	calculateFeePerByte,
 	getEstimateFeeByteForBlock,
-} = require('../../shared/core');
+} = require('../../shared/dynamicFees');
 
 const noTrafficMockup = require('../blockGenerator/noTraffic.json');
 const lowTrafficMockup = require('../blockGenerator/lowTraffic.json');

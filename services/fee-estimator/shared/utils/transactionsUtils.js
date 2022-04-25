@@ -16,7 +16,7 @@
 const { computeMinFee } = require('@liskhq/lisk-transactions');
 
 const { requestConnector } = require('./request');
-const { getGenesisConfig } = require('../constants');
+const { getGenesisConfig } = require('../networkConstants');
 
 let allTransactionSchemasCache;
 

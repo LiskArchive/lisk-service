@@ -15,7 +15,7 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'fees.fee.estimates',
+	method: 'fees.estimates',
 	params: {},
 	definition: {
 		data: {

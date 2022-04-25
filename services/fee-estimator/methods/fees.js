@@ -21,17 +21,17 @@ const {
 
 module.exports = [
 	{
-		name: 'fee.estimates',
+		name: 'estimates',
 		controller: getEstimateFeeByte,
 		params: {},
 	},
 	{
-		name: 'fee.estimates.quick',
+		name: 'estimates.quick',
 		controller: getEstimateFeeByteQuick,
 		params: {},
 	},
 	{
-		name: 'fee.estimates.full',
+		name: 'estimates.full',
 		controller: getEstimateFeeByteFull,
 		params: {},
 	},

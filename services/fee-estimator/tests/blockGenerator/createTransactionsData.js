@@ -76,7 +76,7 @@ const transactionData = {
 	},
 };
 
-const assetsTransaction20 = ['amount', 'recipientAddress', 'data'];
+const assetsTransactionType20 = ['amount', 'recipientAddress', 'data'];
 const assetsTransactionType40 = ['mandatoryKeys', 'optionalKeys', 'numberOfSignatures'];
 const assetsTransactionType51 = ['votes'];
 
@@ -86,7 +86,7 @@ const txMocker = (batchSize) => mocker()
 		if (err) throw err;
 
 		data.transactions.forEach((transaction) => {
-			let containAssets = assetsTransaction20;
+			let containAssets = assetsTransactionType20;
 			const nameFee = 0;
 			let avgTxSize = 130;
 			if (transaction.moduleID === 4) {

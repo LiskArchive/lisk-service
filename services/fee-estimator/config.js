@@ -27,10 +27,10 @@ config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 10; // in s
 /**
  * External endpoints
  */
-config.endpoints.redis = process.env.SERVICE_CORE_REDIS || 'redis://localhost:6379/1';
+config.endpoints.cache = process.env.SERVICE_FEE_ESTIMATOR_CACHE || 'redis://localhost:6379/1';
 
 config.feeEstimates = {
-	quickAlgorithmEnabled: Boolean(String(process.env.ENABLE_FEE_ESTIMATOR_QUICK).toLowerCase() === 'true'),
+	quickAlgorithmEnabled: Boolean(String(process.env.ENABLE_FEE_ESTIMATOR_QUICK).toLowerCase() !== 'false'),
 	fullAlgorithmEnabled: Boolean(String(process.env.ENABLE_FEE_ESTIMATOR_FULL).toLowerCase() === 'true'),
 	coldStartBatchSize: Number(process.env.FEE_EST_COLD_START_BATCH_SIZE || 1),
 	defaultStartBlockHeight: Number(process.env.FEE_EST_DEFAULT_START_BLOCK_HEIGHT || 1),

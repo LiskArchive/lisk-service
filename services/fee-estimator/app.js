@@ -22,7 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { init } = require('./shared/constants');
+const { init } = require('./shared/networkConstants');
 const { setAppContext } = require('./shared/utils/request');
 const Signals = require('./shared/utils/signals');
 
