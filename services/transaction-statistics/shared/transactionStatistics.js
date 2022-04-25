@@ -244,6 +244,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const db = await getDbInstance();
 	const scheduledDays = [];
 	for (let i = 0; i < n; i++) {
+		/* eslint-disable no-await-in-loop */
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
@@ -259,7 +260,8 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 		if (scheduledDays.length === n) {
 			logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
 		}
-	};
+		/* eslint-enable no-await-in-loop */
+	}
 };
 
 const init = async historyLengthDays => {
