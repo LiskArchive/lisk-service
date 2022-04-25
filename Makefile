@@ -96,6 +96,7 @@ build-local:
 	cd ./services/blockchain-coordinator && npm ci
 	cd ./services/blockchain-indexer && npm ci
 	cd ./services/transaction-statistics && npm ci
+	cd ./services/fee-estimator && npm ci
 	cd ./services/core && npm ci
 	cd ./services/market && npm ci
 	cd ./services/newsfeed && npm ci
@@ -113,6 +114,7 @@ clean-local:
 	cd ./services/blockchain-coordinator && rm -rf node_modules
 	cd ./services/blockchain-indexer && rm -rf node_modules
 	cd ./services/transaction-statistics && rm -rf node_modules
+	cd ./services/fee-estimator && rm -rf node_modules
 	cd ./services/core && rm -rf node_modules
 	cd ./services/market && rm -rf node_modules
 	cd ./services/newsfeed && rm -rf node_modules
@@ -130,6 +132,7 @@ audit:
 	cd ./services/blockchain-coordinator && npm audit; :
 	cd ./services/blockchain-indexer && npm audit; :
 	cd ./services/transaction-statistics && npm audit; :
+	cd ./services/fee-estimator && npm audit; :
 	cd ./services/core && npm audit; :
 	cd ./services/market && npm audit; :
 	cd ./services/newsfeed && npm audit; :
@@ -142,6 +145,7 @@ audit-fix:
 	cd ./services/blockchain-coordinator && npm audit fix; :
 	cd ./services/blockchain-indexer && npm audit fix; :
 	cd ./services/transaction-statistics && npm audit fix; :
+	cd ./services/fee-estimator && npm audit fix; :
 	cd ./services/core && npm audit fix; :
 	cd ./services/market && npm audit fix; :
 	cd ./services/newsfeed && npm audit fix; :
@@ -155,6 +159,7 @@ tag-%:
 	cd services/blockchain-coordinator && npm version --no-git-tag-version --allow-same-version $*
 	cd services/blockchain-indexer && npm version --no-git-tag-version --allow-same-version $*
 	cd services/transaction-statistics && npm version --no-git-tag-version --allow-same-version $*
+	cd services/fee-estimator && npm version --no-git-tag-version --allow-same-version $*
 	cd services/core && npm version --no-git-tag-version --allow-same-version $*
 	cd services/market && npm version --no-git-tag-version --allow-same-version $*
 	cd services/newsfeed && npm version --no-git-tag-version --allow-same-version $*
@@ -165,6 +170,7 @@ tag-%:
 	git add ./services/blockchain-coordinator/package*.json
 	git add ./services/blockchain-indexer/package*.json
 	git add ./services/transaction-statistics/package*.json
+	git add ./services/fee-estimator/package*.json
 	git add ./services/core/package*.json
 	git add ./services/market/package*.json
 	git add ./services/newsfeed/package*.json
