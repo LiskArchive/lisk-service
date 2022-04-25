@@ -40,8 +40,8 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 	dependencies: [
-		'connector',
 		'indexer',
+		'connector',
 	],
 });
 

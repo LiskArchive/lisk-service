@@ -248,12 +248,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 		const shouldUpdate = i === 0 || !((await db.find({ date, limit: 1 }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
-			let attempt = 0;
-			const options = {
-				delay: (attempt ** 2) * 60 * 60 * 1000,
-				attempt: attempt += 1,
-			};
-			await transactionStatisticsQueue.add({ date, options });
+			await transactionStatisticsQueue.add({ date });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
 			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
 			scheduledDays.push(formattedDate.toString());
