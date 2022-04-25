@@ -146,9 +146,10 @@ const fetchTransactions = async (date) => {
 	const params = {
 		timestamp: `${moment.unix(date).unix()}:${moment.unix(date).add(1, 'day').unix()}`,
 	};
-	const maxCount = (await requestIndexer('transactions', { ...params, limit: 1 })).meta.total;
-	// TODO: Use requestAll instead of setting limit to maxCount
-	const { data: transactions } = await requestIndexer('transactions', { ...params, limit: maxCount });
+	// TODO: Use requestAll (paginated calls) instead of setting limit to maxCount
+	// const maxCount = (await requestIndexer('transactions', { ...params, limit: 1 })).meta.total;
+	const result = await requestIndexer('transactions', { ...params, limit: 10000 });
+	const transactions = result.data.error ? [] : result.data;
 	return transactions;
 };
 
@@ -242,7 +243,7 @@ const getDistributionByType = async params => {
 const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 	const db = await getDbInstance();
 	const scheduledDays = [];
-	[...Array(n)].forEach(async (_, i) => {
+	for (let i = 0; i < n; i++) {
 		const date = moment().subtract(i, 'day').utc().startOf('day')
 			.unix();
 
@@ -258,7 +259,7 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 		if (scheduledDays.length === n) {
 			logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
 		}
-	});
+	};
 };
 
 const init = async historyLengthDays => {
