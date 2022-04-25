@@ -16,14 +16,10 @@
 const {
 	emptyBlock,
 	nonEmptyBlock,
-	fullySaturatedBlock,
 } = require('../constants/blocks');
 
 const {
-	calculateBlockSize,
-	calculateWeightedAvg,
 	calculateFeePerByte,
-	EMAcalc,
 	getEstimateFeeByteForBlock,
 } = require('../../shared/core');
 
@@ -33,95 +29,6 @@ const moderateTrafficMockup = require('../blockGenerator/moderateTraffic.json');
 const highTrafficMockup = require('../blockGenerator/highTraffic.json');
 
 describe('Fee estimation tests', () => {
-	describe('calculateBlockSize', () => {
-		it('Zero transactions', async () => {
-			const blockSize = await calculateBlockSize(emptyBlock);
-			expect(blockSize).toBe(0);
-		});
-
-		it('Non-zero transactions', async () => {
-			const blockSize = await calculateBlockSize(nonEmptyBlock);
-			expect(blockSize).toBeGreaterThan(0);
-			expect(blockSize).toBeLessThanOrEqual(15 * 2 ** 10);
-		});
-
-		it('Non-zero transactions: Fully saturated block', async () => {
-			const blockSize = await calculateBlockSize(fullySaturatedBlock);
-			expect(blockSize).not.toBe(0);
-			expect(blockSize).toBeGreaterThan(15 * 2 ** 10 - 130);
-			expect(blockSize).toBeLessThanOrEqual(15 * 2 ** 10);
-		});
-	});
-
-	describe('calculateWeightedAvg', () => {
-		it('Batch of empty blocks (noTraffic)', async () => {
-			const wavg = await calculateWeightedAvg(noTrafficMockup.blocks);
-			expect(wavg).toBe(0);
-		});
-
-		it('Batch of non-empty blocks (lowTraffic)', async () => {
-			const wavg = await calculateWeightedAvg(lowTrafficMockup.blocks);
-			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(3415.461411305321);
-		});
-
-		it('Batch of non-empty blocks (moderateTraffic)', async () => {
-			const wavg = await calculateWeightedAvg(moderateTrafficMockup.blocks);
-			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(86516.13500397495);
-		});
-
-		it('Batch of non-empty blocks (highTraffic)', async () => {
-			const wavg = await calculateWeightedAvg(highTrafficMockup.blocks);
-			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(160374.80717213583);
-		});
-	});
-
-	describe('EMA computation', () => {
-		it('Zero offset', async () => {
-			const feePerByte = {
-				low: 3,
-				med: 4,
-				high: 5,
-			};
-			const prevFeeEstPerByte = {};
-
-			const EMAoutput = EMAcalc(feePerByte, prevFeeEstPerByte);
-			expect(EMAoutput.feeEstLow).toBeCloseTo(0.10217999999999999);
-			expect(EMAoutput.feeEstMed).toBeCloseTo(0.13624);
-			expect(EMAoutput.feeEstHigh).toBeCloseTo(0.1703);
-			expect(EMAoutput).toEqual({
-				feeEstLow: 0.10217999999999999,
-				feeEstMed: 0.13624,
-				feeEstHigh: 0.1703,
-			});
-		});
-
-		it('Non-zero offset', async () => {
-			const feePerByte = {
-				low: 0,
-				med: 301.9,
-				high: 2364.4,
-			};
-			const prevFeeEstPerByte = {
-				low: 0,
-				med: 1000,
-				high: 2000,
-			};
-
-			const EMAoutput = EMAcalc(feePerByte, prevFeeEstPerByte);
-			expect(EMAoutput.feeEstLow).toBeCloseTo(0);
-			expect(EMAoutput.feeEstMed).toBeCloseTo(976.222714);
-			expect(EMAoutput.feeEstHigh).toBeCloseTo(2012.411464);
-			expect(EMAoutput).toEqual({
-				feeEstLow: 0,
-				feeEstMed: 976.222714,
-				feeEstHigh: 2012.411464,
-			});
-		});
-	});
-
 	xdescribe('calculateFeePerByte for Blocks', () => {
 		it('Empty block', async () => {
 			const feePerByte = await calculateFeePerByte(emptyBlock);
