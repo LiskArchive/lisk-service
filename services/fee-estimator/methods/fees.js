@@ -17,7 +17,7 @@ const {
 	getEstimateFeeByte,
 	getEstimateFeeByteQuick,
 	getEstimateFeeByteFull,
-} = require('../shared/dynamicFees');
+} = require('../shared/dynamicFeesUtils');
 
 module.exports = [
 	{
