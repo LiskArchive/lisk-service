@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,26 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+let app;
+
+const setAppContext = (h) => app = h;
+
+const getAppContext = () => app;
+
+const requestRpc = async (service, method, params = {}) => {
+	const data = await getAppContext().requestRpc(`${service}.${method}`, params);
+	return data;
+};
+
+const requestConnector = async (method, params) => requestRpc('connector', method, params);
+
 module.exports = {
-	type: 'moleculer',
-	method: 'fees.estimates',
-	params: {},
-	definition: {
-		data: {
-			feeEstimatePerByte: {
-				low: '=,number',
-				medium: 'med,number',
-				high: '=,number',
-			},
-			baseFeeById: 'baseFeeByModuleAssetId',
-			baseFeeByName: 'baseFeeByModuleAssetName',
-			minFeePerByte: '=',
-		},
-		meta: {
-			lastUpdate: 'updated,number',
-			lastBlockHeight: 'blockHeight,number',
-			lastBlockId: 'blockId,string',
-		},
-		links: {},
-	},
+	setAppContext,
+	requestConnector,
 };
