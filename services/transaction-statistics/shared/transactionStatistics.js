@@ -248,12 +248,15 @@ const fetchTransactionsForPastNDays = async (n, forceReload = false) => {
 		const shouldUpdate = i === 0 || !((await db.find({ date, limit: 1 }, ['id'])).length);
 
 		if (shouldUpdate || forceReload) {
-			await transactionStatisticsQueue.add({ date });
 			const formattedDate = moment.unix(date).format('YYYY-MM-DD');
-			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue.`);
+			logger.debug(`Adding day ${i + 1}, ${formattedDate} to the queue`);
+			await transactionStatisticsQueue.add({ date });
+			logger.info(`Added day ${i + 1}, ${formattedDate} to the queue`);
 			scheduledDays.push(formattedDate.toString());
 		}
-		if (scheduledDays.length === n) logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
+		if (scheduledDays.length === n) {
+			logger.info(`Scheduled statistics calculation for ${scheduledDays.length} days (${scheduledDays[scheduledDays.length - 1]} - ${scheduledDays[0]})`);
+		}
 	});
 };
 
