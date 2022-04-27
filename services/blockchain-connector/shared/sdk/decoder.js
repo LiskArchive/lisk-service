@@ -63,24 +63,23 @@ const decodeBlock = async (encodedBlock) => {
 
 	const blockHeaderSchema = await getBlockHeaderSchema();
 	const blockHeader = codec.decode(blockHeaderSchema, block.header);
-	blockHeader.id = hash(block.header);
 
-	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(blockHeader.version);
-	const blockHeaderAsset = codec.decode(blockHeaderAssetSchema, blockHeader.asset);
-	if (Array.isArray(blockHeader.asset.accounts)) {
-		blockHeaderAsset.accounts = await Promise.all(
-			blockHeaderAsset.accounts.map(acc => decodeAccount(acc)),
-		);
-	}
+	// const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(blockHeader.version);
+	// const blockHeaderAsset = codec.decode(blockHeaderAssetSchema, blockHeader.asset);
+	// if (Array.isArray(blockHeader.asset.accounts)) {
+	// 	blockHeaderAsset.accounts = await Promise.all(
+	// 		blockHeaderAsset.accounts.map(acc => decodeAccount(acc)),
+	// 	);
+	// }
 
-	const blockPayload = await Promise.all(block.payload.map(tx => decodeTransaction(tx)));
+	const blockPayload = await Promise.all(block.transactions.map(tx => decodeTransaction(tx)));
 
 	const decodedBlock = {
 		header: {
 			...blockHeader,
-			asset: blockHeaderAsset,
+			// asset: blockHeaderAsset,
 		},
-		payload: blockPayload,
+		transactions: blockPayload,
 	};
 	return decodedBlock;
 };
