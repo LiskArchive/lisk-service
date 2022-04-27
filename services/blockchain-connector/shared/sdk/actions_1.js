@@ -28,7 +28,7 @@ let registeredModules;
 const getSchema = async () => {
 	try {
 		if (!schema) {
-			schema = await invokeAction('app:getSchema');
+			schema = await invokeAction('app_getSchema');
 		}
 		return schema;
 	} catch (err) {
@@ -42,7 +42,7 @@ const getSchema = async () => {
 const getRegisteredActions = async () => {
 	try {
 		if (!registeredActions) {
-			registeredActions = await invokeAction('app:getRegisteredActions');
+			registeredActions = await invokeAction('app_getRegisteredActions');
 		}
 		return registeredActions;
 	} catch (err) {
@@ -56,7 +56,7 @@ const getRegisteredActions = async () => {
 const getRegisteredEvents = async () => {
 	try {
 		if (!registeredEvents) {
-			registeredEvents = await invokeAction('app:getRegisteredEvents');
+			registeredEvents = await invokeAction('app_getRegisteredEvents');
 		}
 		return registeredEvents;
 	} catch (err) {
@@ -70,7 +70,7 @@ const getRegisteredEvents = async () => {
 const getRegisteredModules = async () => {
 	try {
 		if (!registeredModules) {
-			registeredModules = await invokeAction('app:getRegisteredModules');
+			registeredModules = await invokeAction('app_getRegisteredModules');
 		}
 		return registeredModules;
 	} catch (err) {
@@ -83,7 +83,7 @@ const getRegisteredModules = async () => {
 
 const getNodeInfo = async () => {
 	try {
-		const nodeInfo = await invokeAction('app:getNodeInfo');
+		const nodeInfo = await invokeAction('app_getNodeInfo');
 		return nodeInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

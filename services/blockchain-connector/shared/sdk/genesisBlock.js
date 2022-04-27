@@ -32,7 +32,7 @@ let genesisBlockID;
 const getGenesisHeight = async () => {
 	if (!genesisHeight) {
 		const nodeInfo = await getNodeInfo();
-		genesisHeight = nodeInfo.genesisHeight;
+		genesisHeight = nodeInfo.genesisHeight ? nodeInfo.genesisHeight : 0;
 	}
 	return genesisHeight;
 };
@@ -64,7 +64,7 @@ const getGenesisBlock = async (includeAccounts = false) => {
 
 	const height = await getGenesisHeight();
 	try {
-		const encodedBlock = await invokeAction('app:getBlockByHeight', { height });
+		const encodedBlock = await invokeAction('app_getBlockByHeight', { height });
 		const block = await decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
