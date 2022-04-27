@@ -14,7 +14,10 @@
  *
  */
 const { Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
-const { createWSClient } = require('@liskhq/lisk-api-client');
+const {
+	// createWSClient,
+	createIPCClient,
+} = require('@liskhq/lisk-api-client');
 
 const config = require('../../config');
 const delay = require('../delay');
@@ -43,7 +46,8 @@ const instantiateClient = async () => {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();
-				clientCache = await createWSClient(`${liskAddress}/ws`);
+				// clientCache = await createWSClient(`${liskAddress}/ws`);
+				clientCache = await createIPCClient(config.dataPath);
 
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();

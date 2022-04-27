@@ -36,7 +36,7 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json'
  * Network-related settings
  */
 config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL || '';
-
+config.dataPath =process.env.DATA_PATH; // Path where node is running
 config.networks = [
 	{
 		name: 'mainnet',
