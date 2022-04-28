@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getNodeInfo } = require('./actions');
+const { getNodeInfo } = require('./endpoints');
 const { parseToJSONCompatObj } = require('../parser');
 
 let genesisConfig;

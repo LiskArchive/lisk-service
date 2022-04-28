@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRegisteredEvents } = require('../shared/sdk/actions');
+const { getRegisteredEvents } = require('../shared/sdk/endpoints');
 const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
 
 const Signals = require('../shared/signals');

@@ -25,7 +25,7 @@ const packageJson = require('./package.json');
 const nodeStatus = require('./shared/nodeStatus');
 
 const { getGenesisBlock } = require('./shared/sdk/genesisBlock');
-const { getSchema } = require('./shared/sdk/actions_1');
+const { getSchema } = require('./shared/sdk/endpoints_1');
 const { setSchemas } = require('./shared/sdk/schema');
 
 const loggerConf = {

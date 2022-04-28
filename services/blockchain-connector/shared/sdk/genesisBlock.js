@@ -18,9 +18,9 @@ const {
 	Exceptions: { TimeoutException },
 } = require('lisk-service-framework');
 
-const { getNodeInfo } = require('./actions_1');
+const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
-const { timeoutMessage, invokeAction } = require('./client');
+const { timeoutMessage, invokeEndpoint } = require('./client');
 const { decodeBlock } = require('./decoder');
 const { parseToJSONCompatObj } = require('../parser');
 
@@ -64,7 +64,7 @@ const getGenesisBlock = async (includeAccounts = false) => {
 
 	const height = await getGenesisHeight();
 	try {
-		const encodedBlock = await invokeAction('app_getBlockByHeight', { height });
+		const encodedBlock = await invokeEndpoint('app_getBlockByHeight', { height });
 		const block = await decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {

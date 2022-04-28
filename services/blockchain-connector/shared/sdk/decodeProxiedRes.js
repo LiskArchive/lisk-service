@@ -18,36 +18,36 @@ const { decodeBlock, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../parser');
 
 const decodeResponse = async (action, response) => {
-    if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(action)) {
-        const decodedBlock = await decodeBlock(response);
-        return parseToJSONCompatObj(decodedBlock);
-    }
+	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(action)) {
+		const decodedBlock = await decodeBlock(response);
+		return parseToJSONCompatObj(decodedBlock);
+	}
 
-    if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(action)) {
-        return BluebirdPromise.map(
-            response,
-            async block => {
-                const decodedBlock = await decodeBlock(block);
-                return parseToJSONCompatObj(decodedBlock);
-            }, { concurrency: response.length });
-    }
+	if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(action)) {
+		return BluebirdPromise.map(
+			response,
+			async block => {
+				const decodedBlock = await decodeBlock(block);
+				return parseToJSONCompatObj(decodedBlock);
+			}, { concurrency: response.length });
+	}
 
-    if (['app_getTransactionByID'].includes(action)) {
-        const decodedTransaction = await decodeTransaction(response);
-        return parseToJSONCompatObj(decodedTransaction);
-    }
+	if (['app_getTransactionByID'].includes(action)) {
+		const decodedTransaction = await decodeTransaction(response);
+		return parseToJSONCompatObj(decodedTransaction);
+	}
 
-    if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(action)) {
-        return BluebirdPromise.map(
-            response,
-            async transaction => {
-                const decodedTransaction = await decodeTransaction(transaction);
-                return parseToJSONCompatObj(decodedTransaction);
-            }, { concurrency: response.length });
-    }
-    return response;
+	if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(action)) {
+		return BluebirdPromise.map(
+			response,
+			async transaction => {
+				const decodedTransaction = await decodeTransaction(transaction);
+				return parseToJSONCompatObj(decodedTransaction);
+			}, { concurrency: response.length });
+	}
+	return response;
 };
 
 module.exports = {
-    decodeResponse,
+	decodeResponse,
 };

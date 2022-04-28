@@ -14,7 +14,7 @@
  *
  */
 const { Exceptions: { TimeoutException } } = require('lisk-service-framework');
-const { invokeAction } = require('./client');
+const { invokeEndpoint } = require('./client');
 
 // Constants
 const timeoutMessage = 'Response not received in';
@@ -28,7 +28,7 @@ let registeredModules;
 const getSchema = async () => {
 	try {
 		if (!schema) {
-			schema = await invokeAction('app_getSchema');
+			schema = await invokeEndpoint('app_getSchema');
 		}
 		return schema;
 	} catch (err) {
@@ -42,7 +42,7 @@ const getSchema = async () => {
 const getRegisteredActions = async () => {
 	try {
 		if (!registeredActions) {
-			registeredActions = await invokeAction('app_getRegisteredActions');
+			registeredActions = await invokeEndpoint('app_getRegisteredActions');
 		}
 		return registeredActions;
 	} catch (err) {
@@ -56,7 +56,7 @@ const getRegisteredActions = async () => {
 const getRegisteredEvents = async () => {
 	try {
 		if (!registeredEvents) {
-			registeredEvents = await invokeAction('app_getRegisteredEvents');
+			registeredEvents = await invokeEndpoint('app_getRegisteredEvents');
 		}
 		return registeredEvents;
 	} catch (err) {
@@ -70,7 +70,7 @@ const getRegisteredEvents = async () => {
 const getRegisteredModules = async () => {
 	try {
 		if (!registeredModules) {
-			registeredModules = await invokeAction('app_getRegisteredModules');
+			registeredModules = await invokeEndpoint('app_getRegisteredModules');
 		}
 		return registeredModules;
 	} catch (err) {
@@ -83,7 +83,7 @@ const getRegisteredModules = async () => {
 
 const getNodeInfo = async () => {
 	try {
-		const nodeInfo = await invokeAction('app_getNodeInfo');
+		const nodeInfo = await invokeEndpoint('app_getNodeInfo');
 		return nodeInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

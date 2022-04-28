@@ -15,7 +15,7 @@
  */
 const { Logger } = require('lisk-service-framework');
 
-const { getNodeInfo } = require('./sdk/actions');
+const { getNodeInfo } = require('./sdk/endpoints');
 
 const config = require('../config');
 const waitForIt = require('./waitForIt');

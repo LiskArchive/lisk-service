@@ -29,8 +29,8 @@ const {
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
-} = require('./actions_1');
-const { timeoutMessage, getApiClient, invokeAction, invokeActionProxy } = require('./client');
+} = require('./endpoints_1');
+const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
@@ -39,7 +39,7 @@ const logger = Logger();
 
 const getConnectedPeers = async () => {
 	try {
-		const connectedPeers = await invokeAction('app_getConnectedPeers');
+		const connectedPeers = await invokeEndpoint('app_getConnectedPeers');
 		return connectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -51,7 +51,7 @@ const getConnectedPeers = async () => {
 
 const getDisconnectedPeers = async () => {
 	try {
-		const disconnectedPeers = await invokeAction('app_getDisconnectedPeers');
+		const disconnectedPeers = await invokeEndpoint('app_getDisconnectedPeers');
 		return disconnectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -63,7 +63,7 @@ const getDisconnectedPeers = async () => {
 
 const getForgingStatus = async () => {
 	try {
-		const forgingStatus = await invokeAction('app_getForgingStatus');
+		const forgingStatus = await invokeEndpoint('app_getForgingStatus');
 		return forgingStatus;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -88,7 +88,7 @@ const updateForgingStatus = async (config) => {
 
 const getAccount = async (address) => {
 	try {
-		const encodedAccount = await invokeAction('app_getAccount', { address });
+		const encodedAccount = await invokeEndpoint('app_getAccount', { address });
 		const account = await decodeAccount(encodedAccount);
 		return { ...parseToJSONCompatObj(account), _raw: encodedAccount };
 	} catch (err) {
@@ -104,7 +104,7 @@ const getAccount = async (address) => {
 
 const getAccounts = async (addresses) => {
 	try {
-		const encodedAccounts = await invokeAction('app_getAccounts', { address: addresses });
+		const encodedAccounts = await invokeEndpoint('app_getAccounts', { address: addresses });
 		const accounts = await BluebirdPromise.map(
 			encodedAccounts,
 			async (account) => ({
@@ -124,7 +124,7 @@ const getAccounts = async (addresses) => {
 
 const getLastBlock = async () => {
 	try {
-		const encodedBlock = await invokeAction('app_getLastBlock');
+		const encodedBlock = await invokeEndpoint('app_getLastBlock');
 		const block = await decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
@@ -141,7 +141,7 @@ const getBlockByHeight = async (height) => {
 			return getGenesisBlock();
 		}
 
-		const encodedBlock = await invokeAction('app_getBlockByHeight', { height });
+		const encodedBlock = await invokeEndpoint('app_getBlockByHeight', { height });
 		const block = await decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
@@ -168,7 +168,7 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		}
 
 		if (from <= to) {
-			const encodedBlocks = await invokeAction('app_getBlocksByHeightBetween', { from, to });
+			const encodedBlocks = await invokeEndpoint('app_getBlocksByHeightBetween', { from, to });
 			blocks[1] = await BluebirdPromise.map(
 				encodedBlocks,
 				async (block) => ({
@@ -195,7 +195,7 @@ const getBlockByID = async (id) => {
 			return getGenesisBlock();
 		}
 
-		const encodedBlock = await invokeAction('app_getBlockByID', { id });
+		const encodedBlock = await invokeEndpoint('app_getBlockByID', { id });
 		const block = await decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
@@ -220,7 +220,7 @@ const getBlocksByIDs = async (ids) => {
 			return remainingBlocks.splice(genesisBlockIndex, 0, genesisBlock);
 		}
 
-		const encodedBlocks = await invokeAction('app_getBlocksByIDs', { ids });
+		const encodedBlocks = await invokeEndpoint('app_getBlocksByIDs', { ids });
 		const blocks = await BluebirdPromise.map(
 			encodedBlocks,
 			async (block) => ({
@@ -240,7 +240,7 @@ const getBlocksByIDs = async (ids) => {
 
 const getTransactionByID = async (id) => {
 	try {
-		const encodedTransaction = await invokeAction('app_getTransactionByID', { id });
+		const encodedTransaction = await invokeEndpoint('app_getTransactionByID', { id });
 		const transaction = await decodeTransaction(encodedTransaction);
 		return { ...parseToJSONCompatObj(transaction), _raw: encodedTransaction };
 	} catch (err) {
@@ -253,7 +253,7 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
-		const encodedTransactions = await invokeAction('app_getTransactionsByIDs', { ids });
+		const encodedTransactions = await invokeEndpoint('app_getTransactionsByIDs', { ids });
 		const transactions = await BluebirdPromise.map(
 			encodedTransactions,
 			async (tx) => ({
@@ -273,7 +273,7 @@ const getTransactionsByIDs = async (ids) => {
 
 const getTransactionsFromPool = async () => {
 	try {
-		const encodedTransactions = await invokeAction('app_getTransactionsFromPool');
+		const encodedTransactions = await invokeEndpoint('app_getTransactionsFromPool');
 		const transactions = await Promise.all(encodedTransactions.map(tx => decodeTransaction(tx)));
 		return parseToJSONCompatObj(transactions);
 	} catch (err) {
@@ -299,7 +299,7 @@ const postTransaction = async (transaction) => {
 
 const getForgers = async () => {
 	try {
-		const forgers = await invokeAction('app_getForgers');
+		const forgers = await invokeEndpoint('app_getForgers');
 		return forgers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -310,8 +310,8 @@ const getForgers = async () => {
 };
 
 module.exports = {
-	invokeAction,
-	invokeActionProxy,
+	invokeEndpoint,
+	invokeEndpointProxy,
 	getSchema,
 	getRegisteredActions,
 	getRegisteredEvents,

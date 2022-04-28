@@ -82,7 +82,7 @@ const getApiClient = async () => {
 };
 
 // eslint-disable-next-line consistent-return
-const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
+const invokeEndpoint = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
 	const apiClient = await getApiClient();
 	let retries = numRetries;
 	do {
@@ -99,7 +99,7 @@ const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIE
 };
 
 // eslint-disable-next-line consistent-return
-const invokeActionProxy = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
+const invokeEndpointProxy = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
 	const apiClient = await getApiClient();
 	let retries = numRetries;
 	do {
@@ -120,6 +120,6 @@ module.exports = {
 	timeoutMessage,
 
 	getApiClient,
-	invokeAction,
-	invokeActionProxy,
+	invokeEndpoint,
+	invokeEndpointProxy,
 };
