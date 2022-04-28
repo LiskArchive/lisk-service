@@ -19,6 +19,7 @@ const {
 	createIPCClient,
 } = require('@liskhq/lisk-api-client');
 
+const { decodeResponse } = require('./decodeProxiedRes');
 const config = require('../../config');
 const delay = require('../delay');
 const waitForIt = require('../waitForIt');
@@ -97,9 +98,28 @@ const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIE
 	} while (retries--);
 };
 
+// eslint-disable-next-line consistent-return
+const invokeActionProxy = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
+	const apiClient = await getApiClient();
+	let retries = numRetries;
+	do {
+		/* eslint-disable no-await-in-loop */
+		try {
+			const response = await apiClient._channel.invoke(action, params);
+			const decodedResponse = await decodeResponse(action, response);
+			return decodedResponse;
+		} catch (err) {
+			if (retries && err instanceof TimeoutException) await delay(10);
+			else throw err;
+		}
+		/* eslint-enable no-await-in-loop */
+	} while (retries--);
+};
+
 module.exports = {
 	timeoutMessage,
 
 	getApiClient,
 	invokeAction,
+	invokeActionProxy,
 };

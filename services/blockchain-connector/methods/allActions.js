@@ -18,7 +18,8 @@ const actions = require('../shared/sdk/actions');
 const exportAllMethods = async () => {
 	const registeredActions = await actions.getRegisteredActions();
 	const allMethods = registeredActions.map(action => {
-		const genericController = (regAction) => (params) => actions.invokeAction(regAction, params);
+		const genericController = (regAction) => (params) => actions
+			.invokeActionProxy(regAction, params);
 		const controller = genericController(action);
 		return {
 			name: action,

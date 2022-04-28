@@ -30,7 +30,7 @@ const {
 	getRegisteredModules,
 	getNodeInfo,
 } = require('./actions_1');
-const { timeoutMessage, getApiClient, invokeAction } = require('./client');
+const { timeoutMessage, getApiClient, invokeAction, invokeActionProxy } = require('./client');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
@@ -311,6 +311,7 @@ const getForgers = async () => {
 
 module.exports = {
 	invokeAction,
+	invokeActionProxy,
 	getSchema,
 	getRegisteredActions,
 	getRegisteredEvents,
