@@ -19,7 +19,7 @@ const {
 	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
-	getBlockHeaderAssetSchema,
+	getBlockAssetSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
 } = require('./schema');
@@ -62,20 +62,16 @@ const decodeBlock = async (encodedBlock) => {
 	const blockHeaderSchema = await getBlockHeaderSchema();
 	const blockHeader = codec.decode(blockHeaderSchema, block.header);
 
-	// const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(blockHeader.version);
-	// const blockHeaderAsset = codec.decode(blockHeaderAssetSchema, blockHeader.asset);
-	// if (Array.isArray(blockHeader.asset.accounts)) {
-	// 	blockHeaderAsset.accounts = await Promise.all(
-	// 		blockHeaderAsset.accounts.map(acc => decodeAccount(acc)),
-	// 	);
-	// }
+	const blockAssetSchema = await getBlockAssetSchema();
+	const blockAssets = await Promise
+		.all(block.assets.map(asset => codec.decode(blockAssetSchema, asset)));
 
-	const blockPayload = await Promise.all(block.transactions.map(tx => decodeTransaction(tx)));
+	const blockTransactions = await Promise.all(block.transactions.map(tx => decodeTransaction(tx)));
 
 	const decodedBlock = {
 		header: blockHeader,
-		asset: block.assets,
-		transactions: blockPayload,
+		assets: blockAssets,
+		transactions: blockTransactions,
 	};
 	return decodedBlock;
 };

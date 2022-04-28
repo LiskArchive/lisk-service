@@ -20,7 +20,7 @@ const {
 	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
-	getBlockHeaderAssetSchema,
+	getBlockAssetSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
 } = require('./schema');
@@ -45,15 +45,17 @@ const encodeTransaction = async (transaction) => {
 };
 
 const encodeBlock = async (block) => {
-	const { header, payload } = block;
+	const { header, assets, transactions } = block;
 
-	// Handle the block payload
-	const blockPayloadBuffer = await Promise.all(payload.map(tx => encodeTransaction(tx)));
+	// Handle the block transactions
+	const blockTransactionsBuffer = await Promise.all(transactions.map(tx => encodeTransaction(tx)));
 
-	// Handle the block header asset
-	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(header.version);
-	const parsedHeaderAsset = parseInputBySchema(header.asset, blockHeaderAssetSchema);
-	const blockHeaderAssetBuffer = codec.encode(blockHeaderAssetSchema, parsedHeaderAsset);
+	// Handle the block assets
+	const blockAssetSchema = await getBlockAssetSchema();
+	const parsedAssets = await Promise
+		.all(assets.map(asset => parseInputBySchema(asset, blockAssetSchema)));
+	const blockAssetBuffer = await Promise
+		.all(parsedAssets.map(asset => codec.encode(blockAssetSchema, asset)));
 
 	// Handle the block header
 	const blockHeaderSchema = await getBlockHeaderSchema();
@@ -61,10 +63,12 @@ const encodeBlock = async (block) => {
 		blockHeaderSchema,
 		{
 			...header,
-			asset: blockHeaderAssetBuffer,
 			previousBlockID: Buffer.from(header.previousBlockID, 'hex'),
 			transactionRoot: Buffer.from(header.transactionRoot, 'hex'),
-			generatorPublicKey: Buffer.from(header.generatorPublicKey, 'hex'),
+			generatorAddress: Buffer.from(header.generatorAddress, 'hex'),
+			assetsRoot: Buffer.from(header.assetsRoot, 'hex'),
+			stateRoot: Buffer.from(header.stateRoot, 'hex'),
+			validatorsHash: Buffer.from(header.validatorsHash, 'hex'),
 			signature: Buffer.from(header.signature, 'hex'),
 		},
 	);
@@ -74,7 +78,8 @@ const encodeBlock = async (block) => {
 		blockSchema,
 		{
 			header: blockHeaderBuffer,
-			payload: blockPayloadBuffer,
+			assets: blockAssetBuffer,
+			transactions: blockTransactionsBuffer,
 		},
 	);
 
