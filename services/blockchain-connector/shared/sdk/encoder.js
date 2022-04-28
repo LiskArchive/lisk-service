@@ -22,7 +22,7 @@ const {
 	getBlockHeaderSchema,
 	getBlockHeaderAssetSchema,
 	getTransactionSchema,
-	getTransactionAssetSchema,
+	getTransactionParamsSchema,
 } = require('./schema');
 
 const encodeAccount = async (account) => {
@@ -32,13 +32,13 @@ const encodeAccount = async (account) => {
 };
 
 const encodeTransaction = async (transaction) => {
-	const txAssetSchema = await getTransactionAssetSchema(transaction);
-	const txAssetBuffer = codec.encode(txAssetSchema, transaction.asset);
+	const txParamsSchema = await getTransactionParamsSchema(transaction);
+	const txParamsBuffer = codec.encode(txParamsSchema, transaction.asset);
 
 	const txSchema = await getTransactionSchema();
 	const txBuffer = codec.encode(
 		txSchema,
-		{ ...transaction, asset: txAssetBuffer },
+		{ ...transaction, params: txParamsBuffer },
 	);
 
 	return txBuffer.toString('hex');
