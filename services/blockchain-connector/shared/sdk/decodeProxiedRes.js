@@ -48,6 +48,21 @@ const decodeResponse = async (action, response) => {
 	return response;
 };
 
+const decodeEventResponse = async (eventName, payload) => {
+	if (['app_newBlock', 'app_deleteBlock', 'appChainFork'].includes(eventName)) {
+		const decodedBlock = await decodeBlock(payload.block);
+		return parseToJSONCompatObj(decodedBlock);
+	}
+
+	if (eventName === 'app_newTransaction') {
+		const decodedTransaction = await decodeTransaction(payload.transaction);
+		return parseToJSONCompatObj(decodedTransaction);
+	}
+
+	return payload;
+};
+
 module.exports = {
 	decodeResponse,
+	decodeEventResponse,
 };
