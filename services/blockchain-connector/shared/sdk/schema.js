@@ -41,11 +41,11 @@ const getTransactionSchema = async () => {
 	return allSchemas.transaction;
 };
 
-const getTransactionAssetSchema = async (transaction) => {
+const getTransactionParamsSchema = async (transaction) => {
 	const allSchemas = await getSchema();
-	const transactionAssetSchemas = allSchemas.transactionsAssets;
-	const { schema } = transactionAssetSchemas
-		.find(s => s.moduleID === transaction.moduleID && s.assetID === transaction.assetID);
+	const { schema } = allSchemas.commands
+		.find(paramsSchema => paramsSchema.moduleID === transaction.moduleID
+			&& paramsSchema.commandID === transaction.commandID);
 	return schema;
 };
 
@@ -55,5 +55,5 @@ module.exports = {
 	getBlockHeaderSchema,
 	getBlockHeaderAssetSchema,
 	getTransactionSchema,
-	getTransactionAssetSchema,
+	getTransactionParamsSchema,
 };
