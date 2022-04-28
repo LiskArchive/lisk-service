@@ -30,10 +30,24 @@ const getBlockHeaderSchema = async () => {
 	return allSchemas.blockHeader;
 };
 
-const getBlockHeaderAssetSchema = async (blockHeaderVersion) => {
-	const allSchemas = await getSchema();
-	const { blockHeadersAssets } = allSchemas;
-	return blockHeadersAssets[blockHeaderVersion];
+const getBlockAssetSchema = async () => {
+	// TODO: Retrieve block asset schema from core directly once available
+	const assetSchema = {
+		$id: '/block/assets/3',
+		type: 'object',
+		required: ['moduleID', 'data'],
+		properties: {
+			moduleID: {
+				dataType: 'uint32',
+				fieldNumber: 1,
+			},
+			data: {
+				dataType: 'bytes',
+				fieldNumber: 2,
+			},
+		},
+	};
+	return assetSchema;
 };
 
 const getTransactionSchema = async () => {
@@ -53,7 +67,7 @@ module.exports = {
 	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
-	getBlockHeaderAssetSchema,
+	getBlockAssetSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
 };
