@@ -26,59 +26,59 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const resolvemoduleAssets = (data) => {
-	let result = [];
-	data.forEach(liskModule => {
-		if (liskModule.transactionAssets.length) {
-			result = result.concat(
-				liskModule.transactionAssets.map(asset => {
-					const id = String(liskModule.id).concat(':').concat(asset.id);
-					if (liskModule.name && asset.name) {
-						const name = liskModule.name.concat(':').concat(asset.name);
-						return { id, name };
-					}
-					return { id };
-				}),
-			);
-		}
-	});
-	return result;
-};
+// const resolvemoduleAssets = (data) => {
+// 	let result = [];
+// 	data.forEach(liskModule => {
+// 		if (liskModule.transactionAssets.length) {
+// 			result = result.concat(
+// 				liskModule.transactionAssets.map(asset => {
+// 					const id = String(liskModule.id).concat(':').concat(asset.id);
+// 					if (liskModule.name && asset.name) {
+// 						const name = liskModule.name.concat(':').concat(asset.name);
+// 						return { id, name };
+// 					}
+// 					return { id };
+// 				}),
+// 			);
+// 		}
+// 	});
+// 	return result;
+// };
 
-const calculateMilestone = (height, blockRewardArgs) => {
-	const distance = Math.floor(blockRewardArgs.distance);
-	const location = Math.trunc((height - blockRewardArgs.offset) / distance);
-	const lastMile = blockRewardArgs.milestones[blockRewardArgs.milestones.length - 1];
+// const calculateMilestone = (height, blockRewardArgs) => {
+// 	const distance = Math.floor(blockRewardArgs.distance);
+// 	const location = Math.trunc((height - blockRewardArgs.offset) / distance);
+// 	const lastMile = blockRewardArgs.milestones[blockRewardArgs.milestones.length - 1];
 
-	if (location > blockRewardArgs.milestones.length - 1) {
-		return blockRewardArgs.milestones.lastIndexOf(lastMile);
-	}
+// 	if (location > blockRewardArgs.milestones.length - 1) {
+// 		return blockRewardArgs.milestones.lastIndexOf(lastMile);
+// 	}
 
-	return location;
-};
+// 	return location;
+// };
 
-const calculateDefaultReward = (height, blockRewardArgs) => {
-	if (height < blockRewardArgs.offset) {
-		return BigInt(0);
-	}
+// const calculateDefaultReward = (height, blockRewardArgs) => {
+// 	if (height < blockRewardArgs.offset) {
+// 		return BigInt(0);
+// 	}
 
-	return blockRewardArgs.milestones[calculateMilestone(height, blockRewardArgs)];
-};
+// 	return blockRewardArgs.milestones[calculateMilestone(height, blockRewardArgs)];
+// };
 
 const getNetworkStatus = async () => {
 	const status = await getNodeInfo();
 
 	// Ensure 'milestones' are in correct order
-	status.genesisConfig.rewards.milestones.sort((a, b) => Number(BigInt(b) - BigInt(a)));
-	status.milestone = calculateMilestone(
-		status.height,
-		status.genesisConfig.rewards,
-	);
-	status.currentReward = calculateDefaultReward(
-		status.height,
-		status.genesisConfig.rewards,
-	);
-	status.moduleAssets = resolvemoduleAssets(status.registeredModules);
+	// status.genesisConfig.rewards.milestones.sort((a, b) => Number(BigInt(b) - BigInt(a)));
+	// status.milestone = calculateMilestone(
+	// 	status.height,
+	// 	status.genesisConfig.rewards,
+	// );
+	// status.currentReward = calculateDefaultReward(
+	// 	status.height,
+	// 	status.genesisConfig.rewards,
+	// );
+	status.moduleCommand = status.registeredModules;
 	status.registeredModules = status.registeredModules.map(item => item.name);
 
 	status.lastUpdate = Math.floor(Date.now() / 1000);
