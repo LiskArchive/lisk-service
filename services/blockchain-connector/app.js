@@ -57,6 +57,7 @@ nodeStatus.waitForNode().then(async () => {
 		.then(async () => {
 			const schemas = await getSchema();
 			setSchemas(schemas);
+
 			// Download the genesis block, if applicable
 			await getGenesisBlock();
 		})

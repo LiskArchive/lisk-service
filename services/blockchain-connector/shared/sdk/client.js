@@ -38,12 +38,26 @@ const NUM_REQUEST_RETRIES = 5;
 let clientCache;
 let instantiationBeginTime;
 let isInstantiating = false;
+let isAlive;
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async () => {
+	// TODO: Remove method after _channel.isAlive is fixed for all the clients
+	const checkIsAlive = async () => {
+		try {
+			await clientCache._channel.invoke('app_getNodeInfo');
+			isAlive = true;
+		} catch (error) {
+			isAlive = false;
+		}
+		return isAlive;
+	};
+
 	try {
 		if (!isInstantiating) {
-			if (!clientCache || !clientCache._channel.isAlive) {
+			// TODO: Update after _channel.isAlive is fixed for all the clients
+			// if (!clientCache || !clientCache._channel.isAlive || !(await checkIsAlive())) {
+			if (!clientCache || !(await checkIsAlive())) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();
@@ -76,7 +90,9 @@ const instantiateClient = async () => {
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return (apiClient && apiClient._channel && apiClient._channel.invoke)
+	return (apiClient
+		&& apiClient._channel
+		&& (apiClient._channel.isAlive || apiClient._channel.invoke))
 		? apiClient
 		: getApiClient();
 };
@@ -98,22 +114,10 @@ const invokeEndpoint = async (action, params = {}, numRetries = NUM_REQUEST_RETR
 	} while (retries--);
 };
 
-// eslint-disable-next-line consistent-return
-const invokeEndpointProxy = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
-	const apiClient = await getApiClient();
-	let retries = numRetries;
-	do {
-		/* eslint-disable no-await-in-loop */
-		try {
-			const response = await apiClient._channel.invoke(action, params);
-			const decodedResponse = await decodeResponse(action, response);
-			return decodedResponse;
-		} catch (err) {
-			if (retries && err instanceof TimeoutException) await delay(10);
-			else throw err;
-		}
-		/* eslint-enable no-await-in-loop */
-	} while (retries--);
+const invokeEndpointProxy = async (action, params) => {
+	const response = await invokeEndpoint(action, params);
+	const decodedResponse = await decodeResponse(action, response);
+	return decodedResponse;
 };
 
 module.exports = {
