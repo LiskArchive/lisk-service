@@ -16,7 +16,6 @@
 const Signals = require('../../shared/signals');
 
 const {
-	decodeAccount,
 	decodeBlock,
 	decodeTransaction,
 } = require('../../shared/sdk/decoder');
@@ -25,9 +24,6 @@ const { parseToJSONCompatObj } = require('../../shared/parser');
 
 const decodeBlockEventPayload = async (payload) => parseToJSONCompatObj({
 	block: { ...(await decodeBlock(payload.block)), _raw: payload.block },
-	accounts: await Promise.all(
-		payload.accounts.map(async a => ({ ...(await decodeAccount(a)), _raw: a })),
-	),
 });
 
 const appReadyController = async (cb) => {
@@ -50,20 +46,20 @@ const appNetworkEventController = async (cb) => {
 	Signals.get('appNetworkEvent').add(appNetworkEventListener);
 };
 
-const appTransactionNewController = async (cb) => {
-	const appTransactionNewListener = async (payload) => {
+const appNewTransactionController = async (cb) => {
+	const appNewTransactionListener = async (payload) => {
 		const decodedPayload = { transaction: await decodeTransaction(payload) };
 		cb(decodedPayload);
 	};
-	Signals.get('appTransactionNew').add(appTransactionNewListener);
+	Signals.get('appNewTransaction').add(appNewTransactionListener);
 };
 
-const appChainForkController = async (cb) => {
-	const appChainForkListener = async (payload) => {
+const appChainForkedController = async (cb) => {
+	const appChainForkedListener = async (payload) => {
 		const decodedPayload = await decodeBlockEventPayload(payload);
 		cb(decodedPayload);
 	};
-	Signals.get('appChainFork').add(appChainForkListener);
+	Signals.get('appChainForked').add(appChainForkedListener);
 };
 
 const appChainValidatorsChangeController = async (cb) => {
@@ -71,20 +67,20 @@ const appChainValidatorsChangeController = async (cb) => {
 	Signals.get('appChainValidatorsChange').add(appChainValidatorsChangeListener);
 };
 
-const appBlockNewController = async (cb) => {
-	const appBlockNewListener = async (payload) => {
+const appNewBlockController = async (cb) => {
+	const appNewBlockListener = async (payload) => {
 		const decodedPayload = await decodeBlockEventPayload(payload);
 		cb(decodedPayload);
 	};
-	Signals.get('appBlockNew').add(appBlockNewListener);
+	Signals.get('appNewBlock').add(appNewBlockListener);
 };
 
-const appBlockDeleteController = async (cb) => {
-	const appBlockDeleteListener = async (payload) => {
+const appDeleteBlockController = async (cb) => {
+	const appDeleteBlockListener = async (payload) => {
 		const decodedPayload = await decodeBlockEventPayload(payload);
 		cb(decodedPayload);
 	};
-	Signals.get('appBlockDelete').add(appBlockDeleteListener);
+	Signals.get('appDeleteBlock').add(appDeleteBlockListener);
 };
 
 module.exports = {
@@ -92,9 +88,9 @@ module.exports = {
 	appShutdownController,
 	appNetworkReadyController,
 	appNetworkEventController,
-	appTransactionNewController,
-	appChainForkController,
+	appNewTransactionController,
+	appChainForkedController,
 	appChainValidatorsChangeController,
-	appBlockNewController,
-	appBlockDeleteController,
+	appNewBlockController,
+	appDeleteBlockController,
 };

@@ -48,8 +48,8 @@ const decodeResponse = async (action, response) => {
 	return response;
 };
 
-const decodeEventResponse = async (eventName, payload) => {
-	if (['app_newBlock', 'app_deleteBlock', 'appChainFork'].includes(eventName)) {
+const decodeEventPayload = async (eventName, payload) => {
+	if (['app_newBlock', 'app_deleteBlock', 'app_chainForked'].includes(eventName)) {
 		const decodedBlock = await decodeBlock(payload.block);
 		return parseToJSONCompatObj(decodedBlock);
 	}
@@ -64,5 +64,5 @@ const decodeEventResponse = async (eventName, payload) => {
 
 module.exports = {
 	decodeResponse,
-	decodeEventResponse,
+	decodeEventPayload,
 };

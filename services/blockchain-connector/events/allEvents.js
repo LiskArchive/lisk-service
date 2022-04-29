@@ -15,7 +15,7 @@
  */
 const { getRegisteredEvents } = require('../shared/sdk/endpoints');
 const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
-const { decodeEventResponse } = require('../shared/sdk/decodeProxiedRes');
+const { decodeEventPayload } = require('../shared/sdk/decodeProxiedRes');
 
 const Signals = require('../shared/signals');
 
@@ -40,8 +40,8 @@ const exportAllEvents = async () => {
 	const allMethods = registeredEvents.map(event => {
 		const genericController = (regEvent) => (cb) => {
 			const eventListener = async (payload) => {
-				const decodedEvent = await decodeEventResponse(regEvent, payload);
-				Signals.get(toCamelCase(regEvent.split('_'))).dispatch(decodedEvent);
+				Signals.get(toCamelCase(regEvent.split('_'))).dispatch(payload);
+				const decodedEvent = await decodeEventPayload(regEvent, payload);
 				cb(decodedEvent);
 			};
 			Signals.get(regEvent).add(eventListener);
