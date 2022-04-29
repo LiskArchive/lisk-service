@@ -25,7 +25,7 @@ let registeredActions;
 let registeredEvents;
 let registeredModules;
 
-const getSchema = async () => {
+const getSchemas = async () => {
 	try {
 		if (!schema) {
 			schema = await invokeEndpoint('app_getSchema');
@@ -94,7 +94,7 @@ const getNodeInfo = async () => {
 };
 
 module.exports = {
-	getSchema,
+	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,
