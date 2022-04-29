@@ -15,7 +15,7 @@
  */
 const { getRegisteredEvents } = require('../shared/sdk/endpoints');
 const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
-const { decodeEventPayload } = require('../shared/sdk/decodeProxiedRes');
+const { decodeEventPayload } = require('../shared/sdk/decoder');
 
 const Signals = require('../shared/signals');
 

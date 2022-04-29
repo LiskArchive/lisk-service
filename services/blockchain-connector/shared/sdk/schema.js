@@ -14,6 +14,7 @@
 *
 */
 let allSchemas;
+
 const setSchemas = (schemas) => allSchemas = schemas;
 
 const getAccountSchema = async () => allSchemas.account;

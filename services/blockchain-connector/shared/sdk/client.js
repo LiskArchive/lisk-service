@@ -15,11 +15,11 @@
  */
 const { Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
 const {
-	// createWSClient,
+	createWSClient,
 	createIPCClient,
 } = require('@liskhq/lisk-api-client');
 
-const { decodeResponse } = require('./decodeProxiedRes');
+const { decodeResponse } = require('./decoder');
 const config = require('../../config');
 const delay = require('../delay');
 const waitForIt = require('../waitForIt');
@@ -37,32 +37,33 @@ const NUM_REQUEST_RETRIES = 5;
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
+let isClientAlive = false;
 let isInstantiating = false;
-let isAlive;
+
+const checkIsClientAlive = async () => {
+	try {
+		await clientCache._channel.invoke('app_getNodeInfo');
+		isClientAlive = true;
+	} catch (_) {
+		isClientAlive = false;
+	}
+	return isClientAlive;
+};
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async () => {
-	// TODO: Remove method after _channel.isAlive is fixed for all the clients
-	const checkIsAlive = async () => {
-		try {
-			await clientCache._channel.invoke('app_getNodeInfo');
-			isAlive = true;
-		} catch (error) {
-			isAlive = false;
-		}
-		return isAlive;
-	};
-
 	try {
 		if (!isInstantiating) {
-			// TODO: Update after _channel.isAlive is fixed for all the clients
-			// if (!clientCache || !clientCache._channel.isAlive || !(await checkIsAlive())) {
-			if (!clientCache || !(await checkIsAlive())) {
+			if (!clientCache || !(await checkIsClientAlive())) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();
-				// clientCache = await createWSClient(`${liskAddress}/ws`);
-				clientCache = await createIPCClient(config.dataPath);
+
+				if (config.isUseLiskIPCClient) {
+					clientCache = await createIPCClient(config.liskAppDataPath);
+				} else {
+					clientCache = await createWSClient(`${liskAddress}/ws`);
+				}
 
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();
@@ -90,9 +91,7 @@ const instantiateClient = async () => {
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return (apiClient
-		&& apiClient._channel
-		&& (apiClient._channel.isAlive || apiClient._channel.invoke))
+	return (apiClient && await checkIsClientAlive())
 		? apiClient
 		: getApiClient();
 };

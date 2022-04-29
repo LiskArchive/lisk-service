@@ -33,10 +33,15 @@ config.endpoints.liskWs = process.env.LISK_APP_WS || config.endpoints.liskHttp.r
 config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json';
 
 /**
- * Network-related settings
+ * API Client related settings
  */
+config.isUseLiskIPCClient = Boolean(process.env.USE_LISK_IPC_CLIENT.toLowerCase() === 'true');
+config.liskAppDataPath = process.env.LISK_APP_DATA_PATH || '~/.lisk';
+
+/**
+  * Network-related settings
+  */
 config.genesisBlockUrl = process.env.GENESIS_BLOCK_URL || '';
-config.dataPath = process.env.DATA_PATH; // Path where node is running
 config.networks = [
 	{
 		name: 'mainnet',
