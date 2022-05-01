@@ -24,7 +24,7 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	getSchema,
+	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,
@@ -312,7 +312,7 @@ const getForgers = async () => {
 module.exports = {
 	invokeEndpoint,
 	invokeEndpointProxy,
-	getSchema,
+	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,

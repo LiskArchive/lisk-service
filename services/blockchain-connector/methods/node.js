@@ -15,7 +15,7 @@
  */
 const {
 	invokeEndpoint,
-	getSchema,
+	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,
@@ -33,7 +33,7 @@ module.exports = [
 	},
 	{
 		name: 'getSchema',
-		controller: getSchema,
+		controller: getSchemas,
 		params: {},
 	},
 	{
