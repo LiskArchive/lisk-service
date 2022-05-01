@@ -57,6 +57,7 @@ const broker = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
+	dependencies: ['connector'],
 }).getBroker();
 
 const sendSocketIoEvent = (eventName, payload) => {

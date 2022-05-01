@@ -35,7 +35,7 @@ config.endpoints.geoip = process.env.GEOIP_JSON || 'https://geoip.lisk.com/json'
 /**
  * API Client related settings
  */
-config.isUseLiskIPCClient = Boolean(process.env.USE_LISK_IPC_CLIENT.toLowerCase() === 'true');
+config.isUseLiskIPCClient = Boolean(String(process.env.USE_LISK_IPC_CLIENT).toLowerCase() === 'true');
 config.liskAppDataPath = process.env.LISK_APP_DATA_PATH || '~/.lisk';
 
 /**
