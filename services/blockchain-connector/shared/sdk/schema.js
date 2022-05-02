@@ -46,10 +46,10 @@ const getBlockAssetSchema = async () => {
 const getTransactionSchema = async () => schemas.transaction;
 
 const getTransactionParamsSchema = async (transaction) => {
-	const { schema: txParamsSchema } = schemas.commands
+	const { schema } = schemas.commands
 		.find(paramsSchema => paramsSchema.moduleID === transaction.moduleID
 			&& paramsSchema.commandID === transaction.commandID);
-	return txParamsSchema;
+	return schema;
 };
 
 module.exports = {
