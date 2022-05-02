@@ -17,19 +17,12 @@ const { codec } = require('@liskhq/lisk-codec');
 
 const { parseInputBySchema } = require('../parser');
 const {
-	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
 	getBlockAssetSchema,
 	getTransactionSchema,
 	getTransactionParamsSchema,
 } = require('./schema');
-
-const encodeAccount = async (account) => {
-	const accountSchema = await getAccountSchema();
-	const accountBuffer = codec.encode(accountSchema, account);
-	return accountBuffer.toString('hex');
-};
 
 const encodeTransaction = async (transaction) => {
 	const txParamsSchema = await getTransactionParamsSchema(transaction);
@@ -87,7 +80,6 @@ const encodeBlock = async (block) => {
 };
 
 module.exports = {
-	encodeAccount,
 	encodeBlock,
 	encodeTransaction,
 };

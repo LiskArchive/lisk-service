@@ -13,15 +13,15 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-let allSchemas;
+let schemas;
 
-const setSchemas = (schemas) => allSchemas = schemas;
+const setSchemas = (_schemas) => schemas = _schemas;
 
-const getAccountSchema = async () => allSchemas.account;
+const getAccountSchema = async () => schemas.account;
 
-const getBlockSchema = async () => allSchemas.block;
+const getBlockSchema = async () => schemas.block;
 
-const getBlockHeaderSchema = async () => allSchemas.blockHeader;
+const getBlockHeaderSchema = async () => schemas.blockHeader;
 
 const getBlockAssetSchema = async () => {
 	// TODO: Retrieve block asset schema from core directly once available
@@ -43,13 +43,13 @@ const getBlockAssetSchema = async () => {
 	return assetSchema;
 };
 
-const getTransactionSchema = async () => allSchemas.transaction;
+const getTransactionSchema = async () => schemas.transaction;
 
 const getTransactionParamsSchema = async (transaction) => {
-	const { schema } = allSchemas.commands
+	const { schema: txParamsSchema } = schemas.commands
 		.find(paramsSchema => paramsSchema.moduleID === transaction.moduleID
 			&& paramsSchema.commandID === transaction.commandID);
-	return schema;
+	return txParamsSchema;
 };
 
 module.exports = {
