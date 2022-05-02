@@ -48,7 +48,7 @@ const appNetworkEventController = async (cb) => {
 
 const appNewTransactionController = async (cb) => {
 	const appNewTransactionListener = async (payload) => {
-		const decodedPayload = { transaction: await decodeTransaction(payload) };
+		const decodedPayload = { transaction: decodeTransaction(payload) };
 		cb(decodedPayload);
 	};
 	Signals.get('appNewTransaction').add(appNewTransactionListener);
