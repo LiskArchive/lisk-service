@@ -16,8 +16,8 @@
 const endpoints = require('../shared/sdk/endpoints');
 
 const exportAllMethods = async () => {
-	const registeredActions = await endpoints.getRegisteredActions();
-	const allMethods = registeredActions.map(endpoint => {
+	const registeredEndpoints = await endpoints.getRegisteredActions();
+	const allMethods = registeredEndpoints.map(endpoint => {
 		const genericController = (regEndpoint) => (params) => endpoints
 			.invokeEndpointProxy(regEndpoint, params);
 		const controller = genericController(endpoint);
