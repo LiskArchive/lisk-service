@@ -42,7 +42,7 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const resolveModuleAssets = (data) => {
+const resolveModuleCommands = (data) => {
 	let result = [];
 	data.forEach(liskModule => {
 		if (liskModule.commands.length) {
@@ -61,10 +61,10 @@ const resolveModuleAssets = (data) => {
 	return result;
 };
 
-const getAvailableLiskModuleAssets = async () => {
+const getAvailableLiskModuleCommands = async () => {
 	if (!registeredModules) {
 		const response = await requestRpc('getRegisteredModules', {});
-		registeredModules = resolveModuleAssets(response);
+		registeredModules = resolveModuleCommands(response);
 	}
 	return registeredModules;
 };
@@ -75,5 +75,5 @@ module.exports = {
 	getGenesisConfig,
 	getGenesisHeight,
 	updateGenesisHeight,
-	getAvailableLiskModuleAssets,
+	getAvailableLiskModuleCommands,
 };

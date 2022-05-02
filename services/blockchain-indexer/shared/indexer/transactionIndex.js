@@ -23,7 +23,7 @@ const {
 	resolveMultisignatureMemberships,
 } = require('../dataService');
 
-const { getAvailableLiskModuleAssets } = require('../constants');
+const { getAvailableLiskModuleCommands } = require('../constants');
 
 const getTransactionIndexingInfo = async (blocks) => {
 	const multisignatureModuleAssetId = '4:0';
@@ -67,7 +67,7 @@ const getTransactionIndexingInfo = async (blocks) => {
 };
 
 const getTransactionIndexingInfoSdkv6 = async (blocks) => {
-	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
+	const availableLiskModuleAssets = await getAvailableLiskModuleCommands();
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.transactions.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
