@@ -115,7 +115,7 @@ const invokeEndpoint = async (action, params = {}, numRetries = NUM_REQUEST_RETR
 
 const invokeEndpointProxy = async (action, params) => {
 	const response = await invokeEndpoint(action, params);
-	const decodedResponse = await decodeResponse(action, response);
+	const decodedResponse = decodeResponse(action, response);
 	return decodedResponse;
 };
 
