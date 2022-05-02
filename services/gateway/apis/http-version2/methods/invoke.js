@@ -18,7 +18,8 @@ const invokeEndpointSource = require('../../../sources/version2/invoke');
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/invoke',
-	rpcMethod: 'get.invoke',
+	httpMethod: 'POST',
+	rpcMethod: 'post.invoke',
 	params: {
 		endpoint: { optional: false, type: 'string' },
 		params: { optional: true, type: 'object' },
