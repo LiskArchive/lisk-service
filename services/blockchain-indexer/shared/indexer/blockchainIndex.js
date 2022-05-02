@@ -267,6 +267,8 @@ const indexBlockSdkv6 = async job => {
 
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
 	try {
+		const transactions = await getTransactionIndexingInfo(blocks);
+		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 
 		await commitDbTransaction(trx);
