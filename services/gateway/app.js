@@ -57,7 +57,6 @@ const broker = Microservice({
 	transporter: config.transporter,
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
-	dependencies: ['connector'],
 }).getBroker();
 
 const sendSocketIoEvent = (eventName, payload) => {
@@ -141,6 +140,9 @@ const gatewayConfig = {
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},
+	dependencies: [
+		'connector',
+	],
 };
 
 if (config.rateLimit.enable) {
@@ -159,8 +161,6 @@ if (config.rateLimit.enable) {
 }
 
 broker.createService(gatewayConfig);
-
-broker.waitForServices(['core', 'market', 'newsfeed']);
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);
