@@ -24,11 +24,11 @@ const {
 	getTransactionParamsSchema,
 } = require('./schema');
 
-const encodeTransaction = async (transaction) => {
-	const txParamsSchema = await getTransactionParamsSchema(transaction);
+const encodeTransaction = (transaction) => {
+	const txParamsSchema = getTransactionParamsSchema(transaction);
 	const txParamsBuffer = codec.encode(txParamsSchema, transaction.asset);
 
-	const txSchema = await getTransactionSchema();
+	const txSchema = getTransactionSchema();
 	const txBuffer = codec.encode(
 		txSchema,
 		{ ...transaction, params: txParamsBuffer },
@@ -37,36 +37,23 @@ const encodeTransaction = async (transaction) => {
 	return txBuffer.toString('hex');
 };
 
-const encodeBlock = async (block) => {
+const encodeBlock = (block) => {
 	const { header, assets, transactions } = block;
 
 	// Handle the block transactions
-	const blockTransactionsBuffer = await Promise.all(transactions.map(tx => encodeTransaction(tx)));
+	const blockTransactionsBuffer = transactions.map(tx => encodeTransaction(tx));
 
 	// Handle the block assets
-	const blockAssetSchema = await getBlockAssetSchema();
-	const parsedAssets = await Promise
-		.all(assets.map(asset => parseInputBySchema(asset, blockAssetSchema)));
-	const blockAssetBuffer = await Promise
-		.all(parsedAssets.map(asset => codec.encode(blockAssetSchema, asset)));
+	const blockAssetSchema = getBlockAssetSchema();
+	const parsedAssets = assets.map(asset => parseInputBySchema(asset, blockAssetSchema));
+	const blockAssetBuffer = parsedAssets.map(asset => codec.encode(blockAssetSchema, asset));
 
 	// Handle the block header
-	const blockHeaderSchema = await getBlockHeaderSchema();
-	const blockHeaderBuffer = codec.encode(
-		blockHeaderSchema,
-		{
-			...header,
-			previousBlockID: Buffer.from(header.previousBlockID, 'hex'),
-			transactionRoot: Buffer.from(header.transactionRoot, 'hex'),
-			generatorAddress: Buffer.from(header.generatorAddress, 'hex'),
-			assetsRoot: Buffer.from(header.assetsRoot, 'hex'),
-			stateRoot: Buffer.from(header.stateRoot, 'hex'),
-			validatorsHash: Buffer.from(header.validatorsHash, 'hex'),
-			signature: Buffer.from(header.signature, 'hex'),
-		},
-	);
+	const blockHeaderSchema = getBlockHeaderSchema();
+	const parsedBlockHeader = parseInputBySchema(header, blockHeaderSchema);
+	const blockHeaderBuffer = codec.encode(blockHeaderSchema, parsedBlockHeader);
 
-	const blockSchema = await getBlockSchema();
+	const blockSchema = getBlockSchema();
 	const blockBuffer = codec.encode(
 		blockSchema,
 		{

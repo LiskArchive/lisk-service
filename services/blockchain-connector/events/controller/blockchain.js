@@ -22,8 +22,8 @@ const {
 
 const { parseToJSONCompatObj } = require('../../shared/parser');
 
-const decodeBlockEventPayload = async (payload) => parseToJSONCompatObj({
-	block: { ...(await decodeBlock(payload.block)), _raw: payload.block },
+const decodeBlockEventPayload = (payload) => parseToJSONCompatObj({
+	block: { ...(decodeBlock(payload.block)), _raw: payload.block },
 });
 
 const appReadyController = async (cb) => {
@@ -48,7 +48,7 @@ const appNetworkEventController = async (cb) => {
 
 const appNewTransactionController = async (cb) => {
 	const appNewTransactionListener = async (payload) => {
-		const decodedPayload = { transaction: await decodeTransaction(payload) };
+		const decodedPayload = { transaction: decodeTransaction(payload) };
 		cb(decodedPayload);
 	};
 	Signals.get('appNewTransaction').add(appNewTransactionListener);
@@ -77,7 +77,7 @@ const appNewBlockController = async (cb) => {
 
 const appDeleteBlockController = async (cb) => {
 	const appDeleteBlockListener = async (payload) => {
-		const decodedPayload = await decodeBlockEventPayload(payload);
+		const decodedPayload = decodeBlockEventPayload(payload);
 		cb(decodedPayload);
 	};
 	Signals.get('appDeleteBlock').add(appDeleteBlockListener);
