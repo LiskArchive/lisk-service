@@ -14,7 +14,7 @@
  *
  */
 const {
-	invokeEndpoint,
+	invokeEndpointProxy,
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
@@ -25,7 +25,7 @@ const {
 module.exports = [
 	{
 		name: 'invokeEndpoint',
-		controller: async ({ endpoint, params }) => invokeEndpoint(endpoint, params),
+		controller: async ({ endpoint, params }) => invokeEndpointProxy(endpoint, params),
 		params: {
 			endpoint: { optional: false, type: 'string' },
 			params: { optional: true, type: 'object' },
