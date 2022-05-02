@@ -32,7 +32,7 @@ let genesisBlockID;
 const getGenesisHeight = async () => {
 	if (!genesisHeight) {
 		const nodeInfo = await getNodeInfo();
-		genesisHeight = nodeInfo.genesisHeight ? nodeInfo.genesisHeight : 0;
+		genesisHeight = 'genesisHeight' in nodeInfo ? nodeInfo.genesisHeight : 0;
 	}
 	return genesisHeight;
 };

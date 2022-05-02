@@ -19,7 +19,6 @@ const { codec } = require('@liskhq/lisk-codec');
 const { hash } = require('@liskhq/lisk-cryptography');
 
 const {
-	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
 	getBlockAssetSchema,
@@ -28,15 +27,6 @@ const {
 } = require('./schema');
 
 const { parseToJSONCompatObj } = require('../parser');
-
-const decodeAccount = async (encodedAccount) => {
-	const accountSchema = await getAccountSchema();
-	const accountBuffer = Buffer.isBuffer(encodedAccount)
-		? encodedAccount
-		: Buffer.from(encodedAccount, 'hex');
-	const decodedAccount = codec.decode(accountSchema, accountBuffer);
-	return decodedAccount;
-};
 
 const decodeTransaction = async (encodedTransaction) => {
 	const txSchema = await getTransactionSchema();
@@ -70,6 +60,7 @@ const decodeBlock = async (encodedBlock) => {
 	blockHeader.id = hash(block.header);
 
 	const blockAssetSchema = await getBlockAssetSchema();
+	// TODO: Decode 'asset.data' once schema for data is available
 	const blockAssets = await Promise
 		.all(block.assets.map(asset => codec.decode(blockAssetSchema, asset)));
 
@@ -129,7 +120,6 @@ const decodeEventPayload = async (eventName, payload) => {
 };
 
 module.exports = {
-	decodeAccount,
 	decodeBlock,
 	decodeTransaction,
 	decodeResponse,
