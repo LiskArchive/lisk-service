@@ -41,12 +41,10 @@ let isClientAlive = false;
 let isInstantiating = false;
 
 const checkIsClientAlive = async () => {
-	try {
-		await clientCache._channel.invoke('app_getNodeInfo');
-		isClientAlive = true;
-	} catch (_) {
-		isClientAlive = false;
-	}
+	await clientCache._channel.invoke('app_getNodeInfo')
+		.then(() => { isClientAlive = true; })
+		.catch(() => { isClientAlive = false; });
+
 	return isClientAlive;
 };
 
