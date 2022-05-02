@@ -14,8 +14,12 @@
  *
  */
 const { Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
-const { createWSClient } = require('@liskhq/lisk-api-client');
+const {
+	createWSClient,
+	createIPCClient,
+} = require('@liskhq/lisk-api-client');
 
+const { decodeResponse } = require('./decoder');
 const config = require('../../config');
 const delay = require('../delay');
 const waitForIt = require('../waitForIt');
@@ -33,17 +37,31 @@ const NUM_REQUEST_RETRIES = 5;
 // Caching and flags
 let clientCache;
 let instantiationBeginTime;
+let isClientAlive = false;
 let isInstantiating = false;
+
+const checkIsClientAlive = async () => {
+	await clientCache._channel.invoke('app_getNodeInfo')
+		.then(() => { isClientAlive = true; })
+		.catch(() => { isClientAlive = false; });
+
+	return isClientAlive;
+};
 
 // eslint-disable-next-line consistent-return
 const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
-			if (!clientCache || !clientCache._channel.isAlive) {
+			if (!clientCache || !(await checkIsClientAlive())) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();
-				clientCache = await createWSClient(`${liskAddress}/ws`);
+
+				if (config.isUseLiskIPCClient) {
+					clientCache = await createIPCClient(config.liskAppDataPath);
+				} else {
+					clientCache = await createWSClient(`${liskAddress}/ws`);
+				}
 
 				// Inform listeners about the newly instantiated ApiClient
 				Signals.get('newApiClient').dispatch();
@@ -71,13 +89,13 @@ const instantiateClient = async () => {
 
 const getApiClient = async () => {
 	const apiClient = await waitForIt(instantiateClient, RETRY_INTERVAL);
-	return (apiClient && apiClient._channel && apiClient._channel.invoke)
+	return (apiClient && await checkIsClientAlive())
 		? apiClient
 		: getApiClient();
 };
 
 // eslint-disable-next-line consistent-return
-const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
+const invokeEndpoint = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
 	const apiClient = await getApiClient();
 	let retries = numRetries;
 	do {
@@ -93,9 +111,16 @@ const invokeAction = async (action, params = {}, numRetries = NUM_REQUEST_RETRIE
 	} while (retries--);
 };
 
+const invokeEndpointProxy = async (action, params) => {
+	const response = await invokeEndpoint(action, params);
+	const decodedResponse = decodeResponse(action, response);
+	return decodedResponse;
+};
+
 module.exports = {
 	timeoutMessage,
 
 	getApiClient,
-	invokeAction,
+	invokeEndpoint,
+	invokeEndpointProxy,
 };

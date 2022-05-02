@@ -13,8 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getRegisteredEvents } = require('../shared/sdk/actions');
+const { getRegisteredEvents } = require('../shared/sdk/endpoints');
 const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
+const { decodeEventPayload } = require('../shared/sdk/decoder');
 
 const Signals = require('../shared/signals');
 
@@ -38,9 +39,10 @@ const exportAllEvents = async () => {
 	const registeredEvents = await getRegisteredEvents();
 	const allMethods = registeredEvents.map(event => {
 		const genericController = (regEvent) => (cb) => {
-			const eventListener = (payload) => {
-				Signals.get(toCamelCase(regEvent.split(':'))).dispatch(payload);
-				cb(payload);
+			const eventListener = async (payload) => {
+				Signals.get(toCamelCase(regEvent.split('_'))).dispatch(payload);
+				const decodedEvent = decodeEventPayload(regEvent, payload);
+				cb(decodedEvent);
 			};
 			Signals.get(regEvent).add(eventListener);
 		};

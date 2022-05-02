@@ -24,13 +24,13 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	getSchema,
+	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
-} = require('./actions_1');
-const { timeoutMessage, getApiClient, invokeAction } = require('./client');
+} = require('./endpoints_1');
+const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
 const { parseToJSONCompatObj } = require('../parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
@@ -39,7 +39,7 @@ const logger = Logger();
 
 const getConnectedPeers = async () => {
 	try {
-		const connectedPeers = await invokeAction('app:getConnectedPeers');
+		const connectedPeers = await invokeEndpoint('app_getConnectedPeers');
 		return connectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -51,7 +51,7 @@ const getConnectedPeers = async () => {
 
 const getDisconnectedPeers = async () => {
 	try {
-		const disconnectedPeers = await invokeAction('app:getDisconnectedPeers');
+		const disconnectedPeers = await invokeEndpoint('app_getDisconnectedPeers');
 		return disconnectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -63,7 +63,7 @@ const getDisconnectedPeers = async () => {
 
 const getForgingStatus = async () => {
 	try {
-		const forgingStatus = await invokeAction('app:getForgingStatus');
+		const forgingStatus = await invokeEndpoint('app_getForgingStatus');
 		return forgingStatus;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -76,7 +76,7 @@ const getForgingStatus = async () => {
 const updateForgingStatus = async (config) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('app:updateForgingStatus', { ...config });
+		const response = await apiClient._channel.invoke('app_updateForgingStatus', { ...config });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -88,7 +88,7 @@ const updateForgingStatus = async (config) => {
 
 const getAccount = async (address) => {
 	try {
-		const encodedAccount = await invokeAction('app:getAccount', { address });
+		const encodedAccount = await invokeEndpoint('app_getAccount', { address });
 		const account = await decodeAccount(encodedAccount);
 		return { ...parseToJSONCompatObj(account), _raw: encodedAccount };
 	} catch (err) {
@@ -104,7 +104,7 @@ const getAccount = async (address) => {
 
 const getAccounts = async (addresses) => {
 	try {
-		const encodedAccounts = await invokeAction('app:getAccounts', { address: addresses });
+		const encodedAccounts = await invokeEndpoint('app_getAccounts', { address: addresses });
 		const accounts = await BluebirdPromise.map(
 			encodedAccounts,
 			async (account) => ({
@@ -124,8 +124,8 @@ const getAccounts = async (addresses) => {
 
 const getLastBlock = async () => {
 	try {
-		const encodedBlock = await invokeAction('app:getLastBlock');
-		const block = await decodeBlock(encodedBlock);
+		const encodedBlock = await invokeEndpoint('app_getLastBlock');
+		const block = decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -141,8 +141,8 @@ const getBlockByHeight = async (height) => {
 			return getGenesisBlock();
 		}
 
-		const encodedBlock = await invokeAction('app:getBlockByHeight', { height });
-		const block = await decodeBlock(encodedBlock);
+		const encodedBlock = await invokeEndpoint('app_getBlockByHeight', { height });
+		const block = decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -168,15 +168,11 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		}
 
 		if (from <= to) {
-			const encodedBlocks = await invokeAction('app:getBlocksByHeightBetween', { from, to });
-			blocks[1] = await BluebirdPromise.map(
-				encodedBlocks,
-				async (block) => ({
-					...(await decodeBlock(block)),
-					_raw: block,
-				}),
-				{ concurrency: encodedBlocks.length },
-			);
+			const encodedBlocks = await invokeEndpoint('app_getBlocksByHeightBetween', { from, to });
+			blocks[1] = encodedBlocks.map((block) => ({
+				...(decodeBlock(block)),
+				_raw: block,
+			}));
 		}
 
 		return parseToJSONCompatObj([blocks[0], ...blocks[1]]);
@@ -195,8 +191,8 @@ const getBlockByID = async (id) => {
 			return getGenesisBlock();
 		}
 
-		const encodedBlock = await invokeAction('app:getBlockByID', { id });
-		const block = await decodeBlock(encodedBlock);
+		const encodedBlock = await invokeEndpoint('app_getBlockByID', { id });
+		const block = decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -220,15 +216,11 @@ const getBlocksByIDs = async (ids) => {
 			return remainingBlocks.splice(genesisBlockIndex, 0, genesisBlock);
 		}
 
-		const encodedBlocks = await invokeAction('app:getBlocksByIDs', { ids });
-		const blocks = await BluebirdPromise.map(
-			encodedBlocks,
-			async (block) => ({
-				...(await decodeBlock(block)),
-				_raw: block,
-			}),
-			{ concurrency: encodedBlocks.length },
-		);
+		const encodedBlocks = await invokeEndpoint('app_getBlocksByIDs', { ids });
+		const blocks = encodedBlocks.map((block) => ({
+			...(decodeBlock(block)),
+			_raw: block,
+		}));
 		return parseToJSONCompatObj(blocks);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -240,8 +232,8 @@ const getBlocksByIDs = async (ids) => {
 
 const getTransactionByID = async (id) => {
 	try {
-		const encodedTransaction = await invokeAction('app:getTransactionByID', { id });
-		const transaction = await decodeTransaction(encodedTransaction);
+		const encodedTransaction = await invokeEndpoint('app_getTransactionByID', { id });
+		const transaction = decodeTransaction(encodedTransaction);
 		return { ...parseToJSONCompatObj(transaction), _raw: encodedTransaction };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -253,15 +245,11 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
-		const encodedTransactions = await invokeAction('app:getTransactionsByIDs', { ids });
-		const transactions = await BluebirdPromise.map(
-			encodedTransactions,
-			async (tx) => ({
-				...(await decodeTransaction(tx)),
-				_raw: tx,
-			}),
-			{ concurrency: encodedTransactions.length },
-		);
+		const encodedTransactions = await invokeEndpoint('app_getTransactionsByIDs', { ids });
+		const transactions = encodedTransactions.map(async (tx) => ({
+			...(decodeTransaction(tx)),
+			_raw: tx,
+		}));
 		return parseToJSONCompatObj(transactions);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -273,8 +261,8 @@ const getTransactionsByIDs = async (ids) => {
 
 const getTransactionsFromPool = async () => {
 	try {
-		const encodedTransactions = await invokeAction('app:getTransactionsFromPool');
-		const transactions = await Promise.all(encodedTransactions.map(tx => decodeTransaction(tx)));
+		const encodedTransactions = await invokeEndpoint('app_getTransactionsFromPool');
+		const transactions = encodedTransactions.map(tx => decodeTransaction(tx));
 		return parseToJSONCompatObj(transactions);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -287,7 +275,7 @@ const getTransactionsFromPool = async () => {
 const postTransaction = async (transaction) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('app:postTransaction', { transaction });
+		const response = await apiClient._channel.invoke('app_postTransaction', { transaction });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -299,7 +287,7 @@ const postTransaction = async (transaction) => {
 
 const getForgers = async () => {
 	try {
-		const forgers = await invokeAction('app:getForgers');
+		const forgers = await invokeEndpoint('app_getForgers');
 		return forgers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -310,8 +298,9 @@ const getForgers = async () => {
 };
 
 module.exports = {
-	invokeAction,
-	getSchema,
+	invokeEndpoint,
+	invokeEndpointProxy,
+	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,

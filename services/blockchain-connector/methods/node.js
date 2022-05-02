@@ -14,18 +14,18 @@
  *
  */
 const {
-	invokeAction,
-	getSchema,
+	invokeEndpoint,
+	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
-} = require('../shared/sdk/actions');
+} = require('../shared/sdk/endpoints');
 
 module.exports = [
 	{
-		name: 'invokeAction',
-		controller: async ({ action, params }) => invokeAction(action, params),
+		name: 'invokeEndpoint',
+		controller: async ({ action, params }) => invokeEndpoint(action, params),
 		params: {
 			action: { optional: false, type: 'any' },
 			params: { optional: false, type: 'any' },
@@ -33,7 +33,7 @@ module.exports = [
 	},
 	{
 		name: 'getSchema',
-		controller: getSchema,
+		controller: getSchemas,
 		params: {},
 	},
 	{

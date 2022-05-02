@@ -18,7 +18,7 @@ const {
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
-} = require('../shared/sdk/actions');
+} = require('../shared/sdk/endpoints');
 
 module.exports = [
 	{

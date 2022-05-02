@@ -19,7 +19,7 @@ const path = require('path');
 
 const { Logger } = require('lisk-service-framework');
 
-const { getNodeInfo } = require('./actions_1');
+const { getNodeInfo } = require('./endpoints_1');
 const { exists, mkdir } = require('../fsUtils');
 const { downloadAndExtractTarball, downloadJSONFile } = require('../downloadFile');
 

@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAccount, getAccounts } = require('../shared/sdk/actions');
+const { getAccount, getAccounts } = require('../shared/sdk/endpoints');
 const { getNumberOfGenesisAccounts, getGenesisAccounts } = require('../shared/sdk/genesisBlock');
 
 module.exports = [

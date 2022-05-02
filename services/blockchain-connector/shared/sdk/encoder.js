@@ -17,64 +17,49 @@ const { codec } = require('@liskhq/lisk-codec');
 
 const { parseInputBySchema } = require('../parser');
 const {
-	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
-	getBlockHeaderAssetSchema,
+	getBlockAssetSchema,
 	getTransactionSchema,
-	getTransactionAssetSchema,
+	getTransactionParamsSchema,
 } = require('./schema');
 
-const encodeAccount = async (account) => {
-	const accountSchema = await getAccountSchema();
-	const accountBuffer = codec.encode(accountSchema, account);
-	return accountBuffer.toString('hex');
-};
+const encodeTransaction = (transaction) => {
+	const txParamsSchema = getTransactionParamsSchema(transaction);
+	const txParamsBuffer = codec.encode(txParamsSchema, transaction.asset);
 
-const encodeTransaction = async (transaction) => {
-	const txAssetSchema = await getTransactionAssetSchema(transaction);
-	const txAssetBuffer = codec.encode(txAssetSchema, transaction.asset);
-
-	const txSchema = await getTransactionSchema();
+	const txSchema = getTransactionSchema();
 	const txBuffer = codec.encode(
 		txSchema,
-		{ ...transaction, asset: txAssetBuffer },
+		{ ...transaction, params: txParamsBuffer },
 	);
 
 	return txBuffer.toString('hex');
 };
 
-const encodeBlock = async (block) => {
-	const { header, payload } = block;
+const encodeBlock = (block) => {
+	const { header, assets, transactions } = block;
 
-	// Handle the block payload
-	const blockPayloadBuffer = await Promise.all(payload.map(tx => encodeTransaction(tx)));
+	// Handle the block transactions
+	const blockTransactionsBuffer = transactions.map(tx => encodeTransaction(tx));
 
-	// Handle the block header asset
-	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(header.version);
-	const parsedHeaderAsset = parseInputBySchema(header.asset, blockHeaderAssetSchema);
-	const blockHeaderAssetBuffer = codec.encode(blockHeaderAssetSchema, parsedHeaderAsset);
+	// Handle the block assets
+	const blockAssetSchema = getBlockAssetSchema();
+	const parsedAssets = assets.map(asset => parseInputBySchema(asset, blockAssetSchema));
+	const blockAssetBuffer = parsedAssets.map(asset => codec.encode(blockAssetSchema, asset));
 
 	// Handle the block header
-	const blockHeaderSchema = await getBlockHeaderSchema();
-	const blockHeaderBuffer = codec.encode(
-		blockHeaderSchema,
-		{
-			...header,
-			asset: blockHeaderAssetBuffer,
-			previousBlockID: Buffer.from(header.previousBlockID, 'hex'),
-			transactionRoot: Buffer.from(header.transactionRoot, 'hex'),
-			generatorPublicKey: Buffer.from(header.generatorPublicKey, 'hex'),
-			signature: Buffer.from(header.signature, 'hex'),
-		},
-	);
+	const blockHeaderSchema = getBlockHeaderSchema();
+	const parsedBlockHeader = parseInputBySchema(header, blockHeaderSchema);
+	const blockHeaderBuffer = codec.encode(blockHeaderSchema, parsedBlockHeader);
 
-	const blockSchema = await getBlockSchema();
+	const blockSchema = getBlockSchema();
 	const blockBuffer = codec.encode(
 		blockSchema,
 		{
 			header: blockHeaderBuffer,
-			payload: blockPayloadBuffer,
+			assets: blockAssetBuffer,
+			transactions: blockTransactionsBuffer,
 		},
 	);
 
@@ -82,7 +67,6 @@ const encodeBlock = async (block) => {
 };
 
 module.exports = {
-	encodeAccount,
 	encodeBlock,
 	encodeTransaction,
 };

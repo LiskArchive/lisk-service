@@ -14,7 +14,7 @@
  *
  */
 const { Logger } = require('lisk-service-framework');
-const actions = require('./actions');
+const actions = require('./endpoints');
 const GeoService = require('../geolocation');
 const Signals = require('../signals');
 

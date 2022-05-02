@@ -17,25 +17,17 @@ const { codec } = require('@liskhq/lisk-codec');
 const { hash } = require('@liskhq/lisk-cryptography');
 
 const {
-	getAccountSchema,
 	getBlockSchema,
 	getBlockHeaderSchema,
-	getBlockHeaderAssetSchema,
+	getBlockAssetSchema,
 	getTransactionSchema,
-	getTransactionAssetSchema,
+	getTransactionParamsSchema,
 } = require('./schema');
 
-const decodeAccount = async (encodedAccount) => {
-	const accountSchema = await getAccountSchema();
-	const accountBuffer = Buffer.isBuffer(encodedAccount)
-		? encodedAccount
-		: Buffer.from(encodedAccount, 'hex');
-	const decodedAccount = codec.decode(accountSchema, accountBuffer);
-	return decodedAccount;
-};
+const { parseToJSONCompatObj } = require('../parser');
 
-const decodeTransaction = async (encodedTransaction) => {
-	const txSchema = await getTransactionSchema();
+const decodeTransaction = (encodedTransaction) => {
+	const txSchema = getTransactionSchema();
 	const transactionBuffer = Buffer.isBuffer(encodedTransaction)
 		? encodedTransaction
 		: Buffer.from(encodedTransaction, 'hex');
@@ -43,50 +35,86 @@ const decodeTransaction = async (encodedTransaction) => {
 	transaction.id = hash(transactionBuffer);
 	transaction.size = transactionBuffer.length;
 
-	const txAssetSchema = await getTransactionAssetSchema(transaction);
-	const transactionAsset = codec.decode(txAssetSchema, transaction.asset);
+	const txParamsSchema = getTransactionParamsSchema(transaction);
+	const transactionParams = codec.decode(txParamsSchema, transaction.params);
 
 	const decodedTransaction = {
 		...transaction,
-		asset: transactionAsset,
+		params: transactionParams,
 	};
 
 	return decodedTransaction;
 };
 
-const decodeBlock = async (encodedBlock) => {
-	const blockSchema = await getBlockSchema();
+const decodeBlock = (encodedBlock) => {
+	const blockSchema = getBlockSchema();
 	const blockBuffer = Buffer.isBuffer(encodedBlock)
 		? encodedBlock
 		: Buffer.from(encodedBlock, 'hex');
 	const block = codec.decode(blockSchema, blockBuffer);
 
-	const blockHeaderSchema = await getBlockHeaderSchema();
+	const blockHeaderSchema = getBlockHeaderSchema();
 	const blockHeader = codec.decode(blockHeaderSchema, block.header);
 	blockHeader.id = hash(block.header);
 
-	const blockHeaderAssetSchema = await getBlockHeaderAssetSchema(blockHeader.version);
-	const blockHeaderAsset = codec.decode(blockHeaderAssetSchema, blockHeader.asset);
-	if (Array.isArray(blockHeader.asset.accounts)) {
-		blockHeaderAsset.accounts = await Promise.all(
-			blockHeaderAsset.accounts.map(acc => decodeAccount(acc)),
-		);
-	}
+	const blockAssetSchema = getBlockAssetSchema();
+	// TODO: Decode 'asset.data' once schema for data is available
+	const blockAssets = block.assets.map(asset => codec.decode(blockAssetSchema, asset));
 
-	const blockPayload = await Promise.all(block.payload.map(tx => decodeTransaction(tx)));
+	const blockTransactions = block.transactions.map(tx => decodeTransaction(tx));
 
 	const decodedBlock = {
-		header: {
-			...blockHeader,
-			asset: blockHeaderAsset,
-		},
-		payload: blockPayload,
+		header: blockHeader,
+		assets: blockAssets,
+		transactions: blockTransactions,
 	};
 	return decodedBlock;
 };
 
+const decodeResponse = (action, response) => {
+	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(action)) {
+		const decodedBlock = decodeBlock(response);
+		return parseToJSONCompatObj(decodedBlock);
+	}
+
+	if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(action)) {
+		return response.map(block => {
+			const decodedBlock = decodeBlock(block);
+			return parseToJSONCompatObj(decodedBlock);
+		});
+	}
+
+	if (['app_getTransactionByID'].includes(action)) {
+		const decodedTransaction = decodeTransaction(response);
+		return parseToJSONCompatObj(decodedTransaction);
+	}
+
+	if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(action)) {
+		return response.map(transaction => {
+			const decodedTransaction = decodeTransaction(transaction);
+			return parseToJSONCompatObj(decodedTransaction);
+		});
+	}
+	return response;
+};
+
+const decodeEventPayload = (eventName, payload) => {
+	if (['app_newBlock', 'app_deleteBlock', 'app_chainForked'].includes(eventName)) {
+		const decodedBlock = decodeBlock(payload.block);
+		return parseToJSONCompatObj(decodedBlock);
+	}
+
+	if (eventName === 'app_newTransaction') {
+		const decodedTransaction = decodeTransaction(payload.transaction);
+		return parseToJSONCompatObj(decodedTransaction);
+	}
+
+	return payload;
+};
+
 module.exports = {
-	decodeAccount,
 	decodeBlock,
 	decodeTransaction,
+	decodeResponse,
+	decodeEventPayload,
 };
