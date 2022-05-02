@@ -22,7 +22,7 @@ const exportAllMethods = async () => {
 			.invokeEndpointProxy(regEndpoint, params);
 		const controller = genericController(endpoint);
 		return {
-			name: action,
+			name: endpoint,
 			description: `Endpoint: ${endpoint}`,
 			controller,
 			params: {
