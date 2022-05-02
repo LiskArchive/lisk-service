@@ -25,9 +25,9 @@ const {
 module.exports = [
 	{
 		name: 'invokeEndpoint',
-		controller: async ({ action, params }) => invokeEndpoint(action, params),
+		controller: async ({ endpoint, params }) => invokeEndpoint(endpoint, params),
 		params: {
-			action: { optional: false, type: 'string' },
+			endpoint: { optional: false, type: 'string' },
 			params: { optional: true, type: 'object' },
 		},
 	},

@@ -97,13 +97,13 @@ const getApiClient = async () => {
 };
 
 // eslint-disable-next-line consistent-return
-const invokeEndpoint = async (action, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
+const invokeEndpoint = async (endpoint, params = {}, numRetries = NUM_REQUEST_RETRIES) => {
 	const apiClient = await getApiClient();
 	let retries = numRetries;
 	do {
 		/* eslint-disable no-await-in-loop */
 		try {
-			const response = await apiClient._channel.invoke(action, params);
+			const response = await apiClient._channel.invoke(endpoint, params);
 			return response;
 		} catch (err) {
 			if (retries && err instanceof TimeoutException) await delay(10);
@@ -113,9 +113,9 @@ const invokeEndpoint = async (action, params = {}, numRetries = NUM_REQUEST_RETR
 	} while (retries--);
 };
 
-const invokeEndpointProxy = async (action, params) => {
-	const response = await invokeEndpoint(action, params);
-	const decodedResponse = await decodeResponse(action, response);
+const invokeEndpointProxy = async (endpoint, params) => {
+	const response = await invokeEndpoint(endpoint, params);
+	const decodedResponse = await decodeResponse(endpoint, response);
 	return decodedResponse;
 };
 
