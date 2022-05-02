@@ -65,7 +65,7 @@ const getGenesisBlock = async (includeAccounts = false) => {
 	const height = await getGenesisHeight();
 	try {
 		const encodedBlock = await invokeEndpoint('app_getBlockByHeight', { height });
-		const block = await decodeBlock(encodedBlock);
+		const block = decodeBlock(encodedBlock);
 		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

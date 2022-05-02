@@ -41,7 +41,7 @@ const exportAllEvents = async () => {
 		const genericController = (regEvent) => (cb) => {
 			const eventListener = async (payload) => {
 				Signals.get(toCamelCase(regEvent.split('_'))).dispatch(payload);
-				const decodedEvent = await decodeEventPayload(regEvent, payload);
+				const decodedEvent = decodeEventPayload(regEvent, payload);
 				cb(decodedEvent);
 			};
 			Signals.get(regEvent).add(eventListener);

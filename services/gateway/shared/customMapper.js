@@ -94,6 +94,7 @@ const mapArray = (rootObj, definition) => definition.reduce((acc, item, i) => {
  *  - Array narrows the access to the array scope.
  */
 const map = (data, def) => {
+	if (def === '=') return data;
 	if (Array.isArray(def)) return mapArray(data, def);
 	if (isObject(def)) return mapObject(data, def);
 	return {};

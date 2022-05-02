@@ -17,13 +17,13 @@ let schemas;
 
 const setSchemas = (_schemas) => schemas = _schemas;
 
-const getAccountSchema = async () => schemas.account;
+const getAccountSchema = () => schemas.account;
 
-const getBlockSchema = async () => schemas.block;
+const getBlockSchema = () => schemas.block;
 
-const getBlockHeaderSchema = async () => schemas.blockHeader;
+const getBlockHeaderSchema = () => schemas.blockHeader;
 
-const getBlockAssetSchema = async () => {
+const getBlockAssetSchema = () => {
 	// TODO: Retrieve block asset schema from core directly once available
 	const assetSchema = {
 		$id: '/block/assets/3',
@@ -43,13 +43,13 @@ const getBlockAssetSchema = async () => {
 	return assetSchema;
 };
 
-const getTransactionSchema = async () => schemas.transaction;
+const getTransactionSchema = () => schemas.transaction;
 
-const getTransactionParamsSchema = async (transaction) => {
-	const { schema: txParamsSchema } = schemas.commands
+const getTransactionParamsSchema = (transaction) => {
+	const { schema } = schemas.commands
 		.find(paramsSchema => paramsSchema.moduleID === transaction.moduleID
 			&& paramsSchema.commandID === transaction.commandID);
-	return txParamsSchema;
+	return schema;
 };
 
 module.exports = {
