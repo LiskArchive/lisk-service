@@ -32,7 +32,7 @@ const getTransactionIndexingInfo = async (blocks) => {
 	const recipientAddressesToIndex = [];
 	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
 	const txnMultiArray = blocks.map(block => {
-		const transactions = block.payload.map(tx => {
+		const transactions = block.transactions.map(tx => {
 			const [{ id }] = availableLiskModuleAssets
 				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
 			tx.height = block.height;
@@ -66,6 +66,28 @@ const getTransactionIndexingInfo = async (blocks) => {
 	};
 };
 
+const getTransactionIndexingInfoSdkv6 = async (blocks) => {
+	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
+	const txnMultiArray = blocks.map(block => {
+		const transactions = block.transactions.map(tx => {
+			const [{ id }] = availableLiskModuleAssets
+				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.commandID));
+			tx.height = block.height;
+			tx.blockId = block.id;
+			tx.moduleCommandId = id;
+			tx.timestamp = block.timestamp;
+			tx.amount = tx.params.amount || null;
+			tx.data = tx.params.data || null;
+			return tx;
+		});
+		return transactions;
+	});
+	let allTransactions = [];
+	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
+	return allTransactions;
+};
+
 module.exports = {
 	getTransactionIndexingInfo,
+	getTransactionIndexingInfoSdkv6,
 };
