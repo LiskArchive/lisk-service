@@ -15,9 +15,9 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'connector.invokeEndpoint',
+	method: 'connector.invoke',
 	params: {
-		action: '=,string',
+		endpoint: '=,string',
 		params: '=,object',
 	},
 	definition: '=', // Passthrough the response object as is

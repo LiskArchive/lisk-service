@@ -13,14 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const invokeEndpointSource = require('../../../sources/version2/invokeEndpoint');
+const invokeEndpointSource = require('../../../sources/version2/invoke');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/invoke',
-	rpcMethod: 'get.invokeAction',
+	rpcMethod: 'get.invoke',
 	params: {
-		action: { optional: false, type: 'string' },
+		endpoint: { optional: false, type: 'string' },
 		params: { optional: true, type: 'object' },
 	},
 	source: invokeEndpointSource,
