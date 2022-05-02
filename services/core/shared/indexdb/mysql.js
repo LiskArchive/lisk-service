@@ -211,10 +211,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			const { propBetweens } = params;
 			propBetweens.forEach(
 				propBetween => {
-					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
-					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
-					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
+					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
+					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 
