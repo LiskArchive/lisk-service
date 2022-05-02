@@ -45,12 +45,12 @@ const getGenesisConfig = async () => {
 const resolveModuleAssets = (data) => {
 	let result = [];
 	data.forEach(liskModule => {
-		if (liskModule.transactionAssets.length) {
+		if (liskModule.commands.length) {
 			result = result.concat(
-				liskModule.transactionAssets.map(asset => {
-					const id = String(liskModule.id).concat(':').concat(asset.id);
-					if (liskModule.name && asset.name) {
-						const name = liskModule.name.concat(':').concat(asset.name);
+				liskModule.commands.map(command => {
+					const id = String(liskModule.id).concat(':').concat(command.id);
+					if (liskModule.name && command.name) {
+						const name = liskModule.name.concat(':').concat(command.name);
 						return { id, name };
 					}
 					return { id };
