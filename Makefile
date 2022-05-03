@@ -64,12 +64,27 @@ logs-live-%:
 print-config:
 	$(compose) config
 
-build: build-core build-market build-newsfeed build-gateway build-export
+build: build-connector build-indexer build-coordinator build-statistics build-fees build-gateway
 
 build-all: build build-template build-tests
 
 build-core:
 	cd ./services/core && docker build --tag=lisk/service_core ./
+
+build-connector:
+	cd ./services/blockchain-connector && docker build --tag=lisk/service_blockchain_connector ./	
+
+build-indexer:
+	cd ./services/blockchain-indexer && docker build --tag=lisk/service_blockchain_indexer ./
+
+build-coordinator:
+	cd ./services/blockchain-coordinator && docker build --tag=lisk/service_blockchain_coordinator ./
+
+build-statistics:
+	cd ./services/transaction-statistics && docker build --tag=lisk/service_transaction_statistics ./
+
+build-fees:
+cd ./services/fee-estimator && docker build --tag=lisk/service_fee_estimator ./
 
 build-market:
 	cd ./services/market && docker build --tag=lisk/service_market ./
