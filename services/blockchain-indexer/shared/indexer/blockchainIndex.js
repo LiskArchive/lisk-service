@@ -45,6 +45,7 @@ const {
 
 const {
 	getTransactionIndexingInfo,
+	getTransactionIndexingInfoSdkV6,
 } = require('./transactionIndex');
 
 const {
@@ -255,7 +256,7 @@ const indexBlock = async job => {
 	}
 };
 
-const indexBlockSdkv6 = async job => {
+const indexBlockSdkV6 = async job => {
 	const { height } = job.data;
 
 	const blocksDB = await getBlocksIndex();
@@ -267,7 +268,8 @@ const indexBlockSdkv6 = async job => {
 
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
 	try {
-		const transactions = await getTransactionIndexingInfo(blocks);
+		const transactionsDB = await getTransactionsIndex();
+		const transactions = await getTransactionIndexingInfoSdkV6(blocks);
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 
@@ -330,7 +332,7 @@ const deleteIndexedBlocks = async job => {
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlockSdkv6, 30);
+const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlockSdkV6, 30);
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
@@ -480,7 +482,7 @@ const addBlockToQueue = async height => indexBlocksQueue.add({ height });
 
 module.exports = {
 	indexBlock,
-	indexBlockSdkv6,
+	indexBlockSdkV6,
 	indexNewBlock,
 	updateNonFinalBlocks,
 	isGenesisBlockIndexed,
