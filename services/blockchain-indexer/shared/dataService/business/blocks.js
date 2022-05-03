@@ -86,9 +86,9 @@ const normalizeBlocks = async (blocks) => {
 	return normalizedBlocks;
 };
 
-const getBlockByHeight = async (height, includeGenesisAccounts = false) => {
+const getBlockByHeight = async (height) => {
 	const response = await requestRpc('getBlockByHeight', { height });
-	return normalizeBlocks([response], includeGenesisAccounts);
+	return normalizeBlocks([response]);
 };
 
 const getBlockByID = async id => {
