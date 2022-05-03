@@ -38,6 +38,34 @@ describe('paramUtils tests', () => {
 		);
 	});
 
+	it('Return normalized params only with \'from\' value', async () => {
+		const params = { amount: '1000:' };
+		const normalizedParams = normalizeRangeParam(params, property);
+		expect(typeof normalizedParams).toBe('object');
+		expect(normalizedParams.propBetweens).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					property,
+					from: 1000,
+				}),
+			]),
+		);
+	});
+
+	it('Return normalized params only with \'to\' value', async () => {
+		const params = { amount: ':9999' };
+		const normalizedParams = normalizeRangeParam(params, property);
+		expect(typeof normalizedParams).toBe('object');
+		expect(normalizedParams.propBetweens).toEqual(
+			expect.arrayContaining([
+				expect.objectContaining({
+					property,
+					to: 9999,
+				}),
+			]),
+		);
+	});
+
 	it('Throw error in case of invalid (numeric) range', async () => {
 		try {
 			const params = { amount: '1000:100' };
