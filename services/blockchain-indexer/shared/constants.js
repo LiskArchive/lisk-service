@@ -28,7 +28,7 @@ const getFinalizedHeight = async () => {
 };
 
 const updateGenesisHeight = async () => {
-	const genesisHeight = await requestRpc('getGenesisHeight');
+	const { genesisHeight } = await requestRpc('getNodeInfo');
 	await setGenesisHeight(genesisHeight);
 };
 
@@ -61,7 +61,7 @@ const resolveModuleCommands = (data) => {
 	return result;
 };
 
-const getAvailableLiskModuleCommands = async () => {
+const getAvailableModuleCommands = async () => {
 	if (!registeredModules) {
 		const response = await requestRpc('getRegisteredModules', {});
 		registeredModules = resolveModuleCommands(response);
@@ -75,5 +75,5 @@ module.exports = {
 	getGenesisConfig,
 	getGenesisHeight,
 	updateGenesisHeight,
-	getAvailableLiskModuleCommands,
+	getAvailableModuleCommands,
 };
