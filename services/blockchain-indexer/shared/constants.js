@@ -28,7 +28,7 @@ const getFinalizedHeight = async () => {
 };
 
 const updateGenesisHeight = async () => {
-	const { genesisHeight } = await requestRpc('getNodeInfo');
+	const genesisHeight = await requestRpc('getGenesisHeight');
 	await setGenesisHeight(genesisHeight);
 };
 
