@@ -15,8 +15,8 @@
  */
 module.exports = {
 	id: '=,string',
-	moduleAssetId: '=,string',
-	moduleAssetName: '=,string',
+	moduleCommandId: '=,string',
+	moduleCommandName: '=,string',
 	fee: '=,string',
 	height: '=,number',
 	nonce: '=,string',
@@ -32,7 +32,7 @@ module.exports = {
 	},
 	signatures: '=',
 	confirmations: '=,number',
-	asset: '=',
+	params: '=',
 	relays: '=,number',
 	isPending: '=,boolean',
 };
