@@ -73,7 +73,7 @@ const normalizeTransaction = async txs => {
 		txs,
 		async tx => {
 			const [{ id, name }] = availableModuleCommands
-				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.commandID));
+				.filter(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
 			tx = parseToJSONCompatObj(tx);
 			tx.moduleCommandId = id;
 			tx.moduleCommandName = name;

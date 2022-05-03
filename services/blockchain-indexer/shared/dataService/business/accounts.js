@@ -339,7 +339,13 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
 		const accountInfo = cachedAccountInfoStr
 			? JSON.parse(cachedAccountInfoStr)
-			: await requestConnector('invokeEndpoint', { action: 'legacyAccount:getUnregisteredAccount', params: { publicKey } });
+			: await requestConnector(
+				'invokeEndpoint',
+				{
+					action: 'legacyAccount:getUnregisteredAccount',
+					params: { publicKey },
+				},
+			);
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
