@@ -18,17 +18,7 @@ const block = require('./mappings/block');
 module.exports = {
 	type: 'moleculer',
 	method: 'indexer.blocks',
-	params: {
-		blockId: '=,string',
-		height: '=,string',
-		address: 'generatorAddress,string',
-		generatorPublicKey: '=,string',
-		username: 'generatorUsername,string',
-		timestamp: '=,string',
-		offset: '=,number',
-		limit: '=,number',
-		sort: '=,string',
-	},
+	params: {},
 	definition: {
 		data: ['data', block],
 		meta: {
