@@ -514,7 +514,7 @@ const getAccounts = async params => {
 
 const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
 
-const getAllDelegates = async () => requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
+const getAllDelegates = async () => requestRpc('invokeAction', { action: 'dpos_getAllDelegates', params: {} });
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};

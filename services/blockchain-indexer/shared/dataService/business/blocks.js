@@ -25,7 +25,7 @@ const { getTableInstance } = require('../../database/mysql');
 const blockchainStore = require('../../database/blockchainStore');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { getIndexedAccountInfo, getBase32AddressFromHex } = require('../../utils/accountUtils');
 const { requestRpc } = require('../../utils/appContext');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
@@ -42,61 +42,7 @@ let latestBlock;
 // Blockchain starts form a non-zero block height
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
-const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
-	const normalizedBlocks = await BluebirdPromise.map(
-		blocks.map(block => ({ ...block.header, payload: block.payload })),
-		async block => {
-			const account = block.generatorPublicKey
-				? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex'), limit: 1 }, ['address', 'username'])
-				: {};
-			block.generatorAddress = account && account.address ? account.address : null;
-			block.generatorUsername = account && account.username ? account.username : null;
-			block.isFinal = block.height <= (await getFinalizedHeight());
-			block.numberOfTransactions = block.transactions.length;
-
-			block.size = 0;
-			block.totalForged = BigInt(block.reward);
-			block.totalBurnt = BigInt('0');
-			block.totalFee = BigInt('0');
-
-			await BluebirdPromise.map(
-				block.payload,
-				async (txn) => {
-					const schema = await requestRpc('getSchema');
-					const assetSchema = schema.transactionsAssets
-						.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
-					const parsedTxAsset = parseInputBySchema(txn.asset, assetSchema.schema);
-					const parsedTx = parseInputBySchema(txn, schema.transaction);
-					txn = { ...parsedTx, asset: parsedTxAsset };
-					txn.minFee = await getTxnMinFee(txn);
-					block.size += txn.size;
-					block.totalForged += BigInt(txn.fee);
-					block.totalBurnt += BigInt(txn.minFee);
-					block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
-				},
-				{ concurrency: 1 },
-			);
-
-			if (includeGenesisAccounts !== true) {
-				const {
-					accounts,
-					initRounds,
-					initDelegates,
-					...otherAssets
-				} = block.asset;
-
-				block.asset = { ...otherAssets };
-			}
-
-			return parseToJSONCompatObj(block);
-		},
-		{ concurrency: blocks.length },
-	);
-
-	return normalizedBlocks;
-};
-
-const normalizeBlocksSdkv6 = async (blocks) => {
+const normalizeBlocks = async (blocks) => {
 	const normalizedBlocks = await BluebirdPromise.map(
 		blocks.map(block => ({
 			...block.header,
@@ -104,11 +50,13 @@ const normalizeBlocksSdkv6 = async (blocks) => {
 			assets: block.assets,
 		})),
 		async block => {
+			block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
 			block.isFinal = block.height <= (await getFinalizedHeight());
 			block.numberOfTransactions = block.transactions.length;
 
 			block.size = 0;
-			// block.totalForged = BigInt(block.reward);
+			// TODO: get reward value from block event
+			block.totalForged = BigInt(block.reward || '0');
 			block.totalBurnt = BigInt('0');
 			block.totalFee = BigInt('0');
 
@@ -116,14 +64,14 @@ const normalizeBlocksSdkv6 = async (blocks) => {
 				block.transactions,
 				async (txn) => {
 					const schema = await requestRpc('getSchema');
-					const assetSchema = schema.commands
+					const paramsSchema = schema.commands
 						.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
-					const parsedTxAsset = parseInputBySchema(txn.asset, assetSchema.schema);
+					const parsedTxAsset = parseInputBySchema(txn.params, paramsSchema.schema);
 					const parsedTx = parseInputBySchema(txn, schema.transaction);
-					txn = { ...parsedTx, asset: parsedTxAsset };
+					txn = { ...parsedTx, params: parsedTxAsset };
 					txn.minFee = await getTxnMinFee(txn);
 					block.size += txn.size;
-					// block.totalForged += BigInt(txn.fee);
+					block.totalForged += BigInt(txn.fee);
 					block.totalBurnt += BigInt(txn.minFee);
 					block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
 				},
@@ -140,7 +88,7 @@ const normalizeBlocksSdkv6 = async (blocks) => {
 
 const getBlockByHeight = async (height, includeGenesisAccounts = false) => {
 	const response = await requestRpc('getBlockByHeight', { height });
-	return normalizeBlocksSdkv6([response], includeGenesisAccounts);
+	return normalizeBlocks([response], includeGenesisAccounts);
 };
 
 const getBlockByID = async id => {
