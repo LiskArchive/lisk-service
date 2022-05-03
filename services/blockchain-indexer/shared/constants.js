@@ -13,13 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blockchainStore = require('./database/blockchainStore');
 const { requestConnector } = require('./utils/request');
 
-const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
-const getGenesisHeight = () => blockchainStore.get('genesisHeight');
-
 let genesisConfig;
+let genesisHeight;
 let registeredModules;
 
 const getFinalizedHeight = async () => {
@@ -27,9 +24,11 @@ const getFinalizedHeight = async () => {
 	return finalizedHeight;
 };
 
-const updateGenesisHeight = async () => {
-	const genesisHeight = await requestConnector('getGenesisHeight');
-	await setGenesisHeight(genesisHeight);
+const getGenesisHeight = async () => {
+	if (!genesisHeight) {
+		genesisHeight = await requestConnector('getGenesisHeight');
+	}
+	return genesisHeight;
 };
 
 const getCurrentHeight = async () => {
@@ -38,7 +37,7 @@ const getCurrentHeight = async () => {
 };
 
 const getGenesisConfig = async () => {
-	if (!genesisConfig) genesisConfig = (await requestConnector('getNodeInfo')).genesisConfig;
+	if (!genesisConfig) genesisConfig = await requestConnector('getGenesisConfig');
 	return genesisConfig;
 };
 
@@ -63,7 +62,7 @@ const resolveModuleCommands = (data) => {
 
 const getAvailableModuleCommands = async () => {
 	if (!registeredModules) {
-		const response = await requestConnector('getRegisteredModules', {});
+		const response = await requestConnector('getRegisteredModules');
 		registeredModules = resolveModuleCommands(response);
 	}
 	return registeredModules;
@@ -74,6 +73,5 @@ module.exports = {
 	getCurrentHeight,
 	getGenesisConfig,
 	getGenesisHeight,
-	updateGenesisHeight,
 	getAvailableModuleCommands,
 };

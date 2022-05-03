@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,26 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const invokeEndpointSource = require('../../../sources/version3/invoke');
+
 module.exports = {
-	id: '=,string',
-	moduleAssetId: '=,string',
-	moduleAssetName: '=,string',
-	fee: '=,string',
-	height: '=,number',
-	nonce: '=,string',
-	block: {
-		id: 'blockId,string',
-		height: '=,number',
-		timestamp: 'unixTimestamp,number',
+	version: '2.0',
+	swaggerApiPath: '/invoke',
+	httpMethod: 'POST',
+	rpcMethod: 'post.invoke',
+	params: {
+		endpoint: { optional: false, type: 'string' },
+		params: { optional: true, type: 'object' },
 	},
-	sender: {
-		address: 'senderId,string',
-		publicKey: 'senderPublicKey,string',
-		username: '=,string',
-	},
-	signatures: '=',
-	confirmations: '=,number',
-	asset: '=',
-	relays: '=,number',
-	isPending: '=,boolean',
+	source: invokeEndpointSource,
 };

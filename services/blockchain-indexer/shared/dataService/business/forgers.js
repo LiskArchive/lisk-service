@@ -25,8 +25,8 @@ const { requestConnector } = require('../../utils/request');
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
-const getForgers = async params => {
-	const forgers = await requestConnector('getForgers', params);
+const getForgers = async () => {
+	const forgers = await requestConnector('getForgers');
 	forgers.data = forgers
 		.map(forger => ({
 			...forger,

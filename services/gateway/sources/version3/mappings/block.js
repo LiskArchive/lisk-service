@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -15,24 +15,22 @@
  */
 module.exports = {
 	id: '=,string',
-	moduleAssetId: '=,string',
-	moduleAssetName: '=,string',
-	fee: '=,string',
+	version: '=,number',
+	timestamp: '=,number',
 	height: '=,number',
-	nonce: '=,string',
-	block: {
-		id: 'blockId,string',
-		height: '=,number',
-		timestamp: 'unixTimestamp,number',
+	previousBlockID: '=,string',
+	generatorAddress: '=,string',
+	transactionRoot: '=,string',
+	assetsRoot: '=,string',
+	stateRoot: '=,string',
+	maxHeightPrevoted: '=,string',
+	maxHeightGenerated: '=,string',
+	validatorsHash: '=,string',
+	aggregateCommit: {
+		height: '=,string',
+		aggregationBits: '=,string',
+		certificateSignature: '=,string',
 	},
-	sender: {
-		address: 'senderId,string',
-		publicKey: 'senderPublicKey,string',
-		username: '=,string',
-	},
-	signatures: '=',
-	confirmations: '=,number',
-	asset: '=',
-	relays: '=,number',
-	isPending: '=,boolean',
+	signature: '=,string',
+	isFinal: '=,boolean',
 };

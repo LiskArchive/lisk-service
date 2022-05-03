@@ -28,7 +28,7 @@ const {
 	standardizePomHeight,
 } = require('./dpos');
 
-const { getGenesisConfig } = require('../../constants');
+const { getGenesisConfig, getGenesisHeight } = require('../../constants');
 const { getTableInstance } = require('../../database/mysql');
 
 const accountsIndexSchema = require('../../database/schema/accounts');
@@ -302,7 +302,7 @@ const resolveDelegateInfo = async accounts => {
 				);
 				account.dpos.delegate.registrationHeight = delegateRegTx.height
 					? delegateRegTx.height
-					: await requestConnector('getGenesisHeight');
+					: await getGenesisHeight();
 				// }
 			}
 			return account;
@@ -339,7 +339,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
 		const accountInfo = cachedAccountInfoStr
 			? JSON.parse(cachedAccountInfoStr)
-			: await requestConnector('invokeAction', { action: 'legacyAccount:getUnregisteredAccount', params: { publicKey } });
+			: await requestConnector('invokeEndpoint', { action: 'legacyAccount:getUnregisteredAccount', params: { publicKey } });
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
@@ -514,7 +514,7 @@ const getAccounts = async params => {
 
 const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
 
-const getAllDelegates = async () => requestConnector('invokeAction', { action: 'dpos_getAllDelegates', params: {} });
+const getAllDelegates = async () => requestConnector('invokeEndpoint', { action: 'dpos_getAllDelegates' });
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};

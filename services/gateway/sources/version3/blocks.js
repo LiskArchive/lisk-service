@@ -13,21 +13,29 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-let app;
-
-const setAppContext = (h) => app = h;
-
-const getAppContext = () => app;
-
-const requestRpc = async (service, method, params = {}) => {
-	const data = await getAppContext().requestRpc(`${service}.${method}`, params);
-	return data;
-};
-
-const requestConnector = async (method, params) => requestRpc('connector', method, params);
+const block = require('./mappings/block');
 
 module.exports = {
-	setAppContext,
-	requestConnector,
+	type: 'moleculer',
+	method: 'indexer.blocks',
+	params: {
+		blockId: '=,string',
+		height: '=,string',
+		address: 'generatorAddress,string',
+		generatorPublicKey: '=,string',
+		username: 'generatorUsername,string',
+		timestamp: '=,string',
+		offset: '=,number',
+		limit: '=,number',
+		sort: '=,string',
+	},
+	definition: {
+		data: ['data', block],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };

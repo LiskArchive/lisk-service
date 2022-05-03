@@ -37,7 +37,7 @@ const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
-const resolveModuleAsset = async (moduleCommandVal) => {
+const resolveModuleCommand = async (moduleCommandVal) => {
 	const availableModuleCommands = await getAvailableModuleCommands();
 	const [module, command] = moduleCommandVal.split(':');
 	let response;
@@ -201,11 +201,11 @@ const validateParams = async params => {
 		};
 	}
 
-	if (params.moduleAssetName) {
-		const { moduleAssetName, ...remParams } = params;
+	if (params.moduleCommandName) {
+		const { moduleCommandName, ...remParams } = params;
 		params = remParams;
 
-		params.moduleAssetId = await resolveModuleAsset(moduleAssetName);
+		params.moduleCommandId = await resolveModuleCommand(moduleCommandName);
 	}
 
 	return params;

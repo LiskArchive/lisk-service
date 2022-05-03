@@ -28,6 +28,7 @@ const logger = Logger();
 
 let genesisHeight;
 let genesisBlockID;
+let genesisConfig;
 
 const getGenesisHeight = async () => {
 	if (!genesisHeight) {
@@ -96,10 +97,25 @@ const getGenesisAccounts = async (limit, offset) => {
 	return accountsSlice;
 };
 
+const getGenesisConfig = async () => {
+	try {
+		if (!genesisConfig) {
+			genesisConfig = (await invokeEndpoint('app_getNodeInfo')).genesis;
+		}
+		return genesisConfig;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getGenesisConfig\'');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
 	getNumberOfGenesisAccounts,
 	getGenesisAccounts,
+	getGenesisConfig,
 };

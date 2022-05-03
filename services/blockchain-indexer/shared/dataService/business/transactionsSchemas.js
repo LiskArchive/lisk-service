@@ -18,7 +18,7 @@ const { requestConnector } = require('../../utils/request');
 let allTransactionSchemasCache;
 
 const getTransactionsSchemasFromCore = async () => {
-	const schemas = await requestConnector('getSchema', {});
+	const schemas = await requestConnector('getSchema');
 	return schemas;
 };
 

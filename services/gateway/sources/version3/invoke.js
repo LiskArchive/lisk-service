@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -14,25 +14,11 @@
  *
  */
 module.exports = {
-	id: '=,string',
-	moduleAssetId: '=,string',
-	moduleAssetName: '=,string',
-	fee: '=,string',
-	height: '=,number',
-	nonce: '=,string',
-	block: {
-		id: 'blockId,string',
-		height: '=,number',
-		timestamp: 'unixTimestamp,number',
+	type: 'moleculer',
+	method: 'connector.invokeEndpoint',
+	params: {
+		endpoint: '=,string',
+		params: '=,object',
 	},
-	sender: {
-		address: 'senderId,string',
-		publicKey: 'senderPublicKey,string',
-		username: '=,string',
-	},
-	signatures: '=',
-	confirmations: '=,number',
-	asset: '=',
-	relays: '=,number',
-	isPending: '=,boolean',
+	definition: '=', // Passthrough the response object as is
 };

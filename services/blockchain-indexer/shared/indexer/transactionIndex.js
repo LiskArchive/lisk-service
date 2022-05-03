@@ -21,7 +21,7 @@ const getTransactionIndexingInfo = async (blocks) => {
 	const txnMultiArray = blocks.map(block => {
 		const transactions = block.transactions.map(tx => {
 			const { id } = availableModuleCommands
-				.find(module => module.id === String(tx.moduleID).concat(':').concat(tx.commandID));
+				.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
 			tx.height = block.height;
 			tx.blockId = block.id;
 			tx.moduleCommandId = id;

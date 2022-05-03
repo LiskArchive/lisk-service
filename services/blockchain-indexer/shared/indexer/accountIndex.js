@@ -158,7 +158,7 @@ const isGenesisAccountsIndexed = async () => {
 };
 
 const getDelegateAccounts = async () => {
-	const allDelegatesInfo = await requestConnector('invokeAction', { action: 'dpos_getAllDelegates', params: {} });
+	const allDelegatesInfo = await requestConnector('invokeEndpoint', { action: 'dpos_getAllDelegates' });
 	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
 	return allDelegateAddresses;
 };

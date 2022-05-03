@@ -22,7 +22,6 @@ const {
 
 const { getFinalizedHeight } = require('../../constants');
 const { getTableInstance } = require('../../database/mysql');
-const blockchainStore = require('../../database/blockchainStore');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo, getBase32AddressFromHex } = require('../../utils/accountUtils');
@@ -38,9 +37,6 @@ const config = require('../../../config');
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 let latestBlock;
-// Genesis height can be greater that 0
-// Blockchain starts form a non-zero block height
-const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
 const normalizeBlocks = async (blocks) => {
 	const normalizedBlocks = await BluebirdPromise.map(
@@ -64,9 +60,9 @@ const normalizeBlocks = async (blocks) => {
 				block.transactions,
 				async (txn) => {
 					const schema = await requestConnector('getSchema');
-					const paramsSchema = schema.commands
+					const { schema: paramsSchema } = schema.commands
 						.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
-					const parsedTxAsset = parseInputBySchema(txn.params, paramsSchema.schema);
+					const parsedTxAsset = parseInputBySchema(txn.params, paramsSchema);
 					const parsedTx = parseInputBySchema(txn, schema.transaction);
 					txn = { ...parsedTx, params: parsedTxAsset };
 					txn.minFee = await getTxnMinFee(txn);
@@ -225,7 +221,6 @@ const getBlocks = async params => {
 
 module.exports = {
 	getBlocks,
-	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getLastBlock,
