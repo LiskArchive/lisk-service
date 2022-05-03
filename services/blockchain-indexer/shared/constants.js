@@ -14,7 +14,7 @@
  *
  */
 const blockchainStore = require('./database/blockchainStore');
-const { requestRpc } = require('./utils/appContext');
+const { requestConnector } = require('./utils/request');
 
 const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
@@ -23,22 +23,22 @@ let genesisConfig;
 let registeredModules;
 
 const getFinalizedHeight = async () => {
-	const { finalizedHeight } = await requestRpc('getNodeInfo');
+	const { finalizedHeight } = await requestConnector('getNodeInfo');
 	return finalizedHeight;
 };
 
 const updateGenesisHeight = async () => {
-	const genesisHeight = await requestRpc('getGenesisHeight');
+	const genesisHeight = await requestConnector('getGenesisHeight');
 	await setGenesisHeight(genesisHeight);
 };
 
 const getCurrentHeight = async () => {
-	const currentHeight = (await requestRpc('getNodeInfo')).height;
+	const currentHeight = (await requestConnector('getNodeInfo')).height;
 	return currentHeight;
 };
 
 const getGenesisConfig = async () => {
-	if (!genesisConfig) genesisConfig = (await requestRpc('getNodeInfo')).genesisConfig;
+	if (!genesisConfig) genesisConfig = (await requestConnector('getNodeInfo')).genesisConfig;
 	return genesisConfig;
 };
 
@@ -63,7 +63,7 @@ const resolveModuleCommands = (data) => {
 
 const getAvailableModuleCommands = async () => {
 	if (!registeredModules) {
-		const response = await requestRpc('getRegisteredModules', {});
+		const response = await requestConnector('getRegisteredModules', {});
 		registeredModules = resolveModuleCommands(response);
 	}
 	return registeredModules;

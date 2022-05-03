@@ -31,7 +31,7 @@ const {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 } = require('../../utils/accountUtils');
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
@@ -92,12 +92,12 @@ const normalizeTransaction = async txs => {
 };
 
 const getTransactionByID = async id => {
-	const response = await requestRpc('getTransactionByID', { id });
+	const response = await requestConnector('getTransactionByID', { id });
 	return normalizeTransaction([response]);
 };
 
 const getTransactionsByIDs = async ids => {
-	const response = await requestRpc('getTransactionsByIDs', { ids });
+	const response = await requestConnector('getTransactionsByIDs', { ids });
 	return normalizeTransaction(response);
 };
 

@@ -26,7 +26,7 @@ const blockchainStore = require('../../database/blockchainStore');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo, getBase32AddressFromHex } = require('../../utils/accountUtils');
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
 const { getTxnMinFee } = require('../../utils/transactionsUtils');
@@ -63,7 +63,7 @@ const normalizeBlocks = async (blocks) => {
 			await BluebirdPromise.map(
 				block.transactions,
 				async (txn) => {
-					const schema = await requestRpc('getSchema');
+					const schema = await requestConnector('getSchema');
 					const paramsSchema = schema.commands
 						.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
 					const parsedTxAsset = parseInputBySchema(txn.params, paramsSchema.schema);
@@ -87,27 +87,27 @@ const normalizeBlocks = async (blocks) => {
 };
 
 const getBlockByHeight = async (height) => {
-	const response = await requestRpc('getBlockByHeight', { height });
+	const response = await requestConnector('getBlockByHeight', { height });
 	return normalizeBlocks([response]);
 };
 
 const getBlockByID = async id => {
-	const response = await requestRpc('getBlockByID', { id });
+	const response = await requestConnector('getBlockByID', { id });
 	return normalizeBlocks([response]);
 };
 
 const getBlocksByIDs = async ids => {
-	const response = await requestRpc('getBlocksByIDs', { ids });
+	const response = await requestConnector('getBlocksByIDs', { ids });
 	return normalizeBlocks(response);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
-	const response = await requestRpc('getBlocksByHeightBetween', { from, to });
+	const response = await requestConnector('getBlocksByHeightBetween', { from, to });
 	return normalizeBlocks(response);
 };
 
 const getLastBlock = async () => {
-	const response = await requestRpc('getLastBlock');
+	const response = await requestConnector('getLastBlock');
 	[latestBlock] = await normalizeBlocks(response.data);
 	if (latestBlock && latestBlock.id) await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
 	return [latestBlock];

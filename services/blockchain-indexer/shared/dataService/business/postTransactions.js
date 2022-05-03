@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 
 const postTransactions = async params => {
 	const { transaction } = params;
-	const response = await requestRpc('postTransaction', { transaction });
+	const response = await requestConnector('postTransaction', { transaction });
 	return response;
 };
 

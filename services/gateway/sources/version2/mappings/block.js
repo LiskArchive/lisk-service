@@ -45,8 +45,5 @@ module.exports = {
 		maxHeightPrevoted: 'asset.maxHeightPrevoted,number',
 		seedReveal: 'asset.seedReveal,string',
 	},
-	assets: {
-		moduleId: '=,number',
-		data: '=,string',
-	},
+	assets: '=',
 };

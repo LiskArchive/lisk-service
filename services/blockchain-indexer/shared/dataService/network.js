@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestRpc } = require('../utils/appContext');
+const { requestConnector } = require('../utils/request');
 
 const getNetworkStatus = async () => {
-	const result = await requestRpc('getNetworkStatus');
+	const result = await requestConnector('getNetworkStatus');
 	return {
 		data: result.data,
 		meta: {},

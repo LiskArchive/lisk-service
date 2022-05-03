@@ -20,13 +20,13 @@ const {
 	getBase32AddressFromHex,
 } = require('../../utils/accountUtils');
 
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 
 const ObjectUtilService = Utils.Data;
 const { isProperObject } = ObjectUtilService;
 
 const getForgers = async params => {
-	const forgers = await requestRpc('getForgers', params);
+	const forgers = await requestConnector('getForgers', params);
 	forgers.data = forgers
 		.map(forger => ({
 			...forger,
