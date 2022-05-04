@@ -52,7 +52,8 @@ services:
   blockchain-connector:
     image: lisk/service_blockchain_connector
     depends_on:
-      - nats
+      nats:
+        condition: service_started
     networks:
       - services_network
     environment:
@@ -68,10 +69,14 @@ services:
   blockchain-indexer:
     image: lisk/service_blockchain_indexer
     depends_on:
-      - nats
-      - redis_persistent
-      - redis_volatile
-      - mysql
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+      redis_volatile:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -89,8 +94,10 @@ services:
   blockchain-coordinator:
     image: lisk/service_blockchain_coordinator
     depends_on:
-      - nats
-      - redis_persistent
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -103,8 +110,12 @@ services:
   transaction-statistics:
     image: lisk/service_transaction_statistics
     depends_on:
-      - nats
-      - mysql
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -120,7 +131,10 @@ services:
   fee-estimator:
     image: lisk/service_fee_estimator
     depends_on:
-      - nats
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -135,10 +149,14 @@ services:
   gateway:
     image: lisk/service_gateway
     depends_on:
-      - nats
-      - redis_volatile
-      - blockchain-connector
-      - blockchain-indexer
+      nats:
+        condition: service_started
+      redis_volatile:
+        condition: service_healthy
+      blockchain-connector:
+        condition: service_started
+      blockchain-indexer:
+        condition: service_started
     networks:
       - services_network
     environment:
@@ -160,8 +178,10 @@ services:
   market:
     image: lisk/service_market
     depends_on:
-      - nats
-      - redis_persistent
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -175,8 +195,10 @@ services:
   newsfeed:
     image: lisk/service_newsfeed
     depends_on:
-      - nats
-      - mysql
+      nats:
+        condition: service_started
+      mysql:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -191,9 +213,12 @@ services:
   export:
     image: lisk/service_export
     depends_on:
-      - nats
-      - redis_persistent
-      - redis_volatile
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+      redis_volatile:
+        condition: service_healthy
     networks:
       - services_network
     environment:
