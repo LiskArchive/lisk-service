@@ -84,7 +84,7 @@ build-statistics:
 	cd ./services/transaction-statistics && docker build --tag=lisk/service_transaction_statistics ./
 
 build-fees:
-cd ./services/fee-estimator && docker build --tag=lisk/service_fee_estimator ./
+	cd ./services/fee-estimator && docker build --tag=lisk/service_fee_estimator ./
 
 build-market:
 	cd ./services/market && docker build --tag=lisk/service_market ./
