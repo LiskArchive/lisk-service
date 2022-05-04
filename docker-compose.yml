@@ -58,7 +58,8 @@ services:
     environment:
       - SERVICE_BROKER=nats://nats:4222
       - GEOIP_JSON=${GEOIP_JSON}
-      - GENESIS_HEIGHT=${GENESIS_HEIGHT}
+      - USE_LISK_IPC_CLIENT=${USE_LISK_IPC_CLIENT}
+      - LISK_APP_DATA_PATH=${LISK_APP_DATA_PATH}
       - LISK_APP_WS=${LISK_APP_WS}
     restart: always
     extra_hosts:
@@ -79,6 +80,8 @@ services:
       - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
       - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
+      - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
@@ -88,8 +91,6 @@ services:
     depends_on:
       - nats
       - redis_persistent
-      - redis_volatile
-      - mysql
     networks:
       - services_network
     environment:
@@ -136,7 +137,8 @@ services:
     depends_on:
       - nats
       - redis_volatile
-      - core
+      - blockchain-connector
+      - blockchain-indexer
     networks:
       - services_network
     environment:
@@ -153,7 +155,7 @@ services:
     ports:
       - 9901:9901
     healthcheck:
-      test: curl --fail http://gateway:9901/api/v2/transactions
+      test: curl --fail http://gateway:9901/api/v3/blocks
 
   market:
     image: lisk/service_market
