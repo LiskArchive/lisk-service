@@ -13,57 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getBase32AddressFromHex,
-} = require('../utils/accountUtils');
-
-const {
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	resolveMultisignatureMemberships,
-} = require('../dataService');
-
-const { getAvailableLiskModuleAssets } = require('../constants');
+const { getBase32AddressFromHex } = require('../utils/accountUtils');
+const { getAvailableModuleCommands } = require('../constants');
 
 const getTransactionIndexingInfo = async (blocks) => {
-	const multisignatureModuleAssetId = '4:0';
-	let multisignatureInfoToIndex = [];
-	const publicKeysToIndex = [];
-	const recipientAddressesToIndex = [];
-	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
+	const availableModuleCommands = await getAvailableModuleCommands();
 	const txnMultiArray = blocks.map(block => {
-		const transactions = block.payload.map(tx => {
-			const [{ id }] = availableLiskModuleAssets
-				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+		const transactions = block.transactions.map(tx => {
+			const { id } = availableModuleCommands
+				.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
 			tx.height = block.height;
 			tx.blockId = block.id;
-			tx.moduleAssetId = id;
+			tx.moduleCommandId = id;
 			tx.timestamp = block.timestamp;
-			tx.amount = tx.asset.amount || null;
-			tx.data = tx.asset.data || null;
-			if (tx.asset.recipientAddress) {
-				tx.recipientId = getBase32AddressFromHex(tx.asset.recipientAddress);
-				recipientAddressesToIndex.push(tx.asset.recipientAddress);
-			}
-			if (tx.senderPublicKey) publicKeysToIndex.push({ publicKey: tx.senderPublicKey });
-			if (tx.moduleAssetId === multisignatureModuleAssetId) {
-				multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
+			tx.amount = tx.params.amount || null;
+			tx.data = tx.params.data || null;
+			if (tx.params.recipientAddress) {
+				tx.recipientId = getBase32AddressFromHex(tx.params.recipientAddress);
 			}
 			return tx;
 		});
 		return transactions;
 	});
-	let allTransactions = [];
-	txnMultiArray.forEach(transactions => allTransactions = allTransactions.concat(transactions));
-	const accountsByAddress = await getAccountsByAddress(recipientAddressesToIndex);
-	const accountsByPublicKey = await getAccountsByPublicKey(publicKeysToIndex);
-	const allAccounts = accountsByAddress.concat(accountsByPublicKey);
-
-	return {
-		accounts: allAccounts,
-		transactions: allTransactions,
-		multisignatureInfoToIndex,
-	};
+	const allTransactions = txnMultiArray.flat();
+	return allTransactions;
 };
 
 module.exports = {

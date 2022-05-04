@@ -20,11 +20,8 @@ const Signals = require('../shared/utils/signals');
 const {
 	reloadAllPendingTransactions,
 	getTransactionsByBlockId,
-} = require('../shared/dataService');
-
-const {
-	reloadNextForgersCache,
-	getForgers,
+	// reloadNextForgersCache,
+	// getForgers,
 } = require('../shared/dataService');
 
 const logger = Logger();
@@ -84,22 +81,23 @@ module.exports = [
 			Signals.get('newBlock').add(newTransactionsListener);
 		},
 	},
-	{
-		name: 'forgers.change',
-		description: 'Track round change updates',
-		controller: callback => {
-			const forgersChangeListener = async () => {
-				try {
-					await reloadNextForgersCache();
-					const forgers = await getForgers({ limit: 25, offset: 0 });
-					callback(forgers);
-				} catch (err) {
-					logger.error(`Error occured when processing 'forgers.change' event:\n${err.stack}`);
-				}
-			};
-			Signals.get('newBlock').add(forgersChangeListener);
-		},
-	},
+	// TODO: Enable when getForgers method is available from core
+	// {
+	// 	name: 'forgers.change',
+	// 	description: 'Track round change updates',
+	// 	controller: callback => {
+	// 		const forgersChangeListener = async () => {
+	// 			try {
+	// 				await reloadNextForgersCache();
+	// 				const forgers = await getForgers({ limit: 25, offset: 0 });
+	// 				callback(forgers);
+	// 			} catch (err) {
+	// 				logger.error(`Error occured when processing 'forgers.change' event:\n${err.stack}`);
+	// 			}
+	// 		};
+	// 		Signals.get('newBlock').add(forgersChangeListener);
+	// 	},
+	// },
 	{
 		name: 'round.change',
 		description: 'Track round change updates',

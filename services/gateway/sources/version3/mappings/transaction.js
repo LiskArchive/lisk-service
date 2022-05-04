@@ -13,20 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-let app;
-
-const setAppContext = (h) => app = h;
-
-const getAppContext = () => app;
-
-const requestRpc = async (method, params = {}) => {
-	const data = await app.requestRpc(`connector.${method}`, params);
-	return data;
-};
-
 module.exports = {
-	setAppContext,
-	getAppContext,
-	requestRpc,
+	id: '=,string',
+	moduleCommandID: '=,string',
+	moduleCommandName: '=,string',
+	fee: '=,string',
+	height: '=,number',
+	nonce: '=,string',
+	block: {
+		id: 'blockId,string',
+		height: '=,number',
+		timestamp: 'unixTimestamp,number',
+	},
+	sender: {
+		address: 'senderId,string',
+		publicKey: 'senderPublicKey,string',
+		username: '=,string',
+	},
+	signatures: '=',
+	params: '=',
+	isPending: '=,boolean',
 };

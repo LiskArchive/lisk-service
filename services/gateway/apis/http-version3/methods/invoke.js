@@ -13,14 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../utils/request');
-
-const postTransactions = async params => {
-	const { transaction } = params;
-	const response = await requestConnector('postTransaction', { transaction });
-	return response;
-};
+const invokeEndpointSource = require('../../../sources/version3/invoke');
 
 module.exports = {
-	postTransactions,
+	version: '2.0',
+	swaggerApiPath: '/invoke',
+	httpMethod: 'POST',
+	rpcMethod: 'post.invoke',
+	params: {
+		endpoint: { optional: false, type: 'string' },
+		params: { optional: true, type: 'object' },
+	},
+	source: invokeEndpointSource,
 };

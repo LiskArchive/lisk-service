@@ -22,8 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { updateGenesisHeight } = require('./shared/constants');
-const { setAppContext } = require('./shared/utils/appContext');
+const { setAppContext } = require('./shared/utils/request');
 
 const loggerConf = {
 	...config.log,
@@ -67,7 +66,6 @@ setAppContext(app);
 		await status.init();
 
 		if (config.operations.IndexingMode) {
-			await updateGenesisHeight();
 			const processor = require('./shared/processor');
 			await processor.init();
 		}

@@ -19,7 +19,7 @@ const {
 } = require('lisk-service-framework');
 
 const blockSource = require('./blocks');
-const { getAvailableLiskModuleAssets } = require('../../constants');
+const { getAvailableModuleCommands } = require('../../constants');
 
 const { getTableInstance } = require('../../database/mysql');
 const transactionsIndexSchema = require('../../database/schema/transactions');
@@ -31,27 +31,27 @@ const {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 } = require('../../utils/accountUtils');
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 
-const resolveModuleAsset = async (moduleAssetVal) => {
-	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
-	const [module, asset] = moduleAssetVal.split(':');
+const resolveModuleCommand = async (moduleCommandVal) => {
+	const availableModuleCommands = await getAvailableModuleCommands();
+	const [module, command] = moduleCommandVal.split(':');
 	let response;
-	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(asset))) {
-		const [{ name }] = (availableLiskModuleAssets
-			.filter(moduleAsset => moduleAsset.id === moduleAssetVal));
+	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(command))) {
+		const { name } = (availableModuleCommands
+			.find(moduleCommand => moduleCommand.id === moduleCommandVal));
 		response = name;
 	} else {
-		const [{ id }] = (availableLiskModuleAssets
-			.filter(moduleAsset => moduleAsset.name === moduleAssetVal));
+		const { id } = (availableModuleCommands
+			.find(moduleCommand => moduleCommand.name === moduleCommandVal));
 		response = id;
 	}
 	if ([undefined, null, '']
-		.includes(response)) return new Error(`Incorrect moduleAsset ID/Name combination: ${moduleAssetVal}`);
+		.includes(response)) return new Error(`Incorrect moduleCommand ID/Name combination: ${moduleCommandVal}`);
 	return response;
 };
 
@@ -68,20 +68,20 @@ const getTransactionsByBlockIDs = async blockIDs => {
 };
 
 const normalizeTransaction = async txs => {
-	const availableLiskModuleAssets = await getAvailableLiskModuleAssets();
+	const availableModuleCommands = await getAvailableModuleCommands();
 	const normalizedTransactions = await BluebirdPromise.map(
 		txs,
 		async tx => {
-			const [{ id, name }] = availableLiskModuleAssets
-				.filter(module => module.id === String(tx.moduleID).concat(':').concat(tx.assetID));
+			const [{ id, name }] = availableModuleCommands
+				.filter(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
 			tx = parseToJSONCompatObj(tx);
-			tx.moduleAssetId = id;
-			tx.moduleAssetName = name;
-			if (tx.asset.recipientAddress) {
-				tx.asset.recipientAddress = getBase32AddressFromHex(tx.asset.recipientAddress);
+			tx.moduleCommandId = id;
+			tx.moduleCommandName = name;
+			if (tx.params.recipientAddress) {
+				tx.params.recipientAddress = getBase32AddressFromHex(tx.params.recipientAddress);
 			}
-			if (tx.asset.votes && tx.asset.votes.length) {
-				tx.asset.votes
+			if (tx.params.votes && tx.params.votes.length) {
+				tx.params.votes
 					.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
 			}
 			return tx;
@@ -92,12 +92,12 @@ const normalizeTransaction = async txs => {
 };
 
 const getTransactionByID = async id => {
-	const response = await requestRpc('getTransactionByID', { id });
+	const response = await requestConnector('getTransactionByID', { id });
 	return normalizeTransaction([response]);
 };
 
 const getTransactionsByIDs = async ids => {
-	const response = await requestRpc('getTransactionsByIDs', { ids });
+	const response = await requestConnector('getTransactionsByIDs', { ids });
 	return normalizeTransaction(response);
 };
 
@@ -201,11 +201,11 @@ const validateParams = async params => {
 		};
 	}
 
-	if (params.moduleAssetName) {
-		const { moduleAssetName, ...remParams } = params;
+	if (params.moduleCommandName) {
+		const { moduleCommandName, ...remParams } = params;
 		params = remParams;
 
-		params.moduleAssetId = await resolveModuleAsset(moduleAssetName);
+		params.moduleCommandId = await resolveModuleCommand(moduleCommandName);
 	}
 
 	return params;

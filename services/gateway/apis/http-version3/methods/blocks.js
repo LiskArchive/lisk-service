@@ -13,14 +13,15 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../utils/request');
-
-const postTransactions = async params => {
-	const { transaction } = params;
-	const response = await requestConnector('postTransaction', { transaction });
-	return response;
-};
+const blocksSource = require('../../../sources/version3/blocks');
+const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 
 module.exports = {
-	postTransactions,
+	version: '2.0',
+	swaggerApiPath: '/blocks',
+	rpcMethod: 'get.blocks',
+	tags: ['Blocks'],
+	params: {},
+	source: blocksSource,
+	envelope,
 };

@@ -28,7 +28,7 @@ const {
 	standardizePomHeight,
 } = require('./dpos');
 
-const { getGenesisConfig } = require('../../constants');
+const { getGenesisConfig, getGenesisHeight } = require('../../constants');
 const { getTableInstance } = require('../../database/mysql');
 
 const accountsIndexSchema = require('../../database/schema/accounts');
@@ -49,7 +49,7 @@ const {
 	getBase32AddressFromPublicKey,
 } = require('../../utils/accountUtils');
 
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 
 const {
 	dropDuplicates,
@@ -98,8 +98,8 @@ const getAccountsFromCore = async (params) => {
 		meta: {},
 	};
 	const response = params.addresses
-		? await requestRpc('getAccounts', params)
-		: await requestRpc('getAccount', params);
+		? await requestConnector('getAccounts', params)
+		: await requestConnector('getAccount', params);
 
 	if (Object.getOwnPropertyNames(response).length) {
 		accounts.data = [normalizeAccount(response)];
@@ -302,7 +302,7 @@ const resolveDelegateInfo = async accounts => {
 				);
 				account.dpos.delegate.registrationHeight = delegateRegTx.height
 					? delegateRegTx.height
-					: await requestRpc('getGenesisHeight');
+					: await getGenesisHeight();
 				// }
 			}
 			return account;
@@ -339,7 +339,13 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 		const cachedAccountInfoStr = await legacyAccountCache.get(legacyHexAddress);
 		const accountInfo = cachedAccountInfoStr
 			? JSON.parse(cachedAccountInfoStr)
-			: await requestRpc('invokeAction', { action: 'legacyAccount:getUnregisteredAccount', params: { publicKey } });
+			: await requestConnector(
+				'invokeEndpoint',
+				{
+					action: 'legacyAccount:getUnregisteredAccount',
+					params: { publicKey },
+				},
+			);
 
 		if (accountInfo && Object.keys(accountInfo).length) {
 			if (!cachedAccountInfoStr) {
@@ -514,7 +520,7 @@ const getAccounts = async params => {
 
 const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
 
-const getAllDelegates = async () => requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
+const getAllDelegates = async () => requestConnector('invokeEndpoint', { action: 'dpos_getAllDelegates' });
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};

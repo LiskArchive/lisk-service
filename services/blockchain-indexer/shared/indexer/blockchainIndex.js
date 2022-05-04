@@ -40,18 +40,8 @@ const {
 } = require('../utils/arrayUtils');
 
 const {
-	getVoteIndexingInfo,
-} = require('./votersIndex');
-
-const {
 	getTransactionIndexingInfo,
 } = require('./transactionIndex');
-
-const {
-	indexAccountByPublicKey,
-	indexAccountByAddress,
-	indexAccountWithData,
-} = require('./accountIndex');
 
 const {
 	getFinalizedHeight,
@@ -71,19 +61,11 @@ const blocksIndexSchema = require('../database/schema/blocks');
 const accountsIndexSchema = require('../database/schema/accounts');
 const transactionsIndexSchema = require('../database/schema/transactions');
 const votesIndexSchema = require('../database/schema/votes');
-const multisignatureIndexSchema = require('../database/schema/multisignature');
-const votesAggregateIndexSchema = require('../database/schema/votesAggregate');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
-const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema);
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
-const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
-
-// Key-based account update
-// There is a bug that does not update public keys
-const KEY_BASED_ACCOUNT_UPDATE = false;
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -109,77 +91,6 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	return pkInfoArray;
 };
 
-const updateBlockRewards = async (job) => {
-	const { generatorProps, revert } = job.data;
-	const accountsDB = await getAccountsIndex();
-
-	try {
-		// Update producedBlocks & rewards
-		const pkInfoArray = generatorProps;
-		if (!pkInfoArray.isBlockIndexed) {
-			const params = {
-				where: {
-					property: 'address',
-					value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-				},
-			};
-			const amount = { rewards: BigInt(pkInfoArray.reward), producedBlocks: 1 };
-
-			if (revert === true) params.decrement = amount;
-			else params.increment = amount;
-
-			// If no rows are affected with increment, insert the row
-			const numRowsAffected = await accountsDB.increment(params);
-			if (numRowsAffected === 0) {
-				await accountsDB.upsert({
-					address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-					publicKey: pkInfoArray.publicKey,
-					producedBlocks: 1,
-					rewards: pkInfoArray.reward,
-				});
-			}
-		}
-	} catch (error) {
-		logger.debug('Error during vote aggregates update)');
-
-		throw error;
-	}
-};
-
-const updateVoteAggregates = async (job) => {
-	const { voteToAggregate, revert } = job.data;
-
-	const votesAggregateDB = await getVotesAggregateIndex();
-
-	try {
-		// Update the aggregated votes information
-		const params = {
-			where: {
-				property: 'id',
-				value: voteToAggregate.id,
-			},
-		};
-
-		const amount = { amount: BigInt(voteToAggregate.amount) };
-
-		if (revert === true) params.decrement = amount;
-		else params.increment = amount;
-
-		const numRowsAffected = await votesAggregateDB.increment(params);
-		if (numRowsAffected === 0) {
-			await votesAggregateDB.upsert(voteToAggregate.voteObject);
-		}
-	} catch (error) {
-		logger.error('Error during vote aggregate updates');
-		throw error;
-	}
-};
-
-const voteAggregatesQueue = Queue(config.endpoints.cache, 'votingQueue', updateVoteAggregates, 1);
-const blockRewardsQueue = Queue(config.endpoints.cache, 'blockRewardsQueue', updateBlockRewards, 1);
-
-const ensureArray = (e) => Array.isArray(e) ? e : [e];
-
 const indexBlock = async job => {
 	const { height } = job.data;
 
@@ -193,59 +104,13 @@ const indexBlock = async job => {
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
 	try {
 		const transactionsDB = await getTransactionsIndex();
-		const votesDB = await getVotesIndex();
-		const multisignatureDB = await getMultisignatureIndex();
-
-		const {
-			accounts: accountsFromTransactions,
-			transactions,
-			multisignatureInfoToIndex,
-		} = await getTransactionIndexingInfo(blocks);
-
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		ensureArray(accountsByPublicKey).forEach(a => indexAccountWithData(a));
-		ensureArray(accountsFromTransactions).forEach(a => indexAccountWithData(a));
-
+		const transactions = await getTransactionIndexingInfo(blocks);
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
-		if (multisignatureInfoToIndex.length) await multisignatureDB
-			.upsert(multisignatureInfoToIndex, trx);
-
-		if (KEY_BASED_ACCOUNT_UPDATE === true) {
-			const addresses = ensureArray(accountsFromTransactions)
-				.filter(a => a.publicKey).map(a => a.publicKey);
-			const publicKeys = ensureArray(accountsFromTransactions)
-				.filter(a => !a.publicKey).map(a => a.address);
-
-			blocks.forEach(block => indexAccountByPublicKey(block.generatorPublicKey));
-			publicKeys.forEach(pk => indexAccountByPublicKey(pk));
-			addresses.forEach(a => indexAccountByAddress(a));
-		}
-
-		ensureArray(generatorPkInfoArray)
-			.forEach(generatorProps => blockRewardsQueue.add({ generatorProps }));
-
-		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
-		if (votes.length) await votesDB.upsert(votes, trx);
-		ensureArray(votesToAggregateArray)
-			.forEach(voteToAggregate => voteAggregatesQueue.add({ voteToAggregate }));
-
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 
 		await commitDbTransaction(trx);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
-
-		// Revert rewards
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		ensureArray(generatorPkInfoArray)
-			.forEach(generatorProps => blockRewardsQueue.add({ generatorProps, revert: true }));
-
-		// Revert votes
-		const { votesToAggregateArray } = await getVoteIndexingInfo(blocks);
-		ensureArray(votesToAggregateArray)
-			.forEach(voteToAggregate => voteAggregatesQueue.add({ voteToAggregate, revert: true }));
-
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {

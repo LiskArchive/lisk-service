@@ -22,11 +22,10 @@ const {
 
 const { getFinalizedHeight } = require('../../constants');
 const { getTableInstance } = require('../../database/mysql');
-const blockchainStore = require('../../database/blockchainStore');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getIndexedAccountInfo } = require('../../utils/accountUtils');
-const { requestRpc } = require('../../utils/appContext');
+const { getIndexedAccountInfo, getBase32AddressFromHex } = require('../../utils/accountUtils');
+const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
 const { getTxnMinFee } = require('../../utils/transactionsUtils');
@@ -38,36 +37,34 @@ const config = require('../../../config');
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 let latestBlock;
-// Genesis height can be greater that 0
-// Blockchain starts form a non-zero block height
-const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
-const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
+const normalizeBlocks = async (blocks) => {
 	const normalizedBlocks = await BluebirdPromise.map(
-		blocks.map(block => ({ ...block.header, payload: block.payload })),
+		blocks.map(block => ({
+			...block.header,
+			transactions: block.transactions,
+			assets: block.assets,
+		})),
 		async block => {
-			const account = block.generatorPublicKey
-				? await getIndexedAccountInfo({ publicKey: block.generatorPublicKey.toString('hex'), limit: 1 }, ['address', 'username'])
-				: {};
-			block.generatorAddress = account && account.address ? account.address : null;
-			block.generatorUsername = account && account.username ? account.username : null;
+			block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
 			block.isFinal = block.height <= (await getFinalizedHeight());
-			block.numberOfTransactions = block.payload.length;
+			block.numberOfTransactions = block.transactions.length;
 
 			block.size = 0;
-			block.totalForged = BigInt(block.reward);
+			// TODO: get reward value from block event
+			block.totalForged = BigInt(block.reward || '0');
 			block.totalBurnt = BigInt('0');
 			block.totalFee = BigInt('0');
 
 			await BluebirdPromise.map(
-				block.payload,
+				block.transactions,
 				async (txn) => {
-					const schema = await requestRpc('getSchema');
-					const assetSchema = schema.transactionsAssets
-						.find(s => s.moduleID === txn.moduleID && s.assetID === txn.assetID);
-					const parsedTxAsset = parseInputBySchema(txn.asset, assetSchema.schema);
+					const schema = await requestConnector('getSchema');
+					const { schema: paramsSchema } = schema.commands
+						.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
+					const parsedTxAsset = parseInputBySchema(txn.params, paramsSchema);
 					const parsedTx = parseInputBySchema(txn, schema.transaction);
-					txn = { ...parsedTx, asset: parsedTxAsset };
+					txn = { ...parsedTx, params: parsedTxAsset };
 					txn.minFee = await getTxnMinFee(txn);
 					block.size += txn.size;
 					block.totalForged += BigInt(txn.fee);
@@ -77,17 +74,6 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 				{ concurrency: 1 },
 			);
 
-			if (includeGenesisAccounts !== true) {
-				const {
-					accounts,
-					initRounds,
-					initDelegates,
-					...otherAssets
-				} = block.asset;
-
-				block.asset = { ...otherAssets };
-			}
-
 			return parseToJSONCompatObj(block);
 		},
 		{ concurrency: blocks.length },
@@ -96,28 +82,28 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 	return normalizedBlocks;
 };
 
-const getBlockByHeight = async (height, includeGenesisAccounts = false) => {
-	const response = await requestRpc('getBlockByHeight', { height });
-	return normalizeBlocks([response], includeGenesisAccounts);
+const getBlockByHeight = async (height) => {
+	const response = await requestConnector('getBlockByHeight', { height });
+	return normalizeBlocks([response]);
 };
 
 const getBlockByID = async id => {
-	const response = await requestRpc('getBlockByID', { id });
+	const response = await requestConnector('getBlockByID', { id });
 	return normalizeBlocks([response]);
 };
 
 const getBlocksByIDs = async ids => {
-	const response = await requestRpc('getBlocksByIDs', { ids });
+	const response = await requestConnector('getBlocksByIDs', { ids });
 	return normalizeBlocks(response);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
-	const response = await requestRpc('getBlocksByHeightBetween', { from, to });
+	const response = await requestConnector('getBlocksByHeightBetween', { from, to });
 	return normalizeBlocks(response);
 };
 
 const getLastBlock = async () => {
-	const response = await requestRpc('getLastBlock');
+	const response = await requestConnector('getLastBlock');
 	[latestBlock] = await normalizeBlocks(response.data);
 	if (latestBlock && latestBlock.id) await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
 	return [latestBlock];
@@ -235,7 +221,6 @@ const getBlocks = async params => {
 
 module.exports = {
 	getBlocks,
-	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getLastBlock,

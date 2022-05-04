@@ -13,14 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../utils/request');
-
-const postTransactions = async params => {
-	const { transaction } = params;
-	const response = await requestConnector('postTransaction', { transaction });
-	return response;
-};
+const transaction = require('./mappings/transaction');
 
 module.exports = {
-	postTransactions,
+	type: 'moleculer',
+	method: 'indexer.transactions',
+	params: {},
+	definition: {
+		data: ['data', transaction],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
