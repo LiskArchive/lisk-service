@@ -18,7 +18,27 @@ const transaction = require('./mappings/transaction');
 module.exports = {
 	type: 'moleculer',
 	method: 'indexer.transactions',
-	params: {},
+	params: {
+		id: 'transactionID,string',
+		senderAddress: '=',
+		senderPublicKey: '=',
+		recipientID: 'recipientAddress,string',
+		recipientPublicKey: '=',
+		moduleCommandID: '=',
+		moduleCommandName: '=',
+		senderIDOrRecipientID: 'address',
+		nonce: '=',
+		offset: '=',
+		limit: '=',
+		amount: '=',
+		timestamp: '=',
+		blockID: '=',
+		height: '=',
+		search: '=',
+		sort: '=',
+		data: '=',
+		includePending: '=,boolean',
+	},
 	definition: {
 		data: ['data', transaction],
 		meta: {

@@ -342,7 +342,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			: await requestConnector(
 				'invokeEndpoint',
 				{
-					action: 'legacy_getLegacyAccount',
+					endpoint: 'legacy_getLegacyAccount',
 					params: { publicKey },
 				},
 			);
