@@ -342,7 +342,7 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 			: await requestConnector(
 				'invokeEndpoint',
 				{
-					action: 'legacyAccount:getUnregisteredAccount',
+					endpoint: 'legacy_getLegacyAccount',
 					params: { publicKey },
 				},
 			);
@@ -520,7 +520,7 @@ const getAccounts = async params => {
 
 const getDelegates = async params => getAccounts({ ...params, isDelegate: true });
 
-const getAllDelegates = async () => requestConnector('invokeEndpoint', { action: 'dpos_getAllDelegates' });
+const getAllDelegates = async () => requestConnector('invokeEndpoint', { endpoint: 'dpos_getAllDelegates' });
 
 const getMultisignatureGroups = async account => {
 	const multisignatureAccount = {};

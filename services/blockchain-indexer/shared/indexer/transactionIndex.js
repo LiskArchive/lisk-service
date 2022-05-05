@@ -23,13 +23,13 @@ const getTransactionIndexingInfo = async (blocks) => {
 			const { id } = availableModuleCommands
 				.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
 			tx.height = block.height;
-			tx.blockId = block.id;
-			tx.moduleCommandId = id;
+			tx.blockID = block.id;
+			tx.moduleCommandID = id;
 			tx.timestamp = block.timestamp;
 			tx.amount = tx.params.amount || null;
 			tx.data = tx.params.data || null;
 			if (tx.params.recipientAddress) {
-				tx.recipientId = getBase32AddressFromHex(tx.params.recipientAddress);
+				tx.recipientID = getBase32AddressFromHex(tx.params.recipientAddress);
 			}
 			return tx;
 		});

@@ -20,6 +20,7 @@ module.exports = {
 	swaggerApiPath: '/invoke',
 	httpMethod: 'POST',
 	rpcMethod: 'post.invoke',
+	tags: ['Generic'],
 	params: {
 		endpoint: { optional: false, type: 'string' },
 		params: { optional: true, type: 'object' },
