@@ -21,7 +21,10 @@ module.exports = {
 	swaggerApiPath: '/transactions',
 	rpcMethod: 'get.transactions',
 	tags: ['Transactions'],
-	params: {},
+	params: {
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
+		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+	},
 	source: transactionsSource,
 	envelope,
 };

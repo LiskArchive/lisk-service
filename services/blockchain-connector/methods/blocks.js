@@ -75,12 +75,12 @@ module.exports = [
 	},
 	{
 		name: 'getGenesisBlock',
-		controller: async () => getGenesisBlock(),
+		controller: getGenesisBlock,
 		params: {},
 	},
 	{
 		name: 'getGenesisConfig',
-		controller: async () => getGenesisConfig(),
+		controller: getGenesisConfig,
 		params: {},
 	},
 ];

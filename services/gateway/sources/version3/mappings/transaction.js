@@ -21,12 +21,12 @@ module.exports = {
 	height: '=,number',
 	nonce: '=,string',
 	block: {
-		id: 'blockId,string',
+		id: 'blockID,string',
 		height: '=,number',
 		timestamp: 'unixTimestamp,number',
 	},
 	sender: {
-		address: 'senderId,string',
+		address: 'senderID,string',
 		publicKey: 'senderPublicKey,string',
 		username: '=,string',
 	},
