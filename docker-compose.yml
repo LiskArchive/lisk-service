@@ -88,8 +88,6 @@ services:
       - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
       - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   blockchain-coordinator:
     image: lisk/service_blockchain_coordinator
@@ -104,8 +102,6 @@ services:
       - SERVICE_BROKER=nats://nats:4222
       - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   transaction-statistics:
     image: lisk/service_transaction_statistics
@@ -125,8 +121,6 @@ services:
       - ENABLE_TRANSACTION_STATS=${ENABLE_TRANSACTION_STATS}
       - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   fee-estimator:
     image: lisk/service_fee_estimator
@@ -143,8 +137,6 @@ services:
       - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
       - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
     restart: always
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
 
   gateway:
     image: lisk/service_gateway
