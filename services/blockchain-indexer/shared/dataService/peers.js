@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestRpc } = require('../utils/appContext');
+const { requestConnector } = require('../utils/request');
 
 const getPeers = async params => {
 	let peers;
@@ -21,11 +21,11 @@ const getPeers = async params => {
 	const state = params.state ? params.state.toString().toLowerCase() : undefined;
 
 	if (state === 'connected') {
-		peers = await requestRpc('getConnectedPeers');
+		peers = await requestConnector('getConnectedPeers');
 	} else if (state === 'disconnected') {
-		peers = await requestRpc('getDisconnectedPeers');
+		peers = await requestConnector('getDisconnectedPeers');
 	} else {
-		peers = await requestRpc('getPeers');
+		peers = await requestConnector('getPeers');
 	}
 
 	const intersect = (a, b) => {
@@ -88,7 +88,7 @@ const getDisconnectedPeers = async params => {
 };
 
 const getPeersStatistics = async () => {
-	const response = await requestRpc('getPeersStatistics');
+	const response = await requestConnector('getPeersStatistics');
 
 	return {
 		data: response,

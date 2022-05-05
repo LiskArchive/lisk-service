@@ -15,7 +15,7 @@
  */
 const { HTTP, Utils, Logger } = require('lisk-service-framework');
 
-const { requestRpc } = require('./utils/appContext');
+const { requestConnector } = require('./utils/request');
 
 const { isObject } = Utils.Data;
 
@@ -39,7 +39,7 @@ const reloadKnowledge = async () => {
 
 	try {
 		await waitForLastBlock();
-		const netStatus = await requestRpc('getNetworkStatus');
+		const netStatus = await requestConnector('getNetworkStatus');
 		const { nethash } = netStatus.data.constants;
 
 		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`);

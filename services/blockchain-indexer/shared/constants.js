@@ -13,44 +13,43 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blockchainStore = require('./database/blockchainStore');
-const { requestRpc } = require('./utils/appContext');
-
-const setGenesisHeight = (height) => blockchainStore.set('genesisHeight', height);
-const getGenesisHeight = () => blockchainStore.get('genesisHeight');
+const { requestConnector } = require('./utils/request');
 
 let genesisConfig;
+let genesisHeight;
 let registeredModules;
 
 const getFinalizedHeight = async () => {
-	const { finalizedHeight } = await requestRpc('getNodeInfo');
+	const { finalizedHeight } = await requestConnector('getNodeInfo');
 	return finalizedHeight;
 };
 
-const updateGenesisHeight = async () => {
-	const { genesisHeight } = await requestRpc('getNodeInfo');
-	await setGenesisHeight(genesisHeight);
+const getGenesisHeight = async () => {
+	if (!genesisHeight) {
+		genesisHeight = await requestConnector('getGenesisHeight');
+	}
+	return genesisHeight;
 };
 
 const getCurrentHeight = async () => {
-	const currentHeight = (await requestRpc('getNodeInfo')).height;
+	const currentHeight = (await requestConnector('getNodeInfo')).height;
 	return currentHeight;
 };
 
 const getGenesisConfig = async () => {
-	if (!genesisConfig) genesisConfig = (await requestRpc('getNodeInfo')).genesisConfig;
+	if (!genesisConfig) genesisConfig = await requestConnector('getGenesisConfig');
 	return genesisConfig;
 };
 
-const resolveModuleAssets = (data) => {
+const resolveModuleCommands = (data) => {
 	let result = [];
 	data.forEach(liskModule => {
-		if (liskModule.transactionAssets.length) {
+		if (liskModule.commands.length) {
 			result = result.concat(
-				liskModule.transactionAssets.map(asset => {
-					const id = String(liskModule.id).concat(':').concat(asset.id);
-					if (liskModule.name && asset.name) {
-						const name = liskModule.name.concat(':').concat(asset.name);
+				liskModule.commands.map(command => {
+					const id = String(liskModule.id).concat(':').concat(command.id);
+					if (liskModule.name && command.name) {
+						const name = liskModule.name.concat(':').concat(command.name);
 						return { id, name };
 					}
 					return { id };
@@ -61,10 +60,10 @@ const resolveModuleAssets = (data) => {
 	return result;
 };
 
-const getAvailableLiskModuleAssets = async () => {
+const getAvailableModuleCommands = async () => {
 	if (!registeredModules) {
-		const response = await requestRpc('getRegisteredModules', {});
-		registeredModules = resolveModuleAssets(response);
+		const response = await requestConnector('getRegisteredModules');
+		registeredModules = resolveModuleCommands(response);
 	}
 	return registeredModules;
 };
@@ -74,6 +73,5 @@ module.exports = {
 	getCurrentHeight,
 	getGenesisConfig,
 	getGenesisHeight,
-	updateGenesisHeight,
-	getAvailableLiskModuleAssets,
+	getAvailableModuleCommands,
 };

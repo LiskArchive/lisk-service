@@ -15,7 +15,7 @@
  */
 const requireAll = require('require-all');
 
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 const { getAllDirectories } = require('../../utils/file');
 
 // Is a map of maps, where the first level keys are moduleIDs, value are maps
@@ -36,7 +36,7 @@ const getAssetProcessors = async (moduleName) => requireAll({
 });
 
 const buildModuleAssetProcessorMap = async () => {
-	const registeredModules = await requestRpc('getRegisteredModules');
+	const registeredModules = await requestConnector('getRegisteredModules');
 	const registeredModuleIDs = registeredModules.map(m => m.id);
 	const availableModuleProcessors = await getAvailableModuleProcessors();
 

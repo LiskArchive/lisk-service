@@ -39,20 +39,18 @@ const eventsQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-const newBlockProcessor = async ({ block, addresses }) => {
+const newBlockProcessor = async (block) => {
 	logger.debug(`New block arrived at height ${block.height}`);
 	const [normalizedBlock] = await normalizeBlocks([block]);
 	performLastBlockUpdate(normalizedBlock);
 	const response = await getBlocks({ height: normalizedBlock.height });
 	Signals.get('newBlock').dispatch(response);
-	Signals.get('updateAccountsByAddress').dispatch(addresses);
 };
 
-const deleteBlockProcessor = async ({ block, addresses }) => {
+const deleteBlockProcessor = async (block) => {
 	logger.debug(`Performing updates on delete block event for the block at height: ${block.header.height}`);
 	await deleteBlock(block);
 	Signals.get('deleteBlock').dispatch({ data: [block] });
-	Signals.get('updateAccountsByAddress').dispatch(addresses);
 };
 
 const newRoundProcessor = async () => {
@@ -71,11 +69,11 @@ const initEventsProcess = async () => {
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
-			const { block, addresses } = job.data;
-			await newBlockProcessor({ block, addresses });
+			const { block } = job.data;
+			await newBlockProcessor(block);
 		} else if (isDeleteBlock) {
-			const { block, addresses } = job.data;
-			await deleteBlockProcessor({ block, addresses });
+			const { block } = job.data;
+			await deleteBlockProcessor(block);
 		} else if (isNewRound) await newRoundProcessor();
 	});
 };

@@ -19,7 +19,7 @@ module.exports = {
 	schema: {
 		id: { type: 'string' },
 		height: { type: 'integer' },
-		moduleAssetId: { type: 'string' },
+		moduleCommandId: { type: 'string' },
 		nonce: { type: 'integer' },
 		blockId: { type: 'string' },
 		timestamp: { type: 'integer' },

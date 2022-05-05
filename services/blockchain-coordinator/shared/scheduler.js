@@ -24,9 +24,9 @@ const logger = Logger();
 const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
-	isGenesisAccountsIndexed,
-	getDelegateAccounts,
-	getGenesisAccountAddresses,
+	// isGenesisAccountsIndexed,
+	// getDelegateAccounts,
+	// getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
@@ -45,11 +45,11 @@ const blockIndexQueue = new MessageQueue(
 	{ defaultJobOptions: config.queue.defaultJobOptions },
 );
 
-const accountIndexQueue = new MessageQueue(
-	config.queue.accounts.name,
-	config.endpoints.messageQueue,
-	{ defaultJobOptions: config.queue.defaultJobOptions },
-);
+// const accountIndexQueue = new MessageQueue(
+// 	config.queue.accounts.name,
+// 	config.endpoints.messageQueue,
+// 	{ defaultJobOptions: config.queue.defaultJobOptions },
+// );
 
 let registeredLiskModules;
 const setRegisteredModules = modules => registeredLiskModules = modules;
@@ -72,19 +72,19 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 	}));
 };
 
-const scheduleDelegateAccountsIndexing = async (addresses) => {
-	await Promise.all(addresses
-		.map(async (address) => accountIndexQueue.add({ address })),
-	);
-	logger.info('Finished scheduling of delegate accounts indexing');
-};
+// const scheduleDelegateAccountsIndexing = async (addresses) => {
+// 	await Promise.all(addresses
+// 		.map(async (address) => accountIndexQueue.add({ address })),
+// 	);
+// 	logger.info('Finished scheduling of delegate accounts indexing');
+// };
 
-const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
-	await Promise.all(accountAddressesToIndex
-		.map(async (address) => accountIndexQueue.add({ address })),
-	);
-	logger.info('Finished scheduling of genesis accounts indexing');
-};
+// const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
+// 	await Promise.all(accountAddressesToIndex
+// 		.map(async (address) => accountIndexQueue.add({ address })),
+// 	);
+// 	logger.info('Finished scheduling of genesis accounts indexing');
+// };
 
 const initIndexingScheduler = async () => {
 	// Schedule indexing new block
@@ -95,10 +95,10 @@ const initIndexingScheduler = async () => {
 	setRegisteredModules(await getEnabledModules());
 
 	// Get all delegates and schedule indexing
-	const delegates = await getDelegateAccounts();
-	if (Array.isArray(delegates) && delegates.length) {
-		await scheduleDelegateAccountsIndexing(delegates);
-	}
+	// const delegates = await getDelegateAccounts();
+	// if (Array.isArray(delegates) && delegates.length) {
+	// 	await scheduleDelegateAccountsIndexing(delegates);
+	// }
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
 	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();
@@ -117,13 +117,13 @@ const initIndexingScheduler = async () => {
 	}
 
 	// Schedule genesis accounts indexing
-	const isGenesisAccountsAlreadyIndexed = await isGenesisAccountsIndexed();
-	if (!isGenesisAccountsAlreadyIndexed) {
-		const genesisAccountAddresses = await getGenesisAccountAddresses();
-		if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
-			await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
-		}
-	}
+	// const isGenesisAccountsAlreadyIndexed = await isGenesisAccountsIndexed();
+	// if (!isGenesisAccountsAlreadyIndexed) {
+	// 	const genesisAccountAddresses = await getGenesisAccountAddresses();
+	// 	if (Array.isArray(genesisAccountAddresses) && genesisAccountAddresses.length) {
+	// 		await scheduleGenesisAccountsIndexing(genesisAccountAddresses);
+	// 	}
+	// }
 };
 
 const init = async () => {

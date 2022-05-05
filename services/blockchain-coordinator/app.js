@@ -42,8 +42,8 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 	events: {
-		appBlockNew: async (payload) => Signals.get('newBlock').dispatch(payload),
-		appBlockDelete: async (payload) => Signals.get('deleteBlock').dispatch(payload),
+		appNewBlock: async (payload) => Signals.get('newBlock').dispatch(payload),
+		appDeleteBlock: async (payload) => Signals.get('deleteBlock').dispatch(payload),
 		appChainValidatorsChange: async (payload) => Signals.get('newRound').dispatch(payload),
 	},
 	dependencies: [

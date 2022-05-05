@@ -13,14 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../utils/request');
 
-const postTransactions = async params => {
-	const { transaction } = params;
-	const response = await requestConnector('postTransaction', { transaction });
-	return response;
+let app;
+
+const setAppContext = (h) => app = h;
+
+const getAppContext = () => app;
+
+const requestRpc = async (service, method, params = {}) => {
+	const data = await getAppContext().requestRpc(`${service}.${method}`, params);
+	return data;
 };
 
+const requestConnector = async (method, params) => requestRpc('connector', method, params);
+
 module.exports = {
-	postTransactions,
+	setAppContext,
+	requestConnector,
 };

@@ -25,6 +25,7 @@ const {
 	getGenesisHeight,
 	getGenesisBlockID,
 	getGenesisBlock,
+	getGenesisConfig,
 } = require('../shared/sdk/genesisBlock');
 
 module.exports = [
@@ -74,7 +75,12 @@ module.exports = [
 	},
 	{
 		name: 'getGenesisBlock',
-		controller: async () => getGenesisBlock(),
+		controller: getGenesisBlock,
+		params: {},
+	},
+	{
+		name: 'getGenesisConfig',
+		controller: getGenesisConfig,
 		params: {},
 	},
 ];

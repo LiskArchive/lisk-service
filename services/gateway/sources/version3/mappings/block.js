@@ -13,14 +13,24 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { requestConnector } = require('../../utils/request');
-
-const postTransactions = async params => {
-	const { transaction } = params;
-	const response = await requestConnector('postTransaction', { transaction });
-	return response;
-};
-
 module.exports = {
-	postTransactions,
+	id: '=,string',
+	version: '=,number',
+	timestamp: '=,number',
+	height: '=,number',
+	previousBlockID: '=,string',
+	generatorAddress: '=,string',
+	transactionRoot: '=,string',
+	assetsRoot: '=,string',
+	stateRoot: '=,string',
+	maxHeightPrevoted: '=,string',
+	maxHeightGenerated: '=,string',
+	validatorsHash: '=,string',
+	aggregateCommit: {
+		height: '=,string',
+		aggregationBits: '=,string',
+		certificateSignature: '=,string',
+	},
+	signature: '=,string',
+	isFinal: '=,boolean',
 };

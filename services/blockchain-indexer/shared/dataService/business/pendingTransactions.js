@@ -26,12 +26,12 @@ const {
 	getHexAddressFromPublicKey,
 	getIndexedAccountInfo,
 } = require('../../utils/accountUtils');
-const { requestRpc } = require('../../utils/appContext');
+const { requestConnector } = require('../../utils/request');
 
 let pendingTransactionsList = [];
 
 const getPendingTransactionsFromCore = async () => {
-	const response = await requestRpc('getTransactionsFromPool');
+	const response = await requestConnector('getTransactionsFromPool');
 	let pendingTx = await normalizeTransaction(response);
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,

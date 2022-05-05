@@ -24,6 +24,7 @@ const logger = Logger();
 
 const {
 	getCurrentHeight,
+	getGenesisHeight,
 } = require('../constants');
 
 const {
@@ -33,12 +34,6 @@ const {
 const blocksIndexSchema = require('../database/schema/blocks');
 
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
-
-const blockchainStore = require('../database/blockchainStore');
-
-// Genesis height can be greater that 0
-// Blockchain starts form a non-zero block height
-const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;

@@ -31,7 +31,7 @@ const {
 	getTableInstance,
 } = require('../database/mysql');
 
-const { requestRpc } = require('../utils/appContext');
+const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
 const keyValueDB = require('../database/mysqlKVStore');
@@ -99,7 +99,7 @@ const triggerAccountUpdates = async () => {
 
 const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
 
-const getNumberOfGenesisAccounts = async () => requestRpc('getNumberOfGenesisAccounts');
+const getNumberOfGenesisAccounts = async () => requestConnector('getNumberOfGenesisAccounts');
 
 const getGenesisAccounts = async () => {
 	let genesisAccounts = [];
@@ -108,7 +108,7 @@ const getGenesisAccounts = async () => {
 
 	for (let i = 0; i <= numOfGenesisAccounts / PAGE_SIZE; i++) {
 		// eslint-disable-next-line no-await-in-loop
-		const accounts = await requestRpc('getGenesisAccounts', { limit: PAGE_SIZE, offset: i * PAGE_SIZE });
+		const accounts = await requestConnector('getGenesisAccounts', { limit: PAGE_SIZE, offset: i * PAGE_SIZE });
 		genesisAccounts = genesisAccounts.concat(accounts);
 	}
 	return genesisAccounts;
@@ -158,7 +158,7 @@ const isGenesisAccountsIndexed = async () => {
 };
 
 const getDelegateAccounts = async () => {
-	const allDelegatesInfo = await requestRpc('invokeAction', { action: 'dpos:getAllDelegates', params: {} });
+	const allDelegatesInfo = await requestConnector('invokeEndpoint', { endpoint: 'dpos_getAllDelegates' });
 	const allDelegateAddresses = allDelegatesInfo.map(({ address }) => address);
 	return allDelegateAddresses;
 };
