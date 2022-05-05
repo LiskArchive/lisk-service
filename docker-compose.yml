@@ -33,9 +33,10 @@ services:
   mysql:
     image: mysql:8
     platform: linux/amd64
-    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max_connections=200
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d
     restart: always
     networks:
       - services_network
@@ -43,49 +44,111 @@ services:
       - MYSQL_ROOT_PASSWORD=password
       - MYSQL_USER=lisk
       - MYSQL_PASSWORD=password
-    volumes:
-      - ./docker/mysql-init:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-hlocalhost", "-ppassword"]
       timeout: 20s
       retries: 10
 
-  core:
-    image: lisk/service_core
+  blockchain-connector:
+    image: lisk/service_blockchain_connector
     depends_on:
-      - nats
-      - redis_persistent
-      - redis_volatile
-      - mysql
+      nats:
+        condition: service_started
     networks:
       - services_network
     environment:
       - SERVICE_BROKER=nats://nats:4222
-      - SERVICE_CORE_REDIS=redis://redis_persistent:6379/0
-      - SERVICE_CORE_REDIS_VOLATILE=redis://redis_volatile:6379/0
-      - SERVICE_CORE_MYSQL=mysql://lisk:password@mysql:3306/lisk
-      - LISK_STATIC=${LISK_STATIC}
       - GEOIP_JSON=${GEOIP_JSON}
-      - GENESIS_HEIGHT=${GENESIS_HEIGHT}
-      - INDEX_N_BLOCKS=${INDEX_N_BLOCKS}
-      - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
-      - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
-      - ENABLE_TRANSACTION_STATS=${ENABLE_TRANSACTION_STATS}
-      - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
-      - LISK_CORE_WS=${LISK_CORE_WS}
-      - ENABLE_APPLY_SNAPSHOT=${ENABLE_APPLY_SNAPSHOT}
-      - INDEX_SNAPSHOT_URL=${INDEX_SNAPSHOT_URL}
-      - SNAPSHOT_ALLOW_INSECURE_HTTP=${SNAPSHOT_ALLOW_INSECURE_HTTP}
+      - USE_LISK_IPC_CLIENT=${USE_LISK_IPC_CLIENT}
+      - LISK_APP_DATA_PATH=${LISK_APP_DATA_PATH}
+      - LISK_APP_WS=${LISK_APP_WS}
     restart: always
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
+  blockchain-indexer:
+    image: lisk/service_blockchain_indexer
+    depends_on:
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+      redis_volatile:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+      - services_network
+    environment:
+      - SERVICE_BROKER=nats://nats:4222
+      - SERVICE_INDEXER_CACHE_REDIS=redis://redis_persistent:6379/0
+      - SERVICE_INDEXER_REDIS_VOLATILE=redis://redis_volatile:6379/0
+      - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
+      - SERVICE_INDEXER_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - ENABLE_DATA_RETRIEVAL_MODE=${ENABLE_DATA_RETRIEVAL_MODE}
+      - ENABLE_INDEXING_MODE=${ENABLE_INDEXING_MODE}
+    restart: always
+
+  blockchain-coordinator:
+    image: lisk/service_blockchain_coordinator
+    depends_on:
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+    networks:
+      - services_network
+    environment:
+      - SERVICE_BROKER=nats://nats:4222
+      - SERVICE_MESSAGE_QUEUE_REDIS=redis://redis_persistent:6379/8
+    restart: always
+
+  transaction-statistics:
+    image: lisk/service_transaction_statistics
+    depends_on:
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+    networks:
+      - services_network
+    environment:
+      - SERVICE_BROKER=nats://nats:4222
+      - SERVICE_STATISTICS_CACHE_REDIS=redis://redis_persistent:6379/5
+      - SERVICE_STATISTICS_MYSQL=mysql://lisk:password@mysql:3306/lisk
+      - ENABLE_TRANSACTION_STATS=${ENABLE_TRANSACTION_STATS}
+      - TRANSACTION_STATS_HISTORY_LENGTH_DAYS=${TRANSACTION_STATS_HISTORY_LENGTH_DAYS}
+    restart: always
+
+  fee-estimator:
+    image: lisk/service_fee_estimator
+    depends_on:
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+    networks:
+      - services_network
+    environment:
+      - SERVICE_BROKER=nats://nats:4222
+      - SERVICE_FEE_ESTIMATOR_CACHE=redis://redis_persistent:6379/6
+      - ENABLE_FEE_ESTIMATOR_QUICK=${ENABLE_FEE_ESTIMATOR_QUICK}
+      - ENABLE_FEE_ESTIMATOR_FULL=${ENABLE_FEE_ESTIMATOR_FULL}
+    restart: always
+
   gateway:
     image: lisk/service_gateway
     depends_on:
-      - nats
-      - redis_volatile
-      - core
+      nats:
+        condition: service_started
+      redis_volatile:
+        condition: service_healthy
+      blockchain-connector:
+        condition: service_started
+      blockchain-indexer:
+        condition: service_started
     networks:
       - services_network
     environment:
@@ -102,13 +165,15 @@ services:
     ports:
       - 9901:9901
     healthcheck:
-      test: curl --fail http://gateway:9901/api/v2/transactions
+      test: curl --fail http://gateway:9901/api/v3/blocks
 
   market:
     image: lisk/service_market
     depends_on:
-      - nats
-      - redis_persistent
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -122,8 +187,10 @@ services:
   newsfeed:
     image: lisk/service_newsfeed
     depends_on:
-      - nats
-      - mysql
+      nats:
+        condition: service_started
+      mysql:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -138,9 +205,12 @@ services:
   export:
     image: lisk/service_export
     depends_on:
-      - nats
-      - redis_persistent
-      - redis_volatile
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_healthy
+      redis_volatile:
+        condition: service_healthy
     networks:
       - services_network
     environment:

@@ -64,12 +64,24 @@ logs-live-%:
 print-config:
 	$(compose) config
 
-build: build-core build-market build-newsfeed build-gateway build-export
+build: build-connector build-indexer build-coordinator build-statistics build-fees build-market build-newsfeed build-export build-gateway
 
 build-all: build build-template build-tests
 
-build-core:
-	cd ./services/core && docker build --tag=lisk/service_core ./
+build-connector:
+	cd ./services/blockchain-connector && docker build --tag=lisk/service_blockchain_connector ./	
+
+build-indexer:
+	cd ./services/blockchain-indexer && docker build --tag=lisk/service_blockchain_indexer ./
+
+build-coordinator:
+	cd ./services/blockchain-coordinator && docker build --tag=lisk/service_blockchain_coordinator ./
+
+build-statistics:
+	cd ./services/transaction-statistics && docker build --tag=lisk/service_transaction_statistics ./
+
+build-fees:
+	cd ./services/fee-estimator && docker build --tag=lisk/service_fee_estimator ./
 
 build-market:
 	cd ./services/market && docker build --tag=lisk/service_market ./
@@ -97,7 +109,6 @@ build-local:
 	cd ./services/blockchain-indexer && npm ci
 	cd ./services/transaction-statistics && npm ci
 	cd ./services/fee-estimator && npm ci
-	cd ./services/core && npm ci
 	cd ./services/market && npm ci
 	cd ./services/newsfeed && npm ci
 	cd ./services/gateway && npm ci
@@ -115,7 +126,6 @@ clean-local:
 	cd ./services/blockchain-indexer && rm -rf node_modules
 	cd ./services/transaction-statistics && rm -rf node_modules
 	cd ./services/fee-estimator && rm -rf node_modules
-	cd ./services/core && rm -rf node_modules
 	cd ./services/market && rm -rf node_modules
 	cd ./services/newsfeed && rm -rf node_modules
 	cd ./services/gateway && rm -rf node_modules
@@ -124,7 +134,17 @@ clean-local:
 	cd ./tests && rm -rf node_modules
 
 clean-images:
-	docker rmi lisk/service_gateway lisk/service_core lisk/service_template lisk/service_tests; :
+	docker rmi lisk/service_gateway \
+	lisk/service_blockchain_connector \
+	lisk/service_blockchain_indexer \
+	lisk/service_blockchain_coordinator \
+	lisk/service_transaction_statistics \
+	lisk/service_fee_estimator \
+	lisk/service_market \
+	lisk/service_newsfeed \
+	lisk/service_export \
+	lisk/service_template \
+	lisk/service_tests; :
 
 audit:
 	cd ./framework && npm audit; :
@@ -133,7 +153,6 @@ audit:
 	cd ./services/blockchain-indexer && npm audit; :
 	cd ./services/transaction-statistics && npm audit; :
 	cd ./services/fee-estimator && npm audit; :
-	cd ./services/core && npm audit; :
 	cd ./services/market && npm audit; :
 	cd ./services/newsfeed && npm audit; :
 	cd ./services/gateway && npm audit; :
@@ -146,7 +165,6 @@ audit-fix:
 	cd ./services/blockchain-indexer && npm audit fix; :
 	cd ./services/transaction-statistics && npm audit fix; :
 	cd ./services/fee-estimator && npm audit fix; :
-	cd ./services/core && npm audit fix; :
 	cd ./services/market && npm audit fix; :
 	cd ./services/newsfeed && npm audit fix; :
 	cd ./services/gateway && npm audit fix; :
@@ -160,7 +178,6 @@ tag-%:
 	cd services/blockchain-indexer && npm version --no-git-tag-version --allow-same-version $*
 	cd services/transaction-statistics && npm version --no-git-tag-version --allow-same-version $*
 	cd services/fee-estimator && npm version --no-git-tag-version --allow-same-version $*
-	cd services/core && npm version --no-git-tag-version --allow-same-version $*
 	cd services/market && npm version --no-git-tag-version --allow-same-version $*
 	cd services/newsfeed && npm version --no-git-tag-version --allow-same-version $*
 	cd services/export && npm version --no-git-tag-version --allow-same-version $*
@@ -171,7 +188,6 @@ tag-%:
 	git add ./services/blockchain-indexer/package*.json
 	git add ./services/transaction-statistics/package*.json
 	git add ./services/fee-estimator/package*.json
-	git add ./services/core/package*.json
 	git add ./services/market/package*.json
 	git add ./services/newsfeed/package*.json
 	git add ./services/export/package*.json
