@@ -60,7 +60,7 @@ module.exports = {
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				// LISK_APP_WS: 'ws://localhost:5001',
+				LISK_APP_WS: 'ws://localhost:5001',
 				GEOIP_JSON: '',
 				USE_LISK_IPC_CLIENT: 'true', // TODO: Revert this change once issue https://github.com/LiskHQ/lisk-sdk/issues/7141 is fixed
 				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',				
