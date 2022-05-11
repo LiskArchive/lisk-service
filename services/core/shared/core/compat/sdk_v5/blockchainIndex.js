@@ -35,6 +35,8 @@ const {
 const {
 	getCurrentHeight,
 	getBlockByHeight,
+	updateFinalizedHeight,
+	getFinalizedHeight,
 } = require('./blocks');
 
 const {
@@ -93,10 +95,6 @@ const blockchainStore = require('./blockchainStore');
 // Genesis height can be greater that 0
 // Blockchain starts form a non-zero block height
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
-
-// The top final block
-const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);
-const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
 
 // Height below which there are no missing blocks in the index
 const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
@@ -499,30 +497,16 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-const getLastFinalBlockHeight = async () => {
-	// Returns the highest finalized block available within the index
-	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const blocksDB = await getBlocksIndex();
-
-	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
-		sort: 'height:desc',
-		limit: 1,
-		isFinal: true,
-	}, ['height']);
-
-	return lastIndexedHeight;
-};
-
-const getNonFinalHeights = async () => {
+const getMinNonFinalHeight = async () => {
 	const blocksDB = await getBlocksIndex();
 
 	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
 		sort: 'height:asc',
-		limit: 5000,
+		limit: 1,
 		isFinal: false,
 	}, ['height']);
 
-	return lastIndexedHeight || [];
+	return lastIndexedHeight;
 };
 
 const indexMissingBlocks = async (params = {}) => {
@@ -571,15 +555,13 @@ const indexMissingBlocks = async (params = {}) => {
 
 const updateNonFinalBlocks = async () => {
 	const cHeight = await getCurrentHeight();
-	const nfHeights = await getNonFinalHeights();
+	const minNFHeight = await getMinNonFinalHeight();
 
-	if (nfHeights.length > 0) {
-		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
-		await buildIndex(nfHeights[0].height, cHeight);
+	if (typeof minNFHeight === 'number') {
+		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks`);
+		await buildIndex(minNFHeight, cHeight);
 	}
 };
-
-const updateFinalizedHeight = async () => setFinalizedHeight(await getLastFinalBlockHeight());
 
 const getIndexStats = async () => {
 	try {
@@ -675,8 +657,7 @@ const initializeSearchIndex = async () => {
 
 const init = async () => {
 	// Index every new incoming block
-	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
-	Signals.get('newBlock').add(indexNewBlocksListener);
+	Signals.get('newBlock').add(indexNewBlocks);
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('newBlock').add(updateFinalizedHeight);
 	setInterval(reportIndexStatus, 15 * 1000); // ms
@@ -705,6 +686,7 @@ const init = async () => {
 		await updateNonFinalBlocks();
 
 		if (KEY_BASED_ACCOUNT_UPDATE === true) {
+			// Ensure accounts are updated regularly
 			setInterval(triggerAccountUpdates, 15 * 1000); // ms
 		}
 
@@ -716,7 +698,6 @@ const init = async () => {
 
 module.exports = {
 	init,
-	getLastFinalBlockHeight,
 	getIndexStats,
 	deleteBlock,
 	initializeSearchIndex,
