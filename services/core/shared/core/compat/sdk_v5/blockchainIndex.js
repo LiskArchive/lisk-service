@@ -433,25 +433,19 @@ const buildIndex = async (from, to) => {
 		return;
 	}
 
-	const MAX_BLOCKS_LIMIT_PP = 1; // 1 block at a time
-	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+	logger.debug(`Scheduling indexing of blocks in height range: ${from} - ${to}`);
 
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset >= from ? pseudoOffset : from - 1;
-		const batchFromHeight = offset + 1;
-		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
-		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
+	const totalNumOfBlocks = to - from + 1;
+	for (let height = from; height <= to; height++) {
+		const count = height - from + 1;
+		const percentage = ((count / totalNumOfBlocks) * 100).toFixed(1);
+		logger.trace(`Scheduling indexing of block at height ${height} (${count} of ${totalNumOfBlocks}, ${percentage}%)`);
 
-		for (let height = batchFromHeight; height <= batchToHeight; height++) {
-			await indexBlocksQueue.add({ height });
-		}
-		/* eslint-enable no-await-in-loop */
+		// eslint-disable-next-line no-await-in-loop
+		await indexBlocksQueue.add({ height });
 	}
-	logger.info(`Finished scheduling the block index build (${from}-${to})`);
+
+	logger.info(`Finished scheduling indexing of blocks in height range: ${from} - ${to}`);
 };
 
 const indexNewBlocks = async blocks => blocks.data.forEach(async block => {
