@@ -99,7 +99,6 @@ const {
 	updateFinalizedHeight,
 	getSDKVersion,
 	init,
-	indexMissingBlocks,
 	getGenesisHeight,
 	getIndexStartHeight,
 } = require('./compat');
@@ -166,7 +165,6 @@ module.exports = {
 	getSDKVersion,
 	waitForLastBlock,
 	init,
-	indexMissingBlocks,
 	getGenesisHeight,
 	getIndexStartHeight,
 };

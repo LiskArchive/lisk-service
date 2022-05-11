@@ -529,7 +529,9 @@ const indexMissingBlocks = async (params = {}) => {
 
 	// Retrieve the list of missing blocks
 	const missingBlockRanges = await findMissingBlocksInRange(
-		blockIndexLowerRange, blockIndexHigherRange);
+		blockIndexLowerRange,
+		blockIndexHigherRange,
+	);
 
 	// Start building the block index
 	try {
@@ -539,13 +541,12 @@ const indexMissingBlocks = async (params = {}) => {
 			await setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
 		} else {
 			for (let i = 0; i < missingBlockRanges.length; i++) {
+				/* eslint-disable no-await-in-loop */
 				const { from, to } = missingBlockRanges[i];
-
 				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from + 1} blocks)`);
-				/* eslint-disable-next-line no-await-in-loop */
 				await buildIndex(from, to);
-				/* eslint-disable-next-line no-await-in-loop */
 				await setIndexVerifiedHeight(to + 1);
+				/* eslint-enable no-await-in-loop */
 			}
 		}
 	} catch (err) {
@@ -701,5 +702,4 @@ module.exports = {
 	getIndexStats,
 	deleteBlock,
 	initializeSearchIndex,
-	indexMissingBlocks,
 };
