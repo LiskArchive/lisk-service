@@ -54,20 +54,20 @@ pipeline {
 				dir('lisk-service') {
 					script { echoBanner(STAGE_NAME) }
 					nvm(getNodejsVersion()) {
-						dir('./') { sh 'npm i' }
-						dir('./framework') { sh 'npm i' }
-						dir('./services/blockchain-connector') { sh 'npm i' }
-						dir('./services/blockchain-indexer') { sh 'npm i' }
-						dir('./services/blockchain-coordinator') { sh 'npm i' }
-						dir('./services/core') { sh 'npm i' }
-						dir('./services/fee-estimator') { sh 'npm i' }
-						dir('./services/market') { sh 'npm i' }
-						dir('./services/newsfeed') { sh 'npm i' }
-						dir('./services/export') { sh 'npm i' }
-						dir('./services/gateway') { sh 'npm i' }
-						dir('./services/template') { sh 'npm i' }
-						dir('./services/transaction-statistics') { sh 'npm i' }
-						dir('./tests') { sh 'npm i' }
+						dir('lisk-service') { sh 'npm i' }
+						dir('lisk-service/framework') { sh 'npm i' }
+						dir('lisk-service/services/blockchain-connector') { sh 'npm i' }
+						dir('lisk-service/services/blockchain-indexer') { sh 'npm i' }
+						dir('lisk-service/services/blockchain-coordinator') { sh 'npm i' }
+						dir('lisk-service/services/core') { sh 'npm i' }
+						dir('lisk-service/services/fee-estimator') { sh 'npm i' }
+						dir('lisk-service/services/market') { sh 'npm i' }
+						dir('lisk-service/services/newsfeed') { sh 'npm i' }
+						dir('lisk-service/services/export') { sh 'npm i' }
+						dir('lisk-service/services/gateway') { sh 'npm i' }
+						dir('lisk-service/services/template') { sh 'npm i' }
+						dir('lisk-service/services/transaction-statistics') { sh 'npm i' }
+						dir('lisk-service/tests') { sh 'npm i' }
 					}
 				}
 			}
