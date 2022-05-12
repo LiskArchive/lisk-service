@@ -104,10 +104,6 @@ const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 const setIndexDiff = (height) => blockchainStore.set('indexStatus', height);
 const getIndexDiff = () => blockchainStore.get('indexStatus');
 
-// Key-based account update
-// There is a bug that does not update public keys
-const KEY_BASED_ACCOUNT_UPDATE = false;
-
 // Key constants for the KV-store
 const genesisAccountPageCached = 'genesisAccountPageCached';
 const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
@@ -694,10 +690,8 @@ const init = async () => {
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
-		if (KEY_BASED_ACCOUNT_UPDATE === true) {
-			// Ensure accounts are updated regularly
-			setInterval(triggerAccountUpdates, 15 * 1000); // ms
-		}
+		// Ensure the pendingAccounts updates are performed regularly
+		setInterval(triggerAccountUpdates, 15 * 1000); // ms
 
 		logger.info('Finished all blockchain index startup tasks');
 	} catch (err) {
