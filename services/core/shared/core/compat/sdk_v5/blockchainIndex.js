@@ -252,6 +252,8 @@ const updateBlockIndex = async job => {
 };
 
 const deleteIndexedBlocks = async job => {
+	const { blocks } = job.data;
+
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
@@ -259,7 +261,7 @@ const deleteIndexedBlocks = async job => {
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
-		const { blocks } = job.data;
+
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);

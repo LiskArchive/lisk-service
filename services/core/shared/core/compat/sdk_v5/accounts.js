@@ -36,6 +36,10 @@ const {
 	getBase32AddressFromPublicKey,
 } = require('./accountUtils');
 
+const {
+	indexAccountByAddress,
+} = require('./accountIndex');
+
 const { getGenesisConfig } = require('./network');
 
 const {
@@ -637,12 +641,20 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 };
 
 const keepAccountsCacheUpdated = async () => {
-	const accountsDB = await getAccountsIndex();
-	const updateAccountsCacheListener = async (address) => {
-		const accounts = await getAccountsByAddress(address);
-		await accountsDB.upsert(accounts);
-	};
-	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
+	// TODO: Cleanup, if the fix works
+	// const accountsDB = await getAccountsIndex();
+	// const updateAccountsCacheListener = async (address) => {
+	// 	const accounts = await getAccountsByAddress(address);
+	// 	await accountsDB.upsert(accounts);
+	// };
+
+	const updateAccountsCacheListener = async (addresses) => BluebirdPromise.map(
+		addresses,
+		address => indexAccountByAddress(address),
+		{ concurrency: addresses.length },
+	);
+
+	Signals.get('updateAccountsByAddresses').add(updateAccountsCacheListener);
 };
 
 Signals.get('searchIndexInitialized').add(removeReclaimedLegacyAccountInfoFromCache);
