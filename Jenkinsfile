@@ -27,6 +27,9 @@ pipeline {
 				dir('lisk-core') {
 					checkout([$class: 'GitSCM', branches: [[name: "${params.COMMITISH_CORE}" ]], userRemoteConfigs: [[url: 'https://github.com/LiskHQ/lisk-core']]])
 				}
+				dir('lisk-service') {
+					checkout scm
+				}
 			}
 		}
 		stage('Build Core') {
@@ -40,7 +43,6 @@ pipeline {
 						  yarn link "$package"
 						done
 						npm run build
-						./bin/run start --network devnet --api-ipc
 						echo $! >lisk-core.pid
 						'''
 					}
@@ -49,55 +51,63 @@ pipeline {
 		}
 		stage ('Build deps') {
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm i' }
-					dir('./framework') { sh 'npm i' }
-					dir('./services/blockchain-connector') { sh 'npm i' }
-					dir('./services/blockchain-indexer') { sh 'npm i' }
-					dir('./services/blockchain-coordinator') { sh 'npm i' }
-					dir('./services/core') { sh 'npm i' }
-					dir('./services/fee-estimator') { sh 'npm i' }
-					dir('./services/market') { sh 'npm i' }
-					dir('./services/newsfeed') { sh 'npm i' }
-					dir('./services/export') { sh 'npm i' }
-					dir('./services/gateway') { sh 'npm i' }
-					dir('./services/template') { sh 'npm i' }
-					dir('./services/transaction-statistics') { sh 'npm i' }
-					dir('./tests') { sh 'npm i' }
+				dir('lisk-service') {
+					script { echoBanner(STAGE_NAME) }
+					nvm(getNodejsVersion()) {
+						dir('./') { sh 'npm i' }
+						dir('./framework') { sh 'npm i' }
+						dir('./services/blockchain-connector') { sh 'npm i' }
+						dir('./services/blockchain-indexer') { sh 'npm i' }
+						dir('./services/blockchain-coordinator') { sh 'npm i' }
+						dir('./services/core') { sh 'npm i' }
+						dir('./services/fee-estimator') { sh 'npm i' }
+						dir('./services/market') { sh 'npm i' }
+						dir('./services/newsfeed') { sh 'npm i' }
+						dir('./services/export') { sh 'npm i' }
+						dir('./services/gateway') { sh 'npm i' }
+						dir('./services/template') { sh 'npm i' }
+						dir('./services/transaction-statistics') { sh 'npm i' }
+						dir('./tests') { sh 'npm i' }
+					}
 				}
 			}
 		}
 		stage ('Check linting') {
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					sh 'npm run eslint'
+				dir('lisk-service') {
+					script { echoBanner(STAGE_NAME) }
+					nvm(getNodejsVersion()) {
+						sh 'npm run eslint'
+					}
 				}
 			}
 		}
 		stage('Perform unit tests') {
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					dir('./framework') { sh "npm run test:unit" }
-					dir('./services/blockchain-connector') { sh "npm run test:unit" }
-					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
-					dir('./services/fee-estimator') { sh "npm run test:unit" }
-					dir('./services/core') { sh "npm run test:unit" }
-					dir('./services/market') { sh "npm run test:unit" }
-					dir('./services/newsfeed') { sh "npm run test:unit" }
-					dir('./services/export') { sh "npm run test:unit" }
+				dir('lisk-service') {
+					script { echoBanner(STAGE_NAME) }
+					nvm(getNodejsVersion()) {
+						dir('./framework') { sh "npm run test:unit" }
+						dir('./services/blockchain-connector') { sh "npm run test:unit" }
+						dir('./services/blockchain-indexer') { sh "npm run test:unit" }
+						dir('./services/fee-estimator') { sh "npm run test:unit" }
+						dir('./services/core') { sh "npm run test:unit" }
+						dir('./services/market') { sh "npm run test:unit" }
+						dir('./services/newsfeed') { sh "npm run test:unit" }
+						dir('./services/export') { sh "npm run test:unit" }
+					}
 				}
 			}
 		}
 		stage('Run microservices') {
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					sh 'pm2 start --silent ecosystem.jenkins.config.js'
+				dir('lisk-service') {
+					script { echoBanner(STAGE_NAME) }
+					nvm(getNodejsVersion()) {
+						sh 'pm2 start --silent ecosystem.jenkins.config.js'
+					}
+					waitForHttp('http://localhost:9901/api/v3/blocks')
 				}
-				waitForHttp('http://localhost:9901/api/v3/blocks')
 			}
 		}
 	}
@@ -108,7 +118,7 @@ pipeline {
 		cleanup {
 			script { echoBanner('Cleaning up...') }
 			echo 'Keeping dependencies for the next build'
-			dir('./') { sh 'make clean' }
+			dir('lisk-service') { sh 'make clean' }
 			sh '''
 			# lisk-core
 			kill -9 $( cat lisk-core.pid ) || true
