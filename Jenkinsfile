@@ -40,7 +40,8 @@ pipeline {
 						  yarn link "$package"
 						done
 						npm run build
-						./bin/run start -n devnet --api-ipc
+						./bin/run start --network devnet --api-ipc
+						echo $! >lisk-core.pid
 						'''
 					}
 				}
@@ -107,6 +108,11 @@ pipeline {
 		cleanup {
 			script { echoBanner('Cleaning up...') }
 			echo 'Keeping dependencies for the next build'
+			dir('./') { sh 'make clean' }
+			sh '''
+			# lisk-core
+			kill -9 $( cat lisk-core.pid ) || true
+			'''
 		}
 	}
 }
