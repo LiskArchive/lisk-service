@@ -37,13 +37,13 @@ pipeline {
 				dir('lisk-core') {
 					nvm(readFile(".nvmrc").trim()) {
 						sh '''
-						npm install --registry https://npm.lisk.com/
-						npm install --global yarn
-						for package in $( cat ../packages ); do
-						  yarn link "$package"
-						done
-						npm run build
-						echo $! >lisk-core.pid
+							npm install --registry https://npm.lisk.com/
+							npm install --global yarn
+							for package in $( cat ../packages ); do
+							yarn link "$package"
+							done
+							npm run build
+							echo $! >lisk-core.pid
 						'''
 					}
 				}
@@ -53,7 +53,7 @@ pipeline {
 			steps {
 				dir('lisk-service') {
 					script { echoBanner(STAGE_NAME) }
-					nvm(getNodejsVersion()) {
+					nvm(readFile(".nvmrc").trim()) {
 						dir('./') { sh 'npm i' }
 						dir('./framework') { sh 'npm i' }
 						dir('./services/blockchain-connector') { sh 'npm i' }
@@ -74,34 +74,40 @@ pipeline {
 		}
 		stage ('Check linting') {
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					sh 'npm run eslint'
+				dir('lisk-service') {
+					script { echoBanner(STAGE_NAME) }
+					nvm(readFile(".nvmrc").trim()) {
+						sh 'npm run eslint'
+					}
 				}
 			}
 		}
 		stage('Perform unit tests') {
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					dir('./framework') { sh "npm run test:unit" }
-					dir('./services/blockchain-connector') { sh "npm run test:unit" }
-					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
-					dir('./services/fee-estimator') { sh "npm run test:unit" }
-					dir('./services/core') { sh "npm run test:unit" }
-					dir('./services/market') { sh "npm run test:unit" }
-					dir('./services/newsfeed') { sh "npm run test:unit" }
-					dir('./services/export') { sh "npm run test:unit" }
+				dir('lisk-service') {
+					script { echoBanner(STAGE_NAME) }
+					nvm(readFile(".nvmrc").trim()) {
+						dir('./framework') { sh "npm run test:unit" }
+						dir('./services/blockchain-connector') { sh "npm run test:unit" }
+						dir('./services/blockchain-indexer') { sh "npm run test:unit" }
+						dir('./services/fee-estimator') { sh "npm run test:unit" }
+						dir('./services/core') { sh "npm run test:unit" }
+						dir('./services/market') { sh "npm run test:unit" }
+						dir('./services/newsfeed') { sh "npm run test:unit" }
+						dir('./services/export') { sh "npm run test:unit" }
+					}
 				}
 			}
 		}
 		stage('Run microservices') {
 			steps {
-				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					sh 'pm2 start --silent ecosystem.jenkins.config.js' 
+				dir('lisk-service') {
+					script { echoBanner(STAGE_NAME) }
+					nvm(getNodejsVersion()) {
+						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
+					}
+					waitForHttp('http://localhost:9901/api/v3/blocks')
 				}
-				waitForHttp('http://localhost:9901/api/v3/blocks')
 			}
 		}
 	}
@@ -111,7 +117,6 @@ pipeline {
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') }
-			echo 'Keeping dependencies for the next build'
 			dir('lisk-service') { sh 'make clean' }
 			sh '''
 			# lisk-core
