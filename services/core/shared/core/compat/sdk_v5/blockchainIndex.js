@@ -296,7 +296,7 @@ const deleteIndexedBlocks = async job => {
 // Initialize queues
 const indexBlocksQueue = Queue('indexBlocksQueue', indexBlock, 30);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1, config.queue.deleteIndexedBlocksQueue);
 
 const verifyAndIndexBlock = async data => {
 	const { block } = data.data;
