@@ -43,6 +43,7 @@ pipeline {
 							yarn link "$package"
 							done
 							npm run build
+							./bin/run start --network devnet --api-ipc
 							echo $! >lisk-core.pid
 						'''
 					}
@@ -103,7 +104,7 @@ pipeline {
 			steps {
 				dir('lisk-service') {
 					script { echoBanner(STAGE_NAME) }
-					nvm(getNodejsVersion()) {
+					nvm(readFile(".nvmrc").trim()) {
 						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
 					}
 					waitForHttp('http://localhost:9901/api/v3/blocks')
