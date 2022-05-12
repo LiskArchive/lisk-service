@@ -6,12 +6,46 @@ def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 }
 
+properties([
+	parameters([
+		string(name: 'COMMITISH_CORE', description: 'Commit-ish of LiskHQ/lisk-core to use', defaultValue: 'development' ),
+	])
+])
+
 pipeline {
 	agent { node { label 'lisk-service' } }
+	environment {
+		LISK_APP_DATA_PATH='~/.lisk/lisk-core'
+    }
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
 	stages {
+		stage('Checkout SCM') {
+			steps {
+				cleanWs()
+				dir('lisk-core') {
+					checkout([$class: 'GitSCM', branches: [[name: "${params.COMMITISH_CORE}" ]], userRemoteConfigs: [[url: 'https://github.com/LiskHQ/lisk-core']]])
+				}
+			}
+		}
+		stage('Build Core') {
+			steps {
+				dir('lisk-core') {
+					nvm(readFile(".nvmrc").trim()) {
+						sh '''
+						npm install --registry https://npm.lisk.com/
+						npm install --global yarn
+						for package in $( cat ../packages ); do
+						  yarn link "$package"
+						done
+						npm run build
+						./bin/run start -n devnet --api-ipc
+						'''
+					}
+				}
+			}
+		}
 		stage ('Build deps') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
@@ -54,6 +88,15 @@ pipeline {
 					dir('./services/newsfeed') { sh "npm run test:unit" }
 					dir('./services/export') { sh "npm run test:unit" }
 				}
+			}
+		}
+		stage('Run microservices') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				nvm(getNodejsVersion()) {
+					sh 'pm2 start --silent ecosystem.jenkins.config.js'
+				}
+				waitForHttp('http://localhost:9901/api/v3/blocks')
 			}
 		}
 	}
