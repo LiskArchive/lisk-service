@@ -189,18 +189,19 @@ const ensureArray = (e) => Array.isArray(e) ? e : [e];
 const indexBlock = async job => {
 	const { height } = job.data;
 
-	const blocksDB = await getBlocksIndex();
 	const blocks = await getBlockByHeight(height);
+	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block at height ${height}`);
+
+	const blocksDB = await getBlocksIndex();
+	const transactionsDB = await getTransactionsIndex();
+	const votesDB = await getVotesIndex();
+	const multisignatureDB = await getMultisignatureIndex();
+
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
+	logger.trace(`Created new MySQL transaction to index block at height ${height}`);
 
-	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
-
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block at height ${height}`);
 	try {
-		const transactionsDB = await getTransactionsIndex();
-		const votesDB = await getVotesIndex();
-		const multisignatureDB = await getMultisignatureIndex();
 		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
 		const {
 			accounts: accountsFromTransactions,
@@ -210,20 +211,33 @@ const indexBlock = async job => {
 
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		ensureArray(accountsByPublicKey).forEach(a => indexAccountWithData(a));
-		ensureArray(accountsFromTransactions).forEach(a => indexAccountWithData(a));
+
+		await BluebirdPromise.all(
+			ensureArray(accountsByPublicKey)
+				.concat(ensureArray(accountsFromTransactions))
+				.map(async (a) => indexAccountWithData(a)),
+		);
+
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 		if (votes.length) await votesDB.upsert(votes, trx);
 
-		await BluebirdPromise.map(generatorPkInfoArray,
-			generatorProps => updateProducedBlocksAndRewards(generatorProps, trx), { concurrency: 1 });
-		await BluebirdPromise.map(votesToAggregateArray,
-			voteToAggregate => updateVoteAggregatesTrx(voteToAggregate, trx), { concurrency: 1 });
+		await BluebirdPromise.map(
+			generatorPkInfoArray,
+			async (generatorProps) => updateProducedBlocksAndRewards(generatorProps, trx),
+			{ concurrency: 1 },
+		);
+
+		await BluebirdPromise.map(
+			votesToAggregateArray,
+			async (voteToAggregate) => updateVoteAggregatesTrx(voteToAggregate, trx),
+			{ concurrency: 1 },
+		);
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
+		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);

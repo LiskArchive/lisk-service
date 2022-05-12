@@ -81,7 +81,7 @@ const triggerAccountUpdates = async () => {
 	});
 };
 
-const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
+const indexAccountWithData = async (account) => accountDirectUpdateQueue.add(account);
 
 module.exports = {
 	indexAccountByPublicKey,
