@@ -118,10 +118,10 @@ pipeline {
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') }
-			dir('lisk-service') { sh 'make clean' }
+			dir('lisk-service') { sh 'make clean-local' }
 			sh '''
 			# lisk-core
-			kill -9 $( cat lisk-core.pid ) || true
+			kill $( cat lisk-core.pid )
 			'''
 		}
 	}
