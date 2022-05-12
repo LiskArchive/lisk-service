@@ -48,12 +48,12 @@ const queueInstance = (jobName = 'defaultJob', jobFn, concurrency = 1, options =
 		});
 
 		queue.on('error', (err) => {
-			logger.error(`${jobName} Job error`, err);
+			logger.error(`${jobName} Job error: ${err}`);
 		});
 
 		queue.on('failed', (job, err) => {
-			logger.warn(`${jobName} Job failed`, err.message);
-			logger.warn(`${jobName} Job failed`, err.stack);
+			logger.warn(`${jobName} Job failed: ${err.message}`);
+			logger.warn(`${jobName} Job failed: ${err.stack}`);
 		});
 
 		setInterval(async () => {

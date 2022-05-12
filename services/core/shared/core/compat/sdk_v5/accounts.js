@@ -14,6 +14,8 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const Redis = require('ioredis');
+
 const {
 	CacheRedis,
 	Exceptions: {
@@ -35,10 +37,6 @@ const {
 	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
 } = require('./accountUtils');
-
-const {
-	indexAccountByAddress,
-} = require('./accountIndex');
 
 const { getGenesisConfig } = require('./network');
 
@@ -62,13 +60,13 @@ const {
 	standardizePomHeight,
 } = require('./dpos');
 
-const coreApi = require('./coreApi');
-const config = require('../../../../config');
-const Signals = require('../../../signals');
-
 const {
 	getTableInstance,
 } = require('../../../indexdb/mysql');
+
+const coreApi = require('./coreApi');
+const config = require('../../../../config');
+const Signals = require('../../../signals');
 
 const accountsIndexSchema = require('./schema/accounts');
 const blocksIndexSchema = require('./schema/blocks');
@@ -83,6 +81,11 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
+
+const redis = new Redis(config.endpoints.redis);
+
+const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
+const indexAccountByAddress = async (address) => redis.sadd('pendingAccountsByAddress', address);
 
 const requestApi = coreApi.requestRetry;
 
@@ -674,4 +677,6 @@ module.exports = {
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
 	getNumberOfForgers,
+	indexAccountByAddress,
+	indexAccountByPublicKey,
 };
