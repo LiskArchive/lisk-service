@@ -44,19 +44,28 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-nodeStatus.waitForNode()
-	.then(async () => {
-		logger.info('Found a node, initiating Lisk Core...');
+nodeStatus.waitForNode().then(async () => {
+	logger.info('Found a node, initiating Lisk Core...');
 
-		// TODO: Remove after logging issues with 'sdk_v5/snapshotUtils.js' are resolved
-		if (config.snapshot.enable) logger.info('Initialising the automatic index snapshot application process');
+	// TODO: Remove after logging issues with 'sdk_v5/snapshotUtils.js' are resolved
+	if (config.snapshot.enable) logger.info('Initialising the automatic index snapshot application process');
+	await snapshotUtils.initSnapshot()
+		.then(() => { if (config.snapshot.enable) logger.info('Successfully downloaded and applied the snapshot'); })
+		.catch(err => logger.warn(`Unable to apply snapshot:\n${err.message}`));
 
-		await snapshotUtils.initSnapshot()
-			.then(() => { if (config.snapshot.enable) logger.info('Successfully downloaded and applied the snapshot'); })
-			.catch(err => logger.warn(`Unable to apply snapshot:\n${err.message}`));
+	// Ensure all the tables are created in the database
+	const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
+	await blockchainStore.initializeSearchIndex();
 
-		const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
-		await blockchainStore.initializeSearchIndex();
+	logger.info('Checking for node sync status');
+	const intervalID = setInterval(
+		() => logger.info('Node synchronization still in progress...'),
+		nodeStatus.CORE_SYNC_CHECK_INTERVAL,
+	);
+
+	nodeStatus.waitForNodeToFinishSync().then(async () => {
+		clearInterval(intervalID);
+		logger.info('Node synchronization is complete');
 
 		app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
 		app.addEvents(path.join(__dirname, 'events'));
@@ -64,7 +73,7 @@ nodeStatus.waitForNode()
 
 		app.run().then(() => {
 			logger.info(`Service started ${packageJson.name}`);
-
+			logger.info('Triggering the init process');
 			const coreApi = require('./shared/core');
 			coreApi.init();
 		}).catch(err => {
@@ -73,3 +82,4 @@ nodeStatus.waitForNode()
 			process.exit(1);
 		});
 	});
+});
