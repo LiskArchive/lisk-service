@@ -29,7 +29,7 @@ pipeline {
 				}
 			}
 		}
-		stage('Build Core') {
+		stage ('Build dependencies') {
 			steps {
 				dir('lisk-core') {
 					nvm(readFile(".nvmrc").trim()) {
@@ -37,15 +37,9 @@ pipeline {
 							rm -rf ~/.lisk
 							npm ci
 							npm run build
-							./bin/run start --network devnet --api-ipc &
-							echo $! > lisk-core.pid
 						'''
 					}
 				}
-			}
-		}
-		stage ('Build deps') {
-			steps {
 				dir('lisk-service') {
 					script { echoBanner(STAGE_NAME) }
 					nvm(readFile(".nvmrc").trim()) {
@@ -63,6 +57,19 @@ pipeline {
 						dir('./services/template') { sh 'npm ci' }
 						dir('./services/transaction-statistics') { sh 'npm ci' }
 						dir('./tests') { sh 'npm ci' }
+					}
+				}
+			}
+		}
+		stage('Start dependencies') {
+			steps {
+				script { echoBanner('Starting Lisk Core') }
+				dir('lisk-core') {
+					nvm(readFile(".nvmrc").trim()) {
+						sh '''
+							./bin/run start --network devnet --api-ipc &
+							echo $! > lisk-core.pid
+						'''
 					}
 				}
 			}
@@ -99,7 +106,10 @@ pipeline {
 				dir('lisk-service') {
 					script { echoBanner(STAGE_NAME) }
 					nvm(readFile(".nvmrc").trim()) {
-						sh 'pm2 start --silent ecosystem.jenkins.config.js' 
+						sh '''
+							npm install --global pm2
+							pm2 start --silent ecosystem.jenkins.config.js
+						''' 
 					}
 					waitForHttp('http://localhost:9901/api/v3/blocks')
 				}
@@ -109,6 +119,9 @@ pipeline {
 	post {
 		failure {
 			script { echoBanner('Failed to run the pipeline') }
+			sh '''
+				pm2 logs lisk-service-blockchain-connector
+			'''	
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') }
