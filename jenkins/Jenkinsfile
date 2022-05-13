@@ -8,10 +8,10 @@ pipeline {
 	agent { node { label 'lisk-service' } }
 	when {
 		anyOf {
-            branch 'development'
-            branch 'feature/blockchain-agnostic'
-        }
-    }
+			branch 'development'
+			branch 'feature/blockchain-agnostic'
+		}
+	}
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
