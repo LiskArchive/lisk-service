@@ -48,8 +48,8 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 
 const createDbConnection = async (connEndpoint) => {
 	const knex = require('knex')({
-		client: 'mysql',
-		version: '5.7',
+		client: 'mysql2',
+		version: '8',
 		connection: connEndpoint,
 		useNullAsDefault: true,
 		pool: {

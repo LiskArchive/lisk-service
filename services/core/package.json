@@ -46,7 +46,7 @@
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/fd16d55072965e76bb6ec10525a91bb3fdb9c7c7/framework/dist/lisk-service-framework-1.2.5.tgz",
     "method-override": "^3.0.0",
     "moment": "=2.24.0",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "semver": "^7.3.5",
     "signals": "^1.0.0",
     "split": "^1.0.1",
