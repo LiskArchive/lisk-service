@@ -1,4 +1,3 @@
-@Library('lisk-jenkins') _
 pipeline {
 	agent none
 	triggers {
@@ -20,15 +19,14 @@ pipeline {
 			agent any
 			when { branch 'development' }
 			environment {
-				ENABLE_HTTP_API='http-status,http-version2'
-				ENABLE_WS_API='blockchain,rpc-v2'
+				ENABLE_HTTP_API='http-status,http-version3'
+				ENABLE_WS_API='blockchain,rpc-v3'
 				// Mainnet node URL
 				LISK_CORE_WS='ws://host.docker.internal:8080'
-				INDEX_N_BLOCKS='0'
-				ENABLE_JOB_MISSING_BLOCKS='true'
-				INDEX_MISSING_BLOCKS_RANGE='0'
+				USE_LISK_IPC_CLIENT='false'
 				ENABLE_TRANSACTION_STATS='true'
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS='366'
+				ENABLE_FEE_ESTIMATOR_QUICK='true'
 			}
 			steps {
 				ansiColor('xterm') {
