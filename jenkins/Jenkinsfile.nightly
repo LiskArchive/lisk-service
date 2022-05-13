@@ -194,22 +194,28 @@ pipeline {
 			}
 		}
 		cleanup {
-			script { echoBanner('Cleaning up...') }
-			dir('lisk-service') { 
-				nvm(readFile('.nvmrc').trim()) {
-					sh '''
-						pm2 stop --silent ecosystem.jenkins.config.js
-						make clean-local
-					'''
-					dir('./jenkins/mysql') { sh "make down" }
-					dir('./jenkins/redis') { sh "make down" }
+			script { 
+				echoBanner('Cleaning up...')
+				dir('lisk-service') {
+					nvm(readFile('.nvmrc').trim()) {
+						echoBanner('Stopping all microservices and removing dependencies')
+						sh '''
+							pm2 stop --silent ecosystem.jenkins.config.js
+							make clean-local
+						'''
+						echoBanner('Stopping MySql')
+						dir('./jenkins/mysql') { sh "make down" }
+						echoBanner('Stopping Redis')
+						dir('./jenkins/redis') { sh "make down" }
+					}
 				}
-			}
-			dir('lisk-core') { 
-				sh '''
-					kill $( cat lisk-core.pid ) || true
-					rm -rf ~/.lisk node_modules
-				'''
+				dir('lisk-core') {
+					echoBanner('Stopping Lisk Core')
+					sh '''
+						kill $( cat lisk-core.pid ) || true
+						rm -rf ~/.lisk node_modules
+					'''
+				}
 			}
 		}
 	}

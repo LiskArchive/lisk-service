@@ -65,9 +65,12 @@ pipeline {
 			script { echoBanner('Failed to run the pipeline') }
 		}
 		cleanup {
-			script { echoBanner('Cleaning up...') } 
-			nvm(readFile('.nvmrc').trim()) {
-				sh 'make clean-local'
+			script { 
+				echoBanner('Cleaning up...') 
+				nvm(readFile('.nvmrc').trim()) {
+					echoBanner('Removing dependencies') 
+					sh 'make clean-local'
+				}
 			}
 		}
 	}
