@@ -37,8 +37,8 @@ pipeline {
 	}
 	stages {
 		stage('Checkout SCM') {
-			script { echoBanner(STAGE_NAME) }
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				cleanWs()
 				dir('lisk-core') {
 					checkout([$class: 'GitSCM', branches: [[name: "${params.COMMITISH_CORE}" ]], userRemoteConfigs: [[url: 'https://github.com/LiskHQ/lisk-core']]])
@@ -49,8 +49,8 @@ pipeline {
 			}
 		}
 		stage ('Build dependencies') {
-			script { echoBanner(STAGE_NAME) }
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				dir('lisk-core') {
 					nvm(readFile(".nvmrc").trim()) {
 						sh '''
@@ -81,8 +81,8 @@ pipeline {
 			}
 		}
 		stage('Run required services') {
-			script { echoBanner(STAGE_NAME) }
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				dir('lisk-core') {
 					nvm(readFile(".nvmrc").trim()) {
 						sh '''
@@ -100,8 +100,8 @@ pipeline {
 			}
 		}
 		stage ('Check linting') {
-			script { echoBanner(STAGE_NAME) }
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile(".nvmrc").trim()) {
 						sh 'npm run eslint'
@@ -110,8 +110,8 @@ pipeline {
 			}
 		}
 		stage('Perform unit tests') {
-			script { echoBanner(STAGE_NAME) }
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile(".nvmrc").trim()) {
 						dir('./framework') { sh "npm run test:unit" }
@@ -127,8 +127,8 @@ pipeline {
 			}
 		}
 		stage('Run microservices') {
-			script { echoBanner(STAGE_NAME) }
 			steps {
+				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
 					nvm(readFile(".nvmrc").trim()) {
 						sh '''
