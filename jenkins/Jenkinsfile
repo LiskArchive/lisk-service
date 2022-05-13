@@ -7,7 +7,7 @@ def echoBanner(msg) {
 pipeline {
 	agent { node { label 'lisk-service' } }
 	when {
-        anyOf {
+		anyOf {
             branch 'development'
             branch 'feature/blockchain-agnostic'
         }
@@ -19,7 +19,7 @@ pipeline {
 		stage ('Build dependencies') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(readFile(".nvmrc").trim()) {
+				nvm(readFile('.nvmrc').trim()) {
 					dir('./') { sh 'npm ci' }
 					dir('./framework') { sh 'npm ci' }
 					dir('./services/blockchain-connector') { sh 'npm ci' }
@@ -40,7 +40,7 @@ pipeline {
 		stage ('Check linting') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(readFile(".nvmrc").trim()) {
+				nvm(readFile('.nvmrc').trim()) {
 					sh 'npm run eslint'
 				}
 			}
@@ -48,7 +48,7 @@ pipeline {
 		stage('Perform unit tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(readFile(".nvmrc").trim()) {
+				nvm(readFile('.nvmrc').trim()) {
 					dir('./framework') { sh "npm run test:unit" }
 					dir('./services/blockchain-connector') { sh "npm run test:unit" }
 					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
@@ -66,7 +66,7 @@ pipeline {
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') } 
-			nvm(readFile(".nvmrc").trim()) {
+			nvm(readFile('.nvmrc').trim()) {
 				sh 'make clean-local'
 			}
 		}
