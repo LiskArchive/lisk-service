@@ -61,67 +61,74 @@ pipeline {
 			}
 		}
 		stage ('Build dependencies') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-core') {
-					nvm(readFile(".nvmrc").trim()) {
-						sh '''
-							rm -rf ~/.lisk
-							npm ci
-							npm run build
-						'''
+			parallel {
+				stage('Lisk Core') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-core') {
+							nvm(readFile(".nvmrc").trim()) {
+								sh '''
+									rm -rf ~/.lisk
+									npm ci
+									npm run build
+								'''
+							}
+						}
 					}
 				}
-				dir('lisk-service') {
-					nvm(readFile(".nvmrc").trim()) {
-						dir('./') { sh 'npm ci' }
-						dir('./framework') { sh 'npm ci' }
-						dir('./services/blockchain-connector') { sh 'npm ci' }
-						dir('./services/blockchain-indexer') { sh 'npm ci' }
-						dir('./services/blockchain-coordinator') { sh 'npm ci' }
-						dir('./services/core') { sh 'npm ci' }
-						dir('./services/fee-estimator') { sh 'npm ci' }
-						dir('./services/market') { sh 'npm ci' }
-						dir('./services/newsfeed') { sh 'npm ci' }
-						dir('./services/export') { sh 'npm ci' }
-						dir('./services/gateway') { sh 'npm ci' }
-						dir('./services/template') { sh 'npm ci' }
-						dir('./services/transaction-statistics') { sh 'npm ci' }
-						dir('./tests') { sh 'npm ci' }
+				stage('Lisk Service') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile(".nvmrc").trim()) {
+								dir('./') { sh 'npm ci' }
+								dir('./framework') { sh 'npm ci' }
+								dir('./services/blockchain-connector') { sh 'npm ci' }
+								dir('./services/blockchain-indexer') { sh 'npm ci' }
+								dir('./services/blockchain-coordinator') { sh 'npm ci' }
+								dir('./services/core') { sh 'npm ci' }
+								dir('./services/fee-estimator') { sh 'npm ci' }
+								dir('./services/market') { sh 'npm ci' }
+								dir('./services/newsfeed') { sh 'npm ci' }
+								dir('./services/export') { sh 'npm ci' }
+								dir('./services/gateway') { sh 'npm ci' }
+								dir('./services/template') { sh 'npm ci' }
+								dir('./services/transaction-statistics') { sh 'npm ci' }
+								dir('./tests') { sh 'npm ci' }
+							}
+						}
 					}
 				}
 			}
 		}
 		stage('Run required services') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-core') {
-					nvm(readFile(".nvmrc").trim()) {
-						sh '''
-							./bin/run start --network devnet --api-ipc &
-							echo $! > lisk-core.pid
-						'''
-					}
-				}
-				dir('lisk-service') {
-					script {
-						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
-						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
-
-						nvm(readFile(".nvmrc").trim()) {
-							sh 'npm i -g pm2'
+			parallel {
+				stage('Lisk Core') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-core') {
+							nvm(readFile(".nvmrc").trim()) {
+								sh '''
+									./bin/run start --network devnet --api-ipc &
+									echo $! > lisk-core.pid
+								'''
+							}
 						}
 					}
-				}	
-			}
-		}
-		stage ('Check linting') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile(".nvmrc").trim()) {
-						sh 'npm run eslint'
-					}
+				}
+				stage('Lisk Service') {
+					steps {
+						dir('lisk-service') {
+							script {
+								runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+								runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
+
+								nvm(readFile(".nvmrc").trim()) {
+									sh 'npm i -g pm2'
+								}
+							}
+						}
+					}	
 				}
 			}
 		}
@@ -136,24 +143,38 @@ pipeline {
 				}
 			}
 		}
-		stage('Perform functional tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile(".nvmrc").trim()) {
-						dir('./framework') { sh "npm run test:functional" }
-						dir('./services/market') { sh "npm run test:functional" }
-						dir('./tests') { sh "npm run test:functional" }
+		stage('Run Test') {
+			parallel {
+				stage ('Check linting') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile(".nvmrc").trim()) {
+								sh 'npm run eslint'
+							}
+						}
 					}
 				}
-			}
-		}
-		stage('Perform integration tests') {
-			steps {
-				script { echoBanner(STAGE_NAME) }
-				dir('lisk-service') {
-					nvm(readFile(".nvmrc").trim()) {
-						dir('./tests') { sh 'npm run test:integration:APIv3:SDKv6' }
+				stage('Perform functional tests') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile(".nvmrc").trim()) {
+								dir('./framework') { sh "npm run test:functional" }
+								dir('./services/market') { sh "npm run test:functional" }
+								dir('./tests') { sh "npm run test:functional" }
+							}
+						}
+					}
+				}
+				stage('Perform integration tests') {
+					steps {
+						script { echoBanner(STAGE_NAME) }
+						dir('lisk-service') {
+							nvm(readFile(".nvmrc").trim()) {
+								dir('./tests') { sh 'npm run test:integration:APIv3:SDKv6' }
+							}
+						}
 					}
 				}
 			}
