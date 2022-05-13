@@ -273,8 +273,8 @@ const getTransactions = async params => {
 
 	const total = await transactionsDB.count(params);
 	const resultSet = await transactionsDB.find(
-		Object.assign({}, params, { limit: params.limit || total }),
-		['id', 'timestamp', 'height', 'blockId']
+		{ ...params, limit: params.limit || total },
+		['id', 'timestamp', 'height', 'blockId'],
 	);
 	params.ids = resultSet.map(row => row.id);
 

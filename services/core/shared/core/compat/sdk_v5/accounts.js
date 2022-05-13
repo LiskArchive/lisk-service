@@ -192,8 +192,7 @@ const resolveAccountInfo = async accounts => BluebirdPromise.map(
 	accounts,
 	async account => {
 		account.dpos.unlocking = await BluebirdPromise.map(
-			account.dpos.unlocking
-				.sort((a, b) => b - a),
+			account.dpos.unlocking.sort((a, b) => b - a),
 			async unlock => {
 				const delegateHexAddress = unlock.delegateAddress;
 				unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
@@ -644,16 +643,9 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 };
 
 const keepAccountsCacheUpdated = async () => {
-	// TODO: Cleanup, if the fix works
-	// const accountsDB = await getAccountsIndex();
-	// const updateAccountsCacheListener = async (address) => {
-	// 	const accounts = await getAccountsByAddress(address);
-	// 	await accountsDB.upsert(accounts);
-	// };
-
 	const updateAccountsCacheListener = async (addresses) => BluebirdPromise.map(
 		addresses,
-		address => indexAccountByAddress(address),
+		async (address) => indexAccountByAddress(address),
 		{ concurrency: addresses.length },
 	);
 
