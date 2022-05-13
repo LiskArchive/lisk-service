@@ -14,9 +14,6 @@ properties([
 
 pipeline {
 	agent { node { label 'lisk-service' } }
-	environment {
-		LISK_APP_DATA_PATH='~/.lisk/lisk-core'
-    }
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
@@ -37,14 +34,11 @@ pipeline {
 				dir('lisk-core') {
 					nvm(readFile(".nvmrc").trim()) {
 						sh '''
-							npm install --registry https://npm.lisk.com/
-							npm install --global yarn
-							for package in $( cat ../packages ); do
-							yarn link "$package"
-							done
+							rm -rf ~/.lisk
+							npm ci
 							npm run build
-							./bin/run start --network devnet --api-ipc
-							echo $! >lisk-core.pid
+							./bin/run start --network devnet --api-ipc &
+							echo $! > lisk-core.pid
 						'''
 					}
 				}
@@ -55,20 +49,20 @@ pipeline {
 				dir('lisk-service') {
 					script { echoBanner(STAGE_NAME) }
 					nvm(readFile(".nvmrc").trim()) {
-						dir('./') { sh 'npm i' }
-						dir('./framework') { sh 'npm i' }
-						dir('./services/blockchain-connector') { sh 'npm i' }
-						dir('./services/blockchain-indexer') { sh 'npm i' }
-						dir('./services/blockchain-coordinator') { sh 'npm i' }
-						dir('./services/core') { sh 'npm i' }
-						dir('./services/fee-estimator') { sh 'npm i' }
-						dir('./services/market') { sh 'npm i' }
-						dir('./services/newsfeed') { sh 'npm i' }
-						dir('./services/export') { sh 'npm i' }
-						dir('./services/gateway') { sh 'npm i' }
-						dir('./services/template') { sh 'npm i' }
-						dir('./services/transaction-statistics') { sh 'npm i' }
-						dir('./tests') { sh 'npm i' }
+						dir('./') { sh 'npm ci' }
+						dir('./framework') { sh 'npm ci' }
+						dir('./services/blockchain-connector') { sh 'npm ci' }
+						dir('./services/blockchain-indexer') { sh 'npm ci' }
+						dir('./services/blockchain-coordinator') { sh 'npm ci' }
+						dir('./services/core') { sh 'npm ci' }
+						dir('./services/fee-estimator') { sh 'npm ci' }
+						dir('./services/market') { sh 'npm ci' }
+						dir('./services/newsfeed') { sh 'npm ci' }
+						dir('./services/export') { sh 'npm ci' }
+						dir('./services/gateway') { sh 'npm ci' }
+						dir('./services/template') { sh 'npm ci' }
+						dir('./services/transaction-statistics') { sh 'npm ci' }
+						dir('./tests') { sh 'npm ci' }
 					}
 				}
 			}
@@ -120,8 +114,9 @@ pipeline {
 			script { echoBanner('Cleaning up...') }
 			dir('lisk-service') { sh 'make clean-local' }
 			sh '''
-			# lisk-core
-			kill $( cat lisk-core.pid )
+				# lisk-core
+				kill $( cat lisk-core.pid ) || true
+				rm -rf ~/.lisk
 			'''
 		}
 	}
