@@ -9,10 +9,10 @@ def checkOpenPort(nPort) {
 def runServiceIfMissing(svcName, path, nPort) {
 	if (checkOpenPort(nPort) == false) {
 		echo "${svcName} is not running, starting a new instance on port ${nPort}"
-		dir(path) { sh "make up" }
+		dir(path) { sh 'make up' }
 		if (checkOpenPort(nPort) == false) {
-			dir(path) { sh "make logs" }
-			currentBuild.result = "FAILURE"
+			dir(path) { sh 'make logs' }
+			currentBuild.result = 'FAILURE'
 			throw new Exception("Failed to run ${svcName} instance")
 		}
 	}
@@ -42,7 +42,7 @@ properties([
 pipeline {
 	agent { node { label 'lisk-service' } }
 	when {
-        anyOf {
+		anyOf {
             branch 'development'
             branch 'feature/blockchain-agnostic'
         }
@@ -149,7 +149,7 @@ pipeline {
 				}
 			}
 		}
-		stage('Run Test') {
+		stage('Run Tests') {
 			parallel {
 				stage ('Check linting') {
 					steps {
@@ -161,7 +161,7 @@ pipeline {
 						}
 					}
 				}
-				stage('Perform functional tests') {
+				stage('Run functional tests') {
 					steps {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
@@ -173,7 +173,7 @@ pipeline {
 						}
 					}
 				}
-				stage('Perform integration tests') {
+				stage('Run integration tests') {
 					steps {
 						script { echoBanner(STAGE_NAME) }
 						dir('lisk-service') {
