@@ -41,6 +41,12 @@ properties([
 
 pipeline {
 	agent { node { label 'lisk-service' } }
+	when {
+        anyOf {
+            branch 'development'
+            branch 'feature/blockchain-agnostic'
+        }
+    }
 	triggers {
 		cron('0 23 * * *')
 	}
