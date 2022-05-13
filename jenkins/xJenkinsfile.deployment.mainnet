@@ -9,10 +9,7 @@ pipeline {
 			agent any
             when { branch 'development' }
 			steps {
-				sh 'make build-core'
-				sh 'make build-market'
-				sh 'make build-newsfeed'
-				sh 'make build-gateway'
+				sh 'make build'
 			}
 		}
 		stage('Deploy lisk-service Mainnet') {
