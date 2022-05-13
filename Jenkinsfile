@@ -1,4 +1,22 @@
-@Library('lisk-jenkins') _
+MYSQL_PORT = 3306
+REDIS_PORT = 6381
+
+def checkOpenPort(nPort) {
+	def result = sh script: "nc -z localhost ${nPort}", returnStatus: true
+	return (result == 0)
+}
+
+def runServiceIfMissing(svcName, path, nPort) {
+	if (checkOpenPort(nPort) == false) {
+		echo "${svcName} is not running, starting a new instance on port ${nPort}"
+		dir(path) { sh "make up" }
+		if (checkOpenPort(nPort) == false) {
+			dir(path) { sh "make logs" }
+			currentBuild.result = "FAILURE"
+			throw new Exception("Failed to run ${svcName} instance")
+		}
+	}
+}
 
 def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
@@ -19,6 +37,7 @@ pipeline {
 	}
 	stages {
 		stage('Checkout SCM') {
+			script { echoBanner(STAGE_NAME) }
 			steps {
 				cleanWs()
 				dir('lisk-core') {
@@ -30,6 +49,7 @@ pipeline {
 			}
 		}
 		stage ('Build dependencies') {
+			script { echoBanner(STAGE_NAME) }
 			steps {
 				dir('lisk-core') {
 					nvm(readFile(".nvmrc").trim()) {
@@ -41,7 +61,6 @@ pipeline {
 					}
 				}
 				dir('lisk-service') {
-					script { echoBanner(STAGE_NAME) }
 					nvm(readFile(".nvmrc").trim()) {
 						dir('./') { sh 'npm ci' }
 						dir('./framework') { sh 'npm ci' }
@@ -61,9 +80,9 @@ pipeline {
 				}
 			}
 		}
-		stage('Start dependencies') {
+		stage('Run required services') {
+			script { echoBanner(STAGE_NAME) }
 			steps {
-				script { echoBanner('Starting Lisk Core') }
 				dir('lisk-core') {
 					nvm(readFile(".nvmrc").trim()) {
 						sh '''
@@ -72,12 +91,18 @@ pipeline {
 						'''
 					}
 				}
+				dir('lisk-service') {
+					script {
+						runServiceIfMissing('MySQL', './jenkins/mysql', MYSQL_PORT)
+						runServiceIfMissing('Redis', './jenkins/redis', REDIS_PORT)
+					}
+				}	
 			}
 		}
 		stage ('Check linting') {
+			script { echoBanner(STAGE_NAME) }
 			steps {
 				dir('lisk-service') {
-					script { echoBanner(STAGE_NAME) }
 					nvm(readFile(".nvmrc").trim()) {
 						sh 'npm run eslint'
 					}
@@ -85,9 +110,9 @@ pipeline {
 			}
 		}
 		stage('Perform unit tests') {
+			script { echoBanner(STAGE_NAME) }
 			steps {
 				dir('lisk-service') {
-					script { echoBanner(STAGE_NAME) }
 					nvm(readFile(".nvmrc").trim()) {
 						dir('./framework') { sh "npm run test:unit" }
 						dir('./services/blockchain-connector') { sh "npm run test:unit" }
@@ -102,9 +127,9 @@ pipeline {
 			}
 		}
 		stage('Run microservices') {
+			script { echoBanner(STAGE_NAME) }
 			steps {
 				dir('lisk-service') {
-					script { echoBanner(STAGE_NAME) }
 					nvm(readFile(".nvmrc").trim()) {
 						sh '''
 							npm install --global pm2
@@ -120,17 +145,25 @@ pipeline {
 		failure {
 			script { echoBanner('Failed to run the pipeline') }
 			sh '''
-				pm2 logs lisk-service-blockchain-connector
+				pm2 logs
 			'''	
 		}
 		cleanup {
 			script { echoBanner('Cleaning up...') }
-			dir('lisk-service') { sh 'make clean-local' }
-			sh '''
-				# lisk-core
-				kill $( cat lisk-core.pid ) || true
-				rm -rf ~/.lisk
-			'''
+			dir('lisk-service') { 
+				sh '''
+					pm2 stop --silent ecosystem.jenkins.config.js
+					make clean-local
+				'''
+				dir('./jenkins/mysql') { sh "make down" }
+				dir('./jenkins/redis') { sh "make down" }
+			}
+			dir('lisk-core') { 
+				sh '''
+					kill $( cat lisk-core.pid ) || true
+					rm -rf ~/.lisk node_modules
+				'''
+			}
 		}
 	}
 }
