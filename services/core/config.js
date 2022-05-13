@@ -119,15 +119,6 @@ config.queue = {
 		settings: {},
 		// limiter: {},
 	},
-	deleteIndexedBlocksQueue: {
-		defaultJobOptions: {
-			attempts: 10,
-			timeout: 5 * 60 * 1000, // millisecs
-			removeOnComplete: true,
-		},
-		settings: {},
-		// limiter: {},
-	},
 	transactionStatisticsQueue: {
 		defaultJobOptions: {
 			attempts: 5,

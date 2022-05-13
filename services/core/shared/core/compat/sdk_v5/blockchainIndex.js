@@ -117,15 +117,13 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
-			if (block.generatorPublicKey) {
-				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-				pkInfoArray.push({
-					publicKey: block.generatorPublicKey,
-					reward: block.reward,
-					isForger: true,
-					isBlockIndexed: !!blockInfo,
-				});
-			}
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+			pkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: block.reward,
+				isForger: true,
+				isBlockIndexed: !!blockInfo,
+			});
 		},
 		{ concurrency: blocks.length },
 	);
@@ -257,6 +255,7 @@ const deleteIndexedBlocks = async job => {
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
+
 	try {
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
@@ -296,7 +295,7 @@ const deleteIndexedBlocks = async job => {
 // Initialize queues
 const indexBlocksQueue = Queue('indexBlocksQueue', indexBlock, 30);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1, config.queue.deleteIndexedBlocksQueue);
+const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
 const verifyAndIndexBlock = async data => {
 	const { block } = data.data;
@@ -319,18 +318,21 @@ const verifyAndIndexBlock = async data => {
 				.map(b => ({ ...b, isFinal: true })),
 		});
 
+		// Fork handling
 		if (blockInfo && blockInfo.id !== block.id) {
-			// Fork detected
-
 			const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-			const blocksToRemove = await blocksDB.find({
-				propBetweens: [{
-					property: 'height',
-					from: block.height + 1,
-					to: highestIndexedBlock.height,
-				}],
-				limit: highestIndexedBlock.height - block.height,
-			}, ['id']);
+			const blocksToRemove = await blocksDB.find(
+				{
+					propBetweens: [{
+						property: 'height',
+						from: block.height + 1,
+						to: highestIndexedBlock.height,
+					}],
+					sort: 'height:desc',
+					limit: highestIndexedBlock.height - block.height,
+				},
+				['id', 'generatorPublicKey'],
+			);
 			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 		}
 	}
