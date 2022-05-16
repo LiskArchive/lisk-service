@@ -71,7 +71,7 @@ const createDbConnection = async (connEndpoint) => {
 		.catch((err) => {
 			if (err.code === 'ECONNREFUSED') {
 				logger.error(err.message);
-				logger.error('Database error, shutting down the process');
+				logger.fatal('Unable to connect to the database, shutting down the process...');
 				process.exit(1);
 			}
 			logger.error(err.message);
