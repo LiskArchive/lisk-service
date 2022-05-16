@@ -49,8 +49,8 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 
 const createDbConnection = async (connEndpoint) => {
 	const knex = require('knex')({
-		client: 'mysql',
-		version: '5.7',
+		client: 'mysql2',
+		version: '8',
 		connection: connEndpoint,
 		useNullAsDefault: true,
 		pool: {
@@ -72,7 +72,7 @@ const createDbConnection = async (connEndpoint) => {
 		.catch((err) => {
 			if (err.code === 'ECONNREFUSED') {
 				logger.error(err.message);
-				logger.error('Database error, shutting down the process');
+				logger.fatal('Unable to connect to the database, shutting down the process...');
 				process.exit(1);
 			}
 			logger.error(err);
