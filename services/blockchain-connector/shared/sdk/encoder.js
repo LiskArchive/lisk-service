@@ -26,7 +26,7 @@ const {
 
 const encodeTransaction = (transaction) => {
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const txParamsBuffer = codec.encode(txParamsSchema, transaction.asset);
+	const txParamsBuffer = codec.encode(txParamsSchema, transaction.params);
 
 	const txSchema = getTransactionSchema();
 	const txBuffer = codec.encode(
