@@ -6,17 +6,17 @@ def echoBanner(msg) {
 
 pipeline {
 	agent { node { label 'lisk-service' } }
-	when {
-		anyOf {
-			branch 'development'
-			branch 'feature/blockchain-agnostic'
-		}
-	}
 	options {
 		timeout(time: 10, unit: 'MINUTES')
 	}
 	stages {
 		stage ('Build dependencies') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
@@ -38,6 +38,12 @@ pipeline {
 			}
 		}
 		stage ('Check linting') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
@@ -46,6 +52,12 @@ pipeline {
 			}
 		}
 		stage('Perform unit tests') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {

@@ -41,12 +41,6 @@ properties([
 
 pipeline {
 	agent { node { label 'lisk-service' } }
-	when {
-		anyOf {
-			branch 'development'
-			branch 'feature/blockchain-agnostic'
-		}
-	}
 	triggers {
 		cron('0 23 * * *')
 	}
@@ -55,6 +49,12 @@ pipeline {
 	}
 	stages {
 		stage('Checkout SCM') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				cleanWs()
@@ -67,6 +67,12 @@ pipeline {
 			}
 		}
 		stage ('Build dependencies') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			parallel {
 				stage('Lisk Core') {
 					steps {
@@ -109,6 +115,12 @@ pipeline {
 			}
 		}
 		stage('Run required services') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			parallel {
 				stage('Lisk Core') {
 					steps {
@@ -136,6 +148,12 @@ pipeline {
 			}
 		}
 		stage('Run microservices') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				dir('lisk-service') {
@@ -147,6 +165,12 @@ pipeline {
 			}
 		}
 		stage('Run Tests') {
+			when {
+				anyOf {
+					branch 'development'
+					branch 'feature/blockchain-agnostic'
+				}
+			}
 			parallel {
 				stage ('Check linting') {
 					steps {
