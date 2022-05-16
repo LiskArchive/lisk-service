@@ -1,0 +1,21 @@
+# .github/release.yml
+
+### Release goal
+
+#### This version adds / fixes... (Manual)
+
+changelog:
+  categories:
+    - title: Features & Improvements
+      labels:
+        - epic
+        - 'type: refactoring'
+    - title: Breaking Changes
+      labels:
+        - epic
+        - 'type: breaking'
+    - title: Bug & Security Fixes
+      labels:
+        - 'type: bug'
+        - 'type: security'
+    - title: Known Issues
