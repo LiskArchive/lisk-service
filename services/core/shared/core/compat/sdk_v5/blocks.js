@@ -263,6 +263,7 @@ module.exports = {
 	getBlocks,
 	getGenesisHeight,
 	updateFinalizedHeight,
+	setFinalizedHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getCurrentHeight,

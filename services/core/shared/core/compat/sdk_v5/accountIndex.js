@@ -65,10 +65,6 @@ const accountPkUpdateQueue = Queue('accountQueueByPublicKey', updateAccountInfoP
 const accountAddrUpdateQueue = Queue('accountQueueByAddress', updateAccountInfoAddr, 1);
 const accountDirectUpdateQueue = Queue('accountQueueDirect', updateAccountWithData, 1);
 
-const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
-
-const indexAccountByAddress = async (address) => redis.sadd('pendingAccountsByAddress', address);
-
 const triggerAccountUpdates = async () => {
 	const publicKeys = await redis.spop('pendingAccountsByPublicKey', 64);
 	publicKeys.forEach(publicKey => {
@@ -81,11 +77,9 @@ const triggerAccountUpdates = async () => {
 	});
 };
 
-const indexAccountWithData = (account) => accountDirectUpdateQueue.add(account);
+const indexAccountWithData = async (account) => accountDirectUpdateQueue.add(account);
 
 module.exports = {
-	indexAccountByPublicKey,
-	indexAccountByAddress,
 	indexAccountWithData,
 	triggerAccountUpdates,
 };

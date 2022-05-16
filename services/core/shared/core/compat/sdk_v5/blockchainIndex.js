@@ -35,6 +35,8 @@ const {
 const {
 	getCurrentHeight,
 	getBlockByHeight,
+	updateFinalizedHeight,
+	getFinalizedHeight,
 } = require('./blocks');
 
 const {
@@ -94,10 +96,6 @@ const blockchainStore = require('./blockchainStore');
 // Blockchain starts form a non-zero block height
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
-// The top final block
-const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);
-const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
-
 // Height below which there are no missing blocks in the index
 const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
 const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
@@ -105,10 +103,6 @@ const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 // Last blockchain index status
 const setIndexDiff = (height) => blockchainStore.set('indexStatus', height);
 const getIndexDiff = () => blockchainStore.get('indexStatus');
-
-// Key-based account update
-// There is a bug that does not update public keys
-const KEY_BASED_ACCOUNT_UPDATE = false;
 
 // Key constants for the KV-store
 const genesisAccountPageCached = 'genesisAccountPageCached';
@@ -123,15 +117,13 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
-			if (block.generatorPublicKey) {
-				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-				pkInfoArray.push({
-					publicKey: block.generatorPublicKey,
-					reward: block.reward,
-					isForger: true,
-					isBlockIndexed: !!blockInfo,
-				});
-			}
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+			pkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: block.reward,
+				isForger: true,
+				isBlockIndexed: !!blockInfo,
+			});
 		},
 		{ concurrency: blocks.length },
 	);
@@ -191,18 +183,19 @@ const ensureArray = (e) => Array.isArray(e) ? e : [e];
 const indexBlock = async job => {
 	const { height } = job.data;
 
-	const blocksDB = await getBlocksIndex();
 	const blocks = await getBlockByHeight(height);
+	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block at height ${height}`);
+
+	const blocksDB = await getBlocksIndex();
+	const transactionsDB = await getTransactionsIndex();
+	const votesDB = await getVotesIndex();
+	const multisignatureDB = await getMultisignatureIndex();
+
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
+	logger.trace(`Created new MySQL transaction to index block at height ${height}`);
 
-	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
-
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block at height ${height}`);
 	try {
-		const transactionsDB = await getTransactionsIndex();
-		const votesDB = await getVotesIndex();
-		const multisignatureDB = await getMultisignatureIndex();
 		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
 		const {
 			accounts: accountsFromTransactions,
@@ -212,20 +205,33 @@ const indexBlock = async job => {
 
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		ensureArray(accountsByPublicKey).forEach(a => indexAccountWithData(a));
-		ensureArray(accountsFromTransactions).forEach(a => indexAccountWithData(a));
+
+		await BluebirdPromise.all(
+			ensureArray(accountsByPublicKey)
+				.concat(ensureArray(accountsFromTransactions))
+				.map(async (a) => indexAccountWithData(a)),
+		);
+
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 		if (votes.length) await votesDB.upsert(votes, trx);
 
-		await BluebirdPromise.map(generatorPkInfoArray,
-			generatorProps => updateProducedBlocksAndRewards(generatorProps, trx), { concurrency: 1 });
-		await BluebirdPromise.map(votesToAggregateArray,
-			voteToAggregate => updateVoteAggregatesTrx(voteToAggregate, trx), { concurrency: 1 });
+		await BluebirdPromise.map(
+			generatorPkInfoArray,
+			async (generatorProps) => updateProducedBlocksAndRewards(generatorProps, trx),
+			{ concurrency: 1 },
+		);
+
+		await BluebirdPromise.map(
+			votesToAggregateArray,
+			async (voteToAggregate) => updateVoteAggregatesTrx(voteToAggregate, trx),
+			{ concurrency: 1 },
+		);
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
+		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
@@ -244,14 +250,17 @@ const updateBlockIndex = async job => {
 };
 
 const deleteIndexedBlocks = async job => {
+	const { blocks } = job.data;
+
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
+
 	try {
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
-		const { blocks } = job.data;
+
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
@@ -309,18 +318,21 @@ const verifyAndIndexBlock = async data => {
 				.map(b => ({ ...b, isFinal: true })),
 		});
 
+		// Fork handling
 		if (blockInfo && blockInfo.id !== block.id) {
-			// Fork detected
-
 			const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-			const blocksToRemove = await blocksDB.find({
-				propBetweens: [{
-					property: 'height',
-					from: block.height + 1,
-					to: highestIndexedBlock.height,
-				}],
-				limit: highestIndexedBlock.height - block.height,
-			}, ['id']);
+			const blocksToRemove = await blocksDB.find(
+				{
+					propBetweens: [{
+						property: 'height',
+						from: block.height + 1,
+						to: highestIndexedBlock.height,
+					}],
+					sort: 'height:desc',
+					limit: highestIndexedBlock.height - block.height,
+				},
+				['id', 'generatorPublicKey'],
+			);
 			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
 		}
 	}
@@ -435,25 +447,19 @@ const buildIndex = async (from, to) => {
 		return;
 	}
 
-	const MAX_BLOCKS_LIMIT_PP = 1; // 1 block at a time
-	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+	logger.debug(`Scheduling indexing of blocks in height range: ${from} - ${to}`);
 
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset >= from ? pseudoOffset : from - 1;
-		const batchFromHeight = offset + 1;
-		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
-		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
+	const totalNumOfBlocks = to - from + 1;
+	for (let height = from; height <= to; height++) {
+		const count = height - from + 1;
+		const percentage = ((count / totalNumOfBlocks) * 100).toFixed(1);
+		logger.trace(`Scheduling indexing of block at height ${height} (${count} of ${totalNumOfBlocks}, ${percentage}%)`);
 
-		for (let height = batchFromHeight; height <= batchToHeight; height++) {
-			await indexBlocksQueue.add({ height });
-		}
-		/* eslint-enable no-await-in-loop */
+		// eslint-disable-next-line no-await-in-loop
+		await indexBlocksQueue.add({ height });
 	}
-	logger.info(`Finished scheduling the block index build (${from}-${to})`);
+
+	logger.info(`Finished scheduling indexing of blocks in height range: ${from} - ${to}`);
 };
 
 const indexNewBlocks = async blocks => blocks.data.forEach(async block => {
@@ -499,30 +505,16 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-const getLastFinalBlockHeight = async () => {
-	// Returns the highest finalized block available within the index
-	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const blocksDB = await getBlocksIndex();
-
-	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
-		sort: 'height:desc',
-		limit: 1,
-		isFinal: true,
-	}, ['height']);
-
-	return lastIndexedHeight;
-};
-
-const getNonFinalHeights = async () => {
+const getMinNonFinalHeight = async () => {
 	const blocksDB = await getBlocksIndex();
 
 	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
 		sort: 'height:asc',
-		limit: 5000,
+		limit: 1,
 		isFinal: false,
 	}, ['height']);
 
-	return lastIndexedHeight || [];
+	return lastIndexedHeight;
 };
 
 const indexMissingBlocks = async (params = {}) => {
@@ -545,7 +537,9 @@ const indexMissingBlocks = async (params = {}) => {
 
 	// Retrieve the list of missing blocks
 	const missingBlockRanges = await findMissingBlocksInRange(
-		blockIndexLowerRange, blockIndexHigherRange);
+		blockIndexLowerRange,
+		blockIndexHigherRange,
+	);
 
 	// Start building the block index
 	try {
@@ -555,13 +549,12 @@ const indexMissingBlocks = async (params = {}) => {
 			await setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
 		} else {
 			for (let i = 0; i < missingBlockRanges.length; i++) {
+				/* eslint-disable no-await-in-loop */
 				const { from, to } = missingBlockRanges[i];
-
 				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from + 1} blocks)`);
-				/* eslint-disable-next-line no-await-in-loop */
 				await buildIndex(from, to);
-				/* eslint-disable-next-line no-await-in-loop */
 				await setIndexVerifiedHeight(to + 1);
+				/* eslint-enable no-await-in-loop */
 			}
 		}
 	} catch (err) {
@@ -571,15 +564,13 @@ const indexMissingBlocks = async (params = {}) => {
 
 const updateNonFinalBlocks = async () => {
 	const cHeight = await getCurrentHeight();
-	const nfHeights = await getNonFinalHeights();
+	const minNFHeight = await getMinNonFinalHeight();
 
-	if (nfHeights.length > 0) {
-		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
-		await buildIndex(nfHeights[0].height, cHeight);
+	if (typeof minNFHeight === 'number') {
+		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks`);
+		await buildIndex(minNFHeight, cHeight);
 	}
 };
-
-const updateFinalizedHeight = async () => setFinalizedHeight(await getLastFinalBlockHeight());
 
 const getIndexStats = async () => {
 	try {
@@ -675,8 +666,7 @@ const initializeSearchIndex = async () => {
 
 const init = async () => {
 	// Index every new incoming block
-	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
-	Signals.get('newBlock').add(indexNewBlocksListener);
+	Signals.get('newBlock').add(indexNewBlocks);
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('newBlock').add(updateFinalizedHeight);
 	setInterval(reportIndexStatus, 15 * 1000); // ms
@@ -704,9 +694,8 @@ const init = async () => {
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
-		if (KEY_BASED_ACCOUNT_UPDATE === true) {
-			setInterval(triggerAccountUpdates, 15 * 1000); // ms
-		}
+		// Ensure the pendingAccounts updates are performed regularly
+		setInterval(triggerAccountUpdates, 15 * 1000); // ms
 
 		logger.info('Finished all blockchain index startup tasks');
 	} catch (err) {
@@ -716,9 +705,7 @@ const init = async () => {
 
 module.exports = {
 	init,
-	getLastFinalBlockHeight,
 	getIndexStats,
 	deleteBlock,
 	initializeSearchIndex,
-	indexMissingBlocks,
 };

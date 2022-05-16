@@ -14,6 +14,8 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const Redis = require('ioredis');
+
 const {
 	CacheRedis,
 	Exceptions: {
@@ -58,13 +60,13 @@ const {
 	standardizePomHeight,
 } = require('./dpos');
 
-const coreApi = require('./coreApi');
-const config = require('../../../../config');
-const Signals = require('../../../signals');
-
 const {
 	getTableInstance,
 } = require('../../../indexdb/mysql');
+
+const coreApi = require('./coreApi');
+const config = require('../../../../config');
+const Signals = require('../../../signals');
 
 const accountsIndexSchema = require('./schema/accounts');
 const blocksIndexSchema = require('./schema/blocks');
@@ -79,6 +81,11 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.redis);
+
+const redis = new Redis(config.endpoints.redis);
+
+const indexAccountByPublicKey = async (publicKey) => redis.sadd('pendingAccountsByPublicKey', publicKey);
+const indexAccountByAddress = async (address) => redis.sadd('pendingAccountsByAddress', address);
 
 const requestApi = coreApi.requestRetry;
 
@@ -185,8 +192,7 @@ const resolveAccountInfo = async accounts => BluebirdPromise.map(
 	accounts,
 	async account => {
 		account.dpos.unlocking = await BluebirdPromise.map(
-			account.dpos.unlocking
-				.sort((a, b) => b - a),
+			account.dpos.unlocking.sort((a, b) => b - a),
 			async unlock => {
 				const delegateHexAddress = unlock.delegateAddress;
 				unlock.delegateAddress = getBase32AddressFromHex(unlock.delegateAddress);
@@ -637,12 +643,13 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 };
 
 const keepAccountsCacheUpdated = async () => {
-	const accountsDB = await getAccountsIndex();
-	const updateAccountsCacheListener = async (address) => {
-		const accounts = await getAccountsByAddress(address);
-		await accountsDB.upsert(accounts);
-	};
-	Signals.get('updateAccountsByAddress').add(updateAccountsCacheListener);
+	const updateAccountsCacheListener = async (addresses) => BluebirdPromise.map(
+		addresses,
+		async (address) => indexAccountByAddress(address),
+		{ concurrency: addresses.length },
+	);
+
+	Signals.get('updateAccountsByAddresses').add(updateAccountsCacheListener);
 };
 
 Signals.get('searchIndexInitialized').add(removeReclaimedLegacyAccountInfoFromCache);
@@ -662,4 +669,6 @@ module.exports = {
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
 	getNumberOfForgers,
+	indexAccountByAddress,
+	indexAccountByPublicKey,
 };

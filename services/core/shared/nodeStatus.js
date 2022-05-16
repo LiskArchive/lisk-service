@@ -29,6 +29,9 @@ const liskCoreAddress = config.endpoints.liskHttp;
 const logger = Logger();
 
 const CORE_DISCOVERY_INTERVAL = 1 * 1000; // ms
+const CORE_SYNC_CHECK_INTERVAL = 30 * 1000; // ms
+
+let intervalID;
 
 // Report the Lisk Core status
 let logConnectStatus = true;
@@ -63,10 +66,35 @@ const checkStatus = () => new Promise((resolve, reject) => {
 
 const waitForNode = () => waitForIt(checkStatus, CORE_DISCOVERY_INTERVAL);
 
+const waitForNodeToFinishSync = (resolve) => new Promise((res) => {
+	if (!resolve) resolve = res;
+	if (intervalID) {
+		clearInterval(intervalID);
+		intervalID = null;
+	}
+
+	return getNetworkConstants(true).then(({ data: networkConstants }) => {
+		const { syncing } = networkConstants;
+		const isNodeSyncComplete = !syncing;
+		return syncing
+			? (() => {
+				logger.info('Node synchronization still in progress...');
+				intervalID = setInterval(
+					waitForNodeToFinishSync.bind(null, resolve),
+					CORE_SYNC_CHECK_INTERVAL,
+				);
+			})()
+			: resolve(isNodeSyncComplete);
+	});
+});
+
 const getStatus = () => logConnectStatus;
 
 module.exports = {
-	waitForNode,
+	CORE_SYNC_CHECK_INTERVAL,
+
 	checkStatus,
 	getStatus,
+	waitForNode,
+	waitForNodeToFinishSync,
 };

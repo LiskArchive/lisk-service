@@ -64,10 +64,10 @@ const events = {
 			logger.error(`Error occured when processing 'newBlock' event:\n${err.stack}`);
 		}
 	},
-	updateAccountsByAddress: async (addresses) => {
+	updateAccountsByAddresses: async (addresses) => {
 		try {
-			logger.debug(`============== 'updateAccountsByAddress' signal: ${Signals.get('updateAccountsByAddress')} ==============`);
-			Signals.get('updateAccountsByAddress').dispatch(addresses);
+			logger.debug(`============== 'updateAccountsByAddresses' signal: ${Signals.get('updateAccountsByAddresses')} ==============`);
+			Signals.get('updateAccountsByAddresses').dispatch(addresses);
 		} catch (err) {
 			logger.error(`Error occured when processing 'newBlock' event:\n${err.stack}`);
 		}
