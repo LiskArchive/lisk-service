@@ -45,17 +45,28 @@ services:
       - MYSQL_USER=lisk
       - MYSQL_PASSWORD=password
     healthcheck:
-      test: ["CMD", "mysqladmin" ,"ping", "-hlocalhost", "-ppassword"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-hlocalhost",
+          "-ppassword"
+        ]
       timeout: 20s
       retries: 10
 
   core:
     image: lisk/service_core
     depends_on:
-      - nats
-      - redis_persistent
-      - redis_volatile
-      - mysql
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_started
+      redis_volatile:
+        condition: service_started
+      mysql:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -82,9 +93,12 @@ services:
   gateway:
     image: lisk/service_gateway
     depends_on:
-      - nats
-      - redis_volatile
-      - core
+      nats:
+        condition: service_started
+      redis_volatile:
+        condition: service_started
+      core:
+        condition: service_started
     networks:
       - services_network
     environment:
@@ -106,8 +120,10 @@ services:
   market:
     image: lisk/service_market
     depends_on:
-      - nats
-      - redis_persistent
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_started
     networks:
       - services_network
     environment:
@@ -121,8 +137,10 @@ services:
   newsfeed:
     image: lisk/service_newsfeed
     depends_on:
-      - nats
-      - mysql
+      nats:
+        condition: service_started
+      mysql:
+        condition: service_healthy
     networks:
       - services_network
     environment:
@@ -137,9 +155,12 @@ services:
   export:
     image: lisk/service_export
     depends_on:
-      - nats
-      - redis_persistent
-      - redis_volatile
+      nats:
+        condition: service_started
+      redis_persistent:
+        condition: service_started
+      redis_volatile:
+        condition: service_started
     networks:
       - services_network
     environment:
@@ -154,6 +175,7 @@ services:
 
 networks:
   services_network:
+
 
 volumes:
   mysql-data:
