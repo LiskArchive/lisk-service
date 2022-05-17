@@ -189,7 +189,7 @@ pipeline {
 							nvm(readFile('.nvmrc').trim()) {
 								dir('./framework') { sh "npm run test:functional" }
 								dir('./services/market') { sh "npm run test:functional" }
-								dir('./tests') { sh "npm run test:functional" }
+								// dir('./tests') { sh "npm run test:functional" }
 							}
 						}
 					}
@@ -209,9 +209,13 @@ pipeline {
 	}
 	post {
 		failure {
-			script { echoBanner('Failed to run the pipeline') }
-			nvm(readFile('.nvmrc').trim()) {
-				sh 'pm2 logs'	
+			script { 
+				echoBanner('Failed to run the pipeline') 
+			}
+			dir('lisk-service') {
+				nvm(readFile('.nvmrc').trim()) {
+					sh 'pm2 logs'	
+				}
 			}
 		}
 		cleanup {
