@@ -1,4 +1,3 @@
-@Library('lisk-jenkins') _
 def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 	echo msg
@@ -28,12 +27,13 @@ pipeline {
 				waitForHttp('http://localhost:9901/api/ready')
 			}
 		}
-		stage('Run regression tests Mainnet') {
+		stage('Run performance tests Mainnet') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				ansiColor('xterm') {
 					nvm(getNodejsVersion()) {
-						dir('./tests') { sh 'npm run test:regression:mainnet' }
+						// Mainnet service URL
+						dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
 					}
 				}
 			}
