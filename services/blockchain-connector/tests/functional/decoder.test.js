@@ -14,35 +14,35 @@
  *
  */
 const {
-    decodeBlock,
-    decodeTransaction,
+	decodeBlock,
+	decodeTransaction,
 } = require('../../shared/sdk/decoder');
 
 const {
-    block,
-    blockWithTransaction,
-    encodedBlock,
-    encodedBlockWithTransaction,
+	block,
+	blockWithTransaction,
+	encodedBlock,
+	encodedBlockWithTransaction,
 } = require('../constants/blocks');
 
 const {
-    transaction,
-    encodedTransaction,
+	transaction,
+	encodedTransaction,
 } = require('../constants/transactions');
 
 describe('Functional tests for decoder', () => {
-    it('decodeBlock without transactions', async () => {
-        const result = decodeBlock(encodedBlock);
-        expect(result).toMatchObject(block);
-    });
+	it('decodeBlock without transactions', async () => {
+		const result = decodeBlock(encodedBlock);
+		expect(result).toMatchObject(block);
+	});
 
-    it('decodeBlock with transactions', async () => {
-        const result = decodeBlock(encodedBlockWithTransaction);
-        expect(result).toMatchObject(blockWithTransaction);
-    });
+	it('decodeBlock with transactions', async () => {
+		const result = decodeBlock(encodedBlockWithTransaction);
+		expect(result).toMatchObject(blockWithTransaction);
+	});
 
-    it('decode Transaction', async () => {
-        const result = decodeTransaction(encodedTransaction);
-        expect(result).toMatchObject(transaction);
-    });
+	it('decode Transaction', async () => {
+		const result = decodeTransaction(encodedTransaction);
+		expect(result).toMatchObject(transaction);
+	});
 });

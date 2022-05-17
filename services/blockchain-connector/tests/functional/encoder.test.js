@@ -40,12 +40,12 @@ describe('Functional tests for encoder', () => {
 	it('encodeBlock with transactions', async () => {
 		const result = encodeBlock(blockWithTransaction);
 		expect(typeof result).toBe('string');
-		expect(parsedResult).toEqual(encodedBlockWithTransaction);
+		expect(result).toEqual(encodedBlockWithTransaction);
 	});
 
 	it('encodeTransaction', async () => {
 		const result = encodeTransaction(transaction);
 		expect(typeof result).toBe('string');
-		expect(parsedResult).toEqual(encodedTransaction);
+		expect(result).toEqual(encodedTransaction);
 	});
 });
