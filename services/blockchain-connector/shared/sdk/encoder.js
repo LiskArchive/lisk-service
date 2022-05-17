@@ -26,12 +26,15 @@ const {
 
 const encodeTransaction = (transaction) => {
 	const txParamsSchema = getTransactionParamsSchema(transaction);
-	const txParamsBuffer = codec.encode(txParamsSchema, transaction.params);
+	const parsedTxParams = parseInputBySchema(transaction.params, txParamsSchema);
+	const txParamsBuffer = codec.encode(txParamsSchema, parsedTxParams);
 
 	const txSchema = getTransactionSchema();
+	const parsedTx = parseInputBySchema(transaction, txSchema);
+
 	const txBuffer = codec.encode(
 		txSchema,
-		{ ...transaction, params: txParamsBuffer },
+		{ ...parsedTx, params: txParamsBuffer },
 	);
 
 	return txBuffer.toString('hex');
@@ -54,14 +57,14 @@ const encodeBlock = (block) => {
 	const blockHeaderBuffer = codec.encode(blockHeaderSchema, parsedBlockHeader);
 
 	const blockSchema = getBlockSchema();
-	const blockBuffer = codec.encode(
-		blockSchema,
-		{
-			header: blockHeaderBuffer,
-			assets: blockAssetBuffer,
-			transactions: blockTransactionsBuffer,
-		},
-	);
+
+	const parsedBlock = parseInputBySchema({
+		header: blockHeaderBuffer,
+		assets: blockAssetBuffer,
+		transactions: blockTransactionsBuffer,
+	}, blockSchema);
+
+	const blockBuffer = codec.encode(blockSchema, parsedBlock);
 
 	return blockBuffer.toString('hex');
 };
