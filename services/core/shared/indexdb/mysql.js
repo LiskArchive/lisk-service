@@ -261,7 +261,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		return query;
 	};
 
-	const find = (params = {}, columns) => new Promise((resolve, reject) => {
+	const find = async (params = {}, columns) => {
+		const trx = await createDefaultTransaction(knex);
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
 			columns = [tableConfig.primaryKey];
@@ -269,13 +270,16 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
-		query.then(response => {
-			resolve(response);
-		}).catch(err => {
-			logger.error(err.message);
-			reject(err);
-		});
-	});
+		return query.transacting(trx)
+			.then(async (response) => {
+				await trx.commit();
+				return response;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+	};
 
 	const deleteIds = async (ids, trx) => {
 		let isDefaultTrx = false;
@@ -293,7 +297,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 	};
 
 	const count = async (params = {}) => {
-		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
+		const trx = await createDefaultTransaction(knex);
+		const query = knex(tableName).transacting(trx).count(`${tableConfig.primaryKey} as count`);
 		const queryParams = resolveQueryParams(params);
 
 		query.where(queryParams);
@@ -336,13 +341,20 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		const [totalCount] = await query;
-		return totalCount.count;
+		return query.then(async (result) => {
+			await trx.commit();
+			const [totalCount] = result;
+			return totalCount.count;
+		}).catch(trx.rollback);
 	};
 
 	const rawQuery = async queryStatement => {
-		const [resultSet] = await knex.raw(queryStatement);
-		return resultSet;
+		const trx = await createDefaultTransaction(knex);
+		return knex.raw(queryStatement).then(async (result) => {
+			await trx.commit();
+			const [resultSet] = result;
+			return resultSet;
+		}).catch(trx.rollback);
 	};
 
 	const increment = async (params, trx) => {
