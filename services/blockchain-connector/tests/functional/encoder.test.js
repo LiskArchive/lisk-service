@@ -30,7 +30,7 @@ const {
 	encodedTransaction,
 } = require('../constants/transactions');
 
-describe('Function tests for encoder', () => {
+describe('Functional tests for encoder', () => {
 	it('encodeBlock without transactions', async () => {
 		const result = encodeBlock(block);
 		expect(typeof result).toBe('string');

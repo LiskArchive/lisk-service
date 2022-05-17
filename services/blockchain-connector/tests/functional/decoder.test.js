@@ -30,7 +30,7 @@ const {
     encodedTransaction,
 } = require('../constants/transactions');
 
-describe('Function tests for decoder', () => {
+describe('Functional tests for decoder', () => {
     it('decodeBlock without transactions', async () => {
         const result = decodeBlock(encodedBlock);
         expect(result).toMatchObject(block);
