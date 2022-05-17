@@ -11,12 +11,6 @@ pipeline {
 	}
 	stages {
 		stage ('Build dependencies') {
-			when {
-				anyOf {
-					branch 'development'
-					branch 'feature/blockchain-agnostic'
-				}
-			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
@@ -38,12 +32,6 @@ pipeline {
 			}
 		}
 		stage ('Check linting') {
-			when {
-				anyOf {
-					branch 'development'
-					branch 'feature/blockchain-agnostic'
-				}
-			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
@@ -52,12 +40,6 @@ pipeline {
 			}
 		}
 		stage('Perform unit tests') {
-			when {
-				anyOf {
-					branch 'development'
-					branch 'feature/blockchain-agnostic'
-				}
-			}
 			steps {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
