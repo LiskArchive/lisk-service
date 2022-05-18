@@ -84,6 +84,11 @@ const downloadGenesisBlock = async () => {
 
 	if (genesisBlockUrl.endsWith('.tar.gz')) await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
 	else await downloadJSONFile(genesisBlockUrl, genesisBlockFilePath);
+
+	// Download SHA256 file
+	const genesisBlockSHAFilePath = `${directoryPath}/genesis_block.json.tar.gz.SHA256`;
+	const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
+	await downloadAndExtractTarball(genesisBlockUrlSHA256, path.dirname(genesisBlockSHAFilePath));
 };
 
 const getGenesisBlockFromFS = async () => {

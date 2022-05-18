@@ -32,7 +32,14 @@ const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
-			response.pipe(tar.extract({ cwd: directoryPath }));
+			if (url.endsWith('.tar.gz.SHA256')) {
+				const writeStream = fs.createWriteStream(`${directoryPath}/genesis_block.json.tar.gz.SHA256`);
+				response.pipe(writeStream);
+			} else {
+				const writeStream = fs.createWriteStream(`${directoryPath}/genesis_block.json.tar.gz`);
+				response.pipe(writeStream);
+				response.pipe(tar.extract({ cwd: directoryPath }));
+			}
 			response.on('error', async (err) => reject(new Error(err)));
 			response.on('end', async () => {
 				logger.info('File downloaded successfully');
