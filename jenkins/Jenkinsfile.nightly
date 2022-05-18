@@ -188,6 +188,7 @@ pipeline {
 						dir('lisk-service') {
 							nvm(readFile('.nvmrc').trim()) {
 								dir('./framework') { sh "npm run test:functional" }
+								dir('./services/blockchain-connector') { sh "npm run test:functional" }
 								dir('./services/market') { sh "npm run test:functional" }
 								// dir('./tests') { sh "npm run test:functional" }
 							}
