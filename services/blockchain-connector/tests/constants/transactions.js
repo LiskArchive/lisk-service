@@ -41,9 +41,6 @@ const invalidTransaction = {
 		recipientAddress: '60db70ee3f962d518096127ed73b8b8ac9441a28',
 		data: '',
 	},
-	signatures: [
-		'fb02e7a125d20909a449be226cb8f7cc17085b98414584e3422d3405bd83d0dc0aa108ecaf1af01825dbbb632d85bf6bd0f7bbbc9fd81519485679dda78f7006',
-	],
 	id: 'a6ba9d89d8e57bc921dd56417313a01fa7834f12cdbcebdfda58c7b385397d96',
 };
 
