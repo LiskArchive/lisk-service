@@ -17,6 +17,7 @@ const { ServiceBroker } = require('moleculer');
 
 const {
 	block,
+	blockWithTransaction,
 	encodedBlock,
 	invalidEncodedBlock,
 	invalidEncodedTransaction,
@@ -39,22 +40,25 @@ describe('Functional tests for decoder', () => {
 	beforeAll(() => broker.start());
 	afterAll(() => broker.stop());
 
-	xit('decode Transaction', async () => {
+	it('decode Transaction', async () => {
 		const result = await broker.call('connector.decodeTransaction', { encodedTransaction });
+		transaction.size = result.size;
 		expect(Object.keys(result)).toEqual(Object.keys(transaction));
 	});
 
-	xit('decode block with transaction', async () => {
+	it('decode block with transaction', async () => {
 		const result = await broker.call('connector.decodeBlock', { encodedBlock: encodedBlockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
 			transactions: expect.any(Object),
 		});
-		expect(result.transaction.length).toBe(1);
+		blockWithTransaction.transactions[0].size = result.transactions[0].size;
+		expect(result.transactions.length).toBe(1);
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
 		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
-		expect(Object.keys(result.transactions[0])).toEqual(Object.keys(block.transactions[0]));
+		expect(Object.keys(result.transactions[0]))
+			.toEqual(Object.keys(blockWithTransaction.transactions[0]));
 	});
 
 	it('decode block without transactions', async () => {
