@@ -16,6 +16,8 @@
 const {
 	decodeBlock,
 	decodeTransaction,
+	decodeEventPayload,
+	decodeResponse,
 } = require('../../shared/sdk/decoder');
 
 module.exports = [
@@ -31,6 +33,22 @@ module.exports = [
 		controller: async ({ encodedTransaction }) => decodeTransaction(encodedTransaction),
 		params: {
 			encodedTransaction: { optional: false, type: 'string' },
+		},
+	},
+	{
+		name: 'decodeEventPayload',
+		controller: async ({ eventName, payload }) => decodeEventPayload(eventName, payload),
+		params: {
+			eventName: { optional: false, type: 'string' },
+			payload: { optional: false, type: 'object' },
+		},
+	},
+	{
+		name: 'decodeResponse',
+		controller: async ({ action, response }) => decodeResponse(action, response),
+		params: {
+			action: { optional: false, type: 'string' },
+			response: { optional: false, type: 'string' },
 		},
 	},
 ];

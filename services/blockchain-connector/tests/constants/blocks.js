@@ -32,7 +32,7 @@ const block = {
 			certificateSignature: '',
 		},
 		signature: 'efb32235a979a770225cc996b8419c135d10c61a789b5672f9b943637eb735b46cd37b39bfa598831932f15ff7e52a955fbe4756c3e0a83e0da8dd54065e7404',
-		id: '0e448a300f46b3ac5206d5fff55cc145cf33073061f4c838d21fa4230a8e2019',
+		id: '85aaccf5de6988651b7555bdd125c7295fe2cba6c8ede013fce574a0035f4be3',
 	},
 	assets: [
 		{
@@ -62,7 +62,7 @@ const blockWithTransaction = {
 			certificateSignature: '',
 		},
 		signature: 'efb32235a979a770225cc996b8419c135d10c61a789b5672f9b943637eb735b46cd37b39bfa598831932f15ff7e52a955fbe4756c3e0a83e0da8dd54065e7404',
-		id: '0e448a300f46b3ac5206d5fff55cc145cf33073061f4c838d21fa4230a8e2019',
+		id: '85aaccf5de6988651b7555bdd125c7295fe2cba6c8ede013fce574a0035f4be3',
 	},
 	assets: [
 		{

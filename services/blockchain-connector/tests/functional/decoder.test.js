@@ -54,7 +54,7 @@ describe('Functional tests for decoder', () => {
 		expect(result.transaction.length).toBe(1);
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
 		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
-		expect(Object.keys(result.transaction[0])).toEqual(Object.keys(block.transactions[0]));
+		expect(Object.keys(result.transactions[0])).toEqual(Object.keys(block.transactions[0]));
 	});
 
 	it('decode block without transactions', async () => {
@@ -66,7 +66,29 @@ describe('Functional tests for decoder', () => {
 		});
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
 		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
-		expect(result.transaction.length).toBe(0);
+		expect(result.transactions.length).toBe(0);
+	});
+
+	it('decode event payload', async () => {
+		const result = await broker.call('connector.decodeEventPayload',
+			{
+				eventName: 'app_newBlock',
+				payload: {
+					block: encodedBlock,
+				}
+			}
+		);
+		expect(result).toMatchObject(block);
+	});
+
+	it('decode response', async () => {
+		const result = await broker.call('connector.decodeResponse',
+			{
+				action: 'app_getBlockByHeight',
+				response: encodedBlock,
+			}
+		);
+		expect(result).toMatchObject(block);
 	});
 
 	it('throws error when decoding invalid encoded transaction', async () => {
