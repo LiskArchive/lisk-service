@@ -44,7 +44,7 @@ describe('Functional tests for decoder', () => {
 		});
 	});
 
-	xit('decode block with transaction', async () => {
+	xit('decodse block with transaction', async () => {
 		const result = await broker.call('connector.decodeBlock', { encodedBlock: encodedBlockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
