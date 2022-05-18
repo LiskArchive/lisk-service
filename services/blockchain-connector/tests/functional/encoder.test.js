@@ -13,13 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	encodeBlock,
-	encodeTransaction,
-} = require('../../shared/sdk/encoder');
+const { ServiceBroker } = require('moleculer');
 
 const {
 	block,
+	invalidBlock,
 	blockWithTransaction,
 	encodedBlock,
 	encodedBlockWithTransaction,
@@ -27,25 +25,44 @@ const {
 
 const {
 	transaction,
+	invalidTransaction,
 	encodedTransaction,
 } = require('../constants/transactions');
 
+const broker = new ServiceBroker({
+	transporter: 'redis://localhost:6379/0',
+	logLevel: 'warn',
+	requestTimeout: 15 * 1000,
+	logger: console,
+});
+
 describe('Functional tests for encoder', () => {
-	it('encodeBlock without transactions', async () => {
-		const result = encodeBlock(block);
+	beforeAll(() => broker.start());
+	afterAll(() => broker.stop());
+
+	it('encode transaction', async () => {
+		const result = await broker.call('connector.encodeTransaction', { transaction });
+		expect(typeof result).toBe('string');
+		expect(result).toEqual(encodedTransaction);
+	});
+
+	it('encode block with transaction', async () => {
+		const result = await broker.call('connector.encodeBlock', { block: blockWithTransaction });
+		expect(typeof result).toBe('string');
+		expect(result).toEqual(encodedBlockWithTransaction);
+	});
+
+	it('encode block without transactions', async () => {
+		const result = await broker.call('connector.encodeBlock', { block });
 		expect(typeof result).toBe('string');
 		expect(result).toEqual(encodedBlock);
 	});
 
-	it('encodeBlock with transactions', async () => {
-		const result = encodeBlock(blockWithTransaction);
-		expect(typeof result).toBe('string');
-		expect(parsedResult).toEqual(encodedBlockWithTransaction);
+	it('throws error when encoding invalid transaction', async () => {
+		expect(broker.call('connector.encodeTransaction', { transaction: invalidTransaction })).rejects.toThrow();
 	});
 
-	it('encodeTransaction', async () => {
-		const result = encodeTransaction(transaction);
-		expect(typeof result).toBe('string');
-		expect(parsedResult).toEqual(encodedTransaction);
+	it('throws error when encoding invalid block', async () => {
+		expect(broker.call('connector.encodeTransaction', { block: invalidBlock })).rejects.toThrow();
 	});
 });

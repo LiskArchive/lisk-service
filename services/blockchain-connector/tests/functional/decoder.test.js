@@ -13,36 +13,52 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-    decodeBlock,
-    decodeTransaction,
-} = require('../../shared/sdk/decoder');
+const { ServiceBroker } = require('moleculer');
 
 const {
-    block,
-    blockWithTransaction,
-    encodedBlock,
-    encodedBlockWithTransaction,
+	encodedBlock,
+	encodedBlockWithTransaction,
 } = require('../constants/blocks');
 
 const {
-    transaction,
-    encodedTransaction,
+	encodedTransaction,
 } = require('../constants/transactions');
 
+const broker = new ServiceBroker({
+	transporter: 'redis://localhost:6379/0',
+	logLevel: 'warn',
+	requestTimeout: 15 * 1000,
+	logger: console,
+});
+
 describe('Functional tests for decoder', () => {
-    it('decodeBlock without transactions', async () => {
-        const result = decodeBlock(encodedBlock);
-        expect(result).toMatchObject(block);
-    });
+	beforeAll(() => broker.start());
+	afterAll(() => broker.stop());
 
-    it('decodeBlock with transactions', async () => {
-        const result = decodeBlock(encodedBlockWithTransaction);
-        expect(result).toMatchObject(blockWithTransaction);
-    });
+	xit('decode Transaction', async () => {
+		const result = await broker.call('connector.decodeTransaction', { encodedTransaction });
+		expect(result).toMatchObject({
+			header: expect.any(Object),
+			assets: expect.any(Object),
+			transactions: expect.any(Object),
+		});
+	});
 
-    it('decode Transaction', async () => {
-        const result = decodeTransaction(encodedTransaction);
-        expect(result).toMatchObject(transaction);
-    });
+	xit('decode block with transaction', async () => {
+		const result = await broker.call('connector.decodeBlock', { encodedBlock: encodedBlockWithTransaction });
+		expect(result).toMatchObject({
+			header: expect.any(Object),
+			assets: expect.any(Object),
+			transactions: expect.any(Object),
+		});
+	});
+
+	it('decode block without transactions', async () => {
+		const result = await broker.call('connector.decodeBlock', { encodedBlock });
+		expect(result).toMatchObject({
+			header: expect.any(Object),
+			assets: expect.any(Object),
+			transactions: expect.any(Object),
+		});
+	});
 });
