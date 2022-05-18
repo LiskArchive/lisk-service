@@ -194,10 +194,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		);
 
 		// Perform all queries within a batch together
-		if (isDefaultTrx) return Promise.all(queries).then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return Promise.all(queries)
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return Promise.all(queries);
 	};
 
@@ -270,7 +275,9 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		const query = queryBuilder(params, columns);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
-		return query.transacting(trx)
+
+		return query
+			.transacting(trx)
 			.then(async (response) => {
 				await trx.commit();
 				return response;
@@ -289,10 +296,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		}
 
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
-		if (isDefaultTrx) return query.then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return query
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return query;
 	};
 
@@ -307,10 +319,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			const { propBetweens } = params;
 			propBetweens.forEach(
 				propBetween => {
-					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
-					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
-					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
+					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
+					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 
@@ -341,20 +353,31 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		return query.then(async (result) => {
-			await trx.commit();
-			const [totalCount] = result;
-			return totalCount.count;
-		}).catch(trx.rollback);
+		return query
+			.then(async (result) => {
+				await trx.commit();
+				const [totalCount] = result;
+				return totalCount.count;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 	};
 
 	const rawQuery = async queryStatement => {
 		const trx = await createDefaultTransaction(knex);
-		return knex.raw(queryStatement).then(async (result) => {
-			await trx.commit();
-			const [resultSet] = result;
-			return resultSet;
-		}).catch(trx.rollback);
+		return knex.raw(queryStatement)
+			.transacting(trx)
+			.then(async (result) => {
+				await trx.commit();
+				const [resultSet] = result;
+				return resultSet;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 	};
 
 	const increment = async (params, trx) => {
@@ -369,10 +392,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.where(params.where.property, '=', params.where.value)
 			.increment(params.increment);
 
-		if (isDefaultTrx) return query.then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return query
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return query;
 	};
 
@@ -388,10 +416,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.where(params.where.property, '=', params.where.value)
 			.decrement(params.decrement);
 
-		if (isDefaultTrx) return query.then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return query
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return query;
 	};
 
