@@ -53,6 +53,10 @@ nodeStatus.waitForNode().then(async () => {
 	await app.addEvents(path.join(__dirname, 'events'));
 	await app.addJobs(path.join(__dirname, 'jobs'));
 
+	if (config.enableTestingMode) {
+		await app.addMethods(path.join(__dirname, 'methods', 'tests'));
+	}
+
 	app.run()
 		.then(async () => {
 			const schemas = await getSchemas();
