@@ -75,8 +75,8 @@ describe('Functional tests for decoder', () => {
 				eventName: 'app_newBlock',
 				payload: {
 					block: encodedBlock,
-				}
-			}
+				},
+			},
 		);
 		expect(result).toMatchObject(block);
 	});
@@ -86,7 +86,7 @@ describe('Functional tests for decoder', () => {
 			{
 				action: 'app_getBlockByHeight',
 				response: encodedBlock,
-			}
+			},
 		);
 		expect(result).toMatchObject(block);
 	});
