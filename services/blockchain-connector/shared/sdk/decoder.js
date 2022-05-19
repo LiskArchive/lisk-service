@@ -71,25 +71,25 @@ const decodeBlock = (encodedBlock) => {
 	return decodedBlock;
 };
 
-const decodeResponse = (action, response) => {
-	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(action)) {
+const decodeResponse = (endpoint, response) => {
+	if (['app_getBlockByHeight', 'app_getBlockByID', 'app_getLastBlock'].includes(endpoint)) {
 		const decodedBlock = decodeBlock(response);
 		return parseToJSONCompatObj(decodedBlock);
 	}
 
-	if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(action)) {
+	if (['app_getBlocksByHeightBetween', 'app_getBlocksByIDs'].includes(endpoint)) {
 		return response.map(block => {
 			const decodedBlock = decodeBlock(block);
 			return parseToJSONCompatObj(decodedBlock);
 		});
 	}
 
-	if (['app_getTransactionByID'].includes(action)) {
+	if (['app_getTransactionByID'].includes(endpoint)) {
 		const decodedTransaction = decodeTransaction(response);
 		return parseToJSONCompatObj(decodedTransaction);
 	}
 
-	if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(action)) {
+	if (['getTransactionsByIDs', 'getTransactionsFromPool'].includes(endpoint)) {
 		return response.map(transaction => {
 			const decodedTransaction = decodeTransaction(transaction);
 			return parseToJSONCompatObj(decodedTransaction);

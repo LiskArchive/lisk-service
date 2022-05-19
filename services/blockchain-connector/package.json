@@ -46,6 +46,6 @@
     "babel-jest": "^27.3.0",
     "jest": "^27.3.0",
     "jest-when": "^3.5.1",
-    "moleculer": "^0.14.13"
+    "moleculer": "^0.14.21"
   }
 }

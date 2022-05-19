@@ -20,35 +20,40 @@ const {
 	decodeResponse,
 } = require('../../shared/sdk/decoder');
 
+const { parseToJSONCompatObj } = require('../../shared/parser');
+
 module.exports = [
 	{
-		name: 'decodeBlock',
-		controller: async ({ encodedBlock }) => decodeBlock(encodedBlock),
+		name: 'decodeBlockSerialized',
 		params: {
 			encodedBlock: { optional: false, type: 'string' },
 		},
+		controller: async ({ encodedBlock }) => parseToJSONCompatObj(await decodeBlock(encodedBlock)),
 	},
 	{
-		name: 'decodeTransaction',
-		controller: async ({ encodedTransaction }) => decodeTransaction(encodedTransaction),
+		name: 'decodeTransactionSerialized',
 		params: {
 			encodedTransaction: { optional: false, type: 'string' },
+		},
+		controller: async ({ encodedTransaction }) => {
+			const decodedTransaction = await decodeTransaction(encodedTransaction);
+			return parseToJSONCompatObj(decodedTransaction);
 		},
 	},
 	{
 		name: 'decodeEventPayload',
-		controller: async ({ eventName, payload }) => decodeEventPayload(eventName, payload),
 		params: {
 			eventName: { optional: false, type: 'string' },
 			payload: { optional: false, type: 'object' },
 		},
+		controller: async ({ eventName, payload }) => decodeEventPayload(eventName, payload),
 	},
 	{
 		name: 'decodeResponse',
-		controller: async ({ action, response }) => decodeResponse(action, response),
 		params: {
-			action: { optional: false, type: 'string' },
+			endpoint: { optional: false, type: 'string' },
 			response: { optional: false, type: 'string' },
 		},
+		controller: async ({ endpoint, response }) => decodeResponse(endpoint, response),
 	},
 ];

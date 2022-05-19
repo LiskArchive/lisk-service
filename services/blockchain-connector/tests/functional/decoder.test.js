@@ -41,19 +41,22 @@ describe('Functional tests for decoder', () => {
 	afterAll(() => broker.stop());
 
 	it('decode Transaction', async () => {
-		const result = await broker.call('connector.decodeTransaction', { encodedTransaction });
+		const result = await broker.call('connector.decodeTransactionSerialized', { encodedTransaction });
 		transaction.size = result.size;
+		expect(result).toMatchObject(transaction);
 		expect(Object.keys(result)).toEqual(Object.keys(transaction));
 	});
 
 	it('decode block with transaction', async () => {
-		const result = await broker.call('connector.decodeBlock', { encodedBlock: encodedBlockWithTransaction });
+		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock: encodedBlockWithTransaction });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
 			transactions: expect.any(Object),
 		});
 		blockWithTransaction.transactions[0].size = result.transactions[0].size;
+
+		expect(result).toMatchObject(blockWithTransaction);
 		expect(result.transactions.length).toBe(1);
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
 		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
@@ -62,12 +65,13 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode block without transactions', async () => {
-		const result = await broker.call('connector.decodeBlock', { encodedBlock });
+		const result = await broker.call('connector.decodeBlockSerialized', { encodedBlock });
 		expect(result).toMatchObject({
 			header: expect.any(Object),
 			assets: expect.any(Object),
 			transactions: expect.any(Object),
 		});
+		expect(result).toMatchObject(block);
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
 		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
 		expect(result.transactions.length).toBe(0);
@@ -88,7 +92,7 @@ describe('Functional tests for decoder', () => {
 	it('decode response', async () => {
 		const result = await broker.call('connector.decodeResponse',
 			{
-				action: 'app_getBlockByHeight',
+				endpoint: 'app_getBlockByHeight',
 				response: encodedBlock,
 			},
 		);
@@ -96,10 +100,10 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('throws error when decoding invalid encoded transaction', async () => {
-		expect(broker.call('connector.decodeTransaction', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
+		expect(broker.call('connector.decodeTransactionSerialized', { encodedTransaction: invalidEncodedTransaction })).rejects.toThrow();
 	});
 
 	it('throws error when decoding invalid encoded block', async () => {
-		expect(broker.call('connector.decodeBlock', { encodedBlock: invalidEncodedBlock })).rejects.toThrow();
+		expect(broker.call('connector.decodeBlockSerialized', { encodedBlock: invalidEncodedBlock })).rejects.toThrow();
 	});
 });
