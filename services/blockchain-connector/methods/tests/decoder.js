@@ -28,15 +28,15 @@ module.exports = [
 		params: {
 			encodedBlock: { optional: false, type: 'string' },
 		},
-		controller: async ({ encodedBlock }) => parseToJSONCompatObj(await decodeBlock(encodedBlock)),
+		controller: ({ encodedBlock }) => parseToJSONCompatObj(decodeBlock(encodedBlock)),
 	},
 	{
 		name: 'decodeTransactionSerialized',
 		params: {
 			encodedTransaction: { optional: false, type: 'string' },
 		},
-		controller: async ({ encodedTransaction }) => {
-			const decodedTransaction = await decodeTransaction(encodedTransaction);
+		controller: ({ encodedTransaction }) => {
+			const decodedTransaction = decodeTransaction(encodedTransaction);
 			return parseToJSONCompatObj(decodedTransaction);
 		},
 	},
@@ -46,7 +46,7 @@ module.exports = [
 			eventName: { optional: false, type: 'string' },
 			payload: { optional: false, type: 'object' },
 		},
-		controller: async ({ eventName, payload }) => decodeEventPayload(eventName, payload),
+		controller: ({ eventName, payload }) => decodeEventPayload(eventName, payload),
 	},
 	{
 		name: 'decodeResponse',
@@ -54,6 +54,6 @@ module.exports = [
 			endpoint: { optional: false, type: 'string' },
 			response: { optional: false, type: 'string' },
 		},
-		controller: async ({ endpoint, response }) => decodeResponse(endpoint, response),
+		controller: ({ endpoint, response }) => decodeResponse(endpoint, response),
 	},
 ];
