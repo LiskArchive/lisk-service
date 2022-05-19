@@ -52,16 +52,10 @@ describe('Genesis Block import tests', () => {
 		const dataHash = crypto.createHash('sha256');
 
 		const fileHash = await new Promise(resolve => {
-			fileStream.on('data', (data) => {
-				dataHash.update(data);
-			});
-
-			fileStream.on('end', () => {
-				resolve(dataHash.digest());
-			});
+			fileStream.on('data', (data) => { dataHash.update(data); });
+			fileStream.on('end', () => { resolve(dataHash.digest().toString('hex')); });
 		});
 
-		const fileChecksum = fileHash.toString('hex');
-		expect(expectedHash).toEqual(fileChecksum);
+		expect(expectedHash).toEqual(fileHash);
 	});
 });

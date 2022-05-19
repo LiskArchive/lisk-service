@@ -43,7 +43,6 @@ describe('Functional tests for decoder', () => {
 
 	it('decode Transaction', async () => {
 		const result = await broker.call('connector.decodeTransactionSerialized', { encodedTransaction });
-		transaction.size = result.size;
 		expect(Object.keys(result)).toEqual(Object.keys(transaction));
 		expect(result).toMatchObject(transaction);
 	});
@@ -55,7 +54,6 @@ describe('Functional tests for decoder', () => {
 			assets: expect.any(Object),
 			transactions: expect.any(Object),
 		});
-		blockWithTransaction.transactions[0].size = result.transactions[0].size;
 
 		expect(result.transactions.length).toBe(1);
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
@@ -79,24 +77,18 @@ describe('Functional tests for decoder', () => {
 	});
 
 	it('decode event payload', async () => {
-		const result = await broker.call('connector.decodeEventPayload',
-			{
-				eventName: 'app_newBlock',
-				payload: {
-					block: encodedBlock,
-				},
-			},
-		);
+		const result = await broker.call('connector.decodeEventPayload', {
+			eventName: 'app_newBlock',
+			payload: { block: encodedBlock },
+		});
 		expect(result).toMatchObject(block);
 	});
 
 	it('decode response', async () => {
-		const result = await broker.call('connector.decodeResponse',
-			{
-				endpoint: 'app_getBlockByHeight',
-				response: encodedBlock,
-			},
-		);
+		const result = await broker.call('connector.decodeResponse', {
+			endpoint: 'app_getBlockByHeight',
+			response: encodedBlock,
+		});
 		expect(result).toMatchObject(block);
 	});
 
