@@ -21,7 +21,11 @@ const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
 const { exists, mkdir } = require('../fsUtils');
-const { downloadAndExtractTarball, downloadJSONFile } = require('../downloadFile');
+const {
+	downloadAndExtractTarball,
+	downloadJSONFile,
+	downloadFile,
+} = require('../downloadFile');
 
 const config = require('../../config');
 
@@ -84,6 +88,13 @@ const downloadGenesisBlock = async () => {
 
 	if (genesisBlockUrl.endsWith('.tar.gz')) await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
 	else await downloadJSONFile(genesisBlockUrl, genesisBlockFilePath);
+
+	// Download tar file
+	await downloadFile(genesisBlockUrl, directoryPath);
+
+	// Download SHA256 file
+	const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
+	await downloadFile(genesisBlockUrlSHA256, directoryPath);
 };
 
 const getGenesisBlockFromFS = async () => {

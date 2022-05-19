@@ -26,7 +26,8 @@
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:unit",
-    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit",
+    "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
     "@liskhq/lisk-api-client": "canary",
@@ -44,6 +45,7 @@
     "@babel/preset-env": "^7.14.0",
     "babel-jest": "^27.3.0",
     "jest": "^27.3.0",
-    "jest-when": "^3.5.1"
+    "jest-when": "^3.5.1",
+    "moleculer": "^0.14.21"
   }
 }

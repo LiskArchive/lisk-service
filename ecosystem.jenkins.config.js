@@ -59,7 +59,9 @@ module.exports = {
 				LISK_APP_WS: 'ws://localhost:5001',
 				GEOIP_JSON: '',
 				USE_LISK_IPC_CLIENT: 'true', // TODO: Revert this change once issue https://github.com/LiskHQ/lisk-sdk/issues/7141 is fixed
-				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',				
+				// LISK_APP_DATA_PATH: '~/.lisk/lisk-core',
+				ENABLE_TESTING_MODE: 'true',
+				GENESIS_BLOCK_URL: 'https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz',
 			},
 		},
 		{

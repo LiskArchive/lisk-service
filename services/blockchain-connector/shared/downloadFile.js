@@ -79,8 +79,30 @@ const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject
 	});
 });
 
+const downloadFile = (url, dirPath) => new Promise((resolve, reject) => {
+	getHTTPProtocolByURL(url).get(url, (response) => {
+		if (response.statusCode === 200) {
+			const pathWithoutProtocol = url.replace(/(^\w+:|^)\/\//, '').split('/');
+			const fileName = pathWithoutProtocol.pop();
+			const writeStream = fs.createWriteStream(`${dirPath}/${fileName}`);
+			response.pipe(writeStream);
+			response.on('error', async (err) => reject(new Error(err)));
+			response.on('end', async () => {
+				logger.info('File downloaded successfully');
+				resolve();
+			});
+		} else {
+			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
+			logger.error(errMessage);
+			if (response.statusCode === 404) reject(new NotFoundException(errMessage));
+			reject(new Error(errMessage));
+		}
+	});
+});
+
 module.exports = {
 	downloadAndExtractTarball,
 	downloadJSONFile,
 	downloadAndUnzipFile,
+	downloadFile,
 };
