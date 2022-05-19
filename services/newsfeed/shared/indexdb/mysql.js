@@ -49,8 +49,8 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 
 const createDbConnection = async (connEndpoint) => {
 	const knex = require('knex')({
-		client: 'mysql',
-		version: '5.7',
+		client: 'mysql2',
+		version: '8',
 		connection: connEndpoint,
 		useNullAsDefault: true,
 		pool: {
@@ -72,7 +72,7 @@ const createDbConnection = async (connEndpoint) => {
 		.catch((err) => {
 			if (err.code === 'ECONNREFUSED') {
 				logger.error(err.message);
-				logger.error('Database error, shutting down the process');
+				logger.fatal('Unable to connect to the database, shutting down the process...');
 				process.exit(1);
 			}
 			logger.error(err);
@@ -300,10 +300,10 @@ const getDbInstance = async (tableName, tableConfig, connEndpoint = config.endpo
 			const { propBetweens } = params;
 			propBetweens.forEach(
 				propBetween => {
-					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
-					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
-					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
+					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
+					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 

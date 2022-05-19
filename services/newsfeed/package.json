@@ -33,10 +33,10 @@
     "bluebird": "^3.7.2",
     "html-entities": "^2.3.2",
     "html-to-text": "^8.0.0",
-    "knex": "^0.95.4",
+    "knex": "^2.0.0",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/fd16d55072965e76bb6ec10525a91bb3fdb9c7c7/framework/dist/lisk-service-framework-1.2.5.tgz",
     "moment": "^2.29.1",
-    "mysql": "^2.18.1",
+    "mysql2": "^2.3.3",
     "object-hash": "^2.2.0",
     "twitter": "^1.7.1"
   },
