@@ -18,9 +18,10 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const { exists } = require('../../shared/fsUtils');
+const config = require('../../config');
 
 const broker = new ServiceBroker({
-	transporter: 'redis://localhost:6379/0',
+	transporter: config.transporter,
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
 	logger: console,

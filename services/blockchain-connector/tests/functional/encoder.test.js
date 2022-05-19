@@ -28,9 +28,10 @@ const {
 	invalidTransaction,
 	encodedTransaction,
 } = require('../constants/transactions');
+const config = require('../../config');
 
 const broker = new ServiceBroker({
-	transporter: 'redis://localhost:6379/0',
+	transporter: config.transporter,
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
 	logger: console,

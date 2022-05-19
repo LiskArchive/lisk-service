@@ -28,17 +28,18 @@ module.exports = [
 		params: {
 			encodedBlock: { optional: false, type: 'string' },
 		},
-		controller: ({ encodedBlock }) => parseToJSONCompatObj(decodeBlock(encodedBlock)),
+		controller: ({ encodedBlock }) => parseToJSONCompatObj(
+			decodeBlock(encodedBlock),
+		),
 	},
 	{
 		name: 'decodeTransactionSerialized',
 		params: {
 			encodedTransaction: { optional: false, type: 'string' },
 		},
-		controller: ({ encodedTransaction }) => {
-			const decodedTransaction = decodeTransaction(encodedTransaction);
-			return parseToJSONCompatObj(decodedTransaction);
-		},
+		controller: ({ encodedTransaction }) => parseToJSONCompatObj(
+			decodeTransaction(encodedTransaction),
+		),
 	},
 	{
 		name: 'decodeEventPayload',

@@ -28,9 +28,10 @@ const {
 	transaction,
 	encodedTransaction,
 } = require('../constants/transactions');
+const config = require('../../config');
 
 const broker = new ServiceBroker({
-	transporter: 'redis://localhost:6379/0',
+	transporter: config.transporter,
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
 	logger: console,
@@ -43,8 +44,8 @@ describe('Functional tests for decoder', () => {
 	it('decode Transaction', async () => {
 		const result = await broker.call('connector.decodeTransactionSerialized', { encodedTransaction });
 		transaction.size = result.size;
-		expect(result).toMatchObject(transaction);
 		expect(Object.keys(result)).toEqual(Object.keys(transaction));
+		expect(result).toMatchObject(transaction);
 	});
 
 	it('decode block with transaction', async () => {
@@ -56,12 +57,12 @@ describe('Functional tests for decoder', () => {
 		});
 		blockWithTransaction.transactions[0].size = result.transactions[0].size;
 
-		expect(result).toMatchObject(blockWithTransaction);
 		expect(result.transactions.length).toBe(1);
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
 		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
 		expect(Object.keys(result.transactions[0]))
 			.toEqual(Object.keys(blockWithTransaction.transactions[0]));
+		expect(result).toMatchObject(blockWithTransaction);
 	});
 
 	it('decode block without transactions', async () => {
@@ -71,10 +72,10 @@ describe('Functional tests for decoder', () => {
 			assets: expect.any(Object),
 			transactions: expect.any(Object),
 		});
-		expect(result).toMatchObject(block);
 		expect(Object.keys(result.header)).toEqual(Object.keys(block.header));
 		expect(Object.keys(result.assets[0])).toEqual(Object.keys(block.assets[0]));
 		expect(result.transactions.length).toBe(0);
+		expect(result).toMatchObject(block);
 	});
 
 	it('decode event payload', async () => {
