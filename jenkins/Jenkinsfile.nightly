@@ -99,7 +99,6 @@ pipeline {
 								dir('./services/blockchain-connector') { sh 'npm ci' }
 								dir('./services/blockchain-indexer') { sh 'npm ci' }
 								dir('./services/blockchain-coordinator') { sh 'npm ci' }
-								dir('./services/core') { sh 'npm ci' }
 								dir('./services/fee-estimator') { sh 'npm ci' }
 								dir('./services/market') { sh 'npm ci' }
 								dir('./services/newsfeed') { sh 'npm ci' }
