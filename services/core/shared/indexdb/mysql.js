@@ -206,8 +206,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		return Promise.all(queries);
 	};
 
-	const queryBuilder = (params, columns) => {
-		const query = knex.select(columns).table(tableName);
+	const queryBuilder = (params, columns, trx) => {
+		const query = knex(tableName).transacting(trx).select(columns);
 		const queryParams = resolveQueryParams(params);
 
 		query.where(queryParams);
@@ -272,12 +272,11 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
 			columns = [tableConfig.primaryKey];
 		}
-		const query = queryBuilder(params, columns);
+		const query = queryBuilder(params, columns, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
 		return query
-			.transacting(trx)
 			.then(async (response) => {
 				await trx.commit();
 				return response;
