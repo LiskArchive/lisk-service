@@ -64,30 +64,18 @@ const createDbConnection = async (connEndpoint) => {
 		},
 	});
 
-	await new Promise((resolve, reject) => knex
-		.transaction((trx) => trx
-			.select(1)
-			.then(async (result) => {
-				await trx.commit();
-				resolve(result);
-			})
-			.on('query-error', async (err) => {
-				await trx.rollback();
+	knex.select(1)
+		.on('query-error', (error) => {
+			logger.error(error.message);
+		})
+		.catch((err) => {
+			if (err.code === 'ECONNREFUSED') {
 				logger.error(err.message);
-				reject(err);
-			})
-			.catch(async (err) => {
-				await trx.rollback();
-				if (err.code === 'ECONNREFUSED') {
-					logger.error(err.message);
-					logger.fatal('Unable to connect to the database, shutting down the process...');
-					process.exit(1);
-				}
-				logger.error(err.message);
-				reject(err);
-			}),
-		),
-	);
+				logger.fatal('Unable to connect to the database, shutting down the process...');
+				process.exit(1);
+			}
+			logger.error(err.message);
+		});
 
 	return knex;
 };
