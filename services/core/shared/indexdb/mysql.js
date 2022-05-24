@@ -364,10 +364,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			});
 	};
 
-	const rawQuery = async queryStatement => {
+	const rawQuery = async (queryStatement) => {
 		const trx = await createDefaultTransaction(knex);
-		return knex.raw(queryStatement)
-			.transacting(trx)
+		return trx
+			.raw(queryStatement)
 			.then(async (result) => {
 				await trx.commit();
 				const [resultSet] = result;

@@ -287,6 +287,7 @@ const validateTransactionStatistics = async historyLengthDays => {
 			const { meta: { total } } = await getTransactions({
 				moduleAssetId: type,
 				timestamp: `${fromTimestamp}:${toTimestamp}`,
+				limit: 1,
 			});
 			return total === distributionByType[type];
 		},

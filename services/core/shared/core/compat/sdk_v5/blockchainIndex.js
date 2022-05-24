@@ -237,9 +237,13 @@ const indexBlock = async job => {
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			throw new Error(`Deadlock encountered while indexing block at height ${height}. Will retry later.`);
+			const errMessage = `Deadlock encountered while indexing block at height ${height}. Will retry later.`;
+			logger.warn(errMessage);
+			throw new Error(errMessage);
 		}
-		throw error;
+
+		logger.warn(`Error occured while indexing block at height ${height}. Will retry later.`);
+		throw err;
 	}
 };
 
