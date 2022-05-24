@@ -243,7 +243,7 @@ const indexBlock = async job => {
 		}
 
 		logger.warn(`Error occured while indexing block at height ${height}. Will retry later.`);
-		throw err;
+		throw error;
 	}
 };
 
