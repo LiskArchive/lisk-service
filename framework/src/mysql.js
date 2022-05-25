@@ -193,10 +193,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		// Perform all queries within a batch together
 		if (isDefaultTrx) return Promise.all(queries)
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -275,10 +275,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
 		return query
-			.then(async (response) => {
+			.then(async response => {
 				await trx.commit();
 				return response;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -294,10 +294,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
 		if (isDefaultTrx) return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -351,26 +351,26 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		}
 
 		return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				const [totalCount] = result;
 				return totalCount.count;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
 			});
 	};
 
-	const rawQuery = async (queryStatement) => {
+	const rawQuery = async queryStatement => {
 		const trx = await createDefaultTransaction(knex);
 		return trx
 			.raw(queryStatement)
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				const [resultSet] = result;
 				return resultSet;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -390,10 +390,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			.increment(params.increment);
 
 		if (isDefaultTrx) return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -414,10 +414,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			.decrement(params.decrement);
 
 		if (isDefaultTrx) return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;

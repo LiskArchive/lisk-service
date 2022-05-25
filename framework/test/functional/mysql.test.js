@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -19,7 +19,7 @@ const {
 	commitDbTransaction,
 	getDbConnection,
 	rollbackDbTransaction,
-} = require('../../shared/indexdb/mysql');
+} = require('../../src/mysql');
 const schema = require('../constants/blocksSchema');
 
 const tableName = 'functional_test';
