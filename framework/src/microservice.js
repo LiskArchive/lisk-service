@@ -168,7 +168,7 @@ const Microservice = (config = {}) => {
 		return true;
 	};
 
-	const _addItems = async (folderPath, type) => {
+	const _addItems = (folderPath, type) => {
 		const items = requireAllJs(folderPath);
 		const fnMap = {
 			method: addMethod,
@@ -176,23 +176,21 @@ const Microservice = (config = {}) => {
 			job: addJob,
 		};
 
-		await Promise.all(Object.keys(items)
-			.map(async itemGroup => (await items[itemGroup])
-				.forEach(item => fnMap[type].call(this, item)),
-			),
-		);
+		Object.keys(items)
+			.forEach(itemGroup => items[itemGroup]
+				.forEach(item => fnMap[type].call(this, item)));
 	};
 
-	const addMethods = async folderPath => {
-		await _addItems(folderPath, 'method');
+	const addMethods = folderPath => {
+		_addItems(folderPath, 'method');
 	};
 
-	const addEvents = async folderPath => {
-		await _addItems(folderPath, 'event');
+	const addEvents = folderPath => {
+		_addItems(folderPath, 'event');
 	};
 
-	const addJobs = async folderPath => {
-		await _addItems(folderPath, 'job');
+	const addJobs = folderPath => {
+		_addItems(folderPath, 'job');
 	};
 
 	const run = () => {
