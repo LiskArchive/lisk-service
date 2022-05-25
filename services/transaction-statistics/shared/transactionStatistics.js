@@ -14,12 +14,16 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { Logger, Queue } = require('lisk-service-framework');
+const {
+	Logger,
+	Queue,
+	MySQL: { getTableInstance },
+	Signals,
+} = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
 const { requestConnector, requestIndexer } = require('./utils/request');
-const Signals = require('./utils/signals');
 
 const {
 	getTableInstance,
@@ -35,7 +39,7 @@ const config = require('../config');
 const logger = Logger();
 
 let numTrxTypes;
-const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema);
+const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema, config.endpoints.mysql);
 
 const getSelector = async (params) => {
 	const result = { property: 'date' };

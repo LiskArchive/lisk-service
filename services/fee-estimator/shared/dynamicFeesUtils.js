@@ -16,6 +16,7 @@
 const {
 	CacheRedis,
 	Logger,
+	Signals,
 } = require('lisk-service-framework');
 
 const util = require('util');
@@ -29,7 +30,6 @@ const {
 } = require('./dynamicFees');
 
 const { requestConnector } = require('./utils/request');
-const Signals = require('./utils/signals');
 
 const config = require('../config');
 

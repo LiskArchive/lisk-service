@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
+
 const { getRegisteredEvents } = require('../shared/sdk/endpoints');
 const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
 const { decodeEventPayload } = require('../shared/sdk/decoder');
-
-const Signals = require('../shared/signals');
 
 const toCamelCase = (words) => {
 	let result = '';

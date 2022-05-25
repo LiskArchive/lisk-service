@@ -18,13 +18,13 @@ const {
 	Microservice,
 	Logger,
 	LoggerConfig,
+	Signals,
 } = require('lisk-service-framework');
 
 const config = require('./config');
 const packageJson = require('./package.json');
 const { setAppContext } = require('./shared/utils/request');
 const { init } = require('./shared/scheduler');
-const Signals = require('./shared/signals');
 
 const loggerConf = {
 	...config.log,

@@ -13,10 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 const actions = require('./endpoints');
 const GeoService = require('../geolocation');
-const Signals = require('../signals');
 
 const logger = Logger();
 

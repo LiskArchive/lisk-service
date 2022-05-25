@@ -13,8 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const {
+	Signals,
+} = require('lisk-service-framework');
+
 const MessageQueue = require('bull');
-const Signals = require('./signals');
 const config = require('../config');
 
 const eventsQueue = new MessageQueue(

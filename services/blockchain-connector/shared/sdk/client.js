@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Exceptions: { TimeoutException } } = require('lisk-service-framework');
+const { Logger, Exceptions: { TimeoutException }, Signals } = require('lisk-service-framework');
 const {
 	createWSClient,
 	createIPCClient,
@@ -23,7 +23,6 @@ const { decodeResponse } = require('./decoder');
 const config = require('../../config');
 const delay = require('../delay');
 const waitForIt = require('../waitForIt');
-const Signals = require('../signals');
 
 const logger = Logger();
 
