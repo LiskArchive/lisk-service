@@ -16,10 +16,11 @@
 const logger = require('lisk-service-framework').Logger();
 const moment = require('moment');
 
-const mysqlIndex = require('./indexdb/mysql');
+const { getTableInstance } = require('./indexdb/mysql');
+
 const newsfeedIndexSchema = require('./schema/newsfeed');
 
-const getIndex = (tableName) => mysqlIndex(tableName, newsfeedIndexSchema);
+const getIndex = (tableName) => getTableInstance(tableName, newsfeedIndexSchema);
 
 const prune = async (source, table, expiryInDays) => {
 	const db = await getIndex(table);

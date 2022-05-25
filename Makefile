@@ -147,6 +147,7 @@ clean-images:
 	lisk/service_tests; :
 
 audit:
+	npm audit; :
 	cd ./framework && npm audit; :
 	cd ./services/blockchain-connector && npm audit; :
 	cd ./services/blockchain-coordinator && npm audit; :
@@ -159,6 +160,7 @@ audit:
 	cd ./services/export && npm audit; :
 
 audit-fix:
+	npm audit fix; :
 	cd ./framework && npm audit fix; :
 	cd ./services/blockchain-connector && npm audit fix; :
 	cd ./services/blockchain-coordinator && npm audit fix; :
