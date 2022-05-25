@@ -18,10 +18,10 @@ const BluebirdPromise = require('bluebird');
 const {
 	CacheRedis,
 	Exceptions: { NotFoundException },
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const { getFinalizedHeight } = require('../../constants');
-const { getTableInstance } = require('../../database/mysql');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
 const { getIndexedAccountInfo, getBase32AddressFromHex } = require('../../utils/accountUtils');
@@ -30,9 +30,9 @@ const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
 const { getTxnMinFee } = require('../../utils/transactionsUtils');
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
-
 const config = require('../../../config');
+
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, config.endpoints.mysql);
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 

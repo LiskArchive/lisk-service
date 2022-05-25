@@ -15,13 +15,15 @@
  */
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 
 const { getBase32AddressFromHex } = require('../utils/accountUtils');
 
-const { getTableInstance } = require('../database/mysql');
 const votesIndexSchema = require('../database/schema/votes');
 
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
+const config = require('../../config');
+
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, config.endpoints.mysql);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;

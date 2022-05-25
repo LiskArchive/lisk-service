@@ -15,7 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { Logger, CacheRedis } = require('lisk-service-framework');
+const { Logger, CacheRedis, Signals } = require('lisk-service-framework');
 const Transactions = require('@liskhq/lisk-transactions');
 
 const { getLastBlock } = require('./blocks');
@@ -28,7 +28,6 @@ const {
 } = require('../utils/accountUtils');
 const { parseToJSONCompatObj } = require('../utils/parser');
 const requestAll = require('../utils/requestAll');
-const Signals = require('../utils/signals');
 const config = require('../../config');
 
 const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);

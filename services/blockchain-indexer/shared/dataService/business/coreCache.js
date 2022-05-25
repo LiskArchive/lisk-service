@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTableInstance } = require('../../database/mysql');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+
 const accountsIndexSchema = require('../../database/schema/accounts');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
+const config = require('../../../config');
+
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
 
 const getCachedAccountBy = async (key, value) => {
 	const accountsDB = await getAccountsIndex();

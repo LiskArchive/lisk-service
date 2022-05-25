@@ -16,6 +16,13 @@
 const {
 	Logger,
 	Queue,
+	MySQL: {
+		getTableInstance,
+		getDbConnection,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
+	},
 } = require('lisk-service-framework');
 
 const BluebirdPromise = require('bluebird');
@@ -49,23 +56,15 @@ const {
 	getGenesisHeight,
 } = require('../constants');
 
-const {
-	getDbConnection,
-	getTableInstance,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
-} = require('../database/mysql');
-
 const blocksIndexSchema = require('../database/schema/blocks');
 const accountsIndexSchema = require('../database/schema/accounts');
 const transactionsIndexSchema = require('../database/schema/transactions');
 const votesIndexSchema = require('../database/schema/votes');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, config.endpoints.mysql);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, config.endpoints.mysql);
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, config.endpoints.mysql);
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);

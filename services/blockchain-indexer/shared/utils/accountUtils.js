@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils } = require('lisk-service-framework');
+const { Utils, MySQL: { getTableInstance } } = require('lisk-service-framework');
 
 const {
 	hash,
@@ -31,9 +31,9 @@ const accountsIndexSchema = require('../database/schema/accounts');
 
 const dataService = require('../dataService');
 
-const { getTableInstance } = require('../database/mysql');
+const config = require('../../config');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
 
 const isStringType = value => typeof value === 'string';
 

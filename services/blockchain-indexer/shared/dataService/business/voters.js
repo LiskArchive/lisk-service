@@ -16,7 +16,9 @@
 const BluebirdPromise = require('bluebird');
 const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const { getTableInstance } = require('../../database/mysql');
+const {
+	MySQL: { getTableInstance },
+} = require('lisk-service-framework');
 const votesIndexSchema = require('../../database/schema/votes');
 const votesAggregateIndexSchema = require('../../database/schema/votesAggregate');
 
@@ -25,8 +27,10 @@ const {
 	getIndexedAccountInfo,
 } = require('../../utils/accountUtils');
 
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
-const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
+const config = require('../../../config');
+
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, config.endpoints.mysql);
+const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema, config.endpoints.mysql);
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 

@@ -16,12 +16,12 @@
 const BluebirdPromise = require('bluebird');
 const {
 	Exceptions: { InvalidParamsException, NotFoundException },
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const blockSource = require('./blocks');
 const { getAvailableModuleCommands } = require('../../constants');
 
-const { getTableInstance } = require('../../database/mysql');
 const transactionsIndexSchema = require('../../database/schema/transactions');
 
 const {
@@ -34,8 +34,9 @@ const {
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
+const config = require('../../../config');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, config.endpoints.mysql);
 
 const resolveModuleCommand = async (moduleCommandVal) => {
 	const availableModuleCommands = await getAvailableModuleCommands();

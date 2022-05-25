@@ -20,6 +20,8 @@ const {
 	Queue,
 	CacheRedis,
 	Logger,
+	MySQL: { getTableInstance },
+	Signals,
 } = require('lisk-service-framework');
 
 const {
@@ -27,21 +29,16 @@ const {
 	getAccountsByPublicKey2,
 } = require('../dataService');
 
-const {
-	getTableInstance,
-} = require('../database/mysql');
-
 const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
 const keyValueDB = require('../database/mysqlKVStore');
-const Signals = require('../utils/signals');
 
 const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('../database/schema/accounts');
 
-const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
+const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
 
