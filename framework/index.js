@@ -27,6 +27,7 @@ module.exports = {
 	SocketClient: require('./src/socketClient'),
 	Queue: require('./src/queue'),
 	mapper: require('./src/mapper'),
+	MySQL: require('./src/mysql'),
 	Utils: {
 		requireAllJs: require('./src/requireAllJs'),
 		Data: require('./src/data'),
