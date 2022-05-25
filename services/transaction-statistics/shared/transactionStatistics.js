@@ -25,14 +25,6 @@ const BigNumber = require('big-number');
 
 const { requestConnector, requestIndexer } = require('./utils/request');
 
-const {
-	getTableInstance,
-	getDbConnection,
-	startDbTransaction,
-	commitDbTransaction,
-	rollbackDbTransaction,
-} = require('./database/mysql');
-
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
 
