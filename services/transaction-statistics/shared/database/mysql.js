@@ -48,12 +48,12 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 
 const createDbConnection = async (connEndpoint) => {
 	const knex = require('knex')({
-		client: 'mysql',
-		version: '5.7',
+		client: 'mysql2',
+		version: '8',
 		connection: connEndpoint,
 		useNullAsDefault: true,
 		pool: {
-			max: 50,
+			max: 100,
 			min: 2,
 		},
 		log: {
@@ -71,7 +71,7 @@ const createDbConnection = async (connEndpoint) => {
 		.catch((err) => {
 			if (err.code === 'ECONNREFUSED') {
 				logger.error(err.message);
-				logger.error('Database error, shutting down the process');
+				logger.fatal('Unable to connect to the database, shutting down the process...');
 				process.exit(1);
 			}
 			logger.error(err.message);
@@ -194,15 +194,20 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		);
 
 		// Perform all queries within a batch together
-		if (isDefaultTrx) return Promise.all(queries).then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return Promise.all(queries)
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return Promise.all(queries);
 	};
 
-	const queryBuilder = (params, columns) => {
-		const query = knex.select(columns).table(tableName);
+	const queryBuilder = (params, columns, trx) => {
+		const query = knex(tableName).transacting(trx).select(columns);
 		const queryParams = resolveQueryParams(params);
 
 		query.where(queryParams);
@@ -211,10 +216,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			const { propBetweens } = params;
 			propBetweens.forEach(
 				propBetween => {
-					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
-					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
-					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
+					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
+					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 
@@ -261,21 +266,26 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		return query;
 	};
 
-	const find = (params = {}, columns) => new Promise((resolve, reject) => {
+	const find = async (params = {}, columns) => {
+		const trx = await createDefaultTransaction(knex);
 		if (!columns) {
 			logger.warn(`No SELECT columns specified in the query, returning the '${tableName}' table primary key: '${tableConfig.primaryKey}'`);
 			columns = [tableConfig.primaryKey];
 		}
-		const query = queryBuilder(params, columns);
+		const query = queryBuilder(params, columns, trx);
 		const debugSql = query.toSQL().toNative();
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
-		query.then(response => {
-			resolve(response);
-		}).catch(err => {
-			logger.error(err.message);
-			reject(err);
-		});
-	});
+
+		return query
+			.then(async (response) => {
+				await trx.commit();
+				return response;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+	};
 
 	const deleteIds = async (ids, trx) => {
 		let isDefaultTrx = false;
@@ -285,15 +295,21 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		}
 
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
-		if (isDefaultTrx) return query.then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return query
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return query;
 	};
 
 	const count = async (params = {}) => {
-		const query = knex.count(`${tableConfig.primaryKey} as count`).table(tableName);
+		const trx = await createDefaultTransaction(knex);
+		const query = knex(tableName).transacting(trx).count(`${tableConfig.primaryKey} as count`);
 		const queryParams = resolveQueryParams(params);
 
 		query.where(queryParams);
@@ -302,10 +318,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			const { propBetweens } = params;
 			propBetweens.forEach(
 				propBetween => {
-					if (propBetween.from) query.where(propBetween.property, '>=', propBetween.from);
-					if (propBetween.to) query.where(propBetween.property, '<=', propBetween.to);
-					if (propBetween.greaterThan) query.where(propBetween.property, '>', propBetween.greaterThan);
-					if (propBetween.lowerThan) query.where(propBetween.property, '<', propBetween.lowerThan);
+					if ('from' in propBetween) query.where(propBetween.property, '>=', propBetween.from);
+					if ('to' in propBetween) query.where(propBetween.property, '<=', propBetween.to);
+					if ('greaterThan' in propBetween) query.where(propBetween.property, '>', propBetween.greaterThan);
+					if ('lowerThan' in propBetween) query.where(propBetween.property, '<', propBetween.lowerThan);
 				});
 		}
 
@@ -336,13 +352,31 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			query.where(`${property}`, 'like', `%${pattern}%`);
 		}
 
-		const [totalCount] = await query;
-		return totalCount.count;
+		return query
+			.then(async (result) => {
+				await trx.commit();
+				const [totalCount] = result;
+				return totalCount.count;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 	};
 
-	const rawQuery = async queryStatement => {
-		const [resultSet] = await knex.raw(queryStatement);
-		return resultSet;
+	const rawQuery = async (queryStatement) => {
+		const trx = await createDefaultTransaction(knex);
+		return trx
+			.raw(queryStatement)
+			.then(async (result) => {
+				await trx.commit();
+				const [resultSet] = result;
+				return resultSet;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 	};
 
 	const increment = async (params, trx) => {
@@ -357,10 +391,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.where(params.where.property, '=', params.where.value)
 			.increment(params.increment);
 
-		if (isDefaultTrx) return query.then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return query
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return query;
 	};
 
@@ -376,10 +415,15 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.where(params.where.property, '=', params.where.value)
 			.decrement(params.decrement);
 
-		if (isDefaultTrx) return query.then(async (result) => {
-			await trx.commit();
-			return result;
-		}).catch(trx.rollback);
+		if (isDefaultTrx) return query
+			.then(async (result) => {
+				await trx.commit();
+				return result;
+			}).catch(async (err) => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
 		return query;
 	};
 

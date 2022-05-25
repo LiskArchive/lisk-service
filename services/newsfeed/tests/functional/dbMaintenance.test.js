@@ -15,11 +15,11 @@
  */
 const moment = require('moment');
 
-const mysqlIndex = require('../../shared/indexdb/mysql');
+const { getTableInstance } = require('../../shared/indexdb/mysql');
 const schema = require('../../shared/schema/newsfeed');
 
 const tableName = 'newsfeedTestSchema';
-const getIndex = () => mysqlIndex(tableName, schema);
+const getIndex = () => getTableInstance(tableName, schema);
 
 const { normalizedTwitterData } = require('../constants/newsfeed');
 const { prune } = require('../../shared/dbMaintenance');
