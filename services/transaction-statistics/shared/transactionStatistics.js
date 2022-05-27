@@ -17,7 +17,13 @@ const BluebirdPromise = require('bluebird');
 const {
 	Logger,
 	Queue,
-	MySQL: { getTableInstance },
+	MySQL: {
+		getDbConnection,
+		getTableInstance,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
+	},
 	Signals,
 } = require('lisk-service-framework');
 const moment = require('moment');
