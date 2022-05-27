@@ -30,12 +30,12 @@ const blockMocker = (blockData, batchSize, payloadLength) => mocker()
 			}
 
 			if (payloadLength === 0) {
-				block.payload = [];
+				block.transactions = [];
 			} else {
-				block.payload = txMocker(payloadLength);
-				let transactionIndex = block.payload.length - 1;
+				block.transactions = txMocker(payloadLength);
+				let transactionIndex = block.transactions.length - 1;
 				do {
-					const transaction = block.payload[transactionIndex];
+					const transaction = block.transactions[transactionIndex];
 
 					let txPayloadLength;
 					if (transaction.moduleID === 2 && transaction.assetID === 0) txPayloadLength = 130;
