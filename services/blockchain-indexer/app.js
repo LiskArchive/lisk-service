@@ -64,7 +64,7 @@ app.run().then(async () => {
 	const status = require('./shared/indexer/indexStatus');
 	await status.init();
 
-	if (config.operations.IndexingMode) {
+	if (config.operations.isIndexingModeEnabled) {
 		const processor = require('./shared/processor');
 		await processor.init();
 	}
