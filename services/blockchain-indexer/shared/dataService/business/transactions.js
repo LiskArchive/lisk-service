@@ -36,7 +36,9 @@ const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, config.endpoints.mysql);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 const resolveModuleCommand = async (moduleCommandVal) => {
 	const availableModuleCommands = await getAvailableModuleCommands();

@@ -38,7 +38,9 @@ const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('../database/schema/accounts');
 
-const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
 

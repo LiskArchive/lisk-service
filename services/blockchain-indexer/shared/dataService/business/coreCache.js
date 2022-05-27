@@ -19,7 +19,9 @@ const accountsIndexSchema = require('../../database/schema/accounts');
 
 const config = require('../../../config');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 
 const getCachedAccountBy = async (key, value) => {
 	const accountsDB = await getAccountsIndex();

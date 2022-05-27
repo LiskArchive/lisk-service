@@ -15,14 +15,16 @@
  */
 const {
 	Exceptions: { ServiceUnavailableException },
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const config = require('../config');
 
-const { getTableInstance } = require('./indexdb/mysql');
 const newsfeedIndexSchema = require('./schema/newsfeed');
 
-const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema, MYSQL_ENDPOINT);
 
 const enabledSources = Object.values(config.sources)
 	.filter(({ enabled }) => enabled)

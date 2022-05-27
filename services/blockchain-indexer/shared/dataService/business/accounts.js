@@ -61,10 +61,12 @@ const {
 
 const config = require('../../../config');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, config.endpoints.mysql);
-const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, config.endpoints.mysql);
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, config.endpoints.mysql);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);

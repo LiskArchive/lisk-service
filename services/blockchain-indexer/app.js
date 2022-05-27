@@ -47,12 +47,12 @@ const app = Microservice({
 setAppContext(app);
 
 // Add routes, events & jobs
-if (config.operations.IndexingMode) {
+if (config.operations.isIndexingModeEnabled) {
 	app.addMethods(path.join(__dirname, 'methods', 'indexer'));
 	app.addEvents(path.join(__dirname, 'events'));
 }
 
-if (config.operations.dataRetrievalMode) {
+if (config.operations.isDataRetrievalModeEnabled) {
 	app.addMethods(path.join(__dirname, 'methods', 'dataService'));
 }
 

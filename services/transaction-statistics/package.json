@@ -33,7 +33,6 @@
     "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/c462e5d9b7047bec93b62357d48130743374008e/framework/dist/lisk-service-framework-1.4.0.tgz",
     "moment": "^2.29.3"
-
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",

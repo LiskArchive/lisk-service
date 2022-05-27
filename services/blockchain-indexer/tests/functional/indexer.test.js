@@ -22,8 +22,10 @@ const blocksIndexSchema = require('../../shared/database/schema/blocks');
 
 const config = require('../../config');
 
-const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, config.endpoints.mysql);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, config.endpoints.mysql);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',

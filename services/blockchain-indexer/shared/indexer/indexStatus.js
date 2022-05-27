@@ -31,7 +31,9 @@ const blocksIndexSchema = require('../database/schema/blocks');
 
 const config = require('../../config');
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, config.endpoints.mysql);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;

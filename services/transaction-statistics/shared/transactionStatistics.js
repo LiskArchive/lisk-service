@@ -36,8 +36,10 @@ const config = require('../config');
 
 const logger = Logger();
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 let numTrxTypes;
-const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema, config.endpoints.mysql);
+const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema, MYSQL_ENDPOINT);
 
 const getSelector = async (params) => {
 	const result = { property: 'date' };

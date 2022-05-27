@@ -23,7 +23,9 @@ const votesIndexSchema = require('../database/schema/votes');
 
 const config = require('../../config');
 
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, config.endpoints.mysql);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
 
 const dposModuleID = 5;
 const voteTransactionAssetID = 1;
