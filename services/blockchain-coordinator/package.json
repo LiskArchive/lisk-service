@@ -29,12 +29,8 @@
     "test:unit": "echo \"Error: no test specified\""
   },
   "dependencies": {
-    "big-json": "^3.1.0",
-    "bluebird": "^3.7.2",
     "bull": "^4.8.1",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/c462e5d9b7047bec93b62357d48130743374008e/framework/dist/lisk-service-framework-1.4.0.tgz",
-    "signals": "^1.0.0",
-    "tar": "^6.1.11"
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/c462e5d9b7047bec93b62357d48130743374008e/framework/dist/lisk-service-framework-1.4.0.tgz"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",

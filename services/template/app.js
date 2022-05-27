@@ -43,18 +43,16 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-(async () => {
-	// Add routes, events & jobs
-	await app.addMethods(path.join(__dirname, 'methods'));
-	await app.addEvents(path.join(__dirname, 'events'));
-	await app.addJobs(path.join(__dirname, 'jobs'));
+// Add routes, events & jobs
+app.addMethods(path.join(__dirname, 'methods'));
+app.addEvents(path.join(__dirname, 'events'));
+app.addJobs(path.join(__dirname, 'jobs'));
 
-	// Run the application
-	app.run().then(() => {
-		logger.info(`Service started ${packageJson.name}`);
-	}).catch(err => {
-		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-		logger.fatal(err.stack);
-		process.exit(1);
-	});
-})();
+// Run the application
+app.run().then(() => {
+	logger.info(`Service started ${packageJson.name}`);
+}).catch(err => {
+	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+	logger.fatal(err.stack);
+	process.exit(1);
+});

@@ -46,32 +46,30 @@ const app = Microservice({
 
 setAppContext(app);
 
-(async () => {
-	// Add routes, events & jobs
+// Add routes, events & jobs
+if (config.operations.IndexingMode) {
+	app.addMethods(path.join(__dirname, 'methods', 'indexer'));
+	app.addEvents(path.join(__dirname, 'events'));
+}
+
+if (config.operations.dataRetrievalMode) {
+	app.addMethods(path.join(__dirname, 'methods', 'dataService'));
+}
+
+// Run the application
+app.run().then(async () => {
+	logger.info(`Service started ${packageJson.name}`);
+
+	// Init database
+	const status = require('./shared/indexer/indexStatus');
+	await status.init();
+
 	if (config.operations.IndexingMode) {
-		await app.addMethods(path.join(__dirname, 'methods', 'indexer'));
-		await app.addEvents(path.join(__dirname, 'events'));
+		const processor = require('./shared/processor');
+		await processor.init();
 	}
-
-	if (config.operations.dataRetrievalMode) {
-		await app.addMethods(path.join(__dirname, 'methods', 'dataService'));
-	}
-
-	// Run the application
-	app.run().then(async () => {
-		logger.info(`Service started ${packageJson.name}`);
-
-		// Init database
-		const status = require('./shared/indexer/indexStatus');
-		await status.init();
-
-		if (config.operations.IndexingMode) {
-			const processor = require('./shared/processor');
-			await processor.init();
-		}
-	}).catch(err => {
-		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-		logger.fatal(err.stack);
-		process.exit(1);
-	});
-})();
+}).catch(err => {
+	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+	logger.fatal(err.stack);
+	process.exit(1);
+});

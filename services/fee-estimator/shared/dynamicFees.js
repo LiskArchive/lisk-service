@@ -29,7 +29,7 @@ const logger = Logger();
 
 const calculateBlockSize = async block => {
 	let blockSize = 0;
-	block.payload.forEach(txn => blockSize += txn.size);
+	block.transactions.forEach(txn => blockSize += txn.size);
 	return blockSize;
 };
 
@@ -84,7 +84,7 @@ const calculateAvgFeePerByte = (mode, transactionDetails) => {
 const calculateFeePerByte = async block => {
 	const feePerByte = {};
 	const transactionDetails = await BluebirdPromise.map(
-		block.payload,
+		block.transactions,
 		async tx => {
 			// Calculate minFee from JSON parsed transaction
 			const schema = await getAllTransactionSchemasFromCache();
@@ -102,7 +102,7 @@ const calculateFeePerByte = async block => {
 				feePriority: Number(tx.fee) - Number(minFee) / tx.size,
 			};
 		},
-		{ concurrency: block.payload.length },
+		{ concurrency: block.transactions.length },
 	);
 	transactionDetails.sort((t1, t2) => t1.feePriority - t2.feePriority);
 
@@ -173,10 +173,10 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
 			async i => {
-				const { header, payload } = await requestConnector('getBlockByHeight', {
+				const { header, transactions } = await requestConnector('getBlockByHeight', {
 					height: prevFeeEstPerByte.blockHeight + 1 - i,
 				});
-				return { ...header, payload };
+				return { ...header, transactions };
 			},
 			{ concurrency: 50 },
 		);

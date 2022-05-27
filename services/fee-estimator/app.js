@@ -42,7 +42,7 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 	events: {
-		appBlockNew: async (payload) => Signals.get('newBlock').dispatch(payload),
+		appNewBlock: async (payload) => Signals.get('newBlock').dispatch(payload),
 	},
 	dependencies: [
 		'connector',
@@ -51,17 +51,15 @@ const app = Microservice({
 
 setAppContext(app);
 
-(async () => {
-	// Add routes, events & jobs
-	await app.addMethods(path.join(__dirname, 'methods'));
+// Add routes, events & jobs
+app.addMethods(path.join(__dirname, 'methods'));
 
-	// Run the application
-	app.run().then(async () => {
-		logger.info(`Service started ${packageJson.name}`);
-		await init();
-	}).catch(err => {
-		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-		logger.fatal(err.stack);
-		process.exit(1);
-	});
-})();
+// Run the application
+app.run().then(async () => {
+	logger.info(`Service started ${packageJson.name}`);
+	await init();
+}).catch(err => {
+	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+	logger.fatal(err.stack);
+	process.exit(1);
+});

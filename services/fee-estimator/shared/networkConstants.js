@@ -25,14 +25,14 @@ const networkFeeConstants = {
 };
 
 const resolveBaseFees = (networkConstants) => {
-	networkConstants.data.genesisConfig.baseFees.forEach(entry => {
+	networkConstants.data.genesis.baseFees.forEach(entry => {
 		const moduleAssetId = String(entry.moduleID).concat(':').concat(entry.assetID);
 		networkFeeConstants.baseFeeByModuleAssetId[moduleAssetId] = entry.baseFee;
 
 		const [moduleAsset] = networkConstants.data.moduleAssets.filter(o => o.id === moduleAssetId);
 		networkFeeConstants.baseFeeByModuleAssetName[moduleAsset.name] = entry.baseFee;
 	});
-	networkFeeConstants.minFeePerByte = networkConstants.data.genesisConfig.minFeePerByte;
+	networkFeeConstants.minFeePerByte = networkConstants.data.genesis.minFeePerByte;
 
 	return networkFeeConstants;
 };
@@ -47,7 +47,7 @@ const setNetworkFeeConstants = async () => {
 const setGenesisConfig = async () => {
 	if (!genesisConfig) {
 		const result = await requestConnector('getNetworkStatus');
-		genesisConfig = result.data.genesisConfig;
+		genesisConfig = result.data.genesis;
 	}
 };
 

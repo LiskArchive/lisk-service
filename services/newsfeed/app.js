@@ -45,10 +45,10 @@ const app = Microservice({
 	logger: loggerConf,
 });
 
-newsFeedStore.getNewsFeedIndex().then(async () => {
+newsFeedStore.getNewsFeedIndex().then(() => {
 	// Add routes, events & jobs
-	await app.addMethods(path.join(__dirname, 'methods'));
-	await app.addJobs(path.join(__dirname, 'jobs'));
+	app.addMethods(path.join(__dirname, 'methods'));
+	app.addJobs(path.join(__dirname, 'jobs'));
 
 	// Run the application
 	app.run().then(() => {
