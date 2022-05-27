@@ -21,32 +21,9 @@ const {
 const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
 
 const dataService = require('../../../shared/dataService');
-const {
-	getAddressByUsername,
-	getPublicKeyByAny,
-} = require('../../../shared/accountUtils');
 
 const getBlocks = async params => {
 	try {
-		if (typeof params.height === 'number') {
-			params.height = `${params.height}`;
-		}
-		if (params.username) {
-			const { username, ...remParams } = params;
-			params = remParams;
-
-			params.address = await getAddressByUsername(username);
-			if (!params.address) throw new NotFoundException(`Account ID corresponding to username: '${username}' not found.`);
-		}
-
-		if (params.address) {
-			const { address, ...remParams } = params;
-			params = remParams;
-
-			params.generatorPublicKey = await getPublicKeyByAny(address);
-			if (!params.generatorPublicKey) throw new NotFoundException(`Account ID ${address} not found.`);
-		}
-
 		const response = await dataService.getBlocks(params);
 
 		return {

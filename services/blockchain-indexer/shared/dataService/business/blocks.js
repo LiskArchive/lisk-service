@@ -24,7 +24,7 @@ const {
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getIndexedAccountInfo, getBase32AddressFromHex } = require('../../utils/accountUtils');
+const { getBase32AddressFromHex } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
@@ -141,27 +141,10 @@ const getBlocks = async params => {
 		meta: {},
 	};
 
-	if (params.blockId) {
-		const { blockId, ...remParams } = params;
+	if (params.blockID) {
+		const { blockID, ...remParams } = params;
 		params = remParams;
-		params.id = blockId;
-	}
-
-	let accountInfo;
-
-	if (params.address) {
-		const { address, ...remParams } = params;
-		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ address, limit: 1 }, ['publicKey']);
-	}
-	if (params.username) {
-		const { username, ...remParams } = params;
-		params = remParams;
-		accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['publicKey']);
-	}
-
-	if (accountInfo && accountInfo.publicKey) {
-		params.generatorPublicKey = accountInfo.publicKey;
+		params.id = blockID;
 	}
 
 	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
@@ -186,7 +169,7 @@ const getBlocks = async params => {
 			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Block ID ${params.id} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.height) {
-			blocks.data = await getBlockByHeight(params.height);
+			blocks.data = await getBlockByHeight(Number(params.height));
 			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Height ${params.height} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.heightBetween) {
