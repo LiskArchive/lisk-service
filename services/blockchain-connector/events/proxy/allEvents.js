@@ -15,9 +15,9 @@
  */
 const { Signals } = require('lisk-service-framework');
 
-const { getRegisteredEvents } = require('../shared/sdk/endpoints');
-const { subscribeToAllRegisteredEvents } = require('../shared/sdk/events');
-const { decodeEventPayload } = require('../shared/sdk/decoder');
+const { getRegisteredEvents } = require('../../shared/sdk/endpoints');
+const { subscribeToAllRegisteredEvents } = require('../../shared/sdk/events');
+const { decodeEventPayload } = require('../../shared/sdk/decoder');
 
 const toCamelCase = (words) => {
 	let result = '';
