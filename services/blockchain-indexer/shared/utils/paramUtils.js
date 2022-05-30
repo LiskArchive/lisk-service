@@ -27,7 +27,7 @@ const normalizeRangeParam = (params, property) => {
 		const to = Number(toStr);
 
 		if (Number.isNaN(from) || Number.isNaN(to)) throw new ValidationException(`Invalid (non-numeric) '${property}' range values supplied: ${params[property]}.`);
-		if (from && to && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
+		if (fromStr && toStr && from > to) throw new ValidationException(`From ${property} cannot be greater than to ${property}.`);
 
 		if (!params.propBetweens) params.propBetweens = [];
 		if (fromStr === EMPTY_STRING) {
