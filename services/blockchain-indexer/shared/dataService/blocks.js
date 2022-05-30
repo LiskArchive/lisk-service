@@ -55,7 +55,7 @@ const getBlocksFromServer = async params => {
 		meta: {},
 	};
 
-	if (params.blockID) logger.debug(`Retrieved block with id ${params.blockID} from Lisk Core`);
+	if (params.blockID) logger.debug(`Retrieved block with ID ${params.blockID} from Lisk Core`);
 	else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
 	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
 
@@ -87,8 +87,8 @@ const getBlocks = async (params = {}) => {
 
 	let total;
 	if (params.generatorAddress) {
-		total = blocks.meta.total || undefined;
-	} else if (params.blockId || !Number.isNaN(Number(params.height))) {
+		total = blocks.meta.total || null;
+	} else if (params.blockID || !Number.isNaN(Number(params.height))) {
 		total = blocks.data.length;
 	} else if ((params.height && params.height.includes(':'))
 		|| (params.timestamp && params.timestamp.includes(':'))) {

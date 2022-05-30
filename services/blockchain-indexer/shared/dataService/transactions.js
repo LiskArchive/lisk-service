@@ -95,7 +95,7 @@ const postTransactions = async params => {
 		const response = await dataService.postTransactions(params);
 		return {
 			message: 'Transaction payload was successfully passed to the network node',
-			transactionId: response.transactionId,
+			transactionID: response.transactionId,
 		};
 	} catch (err) {
 		if (err.message.includes('ECONNREFUSED')) return {

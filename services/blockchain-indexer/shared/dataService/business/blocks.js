@@ -191,9 +191,9 @@ const getBlocks = async params => {
 		// Block does not exist
 		if (err.message.includes('does not exist')) {
 			let errMessage;
-			if (err.message.includes(':id')) errMessage = `Block ${params.id} does not exist`;
-			if (params.height || err.message.includes(':height')) errMessage = `Block at height ${params.height} does not exist`;
-			throw new NotFoundException(errMessage);
+			if ('id' in params && err.message.includes(params.id)) errMessage = `Block with ID ${params.id} does not exist`;
+			if ('height' in params) errMessage = `Block at height ${params.height} does not exist (${err.message})`;
+			throw new NotFoundException(errMessage || err.message);
 		}
 		throw err;
 	}

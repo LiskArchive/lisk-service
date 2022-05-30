@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const transactionsSource = require('../../../sources/version3/postTransactions');
+const postTransactionsSource = require('../../../sources/version3/postTransactions');
 
 module.exports = {
 	version: '2.0',
@@ -24,5 +24,5 @@ module.exports = {
 	params: {
 		transaction: { optional: false, type: 'string', min: 1, pattern: /^\b[0-9a-fA-F]+\b$/ },
 	},
-	source: transactionsSource,
+	source: postTransactionsSource,
 };

@@ -21,6 +21,6 @@ module.exports = {
 	},
 	definition: {
 		message: '=',
-		transactionId: '=',
+		transactionID: '=',
 	},
 };

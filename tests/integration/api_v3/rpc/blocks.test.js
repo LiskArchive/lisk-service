@@ -52,18 +52,28 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach(block => expect(block).toMap(blockSchema));
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('limit=100 -> ok', async () => {
-			const response = await getBlocks({ limit: 100 });
+		it('limit=10 -> ok', async () => {
+			const response = await getBlocks({ limit: 10 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach(block => expect(block).toMap(blockSchema));
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
@@ -89,21 +99,26 @@ describe('Method get.blocks', () => {
 	});
 
 	describe('is able to retireve block details by block ID', () => {
-		it('known block by block ID -> ok', async () => {
+		it('known block by blockID -> ok', async () => {
 			const response = await getBlocks({ blockID: refBlock.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
-			result.data.forEach(block => expect(block).toMap(blockSchema, { id: refBlock.id }));
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema, { id: refBlock.id });
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
+			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('too long block id -> empty response', async () => {
+		it('too long blockID -> empty response', async () => {
 			const response = await getBlocks({ blockID: 'fkfkfkkkffkfkfk1010101010101010101' }).catch(e => e);
 			expect(response).toMap(invalidParamsSchema);
 		});
 
-		it('invalid block id -> empty response', async () => {
+		it('invalid blockID -> empty response', async () => {
 			const response = await getBlocks({ blockID: '12602944501676077162' }).catch(e => e);
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
@@ -122,7 +137,12 @@ describe('Method get.blocks', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
-			expect(result.data[0]).toMap(blockSchema, { height: refBlock.height });
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema, { height: refBlock.height });
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
+			});
 		});
 
 		it('height = 0 -> -32602', async () => {
@@ -131,14 +151,17 @@ describe('Method get.blocks', () => {
 		});
 	});
 
-	describe('is able to retireve block lists by account address', () => {
-		it('block list by known account ID', async () => {
+	describe('is able to retireve block lists by generatorAddress', () => {
+		it('block list by known generatorAddress', async () => {
 			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			result.data.forEach((block) => {
+			result.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
 			});
 		});
 	});
@@ -153,10 +176,13 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockItem) => {
-				expect(blockItem).toMap(blockSchema);
-				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
-				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				expect(block.timestamp).toBeGreaterThanOrEqual(from);
+				expect(block.timestamp).toBeLessThanOrEqual(to);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
 			});
 		});
 
@@ -168,9 +194,12 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockItem) => {
-				expect(blockItem).toMap(blockSchema);
-				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				expect(block.timestamp).toBeGreaterThanOrEqual(from);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
 			});
 		});
 
@@ -182,9 +211,12 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockItem) => {
-				expect(blockItem).toMap(blockSchema);
-				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				expect(block.timestamp).toBeLessThanOrEqual(to);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
 			});
 		});
 	});
@@ -199,10 +231,13 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockItem) => {
-				expect(blockItem).toMap(blockSchema);
-				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
-				expect(blockItem.height).toBeLessThanOrEqual(maxHeight);
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				expect(block.height).toBeGreaterThanOrEqual(minHeight);
+				expect(block.height).toBeLessThanOrEqual(maxHeight);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
 			});
 		});
 
@@ -214,9 +249,12 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockItem) => {
-				expect(blockItem).toMap(blockSchema);
-				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				expect(block.height).toBeGreaterThanOrEqual(minHeight);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
 			});
 		});
 
@@ -228,9 +266,12 @@ describe('Method get.blocks', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockItem) => {
-				expect(blockItem).toMap(blockSchema);
-				expect(blockItem.height).toBeLessThanOrEqual(maxHeight);
+			result.data.forEach((block, i) => {
+				expect(block).toMap(blockSchema);
+				expect(block.height).toBeLessThanOrEqual(maxHeight);
+				if (i < result.data.length - 1) {
+					expect(block.height).toBe(result.data[i + 1].height + 1);
+				}
 			});
 		});
 	});

@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2019 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -33,16 +33,16 @@ const transactionSchema = {
 	moduleCommandName: Joi.string().required(),
 	fee: Joi.string().required(),
 	height: Joi.number().integer().min(1).required(),
-	nonce: Joi.string().optional(),
+	nonce: Joi.string().required(),
 	confirmations: Joi.number().required(),
 	params: Joi.object().required(),
-	sender: Joi.object(sender).optional(),
-	block: Joi.object(block).optional(),
+	sender: Joi.object(sender).required(),
+	block: Joi.object(block).required(),
 	executionStatus: Joi.string().required(),
 };
 
 const postTransactionSchema = {
-	transactionId: Joi.string().required(),
+	transactionID: Joi.string().required(),
 	message: Joi.string().valid('Transaction payload was successfully passed to the network node').required(),
 };
 
