@@ -98,12 +98,12 @@ const getBlockByID = async id => {
 
 const getBlocksByIDs = async ids => {
 	const response = await requestConnector('getBlocksByIDs', { ids });
-	return normalizeBlocks([response]);
+	return normalizeBlocks(response);
 };
 
 const getBlocksByHeightBetween = async (from, to) => {
 	const response = await requestConnector('getBlocksByHeightBetween', { from, to });
-	return normalizeBlocks([response]);
+	return normalizeBlocks(response);
 };
 
 const getLastBlock = async () => {
