@@ -29,7 +29,7 @@ const getBlocks = async params => {
 		return {
 			data: response.data,
 			meta: response.meta,
-			link: {},
+			links: {},
 		};
 	} catch (err) {
 		let status;
@@ -47,7 +47,7 @@ const getBlocksAssets = async params => {
 		return {
 			data: response.data,
 			meta: response.meta,
-			link: {},
+			links: {},
 		};
 	} catch (err) {
 		let status;
@@ -58,21 +58,7 @@ const getBlocksAssets = async params => {
 	}
 };
 
-const getLastBlock = async params => {
-	const response = await dataService.getBlocks(Object.assign(params, {
-		sort: 'timestamp:desc',
-	}));
-	const blocks = response.data;
-
-	return {
-		data: blocks,
-		meta: response.meta,
-		link: {},
-	};
-};
-
 module.exports = {
 	getBlocks,
-	getLastBlock,
 	getBlocksAssets,
 };

@@ -16,7 +16,6 @@
 
 const {
 	getBlocks,
-	getLastBlock,
 	getBlocksAssets,
 } = require('./controllers/blocks');
 
@@ -45,14 +44,6 @@ module.exports = [
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 			sort: { optional: true, type: 'string' },
-		},
-	},
-	{
-		name: 'blocks.last',
-		controller: getLastBlock,
-		params: {
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
 		},
 	},
 ];
