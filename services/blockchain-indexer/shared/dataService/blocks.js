@@ -55,7 +55,7 @@ const getBlocksFromServer = async params => {
 		meta: {},
 	};
 
-	if (params.blockId) logger.debug(`Retrieved block with id ${params.blockId} from Lisk Core`);
+	if (params.blockID) logger.debug(`Retrieved block with id ${params.blockID} from Lisk Core`);
 	else if (params.height) logger.debug(`Retrieved block with height: ${params.height} from Lisk Core`);
 	else logger.debug(`Retrieved block with custom search: ${util.inspect(params)} from Lisk Core`);
 
