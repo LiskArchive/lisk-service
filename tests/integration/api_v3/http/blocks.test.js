@@ -19,8 +19,8 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const baseUrl = config.SERVICE_ENDPOINT;
-const baseUrlV2 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV2}/blocks`;
+const baseUrlV3 = `${baseUrl}/api/v3`;
+const endpoint = `${baseUrlV3}/blocks`;
 
 const {
 	goodRequestSchema,
@@ -137,11 +137,11 @@ describe('Blocks API', () => {
 
 		it('blocks with half bounded range: toTimestamp', async () => {
 			const toTimestamp = refBlock.timestamp;
-			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}&limit=100`);
+			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
@@ -311,21 +311,21 @@ describe('Blocks API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with invalid combination: blockId and wrong height', async () => {
+		it('returns 404 NOT FOUND when queried with invalid combination: blockID and wrong height', async () => {
 			const expectedStatus = 404;
 			const height = refBlock.height - 10;
 			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&height=${height}`, expectedStatus);
 			expect(response).toMap(notFoundSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with invalid combination: blockId and wrong timestamp', async () => {
+		it('returns 404 NOT FOUND when queried with invalid combination: blockID and wrong timestamp', async () => {
 			const expectedStatus = 404;
 			const timestamp = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&timestamp=${timestamp}`, expectedStatus);
 			expect(response).toMap(notFoundSchema);
 		});
 
-		it('returns 404 NOT FOUND when queried with blockId and non-zero offset', async () => {
+		it('returns 404 NOT FOUND when queried with blockID and non-zero offset', async () => {
 			const expectedStatus = 404;
 			const response = await api.get(`${endpoint}?blockID=${refBlock.id}&offset=1`, expectedStatus);
 			expect(response).toMap(notFoundSchema);

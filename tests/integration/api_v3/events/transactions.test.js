@@ -36,7 +36,8 @@ const baseUrlV2 = `${baseUrl}/api/v3`;
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 
-describe('Test subscribe API transaction event', () => {
+// TODO: Enable test cases once given issue is resolved https://github.com/LiskHQ/lisk-sdk/issues/7172
+xdescribe('Test subscribe API transaction event', () => {
 	it('event update.transactions', async () => {
 		// Post signed transaction to lisk-core (test blockchain CI)
 		const postTransaction = await api.post(
