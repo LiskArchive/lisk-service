@@ -137,7 +137,7 @@ describe('Blocks API', () => {
 
 		it('blocks with half bounded range: toTimestamp', async () => {
 			const toTimestamp = refBlock.timestamp;
-			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
+			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);

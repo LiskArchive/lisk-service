@@ -147,12 +147,12 @@ describe('Method get.blocks', () => {
 		it('Blocks with from...to timestamp -> ok', async () => {
 			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const to = refBlock.timestamp;
-			const response = await getBlocks({ timestamp: `${from}:${to}` });
+			const response = await getBlocks({ timestamp: `${from}:${to}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBeLessThanOrEqual(100);
 			result.data.forEach((blockItem) => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
@@ -162,12 +162,12 @@ describe('Method get.blocks', () => {
 
 		it('Blocks with from... timestamp -> ok', async () => {
 			const from = moment(refBlock.timestamp * 10 ** 3).subtract(1, 'day').unix();
-			const response = await getBlocks({ timestamp: `${from}:` });
+			const response = await getBlocks({ timestamp: `${from}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBeLessThanOrEqual(100);
 			result.data.forEach((blockItem) => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.timestamp).toBeGreaterThanOrEqual(from);
@@ -176,12 +176,12 @@ describe('Method get.blocks', () => {
 
 		it('Blocks with ...to timestamp -> ok', async () => {
 			const to = refBlock.timestamp;
-			const response = await getBlocks({ timestamp: `:${to}` });
+			const response = await getBlocks({ timestamp: `:${to}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBeLessThanOrEqual(100);
 			result.data.forEach((blockItem) => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.timestamp).toBeLessThanOrEqual(to);
@@ -193,12 +193,12 @@ describe('Method get.blocks', () => {
 		it('Blocks with min...max height -> ok', async () => {
 			const minHeight = refBlock.height - 10;
 			const maxHeight = refBlock.height;
-			const response = await getBlocks({ height: `${minHeight}:${maxHeight}` });
+			const response = await getBlocks({ height: `${minHeight}:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBeLessThanOrEqual(100);
 			result.data.forEach((blockItem) => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
@@ -208,12 +208,12 @@ describe('Method get.blocks', () => {
 
 		it('Blocks with min... height -> ok', async () => {
 			const minHeight = refBlock.height - 10;
-			const response = await getBlocks({ height: `${minHeight}:` });
+			const response = await getBlocks({ height: `${minHeight}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBeLessThanOrEqual(100);
 			result.data.forEach((blockItem) => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.height).toBeGreaterThanOrEqual(minHeight);
@@ -222,12 +222,12 @@ describe('Method get.blocks', () => {
 
 		it('Blocks with ...max height -> ok', async () => {
 			const maxHeight = refBlock.height;
-			const response = await getBlocks({ height: `:${maxHeight}` });
+			const response = await getBlocks({ height: `:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.data.length).toBeLessThanOrEqual(100);
 			result.data.forEach((blockItem) => {
 				expect(blockItem).toMap(blockSchema);
 				expect(blockItem.height).toBeLessThanOrEqual(maxHeight);
