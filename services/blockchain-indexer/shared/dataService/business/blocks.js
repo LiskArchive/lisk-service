@@ -204,6 +204,29 @@ const getBlocks = async params => {
 	return blocks;
 };
 
+const getBlocksAssets = async () => {
+	// TODO: Replace with the implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1089
+	const response = {
+		data: [
+			{
+				block: {
+					id: '222675625422353767',
+					height: 100,
+					timestamp: 100,
+				},
+				moduleID: '1',
+				data: {},
+			},
+		],
+		meta: {
+			count: 1,
+			offset: 5,
+			total: 100,
+		},
+	};
+	return response;
+};
+
 module.exports = {
 	getBlocks,
 	getFinalizedHeight,
@@ -211,4 +234,5 @@ module.exports = {
 	getLastBlock,
 	getBlockByHeight,
 	getBlockByID,
+	getBlocksAssets,
 };

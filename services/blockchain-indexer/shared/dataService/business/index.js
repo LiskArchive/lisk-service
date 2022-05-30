@@ -36,6 +36,7 @@ const {
 	getLastBlock,
 	getBlockByHeight,
 	getBlockByID,
+	getBlocksAssets,
 } = require('./blocks');
 
 const {
@@ -94,6 +95,7 @@ module.exports = {
 	getLastBlock,
 	getBlockByHeight,
 	getBlockByID,
+	getBlocksAssets,
 	getForgers,
 	postTransactions,
 	getPendingTransactions,
