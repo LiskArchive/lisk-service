@@ -56,7 +56,7 @@ describe('Test MySQL', () => {
 
 		it(`validate if composite primary key is set`, async () => {
 			const result = await compositeKeyTable.rawQuery(`SHOW KEYS FROM ${compositeKeyTableName} WHERE Key_name = 'PRIMARY'`);
-			expect(result.length).toBe(2);
+			expect(result.length).toBe(compositeKeySchema.primaryKey.length);
 			result.forEach(res => expect(compositeKeySchema.primaryKey.includes(res.Column_name)).toBe(true));
 		});
 
