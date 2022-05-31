@@ -30,7 +30,6 @@ describe('Signals tests', () => {
 	describe('signal.add()', () => {
 		const signal = signals.get('addEvent');
 		const testFunc = () => { };
-
 		it('Add valid listener to signal.add()', async () => {
 			// initially 0 listeners
 			expect(signal.getNumListeners()).toBe(0);

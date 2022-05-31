@@ -27,6 +27,47 @@ const register = name => {
 	return signals[name];
 };
 
-const get = name => signals[name] ? signals[name] : register(name);
+const get = name => {
+	const signal = signals[name] ? signals[name] : register(name);
+	return {
+		dispatch: signal.dispatch,
+
+		add: listener => {
+			const isListenerAdded = signal.has(listener, signal);
+			if (!isListenerAdded) {
+				logger.info(`Adding listener: '${listener.name}' to signal: '${name}'`);
+				const binding = signal.add(listener, signal);
+				return binding;
+			}
+			return false;
+		},
+
+		remove: listener => {
+			const removedListener = signal.remove(listener, signal);
+			logger.info(`Removed listener: '${removedListener.name}' from signal: '${name}'`);
+			return removedListener;
+		},
+
+		getNumListeners: () => {
+			const numOfListener = signal.getNumListeners(signal);
+			logger.info(`Number of listener: '${numOfListener}' from signal: '${name}'`);
+			return numOfListener;
+		},
+
+		dispose: () => {
+			const disposedListener = signal.dispose(signal);
+			logger.info(`Disposed listener: '${name}'`);
+			return disposedListener;
+		},
+
+		removeAll: () => {
+			const removedListener = signal.removeAll(signal);
+			logger.info('Removed all listeners');
+			return removedListener;
+		},
+
+		toString: () => signal.toString(),
+	};
+};
 
 module.exports = { register, get };
