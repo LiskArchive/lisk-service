@@ -103,12 +103,10 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ blockID: refBlock.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(1);
-			result.data.forEach((block, i) => {
+			result.data.forEach((block) => {
 				expect(block).toMap(blockSchema, { id: refBlock.id });
-				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
-				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
@@ -136,12 +134,10 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ height: `${refBlock.height}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(1);
-			result.data.forEach((block, i) => {
+			result.data.forEach((block) => {
 				expect(block).toMap(blockSchema, { height: refBlock.height });
-				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
-				}
 			});
 		});
 
@@ -156,11 +152,14 @@ describe('Method get.blocks', () => {
 			const response = await getBlocks({ generatorAddress: refBlock.generatorAddress });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThan(result.data[i + 1].height + 1);
 				}
 			});
 		});

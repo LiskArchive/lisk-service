@@ -74,12 +74,10 @@ describe('Blocks API', () => {
 		it('known block by blockID -> ok', async () => {
 			const response = await api.get(`${endpoint}?blockID=${refBlock.id}`);
 			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
-			response.data.forEach((block, i) => {
+			response.data.forEach((block) => {
 				expect(block).toMap(blockSchema, { id: refBlock.id });
-				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
-				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -87,14 +85,12 @@ describe('Blocks API', () => {
 		it('known block by height -> ok', async () => {
 			const response = await api.get(`${endpoint}?height=${refBlock.height}`);
 			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
 			expect(response.data[0].height).toEqual(refBlock.height);
 			expect(response.data[0]).toEqual(refBlock);
-			response.data.forEach((block, i) => {
+			response.data.forEach((block) => {
 				expect(block).toMap(blockSchema, { height: refBlock.height });
-				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
-				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -102,11 +98,14 @@ describe('Blocks API', () => {
 		it('known block by generatorAddress -> ok', async () => {
 			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generatorAddress}`);
 			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThan(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -115,11 +114,10 @@ describe('Blocks API', () => {
 		it('known block by timestamp -> ok', async () => {
 			const response = await api.get(`${endpoint}?timestamp=${refBlock.timestamp}`);
 			expect(response).toMap(goodRequestSchema);
-			response.data.forEach((block, i) => {
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBe(1);
+			response.data.forEach((block) => {
 				expect(block).toMap(blockSchema, { timestamp: refBlock.timestamp });
-				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
-				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
