@@ -256,9 +256,12 @@ const updateBlockIndex = async job => {
 const deleteIndexedBlocks = async job => {
 	const { blocks } = job.data;
 
+	const blockIDs = blocks.map(b => b.id).join(', ');
+
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
+	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 
 	try {
 		const accountsDB = await getAccountsIndex();
@@ -290,8 +293,18 @@ const deleteIndexedBlocks = async job => {
 			});
 		await blocksDB.deleteIds(blocks.map(b => b.height), trx);
 		await commitDbTransaction(trx);
+		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	} catch (error) {
+		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 		await rollbackDbTransaction(trx);
+
+		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;
+			logger.warn(errMessage);
+			throw new Error(errMessage);
+		}
+
+		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };
