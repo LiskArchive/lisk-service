@@ -79,12 +79,11 @@ describe('Method get.blocks.assets', () => {
 			const response = await getBlocksAssets({ blockID: refBlockAsset.block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data.length).toEqual(1);
-			result.data.forEach((blockAsset, i) => {
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((blockAsset) => {
 				expect(blockAsset).toMap(blockAssetSchema, { id: refBlockAsset.block.id });
-				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
-				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
@@ -94,11 +93,8 @@ describe('Method get.blocks.assets', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data.length).toEqual(1);
-			result.data.forEach((blockAsset, i) => {
+			result.data.forEach((blockAsset) => {
 				expect(blockAsset).toMap(blockAssetSchema, { height: refBlockAsset.block.height });
-				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
-				}
 			});
 		});
 
@@ -107,7 +103,7 @@ describe('Method get.blocks.assets', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
+				expect(blockAsset).toMap({ ...blockAssetSchema, moduleID: refBlockAsset.moduleID });
 				expect(blockAsset.moduleID).toEqual(refBlockAsset.moduleID);
 				if (i < result.data.length - 1) {
 					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);

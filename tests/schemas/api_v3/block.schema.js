@@ -24,7 +24,7 @@ const block = {
 const blockAssetSchema = {
 	block: Joi.object(block).required(),
 	moduleID: Joi.string().required(),
-	data: Joi.object().required(),
+	assets: Joi.object().required(), // TODO: Update data schema once confirmed from sdk
 };
 
 module.exports = {

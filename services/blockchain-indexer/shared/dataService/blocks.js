@@ -120,10 +120,6 @@ const getBlocksAssets = async params => {
 		meta: {},
 	};
 
-	if (params.blockID) logger.debug(`Retrieving block assets for the block with ID ${params.blockID} from Lisk Core`);
-	else if (params.height) logger.debug(`Retrieving block assets for the block at height: ${params.height} from Lisk Core`);
-	else logger.debug(`Retrieving block assets with custom search: ${util.inspect(params)} from Lisk Core`);
-
 	const response = await dataService.getBlocksAssets(params);
 	if (response.data) blocksAssets.data = response.data;
 	if (response.meta) blocksAssets.meta = response.meta;

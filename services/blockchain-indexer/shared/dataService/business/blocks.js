@@ -14,12 +14,16 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const util = require('util');
 
 const {
 	CacheRedis,
+	Logger,
 	Exceptions: { NotFoundException },
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+
+const logger = Logger();
 
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
@@ -204,7 +208,11 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const getBlocksAssets = async () => {
+const getBlocksAssets = async (params) => {
+	if (params.blockID) logger.debug(`Retrieving block assets for the block with ID ${params.blockID} from Lisk Core`);
+	else if (params.height) logger.debug(`Retrieving block assets for the block at height: ${params.height} from Lisk Core`);
+	else logger.debug(`Retrieving block assets with custom search: ${util.inspect(params)} from Lisk Core`);
+
 	// TODO: Replace with the implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1089
 	const response = {
 		data: [
