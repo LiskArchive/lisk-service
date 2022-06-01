@@ -16,9 +16,9 @@
 const BluebirdPromise = require('bluebird');
 const {
 	Logger,
+	MySQL: { getTableInstance },
+	Signals,
 } = require('lisk-service-framework');
-
-const Signals = require('../utils/signals');
 
 const logger = Logger();
 
@@ -27,13 +27,13 @@ const {
 	getGenesisHeight,
 } = require('../constants');
 
-const {
-	getTableInstance,
-} = require('../database/mysql');
-
 const blocksIndexSchema = require('../database/schema/blocks');
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const config = require('../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 
 let isIndexReady = false;
 const setIndexReadyStatus = isReady => isIndexReady = isReady;

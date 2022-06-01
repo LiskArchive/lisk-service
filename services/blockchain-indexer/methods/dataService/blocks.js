@@ -27,7 +27,6 @@ module.exports = [
 			blockID: { optional: true, type: 'any' },
 			height: { optional: true, type: 'any' },
 			generatorAddress: { optional: true, type: 'any' },
-			generatorPublicKey: { optional: true, type: 'any' },
 			timestamp: { optional: true, type: 'any' },
 			limit: { optional: true, type: 'any' },
 			offset: { optional: true, type: 'any' },

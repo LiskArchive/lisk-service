@@ -86,7 +86,7 @@ const getBlocks = async (params = {}) => {
 	}));
 
 	let total;
-	if (params.generatorPublicKey) {
+	if (params.generatorAddress) {
 		total = blocks.meta.total || undefined;
 	} else if (params.blockId || !Number.isNaN(Number(params.height))) {
 		total = blocks.data.length;

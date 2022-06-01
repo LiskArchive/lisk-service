@@ -17,6 +17,7 @@ const MessageQueue = require('bull');
 
 const {
 	Logger,
+	Signals,
 } = require('lisk-service-framework');
 
 const logger = Logger();
@@ -37,7 +38,6 @@ const {
 } = require('./sources/connector');
 
 const config = require('../config');
-const Signals = require('./signals');
 
 const blockIndexQueue = new MessageQueue(
 	config.queue.blocks.name,

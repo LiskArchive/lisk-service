@@ -14,8 +14,7 @@
  *
  */
 const MessageQueue = require('bull');
-const { Logger } = require('lisk-service-framework');
-const Signals = require('./utils/signals');
+const { Logger, Signals } = require('lisk-service-framework');
 
 const {
 	getBlocks,

@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Signals } = require('lisk-service-framework');
+
 const { getRegisteredEvents } = require('./endpoints');
 const { getApiClient } = require('./client');
-
-const Signals = require('../signals');
 
 const subscribeToAllRegisteredEvents = async () => {
 	const apiClient = await getApiClient();

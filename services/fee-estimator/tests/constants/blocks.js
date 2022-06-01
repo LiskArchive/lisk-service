@@ -28,7 +28,7 @@ const emptyBlock = {
 		maxHeightPrevoted: 249124,
 		seedReveal: '1e69c051be78cb82e287b159a39caf45',
 	},
-	payload: [],
+	transactions: [],
 };
 
 const nonEmptyBlock = {
@@ -46,7 +46,7 @@ const nonEmptyBlock = {
 		maxHeightPrevoted: 250,
 		seedReveal: '039af3c52bd5ad58616328faaf23755f',
 	},
-	payload: [
+	transactions: [
 		{
 			id: 'a231631f473b6b70465eb53548c764cd6051fc1e76dfa9b9d8fe3e6166faa8a5',
 			moduleID: 2,

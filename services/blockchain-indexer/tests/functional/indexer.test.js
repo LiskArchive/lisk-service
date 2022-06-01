@@ -15,13 +15,17 @@
  *
  */
 const { ServiceBroker } = require('moleculer');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 
-const { getTableInstance } = require('../../shared/database/mysql');
 const accountsIndexSchema = require('../../shared/database/schema/accounts');
 const blocksIndexSchema = require('../../shared/database/schema/blocks');
 
-const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
+const config = require('../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 
 const broker = new ServiceBroker({
 	transporter: 'redis://localhost:6379/0',

@@ -13,11 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
-
-const config = require('../../config');
+const Logger = require('./logger').get;
 
 const logger = Logger();
+
+const CONN_ENDPOINT_DEFAULT = 'mysql://lisk:password@localhost:3306/lisk';
 
 const connectionPool = {};
 const tablePool = {};
@@ -35,18 +35,16 @@ const loadSchema = async (knex, tableName, tableConfig) => {
 				const kProp = (table[schema[p].type])(p);
 				if (schema[p].null === false) kProp.notNullable();
 				if ('defaultValue' in schema[p]) kProp.defaultTo(schema[p].defaultValue);
-				if (p === primaryKey) kProp.primary();
 				if (indexes[p]) kProp.index();
-
-				// TODO: Add support for composite primary keys and foreign keys
 				return kProp;
 			});
+			table.primary(primaryKey);
 		});
 
 	return knex;
 };
 
-const createDbConnection = async (connEndpoint) => {
+const createDbConnection = async connEndpoint => {
 	const knex = require('knex')({
 		client: 'mysql2',
 		version: '8',
@@ -65,10 +63,10 @@ const createDbConnection = async (connEndpoint) => {
 	});
 
 	knex.select(1)
-		.on('query-error', (error) => {
+		.on('query-error', error => {
 			logger.error(error.message);
 		})
-		.catch((err) => {
+		.catch(err => {
 			if (err.code === 'ECONNREFUSED') {
 				logger.error(err.message);
 				logger.fatal('Unable to connect to the database, shutting down the process...');
@@ -89,7 +87,7 @@ const cast = (val, type) => {
 	return val;
 };
 
-const resolveQueryParams = (params) => {
+const resolveQueryParams = params => {
 	const queryParams = Object.keys(params)
 		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
 			.includes(key))
@@ -100,7 +98,7 @@ const resolveQueryParams = (params) => {
 	return queryParams;
 };
 
-const getValue = (val) => {
+const getValue = val => {
 	if (typeof val === 'undefined') return null;
 	if (Number.isNaN(val)) return null;
 	return val;
@@ -119,14 +117,14 @@ const mapRowsBySchema = async (rawRows, schema) => {
 	return rows;
 };
 
-const getConnectionPoolKey = (connEndpoint = config.endpoints.mysql) => {
+const getConnectionPoolKey = (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	const userName = connEndpoint.split('//')[1].split('@')[0].split(':')[0];
 	const [hostPort, dbName] = connEndpoint.split('@')[1].split('/');
 	const connPoolKey = `${userName}@${hostPort}/${dbName}`;
 	return connPoolKey;
 };
 
-const getDbConnection = async (connEndpoint = config.endpoints.mysql) => {
+const getDbConnection = async (connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const defaultCharset = 'utf8mb4';
 
@@ -147,7 +145,7 @@ const getDbConnection = async (connEndpoint = config.endpoints.mysql) => {
 
 const createTableIfNotExists = async (tableName,
 	tableConfig,
-	connEndpoint = config.endpoints.mysql) => {
+	connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	const connPoolKey = getConnectionPoolKey(connEndpoint);
 	const connPoolKeyTable = `${connPoolKey}/${tableName}`;
 
@@ -159,18 +157,18 @@ const createTableIfNotExists = async (tableName,
 	}
 };
 
-const startDbTransaction = async (connection) => connection.transaction();
+const startDbTransaction = async connection => connection.transaction();
 
-const commitDbTransaction = async (transaction) => transaction.commit();
+const commitDbTransaction = async transaction => transaction.commit();
 
-const rollbackDbTransaction = async (transaction) => transaction.rollback();
+const rollbackDbTransaction = async transaction => transaction.rollback();
 
-const getTableInstance = async (tableName, tableConfig, connEndpoint = config.endpoints.mysql) => {
+const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDPOINT_DEFAULT) => {
 	const { primaryKey, schema } = tableConfig;
 
 	const knex = await getDbConnection(connEndpoint);
 
-	const createDefaultTransaction = async (connection) => startDbTransaction(connection);
+	const createDefaultTransaction = async connection => startDbTransaction(connection);
 
 	await createTableIfNotExists(tableName, tableConfig, connEndpoint);
 
@@ -186,7 +184,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		const rows = await mapRowsBySchema(rawRows, schema);
 
 		// Create all queries for `INSERT or UPDATE on Duplicate keys`
-		const queries = rows.map((row) => knex(tableName)
+		const queries = rows.map(row => knex(tableName)
 			.transacting(trx)
 			.insert(row)
 			.onConflict(primaryKey)
@@ -195,10 +193,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 
 		// Perform all queries within a batch together
 		if (isDefaultTrx) return Promise.all(queries)
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -277,10 +275,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		logger.debug(`${debugSql.sql}; bindings: ${debugSql.bindings}`);
 
 		return query
-			.then(async (response) => {
+			.then(async response => {
 				await trx.commit();
 				return response;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -296,10 +294,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
 		if (isDefaultTrx) return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -353,26 +351,26 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 		}
 
 		return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				const [totalCount] = result;
 				return totalCount.count;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
 			});
 	};
 
-	const rawQuery = async (queryStatement) => {
+	const rawQuery = async queryStatement => {
 		const trx = await createDefaultTransaction(knex);
 		return trx
 			.raw(queryStatement)
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				const [resultSet] = result;
 				return resultSet;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -392,10 +390,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.increment(params.increment);
 
 		if (isDefaultTrx) return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;
@@ -416,10 +414,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = config.en
 			.decrement(params.decrement);
 
 		if (isDefaultTrx) return query
-			.then(async (result) => {
+			.then(async result => {
 				await trx.commit();
 				return result;
-			}).catch(async (err) => {
+			}).catch(async err => {
 				await trx.rollback();
 				logger.error(err.message);
 				throw err;

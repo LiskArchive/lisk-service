@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const endpoints = require('../shared/sdk/endpoints');
+const endpoints = require('../../shared/sdk/endpoints');
 
 const exportAllMethods = async () => {
 	const registeredEndpoints = await endpoints.getRegisteredActions();

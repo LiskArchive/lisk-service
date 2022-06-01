@@ -14,9 +14,8 @@
  *
  */
 const util = require('util');
-const { Logger } = require('lisk-service-framework');
+const { Logger, Signals } = require('lisk-service-framework');
 
-const Signals = require('../shared/utils/signals');
 const {
 	reloadAllPendingTransactions,
 	getTransactionsByBlockId,

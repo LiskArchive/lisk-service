@@ -41,21 +41,39 @@ const defaultConfig = {
 	},
 };
 
-const filterApis = (requiredApis, availableApis) => {
+// Update when adding new APIs
+const PATH_API_MAPPINGS = {
+	'/': ['http-status'],
+	'/test': ['http-test'],
+	'/v2': ['http-version2', 'http-exports'],
+	'/v3': ['http-version3', 'http-exports'],
+};
+
+const filterApis = (requiredApis) => {
+	requiredApis = requiredApis.split(',');
+
 	const filteredApis = [];
 
-	requiredApis = requiredApis.split(',');
-	Object.keys(availableApis).forEach(key => {
-		if (requiredApis.includes(key)) filteredApis.push(availableApis[key]());
-	});
+	// Filter the APIs to be registered on the gateway based on 'requiredApis' config
+	const apisToRegister = Object.keys(PATH_API_MAPPINGS)
+		.reduce((acc, path) => {
+			requiredApis.forEach(api => {
+				if (PATH_API_MAPPINGS[path].includes(api)) {
+					if (Array.isArray(acc[path])) {
+						acc[path].push(api);
+					} else {
+						acc[path] = [api];
+					}
+				}
+			});
+			return acc;
+		}, {});
+
+	// Generate the final routes to be registered at the gateway in moleculer-web
+	Object.entries(apisToRegister)
+		.forEach(([path, apis]) => filteredApis.push(registerApi(apis, { ...defaultConfig, path })));
 
 	return filteredApis;
 };
 
-module.exports = filterApis(config.api.http, {
-	'http-test': () => registerApi('http-test', { ...defaultConfig, path: '/test' }),
-	'http-status': () => registerApi('http-status', { ...defaultConfig, path: '/' }),
-	'http-version2': () => registerApi('http-version2', { ...defaultConfig, path: '/v2' }),
-	'http-version3': () => registerApi('http-version3', { ...defaultConfig, path: '/v3' }),
-	'http-exports': () => registerApi('http-exports', { ...defaultConfig, path: '/v3' }),
-});
+module.exports = filterApis(config.api.http);

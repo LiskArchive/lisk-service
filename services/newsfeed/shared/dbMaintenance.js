@@ -13,14 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
 const moment = require('moment');
-
-const { getTableInstance } = require('./indexdb/mysql');
+const {
+	Logger,
+	MySQL: { getTableInstance },
+} = require('lisk-service-framework');
 
 const newsfeedIndexSchema = require('./schema/newsfeed');
 
-const getIndex = (tableName) => getTableInstance(tableName, newsfeedIndexSchema);
+const config = require('../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getIndex = (tableName) => getTableInstance(tableName, newsfeedIndexSchema, MYSQL_ENDPOINT);
+
+const logger = Logger();
 
 const prune = async (source, table, expiryInDays) => {
 	const db = await getIndex(table);

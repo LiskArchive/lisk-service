@@ -30,8 +30,11 @@ describe('Test queue', () => {
 			queue: expect.any(Object),
 		})
 
-		expect(queue.queue.client.options.host).toEqual('localhost');
-		expect(queue.queue.client.options.port).toEqual(6379);
+		const host = redisEndpoint.split(':')[1].split('//')[1];
+		const port = Number(redisEndpoint.split(':')[2].split('/')[0]);
+		
+		expect(queue.queue.client.options.host).toEqual(host);
+		expect(queue.queue.client.options.port).toEqual(port);
 	});
 
 	it('Add job to the queue', async () => {

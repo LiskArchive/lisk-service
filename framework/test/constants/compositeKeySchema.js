@@ -13,27 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const block = require('./mappings/block');
-
 module.exports = {
-	type: 'moleculer',
-	method: 'indexer.blocks',
-	params: {
-		blockID: '=,string',
-		height: '=,string',
-		generatorAddress: '=,string',
-		timestamp: '=,string',
-		offset: '=,number',
-		limit: '=,number',
-		sort: '=,string',
+	primaryKey: ['height', 'id'],
+	schema: {
+		id: { type: 'string' },
+		height: { type: 'integer' },
+		timestamp: { type: 'integer' },
+		generatorPublicKey: { type: 'string' },
+		size: { type: 'integer' },
+		reward: { type: 'bigInteger' },
+		isFinal: { type: 'boolean' },
 	},
-	definition: {
-		data: ['data', block],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
+	indexes: {
+		id: { type: 'key' },
+		height: { type: 'range' },
+		timestamp: { type: 'range' },
+		generatorPublicKey: { type: 'key' },
+		size: { type: 'range' },
+		isFinal: { type: 'key' },
+		reward: { type: 'range' },
 	},
+	purge: {},
 };

@@ -49,12 +49,19 @@ nodeStatus.waitForNode().then(async () => {
 	logger.info(`Found a node, starting service ${packageJson.name.toUpperCase()}...`);
 
 	// Add routes, events & jobs
-	await app.addMethods(path.join(__dirname, 'methods'));
-	await app.addEvents(path.join(__dirname, 'events'));
-	await app.addJobs(path.join(__dirname, 'jobs'));
+	app.addMethods(path.join(__dirname, 'methods'));
+
+	const allBlockhainEndpoints = await require('./methods/proxy/allEndpoints');
+	allBlockhainEndpoints.forEach((method) => app.addMethod(method));
+
+	app.addEvents(path.join(__dirname, 'events'));
+	const allBlockchainEvents = await require('./events/proxy/allEvents');
+	allBlockchainEvents.forEach((event) => app.addEvent(event));
+
+	app.addJobs(path.join(__dirname, 'jobs'));
 
 	if (config.enableTestingMode) {
-		await app.addMethods(path.join(__dirname, 'methods', 'tests'));
+		app.addMethods(path.join(__dirname, 'methods', 'tests'));
 	}
 
 	app.run()

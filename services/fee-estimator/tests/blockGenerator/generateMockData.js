@@ -61,7 +61,7 @@ const blockData = {
 	reward: {
 		function: () => '200000000',
 	},
-	payload: {
+	transactions: {
 		function: () => [],
 	},
 	asset: {

@@ -13,13 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTableInstance } = require('./mysql');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+
+const config = require('../../config');
 
 const keyValueStoreSchema = require('./schema/kvStore');
 
 const ALLOWED_VALUE_TYPES = ['boolean', 'number', 'bigint', 'string', 'undefined'];
 
-const getKeyValueStoreIndex = () => getTableInstance('key_value_store', keyValueStoreSchema);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getKeyValueStoreIndex = () => getTableInstance('key_value_store', keyValueStoreSchema, MYSQL_ENDPOINT);
 
 const set = async (key, value) => {
 	const keyValueDB = await getKeyValueStoreIndex();

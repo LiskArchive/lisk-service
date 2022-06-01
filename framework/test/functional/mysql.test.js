@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -19,30 +19,52 @@ const {
 	commitDbTransaction,
 	getDbConnection,
 	rollbackDbTransaction,
-} = require('../../shared/indexdb/mysql');
+} = require('../../src/mysql');
+
 const schema = require('../constants/blocksSchema');
+const compositeKeySchema = require('../constants/compositeKeySchema');
 
 const tableName = 'functional_test';
+const compositeKeyTableName = 'composite_primary_key';
+
 const getIndex = () => getTableInstance(tableName, schema);
+const getCompositeKeyTableIndex = () => getTableInstance(compositeKeyTableName, compositeKeySchema);
 
 const { emptyBlock, nonEmptyBlock } = require('../constants/blocks');
 
 describe('Test MySQL', () => {
 	let testTable;
+	let compositeKeyTable;
 	beforeAll(async () => {
 		// Create table
 		testTable = await getIndex();
+		compositeKeyTable = await getCompositeKeyTableIndex();
 	});
 
 	afterAll(async () => {
 		// Drop table
 		await testTable.rawQuery(`DROP TABLE IF EXISTS ${tableName}`);
+		await compositeKeyTable.rawQuery(`DROP TABLE IF EXISTS ${compositeKeyTableName}`);
 	});
 
-	it(`${tableName} exists`, async () => {
-		const result = await testTable.find();
-		expect(result).toBeInstanceOf(Array);
-		expect(result.length).toBe(0);
+	describe('Generic MySQL validation', () => {
+		it(`validate if primary key is set`, async () => {
+			const result = await testTable.rawQuery(`SHOW KEYS FROM ${tableName} WHERE Key_name = 'PRIMARY'`);
+			expect(result.length).toBe(1);
+			expect(result[0].Column_name).toBe(schema.primaryKey);
+		});
+
+		it(`validate if composite primary key is set`, async () => {
+			const result = await compositeKeyTable.rawQuery(`SHOW KEYS FROM ${compositeKeyTableName} WHERE Key_name = 'PRIMARY'`);
+			expect(result.length).toBe(compositeKeySchema.primaryKey.length);
+			result.forEach(res => expect(compositeKeySchema.primaryKey.includes(res.Column_name)).toBe(true));
+		});
+
+		it(`${tableName} exists`, async () => {
+			const result = await testTable.find();
+			expect(result).toBeInstanceOf(Array);
+			expect(result.length).toBe(0);
+		});
 	});
 
 	describe('With IMPLICIT DB transaction (auto-commit mode)', () => {

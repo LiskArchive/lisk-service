@@ -21,6 +21,7 @@ const {
 		NotFoundException,
 		ValidationException,
 	},
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const {
@@ -29,7 +30,6 @@ const {
 } = require('./dpos');
 
 const { getGenesisConfig, getGenesisHeight } = require('../../constants');
-const { getTableInstance } = require('../../database/mysql');
 
 const accountsIndexSchema = require('../../database/schema/accounts');
 const blocksIndexSchema = require('../../database/schema/blocks');
@@ -61,10 +61,12 @@ const {
 
 const config = require('../../../config');
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema);
-const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema);
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
+const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 const accountsCache = CacheRedis('accounts', config.endpoints.volatileRedis);
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
