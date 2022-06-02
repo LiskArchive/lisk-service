@@ -36,10 +36,13 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlocksAssets = async params => request(wsRpcUrl, 'get.blocks.assets', params);
 
-describe('Method get.blocks.assets', () => {
-	let refBlockAsset;
+// TODO: Enable tests cases with the issue https://github.com/LiskHQ/lisk-service/issues/1089
+xdescribe('Method get.blocks.assets', () => {
+	let refBlockAssets;
+	let refAsset;
 	beforeAll(async () => {
-		[refBlockAsset] = (await getBlocksAssets({ limit: 1, offset: 5 })).result.data;
+		[refBlockAssets] = (await getBlocksAssets({ limit: 1, offset: 5 })).result.data;
+		[refAsset] = refBlockAssets.assets;
 	});
 
 	describe('is able to retireve block assets', () => {
@@ -50,10 +53,10 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
@@ -66,47 +69,48 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('returns block assets by blockID -> ok', async () => {
-			const response = await getBlocksAssets({ blockID: refBlockAsset.block.id });
+			const response = await getBlocksAssets({ blockID: refBlockAssets.block.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
-			expect(result.data.length).toBeGreaterThanOrEqual(1);
-			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockAsset) => {
-				expect(blockAsset).toMap(blockAssetSchema, { id: refBlockAsset.block.id });
+			expect(result.data.length).toEqual(1);
+			result.data.forEach((blockAssets) => {
+				expect(blockAssets).toMap(blockAssetSchema, { id: refBlockAssets.block.id });
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('returns block assets by height -> ok', async () => {
-			const response = await getBlocksAssets({ height: `${refBlockAsset.block.height}` });
+			const response = await getBlocksAssets({ height: `${refBlockAssets.block.height}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(1);
-			result.data.forEach((blockAsset) => {
-				expect(blockAsset).toMap(blockAssetSchema, { height: refBlockAsset.block.height });
+			result.data.forEach((blockAssets) => {
+				expect(blockAssets).toMap(blockAssetSchema, { height: refBlockAssets.block.height });
 			});
 		});
 
 		it('returns block assets by moduleID', async () => {
-			const response = await getBlocksAssets({ moduleID: refBlockAsset.moduleID });
+			const response = await getBlocksAssets({ moduleID: refAsset.moduleID });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap({ ...blockAssetSchema, moduleID: refBlockAsset.moduleID });
-				expect(blockAsset.moduleID).toEqual(refBlockAsset.moduleID);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap({ ...blockAssetSchema });
+				blockAssets.assets.forEach(asset => expect(asset.moduleID).toEqual(refAsset.moduleID));
+				expect(blockAssets.moduleID).toEqual(refBlockAssets.moduleID);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -126,54 +130,54 @@ describe('Method get.blocks.assets', () => {
 
 	describe('is able to retireve block assets by timestamp', () => {
 		it('retusn blocks assets with from...to timestamp -> ok', async () => {
-			const from = moment(refBlockAsset.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
-			const to = refBlockAsset.block.timestamp;
+			const from = moment(refBlockAssets.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const to = refBlockAssets.block.timestamp;
 			const response = await getBlocksAssets({ timestamp: `${from}:${to}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.timestamp).toBeGreaterThanOrEqual(from);
-				expect(blockAsset.block.timestamp).toBeLessThanOrEqual(to);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
+				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(to);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
 
 		it('returns blocks assets with from... timestamp -> ok', async () => {
-			const from = moment(refBlockAsset.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refBlockAssets.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await getBlocksAssets({ timestamp: `${from}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.timestamp).toBeGreaterThanOrEqual(from);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
 
 		it('returns blocks assets with ...to timestamp -> ok', async () => {
-			const to = refBlockAsset.block.timestamp;
+			const to = refBlockAssets.block.timestamp;
 			const response = await getBlocksAssets({ timestamp: `:${to}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.timestamp).toBeLessThanOrEqual(to);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(to);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -181,54 +185,54 @@ describe('Method get.blocks.assets', () => {
 
 	describe('is able to retireve block assets within height range', () => {
 		it('return blocks assets with min...max height -> ok', async () => {
-			const minHeight = refBlockAsset.block.height - 10;
-			const maxHeight = refBlockAsset.block.height;
+			const minHeight = refBlockAssets.block.height - 10;
+			const maxHeight = refBlockAssets.block.height;
 			const response = await getBlocksAssets({ height: `${minHeight}:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.height).toBeGreaterThanOrEqual(minHeight);
-				expect(blockAsset.block.height).toBeLessThanOrEqual(maxHeight);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
+				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
 
 		it('returns blocks assets with min... height -> ok', async () => {
-			const minHeight = refBlockAsset.block.height - 10;
+			const minHeight = refBlockAssets.block.height - 10;
 			const response = await getBlocksAssets({ height: `${minHeight}:`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.height).toBeGreaterThanOrEqual(minHeight);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
 
 		it('Breturns blocks assets with ...max height -> ok', async () => {
-			const maxHeight = refBlockAsset.block.height;
+			const maxHeight = refBlockAssets.block.height;
 			const response = await getBlocksAssets({ height: `:${maxHeight}`, limit: 100 });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(100);
-			result.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.height).toBeLessThanOrEqual(maxHeight);
+			result.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < result.data.length - 1) {
-					expect(blockAsset.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -242,7 +246,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockAsset) => expect(blockAsset).toMap(blockAssetSchema));
+			result.data.forEach((blockAssets) => expect(blockAssets).toMap(blockAssetSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlockAsset = result.data[i - 1];
@@ -261,7 +265,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockAsset) => expect(blockAsset).toMap(blockAssetSchema));
+			result.data.forEach((blockAssets) => expect(blockAssets).toMap(blockAssetSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlockAsset = result.data[i - 1];
@@ -281,7 +285,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockAsset) => expect(blockAsset).toMap(blockAssetSchema));
+			result.data.forEach((blockAssets) => expect(blockAssets).toMap(blockAssetSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlockAsset = result.data[i - 1];
@@ -300,7 +304,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
-			result.data.forEach((blockAsset) => expect(blockAsset).toMap(blockAssetSchema));
+			result.data.forEach((blockAssets) => expect(blockAssets).toMap(blockAssetSchema));
 			if (result.data.length > 1) {
 				for (let i = 1; i < result.data.length; i++) {
 					const prevBlockAsset = result.data[i - 1];

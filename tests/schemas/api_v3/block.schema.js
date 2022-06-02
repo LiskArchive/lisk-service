@@ -21,10 +21,14 @@ const block = {
 	timestamp: Joi.number().required(),
 };
 
+const asset = {
+	moduleID: Joi.string().required(),
+	data: Joi.object().required(), // TODO: Update data schema once confirmed from sdk
+};
+
 const blockAssetSchema = {
 	block: Joi.object(block).required(),
-	moduleID: Joi.string().required(),
-	assets: Joi.object().required(), // TODO: Update data schema once confirmed from sdk
+	assets: Joi.array().items(asset).required(),
 };
 
 module.exports = {

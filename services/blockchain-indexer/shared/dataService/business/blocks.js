@@ -222,8 +222,10 @@ const getBlocksAssets = async (params) => {
 					height: 100,
 					timestamp: 100,
 				},
-				moduleID: '1',
-				data: {},
+				assets: [{
+					moduleID: '1',
+					data: {},
+				}],
 			},
 		],
 		meta: {
