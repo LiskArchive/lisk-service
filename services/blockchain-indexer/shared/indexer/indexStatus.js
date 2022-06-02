@@ -83,7 +83,7 @@ const reportIndexStatus = async () => {
 	const {
 		currentChainHeight,
 		numBlocksIndexed,
-		lastIndexedBlock,
+		lastIndexedBlock = {},
 		chainLength,
 		percentage,
 	} = await getIndexStats();

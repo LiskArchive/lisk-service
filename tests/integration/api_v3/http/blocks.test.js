@@ -181,7 +181,7 @@ describe('Blocks API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
