@@ -34,8 +34,7 @@ const {
 	blockAssetSchema,
 } = require('../../../schemas/api_v3/block.schema');
 
-// TODO: Enable tests cases with the issue https://github.com/LiskHQ/lisk-service/issues/1089
-xdescribe('Blocks Assets API', () => {
+describe('Blocks Assets API', () => {
 	let refBlockAssets;
 	let refAsset;
 	beforeAll(async () => {
@@ -80,12 +79,9 @@ xdescribe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((blockAssets, i) => {
-				expect(blockAssets).toMap({ ...blockAssetSchema });
+			response.data.forEach((blockAssets) => {
+				expect(blockAssets).toMap(blockAssetSchema);
 				blockAssets.assets.forEach(asset => expect(asset.moduleID).toEqual(refAsset.moduleID));
-				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
-				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -96,7 +92,7 @@ xdescribe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
 			response.data.forEach((blockAssets) => {
-				expect(blockAssets).toMap({ ...blockAssetSchema, blockID: refBlockAssets.block.id });
+				expect(blockAssets).toMap(blockAssetSchema);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -107,7 +103,7 @@ xdescribe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toEqual(1);
 			response.data.forEach((blockAssets) => {
-				expect(blockAssets).toMap({ ...blockAssetSchema, height: refBlockAssets.block.height });
+				expect(blockAssets).toMap(blockAssetSchema);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -119,9 +115,7 @@ xdescribe('Blocks Assets API', () => {
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((blockAssets, i) => {
-				expect(blockAssets).toMap({
-					...blockAssetSchema, timestamp: refBlockAssets.block.timestamp,
-				});
+				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < response.data.length - 1) {
 					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
@@ -188,7 +182,7 @@ xdescribe('Blocks Assets API', () => {
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(toTimestamp);

@@ -36,8 +36,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlocksAssets = async params => request(wsRpcUrl, 'get.blocks.assets', params);
 
-// TODO: Enable tests cases with the issue https://github.com/LiskHQ/lisk-service/issues/1089
-xdescribe('Method get.blocks.assets', () => {
+describe('Method get.blocks.assets', () => {
 	let refBlockAssets;
 	let refAsset;
 	beforeAll(async () => {
@@ -85,7 +84,7 @@ xdescribe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(1);
 			result.data.forEach((blockAssets) => {
-				expect(blockAssets).toMap(blockAssetSchema, { id: refBlockAssets.block.id });
+				expect(blockAssets).toMap(blockAssetSchema);
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
@@ -97,7 +96,7 @@ xdescribe('Method get.blocks.assets', () => {
 			expect(result.data).toBeInstanceOf(Array);
 			expect(result.data.length).toEqual(1);
 			result.data.forEach((blockAssets) => {
-				expect(blockAssets).toMap(blockAssetSchema, { height: refBlockAssets.block.height });
+				expect(blockAssets).toMap(blockAssetSchema);
 			});
 		});
 
@@ -105,13 +104,10 @@ xdescribe('Method get.blocks.assets', () => {
 			const response = await getBlocksAssets({ moduleID: refAsset.moduleID });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			result.data.forEach((blockAssets, i) => {
-				expect(blockAssets).toMap({ ...blockAssetSchema });
+			result.data.forEach((blockAssets) => {
+				expect(blockAssets).toMap(blockAssetSchema);
 				blockAssets.assets.forEach(asset => expect(asset.moduleID).toEqual(refAsset.moduleID));
 				expect(blockAssets.moduleID).toEqual(refBlockAssets.moduleID);
-				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
-				}
 			});
 		});
 
