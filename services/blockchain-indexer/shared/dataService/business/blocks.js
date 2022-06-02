@@ -211,6 +211,14 @@ const getBlocks = async params => {
 	return blocks;
 };
 
+const filterAssets = (moduleID, block) => {
+	const filteredAssets = moduleID
+		? block.assets
+			.filter(asset => Number(asset.moduleID) === Number(moduleID))
+		: block.assets;
+	return filteredAssets;
+};
+
 const getBlocksAssets = async (params) => {
 	if (params.blockID) logger.debug(`Retrieving block assets for the block with ID ${params.blockID} from Lisk Core`);
 	else if (params.height) logger.debug(`Retrieving block assets for the block at height: ${params.height} from Lisk Core`);
@@ -257,10 +265,7 @@ const getBlocksAssets = async (params) => {
 					height: blockFromCore.height,
 					timestamp: blockFromCore.timestamp,
 				},
-				assets: moduleIdFromParam
-					? blockFromCore.assets
-						.filter(asset => Number(asset.moduleID) === Number(moduleIdFromParam))
-					: blockFromCore.assets,
+				assets: filterAssets(moduleIdFromParam, blockFromCore),
 			};
 		},
 		{ concurrency: blocksFromDB.length },
