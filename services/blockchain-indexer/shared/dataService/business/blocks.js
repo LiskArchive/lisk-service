@@ -221,7 +221,7 @@ const getBlocksAssets = async (params) => {
 		data: [],
 		meta: {},
 	};
-	let moduleIDFromParam;
+	let moduleIdFromParam;
 
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
@@ -239,7 +239,7 @@ const getBlocksAssets = async (params) => {
 
 	if (params.moduleID) {
 		const { moduleID, ...remParams } = params;
-		moduleIDFromParam = moduleID;
+		moduleIdFromParam = moduleID;
 		params = remParams;
 		params.whereJsonSupersetOf = { property: 'assetModuleIDs', values: moduleID };
 	}
@@ -257,9 +257,9 @@ const getBlocksAssets = async (params) => {
 					height: blockFromCore.height,
 					timestamp: blockFromCore.timestamp,
 				},
-				assets: moduleIDFromParam
+				assets: moduleIdFromParam
 					? blockFromCore.assets
-						.filter(asset => Number(asset.moduleID) === Number(moduleIDFromParam))
+						.filter(asset => Number(asset.moduleID) === Number(moduleIdFromParam))
 					: blockFromCore.assets,
 			};
 		},
