@@ -90,7 +90,7 @@ const cast = (val, type) => {
 
 const resolveQueryParams = params => {
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
+		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf']
 			.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
@@ -233,10 +233,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			query.whereIn(property, values);
 		}
 
-		// if (params.jsonSearch) {
-		// 	const { property, values } = params.jsonSearch;
-		// 	query.JSON_CONTAINS(property, values, '$')
-		// }
+		if (params.whereJsonSupersetOf) {
+			const { property, values } = params.whereJsonSupersetOf;
+			query.whereJsonSupersetOf(property, values);
+		}
 
 		if (params.orWhere) {
 			const { orWhere, orWhereWith } = params;
@@ -337,6 +337,11 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
+		}
+
+		if (params.whereJsonSupersetOf) {
+			const { property, values } = params.whereJsonSupersetOf;
+			query.whereJsonSupersetOf(property, values);
 		}
 
 		if (params.orWhere) {
