@@ -94,32 +94,30 @@ const getGeneratorPkInfoArray = async (blocks) => {
 
 const indexBlock = async job => {
 	const { height } = job.data;
-
 	const blocksDB = await getBlocksIndex();
 	const blocks = await getBlockByHeight(height);
+	const finalBlockToIndex = blocks.map(block => {
+		const moduleIDs = block.assets.map(blockAsset => blockAsset = blockAsset.moduleID);
+		return { ...block, assetModuleIDs: moduleIDs };
+	});
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
-
 	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
-
 	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
 	try {
 		const transactionsDB = await getTransactionsIndex();
-		const transactions = await getTransactionIndexingInfo(blocks);
+		const transactions = await getTransactionIndexingInfo(finalBlockToIndex);
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
-		if (blocks.length) await blocksDB.upsert(blocks, trx);
-
+		if (blocks.length) await blocksDB.upsert(finalBlockToIndex, trx);
 		await commitDbTransaction(trx);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
-
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
 			const errMessage = `Deadlock encountered while indexing block at height ${height}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
-
 		logger.warn(`Error occured while indexing block at height ${height}. Will retry later.`);
 		throw error;
 	}

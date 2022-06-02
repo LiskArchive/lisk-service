@@ -204,27 +204,68 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const getBlocksAssets = async () => {
-	// TODO: Replace with the implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1089
-	const response = {
-		data: [
-			{
-				block: {
-					id: '222675625422353767',
-					height: 100,
-					timestamp: 100,
-				},
-				moduleID: '1',
-				data: {},
-			},
-		],
-		meta: {
-			count: 1,
-			offset: 5,
-			total: 100,
-		},
+const getBlocksAssets = async (params) => {
+	let total;
+	let blocksWithModuleIDs;
+	const blocksDB = await getBlocksIndex();
+	const blockAssets = {
+		data: [],
+		meta: {},
 	};
-	return response;
+
+	if (params.blockID) {
+		const { blockID, ...remParams } = params;
+		params = remParams;
+		params.id = blockID;
+	}
+
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
+		params = normalizeRangeParam(params, 'height');
+	}
+
+	if (params.timestamp && params.timestamp.includes(':')) {
+		params = normalizeRangeParam(params, 'timestamp');
+	}
+
+	if (params.moduleID) {
+		// const { moduleID, ...remParams } = params;
+		// params = remParams;
+		// params.jsonSearch = { property: 'assetModuleIDs', values: moduleID };
+		total = await blocksDB.rawQuery(`SELECT COUNT(*) from blocks WHERE JSON_CONTAINS(assetModuleIDs, '${params.moduleID}', '$')`);
+		blocksWithModuleIDs = await blocksDB.rawQuery(`SELECT * from blocks WHERE JSON_CONTAINS(assetModuleIDs, '${params.moduleID}', '$')`);
+	} else {
+		total = await blocksDB.count(params);
+		blocksWithModuleIDs = await blocksDB.find(params, ['height', 'assetModuleIDs']);
+	}
+
+	blockAssets.data = await BluebirdPromise.map(
+		blocksWithModuleIDs,
+		async (blockWithModuleIDs) => {
+			if (blockWithModuleIDs.assetModuleIDs) {
+				const [blockFromCore] = await getBlockByHeight(blockWithModuleIDs.height);
+				return {
+					block: {
+						id: blockFromCore.id,
+						height: blockFromCore.height,
+						timestamp: blockFromCore.timestamp,
+					},
+					assets: params.moduleID
+						? blockFromCore.assets
+							.filter(asset => Number(asset.moduleID) === Number(params.moduleID))
+						: blockFromCore.assets,
+				};
+			}
+		},
+		{ concurrency: blocksWithModuleIDs.length },
+	);
+
+	blockAssets.meta = {
+		count: blockAssets.data.length,
+		offset: params.offset,
+		total,
+	};
+
+	return blockAssets;
 };
 
 module.exports = {

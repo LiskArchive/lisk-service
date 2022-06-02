@@ -84,6 +84,7 @@ const cast = (val, type) => {
 	if (type === 'string') return String(val);
 	if (type === 'boolean') return Boolean(val);
 	if (type === 'bigInteger') return BigInt(val);
+	if (type === 'json') return JSON.stringify(val);
 	return val;
 };
 
@@ -231,6 +232,11 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
 		}
+
+		// if (params.jsonSearch) {
+		// 	const { property, values } = params.jsonSearch;
+		// 	query.JSON_CONTAINS(property, values, '$')
+		// }
 
 		if (params.orWhere) {
 			const { orWhere, orWhereWith } = params;
