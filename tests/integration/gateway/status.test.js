@@ -24,7 +24,7 @@ const {
 const baseUrl = config.SERVICE_ENDPOINT;
 const endpoint = `${baseUrl}/api`;
 
-describe('Status reporting', () => {
+xdescribe('Status reporting', () => {
 	describe(`GET ${endpoint}`, () => {
 		it('Report status -> 200 OK', async () => {
 			const response = await api.get(`${endpoint}/status`);

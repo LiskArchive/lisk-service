@@ -142,11 +142,11 @@ describe('Blocks API', () => {
 		it('blocks within set timestamps are returned', async () => {
 			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
 			const toTimestamp = refBlock.timestamp;
-			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
+			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeGreaterThanOrEqual(from);
@@ -160,11 +160,11 @@ describe('Blocks API', () => {
 
 		it('blocks with half bounded range: fromTimestamp', async () => {
 			const from = moment(refBlock.timestamp * (10 ** 3)).subtract(1, 'day').unix();
-			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
+			const response = await api.get(`${endpoint}?timestamp=${from}:`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeGreaterThanOrEqual(from);
@@ -177,11 +177,11 @@ describe('Blocks API', () => {
 
 		it('blocks with half bounded range: toTimestamp', async () => {
 			const toTimestamp = refBlock.timestamp;
-			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}&limit=100`);
+			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
@@ -197,11 +197,11 @@ describe('Blocks API', () => {
 		it('blocks within set height are returned', async () => {
 			const minHeight = refBlock.height - 10;
 			const maxHeight = refBlock.height;
-			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}&limit=100`);
+			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.height).toBeGreaterThanOrEqual(minHeight);
@@ -215,11 +215,11 @@ describe('Blocks API', () => {
 
 		it('blocks with half bounded range: minHeight', async () => {
 			const minHeight = refBlock.height - 10;
-			const response = await api.get(`${endpoint}?height=${minHeight}:&limit=100`);
+			const response = await api.get(`${endpoint}?height=${minHeight}:`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.height).toBeGreaterThanOrEqual(minHeight);
@@ -232,11 +232,11 @@ describe('Blocks API', () => {
 
 		it('blocks with half bounded range: maxHeight', async () => {
 			const maxHeight = refBlock.height;
-			const response = await api.get(`${endpoint}?height=:${maxHeight}&limit=100`);
+			const response = await api.get(`${endpoint}?height=:${maxHeight}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(100);
+			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				expect(block.height).toBeLessThanOrEqual(maxHeight);
@@ -324,11 +324,11 @@ describe('Blocks API', () => {
 
 	describe('Fetch blocks based on multiple request params', () => {
 		it('returns blocks by generatorAddress sorted by timestamp descending, limit & offset', async () => {
-			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generatorAddress}&sort=timestamp:desc&limit=5`);
+			const response = await api.get(`${endpoint}?generatorAddress=${refBlock.generatorAddress}&sort=timestamp:desc&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(5);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.forEach(block => {
 				expect(block).toMap(blockSchema);
 				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);

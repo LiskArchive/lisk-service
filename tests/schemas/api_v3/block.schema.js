@@ -25,7 +25,7 @@ const blockSchema = {
 	stateRoot: Joi.string().required(),
 	transactionRoot: Joi.string().required(),
 	previousBlockID: Joi.string().required(),
-	signature: Joi.string().required(),
+	signature: Joi.string().allow('').required(),
 	aggregateCommit: Joi.object().required(),
 	isFinal: Joi.boolean().required(),
 	maxHeightGenerated: Joi.number().required(),
