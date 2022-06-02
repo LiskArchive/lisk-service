@@ -35,10 +35,10 @@ const { getReady, updateSvcStatus, getIndexStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
-const { definition: blocksDefinition } = require('./sources/version2/blocks');
+const { definition: blocksDefinition } = require('./sources/version3/blocks');
 const { definition: feesDefinition } = require('./sources/version2/fees');
 const { definition: forgersDefinition } = require('./sources/version2/forgers');
-const { definition: transactionsDefinition } = require('./sources/version2/transactions');
+const { definition: transactionsDefinition } = require('./sources/version3/transactions');
 
 const { host, port } = config;
 

@@ -52,7 +52,9 @@ const normalizeBlocks = async (blocks) => {
 			assets: block.assets,
 		})),
 		async block => {
-			block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
+			if (block.generatorAddress) {
+				block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
+			}
 			block.isFinal = block.height <= (await getFinalizedHeight());
 			block.numberOfTransactions = block.transactions.length;
 
@@ -110,7 +112,7 @@ const getBlocksByHeightBetween = async (from, to) => {
 
 const getLastBlock = async () => {
 	const response = await requestConnector('getLastBlock');
-	[latestBlock] = await normalizeBlocks(response.data);
+	[latestBlock] = await normalizeBlocks([response]);
 	if (latestBlock && latestBlock.id) await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
 	return [latestBlock];
 };
@@ -167,6 +169,7 @@ const getBlocks = async params => {
 
 	try {
 		if (params.ids) {
+			if (Array.isArray(params.ids) && !params.ids.length) throw new NotFoundException('Blocks not found.');
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.id) {
 			blocks.data = await getBlockByID(params.id);
@@ -192,9 +195,9 @@ const getBlocks = async params => {
 		// Block does not exist
 		if (err.message.includes('does not exist')) {
 			let errMessage;
-			if (err.message.includes(':id')) errMessage = `Block ${params.id} does not exist`;
-			if (err.message.includes(':height')) errMessage = `Block at height ${params.height} does not exist`;
-			throw new NotFoundException(errMessage);
+			if ('id' in params && err.message.includes(params.id)) errMessage = `Block with ID ${params.id} does not exist`;
+			if ('height' in params) errMessage = `Block at height ${params.height} does not exist (${err.message})`;
+			throw new NotFoundException(errMessage || err.message);
 		}
 		throw err;
 	}
