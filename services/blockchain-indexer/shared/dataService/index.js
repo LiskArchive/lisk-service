@@ -44,6 +44,7 @@ const { getAccounts } = require('./accounts');
 
 const {
 	getBlocks,
+	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,
@@ -114,6 +115,7 @@ module.exports = {
 
 	getAccounts,
 	getBlocks,
+	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,

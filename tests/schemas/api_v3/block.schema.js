@@ -33,6 +33,23 @@ const blockSchema = {
 	validatorsHash: Joi.string().required(),
 };
 
+const block = {
+	id: Joi.string().required(),
+	height: Joi.number().required(),
+	timestamp: Joi.number().required(),
+};
+
+const asset = {
+	moduleID: Joi.string().required(),
+	data: Joi.object().required(), // TODO: Update data schema once confirmed from sdk
+};
+
+const blockAssetSchema = {
+	block: Joi.object(block).required(),
+	assets: Joi.array().items(asset).required(),
+};
+
 module.exports = {
 	blockSchema: Joi.object(blockSchema),
+	blockAssetSchema: Joi.object(blockAssetSchema),
 };

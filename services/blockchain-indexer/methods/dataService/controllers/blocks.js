@@ -40,20 +40,25 @@ const getBlocks = async params => {
 	}
 };
 
-const getLastBlock = async params => {
-	const response = await dataService.getBlocks(Object.assign(params, {
-		sort: 'timestamp:desc',
-	}));
-	const blocks = response.data;
+const getBlocksAssets = async params => {
+	try {
+		const response = await dataService.getBlocksAssets(params);
 
-	return {
-		data: blocks,
-		meta: response.meta,
-		links: {},
-	};
+		return {
+			data: response.data,
+			meta: response.meta,
+			links: {},
+		};
+	} catch (err) {
+		let status;
+		if (err instanceof ValidationException) status = BAD_REQUEST;
+		if (err instanceof NotFoundException) status = NOT_FOUND;
+		if (status) return { status, data: { error: err.message } };
+		throw err;
+	}
 };
 
 module.exports = {
 	getBlocks,
-	getLastBlock,
+	getBlocksAssets,
 };

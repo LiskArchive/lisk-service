@@ -114,6 +114,19 @@ const getBlocks = async (params = {}) => {
 	};
 };
 
+const getBlocksAssets = async params => {
+	const blocksAssets = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await dataService.getBlocksAssets(params);
+	if (response.data) blocksAssets.data = response.data;
+	if (response.meta) blocksAssets.meta = response.meta;
+
+	return blocksAssets;
+};
+
 const performLastBlockUpdate = (newBlock) => {
 	try {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
@@ -125,6 +138,7 @@ const performLastBlockUpdate = (newBlock) => {
 
 module.exports = {
 	getBlocks,
+	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
 	waitForLastBlock,
