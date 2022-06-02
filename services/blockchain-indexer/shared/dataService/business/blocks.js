@@ -212,9 +212,6 @@ const getBlocks = async params => {
 };
 
 const getBlocksAssets = async (params) => {
-	let total;
-	let blocksWithModuleIDs;
-
 	if (params.blockID) logger.debug(`Retrieving block assets for the block with ID ${params.blockID} from Lisk Core`);
 	else if (params.height) logger.debug(`Retrieving block assets for the block at height: ${params.height} from Lisk Core`);
 	else logger.debug(`Retrieving block assets with custom search: ${util.inspect(params)} from Lisk Core`);
@@ -224,6 +221,7 @@ const getBlocksAssets = async (params) => {
 		data: [],
 		meta: {},
 	};
+	let moduleIDFromParam;
 
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
@@ -240,33 +238,32 @@ const getBlocksAssets = async (params) => {
 	}
 
 	if (params.moduleID) {
-		// const { moduleID, ...remParams } = params;
-		// params = remParams;
-		// params.jsonSearch = { property: 'assetModuleIDs', values: moduleID };
-		[total] = await blocksDB.rawQuery(`SELECT COUNT(*) from blocks WHERE JSON_CONTAINS(assetModuleIDs, '${params.moduleID}', '$')`);
-		blocksWithModuleIDs = await blocksDB.rawQuery(`SELECT * from blocks WHERE JSON_CONTAINS(assetModuleIDs, '${params.moduleID}', '$')`);
-	} else {
-		total = await blocksDB.count(params);
-		blocksWithModuleIDs = await blocksDB.find(params, ['height', 'assetModuleIDs']);
+		const { moduleID, ...remParams } = params;
+		moduleIDFromParam = moduleID;
+		params = remParams;
+		params.whereJsonSupersetOf = { property: 'assetModuleIDs', values: moduleID };
 	}
 
+	const total = await blocksDB.count(params);
+	const blocksFromDB = await blocksDB.find(params, ['id']);
+
 	blockAssets.data = await BluebirdPromise.map(
-		blocksWithModuleIDs,
-		async (blockWithModuleIDs) => {
-			const [blockFromCore] = await getBlockByHeight(blockWithModuleIDs.height);
+		blocksFromDB,
+		async (blockFromDB) => {
+			const [blockFromCore] = await getBlockByID(blockFromDB.id);
 			return {
 				block: {
 					id: blockFromCore.id,
 					height: blockFromCore.height,
 					timestamp: blockFromCore.timestamp,
 				},
-				assets: params.moduleID
+				assets: moduleIDFromParam
 					? blockFromCore.assets
-						.filter(asset => Number(asset.moduleID) === Number(params.moduleID))
+						.filter(asset => Number(asset.moduleID) === Number(moduleIDFromParam))
 					: blockFromCore.assets,
 			};
 		},
-		{ concurrency: blocksWithModuleIDs.length },
+		{ concurrency: blocksFromDB.length },
 	);
 
 	blockAssets.meta = {
