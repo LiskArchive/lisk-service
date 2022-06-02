@@ -13,14 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const postTransactionsSource = require('../../../sources/version3/postTransactions');
+
 module.exports = {
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: 'unixTimestamp,number',
+	version: '2.0',
+	swaggerApiPath: '/transactions',
+	httpMethod: 'POST',
+	rpcMethod: 'post.transactions',
+	tags: ['Transactions'],
+	params: {
+		transaction: { optional: false, type: 'string', min: 1, pattern: /^\b[0-9a-fA-F]+\b$/ },
 	},
-	assets: ['assets', {
-		moduleID: '=,string',
-		data: '=', // TODO: Update data schema once confirmed from sdk
-	}],
+	source: postTransactionsSource,
 };

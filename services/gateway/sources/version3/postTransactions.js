@@ -14,13 +14,13 @@
  *
  */
 module.exports = {
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: 'unixTimestamp,number',
+	type: 'moleculer',
+	method: 'indexer.transactions.post',
+	params: {
+		transaction: '=,string',
 	},
-	assets: ['assets', {
-		moduleID: '=,string',
-		data: '=', // TODO: Update data schema once confirmed from sdk
-	}],
+	definition: {
+		message: '=',
+		transactionID: '=',
+	},
 };

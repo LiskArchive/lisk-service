@@ -34,10 +34,13 @@ const {
 	blockAssetSchema,
 } = require('../../../schemas/api_v3/block.schema');
 
-describe('Blocks Assets API', () => {
-	let refBlockAsset;
+// TODO: Enable tests cases with the issue https://github.com/LiskHQ/lisk-service/issues/1089
+xdescribe('Blocks Assets API', () => {
+	let refBlockAssets;
+	let refAsset;
 	beforeAll(async () => {
-		[refBlockAsset] = (await api.get(`${endpoint}?limit=1&offset=5`)).data;
+		[refBlockAssets] = (await api.get(`${endpoint}?limit=1&offset=5`)).data;
+		[refAsset] = refBlockAssets.assets;
 	});
 
 	describe('GET /blocks/assets', () => {
@@ -47,10 +50,10 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -62,58 +65,65 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns block assets by moduleID -> ok', async () => {
-			const response = await api.get(`${endpoint}?moduleID=${refBlockAsset.moduleID}`);
+			const response = await api.get(`${endpoint}?moduleID=${refAsset.moduleID}`);
 			expect(response).toMap(goodRequestSchema);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap({ ...blockAssetSchema });
+				blockAssets.assets.forEach(asset => expect(asset.moduleID).toEqual(refAsset.moduleID));
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns block assets by blockID -> ok', async () => {
-			const response = await api.get(`${endpoint}?blockID=${refBlockAsset.block.id}`);
+			const response = await api.get(`${endpoint}?blockID=${refBlockAssets.block.id}`);
 			expect(response).toMap(goodRequestSchema);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
-				}
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach((blockAssets) => {
+				expect(blockAssets).toMap({ ...blockAssetSchema, blockID: refBlockAssets.block.id });
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns block assets by height -> ok', async () => {
-			const response = await api.get(`${endpoint}?height=${refBlockAsset.block.height}`);
+			const response = await api.get(`${endpoint}?height=${refBlockAssets.block.height}`);
 			expect(response).toMap(goodRequestSchema);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
-				}
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toEqual(1);
+			response.data.forEach((blockAssets) => {
+				expect(blockAssets).toMap({ ...blockAssetSchema, height: refBlockAssets.block.height });
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns block assets by timestamp -> ok', async () => {
-			const response = await api.get(`${endpoint}?timestamp=${refBlockAsset.block.timestamp}`);
+			const response = await api.get(`${endpoint}?timestamp=${refBlockAssets.block.timestamp}`);
 			expect(response).toMap(goodRequestSchema);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap({
+					...blockAssetSchema, timestamp: refBlockAssets.block.timestamp,
+				});
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -137,53 +147,53 @@ describe('Blocks Assets API', () => {
 
 	describe('Retrieve blocks assets within timestamps', () => {
 		it('returns blocks assets within set timestamps are returned', async () => {
-			const from = moment(refBlockAsset.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
-			const toTimestamp = refBlockAsset.block.timestamp;
+			const from = moment(refBlockAssets.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const toTimestamp = refBlockAssets.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.timestamp).toBeGreaterThanOrEqual(from);
-				expect(blockAsset.block.timestamp).toBeLessThanOrEqual(toTimestamp);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
+				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns blocks assets with half bounded range: fromTimestamp', async () => {
-			const from = moment(refBlockAsset.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
+			const from = moment(refBlockAssets.block.timestamp * (10 ** 3)).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.timestamp).toBeGreaterThanOrEqual(from);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns blocks assets with half bounded range: toTimestamp', async () => {
-			const toTimestamp = refBlockAsset.block.timestamp;
+			const toTimestamp = refBlockAssets.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.timestamp).toBeLessThanOrEqual(toTimestamp);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -192,53 +202,53 @@ describe('Blocks Assets API', () => {
 
 	describe('Retrieve blocks assets within height range', () => {
 		it('returns blocks assets within set height are returned', async () => {
-			const minHeight = refBlockAsset.block.height - 10;
-			const maxHeight = refBlockAsset.block.height;
+			const minHeight = refBlockAssets.block.height - 10;
+			const maxHeight = refBlockAssets.block.height;
 			const response = await api.get(`${endpoint}?height=${minHeight}:${maxHeight}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.height).toBeGreaterThanOrEqual(minHeight);
-				expect(blockAsset.block.height).toBeLessThanOrEqual(maxHeight);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
+				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('return blocks assets with half bounded range: minHeight', async () => {
-			const minHeight = refBlockAsset.block.height - 10;
+			const minHeight = refBlockAssets.block.height - 10;
 			const response = await api.get(`${endpoint}?height=${minHeight}:&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.height).toBeGreaterThanOrEqual(minHeight);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('return blocks assets with half bounded range: maxHeight', async () => {
-			const maxHeight = refBlockAsset.block.height;
+			const maxHeight = refBlockAssets.block.height;
 			const response = await api.get(`${endpoint}?height=:${maxHeight}&limit=100`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(100);
-			response.data.forEach((blockAsset, i) => {
-				expect(blockAsset).toMap(blockAssetSchema);
-				expect(blockAsset.block.height).toBeLessThanOrEqual(maxHeight);
+			response.data.forEach((blockAssets, i) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAsset.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -252,7 +262,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(blockAsset => expect(blockAsset).toMap(blockAssetSchema));
+			response.data.forEach(blockAssets => expect(blockAssets).toMap(blockAssetSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevBlockAsset = response.data[i - 1];
@@ -270,7 +280,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(blockAsset => expect(blockAsset).toMap(blockAssetSchema));
+			response.data.forEach(blockAssets => expect(blockAssets).toMap(blockAssetSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevBlockAsset = response.data[i - 1];
@@ -289,7 +299,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(blockAsset => expect(blockAsset).toMap(blockAssetSchema));
+			response.data.forEach(blockAssets => expect(blockAssets).toMap(blockAssetSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevBlockAsset = response.data[i - 1];
@@ -307,7 +317,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(blockAsset => expect(blockAsset).toMap(blockAssetSchema));
+			response.data.forEach(blockAssets => expect(blockAssets).toMap(blockAssetSchema));
 			if (response.data.length > 1) {
 				for (let i = 1; i < response.data.length; i++) {
 					const prevBlockAsset = response.data[i - 1];
