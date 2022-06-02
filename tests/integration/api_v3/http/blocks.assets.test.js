@@ -52,7 +52,8 @@ describe('Blocks Assets API', () => {
 			response.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -67,7 +68,8 @@ describe('Blocks Assets API', () => {
 			response.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -93,6 +95,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data.length).toEqual(1);
 			response.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.id).toEqual(refBlockAssets.block.id);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -104,6 +107,7 @@ describe('Blocks Assets API', () => {
 			expect(response.data.length).toEqual(1);
 			response.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toEqual(refBlockAssets.block.height);
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
@@ -116,8 +120,10 @@ describe('Blocks Assets API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.timestamp).toEqual(refBlockAssets.block.timestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -153,7 +159,8 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -170,7 +177,8 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -187,7 +195,8 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -208,7 +217,8 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -225,7 +235,8 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -242,7 +253,8 @@ describe('Blocks Assets API', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(blockAssets.block.height).toBe(response.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(response.data[i + 1].block.height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);

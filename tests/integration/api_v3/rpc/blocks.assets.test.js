@@ -55,7 +55,8 @@ describe('Method get.blocks.assets', () => {
 			result.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
@@ -71,7 +72,8 @@ describe('Method get.blocks.assets', () => {
 			result.data.forEach((blockAssets, i) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
@@ -85,6 +87,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data.length).toEqual(1);
 			result.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.id).toEqual(refBlockAssets.block.id);
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
@@ -97,6 +100,7 @@ describe('Method get.blocks.assets', () => {
 			expect(result.data.length).toEqual(1);
 			result.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
+				expect(blockAssets.block.height).toEqual(refBlockAssets.block.height);
 			});
 		});
 
@@ -139,7 +143,8 @@ describe('Method get.blocks.assets', () => {
 				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(to);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -156,7 +161,8 @@ describe('Method get.blocks.assets', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toBeGreaterThanOrEqual(from);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -173,7 +179,8 @@ describe('Method get.blocks.assets', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.timestamp).toBeLessThanOrEqual(to);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -194,7 +201,8 @@ describe('Method get.blocks.assets', () => {
 				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -211,7 +219,8 @@ describe('Method get.blocks.assets', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.height).toBeGreaterThanOrEqual(minHeight);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
@@ -228,7 +237,8 @@ describe('Method get.blocks.assets', () => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				expect(blockAssets.block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < result.data.length - 1) {
-					expect(blockAssets.block.height).toBe(result.data[i + 1].block.height + 1);
+					expect(blockAssets.block.height)
+						.toBeGreaterThanOrEqual(result.data[i + 1].block.height + 1);
 				}
 			});
 		});
