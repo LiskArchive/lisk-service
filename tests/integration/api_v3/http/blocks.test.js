@@ -50,7 +50,7 @@ describe('Blocks API', () => {
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -65,7 +65,7 @@ describe('Blocks API', () => {
 			response.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -105,7 +105,7 @@ describe('Blocks API', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBeGreaterThan(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -152,7 +152,7 @@ describe('Blocks API', () => {
 				expect(block.timestamp).toBeGreaterThanOrEqual(from);
 				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -169,7 +169,7 @@ describe('Blocks API', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeGreaterThanOrEqual(from);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -186,7 +186,7 @@ describe('Blocks API', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeLessThanOrEqual(toTimestamp);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -207,7 +207,7 @@ describe('Blocks API', () => {
 				expect(block.height).toBeGreaterThanOrEqual(minHeight);
 				expect(block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -224,7 +224,7 @@ describe('Blocks API', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.height).toBeGreaterThanOrEqual(minHeight);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);
@@ -241,7 +241,7 @@ describe('Blocks API', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < response.data.length - 1) {
-					expect(block.height).toBe(response.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(response.data[i + 1].height + 1);
 				}
 			});
 			expect(response.meta).toMap(metaSchema);

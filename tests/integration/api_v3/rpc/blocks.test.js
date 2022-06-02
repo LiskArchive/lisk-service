@@ -55,7 +55,7 @@ describe('Method get.blocks', () => {
 			result.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
@@ -71,7 +71,7 @@ describe('Method get.blocks', () => {
 			result.data.forEach((block, i) => {
 				expect(block).toMap(blockSchema);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
@@ -159,7 +159,7 @@ describe('Method get.blocks', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.generatorAddress).toEqual(refBlock.generatorAddress);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBeGreaterThan(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 		});
@@ -180,7 +180,7 @@ describe('Method get.blocks', () => {
 				expect(block.timestamp).toBeGreaterThanOrEqual(from);
 				expect(block.timestamp).toBeLessThanOrEqual(to);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 		});
@@ -197,7 +197,7 @@ describe('Method get.blocks', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeGreaterThanOrEqual(from);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 		});
@@ -214,7 +214,7 @@ describe('Method get.blocks', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.timestamp).toBeLessThanOrEqual(to);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 		});
@@ -235,7 +235,7 @@ describe('Method get.blocks', () => {
 				expect(block.height).toBeGreaterThanOrEqual(minHeight);
 				expect(block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 		});
@@ -252,7 +252,7 @@ describe('Method get.blocks', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.height).toBeGreaterThanOrEqual(minHeight);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 		});
@@ -269,7 +269,7 @@ describe('Method get.blocks', () => {
 				expect(block).toMap(blockSchema);
 				expect(block.height).toBeLessThanOrEqual(maxHeight);
 				if (i < result.data.length - 1) {
-					expect(block.height).toBe(result.data[i + 1].height + 1);
+					expect(block.height).toBeGreaterThanOrEqual(result.data[i + 1].height + 1);
 				}
 			});
 		});
