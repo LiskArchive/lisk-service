@@ -29,7 +29,7 @@ const getBlocks = async params => {
 		return {
 			data: response.data,
 			meta: response.meta,
-			link: {},
+			links: {},
 		};
 	} catch (err) {
 		let status;
@@ -49,7 +49,7 @@ const getLastBlock = async params => {
 	return {
 		data: blocks,
 		meta: response.meta,
-		link: {},
+		links: {},
 	};
 };
 

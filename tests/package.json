@@ -27,7 +27,7 @@
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:integration:APIv2:SDKv5",
     "test:integration:APIv2:SDKv5": "jest --config=jest.config.integration.apiv2.sdkv5.js",
-    "test:integration:APIv3:SDKv6": "echo integration tests",
+    "test:integration:APIv3:SDKv6": "jest --config=jest.config.integration.apiv3.sdkv6.js",
     "test:functional": "jest --config=jest.config.functional.js",
     "test:regression": "jest --config=jest.config.regression.js",
     "benchmark:RPC:APIv2": "artillery run benchmark/socket_rpc_v2.yaml",
