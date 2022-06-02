@@ -97,7 +97,7 @@ const indexBlock = async job => {
 	const blocksDB = await getBlocksIndex();
 	const blocks = await getBlockByHeight(height);
 	const finalBlockToIndex = blocks.map(block => {
-		const moduleIDs = block.assets.map(blockAsset => blockAsset = blockAsset.moduleID);
+		const moduleIDs = block.assets.map(blockAsset => blockAsset.moduleID);
 		return { ...block, assetModuleIDs: moduleIDs };
 	});
 	const connection = await getDbConnection();

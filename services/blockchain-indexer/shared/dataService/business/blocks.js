@@ -253,20 +253,18 @@ const getBlocksAssets = async (params) => {
 	blockAssets.data = await BluebirdPromise.map(
 		blocksWithModuleIDs,
 		async (blockWithModuleIDs) => {
-			if (blockWithModuleIDs.assetModuleIDs) {
-				const [blockFromCore] = await getBlockByHeight(blockWithModuleIDs.height);
-				return {
-					block: {
-						id: blockFromCore.id,
-						height: blockFromCore.height,
-						timestamp: blockFromCore.timestamp,
-					},
-					assets: params.moduleID
-						? blockFromCore.assets
-							.filter(asset => Number(asset.moduleID) === Number(params.moduleID))
-						: blockFromCore.assets,
-				};
-			}
+			const [blockFromCore] = await getBlockByHeight(blockWithModuleIDs.height);
+			return {
+				block: {
+					id: blockFromCore.id,
+					height: blockFromCore.height,
+					timestamp: blockFromCore.timestamp,
+				},
+				assets: params.moduleID
+					? blockFromCore.assets
+						.filter(asset => Number(asset.moduleID) === Number(params.moduleID))
+					: blockFromCore.assets,
+			};
 		},
 		{ concurrency: blocksWithModuleIDs.length },
 	);
