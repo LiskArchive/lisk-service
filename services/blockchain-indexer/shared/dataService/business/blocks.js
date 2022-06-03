@@ -213,7 +213,7 @@ const getBlocks = async params => {
 
 const filterAssets = (moduleIDs, block) => {
 	const filteredAssets = moduleIDs.length
-		? block.assets.filter(asset => moduleIDs.includes(asset.moduleID))
+		? block.assets.filter(asset => moduleIDs.includes(String(asset.moduleID)))
 		: block.assets;
 	return filteredAssets;
 };
@@ -243,7 +243,7 @@ const getBlocksAssets = async (params) => {
 
 	if (params.moduleID) {
 		const { moduleID, ...remParams } = params;
-		const moduleIDArr = String(moduleID).split(',').map(n => Number(n));
+		const moduleIDArr = String(moduleID).split(',');
 		moduleIDs.push(...moduleIDArr);
 		params = remParams;
 		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: moduleIDs };
