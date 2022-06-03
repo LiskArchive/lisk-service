@@ -212,24 +212,20 @@ const getBlocks = async params => {
 };
 
 const filterAssets = (moduleIDs, block) => {
-	const filteredAssets = moduleIDs
-		? block.assets
-			.filter(asset => moduleIDs.includes(String(asset.moduleID)))
+	const filteredAssets = moduleIDs.length
+		? block.assets.filter(asset => moduleIDs.includes(asset.moduleID))
 		: block.assets;
 	return filteredAssets;
 };
 
 const getBlocksAssets = async (params) => {
-	if (params.blockID) logger.debug(`Retrieving block assets for the block with ID ${params.blockID} from Lisk Core`);
-	else if (params.height) logger.debug(`Retrieving block assets for the block at height: ${params.height} from Lisk Core`);
-	else logger.debug(`Retrieving block assets with custom search: ${util.inspect(params)} from Lisk Core`);
-
 	const blocksDB = await getBlocksIndex();
 	const blockAssets = {
 		data: [],
 		meta: {},
 	};
-	let arrayOfModuleIDs;
+
+	const moduleIDs = [];
 
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
@@ -247,25 +243,28 @@ const getBlocksAssets = async (params) => {
 
 	if (params.moduleID) {
 		const { moduleID, ...remParams } = params;
-		arrayOfModuleIDs = moduleID.split(',');
+		const moduleIDArr = String(moduleID).split(',').map(n => Number(n));
+		moduleIDs.push(...moduleIDArr);
 		params = remParams;
-		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: arrayOfModuleIDs };
+		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: moduleIDs };
 	}
 
+	logger.debug(`Querying index to retrieve block IDs with params: ${util.inspect(params)}`);
 	const total = await blocksDB.count(params);
 	const blocksFromDB = await blocksDB.find(params, ['id']);
 
+	logger.debug(`Requesting blockchain application for blocks with IDs: ${blocksFromDB.map(b => b.id).join(', ')}`);
 	blockAssets.data = await BluebirdPromise.map(
 		blocksFromDB,
 		async (blockFromDB) => {
-			const [blockFromCore] = await getBlockByID(blockFromDB.id);
+			const [block] = await getBlockByID(blockFromDB.id);
 			return {
 				block: {
-					id: blockFromCore.id,
-					height: blockFromCore.height,
-					timestamp: blockFromCore.timestamp,
+					id: block.id,
+					height: block.height,
+					timestamp: block.timestamp,
 				},
-				assets: filterAssets(arrayOfModuleIDs, blockFromCore),
+				assets: filterAssets(moduleIDs, block),
 			};
 		},
 		{ concurrency: blocksFromDB.length },
