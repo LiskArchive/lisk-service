@@ -21,7 +21,7 @@ module.exports = [
 	{
 		name: 'refresh.peers',
 		description: 'Keep the peer list up-to-date',
-		interval: 90, // seconds
+		interval: 60, // seconds
 		init: () => {
 			try {
 				logger.debug('Initializing peer list...');
