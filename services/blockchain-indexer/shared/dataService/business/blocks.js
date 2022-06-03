@@ -211,10 +211,10 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const filterAssets = (moduleID, block) => {
-	const filteredAssets = moduleID
+const filterAssets = (moduleIDs, block) => {
+	const filteredAssets = moduleIDs.length
 		? block.assets
-			.filter(asset => Number(asset.moduleID) === Number(moduleID))
+			.filter(asset => moduleIDs.includes(String(asset.moduleID)))
 		: block.assets;
 	return filteredAssets;
 };
@@ -229,7 +229,7 @@ const getBlocksAssets = async (params) => {
 		data: [],
 		meta: {},
 	};
-	let moduleIdFromParam;
+	let arrayOfModuleIDs;
 
 	if (params.blockID) {
 		const { blockID, ...remParams } = params;
@@ -247,12 +247,12 @@ const getBlocksAssets = async (params) => {
 
 	if (params.moduleID) {
 		const { moduleID, ...remParams } = params;
-		moduleIdFromParam = moduleID;
+		arrayOfModuleIDs = moduleID.split(',');
 		params = remParams;
-		params.whereJsonSupersetOf = { property: 'assetModuleIDs', values: moduleID };
+		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: arrayOfModuleIDs };
 	}
 
-	const total = await blocksDB.count(params);
+	const total = 0;
 	const blocksFromDB = await blocksDB.find(params, ['id']);
 
 	blockAssets.data = await BluebirdPromise.map(
@@ -265,7 +265,7 @@ const getBlocksAssets = async (params) => {
 					height: blockFromCore.height,
 					timestamp: blockFromCore.timestamp,
 				},
-				assets: filterAssets(moduleIdFromParam, blockFromCore),
+				assets: filterAssets(arrayOfModuleIDs, blockFromCore),
 			};
 		},
 		{ concurrency: blocksFromDB.length },

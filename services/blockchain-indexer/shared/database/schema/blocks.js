@@ -22,7 +22,7 @@ module.exports = {
 		generatorAddress: { type: 'string' },
 		size: { type: 'integer' },
 		isFinal: { type: 'boolean', defaultValue: false },
-		assetModuleIDs: { type: 'json' },
+		assetsModuleIDs: { type: 'json' },
 	},
 	indexes: {
 		id: { type: 'key' },
@@ -31,7 +31,7 @@ module.exports = {
 		generatorAddress: { type: 'key' },
 		size: { type: 'range' },
 		isFinal: { type: 'key' },
-		assetModuleIDs: { type: 'key' },
+		assetsModuleIDs: { type: 'key' },
 	},
 	purge: {},
 };
