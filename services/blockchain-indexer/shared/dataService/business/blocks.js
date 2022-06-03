@@ -212,7 +212,7 @@ const getBlocks = async params => {
 };
 
 const filterAssets = (moduleIDs, block) => {
-	const filteredAssets = moduleIDs.length
+	const filteredAssets = moduleIDs
 		? block.assets
 			.filter(asset => moduleIDs.includes(String(asset.moduleID)))
 		: block.assets;
@@ -252,7 +252,7 @@ const getBlocksAssets = async (params) => {
 		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: arrayOfModuleIDs };
 	}
 
-	const total = 0;
+	const total = await blocksDB.count(params);
 	const blocksFromDB = await blocksDB.find(params, ['id']);
 
 	blockAssets.data = await BluebirdPromise.map(

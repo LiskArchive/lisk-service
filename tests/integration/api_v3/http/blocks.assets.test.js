@@ -38,7 +38,7 @@ describe('Blocks Assets API', () => {
 	let refBlockAssets;
 	let refAsset;
 	beforeAll(async () => {
-		[refBlockAssets] = (await api.get(`${endpoint}?limit=1&offset=5`)).data;
+		[refBlockAssets] = (await api.get(`${endpoint}?height=0`)).data;
 		[refAsset] = refBlockAssets.assets;
 	});
 
@@ -84,6 +84,20 @@ describe('Blocks Assets API', () => {
 			response.data.forEach((blockAssets) => {
 				expect(blockAssets).toMap(blockAssetSchema);
 				blockAssets.assets.forEach(asset => expect(asset.moduleID).toEqual(refAsset.moduleID));
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns block assets by multiple moduleIDs -> ok', async () => {
+			const arrayOfModuleIDs = refBlockAssets.assets.map(asset => asset.moduleID);
+			const response = await api.get(`${endpoint}?moduleID=${arrayOfModuleIDs.join(',')}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((blockAssets) => {
+				expect(blockAssets).toMap(blockAssetSchema);
+				blockAssets.assets.forEach(asset => expect(arrayOfModuleIDs).toContain(asset.moduleID));
 			});
 			expect(response.meta).toMap(metaSchema);
 		});
