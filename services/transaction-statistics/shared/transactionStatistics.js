@@ -48,7 +48,7 @@ const getSelector = async (params) => {
 
 	if (!numTrxTypes) {
 		const networkStatus = await requestConnector('getNetworkStatus');
-		numTrxTypes = networkStatus.data.moduleAssets.length;
+		numTrxTypes = networkStatus.data.registeredModules.length;
 	}
 
 	return {
