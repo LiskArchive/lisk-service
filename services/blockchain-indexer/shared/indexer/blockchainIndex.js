@@ -77,15 +77,13 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
-			if (block.generatorPublicKey) {
-				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-				pkInfoArray.push({
-					publicKey: block.generatorPublicKey,
-					reward: block.reward,
-					isForger: true,
-					isBlockIndexed: !!blockInfo,
-				});
-			}
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+			pkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: block.reward,
+				isForger: true,
+				isBlockIndexed: !!blockInfo,
+			});
 		},
 		{ concurrency: blocks.length },
 	);
@@ -94,22 +92,28 @@ const getGeneratorPkInfoArray = async (blocks) => {
 
 const indexBlock = async job => {
 	const { height } = job.data;
-
 	const blocksDB = await getBlocksIndex();
 	const blocks = await getBlockByHeight(height);
+	const blocksToIndex = blocks.map(block => {
+		const moduleIDs = block.assets.map(blockAsset => blockAsset.moduleID);
+		return { ...block, assetsModuleIDs: moduleIDs };
+	});
+
+	if (!validateBlocks(blocks)) {
+		throw new Error(`Error: Invalid block ${height} }`);
+	}
+
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
-
 	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
 
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block ${height} }`);
 	try {
 		const transactionsDB = await getTransactionsIndex();
-		const transactions = await getTransactionIndexingInfo(blocks);
+		const transactions = await getTransactionIndexingInfo(blocksToIndex);
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
-		if (blocks.length) await blocksDB.upsert(blocks, trx);
-
+		if (blocks.length) await blocksDB.upsert(blocksToIndex, trx);
 		await commitDbTransaction(trx);
+		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
@@ -132,14 +136,17 @@ const updateBlockIndex = async job => {
 };
 
 const deleteIndexedBlocks = async job => {
+	const { blocks } = job.data;
+	const blockIDs = blocks.map(b => b.id).join(', ');
+
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
+	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	try {
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
-		const { blocks } = job.data;
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
@@ -165,8 +172,18 @@ const deleteIndexedBlocks = async job => {
 			});
 		await blocksDB.deleteIds(blocks.map(b => b.height), trx);
 		await commitDbTransaction(trx);
+		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	} catch (error) {
+		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 		await rollbackDbTransaction(trx);
+
+		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;
+			logger.warn(errMessage);
+			throw new Error(errMessage);
+		}
+
+		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };
