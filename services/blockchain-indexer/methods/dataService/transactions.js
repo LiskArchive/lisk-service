@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2021 Lisk Foundation
+ * Copyright © 2022 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -18,7 +18,7 @@ const {
 	getTransactions,
 	getPendingTransactions,
 	postTransactions,
-	getTransactionsSchemas,
+	getCommandsParamsSchemas,
 } = require('./controllers/transactions');
 
 module.exports = [
@@ -60,11 +60,11 @@ module.exports = [
 		},
 	},
 	{
-		name: 'transactions.schemas',
-		controller: getTransactionsSchemas,
+		name: 'commands.parameters.schemas',
+		controller: getCommandsParamsSchemas,
 		params: {
-			moduleAssetId: { optional: true, type: 'any' },
-			moduleAssetName: { optional: true, type: 'any' },
+			moduleCommandID: { optional: true, type: 'string' },
+			moduleCommandName: { optional: true, type: 'string' },
 		},
 	},
 ];

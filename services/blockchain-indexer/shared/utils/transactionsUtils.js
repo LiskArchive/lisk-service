@@ -16,20 +16,20 @@
 const { computeMinFee } = require('@liskhq/lisk-transactions');
 
 const { getGenesisConfig } = require('../constants');
-const { getTransactionsSchemas } = require('../dataService/business/transactionsSchemas');
+const { getCommandsParamsSchemas } = require('../dataService/business/commandsParamsSchemas');
 
-const getTxnAssetSchema = async (trx) => {
-	const moduleAssetId = String(trx.moduleID).concat(':').concat(trx.assetID);
-	const { data: [{ schema }] } = await getTransactionsSchemas({ moduleAssetId });
+const getTxnParamsSchema = async (trx) => {
+	const moduleCommandID = String(trx.moduleID).concat(':').concat(trx.commandID);
+	const { data: [{ schema }] } = await getCommandsParamsSchemas({ moduleCommandID });
 	return schema;
 };
 
 const getTxnMinFee = async (
 	txn,
-	getTxnAssetSchemaFn = getTxnAssetSchema,
+	getTxnParamsSchemaFn = getTxnParamsSchema,
 	getGenesisConfigFn = getGenesisConfig,
 ) => computeMinFee(
-	await getTxnAssetSchemaFn(txn),
+	await getTxnParamsSchemaFn(txn),
 	txn,
 	{
 		minFeePerByte: (await getGenesisConfigFn()).minFeePerByte,
