@@ -15,25 +15,17 @@
  */
 
 const {
-	getTransactionsStatisticsDay,
-	getTransactionsStatisticsMonth,
+	getTransactionsStatistics,
 } = require('./controllers/transactions');
 
 module.exports = [
 	{
-		name: 'transactions.statistics.day',
-		controller: getTransactionsStatisticsDay,
+		name: 'transactions.statistics',
+		controller: getTransactionsStatistics,
 		params: {
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
-	},
-	{
-		name: 'transactions.statistics.month',
-		controller: getTransactionsStatisticsMonth,
-		params: {
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
+			interval: { optional: false, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
 		},
 	},
 ];
