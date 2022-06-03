@@ -74,7 +74,7 @@ const {
 	getPendingTransactions,
 	reloadAllPendingTransactions,
 	postTransactions,
-	getTransactionsSchemas,
+	getCommandsParamsSchemas,
 	getTransactionsByBlockId,
 } = require('./transactions');
 
@@ -130,7 +130,7 @@ module.exports = {
 	getPendingTransactions,
 	reloadAllPendingTransactions,
 	postTransactions,
-	getTransactionsSchemas,
+	getCommandsParamsSchemas,
 	getTransactionsByBlockId,
 	getVoters,
 	getVotes,

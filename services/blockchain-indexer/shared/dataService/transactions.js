@@ -110,27 +110,27 @@ const postTransactions = async params => {
 	}
 };
 
-const getTransactionsSchemas = async params => {
-	const transactionsSchemas = {
+const getCommandsParamsSchemas = async params => {
+	const commandsParamsSchemas = {
 		data: [],
 		meta: {},
 	};
 
-	const response = await dataService.getTransactionsSchemas(params);
-	if (response.data) transactionsSchemas.data = response.data;
-	if (response.meta) transactionsSchemas.meta = response.meta;
+	const response = await dataService.getCommandsParamsSchemas(params);
+	if (response.data) commandsParamsSchemas.data = response.data;
+	if (response.meta) commandsParamsSchemas.meta = response.meta;
 
-	if (!transactionsSchemas.data.length && (params.moduleAssetId || params.moduleAssetName)) {
-		const errorMessage = params.moduleAssetId
-			? `Schema corresponding moduleAssetId: '${params.moduleAssetId}' not found.`
-			: `Schema corresponding moduleAssetName: '${params.moduleAssetName}' not found.`;
+	if (!commandsParamsSchemas.data.length && (params.moduleCommandID || params.moduleCommandName)) {
+		const errorMessage = params.moduleCommandID
+			? `Schema corresponding moduleCommandID: '${params.moduleCommandID}' not found.`
+			: `Schema corresponding moduleCommandName: '${params.moduleCommandName}' not found.`;
 		return {
 			data: { error: errorMessage },
 			status: 'NOT_FOUND',
 		};
 	}
 
-	return transactionsSchemas;
+	return commandsParamsSchemas;
 };
 
 const initPendingTransactionsList = (() => dataService.loadAllPendingTransactions())();
@@ -143,6 +143,6 @@ module.exports = {
 	initPendingTransactionsList,
 	reloadAllPendingTransactions: reload,
 	postTransactions,
-	getTransactionsSchemas,
+	getCommandsParamsSchemas,
 	getTransactionsByBlockId: dataService.getTransactionsByBlockId,
 };
