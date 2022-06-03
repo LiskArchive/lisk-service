@@ -22,6 +22,7 @@ module.exports = {
 		generatorAddress: { type: 'string' },
 		size: { type: 'integer' },
 		isFinal: { type: 'boolean', defaultValue: false },
+		assetsModuleIDs: { type: 'json' },
 	},
 	indexes: {
 		id: { type: 'key' },

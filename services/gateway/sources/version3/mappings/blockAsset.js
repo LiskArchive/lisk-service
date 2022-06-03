@@ -17,7 +17,7 @@ module.exports = {
 	block: {
 		id: '=,string',
 		height: '=,number',
-		timestamp: 'unixTimestamp,number',
+		timestamp: '=,number',
 	},
 	assets: ['assets', {
 		moduleID: '=,string',

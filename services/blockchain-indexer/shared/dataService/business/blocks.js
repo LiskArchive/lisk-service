@@ -211,33 +211,72 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const getBlocksAssets = async (params) => {
-	if (params.blockID) logger.debug(`Retrieving block assets for the block with ID ${params.blockID} from Lisk Core`);
-	else if (params.height) logger.debug(`Retrieving block assets for the block at height: ${params.height} from Lisk Core`);
-	else logger.debug(`Retrieving block assets with custom search: ${util.inspect(params)} from Lisk Core`);
+const filterAssets = (moduleIDs, block) => {
+	const filteredAssets = moduleIDs.length
+		? block.assets.filter(asset => moduleIDs.includes(String(asset.moduleID)))
+		: block.assets;
+	return filteredAssets;
+};
 
-	// TODO: Replace with the implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1089
-	const response = {
-		data: [
-			{
-				block: {
-					id: '222675625422353767',
-					height: 100,
-					timestamp: 100,
-				},
-				assets: [{
-					moduleID: '1',
-					data: {},
-				}],
-			},
-		],
-		meta: {
-			count: 1,
-			offset: 5,
-			total: 100,
-		},
+const getBlocksAssets = async (params) => {
+	const blocksDB = await getBlocksIndex();
+	const blockAssets = {
+		data: [],
+		meta: {},
 	};
-	return response;
+
+	const moduleIDs = [];
+
+	if (params.blockID) {
+		const { blockID, ...remParams } = params;
+		params = remParams;
+		params.id = blockID;
+	}
+
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
+		params = normalizeRangeParam(params, 'height');
+	}
+
+	if (params.timestamp && params.timestamp.includes(':')) {
+		params = normalizeRangeParam(params, 'timestamp');
+	}
+
+	if (params.moduleID) {
+		const { moduleID, ...remParams } = params;
+		const moduleIDArr = String(moduleID).split(',');
+		moduleIDs.push(...moduleIDArr);
+		params = remParams;
+		params.whereJsonSupersetOf = { property: 'assetsModuleIDs', values: moduleIDs };
+	}
+
+	logger.debug(`Querying index to retrieve block IDs with params: ${util.inspect(params)}`);
+	const total = await blocksDB.count(params);
+	const blocksFromDB = await blocksDB.find(params, ['id']);
+
+	logger.debug(`Requesting blockchain application for blocks with IDs: ${blocksFromDB.map(b => b.id).join(', ')}`);
+	blockAssets.data = await BluebirdPromise.map(
+		blocksFromDB,
+		async (blockFromDB) => {
+			const [block] = await getBlockByID(blockFromDB.id);
+			return {
+				block: {
+					id: block.id,
+					height: block.height,
+					timestamp: block.timestamp,
+				},
+				assets: filterAssets(moduleIDs, block),
+			};
+		},
+		{ concurrency: blocksFromDB.length },
+	);
+
+	blockAssets.meta = {
+		count: blockAssets.data.length,
+		offset: params.offset,
+		total,
+	};
+
+	return blockAssets;
 };
 
 module.exports = {
