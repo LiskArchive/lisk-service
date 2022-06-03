@@ -89,9 +89,12 @@ const cast = (val, type) => {
 };
 
 const resolveQueryParams = params => {
+	const KNOWN_QUERY_PARAMS = [
+		'sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset',
+		'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf',
+	];
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf']
-			.includes(key))
+		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
 			return obj;
@@ -235,7 +238,13 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		if (params.whereJsonSupersetOf) {
 			const { property, values } = params.whereJsonSupersetOf;
-			query.whereJsonSupersetOf(property, values);
+			query.where(function () {
+				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
+				this.whereJsonSupersetOf(property, val0);
+				remValues.forEach(value => this.orWhere(function () {
+					this.whereJsonSupersetOf(property, value);
+				}));
+			});
 		}
 
 		if (params.orWhere) {
@@ -341,7 +350,13 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		if (params.whereJsonSupersetOf) {
 			const { property, values } = params.whereJsonSupersetOf;
-			query.whereJsonSupersetOf(property, values);
+			query.where(function () {
+				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
+				this.whereJsonSupersetOf(property, val0);
+				remValues.forEach(value => this.orWhere(function () {
+					this.whereJsonSupersetOf(property, value);
+				}));
+			});
 		}
 
 		if (params.orWhere) {
