@@ -31,7 +31,6 @@ module.exports = {
 		generatorAddress: { type: 'key' },
 		size: { type: 'range' },
 		isFinal: { type: 'key' },
-		assetsModuleIDs: { type: 'key' },
 	},
 	purge: {},
 };
