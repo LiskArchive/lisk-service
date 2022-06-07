@@ -27,7 +27,8 @@ const { validate, dropEmptyProps } = require('./paramValidator');
 
 const apiMeta = [];
 
-const configureApi = (apiName, apiPrefix) => {
+const configureApi = (apiNames, apiPrefix) => {
+	const allMethods = {};
 	const transformPath = url => {
 		const dropSlash = str => str.replace(/^\//, '');
 		const curlyBracketsToColon = str => str.split('{').join(':').replace(/}/g, '');
@@ -35,7 +36,11 @@ const configureApi = (apiName, apiPrefix) => {
 		return curlyBracketsToColon(dropSlash(url));
 	};
 
-	const allMethods = Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`));
+	if (typeof apiNames === 'string') apiNames = [apiNames];
+	apiNames.forEach(apiName => Object.assign(
+		allMethods,
+		Utils.requireAllJs(path.resolve(__dirname, `../apis/${apiName}/methods`)),
+	));
 
 	const methods = Object.keys(allMethods).reduce((acc, key) => {
 		const method = allMethods[key];
@@ -115,9 +120,8 @@ const transformParams = (params = {}, specs) => {
 	return output;
 };
 
-
-const registerApi = (apiName, config) => {
-	const { aliases, whitelist, methodPaths } = configureApi(apiName, config.path);
+const registerApi = (apiNames, config) => {
+	const { aliases, whitelist, methodPaths } = configureApi(apiNames, config.path);
 
 	const transformRequest = (apiPath, params) => {
 		try {
@@ -194,20 +198,33 @@ const registerApi = (apiName, config) => {
 				ctx.meta.$responseHeaders = { 'Cache-Control': gatewayConfig.api.httpCacheControlDirectives };
 			}
 
+			// Set response headers and return CSV data if filename available
+			if (data.data && data.meta && data.meta.filename && data.meta.filename.endsWith('.csv')) {
+				res.setHeader('Content-Disposition', `attachment; filename="${data.meta.filename}"`);
+				res.setHeader('Content-Type', 'text/csv');
+				res.end(data.data);
+				return res;
+			}
+
 			if (data.data && data.status) {
+				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
 				if (data.status === 'INVALID_PARAMS') data.status = 'BAD_REQUEST';
 
 				ctx.meta.$statusCode = StatusCodes[data.status] || data.status;
-				if (data.status === 'SERVICE_UNAVAILABLE') ctx.meta.$responseHeaders = { 'Retry-After': 30 };
-				let message = `The request ended up with error ${data.status}`;
 
-				if (typeof data.data === 'object' && typeof data.data.error === 'string') {
-					message = data.data.error;
+				// 'ACCEPTED' is a successful HTTP code
+				if (data.status !== 'ACCEPTED') {
+					let message = `The request ended up with ${data.status} error`;
+
+					if (typeof data.data === 'object' && typeof data.data.error === 'string') {
+						message = data.data.error;
+					}
+
+					return {
+						error: true,
+						message,
+					};
 				}
-				return {
-					error: true,
-					message,
-				};
 			}
 
 			if (Utils.Data.isEmptyArray(data.data) || Utils.Data.isEmptyObject(data.data)) {

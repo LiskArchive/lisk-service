@@ -93,13 +93,70 @@ describe('Test microservice', () => {
 			}
 			expect(app.addJob(job)).toBe(false);
 		});
-
-		describe('addMethods()', () => {
-			it.todo('Add tests for addMethods');
-		})
-
-		describe('addEvents()', () => {
-			it.todo('Add tests for addEvents');
-		})
 	});
+
+	describe('addMethods()', () => {
+		it('Return true when method is registered', async () => {
+			const testMethod = {
+				name: 'test.method',
+				description: 'Return true',
+				controller: async () => true,
+			};
+			expect(app.addMethod(testMethod)).toBe(true);
+		});
+
+		it('Return false when when no controller defined', async () => {
+			const testMethod = {
+				name: 'test.method',
+				description: 'Return false',
+			};
+			expect(app.addMethod(testMethod)).toBe(false);
+		});
+	})
+
+	describe('addEvents()', () => {
+		it('Return true when event is registered', async () => {
+			const testEvent = {
+				name: 'test.event',
+				description: 'Return true',
+				controller: async () => true,
+			};
+			expect(app.addEvent(testEvent)).toBe(true);
+		});
+
+		it('Return false when when no controller defined', async () => {
+			const testEvent = {
+				name: 'test.event',
+				description: 'Return false',
+			};
+			expect(app.addEvent(testEvent)).toBe(false);
+		});
+	})
+
+	describe('requestRpc()', () => {
+		it('Return result when call with registered method name', async () => {
+			const testData = {
+				address: "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+				balance: "95589969000000",
+			};
+
+			const testFunc = async () => testData;
+
+			const testMethod = {
+				name: 'registered.method',
+				description: 'Return data',
+				controller: testFunc,
+			};
+
+			app.addMethod(testMethod);
+			await app.run();
+
+			const result = await app.requestRpc('test-service.registered.method', {});
+			expect(result).toMatchObject(testData);
+		});
+
+		it('Throw error when method is not registered', async () => {
+			expect(app.requestRpc('test-service.unregistered.method', {})).rejects.toThrow();
+		});
+	})
 });

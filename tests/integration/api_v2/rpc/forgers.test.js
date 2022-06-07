@@ -25,7 +25,7 @@ const {
 
 const {
 	forgerSchema,
-} = require('../../../schemas/forger.schema');
+} = require('../../../schemas/api_v2/forger.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getForgers = async params => request(wsRpcUrl, 'get.forgers', params);

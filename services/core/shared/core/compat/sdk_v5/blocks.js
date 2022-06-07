@@ -14,28 +14,22 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+
 const {
 	CacheRedis,
 	Logger,
-	Exceptions: { ValidationException, NotFoundException },
+	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
 const coreApi = require('./coreApi');
 const config = require('../../../../config');
 
-const {
-	getIndexedAccountInfo,
-} = require('./accounts');
-
-const {
-	getApiClient,
-} = require('../common');
-
+const { getIndexedAccountInfo } = require('./accounts');
+const { getTxnMinFee } = require('./transactionsUtils');
+const { normalizeRangeParam } = require('./paramUtils');
+const { getApiClient } = require('../common');
 const { parseToJSONCompatObj } = require('../../../jsonTools');
-
-const {
-	getTableInstance,
-} = require('../../../indexdb/mysql');
+const { getTableInstance } = require('../../../indexdb/mysql');
 
 const blocksIndexSchema = require('./schema/blocks');
 
@@ -86,17 +80,19 @@ const normalizeBlocks = async (blocks, includeGenesisAccounts = false) => {
 			block.totalBurnt = BigInt('0');
 			block.totalFee = BigInt('0');
 
-			block.payload.forEach(txn => {
-				txn.size = apiClient.transaction.encode(txn).length;
-				txn.minFee = apiClient.transaction.computeMinFee(txn);
+			await BluebirdPromise.map(
+				block.payload,
+				async (txn) => {
+					txn.size = apiClient.transaction.encode(txn).length;
+					txn.minFee = await getTxnMinFee(txn);
 
-				block.size += txn.size;
-
-				const txnMinFee = BigInt(txn.minFee);
-				block.totalForged += BigInt(txn.fee);
-				block.totalBurnt += txnMinFee;
-				block.totalFee += BigInt(txn.fee) - txnMinFee;
-			});
+					block.size += txn.size;
+					block.totalForged += txn.fee;
+					block.totalBurnt += txn.minFee;
+					block.totalFee += txn.fee - txn.minFee;
+				},
+				{ concurrency: 1 },
+			);
 
 			if (includeGenesisAccounts !== true) {
 				const {
@@ -198,29 +194,11 @@ const getBlocks = async params => {
 	}
 
 	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-		const { height, ...remParams } = params;
-		params = remParams;
-		const [from, to] = height.split(':');
-		if (from && to && from > to) throw new ValidationException('From height cannot be greater than to height');
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'height',
-			from,
-			to,
-		});
+		params = normalizeRangeParam(params, 'height');
 	}
 
 	if (params.timestamp && params.timestamp.includes(':')) {
-		const { timestamp, ...remParams } = params;
-		params = remParams;
-		const [from, to] = timestamp.split(':');
-		if (from && to && from > to) throw new ValidationException('From timestamp cannot be greater than to timestamp');
-		if (!params.propBetweens) params.propBetweens = [];
-		params.propBetweens.push({
-			property: 'timestamp',
-			from,
-			to,
-		});
+		params = normalizeRangeParam(params, 'timestamp');
 	}
 
 	const total = await blocksDB.count(params);
@@ -285,6 +263,7 @@ module.exports = {
 	getBlocks,
 	getGenesisHeight,
 	updateFinalizedHeight,
+	setFinalizedHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getCurrentHeight,

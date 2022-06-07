@@ -27,7 +27,7 @@ const {
 
 const {
 	voteSchemaVersion5,
-} = require('../../../schemas/vote.schema');
+} = require('../../../schemas/api_v2/vote.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 

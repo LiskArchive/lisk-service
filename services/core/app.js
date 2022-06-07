@@ -25,6 +25,8 @@ const packageJson = require('./package.json');
 
 const nodeStatus = require('./shared/nodeStatus');
 
+const snapshotUtils = require('./shared/core/compat/sdk_v5/snapshotUtils');
+
 const loggerConf = {
 	...config.log,
 	name: packageJson.name,
@@ -45,22 +47,39 @@ const app = Microservice({
 nodeStatus.waitForNode().then(async () => {
 	logger.info('Found a node, initiating Lisk Core...');
 
+	// TODO: Remove after logging issues with 'sdk_v5/snapshotUtils.js' are resolved
+	if (config.snapshot.enable) logger.info('Initialising the automatic index snapshot application process');
+	await snapshotUtils.initSnapshot()
+		.then(() => { if (config.snapshot.enable) logger.info('Successfully downloaded and applied the snapshot'); })
+		.catch(err => logger.warn(`Unable to apply snapshot:\n${err.message}`));
+
+	// Ensure all the tables are created in the database
 	const blockchainStore = require('./shared/core/compat/sdk_v5/blockchainIndex');
 	await blockchainStore.initializeSearchIndex();
 
-	app.addMethods(path.join(__dirname, 'methods', 'api_v1'));
-	app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
-	app.addEvents(path.join(__dirname, 'events'));
-	app.addJobs(path.join(__dirname, 'jobs'));
+	logger.info('Checking for node sync status');
+	const intervalID = setInterval(
+		() => logger.info('Node synchronization still in progress...'),
+		nodeStatus.CORE_SYNC_CHECK_INTERVAL,
+	);
 
-	app.run().then(() => {
-		logger.info(`Service started ${packageJson.name}`);
+	nodeStatus.waitForNodeToFinishSync().then(async () => {
+		clearInterval(intervalID);
+		logger.info('Node synchronization is complete');
 
-		const coreApi = require('./shared/core');
-		coreApi.init();
-	}).catch(err => {
-		logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
-		logger.fatal(err.stack);
-		process.exit(1);
+		app.addMethods(path.join(__dirname, 'methods', 'api_v2'));
+		app.addEvents(path.join(__dirname, 'events'));
+		app.addJobs(path.join(__dirname, 'jobs'));
+
+		app.run().then(() => {
+			logger.info(`Service started ${packageJson.name}`);
+			logger.info('Triggering the init process');
+			const coreApi = require('./shared/core');
+			coreApi.init();
+		}).catch(err => {
+			logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
+			logger.fatal(err.stack);
+			process.exit(1);
+		});
 	});
 });

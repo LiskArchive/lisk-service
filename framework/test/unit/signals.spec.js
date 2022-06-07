@@ -25,13 +25,11 @@ describe('Signals tests', () => {
 			});
 		});
 
-		it.todo('Failing test case for dispatched event');
 	});
 
 	describe('signal.add()', () => {
 		const signal = signals.get('addEvent');
 		const testFunc = () => { };
-
 		it('Add valid listener to signal.add()', async () => {
 			// initially 0 listeners
 			expect(signal.getNumListeners()).toBe(0);

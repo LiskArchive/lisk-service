@@ -40,7 +40,6 @@ function abstractRequest(options, done) {
 		request.send(options.params);
 	}
 
-
 	if (done) {
 		return request.end((err, res) => {
 			done(err, res);
@@ -48,7 +47,6 @@ function abstractRequest(options, done) {
 	}
 	return request;
 }
-
 
 // Get the given path
 node.get = function (path, done) {

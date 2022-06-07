@@ -1,0 +1,44 @@
+@Library('lisk-jenkins') _
+def echoBanner(msg) {
+	echo '----------------------------------------------------------------------'
+	echo msg
+	echo '----------------------------------------------------------------------'
+}
+
+def checkHttp(url) {
+	def result = sh script: "curl -s -f -o /dev/null ${url}", returnStatus: true
+	return (result == 0)
+}
+
+def waitForHttp(url) {
+	waitUntil { script { return (checkHttp(url) == true) } }
+}
+
+pipeline {
+	agent none
+	triggers {
+		// Triggers every week at midnight on Sunday morning
+		cron('0 1 * * 0')
+		}
+	stages {
+		stage('Readiness check') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				// Mainnet service URL
+				waitForHttp('http://localhost:9901/api/ready')
+			}
+		}
+		stage('Run performance tests Mainnet') {
+			steps {
+				script { echoBanner(STAGE_NAME) }
+				ansiColor('xterm') {
+					nvm(getNodejsVersion()) {
+						// Mainnet service URL
+						dir('./tests') { sh 'LISK_SERVICE_URL=http://localhost:9901 npm run benchmark' }
+					}
+				}
+			}
+		}
+	}
+}
+// vim: filetype=groovy

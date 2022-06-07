@@ -1,6 +1,6 @@
 {
   "name": "lisk-service",
-  "version": "0.5.0",
+  "version": "0.6.3-alpha.1",
   "description": "Lisk Service",
   "keywords": [
     "lisk",
@@ -20,8 +20,8 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": "12.16.2",
-    "npm": "6.14.4"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "start": "pm2 start ecosystem.core3.config.js",
@@ -30,12 +30,10 @@
     "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\""
   },
   "devDependencies": {
-    "eslint": "^7.1.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-config-lisk-base": "^1.2.2",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-jest": "^23.16.0",
-    "eslint-plugin-mocha": "^7.0.1"
-  },
-  "dependencies": {}
+    "eslint": "^7.32.0",
+    "eslint-config-lisk-base": "^2.0.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-jest": "^26.2.2",
+    "eslint-plugin-mocha": "^10.0.4"
+  }
 }

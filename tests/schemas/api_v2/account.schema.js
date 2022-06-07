@@ -15,26 +15,27 @@
  */
 import Joi from 'joi';
 
-const {
-	pomHeightSchema,
-	validDelegateStatuses,
-} = require('./delegate.schema');
+const validDelegateStatuses = ['active', 'standby', 'banned', 'punished', 'non-eligible'];
+
+const pomHeightSchema = {
+	start: Joi.number().required(),
+	end: Joi.number().required(),
+};
 
 const delegateSchema = {
-	approval: Joi.number().min(0).optional(),
-	missedBlocks: Joi.number().integer().min(0).optional(),
 	producedBlocks: Joi.number().integer().min(0).optional(),
-	productivity: Joi.string().optional(),
 	rank: Joi.number().integer().min(1).optional(),
 	rewards: Joi.string().optional(),
-	username: Joi.string().optional(),
-	vote: Joi.string().optional(),
+	username: Joi.string().allow('').optional(),
+	voteWeight: Joi.string().optional(),
 	isBanned: Joi.boolean().optional(),
 	status: Joi.string().valid(...validDelegateStatuses).optional(),
 	pomHeights: Joi.array().items(pomHeightSchema).optional(),
 	registrationHeight: Joi.number().integer().min(0).optional(),
-	lastForgedHeight: Joi.number().integer().min(0).optional(),
+	lastForgedHeight: Joi.number().integer().min(0).allow(null)
+		.optional(),
 	consecutiveMissedBlocks: Joi.number().integer().optional(),
+	totalVotesReceived: Joi.string().optional(),
 };
 
 const knowledgeSchema = {
@@ -42,61 +43,12 @@ const knowledgeSchema = {
 	description: Joi.string().required(),
 };
 
-const multisignatureAccountMemberSchema = {
-	address: Joi.string().required(),
-	publicKey: Joi.string().required(),
-	secondPublicKey: Joi.string().optional(),
-	balance: Joi.string().required(),
-	unconfirmedSignature: Joi.number().optional(),
-	isMandatory: Joi.boolean().optional(),
-};
-
-const multisignatureAccountSchema = {
-	lifetime: Joi.number().optional(),
-	minimalNumberAcccounts: Joi.number().optional(),
-	numberOfReqSignatures: Joi.number().optional(),
-	members: Joi.array().items(multisignatureAccountMemberSchema).optional(),
-};
-
-const multisignatureMembershipSchema = {
-	address: Joi.string().required(),
-	balance: Joi.string().required(),
-	lifetime: Joi.number().required(),
-	minimalNumberAcccounts: Joi.number().required(),
-	publicKey: Joi.string().required(),
-	secondPublicKey: Joi.string().required(),
-};
-
-const transactionCountSchema = {
-	incoming: Joi.string().required(),
-	outgoing: Joi.string().required(),
-};
-
-const unconfirmedMultisignatureMembershipSchema = multisignatureAccountMemberSchema;
-
 const unlockingHeightSchema = pomHeightSchema;
 
 const unlockingItemSchema = {
 	amount: Joi.string().required(),
 	height: Joi.object(unlockingHeightSchema).required(),
 	delegateAddress: Joi.string().required(),
-};
-
-const accountSchema = {
-	address: Joi.string().required(),
-	publicKey: Joi.string().allow('').required(),
-	secondPublicKey: Joi.string().allow('').optional(),
-	balance: Joi.string().required(),
-	nonce: Joi.string().optional(),
-	delegate: Joi.object(delegateSchema).optional(),
-	knowledge: Joi.object(knowledgeSchema).optional(),
-	multisignatureAccount: Joi.object(multisignatureAccountSchema).optional(),
-	multisignatureMemberships: Joi.array()
-		.items(multisignatureMembershipSchema).optional(),
-	transactionCount: Joi.object(transactionCountSchema).required(),
-	unconfirmedMultisignatureMemberships: Joi.array()
-		.items(unconfirmedMultisignatureMembershipSchema).optional(), // TODO: Removed?
-	unlocking: Joi.array().items(unlockingItemSchema).optional(),
 };
 
 const summary = {
@@ -124,18 +76,7 @@ const sequence = {
 };
 
 const dpos = {
-	approval: Joi.number().min(0).optional(),
-	missedBlocks: Joi.number().integer().min(0).optional(),
-	producedBlocks: Joi.number().integer().min(0).optional(),
-	rank: Joi.number().integer().min(1).optional(),
-	rewards: Joi.string().optional(),
-	username: Joi.string().allow('').optional(),
-	isBanned: Joi.boolean().optional(),
-	status: Joi.string().valid(...validDelegateStatuses).optional(),
-	pomHeights: Joi.array().items(pomHeightSchema).optional(),
-	lastForgedHeight: Joi.number().integer().min(0).optional(),
-	consecutiveMissedBlocks: Joi.number().integer().optional(),
-	delegate: Joi.object().required(), // TODO delegate schema for version 5
+	delegate: Joi.object(delegateSchema).required(),
 	unlocking: Joi.array().items(unlockingItemSchema).optional(),
 	sentVotes: Joi.array().items(sentVotes).optional(),
 };
@@ -164,8 +105,6 @@ const accountSchemaVersion5 = {
 };
 
 module.exports = {
-	accountSchema: Joi.object(accountSchema).required(),
-	delegateSchema: Joi.object(delegateSchema).required(),
 	accountSchemaVersion5: Joi.object(accountSchemaVersion5).required(),
 	dpos: Joi.object(dpos).required(),
 };

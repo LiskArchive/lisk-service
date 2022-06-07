@@ -1,4 +1,4 @@
-FROM node:12-alpine AS builder
+FROM node:16.15.0-alpine AS builder
 
 RUN apk add --no-cache alpine-sdk python2 git libtool autoconf automake
 RUN adduser -D builder
@@ -11,7 +11,7 @@ COPY ./package-lock.json ./package.json .babelrc ./
 RUN npm ci
 
 
-FROM node:12-alpine
+FROM node:16.15.0-alpine
 
 RUN apk add --no-cache curl
 RUN adduser -D lisk

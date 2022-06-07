@@ -35,7 +35,8 @@ const {
 const {
 	getCurrentHeight,
 	getBlockByHeight,
-	getBlocksByHeightBetween,
+	updateFinalizedHeight,
+	getFinalizedHeight,
 } = require('./blocks');
 
 const {
@@ -44,7 +45,10 @@ const {
 	getAllDelegates,
 } = require('./accounts');
 
-const { getBase32AddressFromPublicKey } = require('./accountUtils');
+const {
+	getBase32AddressFromPublicKey,
+} = require('./accountUtils');
+
 const {
 	getVoteIndexingInfo,
 	getVotesByTransactionIDs,
@@ -55,8 +59,10 @@ const {
 	getTransactionsByBlockIDs,
 } = require('./transactions');
 
-const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
-const genesisAccountsCache = CacheRedis('genesisAccounts', config.endpoints.redis);
+const {
+	triggerAccountUpdates,
+	indexAccountWithData,
+} = require('./accountIndex');
 
 const {
 	getDbConnection,
@@ -65,6 +71,10 @@ const {
 	commitDbTransaction,
 	rollbackDbTransaction,
 } = require('../../../indexdb/mysql');
+
+const keyValueDB = require('../../../indexdb/mysqlKVStore');
+
+const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.redis);
 
 const blocksIndexSchema = require('./schema/blocks');
 const accountsIndexSchema = require('./schema/accounts');
@@ -86,10 +96,6 @@ const blockchainStore = require('./blockchainStore');
 // Blockchain starts form a non-zero block height
 const getGenesisHeight = () => blockchainStore.get('genesisHeight');
 
-// The top final block
-const setFinalizedHeight = (height) => blockchainStore.set('finalizedHeight', height);
-const getFinalizedHeight = () => blockchainStore.get('finalizedHeight');
-
 // Height below which there are no missing blocks in the index
 const setIndexVerifiedHeight = (height) => blockchainStore.set('indexVerifiedHeight', height);
 const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
@@ -98,6 +104,9 @@ const getIndexVerifiedHeight = () => blockchainStore.get('indexVerifiedHeight');
 const setIndexDiff = (height) => blockchainStore.set('indexStatus', height);
 const getIndexDiff = () => blockchainStore.get('indexStatus');
 
+// Key constants for the KV-store
+const genesisAccountPageCached = 'genesisAccountPageCached';
+const isGenesisAccountIndexingFinished = 'isGenesisAccountIndexingFinished';
 
 const validateBlocks = (blocks) => blocks.length
 	&& blocks.every(block => !!block && block.height >= 0);
@@ -108,36 +117,85 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	await BluebirdPromise.map(
 		blocks,
 		async block => {
-			if (block.generatorPublicKey) {
-				const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-				pkInfoArray.push({
-					publicKey: block.generatorPublicKey,
-					reward: block.reward,
-					isForger: true,
-					isBlockIndexed: !!blockInfo,
-				});
-			}
+			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+			pkInfoArray.push({
+				publicKey: block.generatorPublicKey,
+				reward: block.reward,
+				isForger: true,
+				isBlockIndexed: !!blockInfo,
+			});
 		},
 		{ concurrency: blocks.length },
 	);
 	return pkInfoArray;
 };
 
-const indexBlocks = async job => {
-	const blocksDB = await getBlocksIndex();
+const updateProducedBlocksAndRewards = async (generatorInfo, trx) => {
+	const accountsDB = await getAccountsIndex();
+
+	// Update producedBlocks & rewards
+	if (!generatorInfo.isBlockIndexed) {
+		const incrementParam = {
+			increment: {
+				rewards: BigInt(generatorInfo.reward),
+				producedBlocks: 1,
+			},
+			where: {
+				property: 'address',
+				value: getBase32AddressFromPublicKey(generatorInfo.publicKey),
+			},
+		};
+
+		// If no rows are affected with increment, insert the row
+		const numRowsAffected = await accountsDB.increment(incrementParam, trx);
+		if (numRowsAffected === 0) {
+			await accountsDB.upsert({
+				address: getBase32AddressFromPublicKey(generatorInfo.publicKey),
+				publicKey: generatorInfo.publicKey,
+				producedBlocks: 1,
+				rewards: generatorInfo.reward,
+			}, trx);
+		}
+	}
+};
+
+const updateVoteAggregatesTrx = async (voteToAggregate, trx) => {
 	const votesAggregateDB = await getVotesAggregateIndex();
-	const blocks = await getBlocksByHeightBetween(job.data.from, job.data.to);
+
+	const incrementParam = {
+		increment: {
+			amount: BigInt(voteToAggregate.amount),
+		},
+		where: {
+			property: 'id',
+			value: voteToAggregate.id,
+		},
+	};
+
+	const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
+	if (numRowsAffected === 0) {
+		await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
+	}
+};
+
+const ensureArray = (e) => Array.isArray(e) ? e : [e];
+
+const indexBlock = async job => {
+	const { height } = job.data;
+
+	const blocks = await getBlockByHeight(height);
+	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid block at height ${height}`);
+
+	const blocksDB = await getBlocksIndex();
+	const transactionsDB = await getTransactionsIndex();
+	const votesDB = await getVotesIndex();
+	const multisignatureDB = await getMultisignatureIndex();
+
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
-	if (!validateBlocks(blocks)) throw new Error(`Error: Invalid blocks ${job.data.from}-${job.data.to} }`);
-	try {
-		const accountsDB = await getAccountsIndex();
-		const transactionsDB = await getTransactionsIndex();
-		const votesDB = await getVotesIndex();
-		const multisignatureDB = await getMultisignatureIndex();
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+	logger.trace(`Created new MySQL transaction to index block at height ${height}`);
 
-		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
+	try {
 		const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blocks);
 		const {
 			accounts: accountsFromTransactions,
@@ -145,67 +203,46 @@ const indexBlocks = async job => {
 			multisignatureInfoToIndex,
 		} = await getTransactionIndexingInfo(blocks);
 
-		const allAccounts = accountsByPublicKey.concat(accountsFromTransactions);
-		if (allAccounts.length) await accountsDB.upsert(allAccounts, trx);
+		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
+		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
+
+		await BluebirdPromise.all(
+			ensureArray(accountsByPublicKey)
+				.concat(ensureArray(accountsFromTransactions))
+				.map(async (a) => indexAccountWithData(a)),
+		);
+
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (multisignatureInfoToIndex.length) await multisignatureDB
 			.upsert(multisignatureInfoToIndex, trx);
 		if (votes.length) await votesDB.upsert(votes, trx);
 
-		// Update producedBlocks & rewards
 		await BluebirdPromise.map(
 			generatorPkInfoArray,
-			async pkInfoArray => {
-				if (!pkInfoArray.isBlockIndexed) {
-					const incrementParam = {
-						increment: {
-							rewards: BigInt(pkInfoArray.reward),
-							producedBlocks: 1,
-						},
-						where: {
-							property: 'address',
-							value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-						},
-					};
-
-					// If no rows are affected with increment, insert the row
-					const numRowsAffected = await accountsDB.increment(incrementParam, trx);
-					if (numRowsAffected === 0) {
-						await accountsDB.upsert({
-							address: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-							publicKey: pkInfoArray.publicKey,
-							producedBlocks: 1,
-							rewards: pkInfoArray.reward,
-						}, trx);
-					}
-				}
-			},
+			async (generatorProps) => updateProducedBlocksAndRewards(generatorProps, trx),
+			{ concurrency: 1 },
 		);
 
-		// Update the aggregated votes information
 		await BluebirdPromise.map(
 			votesToAggregateArray,
-			async voteToAggregate => {
-				const incrementParam = {
-					increment: {
-						amount: BigInt(voteToAggregate.amount),
-					},
-					where: {
-						property: 'id',
-						value: voteToAggregate.id,
-					},
-				};
-				const numRowsAffected = await votesAggregateDB.increment(incrementParam, trx);
-				if (numRowsAffected === 0) {
-					await votesAggregateDB.upsert(voteToAggregate.voteObject, trx);
-				}
-			},
+			async (voteToAggregate) => updateVoteAggregatesTrx(voteToAggregate, trx),
+			{ concurrency: 1 },
 		);
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
+		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
 	} catch (error) {
 		await rollbackDbTransaction(trx);
+		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
+
+		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+			const errMessage = `Deadlock encountered while indexing block at height ${height}. Will retry later.`;
+			logger.warn(errMessage);
+			throw new Error(errMessage);
+		}
+
+		logger.warn(`Error occured while indexing block at height ${height}. Will retry later.`);
 		throw error;
 	}
 };
@@ -217,14 +254,20 @@ const updateBlockIndex = async job => {
 };
 
 const deleteIndexedBlocks = async job => {
+	const { blocks } = job.data;
+
+	const blockIDs = blocks.map(b => b.id).join(', ');
+
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
+	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
+
 	try {
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
 		const votesDB = await getVotesIndex();
-		const { blocks } = job.data;
+
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
@@ -250,16 +293,69 @@ const deleteIndexedBlocks = async job => {
 			});
 		await blocksDB.deleteIds(blocks.map(b => b.height), trx);
 		await commitDbTransaction(trx);
+		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	} catch (error) {
+		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 		await rollbackDbTransaction(trx);
+
+		if (error.message.includes('ER_LOCK_DEADLOCK')) {
+			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;
+			logger.warn(errMessage);
+			throw new Error(errMessage);
+		}
+
+		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };
 
 // Initialize queues
-const indexBlocksQueue = Queue('indexBlocksQueue', indexBlocks, 30);
+const indexBlocksQueue = Queue('indexBlocksQueue', indexBlock, 30);
 const updateBlockIndexQueue = Queue('updateBlockIndexQueue', updateBlockIndex, 1);
 const deleteIndexedBlocksQueue = Queue('deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+
+const verifyAndIndexBlock = async data => {
+	const { block } = data.data;
+
+	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
+
+	const blocksDB = await getBlocksIndex();
+	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
+	if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
+		// Index if doesn't exist, or update if it isn't set to final
+		await indexBlocksQueue.add({ height: block.height });
+
+		// Update block finality status
+		const finalizedBlockHeight = await getFinalizedHeight();
+		const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
+			Object.keys(blocksIndexSchema.schema));
+		await updateBlockIndexQueue.add({
+			blocks: nonFinalBlocks
+				.filter(b => b.height <= finalizedBlockHeight)
+				.map(b => ({ ...b, isFinal: true })),
+		});
+
+		// Fork handling
+		if (blockInfo && blockInfo.id !== block.id) {
+			const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
+			const blocksToRemove = await blocksDB.find(
+				{
+					propBetweens: [{
+						property: 'height',
+						from: block.height + 1,
+						to: highestIndexedBlock.height,
+					}],
+					sort: 'height:desc',
+					limit: highestIndexedBlock.height - block.height,
+				},
+				['id', 'generatorPublicKey'],
+			);
+			await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
+		}
+	}
+};
+
+const verifyBlocksQueue = Queue('verifyBlocksQueue', verifyAndIndexBlock, 1);
 
 const cacheLegacyAccountInfo = async () => {
 	// Cache the legacy account reclaim balance information
@@ -285,16 +381,15 @@ const cacheLegacyAccountInfo = async () => {
 
 const performGenesisAccountsIndexing = async () => {
 	const accountsDB = await getAccountsIndex();
-	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 
+	const [genesisBlock] = await getBlockByHeight(await getGenesisHeight(), true);
 	const genesisAccountsToIndex = genesisBlock.asset.accounts
 		.filter(account => account.address.length === 40)
 		.map(account => account.address);
-	const genesisAccountPageCached = 'genesisAccountPageCached';
 
 	logger.info(`${genesisAccountsToIndex.length} registered accounts found in the genesis block`);
 
-	const lastCachedPage = await genesisAccountsCache.get(genesisAccountPageCached) || 0;
+	const lastCachedPage = await keyValueDB.get(genesisAccountPageCached) || 0;
 
 	const PAGE_SIZE = 1000;
 	const NUM_PAGES = Math.ceil(genesisAccountsToIndex.length / PAGE_SIZE);
@@ -307,11 +402,18 @@ const performGenesisAccountsIndexing = async () => {
 		if (pageNum >= lastCachedPage) {
 			const genesisAccountAddressesToIndex = genesisAccountsToIndex.slice(currentPage, nextPage);
 
-			logger.info(`Scheduling retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
+			logger.info(`Attempting retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 
 			const accounts = await getAccountsByAddress(genesisAccountAddressesToIndex, true);
 			if (accounts.length) await accountsDB.upsert(accounts);
-			await genesisAccountsCache.set(genesisAccountPageCached, pageNum);
+			await keyValueDB.set(genesisAccountPageCached, pageNum);
+
+			// Update MySQL based KV-store to avoid re-indexing of the genesis accounts
+			// after applying the DB snapshots
+			if (pageNum === NUM_PAGES - 1) {
+				logger.info('Setting genesis account indexing completion status');
+				await keyValueDB.set(isGenesisAccountIndexingFinished, true);
+			}
 		} else {
 			logger.info(`Skipping retrieval of genesis accounts batch ${pageNum + 1}/${NUM_PAGES} (${percentage}%)`);
 		}
@@ -320,18 +422,18 @@ const performGenesisAccountsIndexing = async () => {
 };
 
 const indexGenesisAccounts = async () => {
-	const isScheduled = await genesisAccountsCache.get('isGenesisAccountIndexingScheduled');
-
-	if (isScheduled === true) {
+	if (await keyValueDB.get(isGenesisAccountIndexingFinished)) {
 		logger.info('Skipping genesis account index update (one-time operation, already indexed)');
 		return;
 	}
 
 	try {
+		// Ensure genesis accounts indexing continues even after the Api client is re-instantiated
+		// Remove the listener after the genesis accounts are successfully indexed
 		logger.info('Attempting to update genesis account index (one-time operation)');
+		Signals.get('newApiClient').add(performGenesisAccountsIndexing);
 		await performGenesisAccountsIndexing();
-		await genesisAccountsCache.set('isGenesisAccountIndexingScheduled', true);
-		await genesisAccountsCache.set('genesisAccountPageCached', 0);
+		Signals.get('newApiClient').remove(performGenesisAccountsIndexing);
 	} catch (err) {
 		logger.fatal('Critical error: Unable to index Genesis block accounts batch. Will retry after the restart');
 		logger.fatal(err.message);
@@ -362,63 +464,24 @@ const buildIndex = async (from, to) => {
 		return;
 	}
 
-	const MAX_BLOCKS_LIMIT_PP = 1; // 1 block at a time
-	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
+	logger.debug(`Scheduling indexing of blocks in height range: ${from} - ${to}`);
 
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset >= from ? pseudoOffset : from - 1;
-		const batchFromHeight = offset + 1;
-		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
-		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
+	const totalNumOfBlocks = to - from + 1;
+	for (let height = from; height <= to; height++) {
+		const count = height - from + 1;
+		const percentage = ((count / totalNumOfBlocks) * 100).toFixed(1);
+		logger.trace(`Scheduling indexing of block at height ${height} (${count} of ${totalNumOfBlocks}, ${percentage}%)`);
 
-		await indexBlocksQueue.add({ from: batchFromHeight, to: batchToHeight });
-		/* eslint-enable no-await-in-loop */
+		// eslint-disable-next-line no-await-in-loop
+		await indexBlocksQueue.add({ height });
 	}
-	logger.info(`Finished scheduling the block index build (${from}-${to})`);
+
+	logger.info(`Finished scheduling indexing of blocks in height range: ${from} - ${to}`);
 };
 
-const indexNewBlocks = async blocks => {
-	const blocksDB = await getBlocksIndex();
-	if (blocks.data.length === 1) {
-		const [block] = blocks.data;
-		logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
-
-		const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
-		if (!blockInfo || (!blockInfo.isFinal && block.isFinal)) {
-			// Index if doesn't exist, or update if it isn't set to final
-			await indexBlocksQueue.add({ from: block.height, to: block.height });
-
-			// Update block finality status
-			const finalizedBlockHeight = await getFinalizedHeight();
-			const nonFinalBlocks = await blocksDB.find({ isFinal: false, limit: 1000 },
-				Object.keys(blocksIndexSchema.schema));
-			await updateBlockIndexQueue.add({
-				blocks: nonFinalBlocks
-					.filter(b => b.height <= finalizedBlockHeight)
-					.map(b => ({ ...b, isFinal: true })),
-			});
-
-			if (blockInfo && blockInfo.id !== block.id) {
-				// Fork detected
-
-				const [highestIndexedBlock] = await blocksDB.find({ sort: 'height:desc', limit: 1 }, ['height']);
-				const blocksToRemove = await blocksDB.find({
-					propBetweens: [{
-						property: 'height',
-						from: block.height + 1,
-						to: highestIndexedBlock.height,
-					}],
-					limit: highestIndexedBlock.height - block.height,
-				}, ['id']);
-				await deleteIndexedBlocksQueue.add({ blocks: blocksToRemove });
-			}
-		}
-	}
-};
+const indexNewBlocks = async blocks => blocks.data.forEach(async block => {
+	await verifyBlocksQueue.add({ block });
+});
 
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	let result = [];
@@ -459,31 +522,16 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-
-const getLastFinalBlockHeight = async () => {
-	// Returns the highest finalized block available within the index
-	// If index empty, default lastIndexedHeight (alias for height) to blockIndexLowerRange
-	const blocksDB = await getBlocksIndex();
-
-	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
-		sort: 'height:desc',
-		limit: 1,
-		isFinal: true,
-	}, ['height']);
-
-	return lastIndexedHeight;
-};
-
-const getNonFinalHeights = async () => {
+const getMinNonFinalHeight = async () => {
 	const blocksDB = await getBlocksIndex();
 
 	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
 		sort: 'height:asc',
-		limit: 5000,
+		limit: 1,
 		isFinal: false,
 	}, ['height']);
 
-	return lastIndexedHeight || [];
+	return lastIndexedHeight;
 };
 
 const indexMissingBlocks = async (params = {}) => {
@@ -506,7 +554,9 @@ const indexMissingBlocks = async (params = {}) => {
 
 	// Retrieve the list of missing blocks
 	const missingBlockRanges = await findMissingBlocksInRange(
-		blockIndexLowerRange, blockIndexHigherRange);
+		blockIndexLowerRange,
+		blockIndexHigherRange,
+	);
 
 	// Start building the block index
 	try {
@@ -516,13 +566,12 @@ const indexMissingBlocks = async (params = {}) => {
 			await setIndexVerifiedHeight(Math.max(indexVerifiedHeight, blockIndexHigherRange));
 		} else {
 			for (let i = 0; i < missingBlockRanges.length; i++) {
+				/* eslint-disable no-await-in-loop */
 				const { from, to } = missingBlockRanges[i];
-
 				logger.info(`Attempting to cache missing blocks ${from}-${to} (${to - from + 1} blocks)`);
-				/* eslint-disable-next-line no-await-in-loop */
 				await buildIndex(from, to);
-				/* eslint-disable-next-line no-await-in-loop */
 				await setIndexVerifiedHeight(to + 1);
+				/* eslint-enable no-await-in-loop */
 			}
 		}
 	} catch (err) {
@@ -532,15 +581,13 @@ const indexMissingBlocks = async (params = {}) => {
 
 const updateNonFinalBlocks = async () => {
 	const cHeight = await getCurrentHeight();
-	const nfHeights = await getNonFinalHeights();
+	const minNFHeight = await getMinNonFinalHeight();
 
-	if (nfHeights.length > 0) {
-		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
-		await buildIndex(nfHeights[0].height, cHeight);
+	if (typeof minNFHeight === 'number') {
+		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks`);
+		await buildIndex(minNFHeight, cHeight);
 	}
 };
-
-const updateFinalizedHeight = async () => setFinalizedHeight(await getLastFinalBlockHeight());
 
 const getIndexStats = async () => {
 	try {
@@ -603,7 +650,7 @@ const reportIndexStatus = async () => {
 	const {
 		currentChainHeight,
 		numBlocksIndexed,
-		lastIndexedBlock,
+		lastIndexedBlock = {},
 		chainLength,
 		percentage,
 	} = await getIndexStats();
@@ -636,8 +683,7 @@ const initializeSearchIndex = async () => {
 
 const init = async () => {
 	// Index every new incoming block
-	const indexNewBlocksListener = async (data) => { await indexNewBlocks(data); };
-	Signals.get('newBlock').add(indexNewBlocksListener);
+	Signals.get('newBlock').add(indexNewBlocks);
 	Signals.get('newBlock').add(checkIndexReadiness);
 	Signals.get('newBlock').add(updateFinalizedHeight);
 	setInterval(reportIndexStatus, 15 * 1000); // ms
@@ -651,16 +697,22 @@ const init = async () => {
 		// Download genesis block
 		await getBlockByHeight(await getGenesisHeight());
 
+		// Start the indexing process (accounts)
+		await indexGenesisAccounts();
+		await cacheLegacyAccountInfo();
+
 		// Index all the delegate accounts first
 		await indexAllDelegateAccounts();
+
+		// Start the previously scheduled account updates
+		await triggerAccountUpdates();
 
 		// Start the indexing process (blocks)
 		await indexMissingBlocks();
 		await updateNonFinalBlocks();
 
-		// Start the indexing process (accounts)
-		await cacheLegacyAccountInfo();
-		await indexGenesisAccounts();
+		// Ensure the pendingAccounts updates are performed regularly
+		setInterval(triggerAccountUpdates, 15 * 1000); // ms
 
 		logger.info('Finished all blockchain index startup tasks');
 	} catch (err) {
@@ -670,9 +722,7 @@ const init = async () => {
 
 module.exports = {
 	init,
-	getLastFinalBlockHeight,
 	getIndexStats,
 	deleteBlock,
 	initializeSearchIndex,
-	indexMissingBlocks,
 };

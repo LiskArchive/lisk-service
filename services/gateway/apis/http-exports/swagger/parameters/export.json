@@ -1,0 +1,38 @@
+{
+    "address": {
+        "name": "address",
+        "in": "query",
+        "description": "Address of the account to query",
+        "type": "string",
+        "format": "address",
+        "minLength": 41,
+        "maxLength": 41
+    },
+    "publicKey": {
+        "name": "publicKey",
+        "in": "query",
+        "description": "Public key of the account to query",
+        "type": "string",
+        "format": "publicKey",
+        "minLength": 64,
+        "maxLength": 64
+    },
+    "interval": {
+        "name": "interval",
+        "in": "query",
+        "description": "Date interval to query in YYYY-MM-DD format",
+        "type": "string",
+        "format": "interval",
+        "minLength": 10,
+        "maxLength": 21
+    },
+    "filename": {
+        "name": "filename",
+        "in": "path",
+        "description": "Filename",
+        "required": true,
+        "type": "string",
+        "minLength": 80,
+        "maxLength": 80
+    }
+}

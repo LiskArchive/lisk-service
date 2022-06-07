@@ -1,0 +1,47 @@
+{
+  "name": "lisk-service-export",
+  "version": "0.6.3-alpha.1",
+  "description": "Lisk Service Export",
+  "keywords": [
+    "lisk",
+    "blockchain"
+  ],
+  "homepage": "https://github.com/LiskHQ/lisk-service",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LiskHQ/lisk-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LiskHQ/lisk-service/issues"
+  },
+  "private": true,
+  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "engines": {
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "clean": "rm -rf ./node_modules",
+    "test": "npm run test:unit",
+    "test:unit": "jest --config=jest.config.unit.js --detectOpenHandles --forceExit",
+    "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit",
+    "watch": "supervisor -w . -i ./node_modules app.js"
+  },
+  "dependencies": {
+    "@liskhq/lisk-cryptography": "^3.2.1",
+    "bluebird": "^3.7.2",
+    "bull": "^3.29.2",
+    "json2csv": "^5.0.6",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/00bd8bb564ca275224b07fcb7707f0567df7ccf9/framework/dist/lisk-service-framework-1.4.0.tgz",
+    "moment": "^2.29.1",
+    "moment-range": "^4.0.2",
+    "minio": "^7.0.21",
+    "node-cron": "=2.0.3"
+  },
+  "devDependencies": {
+    "jest": "^27.3.0"
+  }
+}

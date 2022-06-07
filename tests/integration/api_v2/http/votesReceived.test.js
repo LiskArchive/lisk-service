@@ -28,7 +28,7 @@ const {
 
 const {
 	voterSchemaVersion5,
-} = require('../../../schemas/voter.schema');
+} = require('../../../schemas/api_v2/voter.schema');
 
 [
 	`${baseUrlV2}/votes_received`,
@@ -90,7 +90,6 @@ const {
 				expect(response.data).toMap(voterSchemaVersion5);
 				expect(response.meta).toMap(metaSchema);
 			});
-
 
 			it('Returns BAD_REQUEST (400) when requested with limit = 0', async () => {
 				const response = await api.get(`${endpoint}?limit=0`, 400);

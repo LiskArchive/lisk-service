@@ -1,4 +1,4 @@
-FROM node:12-alpine AS builder
+FROM node:16.15.0-alpine AS builder
 
 RUN apk add --no-cache git
 RUN adduser -D builder
@@ -14,7 +14,7 @@ RUN npm ci
 RUN node -e 'console.log(JSON.stringify({ timestamp: new Date().toISOString() }));' > ./build.json
 
 
-FROM node:12-alpine
+FROM node:16.15.0-alpine
 
 RUN apk add --no-cache curl
 RUN adduser -D lisk

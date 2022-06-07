@@ -19,14 +19,14 @@ const {
 } = require('lisk-service-framework');
 
 const { normalizeData } = require('../shared/normalizers');
+const { getTableInstance } = require('../shared/indexdb/mysql');
 
-const mysqlIndex = require('../shared/indexdb/mysql');
 const newsfeedIndexSchema = require('../shared/schema/newsfeed');
 const config = require('../config');
 
 const logger = Logger();
 
-const getNewsFeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
+const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema);
 
 const reloadNewsFromDrupal = async drupalSources => {
 	const newsfeedDB = await getNewsFeedIndex();

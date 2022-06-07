@@ -19,10 +19,10 @@ const {
 
 const config = require('../config');
 
-const mysqlIndex = require('./indexdb/mysql');
+const { getTableInstance } = require('./indexdb/mysql');
 const newsfeedIndexSchema = require('./schema/newsfeed');
 
-const getNewsFeedIndex = () => mysqlIndex('newsfeed', newsfeedIndexSchema);
+const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema);
 
 const enabledSources = Object.values(config.sources)
 	.filter(({ enabled }) => enabled)

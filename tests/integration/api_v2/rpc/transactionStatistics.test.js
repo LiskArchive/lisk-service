@@ -29,7 +29,7 @@ const {
 	transactionStatisticsSchema,
 	goodRequestSchema,
 	metaSchema,
-} = require('../../../schemas/transactionStatistics.schema');
+} = require('../../../schemas/api_v2/transactionStatistics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const requestTransactionStatistics = async (mode, params) => request(wsRpcUrl, `get.transactions.statistics.${mode}`, params);

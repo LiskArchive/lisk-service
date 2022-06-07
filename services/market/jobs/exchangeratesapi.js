@@ -22,11 +22,11 @@ module.exports = [
 		description: 'Fetches up-to-date market prices from exchangeratesapi',
 		schedule: '* * * * *',
 		init: async () => {
-			logger.debug('Initializing market prices');
+			logger.debug('Initializing market prices from exchangeratesapi');
 			await reload();
 		},
 		controller: async () => {
-			logger.debug('Job scheduled to update prices from Binance');
+			logger.debug('Job scheduled to update prices from exchangeratesapi');
 			await reload();
 		},
 	},

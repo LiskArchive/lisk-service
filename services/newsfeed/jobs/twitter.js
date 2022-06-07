@@ -17,14 +17,17 @@ const { Logger } = require('lisk-service-framework');
 
 const { normalizeData } = require('../shared/normalizers');
 const { getData } = require('../shared/twitter');
+const { getTableInstance } = require('../shared/indexdb/mysql');
 
-const mysqlIndex = require('../shared/indexdb/mysql');
 const newsfeedIndexSchema = require('../shared/schema/newsfeed');
 const config = require('../config');
 
 const logger = Logger();
 
-const getNewsFeedIndex = () => mysqlIndex(config.sources.twitter_lisk.table, newsfeedIndexSchema);
+const getNewsFeedIndex = () => getTableInstance(
+	config.sources.twitter_lisk.table,
+	newsfeedIndexSchema,
+);
 
 const refreshTwitterData = async () => {
 	logger.debug('Updating Twitter data...');

@@ -18,6 +18,7 @@ const { Logger } = require('lisk-service-framework');
 const moment = require('moment');
 const BigNumber = require('big-number');
 
+const coreApi = require('./compat');
 const Signals = require('../signals');
 
 const { getTransactions } = require('./transactions');
@@ -38,14 +39,19 @@ const logger = Logger();
 
 const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema);
 
-const getSelector = (params) => {
+const getSelector = async (params) => {
 	const result = { property: 'date' };
 	if (params.dateFrom) result.from = params.dateFrom.unix();
 	if (params.dateTo) result.to = params.dateTo.unix();
+
+	const networkStatus = await coreApi.getNetworkStatus();
+	const numTrxTypes = networkStatus.data.moduleAssets.length;
+
 	return {
 		propBetweens: [result],
 		sort: 'date:desc',
-		limit: params.limit || 366, // max supported limit of days
+		// max supported limit of days * #transaction types + 1 (for the default type: 'any')
+		limit: params.limit || 366 * (numTrxTypes + 1),
 	};
 };
 
@@ -138,8 +144,7 @@ const insertToDb = async (statsList, date) => {
 
 const fetchTransactions = async (date) => {
 	const params = {
-		fromTimestamp: moment.unix(date).unix(),
-		toTimestamp: moment.unix(date).add(1, 'day').unix(),
+		timestamp: `${moment.unix(date).unix()}:${moment.unix(date).add(1, 'day').unix()}`,
 	};
 	const maxCount = (await getTransactions({ ...params, limit: 1 })).meta.total;
 	const transactions = await requestAll(getTransactions, params, maxCount);
@@ -167,7 +172,7 @@ const transactionStatisticsQueue = Queue(queueName, queueJob, 1);
 const getStatsTimeline = async params => {
 	const db = await getDbInstance();
 
-	const result = await db.find(getSelector(params), ['date', 'count', 'volume']);
+	const result = await db.find(await getSelector(params), ['date', 'count', 'volume']);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -194,7 +199,7 @@ const getStatsTimeline = async params => {
 const getDistributionByAmount = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(getSelector(params), ['amount_range', 'count'])).filter(o => o.count > 0);
+	const result = (await db.find(await getSelector(params), ['amount_range', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -212,7 +217,7 @@ const getDistributionByAmount = async params => {
 const getDistributionByType = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(getSelector(params), ['type', 'count'])).filter(o => o.count > 0);
+	const result = (await db.find(await getSelector(params), ['type', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
@@ -276,10 +281,13 @@ const validateTransactionStatistics = async historyLengthDays => {
 	const verifyStatistics = await BluebirdPromise.map(
 		Object.keys(distributionByType),
 		async type => {
+			const fromTimestamp = Math.floor((moment.unix(dateFrom).unix()) / 1000);
+			const toTimestamp = Math.floor((moment.unix(dateTo).unix()) / 1000);
+
 			const { meta: { total } } = await getTransactions({
 				moduleAssetId: type,
-				fromTimestamp: (moment.unix(dateFrom).unix()) / 1000,
-				toTimestamp: (moment.unix(dateTo).unix()) / 1000,
+				timestamp: `${fromTimestamp}:${toTimestamp}`,
+				limit: 1,
 			});
 			return total === distributionByType[type];
 		},

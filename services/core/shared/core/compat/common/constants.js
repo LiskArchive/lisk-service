@@ -25,7 +25,7 @@ const config = require('../../../../config');
 
 const constantsCache = CacheRedis('networkConstants', config.endpoints.redis);
 
-let coreVersion = '1.0.0-alpha.0';
+let coreVersion = '3.0.0-beta.2';
 let constants;
 let readyStatus;
 let registeredLiskModuleAssets;
@@ -72,9 +72,9 @@ const resolveBaseFees = (networkConstants) => {
 	return networkFeeConstants;
 };
 
-const getNetworkConstants = async () => {
+const getNetworkConstants = async (forceUpdate = false) => {
 	try {
-		if (!constants) {
+		if (!constants || forceUpdate) {
 			let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
 			if (Object.getOwnPropertyNames(result).length === 0) {
 				const apiClient = await getApiClient();

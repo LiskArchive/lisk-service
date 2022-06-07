@@ -62,6 +62,7 @@ const loadAllPendingTransactions = async () => {
 };
 
 const validateParams = async params => {
+	const validatedParams = {};
 	if (params.nonce && !(params.senderAddress || params.senderPublicKey)) {
 		throw new ValidationException('Nonce based retrieval is only possible along with senderAddress or senderPublicKey');
 	}
@@ -69,42 +70,47 @@ const validateParams = async params => {
 	if (params.senderUsername) {
 		const accountInfo = await getIndexedAccountInfo({ username: params.senderUsername, limit: 1 }, ['address', 'publicKey']);
 		if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.senderUsername} does not exist`);
-		params.senderPublicKey = accountInfo.publicKey;
+		validatedParams.senderPublicKey = accountInfo.publicKey;
 	}
 
 	if (params.senderIdOrRecipientId) {
-		params.senderAddress = params.senderIdOrRecipientId;
-		params.recipientAddress = params.senderIdOrRecipientId;
+		validatedParams.senderAddress = params.senderIdOrRecipientId;
+		validatedParams.recipientAddress = params.senderIdOrRecipientId;
 	}
 
 	if (params.senderAddress) {
 		const account = await getIndexedAccountInfo({ address: params.senderAddress, limit: 1 }, ['address', 'publicKey']);
-		params.senderPublicKey = account.publicKey;
+		validatedParams.senderPublicKey = account.publicKey;
 	}
 
 	if (params.recipientPublicKey) {
-		params.recipientAddress = getHexAddressFromPublicKey(params.recipientPublicKey);
+		validatedParams.recipientAddress = getHexAddressFromPublicKey(params.recipientPublicKey);
 	}
 
 	if (params.recipientUsername) {
 		const accountInfo = await getIndexedAccountInfo({ username: params.recipientUsername, limit: 1 }, ['address']);
 		if (!accountInfo || accountInfo.address === undefined) return new NotFoundException(`Account with username: ${params.recipientUsername} does not exist`);
-		params.recipientAddress = accountInfo.address;
+		validatedParams.recipientAddress = accountInfo.address;
 	}
 
 	if (params.amount && params.amount.includes(':')) {
 		const minAmount = params.amount.split(':')[0];
 		const maxAmount = params.amount.split(':')[1];
-		params.minAmount = Number(minAmount);
-		params.maxAmount = Number(maxAmount);
+		validatedParams.minAmount = Number(minAmount);
+		validatedParams.maxAmount = Number(maxAmount);
 	}
-	return params;
+
+	if (params.id) validatedParams.id = params.id;
+
+	if (params.sort) validatedParams.sort = params.sort;
+
+	return validatedParams;
 };
 
 const getPendingTransactions = async params => {
 	const pendingTransactions = {
 		data: [],
-		meta: {},
+		meta: { total: 0 },
 	};
 
 	const offset = Number(params.offset) || 0;

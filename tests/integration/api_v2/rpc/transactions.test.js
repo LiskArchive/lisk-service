@@ -29,7 +29,7 @@ const {
 
 const {
 	transactionSchemaVersion5,
-} = require('../../../schemas/transaction.schema');
+} = require('../../../schemas/api_v2/transaction.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
 const getTransactions = async params => request(wsRpcUrl, 'get.transactions', params);
@@ -224,6 +224,62 @@ describe('Method get.transactions', () => {
 
 		it('empty height -> empty response', async () => {
 			const response = await getTransactions({ height: '' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('Blocks with min...max height -> ok', async () => {
+			const minHeight = refTransaction.block.height;
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await getTransactions({ height: `${minHeight}:${maxHeight}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((transaction) => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeGreaterThanOrEqual(minHeight);
+				expect(transaction.block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Blocks with min... height -> ok', async () => {
+			const minHeight = refTransaction.block.height;
+			const response = await getTransactions({ height: `${minHeight}:` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((transaction) => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeGreaterThanOrEqual(minHeight);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Blocks with ...max height -> ok', async () => {
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await getTransactions({ height: `:${maxHeight}` });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			result.data.forEach((transaction) => {
+				expect(transaction).toMap(transactionSchemaVersion5);
+				expect(transaction.block.height).toBeLessThanOrEqual(maxHeight);
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('Blocks with max...min height -> empty response', async () => {
+			const minHeight = refTransaction.block.height;
+			const maxHeight = refTransaction.block.height + 100;
+			const response = await getTransactions({ height: `${maxHeight}:${minHeight}` });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);
@@ -546,8 +602,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Re-enable after test blockchain update with transaction data
-		xit('returns transactions when queried with data', async () => {
+		it('returns transactions when queried with data', async () => {
 			const response = await getTransactions({ data: refTransaction.asset.data });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
@@ -562,8 +617,7 @@ describe('Method get.transactions', () => {
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		// TODO: Re-enable after test blockchain update with transaction data
-		xit('returns transactions when queried with data, limit and offset', async () => {
+		it('returns transactions when queried with data, limit and offset', async () => {
 			try {
 				const response = await getTransactions({
 					data: refTransaction.asset.data,

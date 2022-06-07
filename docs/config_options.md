@@ -41,11 +41,9 @@ HOST=0.0.0.0   # or 127.0.0.1 for localhost
 ```bash
 # Enable certain APIs (HTTP & WebSocket)
 # Use comma separated list
-ENABLE_HTTP_API=http-status,http-version2
+ENABLE_HTTP_API=http-status,http-version2,http-exports
 ENABLE_WS_API=blockchain,rpc-v2
 ```
-
-Note: Since the SDK version 5 the HTTP APIs `http-version1,http-version1-compat` and WebSocket APIs `rpc,rpc-v1` are considered deprecated. Please use only `version2` APIs when connecting to the SDKv5-based node.
 
 ### Caching
 
@@ -160,6 +158,23 @@ GEOIP_JSON=https://geoip.lisk.com/json
 INDEX_N_BLOCKS=202
 ```
 
+### Mysql Snapshot settings
+
+```bash
+# Enable or disable apply snapshot feature
+ENABLE_APPLY_SNAPSHOT=true
+
+# Custom snapshot url (Expected to end with sql.gz)
+INDEX_SNAPSHOT_URL='https://snapshots.lisk.io/mainnet/service.sql.gz'
+
+# When the MySql is hosted as a docker-compose service, set the following environment variables:
+# Set docker-compose file path (use absolute path)
+DOCKER_COMPOSE_FILEPATH='/Users/lisk/lisk-service/jenkins/mysql/docker-compose.yml'
+
+# Set mysql service name as defined in the above docker-compose file
+DOCKER_MYSQL_SERVICE_NAME=mysql
+```
+
 ### Transaction statistics
 
 ```bash
@@ -195,4 +210,12 @@ FEE_EST_DEFAULT_START_BLOCK_HEIGHT=1
 FEE_EST_EMA_BATCH_SIZE=20
 FEE_EST_EMA_DECAY_RATE=0.5
 FEE_EST_WAVG_DECAY_PERCENTAGE=10
+```
+
+### Account transaction exports
+
+```bash
+# Required for exports to work properly
+SERVICE_EXPORT_REDIS=redis://localhost:6379/3
+SERVICE_EXPORT_REDIS_VOLATILE=redis://localhost:6379/4
 ```

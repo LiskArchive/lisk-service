@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-core",
-  "version": "0.5.0",
+  "version": "0.6.3-alpha.1",
   "description": "Lisk Service Core",
   "keywords": [
     "lisk",
@@ -19,20 +19,19 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": "12.16.2",
-    "npm": "6.14.4"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "start": "node app.js",
     "clean": "rm -rf ./node_modules",
     "test": "npm run test:unit",
-    "test:unit": "./node_modules/.bin/jest --config=jest.config.js --detectOpenHandles --forceExit"
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-api-client": "^5.1.3",
-    "@liskhq/lisk-cryptography": "^3.1.0",
-    "@liskhq/lisk-transactions-v4": "npm:@liskhq/lisk-transactions@^4.0.0",
-    "@liskhq/lisk-transactions-v5": "npm:@liskhq/lisk-transactions@^5.1.1",
+    "@liskhq/lisk-api-client": "^5.1.6",
+    "@liskhq/lisk-cryptography": "^3.2.1",
+    "@liskhq/lisk-transactions": "^5.2.2",
     "async": "^3.2.0",
     "big-json": "^3.1.0",
     "big-number": "=2.0.0",
@@ -42,12 +41,12 @@
     "commander": "=5.0.0",
     "compression": "^1.7.4",
     "debug": "=4.1.1",
-    "ioredis": "^4.27.1",
-    "knex": "^0.95.4",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/059aa632586d77ca958edc1561f90879bf98b507/framework/dist/lisk-service-framework-1.2.4.tgz",
+    "ioredis": "^4.28.5",
+    "knex": "^2.0.0",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/00bd8bb564ca275224b07fcb7707f0567df7ccf9/framework/dist/lisk-service-framework-1.4.0.tgz",
     "method-override": "^3.0.0",
-    "moment": "=2.24.0",
-    "mysql": "^2.18.1",
+    "moment": "^2.29.3",
+    "mysql2": "^2.3.3",
     "semver": "^7.3.5",
     "signals": "^1.0.0",
     "split": "^1.0.1",
@@ -59,6 +58,7 @@
     "@babel/preset-env": "^7.14.0",
     "babel-jest": "^27.3.0",
     "jest": "^27.3.0",
+    "jest-when": "^3.5.1",
     "mocker-data-generator": "^2.12.0"
   }
 }

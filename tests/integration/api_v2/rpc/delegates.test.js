@@ -275,7 +275,6 @@ describe('Method get.delegates', () => {
 		});
 	});
 
-
 	describe('Search genesis delegate accounts with sorting specified', () => {
 		it('returns 10 delegate accounts sorted by balance descending', async () => {
 			const response = await getDelegates({ isDelegate: true, search: 'genesis', sort: 'balance:desc' });

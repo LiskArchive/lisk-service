@@ -38,6 +38,7 @@ The Lisk Service API is compatible with RESTful guidelines. The specification be
 - [Off-chain Features](#off-chain-features)
   - [Market Prices](#market-prices)
   - [News Feed Aggregator](#news-feed-aggregator)
+  - [Account History Export](#account-history-export)
 
 ## Response format
 
@@ -1011,6 +1012,7 @@ No params required.
 ```jsonc
 {
   "data": {
+    "genesisHeight": 16270293,
     "height": 16550779,
     "finalizedHeight": 16550609,
     "networkVersion": "3.0",
@@ -1227,4 +1229,102 @@ _Invalid source name_
   "error": true,
   "message": "Service is not ready yet"
 }
+```
+## Account History Export
+
+Returns transaction history export scheduling information
+
+#### Endpoints
+
+- HTTP `/api/v2/transactions/export`
+- RPC `get.transactions.export`
+
+#### Request parameters
+
+| Parameter | Type             | Validation                                                 | Default        | Comment                                |
+| --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
+| address   | String           | `/^lsk[a-hjkm-z2-9]{38}$//^[1-9]\d{0,19}[L\|l]$/`          | *(empty)*      |    |
+| publicKey | String           | `/^([A-Fa-f0-9]{2}){32}$/`                                 | *(empty)*      |
+| interval  | String           |                                                            | *(empty)*      |
+
+#### Response example
+Schedule transaction export
+
+202 ACCEPTED
+```jsonc
+{
+  "data": {
+    "address": "lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt",
+    "interval": "2021-03-16:2021-12-06",
+  },
+  "meta": {
+    "ready": false
+  }
+}
+```
+
+File is ready to export
+
+200 OK
+```jsonc
+{
+  "data": {
+    "address": "lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt",
+    "interval": "2021-03-16:2021-12-06",
+    "fileName": "transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv",
+    "fileUrl": "/api/v2/exports/transactions_lskdxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yt_2021-03-16_2021-12-06.csv"
+  },
+  "meta": {
+    "ready": true
+  }
+}
+```
+
+400 Bad Request
+
+_Invalid parameter_
+```
+{
+  "error": true,
+  "message": "Unknown input parameter(s): <param_name>"
+}
+```
+
+404 Not Found
+```jsonc
+{
+  "error": true,
+  "message": "Account <account_id> not found."
+}
+
+```
+
+File retrieval
+
+#### Endpoints
+
+- HTTP `/api/v2/exports/{filename}`
+- RPC `Not Applicable`
+
+#### Request parameters
+
+| Parameter | Type             | Validation                                                 | Default        | Comment                                |
+| --------- | ---------------- | ---------------------------------------------------------- | -------------- | -------------------------------------- |
+| filename   | String          |                                                            | *(empty)*      |                                        |
+
+#### Response example
+Schedule transaction export
+
+200 OK
+```
+[CSV file]
+```
+
+404 Not Found
+```jsonc
+{
+  "error": true,
+  "message": "File <filename.csv> not found."
+}
+
 ```

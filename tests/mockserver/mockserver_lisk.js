@@ -3,9 +3,9 @@ const httpProxy = require('http-proxy');
 const mockserver = require('mockserver');
 const log4js = require('log4js');
 const socketIo = require('socket.io');
-const blocks = require('./lisk_ws_mocks/blocksChange');
-const transactions = require('./lisk_ws_mocks/transactionsChange');
-const rounds = require('./lisk_ws_mocks/roundsChange');
+const blocks = require('./lisk_ws_mocks/blocksChange.json');
+const transactions = require('./lisk_ws_mocks/transactionsChange.json');
+const rounds = require('./lisk_ws_mocks/roundsChange.json');
 
 const logger = log4js.getLogger();
 logger.level = 'info';

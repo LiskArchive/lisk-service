@@ -19,6 +19,7 @@ module.exports = {
 	method: 'core.network.status',
 	definition: {
 		data: {
+			genesisHeight: '=,number',
 			height: '=,number',
 			finalizedHeight: '=,number',
 			networkVersion: '=,string',

@@ -17,10 +17,12 @@ import Joi from 'joi';
 
 const newsfeedArticleSchema = {
 	author: Joi.string().required(),
-	content_t: Joi.string().required(),
+	content: Joi.string().required(),
+	imageUrl: Joi.string().allow(null).required(),
 	image_url: Joi.string().allow(null).required(),
 	source: Joi.string().pattern(/^\b[a-z]+(?:_[a-z]+){1,2}\b$/).required(),
-	source_id: Joi.string().required(),
+	sourceId: Joi.string().required(),
+	timestamp: Joi.number().integer().positive().required(),
 	createdAt: Joi.number().integer().positive().required(),
 	modifiedAt: Joi.number().integer().positive().required(),
 	title: Joi.string().allow('', null).required(),

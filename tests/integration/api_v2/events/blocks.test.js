@@ -27,7 +27,7 @@ const {
 
 const {
 	blockSchemaVersion5,
-} = require('../../../schemas/block.schema');
+} = require('../../../schemas/api_v2/block.schema');
 
 const endpoint = `${config.SERVICE_ENDPOINT_RPC}/blockchain`;
 

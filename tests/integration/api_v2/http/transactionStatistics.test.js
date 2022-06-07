@@ -28,7 +28,7 @@ const {
 	transactionStatisticsSchema,
 	goodRequestSchema,
 	metaSchema,
-} = require('../../../schemas/transactionStatistics.schema');
+} = require('../../../schemas/api_v2/transactionStatistics.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV1 = `${baseUrl}/api/v2`;

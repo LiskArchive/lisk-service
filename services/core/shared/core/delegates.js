@@ -16,6 +16,8 @@
 const { Logger, CacheRedis } = require('lisk-service-framework');
 const BluebirdPromise = require('bluebird');
 
+const Transactions = require('@liskhq/lisk-transactions');
+
 const Signals = require('../signals');
 const config = require('../../config');
 
@@ -43,8 +45,9 @@ let delegateList = [];
 
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
-	if (diff !== 0) return Number(diff);
-	return Buffer.from(a.account.address).compare(Buffer.from(b.account.address));
+	if (diff !== BigInt('0')) return Number(diff);
+	return Buffer.from(coreApi.getHexAddressFromBase32(a.account.address), 'hex')
+		.compare(Buffer.from(coreApi.getHexAddressFromBase32(b.account.address), 'hex'));
 };
 
 const computeDelegateRank = async () => {
@@ -58,10 +61,9 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	// TODO: These feature should be handled by the compatibility layer
-	const numActiveForgers = (sdkVersion < 4) ? 101 : 103;
+	const numActiveForgers = await coreApi.getNumberOfForgers();
 
-	const MIN_ELIGIBLE_VOTE_WEIGHT = BigInt(1000);
+	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
 	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
@@ -92,7 +94,7 @@ const computeDelegateStatus = async () => {
 				delegate.status = delegateStatus.PUNISHED;
 			} else if (activeNextForgersList.includes(delegate.account.address)) {
 				delegate.status = delegateStatus.ACTIVE;
-			} else if (delegate.delegateWeight >= MIN_ELIGIBLE_VOTE_WEIGHT) {
+			} else if (BigInt(delegate.delegateWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 				delegate.status = delegateStatus.STANDBY;
 			}
 		}
@@ -126,14 +128,9 @@ const loadAllDelegates = async () => {
 };
 
 const loadAllNextForgers = async () => {
-	// TODO: These feature should be handled by the compatibility layer
-	const maxCount = (sdkVersion < 4) ? 101 : 103;
-	if (sdkVersion <= 4) {
-		rawNextForgers = await requestAll(coreApi.getNextForgers, { limit: maxCount }, maxCount);
-	} else {
-		const { data } = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
-		rawNextForgers = data;
-	}
+	const maxCount = await coreApi.getNumberOfForgers();
+	const { data } = await coreApi.getForgers({ limit: maxCount, offset: nextForgers.length });
+	rawNextForgers = data;
 	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
 };
 
@@ -294,7 +291,12 @@ const updateDelegateListEveryBlock = () => {
 					// Update delegate list on newBlock event
 					if (delegate.isDelegate) {
 						if (delegateIndex === -1) delegateList.push(delegate);
-						else delegateList[delegateIndex] = delegate;
+						else {
+							// Re-assign the current delegate status before updating the delegateList
+							// Delegate status can change only at the beginning of a new round
+							const { status } = delegateList[delegateIndex];
+							delegateList[delegateIndex] = { ...delegate, status };
+						}
 						// Remove delegate from list when deleteBlock event contains delegate registration tx
 					} else if (delegateIndex !== -1) {
 						delegateList.splice(delegateIndex, 1);
@@ -329,6 +331,7 @@ const updateDelegateListEveryBlock = () => {
 	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
 
+// Updates the account details of the delegates
 const updateDelegateListOnAccountsUpdate = () => {
 	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
 		hexAddresses.forEach(async hexAddress => {

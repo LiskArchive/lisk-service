@@ -17,9 +17,10 @@ const { getNetworkConstants } = require('./constants');
 
 let epochUnixTime;
 
+// This method is only used for SDK Version <=4
 const getEpochUnixTime = async () => {
 	const nodeConstants = await getNetworkConstants();
-	const { epoch } = nodeConstants.data ? nodeConstants.data : nodeConstants; // TODO: Fix this
+	const { epoch } = nodeConstants.data ? nodeConstants.data : nodeConstants;
 	epochUnixTime = new Date(epoch).getTime() / 1000;
 	return epochUnixTime;
 };

@@ -110,7 +110,12 @@ const Microservice = (config = {}) => {
 		}
 
 		event.controller(data => {
-			broker.emit(event.name, data, 'gateway');
+			const { broadcast, target } = event;
+			if (broadcast === true) {
+				broker.broadcast(event.name, data, target);
+			} else {
+				broker.emit(event.name, data, target);
+			}
 		});
 		logger.info(`Registered event ${moleculerConfig.name}.${event.name}`);
 		return true;
@@ -198,6 +203,16 @@ const Microservice = (config = {}) => {
 		return broker.start();
 	};
 
+	const requestRpc = (method, params) => new Promise((resolve, reject) => {
+		broker
+			.call(method, params)
+			.then(res => resolve(res))
+			.catch(err => {
+				logger.error(`Error occurred! ${err.message}`);
+				reject(err);
+			});
+	});
+
 	return {
 		addMethods,
 		addEvents,
@@ -207,6 +222,7 @@ const Microservice = (config = {}) => {
 		addJob,
 		getBroker,
 		run,
+		requestRpc,
 	};
 };
 

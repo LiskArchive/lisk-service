@@ -3,7 +3,8 @@
 		"lisk-base"
 	],
 	"plugins": [
-		"import"
+		"import",
+		"mocha",
 	],
 	"globals": {
 		"ipc": true,

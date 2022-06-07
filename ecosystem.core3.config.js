@@ -32,14 +32,15 @@ module.exports = {
 				PORT: '9901',
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
+				SERVICE_GATEWAY_REDIS_VOLATILE: 'redis://localhost:6379/5',
 				WS_RATE_LIMIT_ENABLE: false,
 				WS_RATE_LIMIT_CONNECTIONS: 5,
 				WS_RATE_LIMIT_DURATION: 1, // in seconds
 				HTTP_RATE_LIMIT_ENABLE: false,
 				HTTP_RATE_LIMIT_CONNECTIONS: 200,
 				HTTP_RATE_LIMIT_WINDOW: 10, // in seconds
-				// ENABLE_HTTP_API: 'http-status,http-version2',
-				// ENABLE_WS_API: 'blockchain,rpc-v2',
+				ENABLE_HTTP_API: 'http-status,http-version2,http-exports',
+				ENABLE_WS_API: 'blockchain,rpc-v2',
 				// HTTP_CACHE_CONTROL_DIRECTIVES: 'public, max-age=10',
 				// ENABLE_HTTP_CACHE_CONTROL: 'true'
 			},
@@ -59,16 +60,14 @@ module.exports = {
 			env: {
 				// --- Remember to set the properties below
 				SERVICE_BROKER: 'redis://localhost:6379/0',
-				LISK_CORE_WS: 'ws://localhost:8080',
+				LISK_CORE_WS: 'ws://localhost:5001',
 				SERVICE_CORE_REDIS: 'redis://localhost:6379/1',
 				SERVICE_CORE_REDIS_VOLATILE: 'redis://localhost:6379/8',
-				SERVICE_CORE_MYSQL: 'mysql://root:password@localhost:3306/lisk',
+				SERVICE_CORE_MYSQL: 'mysql://lisk:password@localhost:3306/lisk',
 				LISK_STATIC: 'https://static-data.lisk.com',
 				GEOIP_JSON: '',
 				INDEX_N_BLOCKS: '0',
 				ENABLE_TRANSACTION_STATS: 'true',
-				ENABLE_JOB_MISSING_BLOCKS: 'true',
-				INDEX_MISSING_BLOCKS_RANGE: '0',
 				TRANSACTION_STATS_HISTORY_LENGTH_DAYS: '366',
 				TRANSACTION_STATS_UPDATE_INTERVAL: '3600',
 				ENABLE_FEE_ESTIMATOR_QUICK: 'true',
@@ -111,6 +110,23 @@ module.exports = {
 			env: {
 				SERVICE_BROKER: 'redis://localhost:6379/0',
 				SERVICE_NEWSFEED_MYSQL: 'mysql://lisk:password@localhost:3306/lisk?charset=utf8mb4',
+			},
+		},
+		{
+			name: 'lisk-service-export',
+			script: 'app.js',
+			cwd: './services/export',
+			pid_file: './pids/service_export.pid',
+			out_file: './logs/service_export.log',
+			error_file: './logs/service_export.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '512M',
+			autorestart: true,
+			env: {
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+				// SERVICE_EXPORT_REDIS: 'redis://localhost:6379/3',
 			},
 		},
 	],

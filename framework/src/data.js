@@ -20,7 +20,7 @@ const isString = item => typeof item === 'string';
 
 module.exports = {
 	isObject,
-	isProperObject: isObject, // TODO: Deprecated, check refs in code
+	isProperObject: isObject,
 	isEmptyArray,
 	isEmptyObject,
 	isString,

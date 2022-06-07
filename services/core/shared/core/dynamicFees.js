@@ -30,7 +30,7 @@ const {
 
 const { getLastBlock } = require('./blocks');
 
-const config = require('../../config.js');
+const config = require('../../config');
 
 const sdkVersion = getSDKVersion();
 const logger = Logger();

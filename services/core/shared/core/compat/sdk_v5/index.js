@@ -27,7 +27,6 @@ const blockInit = require('./blocks').init;
 
 const {
 	deleteBlock,
-	indexMissingBlocks,
 } = require('./blockchainIndex');
 
 const blockchainIndexInit = require('./blockchainIndex').init;
@@ -38,11 +37,13 @@ const {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	validateAddress,
+	getNumberOfForgers,
 } = require('./accounts');
 
 const {
 	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
+	getHexAddressFromBase32,
 } = require('./accountUtils');
 
 const {
@@ -102,7 +103,6 @@ const init = async () => {
 };
 
 module.exports = {
-	...require('../sdk_v4'),
 	...require('./coreCache'),
 
 	events,
@@ -112,16 +112,17 @@ module.exports = {
 	deleteBlock,
 	getGenesisHeight,
 	getIndexStartHeight,
-	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 
 	getAccounts,
 	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
+	getHexAddressFromBase32,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	validateAddress,
+	getNumberOfForgers,
 
 	getNetworkStatus,
 
