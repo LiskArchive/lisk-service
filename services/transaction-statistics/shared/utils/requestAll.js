@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const requestAll = async (fn, methodName, params, limit) => {
+const requestAll = async (fn, method, params, limit) => {
 	const defaultMaxAmount = limit || 1000;
 	const oneRequestLimit = params.limit || 100;
-	const firstRequest = await fn(methodName,
+	const firstRequest = await fn(method,
 		{
 			...params,
 			...{
@@ -33,7 +33,7 @@ const requestAll = async (fn, methodName, params, limit) => {
 		if (maxAmount > oneRequestLimit) {
 			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
 				/* eslint-disable-next-line no-await-in-loop */
-				const result = await fn(methodName, {
+				const result = await fn(method, {
 					...params,
 					...{
 						limit: oneRequestLimit,
