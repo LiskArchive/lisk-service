@@ -48,6 +48,8 @@ The default port for REST API requests and Socket.io-based communication is `990
 WebSocket-based APIs can by used through a [socket.io](https://socket.io/) library available for many modern programming languages and frameworks.
 
 To continue the installation ensure that you have the following dependencies installed:
+- [NodeJS Active LTS - ^v16.15.0](https://nodejs.org/en/about/releases/)
+- [MySQL - ^v8.0.29](https://dev.mysql.com/doc/relnotes/mysql/8.0/en/)
 - [Docker](https://www.docker.com/) with [Docker compose](https://docs.docker.com/compose/install/)
 - [GNU Make](https://www.gnu.org/software/make/) and [GNU Tar](https://www.gnu.org/software/tar/)
 
