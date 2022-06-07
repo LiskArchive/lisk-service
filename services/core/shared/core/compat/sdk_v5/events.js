@@ -42,7 +42,7 @@ const register = async (events) => {
 
 			logger.debug(`New block forged: ${newBlock.id} at height ${newBlock.height}`);
 			events.newBlock(newBlock);
-			events.updateAccountsByAddress(affectedAccountAddresses);
+			events.updateAccountsByAddresses(affectedAccountAddresses);
 			events.calculateFeeEstimate();
 		} catch (err) {
 			logger.error(`Error while processing the 'app:block:new' event:\n${err.stack}`);
@@ -57,7 +57,7 @@ const register = async (events) => {
 
 			logger.debug(`Block deleted: ${deletedBlock.id} at height ${deletedBlock.height}`);
 			events.deleteBlock(deletedBlock);
-			events.updateAccountsByAddress(affectedAccountAddresses);
+			events.updateAccountsByAddresses(affectedAccountAddresses);
 			events.calculateFeeEstimate();
 		} catch (err) {
 			logger.error(`Error while processing the 'app:block:delete' event:\n${err.stack}`);

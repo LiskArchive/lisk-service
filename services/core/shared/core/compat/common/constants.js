@@ -72,9 +72,9 @@ const resolveBaseFees = (networkConstants) => {
 	return networkFeeConstants;
 };
 
-const getNetworkConstants = async () => {
+const getNetworkConstants = async (forceUpdate = false) => {
 	try {
-		if (!constants) {
+		if (!constants || forceUpdate) {
 			let result = await http.get('/node/constants'); // Necessary to remove cyclic dependency
 			if (Object.getOwnPropertyNames(result).length === 0) {
 				const apiClient = await getApiClient();

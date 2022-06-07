@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-market",
-  "version": "0.6.1",
+  "version": "0.6.3-alpha.1",
   "description": "Lisk Service Market",
   "keywords": [
     "lisk",
@@ -19,8 +19,8 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": "14.18.1",
-    "npm": "6.14.15"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "start": "node app.js",
@@ -32,8 +32,8 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "joi": "^17.4.0",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/fd16d55072965e76bb6ec10525a91bb3fdb9c7c7/framework/dist/lisk-service-framework-1.2.5.tgz",
-    "moment": "^2.29.2",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/00bd8bb564ca275224b07fcb7707f0567df7ccf9/framework/dist/lisk-service-framework-1.4.0.tgz",
+    "moment": "^2.29.3",
     "node-cron": "=2.0.3"
   },
   "devDependencies": {

@@ -27,7 +27,6 @@ const blockInit = require('./blocks').init;
 
 const {
 	deleteBlock,
-	indexMissingBlocks,
 } = require('./blockchainIndex');
 
 const blockchainIndexInit = require('./blockchainIndex').init;
@@ -113,7 +112,6 @@ module.exports = {
 	deleteBlock,
 	getGenesisHeight,
 	getIndexStartHeight,
-	indexMissingBlocks,
 	updateFinalizedHeight,
 	getFinalizedHeight,
 
