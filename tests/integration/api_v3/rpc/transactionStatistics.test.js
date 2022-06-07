@@ -21,7 +21,6 @@ const { request } = require('../../../helpers/socketIoRpcRequest');
 const {
 	invalidParamsSchema,
 	jsonRpcEnvelopeSchema,
-	wrongMethodSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -132,9 +131,9 @@ describe('get.transactions.statistics', () => {
 	});
 
 	describe('GET get.transactions.statistics.year', () => {
-		it('returns error METHOD_NOT_FOUND (-32601)) if called without any params as years are not supported', async () => {
+		it('returns invalid param error (-32602) if called without any params as years are not supported', async () => {
 			const response = await requestTransactionStatistics({ interval: 'year' });
-			expect(response).toMap(wrongMethodSchema);
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 });

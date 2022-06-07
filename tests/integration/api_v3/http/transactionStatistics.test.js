@@ -20,7 +20,7 @@ const { api } = require('../../../helpers/api');
 
 const {
 	wrongInputParamSchema,
-	notFoundSchema,
+	badRequestSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
@@ -133,9 +133,9 @@ describe('Transaction statistics API', () => {
 		});
 
 		describe('GET /transactions/statistics/year', () => {
-			it('returns error 404 if called without any params as years are not supported', async () => {
-				const response = await api.get(`${baseEndpoint}?interval=year}`, 404);
-				expect(response).toMap(notFoundSchema);
+			it('returns error if called without any params as years are not supported', async () => {
+				const response = await api.get(`${baseEndpoint}?interval=year}`, 400);
+				expect(response).toMap(badRequestSchema);
 			});
 		});
 	});

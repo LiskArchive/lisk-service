@@ -24,7 +24,7 @@ module.exports = {
 		limit: '=',
 	},
 	definition: {
-		data: ['data', transactionsStatistics],
+		data: transactionsStatistics,
 		meta: {
 			limit: '=,number',
 			offset: '=,number',

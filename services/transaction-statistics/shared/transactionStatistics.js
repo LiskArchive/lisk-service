@@ -154,7 +154,7 @@ const fetchTransactions = async (date) => {
 	const txMeta = (await requestIndexer('transactions', { ...params, limit: 1 })).meta;
 	const maxCount = txMeta ? txMeta.total : 1000;
 	const result = await requestAll(requestIndexer, 'transactions', { ...params, limit: 100 }, maxCount);
-	const transactions = result.data.error ? [] : result.data;
+	const transactions = result.error ? [] : result;
 	return transactions;
 };
 
