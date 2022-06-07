@@ -30,6 +30,7 @@ const moment = require('moment');
 const BigNumber = require('big-number');
 
 const { requestConnector, requestIndexer } = require('./utils/request');
+const requestAll = require('./utils/requestAll');
 
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
 const config = require('../config');
@@ -150,9 +151,9 @@ const fetchTransactions = async (date) => {
 	const params = {
 		timestamp: `${moment.unix(date).unix()}:${moment.unix(date).add(1, 'day').unix()}`,
 	};
-	// TODO: Use requestAll (paginated calls) instead of setting limit to maxCount
-	// const maxCount = (await requestIndexer('transactions', { ...params, limit: 1 })).meta.total;
-	const result = await requestIndexer('transactions', { ...params, limit: 10000 });
+	const txMeta = (await requestIndexer('transactions', { ...params, limit: 1 })).meta;
+	const maxCount = txMeta ? txMeta.total : 1000;
+	const result = await requestAll(requestIndexer, 'transactions', { ...params, limit: 100 }, maxCount);
 	const transactions = result.data.error ? [] : result.data;
 	return transactions;
 };
