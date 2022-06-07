@@ -25,23 +25,24 @@ const requestAll = async (fn, methodName, params, limit) => {
 			},
 		});
 	const { data } = firstRequest;
-	const maxAmount = !firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
-		? defaultMaxAmount
-		: firstRequest.meta.total;
+	if (!data.error) {
+		const maxAmount = !firstRequest.meta.total || firstRequest.meta.total > defaultMaxAmount
+			? defaultMaxAmount
+			: firstRequest.meta.total;
 
-	if (maxAmount > oneRequestLimit) {
-		for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
-			/* eslint-disable no-await-in-loop */
-			const result = await fn({
-				...params,
-				...{
-					limit: oneRequestLimit,
-					offset: oneRequestLimit * page,
-				},
-			});
-			if (!result.data.length) break;
-			data.push(...result.data);
-			/* eslint-enable no-await-in-loop */
+		if (maxAmount > oneRequestLimit) {
+			for (let page = 1; page < Math.ceil(maxAmount / oneRequestLimit); page++) {
+				/* eslint-disable-next-line no-await-in-loop */
+				const result = await fn(methodName, {
+					...params,
+					...{
+						limit: oneRequestLimit,
+						offset: oneRequestLimit * page,
+					},
+				});
+				if (!result.data.length) break;
+				data.push(...result.data);
+			}
 		}
 	}
 	return data;
