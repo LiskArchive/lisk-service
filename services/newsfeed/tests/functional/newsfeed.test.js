@@ -17,9 +17,10 @@
 const { ServiceBroker } = require('moleculer');
 const { newsfeedArticleSchema } = require('../schemas/newsfeedArticle.schema');
 const { serviceUnavailableSchema } = require('../schemas/serviceUnavailable.schema');
+const config = require('../../config');
 
 const broker = new ServiceBroker({
-	transporter: 'redis://localhost:6379/0',
+	transporter: config.transporter,
 	logLevel: 'warn',
 	requestTimeout: 15 * 1000,
 	logger: console,

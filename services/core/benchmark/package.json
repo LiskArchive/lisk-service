@@ -17,6 +17,6 @@
     "mysql": "^2.18.1",
     "redis": "^3.1.1",
     "redis-redisearch": "^1.0.1",
-    "sqlite3": "^5.0.0"
+    "sqlite3": "^5.0.3"
   }
 }

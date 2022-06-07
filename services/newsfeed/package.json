@@ -35,7 +35,7 @@
     "html-to-text": "^8.0.0",
     "knex": "^2.0.0",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/00bd8bb564ca275224b07fcb7707f0567df7ccf9/framework/dist/lisk-service-framework-1.4.0.tgz",
-    "moment": "^2.29.1",
+    "moment": "^2.29.3",
     "mysql2": "^2.3.3",
     "object-hash": "^2.2.0",
     "twitter": "^1.7.1"
