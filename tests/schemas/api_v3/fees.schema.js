@@ -36,9 +36,11 @@ const feeEstimateSchema = {
 };
 
 const metaSchema = {
-	lastUpdate: Joi.number().integer().min(0).max(getCurrentTimestamp()).required(),
+	lastUpdate: Joi.number().integer().min(0).max(getCurrentTimestamp())
+		.required(),
 	lastBlockHeight: Joi.number().integer().min(1).required(),
-	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256).required(),
+	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
+		.required(),
 };
 
 const goodRequestSchema = {
