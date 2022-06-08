@@ -26,11 +26,11 @@ const feeEstimateSchema = {
 	}).required(),
 	baseFeeByID: Joi.object()
 		.min(1)
-		.pattern(/^\b(?:[0-9]+:[0-9]+)\b$/, Joi.string().required())
+		.pattern(regex.MODULE_ID, Joi.string().required())
 		.required(),
 	baseFeeByName: Joi.object()
 		.min(1)
-		.pattern(/^\b(?:[0-9a-zA-Z]+:[0-9a-zA-Z]+)\b$/, Joi.string().required())
+		.pattern(regex.MODULE_NAME, Joi.string().required())
 		.required(),
 	minFeePerByte: Joi.number().integer().required(),
 };
