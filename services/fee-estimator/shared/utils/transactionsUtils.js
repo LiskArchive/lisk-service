@@ -18,44 +18,48 @@ const { computeMinFee } = require('@liskhq/lisk-transactions');
 const { requestConnector } = require('./request');
 const { getGenesisConfig } = require('../networkConstants');
 
-let allTransactionSchemasCache;
+let allCommandsParamsSchemasFromAppCache;
+let allCommandsParamsSchemasForFeesCache;
 
-const getTransactionsSchemasFromCore = async () => {
-	const schemas = await requestConnector('getSchema', {});
+const getCommandsParamsSchemasFromApp = async () => {
+	const schemas = await requestConnector('getSchema');
 	return schemas;
 };
 
-const getAllTransactionSchemasFromCache = async () => {
-	if (!allTransactionSchemasCache) {
-		allTransactionSchemasCache = await getTransactionsSchemasFromCore();
+const getAllCommandsParamsSchemas = async () => {
+	if (!allCommandsParamsSchemasFromAppCache) {
+		allCommandsParamsSchemasFromAppCache = await getCommandsParamsSchemasFromApp();
 	}
-	return allTransactionSchemasCache;
+	return allCommandsParamsSchemasFromAppCache;
 };
 
-const getTxnAssetSchema = async (trx) => {
-	const moduleAssetId = String(trx.moduleID).concat(':').concat(trx.assetID);
-	const response = await getAllTransactionSchemasFromCache();
-	const allTransactionSchemas = response.transactionsAssets.map(txAsset => {
-		const formattedTxAsset = {};
-		formattedTxAsset.moduleAssetId = String(txAsset.moduleID).concat(':').concat(txAsset.assetID);
-		formattedTxAsset.moduleAssetName = String(txAsset.moduleName).concat(':').concat(txAsset.assetName);
-		formattedTxAsset.schema = txAsset.schema;
-		return formattedTxAsset;
-	});
+const getTxnParamsSchema = async (trx) => {
+	const moduleCommandID = String(trx.moduleID).concat(':').concat(trx.commandID);
+	const response = await getAllCommandsParamsSchemas();
 
-	const [{ schema }] = allTransactionSchemas.filter(
-		txSchema => (!moduleAssetId)
-			|| txSchema.moduleAssetId === moduleAssetId,
+	if (!allCommandsParamsSchemasForFeesCache) {
+		allCommandsParamsSchemasForFeesCache = response.commands.map(txParams => {
+			const formattedTxParams = {};
+			formattedTxParams.moduleCommandID = String(txParams.moduleID).concat(':').concat(txParams.commandID);
+			formattedTxParams.moduleCommandName = String(txParams.moduleName).concat(':').concat(txParams.commandName);
+			formattedTxParams.schema = txParams.schema;
+			return formattedTxParams;
+		});
+	}
+
+	const [{ schema }] = allCommandsParamsSchemasForFeesCache.filter(
+		txSchema => (!moduleCommandID)
+			|| txSchema.moduleCommandID === moduleCommandID,
 	);
 	return schema;
 };
 
 const getTxnMinFee = async (
 	txn,
-	getTxnAssetSchemaFn = getTxnAssetSchema,
+	getTxnParamsSchemaFn = getTxnParamsSchema,
 	getGenesisConfigFn = getGenesisConfig,
 ) => computeMinFee(
-	await getTxnAssetSchemaFn(txn),
+	await getTxnParamsSchemaFn(txn),
 	txn,
 	{
 		minFeePerByte: (await getGenesisConfigFn()).minFeePerByte,
@@ -67,5 +71,5 @@ const getTxnMinFee = async (
 
 module.exports = {
 	getTxnMinFee,
-	getAllTransactionSchemasFromCache,
+	getAllCommandsParamsSchemas,
 };

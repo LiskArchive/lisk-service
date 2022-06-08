@@ -13,16 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
-const MODULE_COMMAND_ID = /^\b(?:[0-9]+:[0-9]+)\b$/;
-const MODULE_COMMAND_NAME = /^\b(?:[0-9a-zA-Z]+:[0-9a-zA-Z]+)\b$/;
-const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
-
 module.exports = {
-	IP,
-	HASH_SHA256,
-	MODULE_COMMAND_ID,
-	MODULE_COMMAND_NAME,
-	SEMVER,
+	type: 'moleculer',
+	method: 'fees.estimates',
+	params: {},
+	definition: {
+		data: {
+			feeEstimatePerByte: {
+				low: '=,number',
+				medium: 'med,number',
+				high: '=,number',
+			},
+			baseFeeByID: 'baseFeeByModuleCommandID',
+			baseFeeByName: 'baseFeeByModuleCommandName',
+			minFeePerByte: '=',
+		},
+		meta: {
+			lastUpdate: 'updated,number',
+			lastBlockHeight: 'blockHeight,number',
+			lastBlockID: 'blockID,string',
+		},
+		links: {},
+	},
 };

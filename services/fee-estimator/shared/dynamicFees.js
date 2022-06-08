@@ -18,7 +18,7 @@ const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const { calcAvgFeeByteModes, EMAcalc } = require('./utils/dynamicFees');
 const { parseInputBySchema } = require('./utils/parser');
-const { getTxnMinFee, getAllTransactionSchemasFromCache } = require('./utils/transactionsUtils');
+const { getTxnMinFee, getAllCommandsParamsSchemas } = require('./utils/transactionsUtils');
 const { requestConnector } = require('./utils/request');
 
 const config = require('../config');
@@ -87,14 +87,14 @@ const calculateFeePerByte = async block => {
 		block.transactions,
 		async tx => {
 			// Calculate minFee from JSON parsed transaction
-			const schema = await getAllTransactionSchemasFromCache();
-			const assetSchema = schema.transactionsAssets
-				.find(s => s.moduleID === tx.moduleID && s.assetID === tx.assetID);
-			const parsedTxAsset = parseInputBySchema(tx.asset, assetSchema.schema);
+			const schema = await getAllCommandsParamsSchemas();
+			const paramsSchema = schema.commands
+				.find(s => s.moduleID === tx.moduleID && s.commandID === tx.commandID);
+			const parsedTxParams = parseInputBySchema(tx.params, paramsSchema);
 			const parsedTx = parseInputBySchema(tx, schema.transaction);
 			const minFee = await getTxnMinFee({
 				...parsedTx,
-				asset: parsedTxAsset,
+				params: parsedTxParams,
 			});
 			return {
 				id: tx.id,
@@ -136,7 +136,7 @@ const getEstimateFeeByteForBlock = async (blockBatch, innerPrevFeeEstPerByte) =>
 
 	feeEstPerByte.updated = Math.floor(Date.now() / 1000);
 	feeEstPerByte.blockHeight = blockBatch.data[0].height;
-	feeEstPerByte.blockId = blockBatch.data[0].id;
+	feeEstPerByte.blockID = blockBatch.data[0].id;
 
 	return feeEstPerByte;
 };
