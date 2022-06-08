@@ -14,11 +14,18 @@
  *
  */
 const { requestConnector } = require('../utils/request');
+const { resolveModuleCommands } = require('../constants');
 
 const getNetworkStatus = async () => {
-	const result = await requestConnector('getNetworkStatus');
+	const status = await requestConnector('getNetworkStatus');
+
+	status.moduleCommands = resolveModuleCommands(status.registeredModules);
+	status.registeredModules = status.registeredModules.map(item => item.name);
+	status.lastUpdate = Math.floor(Date.now() / 1000);
+	status.constants = { nethash: status.networkIdentifier };
+
 	return {
-		data: result.data,
+		data: status,
 		meta: {},
 	};
 };
