@@ -14,6 +14,9 @@
  *
  */
 import Joi from 'joi';
+import regex from './regex';
+
+const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
 const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object({
@@ -21,7 +24,7 @@ const feeEstimateSchema = {
 		medium: Joi.number().min(0).required(),
 		high: Joi.number().min(0).required(),
 	}).required(),
-	baseFeeById: Joi.object()
+	baseFeeByID: Joi.object()
 		.min(1)
 		.pattern(/^\b(?:[0-9]+:[0-9]+)\b$/, Joi.string().required())
 		.required(),
@@ -33,9 +36,9 @@ const feeEstimateSchema = {
 };
 
 const metaSchema = {
-	lastUpdate: Joi.number().integer().min(1).required(),
+	lastUpdate: Joi.number().integer().min(0).max(getCurrentTimestamp()).required(),
 	lastBlockHeight: Joi.number().integer().min(1).required(),
-	lastBlockId: Joi.string().required(),
+	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256).required(),
 };
 
 const goodRequestSchema = {

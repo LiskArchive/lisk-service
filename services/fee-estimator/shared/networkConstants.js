@@ -20,7 +20,7 @@ let genesisConfig;
 
 const networkFeeConstants = {
 	minFeePerByte: undefined,
-	baseFeeByModuleCommandId: {},
+	baseFeeByModuleCommandID: {},
 	baseFeeByModuleCommandName: {},
 };
 
@@ -46,7 +46,7 @@ const resolveModuleCommands = (data) => {
 const resolveBaseFees = (networkConstants) => {
 	networkConstants.genesis.baseFees.forEach(entry => {
 		const moduleCommandID = String(entry.moduleID).concat(':').concat(entry.commandID);
-		networkFeeConstants.baseFeeByModuleCommandId[moduleCommandID] = entry.baseFee;
+		networkFeeConstants.baseFeeByModuleCommandID[moduleCommandID] = entry.baseFee;
 
 		networkConstants.commands = resolveModuleCommands(networkConstants.registeredModules);
 		const [moduleCommand] = networkConstants.commands.filter(o => o.id === moduleCommandID);
