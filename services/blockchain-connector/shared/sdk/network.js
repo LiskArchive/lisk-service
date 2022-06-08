@@ -13,8 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { Logger, Signals } = require('lisk-service-framework');
 const { getNodeInfo } = require('./endpoints');
 const { parseToJSONCompatObj } = require('../parser');
+
+const logger = Logger();
 
 let genesisConfig;
 let networkStatus;
@@ -29,10 +32,20 @@ const getGenesisConfig = async () => {
 
 const getNetworkStatus = async () => parseToJSONCompatObj(networkStatus);
 
-const setNetworkStatus = (status) => networkStatus = status;
+const refreshNetworkStatus = async () => {
+	const refreshNetworkStatusListener = async () => {
+		try {
+			logger.debug('Refreshing network status');
+			networkStatus = await getNodeInfo();
+		} catch (err) {
+			logger.warn(`Error occurred while refreshing network status:\n${err.stack}`);
+		}
+	};
+	Signals.get('appNewBlock').add(refreshNetworkStatusListener);
+};
 
 module.exports = {
 	getNetworkStatus,
 	getGenesisConfig,
-	setNetworkStatus,
+	refreshNetworkStatus,
 };

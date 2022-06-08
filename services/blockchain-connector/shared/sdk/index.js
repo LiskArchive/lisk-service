@@ -13,23 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
-const { getNodeInfo } = require('./endpoints');
-const { setNetworkStatus } = require('./network');
-
-const logger = Logger();
+const { refreshNetworkStatus } = require('./network');
 
 const init = async () => {
-	const refreshNetworkStatusListener = async () => {
-		try {
-			logger.debug('Refreshing network status');
-			const networkStatus = await getNodeInfo();
-			setNetworkStatus(networkStatus);
-		} catch (err) {
-			logger.warn(`Error occurred while refreshing network status:\n${err.stack}`);
-		}
-	};
-	Signals.get('appNewBlock').add(refreshNetworkStatusListener);
+	await refreshNetworkStatus();
 };
 
 module.exports = {
