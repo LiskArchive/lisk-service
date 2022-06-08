@@ -14,14 +14,14 @@
  *
  */
 import Joi from 'joi';
-import regexValidators from './regexValidators';
+import regex from './regex';
 
-const moduleCommand = {
+const moduleCommandSchema = {
 	id: Joi.string().required(),
 	name: Joi.string().required(),
 };
 
-const genesis = {
+const genesisSchema = {
 	blockTime: Joi.number().integer().min(0).required(),
 	communityIdentifier: Joi.string().required(),
 	maxTransactionsSize: Joi.number().integer().min(0).required(),
@@ -30,38 +30,38 @@ const genesis = {
 	modules: Joi.object().required(),
 };
 
-const seedPeer = {
-	ip: Joi.string().pattern(regexValidators.ip).required(),
+const seedPeerSchema = {
+	ip: Joi.string().pattern(regex.IP).required(),
 	port: Joi.number().port().required(),
 };
 
-const network = {
+const networkSchema = {
 	port: Joi.number().port().required(),
-	seedPeers: Joi.array().items(seedPeer).required(),
+	seedPeers: Joi.array().items(seedPeerSchema).required(),
 };
 
 const networkStatusSchema = {
-	version: Joi.string().pattern(regexValidators.version).required(),
+	version: Joi.string().pattern(regex.SEMVER).required(),
 	networkVersion: Joi.string().required(),
-	networkIdentifier: Joi.string().min(1).max(64).pattern(regexValidators.id)
+	networkIdentifier: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
 		.required(),
-	lastBlockID: Joi.string().min(1).max(64).pattern(regexValidators.id)
+	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
 		.required(),
 	height: Joi.number().integer().min(0).required(),
 	finalizedHeight: Joi.number().min(0).integer().required(),
 	syncing: Joi.boolean().required(),
 	unconfirmedTransactions: Joi.number().integer().min(0).required(),
-	genesis: Joi.object(genesis).required(),
+	genesis: Joi.object(genesisSchema).required(),
 	registeredModules: Joi.array().items(Joi.string()).required(),
-	moduleCommands: Joi.array().items(moduleCommand).required(),
-	network: Joi.object(network).required(),
+	moduleCommands: Joi.array().items(moduleCommandSchema).required(),
+	network: Joi.object(networkSchema).required(),
 };
 
 const metaSchema = {
 	lastUpdate: Joi.number().integer().min(0).max(Date.now())
 		.required(),
 	lastBlockHeight: Joi.number().integer().min(0).required(),
-	lastBlockID: Joi.string().min(1).max(64).pattern(regexValidators.id)
+	lastBlockID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
 		.required(),
 };
 
