@@ -90,8 +90,8 @@ const calculateFeePerByte = async block => {
 			const schema = await getAllCommandsParamsSchemasFromCache();
 			const paramsSchema = schema.commands
 				.find(s => s.moduleID === tx.moduleID && s.commandID === tx.commandID);
-			const parsedTxParams = parseInputBySchema(txn.params, paramsSchema);
-			const parsedTx = parseInputBySchema(txn, schema.transaction);
+			const parsedTxParams = parseInputBySchema(tx.params, paramsSchema);
+			const parsedTx = parseInputBySchema(tx, schema.transaction);
 			const minFee = await getTxnMinFee({
 				...parsedTx,
 				params: parsedTxParams,

@@ -34,7 +34,7 @@ const getAllCommandsParamsSchemasFromCache = async () => {
 
 const getTxnParamsSchema = async (trx) => {
 	const moduleCommandID = String(trx.moduleID).concat(':').concat(trx.commandID);
-	const response = await getAllTransactionSchemasFromCache();
+	const response = await getAllCommandsParamsSchemasFromCache();
 	const allCommandsParamsSchemas = response.commands.map(txParams => {
 		const formattedTxParams = {};
 		formattedTxParams.moduleCommandID = String(txParams.moduleID).concat(':').concat(txParams.commandID);
