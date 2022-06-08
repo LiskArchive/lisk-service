@@ -132,7 +132,7 @@ describe('Transaction statistics API', () => {
 			});
 		});
 
-		describe('GET /transactions/statistics/year', () => {
+		describe('GET /transactions/statistics?interval=year', () => {
 			it('returns error if called without any params as years are not supported', async () => {
 				const response = await api.get(`${baseEndpoint}?interval=year}`, 400);
 				expect(response).toMap(badRequestSchema);

@@ -29,7 +29,7 @@ const {
 const moment = require('moment');
 const BigNumber = require('big-number');
 
-const { requestConnector, requestIndexer } = require('./utils/request');
+const { requestIndexer } = require('./utils/request');
 const requestAll = require('./utils/requestAll');
 
 const txStatisticsIndexSchema = require('./database/schemas/transactionStatistics');
@@ -48,8 +48,8 @@ const getSelector = async (params) => {
 	if (params.dateTo) result.to = params.dateTo.unix();
 
 	if (!numTrxTypes) {
-		const networkStatus = await requestConnector('getNetworkStatus');
-		numTrxTypes = networkStatus.data.registeredModules.length;
+		const networkStatus = await requestIndexer('getNetworkStatus');
+		numTrxTypes = networkStatus.data.moduleCommands.length;
 	}
 
 	return {

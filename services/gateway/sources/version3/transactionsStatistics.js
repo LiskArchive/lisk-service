@@ -20,8 +20,8 @@ module.exports = {
 	method: 'statistics.transactions.statistics',
 	params: {
 		interval: '=,string',
-		offset: '=',
-		limit: '=',
+		offset: '=,number',
+		limit: '=,number',
 	},
 	definition: {
 		data: transactionsStatistics,

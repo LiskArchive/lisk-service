@@ -130,7 +130,7 @@ describe('get.transactions.statistics', () => {
 		});
 	});
 
-	describe('GET get.transactions.statistics.year', () => {
+	describe('GET get.transactions.statistics with interval: \'year\'', () => {
 		it('returns invalid param error (-32602) if called without any params as years are not supported', async () => {
 			const response = await requestTransactionStatistics({ interval: 'year' });
 			expect(response).toMap(invalidParamsSchema);
