@@ -18,27 +18,27 @@ const { computeMinFee } = require('@liskhq/lisk-transactions');
 const { requestConnector } = require('./request');
 const { getGenesisConfig } = require('../networkConstants');
 
-let allCommandsParamsSchemasCache;
-let allCommandsParamsSchemas;
+let allCommandsParamsSchemasFromAppCache;
+let allCommandsParamsSchemasForFeesCache;
 
-const getCommandsParamsSchemasFromCore = async () => {
+const getCommandsParamsSchemasFromApp = async () => {
 	const schemas = await requestConnector('getSchema');
 	return schemas;
 };
 
 const getAllCommandsParamsSchemas = async () => {
-	if (!allCommandsParamsSchemasCache) {
-		allCommandsParamsSchemasCache = await getCommandsParamsSchemasFromCore();
+	if (!allCommandsParamsSchemasFromAppCache) {
+		allCommandsParamsSchemasFromAppCache = await getCommandsParamsSchemasFromApp();
 	}
-	return allCommandsParamsSchemasCache;
+	return allCommandsParamsSchemasFromAppCache;
 };
 
 const getTxnParamsSchema = async (trx) => {
 	const moduleCommandID = String(trx.moduleID).concat(':').concat(trx.commandID);
 	const response = await getAllCommandsParamsSchemas();
 
-	if (!allCommandsParamsSchemas) {
-		allCommandsParamsSchemas = response.commands.map(txParams => {
+	if (!allCommandsParamsSchemasForFeesCache) {
+		allCommandsParamsSchemasForFeesCache = response.commands.map(txParams => {
 			const formattedTxParams = {};
 			formattedTxParams.moduleCommandID = String(txParams.moduleID).concat(':').concat(txParams.commandID);
 			formattedTxParams.moduleCommandName = String(txParams.moduleName).concat(':').concat(txParams.commandName);
@@ -47,7 +47,7 @@ const getTxnParamsSchema = async (trx) => {
 		});
 	}
 
-	const [{ schema }] = allCommandsParamsSchemas.filter(
+	const [{ schema }] = allCommandsParamsSchemasForFeesCache.filter(
 		txSchema => (!moduleCommandID)
 			|| txSchema.moduleCommandID === moduleCommandID,
 	);
