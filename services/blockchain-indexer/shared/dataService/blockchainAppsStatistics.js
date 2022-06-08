@@ -13,19 +13,21 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const getBlockchainAppStatistics = async () => {
-    // TODO: Replace it with the real implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1111
-    return {
-        data: {
-            registered: 2503,
-            active: 2328,
-            terminated: 35,
+const getBlockchainAppsStatistics = async () => {
+	// TODO: Replace it with the real implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1111
+	const response = {
+		registered: 2503,
+		active: 2328,
+		terminated: 35,
 
-        },
-        meta: {},
-    };
+	};
+
+	return {
+		data: response,
+		meta: {},
+	};
 };
 
 module.exports = {
-    getBlockchainAppStatistics,
+	getBlockchainAppsStatistics,
 };

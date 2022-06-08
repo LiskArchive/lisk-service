@@ -13,21 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-import Joi from 'joi';
+const dataService = require('../../../shared/dataService');
 
-const goodRequestSchema = {
-	data: Joi.object().required(),
-	meta: Joi.object().optional(),
-	links: Joi.object().optional(),
-};
-
-const blockchainAppStatsSchema = {
-	registered: Joi.number().integer().min(0).required(),
-	active: Joi.number().integer().min(0).required(),
-	terminated: Joi.number().integer().min(0).required(),
+const getBlockchainAppsStatistics = async () => {
+	const result = await dataService.getBlockchainAppsStatistics();
+	return result;
 };
 
 module.exports = {
-	blockchainAppStatsSchema: Joi.object(blockchainAppStatsSchema).required(),
-	goodRequestSchema: Joi.object(goodRequestSchema).required(),
+	getBlockchainAppsStatistics,
 };

@@ -21,9 +21,9 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	blockchainAppStatsSchema,
+	blockchainAppsStatsSchema,
 	goodRequestSchema,
-} = require('../../../schemas/api_v3/blockchainAppStatsSchema.schema');
+} = require('../../../schemas/api_v3/blockchainAppsStatsSchema.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -33,7 +33,7 @@ describe('Blockchain apps statistics API', () => {
 	it('returns apps statistics', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(blockchainAppStatsSchema);
+		expect(response.data).toMap(blockchainAppsStatsSchema);
 	});
 
 	it('invalid param -> 400', async () => {

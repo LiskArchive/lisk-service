@@ -13,13 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const blockchainAppStatsSchemaSource = require('../../../sources/version3/blockchainAppStatsSchema');
+import Joi from 'joi';
+
+const goodRequestSchema = {
+	data: Joi.object().required(),
+	meta: Joi.object().optional(),
+	links: Joi.object().optional(),
+};
+
+const blockchainAppsStatsSchema = {
+	registered: Joi.number().integer().min(0).required(),
+	active: Joi.number().integer().min(0).required(),
+	terminated: Joi.number().integer().min(0).required(),
+};
 
 module.exports = {
-	version: '2.0',
-	swaggerApiPath: '/blockchain/apps/statistics',
-	rpcMethod: 'get.blockchain.apps.statistics',
-	tags: ['Blockchain Application Statistics'],
-	params: {},
-	source: blockchainAppStatsSchemaSource,
+	blockchainAppsStatsSchema: Joi.object(blockchainAppsStatsSchema).required(),
+	goodRequestSchema: Joi.object(goodRequestSchema).required(),
 };

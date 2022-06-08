@@ -13,13 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
-
-const getBlockchainAppStatistics = async () => {
-	const result = await dataService.getBlockchainAppStatistics();
-	return result;
-};
+const blockchainAppsStatsSchemaSource = require('../../../sources/version3/blockchainAppsStatsSchema');
 
 module.exports = {
-	getBlockchainAppStatistics,
+	version: '2.0',
+	swaggerApiPath: '/blockchain/apps/statistics',
+	rpcMethod: 'get.blockchain.apps.statistics',
+	tags: ['Blockchain Application Statistics'],
+	params: {},
+	source: blockchainAppsStatsSchemaSource,
 };
