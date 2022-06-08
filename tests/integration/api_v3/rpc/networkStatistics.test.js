@@ -29,7 +29,7 @@ const {
 } = require('../../../schemas/api_v3/networkStatistics.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const getNetworkStatistics = async () => request(wsRpcUrl, 'get.network.statistics');
+const getNetworkStatistics = async (params) => request(wsRpcUrl, 'get.network.statistics', params);
 
 // TODO: Enable when peers endpoint is available from sdk
 xdescribe('get.network.statistics', () => {
