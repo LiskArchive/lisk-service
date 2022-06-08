@@ -21,12 +21,14 @@ const goodRequestSchema = {
 	links: Joi.object().optional(),
 };
 
+const basicStatsSchema = {
+	totalPeers: Joi.number().integer().min(0).required(),
+	connectedPeers: Joi.number().integer().min(0).required(),
+	disconnectedPeers: Joi.number().integer().min(0).required(),
+};
+
 const networkStatisticsSchema = {
-	basic: Joi.object({
-		totalPeers: Joi.number().integer().min(0).required(),
-		connectedPeers: Joi.number().integer().min(0).required(),
-		disconnectedPeers: Joi.number().integer().min(0).required(),
-	}).required(),
+	basic: Joi.object(basicStatsSchema).required(),
 	height: Joi.object().required(),
 	networkVersion: Joi.object().required(),
 };
