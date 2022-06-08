@@ -13,26 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
+const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
+
 module.exports = {
-	type: 'moleculer',
-	method: 'fees.estimates',
-	params: {},
-	definition: {
-		data: {
-			feeEstimatePerByte: {
-				low: '=,number',
-				medium: 'med,number',
-				high: '=,number',
-			},
-			baseFeeById: 'baseFeeByModuleAssetId',
-			baseFeeByName: 'baseFeeByModuleAssetName',
-			minFeePerByte: '=',
-		},
-		meta: {
-			lastUpdate: 'updated,number',
-			lastBlockHeight: 'blockHeight,number',
-			lastBlockId: 'blockId,string',
-		},
-		links: {},
-	},
+	IP,
+	HASH_SHA256,
+	SEMVER,
 };

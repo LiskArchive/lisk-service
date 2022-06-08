@@ -13,26 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const networkStatusSource = require('../../../sources/version3/networkStatus');
+
 module.exports = {
-	type: 'moleculer',
-	method: 'fees.estimates',
-	params: {},
-	definition: {
-		data: {
-			feeEstimatePerByte: {
-				low: '=,number',
-				medium: 'med,number',
-				high: '=,number',
-			},
-			baseFeeById: 'baseFeeByModuleAssetId',
-			baseFeeByName: 'baseFeeByModuleAssetName',
-			minFeePerByte: '=',
-		},
-		meta: {
-			lastUpdate: 'updated,number',
-			lastBlockHeight: 'blockHeight,number',
-			lastBlockId: 'blockId,string',
-		},
-		links: {},
-	},
+	version: '2.0',
+	swaggerApiPath: '/network/status',
+	rpcMethod: 'get.network.status',
+	tags: ['Network'],
+	source: networkStatusSource,
 };

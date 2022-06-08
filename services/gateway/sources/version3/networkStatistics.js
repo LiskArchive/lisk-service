@@ -15,24 +15,15 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'fees.estimates',
+	method: 'indexer.peers.statistics',
 	params: {},
 	definition: {
 		data: {
-			feeEstimatePerByte: {
-				low: '=,number',
-				medium: 'med,number',
-				high: '=,number',
-			},
-			baseFeeById: 'baseFeeByModuleAssetId',
-			baseFeeByName: 'baseFeeByModuleAssetName',
-			minFeePerByte: '=',
+			basic: '=',
+			height: '=',
+			networkVersion: '=',
 		},
-		meta: {
-			lastUpdate: 'updated,number',
-			lastBlockHeight: 'blockHeight,number',
-			lastBlockId: 'blockId,string',
-		},
+		meta: {},
 		links: {},
 	},
 };
