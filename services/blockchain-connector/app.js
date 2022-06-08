@@ -26,7 +26,7 @@ const nodeStatus = require('./shared/nodeStatus');
 
 const { getGenesisBlock } = require('./shared/sdk/genesisBlock');
 const { getSchemas } = require('./shared/sdk/endpoints_1');
-const { init } = require('./shared/sdk/network');
+const { init } = require('./shared/sdk');
 const { setSchemas } = require('./shared/sdk/schema');
 
 const loggerConf = {
