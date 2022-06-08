@@ -18,19 +18,18 @@ import regex from './regex';
 
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
+const feeEstimatePerByteSchema = {
+	low: Joi.number().min(0).required(),
+	medium: Joi.number().min(0).required(),
+	high: Joi.number().min(0).required(),
+};
 const feeEstimateSchema = {
-	feeEstimatePerByte: Joi.object({
-		low: Joi.number().min(0).required(),
-		medium: Joi.number().min(0).required(),
-		high: Joi.number().min(0).required(),
-	}).required(),
+	feeEstimatePerByte: Joi.object(feeEstimatePerByteSchema).required(),
 	baseFeeByID: Joi.object()
-		.min(1)
-		.pattern(regex.MODULE_ID, Joi.string().required())
+		.pattern(regex.MODULE_COMMAND_ID, Joi.string().required())
 		.required(),
 	baseFeeByName: Joi.object()
-		.min(1)
-		.pattern(regex.MODULE_NAME, Joi.string().required())
+		.pattern(regex.MODULE_COMMAND_NAME, Joi.string().required())
 		.required(),
 	minFeePerByte: Joi.number().integer().required(),
 };

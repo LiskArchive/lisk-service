@@ -31,8 +31,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestFeeEstimate = async () => request(wsRpcUrl, 'get.fees');
 
 describe('get.fees', () => {
-	// TODO: Enable once base fees is available from sdk getNodeInfo endpoint
-	xit('returns estimated fees, when supported', async () => {
+	it('returns estimated fees, when supported', async () => {
 		const response = await requestFeeEstimate();
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
