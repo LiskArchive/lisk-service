@@ -35,7 +35,7 @@ module.exports = {
 		meta: {
 			lastUpdate: 'data.lastUpdate,number',
 			lastBlockHeight: 'data.height,number',
-			lastBlockId: 'data.lastBlockID,string',
+			lastBlockID: 'data.lastBlockID,string',
 		},
 		links: {},
 	},
