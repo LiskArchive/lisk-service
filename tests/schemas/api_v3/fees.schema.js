@@ -23,6 +23,7 @@ const feeEstimatePerByteSchema = {
 	medium: Joi.number().min(0).required(),
 	high: Joi.number().min(0).required(),
 };
+
 const feeEstimateSchema = {
 	feeEstimatePerByte: Joi.object(feeEstimatePerByteSchema).required(),
 	baseFeeByID: Joi.object()
