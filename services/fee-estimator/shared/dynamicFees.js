@@ -18,7 +18,7 @@ const { CacheRedis, Logger } = require('lisk-service-framework');
 
 const { calcAvgFeeByteModes, EMAcalc } = require('./utils/dynamicFees');
 const { parseInputBySchema } = require('./utils/parser');
-const { getTxnMinFee, getAllCommandsParamsSchemasFromCache } = require('./utils/transactionsUtils');
+const { getTxnMinFee, getAllCommandsParamsSchemas } = require('./utils/transactionsUtils');
 const { requestConnector } = require('./utils/request');
 
 const config = require('../config');
@@ -87,7 +87,7 @@ const calculateFeePerByte = async block => {
 		block.transactions,
 		async tx => {
 			// Calculate minFee from JSON parsed transaction
-			const schema = await getAllCommandsParamsSchemasFromCache();
+			const schema = await getAllCommandsParamsSchemas();
 			const paramsSchema = schema.commands
 				.find(s => s.moduleID === tx.moduleID && s.commandID === tx.commandID);
 			const parsedTxParams = parseInputBySchema(tx.params, paramsSchema);

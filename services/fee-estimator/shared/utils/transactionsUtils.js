@@ -19,13 +19,14 @@ const { requestConnector } = require('./request');
 const { getGenesisConfig } = require('../networkConstants');
 
 let allCommandsParamsSchemasCache;
+let allCommandsParamsSchemas;
 
 const getCommandsParamsSchemasFromCore = async () => {
 	const schemas = await requestConnector('getSchema');
 	return schemas;
 };
 
-const getAllCommandsParamsSchemasFromCache = async () => {
+const getAllCommandsParamsSchemas = async () => {
 	if (!allCommandsParamsSchemasCache) {
 		allCommandsParamsSchemasCache = await getCommandsParamsSchemasFromCore();
 	}
@@ -34,14 +35,17 @@ const getAllCommandsParamsSchemasFromCache = async () => {
 
 const getTxnParamsSchema = async (trx) => {
 	const moduleCommandID = String(trx.moduleID).concat(':').concat(trx.commandID);
-	const response = await getAllCommandsParamsSchemasFromCache();
-	const allCommandsParamsSchemas = response.commands.map(txParams => {
-		const formattedTxParams = {};
-		formattedTxParams.moduleCommandID = String(txParams.moduleID).concat(':').concat(txParams.commandID);
-		formattedTxParams.moduleCommandName = String(txParams.moduleName).concat(':').concat(txParams.commandName);
-		formattedTxParams.schema = txParams.schema;
-		return formattedTxParams;
-	});
+	const response = await getAllCommandsParamsSchemas();
+
+	if (!allCommandsParamsSchemas) {
+		allCommandsParamsSchemas = response.commands.map(txParams => {
+			const formattedTxParams = {};
+			formattedTxParams.moduleCommandID = String(txParams.moduleID).concat(':').concat(txParams.commandID);
+			formattedTxParams.moduleCommandName = String(txParams.moduleName).concat(':').concat(txParams.commandName);
+			formattedTxParams.schema = txParams.schema;
+			return formattedTxParams;
+		});
+	}
 
 	const [{ schema }] = allCommandsParamsSchemas.filter(
 		txSchema => (!moduleCommandID)
@@ -67,5 +71,5 @@ const getTxnMinFee = async (
 
 module.exports = {
 	getTxnMinFee,
-	getAllCommandsParamsSchemasFromCache,
+	getAllCommandsParamsSchemas,
 };
