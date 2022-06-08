@@ -106,7 +106,7 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 
 	const { header: latestBlock } = await requestConnector('getLastBlock');
 	const validate = (feeEstPerByte, allowedLag = 0) => feeEstPerByte
-		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockId']
+		&& ['low', 'med', 'high', 'updated', 'blockHeight', 'blockID']
 			.every(key => Object.keys(feeEstPerByte).includes(key))
 		&& Number(latestBlock.height) - Number(feeEstPerByte.blockHeight) <= allowedLag;
 

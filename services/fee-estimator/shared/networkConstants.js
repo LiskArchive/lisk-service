@@ -20,19 +20,39 @@ let genesisConfig;
 
 const networkFeeConstants = {
 	minFeePerByte: undefined,
-	baseFeeByModuleAssetId: {},
-	baseFeeByModuleAssetName: {},
+	baseFeeByModuleCommandID: {},
+	baseFeeByModuleCommandName: {},
+};
+
+const resolveModuleCommands = (data) => {
+	let result = [];
+	data.forEach(liskModule => {
+		if (liskModule.commands.length) {
+			result = result.concat(
+				liskModule.commands.map(command => {
+					const id = String(liskModule.id).concat(':').concat(command.id);
+					if (liskModule.name && command.name) {
+						const name = liskModule.name.concat(':').concat(command.name);
+						return { id, name };
+					}
+					return { id };
+				}),
+			);
+		}
+	});
+	return result;
 };
 
 const resolveBaseFees = (networkConstants) => {
-	networkConstants.data.genesis.baseFees.forEach(entry => {
-		const moduleAssetId = String(entry.moduleID).concat(':').concat(entry.assetID);
-		networkFeeConstants.baseFeeByModuleAssetId[moduleAssetId] = entry.baseFee;
+	networkConstants.genesis.baseFees.forEach(entry => {
+		const moduleCommandID = String(entry.moduleID).concat(':').concat(entry.commandID);
+		networkFeeConstants.baseFeeByModuleCommandID[moduleCommandID] = entry.baseFee;
 
-		const [moduleAsset] = networkConstants.data.moduleAssets.filter(o => o.id === moduleAssetId);
-		networkFeeConstants.baseFeeByModuleAssetName[moduleAsset.name] = entry.baseFee;
+		networkConstants.commands = resolveModuleCommands(networkConstants.registeredModules);
+		const [moduleCommand] = networkConstants.commands.filter(o => o.id === moduleCommandID);
+		networkFeeConstants.baseFeeByModuleCommandName[moduleCommand.name] = entry.baseFee;
 	});
-	networkFeeConstants.minFeePerByte = networkConstants.data.genesis.minFeePerByte;
+	networkFeeConstants.minFeePerByte = networkConstants.genesis.minFeePerByte;
 
 	return networkFeeConstants;
 };
@@ -47,7 +67,7 @@ const setNetworkFeeConstants = async () => {
 const setGenesisConfig = async () => {
 	if (!genesisConfig) {
 		const result = await requestConnector('getNetworkStatus');
-		genesisConfig = result.data.genesis;
+		genesisConfig = result.genesis;
 	}
 };
 
