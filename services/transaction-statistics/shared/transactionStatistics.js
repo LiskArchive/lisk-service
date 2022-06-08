@@ -48,7 +48,7 @@ const getSelector = async (params) => {
 	if (params.dateTo) result.to = params.dateTo.unix();
 
 	if (!numTrxTypes) {
-		const networkStatus = await requestIndexer('getNetworkStatus');
+		const networkStatus = await requestIndexer('network.status');
 		numTrxTypes = networkStatus.data.moduleCommands.length;
 	}
 
