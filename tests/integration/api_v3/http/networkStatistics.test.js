@@ -17,6 +17,10 @@ const config = require('../../../config');
 const { api } = require('../../../helpers/api');
 
 const {
+	badRequestSchema,
+} = require('../../../schemas/httpGenerics.schema');
+
+const {
 	networkStatisticsSchema,
 	goodRequestSchema,
 } = require('../../../schemas/api_v3/networkStatistics.schema');
@@ -31,5 +35,10 @@ xdescribe(`GET ${endpoint}`, () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(networkStatisticsSchema);
+	});
+
+	it('invalid request param -> bad request', async () => {
+		const response = await api.get(`${endpoint}?invalidParam=invalid`, 400);
+		expect(response).toMap(badRequestSchema);
 	});
 });

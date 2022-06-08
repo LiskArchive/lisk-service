@@ -20,6 +20,10 @@ const {
 } = require('../../../helpers/socketIoRpcRequest');
 
 const {
+	invalidParamsSchema,
+} = require('../../../schemas/rpcGenerics.schema');
+
+const {
 	networkStatisticsSchema,
 	goodRequestSchema,
 } = require('../../../schemas/api_v3/networkStatistics.schema');
@@ -33,5 +37,10 @@ xdescribe('get.network.statistics', () => {
 		const response = await getNetworkStatistics();
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(networkStatisticsSchema);
+	});
+
+	it('invalid request param -> invalid param', async () => {
+		const response = await getNetworkStatistics({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
 	});
 });

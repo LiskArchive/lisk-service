@@ -23,9 +23,9 @@ const goodRequestSchema = {
 
 const networkStatisticsSchema = Joi.object({
 	basic: Joi.object({
-		totalPeers: Joi.number().required(),
-		connectedPeers: Joi.number().required(),
-		disconnectedPeers: Joi.number().required(),
+		totalPeers: Joi.number().integer().min(0).required(),
+		connectedPeers: Joi.number().integer().min(0).required(),
+		disconnectedPeers: Joi.number().integer().min(0).required(),
 	}).required(),
 	height: Joi.object().required(),
 	networkVersion: Joi.object().required(),
