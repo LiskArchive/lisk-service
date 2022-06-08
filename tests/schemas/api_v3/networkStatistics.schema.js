@@ -21,7 +21,7 @@ const goodRequestSchema = {
 	links: Joi.object().optional(),
 };
 
-const networkStatisticsSchema = Joi.object({
+const networkStatisticsSchema = {
 	basic: Joi.object({
 		totalPeers: Joi.number().integer().min(0).required(),
 		connectedPeers: Joi.number().integer().min(0).required(),
@@ -29,7 +29,7 @@ const networkStatisticsSchema = Joi.object({
 	}).required(),
 	height: Joi.object().required(),
 	networkVersion: Joi.object().required(),
-}).required();
+};
 
 module.exports = {
 	networkStatisticsSchema: Joi.object(networkStatisticsSchema).required(),

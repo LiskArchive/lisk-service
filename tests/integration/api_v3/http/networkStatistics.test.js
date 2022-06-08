@@ -29,9 +29,9 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/network/statistics`;
 
-// TODO: Enable when peers endpoint is available from sdk
-xdescribe(`GET ${endpoint}`, () => {
-	it('retrieves network statistics -> ok', async () => {
+describe(`GET ${endpoint}`, () => {
+	// TODO: Enable when peers endpoint is available from sdk
+	xit('retrieves network statistics -> ok', async () => {
 		const response = await api.get(endpoint);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(networkStatisticsSchema);

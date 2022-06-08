@@ -31,9 +31,9 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getNetworkStatistics = async (params) => request(wsRpcUrl, 'get.network.statistics', params);
 
-// TODO: Enable when peers endpoint is available from sdk
-xdescribe('get.network.statistics', () => {
-	it('returns network statistics', async () => {
+describe('get.network.statistics', () => {
+	// TODO: Enable when peers endpoint is available from sdk
+	xit('returns network statistics', async () => {
 		const response = await getNetworkStatistics();
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toMap(networkStatisticsSchema);
