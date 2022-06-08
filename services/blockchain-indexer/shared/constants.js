@@ -74,4 +74,5 @@ module.exports = {
 	getGenesisConfig,
 	getGenesisHeight,
 	getAvailableModuleCommands,
+	resolveModuleCommands,
 };
