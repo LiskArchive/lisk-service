@@ -19,7 +19,6 @@ const getBlockchainAppsStatistics = async () => {
 		registered: 2503,
 		active: 2328,
 		terminated: 35,
-
 	};
 
 	return {

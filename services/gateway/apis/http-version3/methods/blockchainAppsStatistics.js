@@ -19,7 +19,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blockchain/apps/statistics',
 	rpcMethod: 'get.blockchain.apps.statistics',
-	tags: ['Blockchain Application Statistics'],
+	tags: ['Blockchain Applications'],
 	params: {},
 	source: blockchainAppsStatsSchemaSource,
 };
