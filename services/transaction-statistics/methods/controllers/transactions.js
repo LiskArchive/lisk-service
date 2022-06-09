@@ -17,37 +17,31 @@ const moment = require('moment');
 
 const txStatisticsService = require('../../shared/transactionStatistics');
 
-const getTransactionsStatistics = async ({
-	aggregateBy,
-	limit = 10,
-	offset = 0,
-}) => {
-	limit = parseInt(limit, 10);
-	offset = parseInt(offset, 10);
-	const dateFormat = aggregateBy === 'day' ? 'YYYY-MM-DD' : 'YYYY-MM';
+const getTransactionsStatistics = async (params) => {
+	const dateFormat = params.interval === 'day' ? 'YYYY-MM-DD' : 'YYYY-MM';
 
 	const dateTo = moment()
 		.utc()
-		.endOf(aggregateBy)
-		.subtract(offset, aggregateBy);
+		.endOf(params.interval)
+		.subtract(params.offset, params.interval);
 	const dateFrom = moment(dateTo)
-		.startOf(aggregateBy)
-		.subtract(limit - 1, aggregateBy);
-	const params = {
+		.startOf(params.interval)
+		.subtract(params.limit - 1, params.interval);
+	const statsParams = {
 		dateFormat,
 		dateTo,
 		dateFrom,
 	};
 
-	const timelineRaw = await txStatisticsService.getStatsTimeline(params);
+	const timelineRaw = await txStatisticsService.getStatsTimeline(statsParams);
 	const timeline = timelineRaw.map((el) => ({
 		...el,
 		timestamp: Date.parse(el.date) / 1000,
 		transactionCount: parseInt(el.transactionCount, 10),
 	}));
 
-	const distributionByType = await txStatisticsService.getDistributionByType(params);
-	const distributionByAmount = await txStatisticsService.getDistributionByAmount(params);
+	const distributionByType = await txStatisticsService.getDistributionByType(statsParams);
+	const distributionByAmount = await txStatisticsService.getDistributionByAmount(statsParams);
 
 	return {
 		data: {
@@ -56,8 +50,8 @@ const getTransactionsStatistics = async ({
 			distributionByAmount,
 		},
 		meta: {
-			limit,
-			offset,
+			limit: params.limit,
+			offset: params.offset,
 			dateFormat,
 			dateFrom: dateFrom.format(dateFormat),
 			dateTo: dateTo.format(dateFormat),
@@ -65,10 +59,6 @@ const getTransactionsStatistics = async ({
 	};
 };
 
-const getTransactionsStatisticsDay = (params) => getTransactionsStatistics({ aggregateBy: 'day', ...params });
-const getTransactionsStatisticsMonth = (params) => getTransactionsStatistics({ aggregateBy: 'month', ...params });
-
 module.exports = {
-	getTransactionsStatisticsDay,
-	getTransactionsStatisticsMonth,
+	getTransactionsStatistics,
 };
