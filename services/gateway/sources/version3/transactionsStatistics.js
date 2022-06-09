@@ -13,19 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const transactionsStatistics = require('./mappings/transactionsStatistics');
 
-const {
-	getTransactionsStatistics,
-} = require('./controllers/transactions');
-
-module.exports = [
-	{
-		name: 'transactions.statistics',
-		controller: getTransactionsStatistics,
-		params: {
-			interval: { optional: false, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-		},
+module.exports = {
+	type: 'moleculer',
+	method: 'statistics.transactions.statistics',
+	params: {
+		interval: '=,string',
+		offset: '=,number',
+		limit: '=,number',
 	},
-];
+	definition: {
+		data: transactionsStatistics,
+		meta: {
+			limit: '=,number',
+			offset: '=,number',
+			aggregateBy: '=,string',
+			dateFormat: '=,string',
+			dateFrom: '=,string',
+			dateTo: '=,string',
+		},
+		links: {},
+	},
+};

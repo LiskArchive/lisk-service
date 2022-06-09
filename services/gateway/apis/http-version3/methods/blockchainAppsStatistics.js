@@ -13,19 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const blockchainAppsStatsSchemaSource = require('../../../sources/version3/blockchainAppsStatsSchema');
 
-const {
-	getTransactionsStatistics,
-} = require('./controllers/transactions');
-
-module.exports = [
-	{
-		name: 'transactions.statistics',
-		controller: getTransactionsStatistics,
-		params: {
-			interval: { optional: false, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-		},
-	},
-];
+module.exports = {
+	version: '2.0',
+	swaggerApiPath: '/blockchain/apps/statistics',
+	rpcMethod: 'get.blockchain.apps.statistics',
+	tags: ['Blockchain Applications'],
+	params: {},
+	source: blockchainAppsStatsSchemaSource,
+};

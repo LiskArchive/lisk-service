@@ -13,19 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const {
-	getTransactionsStatistics,
-} = require('./controllers/transactions');
-
-module.exports = [
-	{
-		name: 'transactions.statistics',
-		controller: getTransactionsStatistics,
-		params: {
-			interval: { optional: false, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
+module.exports = {
+	type: 'moleculer',
+	method: 'indexer.blockchain.apps.statistics',
+	params: {},
+	definition: {
+		data: {
+			registered: '=,number',
+			active: '=,number',
+			terminated: '=,number',
 		},
+		meta: {},
+		links: {},
 	},
-];
+};

@@ -52,6 +52,8 @@ const {
 	performLastBlockUpdate,
 } = require('./blocks');
 
+const { getBlockchainAppsStatistics } = require('./blockchainAppsStatistics');
+
 const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
@@ -121,6 +123,7 @@ module.exports = {
 	waitForLastBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
+	getBlockchainAppsStatistics,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,

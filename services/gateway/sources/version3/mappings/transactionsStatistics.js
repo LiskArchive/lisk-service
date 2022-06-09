@@ -13,19 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-
-const {
-	getTransactionsStatistics,
-} = require('./controllers/transactions');
-
-module.exports = [
-	{
-		name: 'transactions.statistics',
-		controller: getTransactionsStatistics,
-		params: {
-			interval: { optional: false, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-		},
-	},
-];
+module.exports = {
+	timeline: '=',
+	distributionByType: '=',
+	distributionByAmount: '=',
+};

@@ -15,17 +15,13 @@
  */
 
 const {
-	getTransactionsStatistics,
-} = require('./controllers/transactions');
+	getBlockchainAppsStatistics,
+} = require('./controllers/blockchainAppsStatistics');
 
 module.exports = [
 	{
-		name: 'transactions.statistics',
-		controller: getTransactionsStatistics,
-		params: {
-			interval: { optional: false, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-		},
+		name: 'blockchain.apps.statistics',
+		controller: getBlockchainAppsStatistics,
+		params: {},
 	},
 ];

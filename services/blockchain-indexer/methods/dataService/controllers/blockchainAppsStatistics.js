@@ -13,19 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const dataService = require('../../../shared/dataService');
 
-const {
-	getTransactionsStatistics,
-} = require('./controllers/transactions');
+const getBlockchainAppsStatistics = async () => {
+	const result = await dataService.getBlockchainAppsStatistics();
+	return result;
+};
 
-module.exports = [
-	{
-		name: 'transactions.statistics',
-		controller: getTransactionsStatistics,
-		params: {
-			interval: { optional: false, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
-		},
-	},
-];
+module.exports = {
+	getBlockchainAppsStatistics,
+};
