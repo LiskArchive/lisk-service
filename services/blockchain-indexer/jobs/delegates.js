@@ -21,8 +21,7 @@ module.exports = [
 	{
 		name: 'reload.delegates',
 		description: 'Keep the delegate list up-to-date',
-		interval: 10,
-		// schedule: '*/5 * * * *', // Every 5 min
+		schedule: '*/5 * * * *', // Every 5 min
 		init: async () => {
 			logger.debug('Initializing delegate cache...');
 			try {
