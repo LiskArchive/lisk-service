@@ -25,6 +25,12 @@ const config = require('../../../config');
 
 const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
+const isDposModuleRegistered = async () => {
+	const networkStatus = await requestConnector('getNetworkStatus');
+	const isRegistered = networkStatus.registeredModules.some(module => module.id === 13);
+	return isRegistered;
+};
+
 const verifyIfPunished = async delegate => {
 	const latestBlockString = await latestBlockCache.get('latestBlock');
 	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
@@ -36,7 +42,6 @@ const verifyIfPunished = async delegate => {
 
 const getAllDelegates = async () => {
 	const delegatesFromApp = await requestConnector('invokeEndpoint', { endpoint: 'dpos_getAllDelegates' });
-
 	const delegates = await BluebirdPromise.map(
 		delegatesFromApp,
 		async delegate => {
@@ -61,4 +66,5 @@ const getAllDelegates = async () => {
 
 module.exports = {
 	getAllDelegates,
+	isDposModuleRegistered,
 };

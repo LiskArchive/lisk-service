@@ -14,7 +14,6 @@
  *
  */
 const {
-	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getAccountsByAddress,
@@ -23,6 +22,8 @@ const {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
+	getAllDelegates,
+	isDposModuleRegistered,
 	getNumberOfForgers,
 	getGenesisHeight,
 	getFinalizedHeight,
@@ -85,7 +86,6 @@ const { getVoters } = require('./voters');
 const { getVotes } = require('./votes');
 
 module.exports = {
-	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getAccountsByAddress,
@@ -94,6 +94,8 @@ module.exports = {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
+	getAllDelegates,
+	isDposModuleRegistered,
 	getNumberOfForgers,
 	getGenesisHeight,
 	getFinalizedHeight,

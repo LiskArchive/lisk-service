@@ -16,7 +16,6 @@
 const {
 	getAccounts,
 	getDelegates,
-	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getAccountsByAddress,
@@ -38,6 +37,11 @@ const {
 	getBlockByID,
 	getBlocksAssets,
 } = require('./blocks');
+
+const {
+	getAllDelegates,
+	isDposModuleRegistered,
+} = require('./delegates');
 
 const {
 	getForgers,
@@ -78,7 +82,6 @@ const {
 module.exports = {
 	getAccounts,
 	getDelegates,
-	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getAccountsByAddress,
@@ -96,6 +99,8 @@ module.exports = {
 	getBlockByHeight,
 	getBlockByID,
 	getBlocksAssets,
+	getAllDelegates,
+	isDposModuleRegistered,
 	getForgers,
 	postTransactions,
 	getPendingTransactions,
