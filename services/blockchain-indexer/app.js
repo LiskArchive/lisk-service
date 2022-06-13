@@ -50,13 +50,13 @@ setAppContext(app);
 if (config.operations.isIndexingModeEnabled) {
 	app.addMethods(path.join(__dirname, 'methods', 'indexer'));
 	app.addEvents(path.join(__dirname, 'events'));
-	app.addJobs(path.join(__dirname, 'jobs'));
 }
 
 if (config.operations.isDataRetrievalModeEnabled) {
 	app.addMethods(path.join(__dirname, 'methods', 'dataService'));
-	app.addJobs(path.join(__dirname, 'jobs'));
 }
+
+app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
 app.run().then(async () => {

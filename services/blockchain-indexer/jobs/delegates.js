@@ -15,7 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const { reloadDelegateCache } = require('../shared/dataService');
+const { reloadDelegateCache, isDposModuleRegistered } = require('../shared/dataService');
 
 module.exports = [
 	{
@@ -23,20 +23,24 @@ module.exports = [
 		description: 'Keep the delegate list up-to-date',
 		schedule: '*/5 * * * *', // Every 5 min
 		init: async () => {
-			logger.debug('Initializing delegate cache...');
-			try {
-				await reloadDelegateCache();
-				logger.info('Successfully initialized delegate cache');
-			} catch (err) {
-				logger.warn(`Initializing delegate cache failed due to: ${err.message}`);
+			if (isDposModuleRegistered) {
+				logger.debug('Initializing delegate cache...');
+				try {
+					await reloadDelegateCache();
+					logger.info('Successfully initialized delegate cache');
+				} catch (err) {
+					logger.warn(`Initializing delegate cache failed due to: ${err.message}`);
+				}
 			}
 		},
 		controller: async () => {
-			logger.debug('Reloading delegate cache...');
-			try {
-				await reloadDelegateCache();
-			} catch (err) {
-				logger.warn(`Reloading delegate cache failed due to: ${err.message}`);
+			if (isDposModuleRegistered) {
+				logger.debug('Reloading delegate cache...');
+				try {
+					await reloadDelegateCache();
+				} catch (err) {
+					logger.warn(`Reloading delegate cache failed due to: ${err.message}`);
+				}
 			}
 		},
 	},
