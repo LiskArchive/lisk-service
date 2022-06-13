@@ -38,7 +38,7 @@ const delegateStatus = {
 	STANDBY: 'standby',
 	BANNED: 'banned',
 	PUNISHED: 'punished',
-	NON_ELIGIBLE: 'non-eligible', // TODO: Update to 'ineligible' with API v3
+	INELIGIBLE: 'ineligible',
 };
 
 let rawGenerators = [];
@@ -61,7 +61,7 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const numActiveGenerators = await dataService.getNumberOfGenerators();
+	const numActiveGenerators = await dataService.getNumberOfGenerators() || 103;
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
@@ -80,7 +80,7 @@ const computeDelegateStatus = async () => {
 		logger.debug('Determine delegate status');
 
 		// Default delegate status
-		delegate.status = delegateStatus.NON_ELIGIBLE;
+		delegate.status = delegateStatus.INELIGIBLE;
 
 		// Update delegate status, if applicable
 		if (delegate.isBanned) {
@@ -255,41 +255,40 @@ const getDelegates = async params => {
 // Keep the delegate cache up-to-date
 const updateDelegateListEveryBlock = () => {
 	const updateDelegateCacheListener = async (eventType, data) => {
-		const dposModuleId = 5;
-		const registerDelegateAssetId = 0;
-		const voteDelegateAssetId = 1;
+		const dposModuleID = 13;
+		const registerDelegateCommandID = 0;
+		const voteDelegateCommandID = 1;
 
 		const updatedDelegateAddresses = [];
 		const [block] = data.data;
-		if (block && block.payload && Array.isArray(block.payload)) {
-			block.payload.forEach(tx => {
-				if (tx.moduleID === dposModuleId) {
-					if (tx.assetID === registerDelegateAssetId) {
+		if (block && block.transactions && Array.isArray(block.transactions)) {
+			block.transactions.forEach(tx => {
+				if (tx.moduleID === dposModuleID) {
+					if (tx.CommandID === registerDelegateCommandID) {
 						updatedDelegateAddresses
 							.push(getBase32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.assetID === voteDelegateAssetId) {
-						tx.asset.votes.forEach(vote => updatedDelegateAddresses
+					} else if (tx.CommandID === voteDelegateCommandID) {
+						tx.params.votes.forEach(vote => updatedDelegateAddresses
 							.push(getBase32AddressFromHex(vote.delegateAddress)));
 					}
 				}
 			});
 			if (updatedDelegateAddresses.length) {
-				const { data: updatedDelegateAccounts } = await dataService
-					.getAccounts({ addresses: updatedDelegateAddresses });
+				const updatedDelegateAccounts = await dataService
+					.getDelegates({ addresses: updatedDelegateAddresses });
 
 				updatedDelegateAccounts.forEach(delegate => {
 					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
 					// Update delegate list on newBlock event
-					if (delegate.isDelegate) {
-						if (delegateIndex === -1) delegateList.push(delegate);
-						else {
-							// Re-assign the current delegate status before updating the delegateList
-							// Delegate status can change only at the beginning of a new round
-							const { status } = delegateList[delegateIndex];
-							delegateList[delegateIndex] = { ...delegate, status };
-						}
-						// Remove delegate from list when deleteBlock event contains delegate registration tx
-					} else if (delegateIndex !== -1) {
+					if (delegateIndex === -1) delegateList.push(delegate);
+					else {
+						// Re-assign the current delegate status before updating the delegateList
+						// Delegate status can change only at the beginning of a new round
+						const { status } = delegateList[delegateIndex];
+						delegateList[delegateIndex] = { ...delegate, status };
+					}
+					// Remove delegate from list when deleteBlock event contains delegate registration tx
+					if (delegateIndex !== -1) {
 						delegateList.splice(delegateIndex, 1);
 					}
 				});

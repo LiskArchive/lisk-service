@@ -19,6 +19,8 @@ const {
 	CacheRedis,
 } = require('lisk-service-framework');
 
+const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
+
 const { requestConnector } = require('../../utils/request');
 
 const config = require('../../../config');
@@ -41,7 +43,7 @@ const verifyIfPunished = async delegate => {
 };
 
 const getAllDelegates = async () => {
-	const delegatesFromApp = await requestConnector('invokeEndpoint', { endpoint: 'dpos_getAllDelegates' });
+	const delegatesFromApp = await requestConnector('dpos_getAllDelegates');
 	const delegates = await BluebirdPromise.map(
 		delegatesFromApp,
 		async delegate => {
@@ -64,7 +66,19 @@ const getAllDelegates = async () => {
 	return delegates;
 };
 
+const getDelegates = async (addresses) => {
+	const delegates = await BluebirdPromise.map(
+		addresses,
+		async address => {
+			const delegate = await requestConnector('dpos_getDelegate', { address: getHexAddressFromBase32(address) });
+			return delegate;
+		}, { concurrency: addresses.length });
+
+	return delegates;
+};
+
 module.exports = {
 	getAllDelegates,
 	isDposModuleRegistered,
+	getDelegates,
 };
