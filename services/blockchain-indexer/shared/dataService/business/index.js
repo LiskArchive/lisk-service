@@ -44,8 +44,9 @@ const {
 } = require('./delegates');
 
 const {
-	getForgers,
-} = require('./forgers');
+	getGenerators,
+	getNumberOfGenerators,
+} = require('./generators');
 
 const {
 	getPendingTransactions,
@@ -101,7 +102,8 @@ module.exports = {
 	getBlocksAssets,
 	getAllDelegates,
 	isDposModuleRegistered,
-	getForgers,
+	getGenerators,
+	getNumberOfGenerators,
 	postTransactions,
 	getPendingTransactions,
 	loadAllPendingTransactions,

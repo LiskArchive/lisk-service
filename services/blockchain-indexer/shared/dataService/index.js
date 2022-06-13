@@ -59,8 +59,8 @@ const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadNextForgersCache,
-	getForgers,
+	reloadGeneratorCache,
+	getGenerators,
 } = require('./delegates');
 
 const { getNetworkStatus } = require('./network');
@@ -102,7 +102,7 @@ module.exports = {
 	normalizeBlocks,
 	getBlockByHeight,
 	getBlockByID,
-	getForgers,
+	getGenerators,
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
@@ -129,7 +129,7 @@ module.exports = {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadNextForgersCache,
+	reloadGeneratorCache,
 	getNetworkStatus,
 	getTransactions,
 	getPendingTransactions,

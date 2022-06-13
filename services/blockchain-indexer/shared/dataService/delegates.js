@@ -27,7 +27,6 @@ const {
 	getBase32AddressFromHex,
 } = require('../utils/accountUtils');
 const { parseToJSONCompatObj } = require('../utils/parser');
-const requestAll = require('../utils/requestAll');
 const config = require('../../config');
 
 const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
@@ -42,15 +41,15 @@ const delegateStatus = {
 	NON_ELIGIBLE: 'non-eligible', // TODO: Update to 'ineligible' with API v3
 };
 
-let rawNextForgers = [];
-let nextForgers = [];
+let rawGenerators = [];
+let generatorsList = [];
 let delegateList = [];
 
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return Buffer.from(getHexAddressFromBase32(a.account.address), 'hex')
-		.compare(Buffer.from(getHexAddressFromBase32(b.account.address), 'hex'));
+	return Buffer.from(getHexAddressFromBase32(a.address), 'hex')
+		.compare(Buffer.from(getHexAddressFromBase32(b.address), 'hex'));
 };
 
 const computeDelegateRank = async () => {
@@ -62,13 +61,13 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const numActiveForgers = await dataService.getNumberOfForgers();
+	const numActiveGenerators = await dataService.getNumberOfGenerators();
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
-	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
-	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
+	const allGeneratorsAddressList = rawGenerators.map(generator => generator.address);
+	const activeGeneratorsList = allGeneratorsAddressList.slice(0, numActiveGenerators);
 
 	const verifyIfPunished = delegate => {
 		const isPunished = delegate.pomHeights
@@ -84,11 +83,11 @@ const computeDelegateStatus = async () => {
 		delegate.status = delegateStatus.NON_ELIGIBLE;
 
 		// Update delegate status, if applicable
-		if (delegate.dpos.delegate.isBanned) {
+		if (delegate.isBanned) {
 			delegate.status = delegateStatus.BANNED;
 		} else if (verifyIfPunished(delegate)) {
 			delegate.status = delegateStatus.PUNISHED;
-		} else if (activeNextForgersList.includes(delegate.account.address)) {
+		} else if (activeGeneratorsList.includes(delegate.address)) {
 			delegate.status = delegateStatus.ACTIVE;
 		} else if (BigInt(delegate.delegateWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			delegate.status = delegateStatus.STANDBY;
@@ -100,15 +99,12 @@ const computeDelegateStatus = async () => {
 
 const loadAllDelegates = async () => {
 	try {
-		const maxCount = 10000;
-		delegateList = await requestAll(dataService.getDelegates, { limit: 10 }, maxCount);
+		delegateList = await dataService.getAllDelegates();
 		await BluebirdPromise.map(
 			delegateList,
 			async delegate => {
-				delegate.address = delegate.account.address;
-				delegate.publicKey = delegate.account.publicKey;
 				await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
-				await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
+				await cacheRedisDelegates.set(delegate.name, parseToJSONCompatObj(delegate));
 				return delegate;
 			},
 			{ concurrency: delegateList.length },
@@ -122,28 +118,31 @@ const loadAllDelegates = async () => {
 	}
 };
 
-const loadAllNextForgers = async () => {
-	const maxCount = await dataService.getNumberOfForgers();
-	rawNextForgers = await dataService.getForgers({ limit: maxCount, offset: nextForgers.length });
-	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
+const loadAllGenerators = async () => {
+	const maxCount = await dataService.getNumberOfGenerators();
+	rawGenerators = await dataService.getGenerators({
+		limit: maxCount,
+		offset: generatorsList.length,
+	});
+	logger.info(`Updated generators list with ${rawGenerators.length} delegates.`);
 };
 
-const resolveNextForgers = async () => {
-	nextForgers = await BluebirdPromise.map(
-		rawNextForgers,
+const resolveGenerators = async () => {
+	generatorsList = await BluebirdPromise.map(
+		rawGenerators,
 		async forger => forger,
 	);
 	logger.debug('Finished collecting delegates');
 };
 
-const reloadNextForgersCache = async () => {
-	await loadAllNextForgers();
-	await resolveNextForgers();
+const reloadGeneratorCache = async () => {
+	await loadAllGenerators();
+	await resolveGenerators();
 };
 
 const reload = async () => {
 	await loadAllDelegates();
-	await loadAllNextForgers();
+	await loadAllGenerators();
 	await computeDelegateRank();
 	await computeDelegateStatus();
 };
@@ -166,21 +165,21 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	return relevantDelegates.length;
 };
 
-const getForgers = async params => {
-	const forgers = {
+const getGenerators = async params => {
+	const generators = {
 		data: [],
 		meta: {},
 	};
 
 	const { offset, limit } = params;
 
-	forgers.data = nextForgers.slice(offset, offset + limit);
+	generators.data = generatorsList.slice(offset, offset + limit);
 
-	forgers.meta.count = forgers.data.length;
-	forgers.meta.offset = offset;
-	forgers.meta.total = nextForgers.length;
+	generators.meta.count = generators.data.length;
+	generators.meta.offset = offset;
+	generators.meta.total = generatorsList.length;
 
-	return parseToJSONCompatObj(forgers);
+	return parseToJSONCompatObj(generators);
 };
 
 const getDelegates = async params => {
@@ -351,6 +350,6 @@ module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadNextForgersCache,
-	getForgers,
+	reloadGeneratorCache,
+	getGenerators,
 };

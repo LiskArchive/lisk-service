@@ -54,17 +54,17 @@ const getAccounts = async params => {
 	}
 };
 
-const getForgers = async params => {
-	const nextForgers = await dataService.getForgers(params);
-	if (isEmptyObject(nextForgers)) return {};
+const getGenerators = async params => {
+	const generators = await dataService.getGenerators(params);
+	if (isEmptyObject(generators)) return {};
 
 	return {
-		data: nextForgers.data,
-		meta: nextForgers.meta,
+		data: generators.data,
+		meta: generators.meta,
 	};
 };
 
 module.exports = {
 	getAccounts,
-	getForgers,
+	getGenerators,
 };
