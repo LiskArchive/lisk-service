@@ -40,7 +40,7 @@ const {
 	getCachedAccountByUsername,
 } = require('./business');
 
-const { getAccounts } = require('./accounts');
+const { getAccounts, getLegacyAccountInfo } = require('./accounts');
 
 const {
 	getBlocks,
@@ -116,6 +116,7 @@ module.exports = {
 	getCachedAccountByUsername,
 
 	getAccounts,
+	getLegacyAccountInfo,
 	getBlocks,
 	getBlocksAssets,
 	setLastBlock,
