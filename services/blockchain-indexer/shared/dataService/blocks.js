@@ -37,13 +37,13 @@ const getLastBlock = async () => {
 	return latestBlock;
 };
 
-const getTotalNumberOfBlocks = async () => (getLastBlock()).height
+const getTotalNumberOfBlocks = async () => (await getLastBlock()).height
 	- (await getGenesisHeight()) + 1;
 
 const waitForLastBlock = () => new Promise((resolve) => {
-	const checkLastBlock = (interval) => {
-		const block = getLastBlock();
-		if (block && block.height > 0) {
+	const checkLastBlock = async (interval) => {
+		const block = await getLastBlock();
+		if (block.height > 0) {
 			if (interval) clearInterval(interval);
 			resolve(getLastBlock());
 		}
