@@ -41,7 +41,7 @@ const eventsQueue = new MessageQueue(
 const newBlockProcessor = async (block) => {
 	logger.debug(`New block arrived at height ${block.height}`);
 	const [normalizedBlock] = await normalizeBlocks([block]);
-	performLastBlockUpdate(normalizedBlock);
+	await performLastBlockUpdate(normalizedBlock);
 	const response = await getBlocks({ height: normalizedBlock.height });
 	Signals.get('newBlock').dispatch(response);
 };

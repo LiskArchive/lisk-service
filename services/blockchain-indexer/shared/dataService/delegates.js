@@ -61,7 +61,9 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const numActiveGenerators = await dataService.getNumberOfGenerators() || 103;
+	// TODO: Update when issue https://github.com/LiskHQ/lisk-sdk/issues/7213 is resolved
+	// const numActiveGenerators = await dataService.getNumberOfGenerators();
+	const numActiveGenerators = 103;
 
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
@@ -119,7 +121,9 @@ const loadAllDelegates = async () => {
 };
 
 const loadAllGenerators = async () => {
-	const maxCount = await dataService.getNumberOfGenerators();
+	// TODO: Update when issue https://github.com/LiskHQ/lisk-sdk/issues/7213 is resolved
+	// const maxCount = await dataService.getNumberOfGenerators();
+	const maxCount = 103;
 	rawGenerators = await dataService.getGenerators({
 		limit: maxCount,
 		offset: generatorsList.length,
@@ -280,15 +284,16 @@ const updateDelegateListEveryBlock = () => {
 				updatedDelegateAccounts.forEach(delegate => {
 					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
 					// Update delegate list on newBlock event
-					if (delegateIndex === -1) delegateList.push(delegate);
-					else {
-						// Re-assign the current delegate status before updating the delegateList
-						// Delegate status can change only at the beginning of a new round
-						const { status } = delegateList[delegateIndex];
-						delegateList[delegateIndex] = { ...delegate, status };
-					}
-					// Remove delegate from list when deleteBlock event contains delegate registration tx
-					if (delegateIndex !== -1) {
+					if (delegate.isDelegate) {
+						if (delegateIndex === -1) delegateList.push(delegate);
+						else {
+							// Re-assign the current delegate status before updating the delegateList
+							// Delegate status can change only at the beginning of a new round
+							const { status } = delegateList[delegateIndex];
+							delegateList[delegateIndex] = { ...delegate, status };
+						}
+						// Remove delegate from list when deleteBlock event contains delegate registration tx
+					} else if (delegateIndex !== -1) {
 						delegateList.splice(delegateIndex, 1);
 					}
 				});

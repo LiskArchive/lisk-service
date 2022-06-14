@@ -78,7 +78,7 @@ const getDelegates = async (addresses) => {
 };
 
 module.exports = {
+	getDelegates,
 	getAllDelegates,
 	isDposModuleRegistered,
-	getDelegates,
 };

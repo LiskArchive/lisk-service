@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { CacheRedis, Logger } = require('lisk-service-framework');
 const util = require('util');
 
 const logger = Logger();
@@ -25,14 +25,17 @@ const {
 } = require('../constants');
 const { getUsernameByAddress } = require('../utils/delegateUtils');
 
-let lastBlock = {};
+const config = require('../../config');
 
-const setLastBlock = block => {
-	if (block && block.height && block.height > lastBlock.height) lastBlock = block;
-	else if (!lastBlock.height) lastBlock = block;
+const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
+
+const setLastBlock = async block => latestBlockCache.set('latestBlock', JSON.stringify(block));
+
+const getLastBlock = async () => {
+	const latestBlockString = await latestBlockCache.get('latestBlock');
+	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
+	return latestBlock;
 };
-
-const getLastBlock = () => lastBlock;
 
 const getTotalNumberOfBlocks = async () => (getLastBlock()).height
 	- (await getGenesisHeight()) + 1;
@@ -127,10 +130,10 @@ const getBlocksAssets = async params => {
 	return blocksAssets;
 };
 
-const performLastBlockUpdate = (newBlock) => {
+const performLastBlockUpdate = async (newBlock) => {
 	try {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
-		setLastBlock(newBlock);
+		await setLastBlock(newBlock);
 	} catch (err) {
 		logger.error(`Error occured when performing last block update:\n${err.stack}`);
 	}

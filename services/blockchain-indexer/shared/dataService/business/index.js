@@ -38,8 +38,8 @@ const {
 } = require('./blocks');
 
 const {
-	getAllDelegates,
 	getDelegates,
+	getAllDelegates,
 	isDposModuleRegistered,
 } = require('./delegates');
 
@@ -99,8 +99,8 @@ module.exports = {
 	getBlockByHeight,
 	getBlockByID,
 	getBlocksAssets,
-	getAllDelegates,
 	getDelegates,
+	getAllDelegates,
 	isDposModuleRegistered,
 	getGenerators,
 	getNumberOfGenerators,
