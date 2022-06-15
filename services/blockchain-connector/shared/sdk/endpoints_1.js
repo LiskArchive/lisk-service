@@ -83,7 +83,7 @@ const getRegisteredModules = async () => {
 
 const getNodeInfo = async () => {
 	try {
-		const nodeInfo = await invokeEndpoint('app_getNodeInfo');
+		const nodeInfo = await invokeEndpoint('system_getNodeInfo');
 		return nodeInfo;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
