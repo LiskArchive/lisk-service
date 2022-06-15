@@ -13,16 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const legacyAccountsSource = require('../../../sources/version3/legacyAccountsSchema');
-const regex = require('../../../shared/regex');
+const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 
 module.exports = {
-	version: '2.0',
-	swaggerApiPath: '/legacy',
-	rpcMethod: 'get.legacy',
-	tags: ['Accounts'],
-	params: {
-		publicKey: { optional: false, type: 'string', min: 64, max: 64, pattern: regex.PUBLIC_KEY },
-	},
-	source: legacyAccountsSource,
+	PUBLIC_KEY,
 };
