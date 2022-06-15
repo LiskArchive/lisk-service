@@ -285,13 +285,13 @@ const postTransaction = async (transaction) => {
 	}
 };
 
-const getForgers = async () => {
+const getGenerators = async () => {
 	try {
-		const forgers = await invokeEndpoint('app_getForgers');
-		return forgers;
+		const generators = await invokeEndpoint('validator_getGeneratorList');
+		return generators;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getForgers\'');
+			throw new TimeoutException('Request timed out when calling \'getGenerators\'');
 		}
 		throw err;
 	}
@@ -320,5 +320,5 @@ module.exports = {
 	getTransactionsByIDs,
 	getTransactionsFromPool,
 	postTransaction,
-	getForgers,
+	getGenerators,
 };

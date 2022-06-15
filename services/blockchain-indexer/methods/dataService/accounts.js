@@ -15,7 +15,7 @@
  */
 const {
 	getAccounts,
-	getForgers,
+	getGenerators,
 	getLegacyAccountInfo,
 } = require('./controllers/accounts');
 
@@ -41,8 +41,8 @@ module.exports = [
 		},
 	},
 	{
-		name: 'forgers',
-		controller: getForgers,
+		name: 'generators',
+		controller: getGenerators,
 		params: {
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },

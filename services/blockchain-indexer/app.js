@@ -54,6 +54,7 @@ if (config.operations.isIndexingModeEnabled) {
 
 if (config.operations.isDataRetrievalModeEnabled) {
 	app.addMethods(path.join(__dirname, 'methods', 'dataService'));
+	app.addJobs(path.join(__dirname, 'jobs', 'dataService'));
 }
 
 // Run the application

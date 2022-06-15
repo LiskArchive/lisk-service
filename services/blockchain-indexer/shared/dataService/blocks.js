@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger } = require('lisk-service-framework');
+const { CacheRedis, Logger } = require('lisk-service-framework');
 const util = require('util');
 
 const logger = Logger();
@@ -23,31 +23,24 @@ const {
 	getGenesisHeight,
 	getFinalizedHeight,
 } = require('../constants');
-const { getUsernameByAddress } = require('../utils/delegateUtils');
+const { getNameByAddress } = require('../utils/delegateUtils');
 
-let lastBlock = {};
+const config = require('../../config');
 
-const setLastBlock = block => {
-	if (block && block.height && block.height > lastBlock.height) lastBlock = block;
-	else if (!lastBlock.height) lastBlock = block;
+const LAST_BLOCK_CACHE = 'lastBlock';
+const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
+
+const LAST_BLOCK_KEY = 'lastBlock';
+const setLastBlock = async block => lastBlockCache.set(LAST_BLOCK_KEY, JSON.stringify(block));
+
+const getLastBlock = async () => {
+	const lastBlockString = await lastBlockCache.get(LAST_BLOCK_KEY);
+	const lastBlock = lastBlockString ? JSON.parse(lastBlockString) : {};
+	return lastBlock;
 };
 
-const getLastBlock = () => lastBlock;
-
-const getTotalNumberOfBlocks = async () => (getLastBlock()).height
+const getTotalNumberOfBlocks = async () => (await getLastBlock()).height
 	- (await getGenesisHeight()) + 1;
-
-const waitForLastBlock = () => new Promise((resolve) => {
-	const checkLastBlock = (interval) => {
-		const block = getLastBlock();
-		if (block && block.height > 0) {
-			if (interval) clearInterval(interval);
-			resolve(getLastBlock());
-		}
-	};
-	checkLastBlock();
-	const interval = setInterval(() => checkLastBlock(interval), 500);
-});
 
 const getBlocksFromServer = async params => {
 	const blocks = {
@@ -81,7 +74,7 @@ const getBlocks = async (params = {}) => {
 	if (response.meta) blocks.meta = response.meta;
 
 	await Promise.all(blocks.data.map(async block => {
-		block.generatorUsername = await getUsernameByAddress(block.generatorAddress);
+		block.generatorUsername = await getNameByAddress(block.generatorAddress);
 		return block;
 	}));
 
@@ -127,10 +120,10 @@ const getBlocksAssets = async params => {
 	return blocksAssets;
 };
 
-const performLastBlockUpdate = (newBlock) => {
+const performLastBlockUpdate = async (newBlock) => {
 	try {
 		logger.debug(`Setting last block to height: ${newBlock.height} (id: ${newBlock.id})`);
-		setLastBlock(newBlock);
+		await setLastBlock(newBlock);
 	} catch (err) {
 		logger.error(`Error occured when performing last block update:\n${err.stack}`);
 	}
@@ -141,7 +134,6 @@ module.exports = {
 	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
-	waitForLastBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 };

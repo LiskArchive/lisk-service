@@ -19,10 +19,10 @@ const { Logger, Signals } = require('lisk-service-framework');
 const {
 	getBlocks,
 	performLastBlockUpdate,
-	reloadNextForgersCache,
+	reloadGeneratorsCache,
 	reloadDelegateCache,
-	getForgers,
-	getNumberOfForgers,
+	getGenerators,
+	getNumberOfGenerators,
 	normalizeBlocks,
 } = require('./dataService');
 
@@ -41,7 +41,7 @@ const eventsQueue = new MessageQueue(
 const newBlockProcessor = async (block) => {
 	logger.debug(`New block arrived at height ${block.height}`);
 	const [normalizedBlock] = await normalizeBlocks([block]);
-	performLastBlockUpdate(normalizedBlock);
+	await performLastBlockUpdate(normalizedBlock);
 	const response = await getBlocks({ height: normalizedBlock.height });
 	Signals.get('newBlock').dispatch(response);
 };
@@ -55,10 +55,10 @@ const deleteBlockProcessor = async (block) => {
 const newRoundProcessor = async () => {
 	logger.debug('Performing updates on new round');
 	await reloadDelegateCache();
-	await reloadNextForgersCache();
-	const limit = await getNumberOfForgers();
-	const nextForgers = await getForgers({ limit, offset: 0 });
-	const response = { nextForgers: nextForgers.data.map(forger => forger.address) };
+	await reloadGeneratorsCache();
+	const limit = await getNumberOfGenerators();
+	const generators = await getGenerators({ limit, offset: 0 });
+	const response = { generators: generators.data.map(generator => generator.address) };
 	Signals.get('newRound').dispatch(response);
 };
 
