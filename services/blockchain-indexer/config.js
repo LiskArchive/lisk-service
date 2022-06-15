@@ -75,4 +75,10 @@ config.operations = {
 	isIndexingModeEnabled: Boolean(String(process.env.ENABLE_INDEXING_MODE).toLowerCase() !== 'false'), // Enabled by default
 };
 
+config.constants = {
+	dposModuleID: process.env.DPOS_MODULE_ID || 13,
+	registerDelegateCommandID: process.env.REGISTER_DELEGATE_COMMAND_ID || 0,
+	voteDelegateCommandID: process.env.VOTE_DELEGATE_COMMAND_ID || 1,
+};
+
 module.exports = config;

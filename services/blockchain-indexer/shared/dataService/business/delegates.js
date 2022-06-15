@@ -29,16 +29,18 @@ const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 const isDposModuleRegistered = async () => {
 	const networkStatus = await requestConnector('getNetworkStatus');
-	const isRegistered = networkStatus.registeredModules.some(module => module.id === 13);
+	const isRegistered = networkStatus.registeredModules
+		.some(module => module.id === config.constants.dposModuleID);
 	return isRegistered;
 };
 
 const verifyIfPunished = async delegate => {
 	const latestBlockString = await latestBlockCache.get('latestBlock');
 	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
+	// TODO: Get this information from SDK direvctly once available
 	const isPunished = delegate.pomHeights
 		.some(pomHeight => pomHeight.start <= latestBlock.height
-            && latestBlock.height <= pomHeight.end);
+			&& latestBlock.height <= pomHeight.end);
 	return isPunished;
 };
 
@@ -46,6 +48,7 @@ const getAllDelegates = async () => {
 	const delegatesFromApp = await requestConnector('dpos_getAllDelegates');
 	const delegates = await BluebirdPromise.map(
 		delegatesFromApp,
+		// TODO: Get delegateWeight from SDK direvctly once available
 		async delegate => {
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
 				delegate.delegateWeight = BigInt('0');

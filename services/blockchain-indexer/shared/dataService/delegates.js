@@ -259,24 +259,21 @@ const getDelegates = async params => {
 // Keep the delegate cache up-to-date
 const updateDelegateListEveryBlock = () => {
 	const updateDelegateCacheListener = async (eventType, data) => {
-		const dposModuleID = 13;
-		const registerDelegateCommandID = 0;
-		const voteDelegateCommandID = 1;
-
 		const updatedDelegateAddresses = [];
 		const [block] = data.data;
 		if (block && block.transactions && Array.isArray(block.transactions)) {
 			block.transactions.forEach(tx => {
-				if (tx.moduleID === dposModuleID) {
-					if (tx.CommandID === registerDelegateCommandID) {
+				if (tx.moduleID === config.constants.dposModuleID) {
+					if (tx.CommandID === config.constants.registerDelegateCommandID) {
 						updatedDelegateAddresses
 							.push(getBase32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.CommandID === voteDelegateCommandID) {
+					} else if (tx.CommandID === config.constants.voteDelegateCommandID) {
 						tx.params.votes.forEach(vote => updatedDelegateAddresses
 							.push(getBase32AddressFromHex(vote.delegateAddress)));
 					}
 				}
 			});
+			// TODO: Validate the logic if there is need to update delegate cache on vote transaction
 			if (updatedDelegateAddresses.length) {
 				const updatedDelegateAccounts = await dataService
 					.getDelegates({ addresses: updatedDelegateAddresses });
@@ -284,17 +281,15 @@ const updateDelegateListEveryBlock = () => {
 				updatedDelegateAccounts.forEach(delegate => {
 					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
 					// Update delegate list on newBlock event
-					if (delegate.isDelegate) {
-						if (delegateIndex === -1) delegateList.push(delegate);
-						else {
-							// Re-assign the current delegate status before updating the delegateList
-							// Delegate status can change only at the beginning of a new round
-							const { status } = delegateList[delegateIndex];
-							delegateList[delegateIndex] = { ...delegate, status };
-						}
-						// Remove delegate from list when deleteBlock event contains delegate registration tx
-					} else if (delegateIndex !== -1) {
+					if (delegateIndex === -1) delegateList.push(delegate);
+					// Remove delegate from list when deleteBlock event contains delegate registration tx
+					else if (eventType === 'deleteBlock' && delegateIndex !== -1) {
 						delegateList.splice(delegateIndex, 1);
+					} else {
+						// Re-assign the current delegate status before updating the delegateList
+						// Delegate status can change only at the beginning of a new round
+						const { status } = delegateList[delegateIndex];
+						delegateList[delegateIndex] = { ...delegate, status };
 					}
 				});
 
