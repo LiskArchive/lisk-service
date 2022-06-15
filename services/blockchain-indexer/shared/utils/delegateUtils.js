@@ -16,25 +16,25 @@
 const { CacheRedis } = require('lisk-service-framework');
 const config = require('../../config');
 
-const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.redis);
+const delegatesCache = CacheRedis('delegates', config.endpoints.cache);
 
-const getUsernameByAddress = async (address) => {
+const getNameByAddress = async (address) => {
 	if (address) {
-		const delegate = await cacheRedisDelegates.get(address);
-		if (delegate) return delegate.username;
+		const name = await delegatesCache.get(address);
+		if (name) return name;
 	}
 	return null;
 };
 
-const getAddressByUsername = async (username) => {
-	if (username) {
-		const delegate = await cacheRedisDelegates.get(username);
-		if (delegate) return delegate.account.address;
+const getAddressByName = async (name) => {
+	if (name) {
+		const address = await delegatesCache.get(name);
+		if (address) return address;
 	}
 	return null;
 };
 
 module.exports = {
-	getUsernameByAddress,
-	getAddressByUsername,
+	getNameByAddress,
+	getAddressByName,
 };

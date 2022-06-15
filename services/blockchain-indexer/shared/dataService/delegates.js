@@ -101,8 +101,8 @@ const loadAllDelegates = async () => {
 		await BluebirdPromise.map(
 			delegateList,
 			async delegate => {
-				await delegatesCache.set(delegate.address, parseToJSONCompatObj(delegate));
-				await delegatesCache.set(delegate.name, parseToJSONCompatObj(delegate));
+				await delegatesCache.set(delegate.address, delegate.name);
+				await delegatesCache.set(delegate.name, delegate.address);
 				return delegate;
 			},
 			{ concurrency: delegateList.length },

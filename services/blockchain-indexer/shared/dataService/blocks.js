@@ -23,7 +23,7 @@ const {
 	getGenesisHeight,
 	getFinalizedHeight,
 } = require('../constants');
-const { getUsernameByAddress } = require('../utils/delegateUtils');
+const { getNameByAddress } = require('../utils/delegateUtils');
 
 const config = require('../../config');
 
@@ -74,7 +74,7 @@ const getBlocks = async (params = {}) => {
 	if (response.meta) blocks.meta = response.meta;
 
 	await Promise.all(blocks.data.map(async block => {
-		block.generatorUsername = await getUsernameByAddress(block.generatorAddress);
+		block.generatorUsername = await getNameByAddress(block.generatorAddress);
 		return block;
 	}));
 
