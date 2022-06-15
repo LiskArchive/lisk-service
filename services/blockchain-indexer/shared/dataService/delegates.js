@@ -27,10 +27,11 @@ const {
 	getBase32AddressFromHex,
 } = require('../utils/accountUtils');
 const { parseToJSONCompatObj } = require('../utils/parser');
-const requestAll = require('../utils/requestAll');
+
+const { MODULE_ID, COMMAND_ID } = require('../constants');
 const config = require('../../config');
 
-const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
+const delegatesCache = CacheRedis('delegates', config.endpoints.cache);
 
 const logger = Logger();
 
@@ -39,18 +40,17 @@ const delegateStatus = {
 	STANDBY: 'standby',
 	BANNED: 'banned',
 	PUNISHED: 'punished',
-	NON_ELIGIBLE: 'non-eligible', // TODO: Update to 'ineligible' with API v3
+	INELIGIBLE: 'ineligible',
 };
 
-let rawNextForgers = [];
-let nextForgers = [];
+let generatorsList = [];
 let delegateList = [];
 
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return Buffer.from(getHexAddressFromBase32(a.account.address), 'hex')
-		.compare(Buffer.from(getHexAddressFromBase32(b.account.address), 'hex'));
+	return Buffer.from(getHexAddressFromBase32(a.address), 'hex')
+		.compare(Buffer.from(getHexAddressFromBase32(b.address), 'hex'));
 };
 
 const computeDelegateRank = async () => {
@@ -62,13 +62,10 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	const numActiveForgers = await dataService.getNumberOfForgers();
-
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
-	const allNextForgersAddressList = rawNextForgers.map(forger => forger.address);
-	const activeNextForgersList = allNextForgersAddressList.slice(0, numActiveForgers);
+	const activeGeneratorsList = generatorsList.map(generator => generator.address);
 
 	const verifyIfPunished = delegate => {
 		const isPunished = delegate.pomHeights
@@ -81,14 +78,14 @@ const computeDelegateStatus = async () => {
 		logger.debug('Determine delegate status');
 
 		// Default delegate status
-		delegate.status = delegateStatus.NON_ELIGIBLE;
+		delegate.status = delegateStatus.INELIGIBLE;
 
 		// Update delegate status, if applicable
-		if (delegate.dpos.delegate.isBanned) {
+		if (delegate.isBanned) {
 			delegate.status = delegateStatus.BANNED;
 		} else if (verifyIfPunished(delegate)) {
 			delegate.status = delegateStatus.PUNISHED;
-		} else if (activeNextForgersList.includes(delegate.account.address)) {
+		} else if (activeGeneratorsList.includes(delegate.address)) {
 			delegate.status = delegateStatus.ACTIVE;
 		} else if (BigInt(delegate.delegateWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
 			delegate.status = delegateStatus.STANDBY;
@@ -100,15 +97,12 @@ const computeDelegateStatus = async () => {
 
 const loadAllDelegates = async () => {
 	try {
-		const maxCount = 10000;
-		delegateList = await requestAll(dataService.getDelegates, { limit: 10 }, maxCount);
+		delegateList = await dataService.getAllDelegates();
 		await BluebirdPromise.map(
 			delegateList,
 			async delegate => {
-				delegate.address = delegate.account.address;
-				delegate.publicKey = delegate.account.publicKey;
-				await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
-				await cacheRedisDelegates.set(delegate.username, parseToJSONCompatObj(delegate));
+				await delegatesCache.set(delegate.address, delegate.name);
+				await delegatesCache.set(delegate.name, delegate.address);
 				return delegate;
 			},
 			{ concurrency: delegateList.length },
@@ -122,28 +116,18 @@ const loadAllDelegates = async () => {
 	}
 };
 
-const loadAllNextForgers = async () => {
-	const maxCount = await dataService.getNumberOfForgers();
-	rawNextForgers = await dataService.getForgers({ limit: maxCount, offset: nextForgers.length });
-	logger.info(`Updated next forgers list with ${rawNextForgers.length} delegates.`);
-};
-
-const resolveNextForgers = async () => {
-	nextForgers = await BluebirdPromise.map(
-		rawNextForgers,
-		async forger => forger,
-	);
-	logger.debug('Finished collecting delegates');
-};
-
-const reloadNextForgersCache = async () => {
-	await loadAllNextForgers();
-	await resolveNextForgers();
+const loadAllGenerators = async () => {
+	generatorsList = await dataService.getGenerators();
+	logger.info(`Updated generators list with ${generatorsList.length} delegates.`);
 };
 
 const reload = async () => {
+	if (!await dataService.isDposModuleRegistered()) {
+		return;
+	}
+
 	await loadAllDelegates();
-	await loadAllNextForgers();
+	await loadAllGenerators();
 	await computeDelegateRank();
 	await computeDelegateStatus();
 };
@@ -166,21 +150,21 @@ const getTotalNumberOfDelegates = async (params = {}) => {
 	return relevantDelegates.length;
 };
 
-const getForgers = async params => {
-	const forgers = {
+const getGenerators = async params => {
+	const generators = {
 		data: [],
 		meta: {},
 	};
 
 	const { offset, limit } = params;
 
-	forgers.data = nextForgers.slice(offset, offset + limit);
+	generators.data = generatorsList.slice(offset, offset + limit);
 
-	forgers.meta.count = forgers.data.length;
-	forgers.meta.offset = offset;
-	forgers.meta.total = nextForgers.length;
+	generators.meta.count = generators.data.length;
+	generators.meta.offset = offset;
+	generators.meta.total = generatorsList.length;
 
-	return parseToJSONCompatObj(forgers);
+	return parseToJSONCompatObj(generators);
 };
 
 const getDelegates = async params => {
@@ -255,43 +239,43 @@ const getDelegates = async params => {
 
 // Keep the delegate cache up-to-date
 const updateDelegateListEveryBlock = () => {
-	const updateDelegateCacheListener = async (eventType, data) => {
-		const dposModuleId = 5;
-		const registerDelegateAssetId = 0;
-		const voteDelegateAssetId = 1;
+	const EVENT_NEW_BLOCK = 'newBlock';
+	const EVENT_DELETE_BLOCK = 'deleteBlock';
 
+	const updateDelegateCacheListener = async (eventType, data) => {
 		const updatedDelegateAddresses = [];
 		const [block] = data.data;
-		if (block && block.payload && Array.isArray(block.payload)) {
-			block.payload.forEach(tx => {
-				if (tx.moduleID === dposModuleId) {
-					if (tx.assetID === registerDelegateAssetId) {
+		if (block && block.transactions && Array.isArray(block.transactions)) {
+			block.transactions.forEach(tx => {
+				if (tx.moduleID === MODULE_ID.DPOS) {
+					if (tx.CommandID === COMMAND_ID.REGISTER_DELEGATE) {
 						updatedDelegateAddresses
 							.push(getBase32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.assetID === voteDelegateAssetId) {
-						tx.asset.votes.forEach(vote => updatedDelegateAddresses
+					} else if (tx.CommandID === COMMAND_ID.VOTE_DELEGATE) {
+						tx.params.votes.forEach(vote => updatedDelegateAddresses
 							.push(getBase32AddressFromHex(vote.delegateAddress)));
 					}
 				}
 			});
+			// TODO: Validate the logic if there is need to update delegate cache on vote transaction
 			if (updatedDelegateAddresses.length) {
-				const { data: updatedDelegateAccounts } = await dataService
-					.getAccounts({ addresses: updatedDelegateAddresses });
+				const updatedDelegateAccounts = await dataService
+					.getDelegates({ addresses: updatedDelegateAddresses });
 
 				updatedDelegateAccounts.forEach(delegate => {
 					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-					// Update delegate list on newBlock event
-					if (delegate.isDelegate) {
-						if (delegateIndex === -1) delegateList.push(delegate);
-						else {
-							// Re-assign the current delegate status before updating the delegateList
-							// Delegate status can change only at the beginning of a new round
-							const { status } = delegateList[delegateIndex];
-							delegateList[delegateIndex] = { ...delegate, status };
-						}
+
+					if (eventType === EVENT_DELETE_BLOCK && delegateIndex !== -1) {
 						// Remove delegate from list when deleteBlock event contains delegate registration tx
-					} else if (delegateIndex !== -1) {
 						delegateList.splice(delegateIndex, 1);
+					} else if (delegateIndex === -1) {
+						// Append to delegate list on newBlock event, if missing
+						delegateList.push(delegate);
+					} else {
+						// Re-assign the current delegate status before updating the delegateList
+						// Delegate status can change only at the beginning of a new round
+						const { status } = delegateList[delegateIndex];
+						delegateList[delegateIndex] = { ...delegate, status };
 					}
 				});
 
@@ -304,11 +288,11 @@ const updateDelegateListEveryBlock = () => {
 			if (delegateList[delegateIndex]
 				&& Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
 				if (delegateList[delegateIndex].producedBlocks && delegateList[delegateIndex].rewards) {
-					delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
+					delegateList[delegateIndex].producedBlocks = eventType === EVENT_NEW_BLOCK
 						? delegateList[delegateIndex].producedBlocks + 1
 						: delegateList[delegateIndex].producedBlocks - 1;
 
-					delegateList[delegateIndex].rewards = eventType === 'newBlock'
+					delegateList[delegateIndex].rewards = eventType === EVENT_NEW_BLOCK
 						? (BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)).toString()
 						: (BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward)).toString();
 				}
@@ -316,9 +300,12 @@ const updateDelegateListEveryBlock = () => {
 		}
 	};
 
-	const updateDelegateCacheOnNewBlockListener = (block) => updateDelegateCacheListener('newBlock', block);
-	const updateDelegateCacheOnDeleteBlockListener = (block) => updateDelegateCacheListener('deleteBlock', block);
-
+	const updateDelegateCacheOnNewBlockListener = (block) => {
+		updateDelegateCacheListener(EVENT_NEW_BLOCK, block);
+	};
+	const updateDelegateCacheOnDeleteBlockListener = (block) => {
+		updateDelegateCacheListener(EVENT_DELETE_BLOCK, block);
+	};
 	Signals.get('newBlock').add(updateDelegateCacheOnNewBlockListener);
 	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };
@@ -351,6 +338,6 @@ module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadNextForgersCache,
-	getForgers,
+	reloadGeneratorsCache: loadAllGenerators,
+	getGenerators,
 };

@@ -14,15 +14,15 @@
  *
  */
 const {
-	getForgers,
+	getGenerators,
 	getForgingStatus,
 	updateForgingStatus,
 } = require('../shared/sdk/endpoints');
 
 module.exports = [
 	{
-		name: 'getForgers',
-		controller: getForgers,
+		name: 'getGenerators',
+		controller: getGenerators,
 		params: {},
 	},
 	{

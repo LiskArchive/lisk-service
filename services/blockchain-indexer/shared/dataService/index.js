@@ -14,7 +14,6 @@
  *
  */
 const {
-	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getAccountsByAddress,
@@ -23,7 +22,9 @@ const {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
-	getNumberOfForgers,
+	getAllDelegates,
+	isDposModuleRegistered,
+	getNumberOfGenerators,
 	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -40,14 +41,13 @@ const {
 	getCachedAccountByUsername,
 } = require('./business');
 
-const { getAccounts } = require('./accounts');
+const { getAccounts, getLegacyAccountInfo } = require('./accounts');
 
 const {
 	getBlocks,
 	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
-	waitForLastBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 } = require('./blocks');
@@ -58,8 +58,8 @@ const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadNextForgersCache,
-	getForgers,
+	reloadGeneratorsCache,
+	getGenerators,
 } = require('./delegates');
 
 const { getNetworkStatus } = require('./network');
@@ -85,7 +85,6 @@ const { getVoters } = require('./voters');
 const { getVotes } = require('./votes');
 
 module.exports = {
-	getAllDelegates,
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
 	getAccountsByAddress,
@@ -94,13 +93,15 @@ module.exports = {
 	getIndexedAccountInfo,
 	getAccountsBySearch,
 	resolveMultisignatureMemberships,
-	getNumberOfForgers,
+	getAllDelegates,
+	isDposModuleRegistered,
+	getNumberOfGenerators,
 	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getBlockByHeight,
 	getBlockByID,
-	getForgers,
+	getGenerators,
 	getPeers,
 	getConnectedPeers,
 	getDisconnectedPeers,
@@ -116,18 +117,18 @@ module.exports = {
 	getCachedAccountByUsername,
 
 	getAccounts,
+	getLegacyAccountInfo,
 	getBlocks,
 	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
-	waitForLastBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 	getBlockchainAppsStatistics,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadNextForgersCache,
+	reloadGeneratorsCache,
 	getNetworkStatus,
 	getTransactions,
 	getPendingTransactions,
