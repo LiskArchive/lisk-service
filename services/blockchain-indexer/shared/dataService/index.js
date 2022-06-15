@@ -48,7 +48,6 @@ const {
 	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
-	waitForLastBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 } = require('./blocks');
@@ -123,7 +122,6 @@ module.exports = {
 	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
-	waitForLastBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 	getBlockchainAppsStatistics,

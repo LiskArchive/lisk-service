@@ -42,18 +42,6 @@ const getLastBlock = async () => {
 const getTotalNumberOfBlocks = async () => (await getLastBlock()).height
 	- (await getGenesisHeight()) + 1;
 
-const waitForLastBlock = () => new Promise((resolve) => {
-	const checkLastBlock = async (interval) => {
-		const block = await getLastBlock();
-		if (block.height > 0) {
-			if (interval) clearInterval(interval);
-			resolve(getLastBlock());
-		}
-	};
-	checkLastBlock();
-	const interval = setInterval(() => checkLastBlock(interval), 500);
-});
-
 const getBlocksFromServer = async params => {
 	const blocks = {
 		data: [],
@@ -146,7 +134,6 @@ module.exports = {
 	getBlocksAssets,
 	setLastBlock,
 	getLastBlock,
-	waitForLastBlock,
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 };

@@ -31,7 +31,7 @@ const { parseToJSONCompatObj } = require('../utils/parser');
 const { MODULE_ID, COMMAND_ID } = require('../constants');
 const config = require('../../config');
 
-const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
+const delegatesCache = CacheRedis('delegates', config.endpoints.cache);
 
 const logger = Logger();
 
@@ -62,15 +62,10 @@ const computeDelegateRank = async () => {
 };
 
 const computeDelegateStatus = async () => {
-	// TODO: Update when issue https://github.com/LiskHQ/lisk-sdk/issues/7213 is resolved
-	// const numActiveGenerators = await dataService.getNumberOfGenerators();
-	const numActiveGenerators = 103;
-
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
-	const allGeneratorsAddressList = generatorsList.map(generator => generator.address);
-	const activeGeneratorsList = allGeneratorsAddressList.slice(0, numActiveGenerators);
+	const activeGeneratorsList = generatorsList.map(generator => generator.address);
 
 	const verifyIfPunished = delegate => {
 		const isPunished = delegate.pomHeights
@@ -106,8 +101,8 @@ const loadAllDelegates = async () => {
 		await BluebirdPromise.map(
 			delegateList,
 			async delegate => {
-				await cacheRedisDelegates.set(delegate.address, parseToJSONCompatObj(delegate));
-				await cacheRedisDelegates.set(delegate.name, parseToJSONCompatObj(delegate));
+				await delegatesCache.set(delegate.address, parseToJSONCompatObj(delegate));
+				await delegatesCache.set(delegate.name, parseToJSONCompatObj(delegate));
 				return delegate;
 			},
 			{ concurrency: delegateList.length },
@@ -122,10 +117,7 @@ const loadAllDelegates = async () => {
 };
 
 const loadAllGenerators = async () => {
-	// TODO: Update when issue https://github.com/LiskHQ/lisk-sdk/issues/7213 is resolved
-	// const maxCount = await dataService.getNumberOfGenerators();
-	const maxCount = 103;
-	generatorsList = await dataService.getGenerators({ limit: maxCount });
+	generatorsList = await dataService.getGenerators();
 	logger.info(`Updated generators list with ${generatorsList.length} delegates.`);
 };
 
@@ -243,6 +235,9 @@ const getDelegates = async params => {
 
 // Keep the delegate cache up-to-date
 const updateDelegateListEveryBlock = () => {
+	const EVENT_NEW_BLOCK = 'newBlock';
+	const EVENT_DELETE_BLOCK = 'deleteBlock';
+
 	const updateDelegateCacheListener = async (eventType, data) => {
 		const updatedDelegateAddresses = [];
 		const [block] = data.data;
@@ -265,11 +260,13 @@ const updateDelegateListEveryBlock = () => {
 
 				updatedDelegateAccounts.forEach(delegate => {
 					const delegateIndex = delegateList.findIndex(acc => acc.address === delegate.address);
-					// Update delegate list on newBlock event
-					if (delegateIndex === -1) delegateList.push(delegate);
-					// Remove delegate from list when deleteBlock event contains delegate registration tx
-					else if (eventType === 'deleteBlock' && delegateIndex !== -1) {
+
+					if (eventType === EVENT_DELETE_BLOCK && delegateIndex !== -1) {
+						// Remove delegate from list when deleteBlock event contains delegate registration tx
 						delegateList.splice(delegateIndex, 1);
+					} else if (delegateIndex === -1) {
+						// Append to delegate list on newBlock event, if missing
+						delegateList.push(delegate);
 					} else {
 						// Re-assign the current delegate status before updating the delegateList
 						// Delegate status can change only at the beginning of a new round
@@ -287,11 +284,11 @@ const updateDelegateListEveryBlock = () => {
 			if (delegateList[delegateIndex]
 				&& Object.getOwnPropertyNames(delegateList[delegateIndex]).length) {
 				if (delegateList[delegateIndex].producedBlocks && delegateList[delegateIndex].rewards) {
-					delegateList[delegateIndex].producedBlocks = eventType === 'newBlock'
+					delegateList[delegateIndex].producedBlocks = eventType === EVENT_NEW_BLOCK
 						? delegateList[delegateIndex].producedBlocks + 1
 						: delegateList[delegateIndex].producedBlocks - 1;
 
-					delegateList[delegateIndex].rewards = eventType === 'newBlock'
+					delegateList[delegateIndex].rewards = eventType === EVENT_NEW_BLOCK
 						? (BigInt(delegateList[delegateIndex].rewards) + BigInt(block.reward)).toString()
 						: (BigInt(delegateList[delegateIndex].rewards) - BigInt(block.reward)).toString();
 				}
@@ -299,9 +296,12 @@ const updateDelegateListEveryBlock = () => {
 		}
 	};
 
-	const updateDelegateCacheOnNewBlockListener = (block) => updateDelegateCacheListener('newBlock', block);
-	const updateDelegateCacheOnDeleteBlockListener = (block) => updateDelegateCacheListener('deleteBlock', block);
-
+	const updateDelegateCacheOnNewBlockListener = (block) => {
+		updateDelegateCacheListener(EVENT_NEW_BLOCK, block);
+	};
+	const updateDelegateCacheOnDeleteBlockListener = (block) => {
+		updateDelegateCacheListener(EVENT_DELETE_BLOCK, block);
+	};
 	Signals.get('newBlock').add(updateDelegateCacheOnNewBlockListener);
 	Signals.get('deleteBlock').add(updateDelegateCacheOnDeleteBlockListener);
 };

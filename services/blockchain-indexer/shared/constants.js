@@ -84,6 +84,7 @@ module.exports = {
 	getGenesisHeight,
 	getAvailableModuleCommands,
 	resolveModuleCommands,
+
 	MODULE_ID,
 	COMMAND_ID,
 };
