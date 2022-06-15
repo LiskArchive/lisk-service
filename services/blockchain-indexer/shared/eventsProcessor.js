@@ -19,7 +19,7 @@ const { Logger, Signals } = require('lisk-service-framework');
 const {
 	getBlocks,
 	performLastBlockUpdate,
-	reloadGeneratorCache,
+	reloadGeneratorsCache,
 	reloadDelegateCache,
 	getGenerators,
 	getNumberOfGenerators,
@@ -55,7 +55,7 @@ const deleteBlockProcessor = async (block) => {
 const newRoundProcessor = async () => {
 	logger.debug('Performing updates on new round');
 	await reloadDelegateCache();
-	await reloadGeneratorCache();
+	await reloadGeneratorsCache();
 	const limit = await getNumberOfGenerators();
 	const generators = await getGenerators({ limit, offset: 0 });
 	const response = { generators: generators.data.map(generator => generator.address) };

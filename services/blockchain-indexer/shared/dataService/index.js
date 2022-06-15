@@ -59,7 +59,7 @@ const {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadGeneratorCache,
+	reloadGeneratorsCache,
 	getGenerators,
 } = require('./delegates');
 
@@ -129,7 +129,7 @@ module.exports = {
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadGeneratorCache,
+	reloadGeneratorsCache,
 	getNetworkStatus,
 	getTransactions,
 	getPendingTransactions,

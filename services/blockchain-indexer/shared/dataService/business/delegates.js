@@ -24,20 +24,24 @@ const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 
 const config = require('../../../config');
+const { MODULE_ID } = require('../../constants');
 
-const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
+const LAST_BLOCK_CACHE = 'lastBlock';
+const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
+
+const LAST_BLOCK_KEY = 'lastBlock';
 
 const isDposModuleRegistered = async () => {
 	const networkStatus = await requestConnector('getNetworkStatus');
 	const isRegistered = networkStatus.registeredModules
-		.some(module => module.id === config.constants.dposModuleID);
+		.some(module => module.id === MODULE_ID.DPOS);
 	return isRegistered;
 };
 
 const verifyIfPunished = async delegate => {
-	const latestBlockString = await latestBlockCache.get('latestBlock');
+	const latestBlockString = await lastBlockCache.get(LAST_BLOCK_KEY);
 	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
-	// TODO: Get this information from SDK direvctly once available
+	// TODO: Get this information from SDK directly once available
 	const isPunished = delegate.pomHeights
 		.some(pomHeight => pomHeight.start <= latestBlock.height
 			&& latestBlock.height <= pomHeight.end);
@@ -73,10 +77,14 @@ const getDelegates = async (addresses) => {
 	const delegates = await BluebirdPromise.map(
 		addresses,
 		async address => {
-			const delegate = await requestConnector('dpos_getDelegate', { address: getHexAddressFromBase32(address) });
+			const delegate = await requestConnector(
+				'dpos_getDelegate',
+				{ address: getHexAddressFromBase32(address) },
+			);
 			return delegate;
-		}, { concurrency: addresses.length });
-
+		},
+		{ concurrency: addresses.length },
+	);
 	return delegates;
 };
 

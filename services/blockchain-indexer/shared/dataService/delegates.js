@@ -27,6 +27,8 @@ const {
 	getBase32AddressFromHex,
 } = require('../utils/accountUtils');
 const { parseToJSONCompatObj } = require('../utils/parser');
+
+const { MODULE_ID, COMMAND_ID } = require('../constants');
 const config = require('../../config');
 
 const cacheRedisDelegates = CacheRedis('delegates', config.endpoints.cache);
@@ -41,7 +43,6 @@ const delegateStatus = {
 	INELIGIBLE: 'ineligible',
 };
 
-let rawGenerators = [];
 let generatorsList = [];
 let delegateList = [];
 
@@ -68,7 +69,7 @@ const computeDelegateStatus = async () => {
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
-	const allGeneratorsAddressList = rawGenerators.map(generator => generator.address);
+	const allGeneratorsAddressList = generatorsList.map(generator => generator.address);
 	const activeGeneratorsList = allGeneratorsAddressList.slice(0, numActiveGenerators);
 
 	const verifyIfPunished = delegate => {
@@ -124,24 +125,8 @@ const loadAllGenerators = async () => {
 	// TODO: Update when issue https://github.com/LiskHQ/lisk-sdk/issues/7213 is resolved
 	// const maxCount = await dataService.getNumberOfGenerators();
 	const maxCount = 103;
-	rawGenerators = await dataService.getGenerators({
-		limit: maxCount,
-		offset: generatorsList.length,
-	});
-	logger.info(`Updated generators list with ${rawGenerators.length} delegates.`);
-};
-
-const resolveGenerators = async () => {
-	generatorsList = await BluebirdPromise.map(
-		rawGenerators,
-		async forger => forger,
-	);
-	logger.debug('Finished collecting delegates');
-};
-
-const reloadGeneratorCache = async () => {
-	await loadAllGenerators();
-	await resolveGenerators();
+	generatorsList = await dataService.getGenerators({ limit: maxCount });
+	logger.info(`Updated generators list with ${generatorsList.length} delegates.`);
 };
 
 const reload = async () => {
@@ -263,11 +248,11 @@ const updateDelegateListEveryBlock = () => {
 		const [block] = data.data;
 		if (block && block.transactions && Array.isArray(block.transactions)) {
 			block.transactions.forEach(tx => {
-				if (tx.moduleID === config.constants.dposModuleID) {
-					if (tx.CommandID === config.constants.registerDelegateCommandID) {
+				if (tx.moduleID === MODULE_ID.DPOS) {
+					if (tx.CommandID === COMMAND_ID.REGISTER_DELEGATE) {
 						updatedDelegateAddresses
 							.push(getBase32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.CommandID === config.constants.voteDelegateCommandID) {
+					} else if (tx.CommandID === COMMAND_ID.VOTE_DELEGATE) {
 						tx.params.votes.forEach(vote => updatedDelegateAddresses
 							.push(getBase32AddressFromHex(vote.delegateAddress)));
 					}
@@ -349,6 +334,6 @@ module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadGeneratorCache,
+	reloadGeneratorsCache: loadAllGenerators,
 	getGenerators,
 };

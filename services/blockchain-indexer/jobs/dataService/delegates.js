@@ -15,7 +15,7 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const { reloadDelegateCache, isDposModuleRegistered } = require('../shared/dataService');
+const { reloadDelegateCache, isDposModuleRegistered } = require('../../shared/dataService');
 
 module.exports = [
 	{
@@ -23,7 +23,7 @@ module.exports = [
 		description: 'Keep the delegate list up-to-date',
 		schedule: '*/5 * * * *', // Every 5 min
 		init: async () => {
-			if (isDposModuleRegistered) {
+			if (await isDposModuleRegistered) {
 				logger.debug('Initializing delegate cache...');
 				try {
 					await reloadDelegateCache();
@@ -34,7 +34,7 @@ module.exports = [
 			}
 		},
 		controller: async () => {
-			if (isDposModuleRegistered) {
+			if (await isDposModuleRegistered) {
 				logger.debug('Reloading delegate cache...');
 				try {
 					await reloadDelegateCache();

@@ -27,14 +27,16 @@ const { getUsernameByAddress } = require('../utils/delegateUtils');
 
 const config = require('../../config');
 
-const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
+const LAST_BLOCK_CACHE = 'lastBlock';
+const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
 
-const setLastBlock = async block => latestBlockCache.set('latestBlock', JSON.stringify(block));
+const LAST_BLOCK_KEY = 'lastBlock';
+const setLastBlock = async block => lastBlockCache.set(LAST_BLOCK_KEY, JSON.stringify(block));
 
 const getLastBlock = async () => {
-	const latestBlockString = await latestBlockCache.get('latestBlock');
-	const latestBlock = latestBlockString ? JSON.parse(latestBlockString) : {};
-	return latestBlock;
+	const lastBlockString = await lastBlockCache.get(LAST_BLOCK_KEY);
+	const lastBlock = lastBlockString ? JSON.parse(lastBlockString) : {};
+	return lastBlock;
 };
 
 const getTotalNumberOfBlocks = async () => (await getLastBlock()).height

@@ -68,6 +68,15 @@ const getAvailableModuleCommands = async () => {
 	return registeredModules;
 };
 
+const MODULE_ID = {
+	DPOS: process.env.MODULE_ID_DPOS || 13,
+};
+
+const COMMAND_ID = {
+	REGISTER_DELEGATE: process.env.COMMAND_ID_DPOS_REGISTER_DELEGATE || 0,
+	VOTE_DELEGATE: process.env.COMMAND_ID_DPOS_VOTE_DELEGATE || 1,
+};
+
 module.exports = {
 	getFinalizedHeight,
 	getCurrentHeight,
@@ -75,4 +84,6 @@ module.exports = {
 	getGenesisHeight,
 	getAvailableModuleCommands,
 	resolveModuleCommands,
+	MODULE_ID,
+	COMMAND_ID,
 };
