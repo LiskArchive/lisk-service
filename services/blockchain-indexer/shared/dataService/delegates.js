@@ -122,6 +122,10 @@ const loadAllGenerators = async () => {
 };
 
 const reload = async () => {
+	if (!await dataService.isDPoSModuleRegistered()) {
+		return;
+	}
+
 	await loadAllDelegates();
 	await loadAllGenerators();
 	await computeDelegateRank();
