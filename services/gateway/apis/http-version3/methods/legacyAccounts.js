@@ -13,18 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const IP = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
-const MODULE_COMMAND_ID = /^\b(?:[0-9]+:[0-9]+)\b$/;
-const MODULE_COMMAND_NAME = /^\b(?:[0-9a-zA-Z]+:[0-9a-zA-Z]+)\b$/;
-const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
-const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
+const legacyAccountsSource = require('../../../sources/version3/legacyAccountsSchema');
+const regex = require('../../../shared/regex');
 
 module.exports = {
-	IP,
-	HASH_SHA256,
-	MODULE_COMMAND_ID,
-	MODULE_COMMAND_NAME,
-	PUBLIC_KEY,
-	SEMVER,
+	version: '2.0',
+	swaggerApiPath: '/legacy',
+	rpcMethod: 'get.legacy',
+	tags: ['Accounts'],
+	params: {
+		publicKey: { optional: false, type: 'string', min: 64, max: 64, pattern: regex.PUBLIC_KEY },
+	},
+	source: legacyAccountsSource,
 };

@@ -70,6 +70,23 @@ const getAccounts = async params => {
 	return parseToJSONCompatObj(accounts);
 };
 
+const getLegacyAccountInfo = async (params) => {
+	// TODO: Update once legacy account implementation is done with the issue https://github.com/LiskHQ/lisk-service/issues/1100
+	// const legacyAccountInfo = await dataService.getLegacyAccountInfo(params);
+	const legacyAccountInfo = {
+		data: {
+			legacyAddress: '5958045787317804578L',
+			balance: 1000,
+		},
+		meta: {
+			publicKey: params.publicKey,
+		},
+	};
+
+	return legacyAccountInfo;
+};
+
 module.exports = {
 	getAccounts,
+	getLegacyAccountInfo,
 };
