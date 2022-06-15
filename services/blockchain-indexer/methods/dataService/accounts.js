@@ -16,6 +16,7 @@
 const {
 	getAccounts,
 	getForgers,
+	getLegacyAccountInfo,
 } = require('./controllers/accounts');
 
 const {
@@ -51,5 +52,12 @@ module.exports = [
 		name: 'delegates.reload',
 		controller: reloadDelegateCache,
 		params: {},
+	},
+	{
+		name: 'legacy',
+		controller: getLegacyAccountInfo,
+		params: {
+			publicKey: { optional: false, type: 'string' },
+		},
 	},
 ];
