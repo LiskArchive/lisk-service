@@ -31,7 +31,7 @@ const {
 	getNodeInfo,
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
-const { decodeAccount, decodeBlock, decodeTransaction } = require('./decoder');
+const { decodeAccount } = require('./decoder');
 const { parseToJSONCompatObj } = require('../parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
@@ -63,7 +63,7 @@ const getDisconnectedPeers = async () => {
 
 const getForgingStatus = async () => {
 	try {
-		const forgingStatus = await invokeEndpoint('app_getForgingStatus');
+		const forgingStatus = await invokeEndpoint('generator_getForgingStatus');
 		return forgingStatus;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -76,7 +76,7 @@ const getForgingStatus = async () => {
 const updateForgingStatus = async (config) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('app_updateForgingStatus', { ...config });
+		const response = await apiClient._channel.invoke('generator_updateForgingStatus', { ...config });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -124,9 +124,8 @@ const getAccounts = async (addresses) => {
 
 const getLastBlock = async () => {
 	try {
-		const encodedBlock = await invokeEndpoint('app_getLastBlock');
-		const block = decodeBlock(encodedBlock);
-		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
+		const block = await invokeEndpoint('chain_getLastBlock');
+		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getLastBlock\'');
@@ -141,9 +140,8 @@ const getBlockByHeight = async (height) => {
 			return getGenesisBlock();
 		}
 
-		const encodedBlock = await invokeEndpoint('app_getBlockByHeight', { height });
-		const block = decodeBlock(encodedBlock);
-		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
+		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
+		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlockByHeight' for height: ${height}`);
@@ -168,14 +166,10 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		}
 
 		if (from <= to) {
-			const encodedBlocks = await invokeEndpoint('app_getBlocksByHeightBetween', { from, to });
-			blocks[1] = encodedBlocks.map((block) => ({
-				...(decodeBlock(block)),
-				_raw: block,
-			}));
+			blocks[1] = await invokeEndpoint('chain_getBlocksByHeightBetween', { from, to });
 		}
 
-		return parseToJSONCompatObj([blocks[0], ...blocks[1]]);
+		return ([blocks[0], ...blocks[1]]);
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
@@ -191,9 +185,8 @@ const getBlockByID = async (id) => {
 			return getGenesisBlock();
 		}
 
-		const encodedBlock = await invokeEndpoint('app_getBlockByID', { id });
-		const block = decodeBlock(encodedBlock);
-		return { ...parseToJSONCompatObj(block), _raw: encodedBlock };
+		const block = await invokeEndpoint('chain_getBlockByID', { id });
+		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlockByID' for ID: ${id}`);
@@ -216,12 +209,8 @@ const getBlocksByIDs = async (ids) => {
 			return remainingBlocks.splice(genesisBlockIndex, 0, genesisBlock);
 		}
 
-		const encodedBlocks = await invokeEndpoint('app_getBlocksByIDs', { ids });
-		const blocks = encodedBlocks.map((block) => ({
-			...(decodeBlock(block)),
-			_raw: block,
-		}));
-		return parseToJSONCompatObj(blocks);
+		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
+		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByIDs' for IDs: ${ids}`);
@@ -232,9 +221,8 @@ const getBlocksByIDs = async (ids) => {
 
 const getTransactionByID = async (id) => {
 	try {
-		const encodedTransaction = await invokeEndpoint('app_getTransactionByID', { id });
-		const transaction = decodeTransaction(encodedTransaction);
-		return { ...parseToJSONCompatObj(transaction), _raw: encodedTransaction };
+		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });
+		return transaction;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionByID' for ID: ${id}`);
@@ -245,12 +233,8 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
-		const encodedTransactions = await invokeEndpoint('app_getTransactionsByIDs', { ids });
-		const transactions = encodedTransactions.map(async (tx) => ({
-			...(decodeTransaction(tx)),
-			_raw: tx,
-		}));
-		return parseToJSONCompatObj(transactions);
+		const transaction = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
+		return transaction;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getTransactionsByIDs' for IDs: ${ids}`);
@@ -261,9 +245,8 @@ const getTransactionsByIDs = async (ids) => {
 
 const getTransactionsFromPool = async () => {
 	try {
-		const encodedTransactions = await invokeEndpoint('app_getTransactionsFromPool');
-		const transactions = encodedTransactions.map(tx => decodeTransaction(tx));
-		return parseToJSONCompatObj(transactions);
+		const transactions = await invokeEndpoint('generator_getTransactionsFromPool');
+		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException('Request timed out when calling \'getTransactionsFromPool\'');
@@ -275,7 +258,7 @@ const getTransactionsFromPool = async () => {
 const postTransaction = async (transaction) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('app_postTransaction', { transaction });
+		const response = await apiClient._channel.invoke('generator_postTransaction', { transaction });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -287,7 +270,7 @@ const postTransaction = async (transaction) => {
 
 const getForgers = async () => {
 	try {
-		const forgers = await invokeEndpoint('app_getForgers');
+		const forgers = await invokeEndpoint('validator_getForgers');
 		return forgers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

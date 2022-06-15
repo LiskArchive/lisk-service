@@ -21,8 +21,6 @@ const {
 const { getNodeInfo } = require('./endpoints_1');
 const { getGenesisBlockFromFS } = require('./blocksUtils');
 const { timeoutMessage, invokeEndpoint } = require('./client');
-const { decodeBlock } = require('./decoder');
-const { parseToJSONCompatObj } = require('../parser');
 
 const logger = Logger();
 

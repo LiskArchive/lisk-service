@@ -28,7 +28,7 @@ let registeredModules;
 const getSchemas = async () => {
 	try {
 		if (!schema) {
-			schema = await invokeEndpoint('app_getSchema');
+			schema = await invokeEndpoint('system_getSchema');
 		}
 		return schema;
 	} catch (err) {
