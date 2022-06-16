@@ -51,7 +51,7 @@ const appNewTransactionController = async (cb) => {
 		const decodedPayload = { transaction: decodeTransaction(payload) };
 		cb(decodedPayload);
 	};
-	Signals.get('appNewTransaction').add(appNewTransactionListener);
+	Signals.get('txpool_newTransaction').add(appNewTransactionListener);
 };
 
 const appChainForkedController = async (cb) => {
@@ -59,20 +59,17 @@ const appChainForkedController = async (cb) => {
 		const decodedPayload = await decodeBlockEventPayload(payload);
 		cb(decodedPayload);
 	};
-	Signals.get('appChainForked').add(appChainForkedListener);
+	Signals.get('chain_forked').add(appChainForkedListener);
 };
 
 const appChainValidatorsChangeController = async (cb) => {
 	const appChainValidatorsChangeListener = async (payload) => cb(payload);
-	Signals.get('appChainValidatorsChange').add(appChainValidatorsChangeListener);
+	Signals.get('chain_validatorsChanged').add(appChainValidatorsChangeListener);
 };
 
 const appNewBlockController = async (cb) => {
-	const appNewBlockListener = async (payload) => {
-		const decodedPayload = await decodeBlockEventPayload(payload);
-		cb(decodedPayload);
-	};
-	Signals.get('appNewBlock').add(appNewBlockListener);
+	const appNewBlockListener = async (payload) => cb(payload);
+	Signals.get('chain_newBlock').add(appNewBlockListener);
 };
 
 const appDeleteBlockController = async (cb) => {
@@ -80,7 +77,7 @@ const appDeleteBlockController = async (cb) => {
 		const decodedPayload = decodeBlockEventPayload(payload);
 		cb(decodedPayload);
 	};
-	Signals.get('appDeleteBlock').add(appDeleteBlockListener);
+	Signals.get('chain_deleteBlock').add(appDeleteBlockListener);
 };
 
 module.exports = {

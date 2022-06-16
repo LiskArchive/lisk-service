@@ -88,7 +88,9 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 
 const initIndexingScheduler = async () => {
 	// Schedule indexing new block
-	const newBlockListener = async ({ block }) => scheduleBlocksIndexing(block.header.height, true);
+	const newBlockListener = async ({ blockHeader }) => {
+		scheduleBlocksIndexing(blockHeader.height, true);
+	};
 	Signals.get('newBlock').add(newBlockListener);
 
 	// Retrieve enabled modules from connector

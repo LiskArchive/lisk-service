@@ -66,7 +66,7 @@ module.exports = [
 		controller: getTokensInfo,
 		params: {
 			address: { optional: false, type: 'string' },
-			tokenID: { optional: false, type: 'string' },
+			tokenID: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},
