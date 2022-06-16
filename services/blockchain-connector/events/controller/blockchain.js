@@ -15,17 +15,6 @@
  */
 const { Signals } = require('lisk-service-framework');
 
-const {
-	decodeBlock,
-	decodeTransaction,
-} = require('../../shared/sdk/decoder');
-
-const { parseToJSONCompatObj } = require('../../shared/parser');
-
-const decodeBlockEventPayload = (payload) => parseToJSONCompatObj({
-	block: { ...(decodeBlock(payload.block)), _raw: payload.block },
-});
-
 const appReadyController = async (cb) => {
 	const appReadyListener = async (payload) => cb(payload);
 	Signals.get('appReady').add(appReadyListener);
@@ -47,18 +36,12 @@ const appNetworkEventController = async (cb) => {
 };
 
 const appNewTransactionController = async (cb) => {
-	const appNewTransactionListener = async (payload) => {
-		const decodedPayload = { transaction: decodeTransaction(payload) };
-		cb(decodedPayload);
-	};
+	const appNewTransactionListener = async (payload) => cb(payload);
 	Signals.get('txpool_newTransaction').add(appNewTransactionListener);
 };
 
 const appChainForkedController = async (cb) => {
-	const appChainForkedListener = async (payload) => {
-		const decodedPayload = await decodeBlockEventPayload(payload);
-		cb(decodedPayload);
-	};
+	const appChainForkedListener = async (payload) => cb(payload);
 	Signals.get('chain_forked').add(appChainForkedListener);
 };
 
@@ -73,10 +56,7 @@ const appNewBlockController = async (cb) => {
 };
 
 const appDeleteBlockController = async (cb) => {
-	const appDeleteBlockListener = async (payload) => {
-		const decodedPayload = decodeBlockEventPayload(payload);
-		cb(decodedPayload);
-	};
+	const appDeleteBlockListener = async (payload) => cb(payload);
 	Signals.get('chain_deleteBlock').add(appDeleteBlockListener);
 };
 
