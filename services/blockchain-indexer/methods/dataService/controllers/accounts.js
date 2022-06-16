@@ -17,7 +17,7 @@ const {
 	Logger,
 	Utils,
 	HTTP,
-	Exceptions: { ValidationException },
+	Exceptions: { ValidationException, InvalidParamsException },
 } = require('lisk-service-framework');
 
 const { StatusCodes: { BAD_REQUEST } } = HTTP;
@@ -74,12 +74,19 @@ const getLegacyAccountInfo = async params => {
 };
 
 const getTokensInfo = async params => {
-	const tokensInfo = await dataService.getTokensInfo(params);
+	try {
+		const tokensInfo = await dataService.getTokensInfo(params);
 
-	return {
-		data: tokensInfo.data,
-		meta: tokensInfo.meta,
-	};
+		return {
+			data: tokensInfo.data,
+			meta: tokensInfo.meta,
+		};
+	} catch (error) {
+		let status;
+		if (error instanceof InvalidParamsException) status = 'INVALID_PARAMS';
+		if (status) return { status, data: { error: error.message } };
+		throw error;
+	}
 };
 
 module.exports = {
