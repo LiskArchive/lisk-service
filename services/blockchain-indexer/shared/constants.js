@@ -17,6 +17,7 @@ const { requestConnector } = require('./utils/request');
 
 let genesisConfig;
 let genesisHeight;
+let modulesCommands;
 let registeredModules;
 
 const getFinalizedHeight = async () => {
@@ -61,9 +62,17 @@ const resolveModuleCommands = (data) => {
 };
 
 const getAvailableModuleCommands = async () => {
+	if (!modulesCommands) {
+		const response = await requestConnector('getMetadata');
+		modulesCommands = resolveModuleCommands(response.modules);
+	}
+	return modulesCommands;
+};
+
+const getRegisteredModules = async () => {
 	if (!registeredModules) {
-		const response = await requestConnector('getRegisteredModules');
-		registeredModules = resolveModuleCommands(response);
+		const response = await requestConnector('getMetadata');
+		registeredModules = response.modules.map(module => module.name);
 	}
 	return registeredModules;
 };
@@ -84,6 +93,7 @@ module.exports = {
 	getGenesisHeight,
 	getAvailableModuleCommands,
 	resolveModuleCommands,
+	getRegisteredModules,
 
 	MODULE_ID,
 	COMMAND_ID,
