@@ -271,7 +271,7 @@ const postTransaction = async (transaction) => {
 
 const getGenerators = async () => {
 	try {
-		const generators = await invokeEndpoint('validator_getGeneratorList');
+		const generators = await invokeEndpoint('chain_getGeneratorList');
 		return generators;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

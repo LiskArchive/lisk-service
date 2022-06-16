@@ -17,7 +17,7 @@ const { requestConnector } = require('../utils/request');
 const { getAvailableModuleCommands, getRegisteredModules } = require('../constants');
 
 const getNetworkStatus = async () => {
-	const status = await requestConnector('getNodeInfo');
+	const status = await requestConnector('getNetworkStatus');
 
 	status.moduleCommands = await getAvailableModuleCommands();
 	status.registeredModules = await getRegisteredModules();
