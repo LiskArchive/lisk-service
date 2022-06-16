@@ -29,6 +29,7 @@ const {
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
+	getMetadata,
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { decodeAccount } = require('./decoder');
@@ -288,6 +289,7 @@ module.exports = {
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
+	getMetadata,
 	getConnectedPeers,
 	getDisconnectedPeers,
 	getForgingStatus,

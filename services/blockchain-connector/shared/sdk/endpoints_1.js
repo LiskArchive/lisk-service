@@ -20,6 +20,7 @@ const { invokeEndpoint } = require('./client');
 const timeoutMessage = 'Response not received in';
 
 // Caching for constants from SDK application
+let metadata;
 let schema;
 let registeredActions;
 let registeredEvents;
@@ -93,10 +94,25 @@ const getNodeInfo = async () => {
 	}
 };
 
+const getMetadata = async () => {
+	try {
+		if (!metadata) {
+			metadata = await invokeEndpoint('system_getMetadata');
+		}
+		return metadata;
+	} catch (err) {
+		if (err.message.includes(timeoutMessage)) {
+			throw new TimeoutException('Request timed out when calling \'getMetadata\'');
+		}
+		throw err;
+	}
+};
+
 module.exports = {
 	getSchemas,
 	getRegisteredActions,
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
+	getMetadata,
 };
