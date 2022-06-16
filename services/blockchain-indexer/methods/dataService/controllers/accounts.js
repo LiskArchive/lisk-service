@@ -73,8 +73,18 @@ const getLegacyAccountInfo = async params => {
 	};
 };
 
+const getTokensInfo = async params => {
+	const tokensInfo = await dataService.getTokensInfo(params);
+
+	return {
+		data: tokensInfo.data,
+		meta: tokensInfo.meta,
+	};
+};
+
 module.exports = {
 	getAccounts,
 	getGenerators,
 	getLegacyAccountInfo,
+	getTokensInfo,
 };
