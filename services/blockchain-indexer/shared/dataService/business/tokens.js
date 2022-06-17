@@ -31,6 +31,7 @@ const getTokensInfo = async (params) => {
 		throw new InvalidParamsException('tokenID based retrieval is only possible along with address');
 	}
 
+	// TODO: Add logic to retrieve symbol and name from the SDK once endpoint is available
 	if (params.tokenID && params.address) {
 		const response = await requestConnector('token_getBalance', {
 			address: getHexAddressFromBase32(params.address), tokenID: params.tokenID,
