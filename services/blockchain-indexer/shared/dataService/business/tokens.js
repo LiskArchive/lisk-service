@@ -21,6 +21,7 @@ const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 
 const getTokensInfo = async (params) => {
+	let tokensInfo;
 	const tokens = {
 		data: [],
 		meta: {},
@@ -34,21 +35,23 @@ const getTokensInfo = async (params) => {
 		const response = await requestConnector('token_getBalance', {
 			address: getHexAddressFromBase32(params.address), tokenID: params.tokenID,
 		});
-		tokens.data = { ...response, tokenID: params.tokenID };
+
+		tokensInfo = [{ ...response, tokenID: params.tokenID }];
 	} else {
 		const response = await requestConnector('token_getBalances', {
 			address: getHexAddressFromBase32(params.address),
 		});
-		tokens.data = response.balances;
+
+		tokensInfo = response.balances;
 	}
 
-	tokens.data = Array.isArray(tokens.data) ? tokens.data : [tokens.data];
+	tokens.data = tokensInfo.slice(params.offset, params.offset + params.limit);
 
 	tokens.meta = {
 		address: params.address,
-		count: params.limit,
+		count: tokens.data.length,
 		offset: params.offset,
-		total: tokens.data,
+		total: tokensInfo.length,
 	};
 
 	return tokens;

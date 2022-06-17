@@ -57,7 +57,7 @@ const {
 	postTransactions,
 } = require('./postTransactions');
 
-const { getTokensInfo } = require('./token');
+const { getTokensInfo } = require('./tokens');
 
 const {
 	getTransactions,
