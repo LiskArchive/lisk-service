@@ -246,7 +246,7 @@ const getTransactionsByIDs = async (ids) => {
 
 const getTransactionsFromPool = async () => {
 	try {
-		const transactions = await invokeEndpoint('generator_getTransactionsFromPool');
+		const transactions = await invokeEndpoint('txpool_getTransactionsFromPool');
 		return transactions;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -259,7 +259,7 @@ const getTransactionsFromPool = async () => {
 const postTransaction = async (transaction) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('generator_postTransaction', { transaction });
+		const response = await apiClient._channel.invoke('txpool_postTransaction', { transaction });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
