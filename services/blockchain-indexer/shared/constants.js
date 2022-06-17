@@ -63,7 +63,7 @@ const resolveModuleCommands = (data) => {
 
 const getAvailableModuleCommands = async () => {
 	if (!modulesCommands) {
-		const response = await requestConnector('getMetadata');
+		const response = await requestConnector('getSystemMetadata');
 		modulesCommands = resolveModuleCommands(response.modules);
 	}
 	return modulesCommands;
@@ -71,7 +71,7 @@ const getAvailableModuleCommands = async () => {
 
 const getRegisteredModules = async () => {
 	if (!registeredModules) {
-		const response = await requestConnector('getMetadata');
+		const response = await requestConnector('getSystemMetadata');
 		registeredModules = response.modules.map(module => module.name);
 	}
 	return registeredModules;

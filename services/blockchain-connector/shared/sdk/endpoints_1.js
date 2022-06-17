@@ -94,7 +94,7 @@ const getNodeInfo = async () => {
 	}
 };
 
-const getMetadata = async () => {
+const getSystemMetadata = async () => {
 	try {
 		if (!metadata) {
 			metadata = await invokeEndpoint('system_getMetadata');
@@ -102,7 +102,7 @@ const getMetadata = async () => {
 		return metadata;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException('Request timed out when calling \'getMetadata\'');
+			throw new TimeoutException('Request timed out when calling \'getSystemMetadata\'');
 		}
 		throw err;
 	}
@@ -114,5 +114,5 @@ module.exports = {
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
-	getMetadata,
+	getSystemMetadata,
 };
