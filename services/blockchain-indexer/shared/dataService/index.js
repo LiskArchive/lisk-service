@@ -39,12 +39,12 @@ const {
 	getCachedAccountByPublicKey,
 	getCachedAccountBySecondPublicKey,
 	getCachedAccountByUsername,
+	getTokensInfo,
 } = require('./business');
 
 const {
 	getAccounts,
 	getLegacyAccountInfo,
-	getTokensInfo,
 } = require('./accounts');
 
 const {

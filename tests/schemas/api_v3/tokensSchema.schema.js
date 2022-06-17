@@ -22,7 +22,7 @@ const lockedAmount = {
 };
 
 const tokensMetaSchema = {
-	address: Joi.string().pattern(regex.ADDRESS).required(),
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	count: Joi.number().integer().min(0).required(),
 	offset: Joi.number().integer().min(0).required(),
 	total: Joi.number().integer().min(0).required(),

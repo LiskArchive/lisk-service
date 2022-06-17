@@ -21,7 +21,7 @@ const {
 
 const {
 	invalidParamsSchema,
-	goodRequestSchema,
+	jsonRpcEnvelopeSchema,
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
@@ -32,20 +32,51 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensInfo = async (params) => request(wsRpcUrl, 'get.tokens', params);
 
-describe('get.legacy', () => {
+describe('get.tokens', () => {
 	// TODO: Enable/update when token modules endpoints works
 	xit('returns tokens info when call with address', async () => {
 		const response = await getTokensInfo({ address: '' });
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(tokensSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
+		expect(response.meta).toMap(tokensMetaSchema);
+	});
+
+	// TODO: Enable/update when token modules endpoints works
+	xit('returns tokens info when call with address and limit=10', async () => {
+		const response = await getTokensInfo({ address: '', limit: 10 });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
+		expect(response.meta).toMap(tokensMetaSchema);
+	});
+
+	// TODO: Enable/update when token modules endpoints works
+	xit('returns tokens info when call with address, limit=10 and offset=1', async () => {
+		const response = await getTokensInfo({ address: '', limit: 10, offset: 1 });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
 
 	// TODO: Enable/update when token modules endpoints works
 	xit('returns token info when call with address and tokenID', async () => {
 		const response = await getTokensInfo({ address: '', tokenID: '' });
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toMap(tokensSchema);
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
 

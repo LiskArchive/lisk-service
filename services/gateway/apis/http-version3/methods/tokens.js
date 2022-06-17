@@ -21,9 +21,9 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/tokens',
 	rpcMethod: 'get.tokens',
-	tags: ['Account'],
+	tags: ['Tokens'],
 	params: {
-		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS },
+		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
 		tokenID: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
 		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
