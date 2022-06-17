@@ -87,7 +87,7 @@ module.exports = [
 			const generatorsChangeListener = async () => {
 				try {
 					await reloadGeneratorsCache();
-					const generators = await getGenerators({ limit: 25, offset: 0 });
+					const generators = await getGenerators({ limit: 103 });
 					callback(generators);
 				} catch (err) {
 					logger.error(`Error occured when processing 'generators.change' event:\n${err.stack}`);

@@ -31,24 +31,54 @@ const endpoint = `${baseUrl}/api/v3`;
 
 describe('Generators API', () => {
 	describe('GET /generators', () => {
-		it('limit = 100 -> ok', async () => {
+		it('retrieve generators list -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(103);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list with limit=100 -> ok', async () => {
 			const response = await api.get(`${endpoint}/generators?limit=100`);
 			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeArrayOfSize(100);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
+			response.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('retrieve generators list with limit=100 and offset=1 -> ok', async () => {
+			const response = await api.get(`${endpoint}/generators?limit=100&offset=1`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(100);
 			response.data.map(generator => expect(generator).toMap(generatorSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('limit = 0 -> 400', async () => {
-			const response = await api.get(`${endpoint}/generatorSchema?limit=0`, 400);
+			const response = await api.get(`${endpoint}/generators?limit=0`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
 		it('empty limit -> all generators', async () => {
-			const response = await api.get(`${endpoint}/generatorSchema?limit=`);
+			const response = await api.get(`${endpoint}/generators?limit=`);
 			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(103);
 			response.data.map(generator => expect(generator).toMap(generatorSchema));
 			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid request param -> bad request', async () => {
+			const response = await api.get(`${endpoint}/generators?invalidParam=invalid`, 400);
+			expect(response).toMap(badRequestSchema);
 		});
 	});
 });

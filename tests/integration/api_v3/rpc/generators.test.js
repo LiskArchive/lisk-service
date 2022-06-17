@@ -32,18 +32,40 @@ const getGenerators = async params => request(wsRpcUrl, 'get.generators', params
 
 describe('Generators API', () => {
 	describe('GET /generators', () => {
-		it('limit = 100 -> ok', async () => {
-			const response = await getGenerators({ limit: 100 });
+		it('returns generators list -> ok', async () => {
+			const response = await getGenerators();
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(103);
 			result.data.map(generator => expect(generator).toMap(generatorSchema));
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('limit = 0 -> -32602', async () => {
-			const response = await getGenerators({ limit: 0 }).catch(e => e);
-			expect(response).toMap(invalidParamsSchema);
+		it('returns generators list with limit=100 -> ok', async () => {
+			const response = await getGenerators({ limit: 100 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(100);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('returns generators list with limit=100 and offset=1 -> ok', async () => {
+			const response = await getGenerators({ limit: 100, offset: 1 });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(100);
+			result.data.map(generator => expect(generator).toMap(generatorSchema));
+			expect(result.meta).toMap(metaSchema);
 		});
 
 		it('empty limit -> all generators', async () => {
@@ -51,8 +73,21 @@ describe('Generators API', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result).toMap(resultEnvelopeSchema);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(103);
 			result.data.map(generator => expect(generator).toMap(generatorSchema));
 			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('limit=0 -> -32602', async () => {
+			const response = await getGenerators({ limit: 0 }).catch(e => e);
+			expect(response).toMap(invalidParamsSchema);
+		});
+
+		it('invalid request param -> invalid param', async () => {
+			const response = await getGenerators({ invalidParam: 'invalid' });
+			expect(response).toMap(invalidParamsSchema);
 		});
 	});
 });

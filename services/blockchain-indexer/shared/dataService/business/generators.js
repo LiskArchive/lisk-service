@@ -27,6 +27,8 @@ const getGenerators = async () => {
 		async address => ({
 			address: getBase32AddressFromHex(address),
 			name: await getNameByAddress(address),
+			// TODO: Update when nextForgingTime is available from SDK
+			// nextForgingTime
 		}));
 
 	return generators;
