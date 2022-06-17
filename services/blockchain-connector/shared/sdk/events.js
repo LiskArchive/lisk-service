@@ -44,4 +44,4 @@ const subscribeToAllRegisteredEvents = async () => {
 	});
 };
 
-module.exports = { subscribeToAllRegisteredEvents };
+module.exports = { subscribeToAllRegisteredEvents, events };

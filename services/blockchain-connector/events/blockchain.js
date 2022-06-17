@@ -18,11 +18,11 @@ const {
 	appShutdownController,
 	appNetworkReadyController,
 	appNetworkEventController,
-	appNewTransactionController,
-	appChainForkedController,
-	appChainValidatorsChangeController,
-	appNewBlockController,
-	appDeleteBlockController,
+	txpoolNewTransactionController,
+	chainForkedController,
+	chainValidatorsChangeController,
+	chainNewBlockController,
+	chainDeleteBlockController,
 } = require('./controller/blockchain');
 
 const sdkEvents = [
@@ -47,29 +47,29 @@ const sdkEvents = [
 		controller: appNetworkEventController,
 	},
 	{
-		name: 'appNewTransaction',
+		name: 'txpoolNewTransaction',
 		get description() { return `Event ${this.name}`; },
-		controller: appNewTransactionController,
+		controller: txpoolNewTransactionController,
 	},
 	{
-		name: 'appChainForked',
+		name: 'chainForked',
 		get description() { return `Event ${this.name}`; },
-		controller: appChainForkedController,
+		controller: chainForkedController,
 	},
 	{
-		name: 'appChainValidatorsChange',
+		name: 'chainValidatorsChange',
 		get description() { return `Event ${this.name}`; },
-		controller: appChainValidatorsChangeController,
+		controller: chainValidatorsChangeController,
 	},
 	{
-		name: 'appNewBlock',
+		name: 'chainNewBlock',
 		get description() { return `Event ${this.name}`; },
-		controller: appNewBlockController,
+		controller: chainNewBlockController,
 	},
 	{
-		name: 'appDeleteBlock',
+		name: 'chainDeleteBlock',
 		get description() { return `Event ${this.name}`; },
-		controller: appDeleteBlockController,
+		controller: chainDeleteBlockController,
 	},
 ];
 

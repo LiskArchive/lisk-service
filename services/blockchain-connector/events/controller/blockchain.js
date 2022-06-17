@@ -35,29 +35,29 @@ const appNetworkEventController = async (cb) => {
 	Signals.get('appNetworkEvent').add(appNetworkEventListener);
 };
 
-const appNewTransactionController = async (cb) => {
-	const appNewTransactionListener = async (payload) => cb(payload);
-	Signals.get('txpool_newTransaction').add(appNewTransactionListener);
+const txpoolNewTransactionController = async (cb) => {
+	const txpoolNewTransactionListener = async (payload) => cb(payload);
+	Signals.get('txpoolNewTransaction').add(txpoolNewTransactionListener);
 };
 
-const appChainForkedController = async (cb) => {
-	const appChainForkedListener = async (payload) => cb(payload);
-	Signals.get('chain_forked').add(appChainForkedListener);
+const chainForkedController = async (cb) => {
+	const chainForkedListener = async (payload) => cb(payload);
+	Signals.get('chainForked').add(chainForkedListener);
 };
 
-const appChainValidatorsChangeController = async (cb) => {
-	const appChainValidatorsChangeListener = async (payload) => cb(payload);
-	Signals.get('chain_validatorsChanged').add(appChainValidatorsChangeListener);
+const chainValidatorsChangeController = async (cb) => {
+	const chainValidatorsChangeListener = async (payload) => cb(payload);
+	Signals.get('chainValidatorsChanged').add(chainValidatorsChangeListener);
 };
 
-const appNewBlockController = async (cb) => {
-	const appNewBlockListener = async (payload) => cb(payload);
-	Signals.get('chain_newBlock').add(appNewBlockListener);
+const chainNewBlockController = async (cb) => {
+	const chainNewBlockListener = async (payload) => cb(payload);
+	Signals.get('chainNewBlock').add(chainNewBlockListener);
 };
 
-const appDeleteBlockController = async (cb) => {
-	const appDeleteBlockListener = async (payload) => cb(payload);
-	Signals.get('chain_deleteBlock').add(appDeleteBlockListener);
+const chainDeleteBlockController = async (cb) => {
+	const chainDeleteBlockListener = async (payload) => cb(payload);
+	Signals.get('chainDeleteBlock').add(chainDeleteBlockListener);
 };
 
 module.exports = {
@@ -65,9 +65,9 @@ module.exports = {
 	appShutdownController,
 	appNetworkReadyController,
 	appNetworkEventController,
-	appNewTransactionController,
-	appChainForkedController,
-	appChainValidatorsChangeController,
-	appNewBlockController,
-	appDeleteBlockController,
+	txpoolNewTransactionController,
+	chainForkedController,
+	chainValidatorsChangeController,
+	chainNewBlockController,
+	chainDeleteBlockController,
 };
