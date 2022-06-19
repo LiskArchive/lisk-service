@@ -27,9 +27,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const logger = Logger();
-
-const config = require('../../config');
+const { processTransaction } = require('./module');
 
 const {
 	getBlockByHeight,
@@ -54,12 +52,16 @@ const {
 	getAvailableModuleCommands,
 } = require('../constants');
 
+const config = require('../../config');
+
 const blocksIndexSchema = require('../database/schema/blocks');
 const accountsIndexSchema = require('../database/schema/accounts');
 const transactionsIndexSchema = require('../database/schema/transactions');
 const votesIndexSchema = require('../database/schema/votes');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const logger = Logger();
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
@@ -114,24 +116,31 @@ const indexBlock = async job => {
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
 
-	const blockToIndex = {
-		...block,
-		assetsModuleIDs: block.assets.map(blockAsset => blockAsset.moduleID),
-	};
-
 	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
+	const dbTrx = await startDbTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
 
 	try {
-		const transactionsDB = await getTransactionsIndex();
-		const transactions = await getTransactionIndexingInfo(blockToIndex);
-		if (transactions.length) await transactionsDB.upsert(transactions, trx);
-		if (blocks.length) await blocksDB.upsert(blocksToIndex, trx);
-		await commitDbTransaction(trx);
+		if (block.transactions.length) {
+			const { transactions: t, assets, ...blockHeader } = block;
+			const transactions = await getTransactionIndexingInfo(block);
+			await BluebirdPromise.map(
+				transactions,
+				async (tx) => processTransaction(blockHeader, tx, dbTrx),
+				{ concurrency: transactions.length },
+			);
+		}
+
+		const blockToIndex = {
+			...block,
+			assetsModuleIDs: block.assets.map(asset => asset.moduleID),
+		};
+
+		await blocksDB.upsert(blockToIndex, dbTrx);
+		await commitDbTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await rollbackDbTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
