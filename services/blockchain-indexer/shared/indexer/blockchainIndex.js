@@ -12,7 +12,9 @@
  *
  * Removal or modification of this copyright notice is prohibited.
  *
- */
+*/
+const BluebirdPromise = require('bluebird');
+
 const {
 	Logger,
 	Queue,
@@ -24,8 +26,6 @@ const {
 		rollbackDbTransaction,
 	},
 } = require('lisk-service-framework');
-
-const BluebirdPromise = require('bluebird');
 
 const logger = Logger();
 
@@ -39,6 +39,7 @@ const {
 } = require('../dataService');
 
 const {
+	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
 } = require('../utils/accountUtils');
 
@@ -47,13 +48,10 @@ const {
 } = require('../utils/arrayUtils');
 
 const {
-	getTransactionIndexingInfo,
-} = require('./transactionIndex');
-
-const {
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisHeight,
+	getAvailableModuleCommands,
 } = require('../constants');
 
 const blocksIndexSchema = require('../database/schema/blocks');
@@ -67,9 +65,6 @@ const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema,
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
-
-const validateBlocks = (blocks) => blocks.length
-	&& blocks.every(block => !!block && block.height >= 0);
 
 const getGeneratorPkInfoArray = async (blocks) => {
 	const blocksDB = await getBlocksIndex();
@@ -90,18 +85,39 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	return pkInfoArray;
 };
 
+const validateBlock = (block) => !!block && block.height >= 0;
+
+const getTransactionIndexingInfo = async (block) => {
+	const availableModuleCommands = await getAvailableModuleCommands();
+	const transactions = block.transactions.map(tx => {
+		const { id } = availableModuleCommands
+			.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
+		tx.height = block.height;
+		tx.blockID = block.id;
+		tx.moduleCommandID = id;
+		tx.timestamp = block.timestamp;
+		tx.amount = tx.params.amount || null;
+		tx.data = tx.params.data || null;
+		if (tx.params.recipientAddress) {
+			tx.recipientID = getBase32AddressFromHex(tx.params.recipientAddress);
+		}
+		return tx;
+	});
+
+	return transactions;
+};
+
 const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const blocks = await getBlockByHeight(height);
-	const blocksToIndex = blocks.map(block => {
-		const moduleIDs = block.assets.map(blockAsset => blockAsset.moduleID);
-		return { ...block, assetsModuleIDs: moduleIDs };
-	});
+	const block = await getBlockByHeight(height);
 
-	if (!validateBlocks(blocks)) {
-		throw new Error(`Error: Invalid block ${height} }`);
-	}
+	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
+
+	const blockToIndex = {
+		...block,
+		assetsModuleIDs: block.assets.map(blockAsset => blockAsset.moduleID),
+	};
 
 	const connection = await getDbConnection();
 	const trx = await startDbTransaction(connection);
@@ -109,7 +125,7 @@ const indexBlock = async job => {
 
 	try {
 		const transactionsDB = await getTransactionsIndex();
-		const transactions = await getTransactionIndexingInfo(blocksToIndex);
+		const transactions = await getTransactionIndexingInfo(blockToIndex);
 		if (transactions.length) await transactionsDB.upsert(transactions, trx);
 		if (blocks.length) await blocksDB.upsert(blocksToIndex, trx);
 		await commitDbTransaction(trx);
@@ -197,7 +213,7 @@ const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [blo
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
-	const [block] = await getBlockByHeight(height);
+	const block = await getBlockByHeight(height);
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
