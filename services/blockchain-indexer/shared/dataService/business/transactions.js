@@ -19,10 +19,8 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const blockSource = require('./blocks');
+const { getBlockByID } = require('./blocks');
 const { getAvailableModuleCommands } = require('../../constants');
-
-const transactionsIndexSchema = require('../../database/schema/transactions');
 
 const {
 	getHexAddressFromPublicKey,
@@ -34,6 +32,8 @@ const {
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
+
+const transactionsIndexSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -291,7 +291,7 @@ const getTransactions = async params => {
 };
 
 const getTransactionsByBlockId = async blockId => {
-	const [block] = await blockSource.getBlockByID(blockId);
+	const block = await getBlockByID(blockId);
 	const transactions = await BluebirdPromise.map(
 		block.payload,
 		async transaction => {
