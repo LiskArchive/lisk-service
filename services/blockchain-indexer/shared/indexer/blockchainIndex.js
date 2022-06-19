@@ -323,25 +323,25 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-const getNonFinalHeights = async () => {
+const getMinNonFinalHeight = async () => {
 	const blocksDB = await getBlocksIndex();
 
 	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
 		sort: 'height:asc',
-		limit: 5000, // TODO: Check later for improvements
+		limit: 1,
 		isFinal: false,
 	}, ['height']);
 
-	return lastIndexedHeight || [];
+	return lastIndexedHeight;
 };
 
 const updateNonFinalBlocks = async () => {
 	const cHeight = await getCurrentHeight();
-	const nfHeights = await getNonFinalHeights();
+	const minNFHeight = await getMinNonFinalHeight();
 
-	if (nfHeights.length > 0) {
-		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
-		await buildIndex(nfHeights[0].height, cHeight);
+	if (typeof minNFHeight === 'number') {
+		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks`);
+		await buildIndex(minNFHeight, cHeight);
 	}
 };
 
