@@ -18,7 +18,8 @@
 const assetID = 0;
 const assetName = 'transfer';
 
-const processTransaction = async (blockHeader, tx) => {
+// eslint-disable-next-line no-unused-vars
+const processTransaction = async (blockHeader, tx, dbTrx) => {
 	// TODO: Implement
 
 	console.info(blockHeader, tx);

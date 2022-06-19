@@ -19,4 +19,7 @@ export const assetID = 0;
 export const assetName = 'assetName';
 
 // Implement the custom logic in the 'processTransaction' method and export it
-export const processTransaction = async (blockHeader, tx) => Promise.resolve({ blockHeader, tx });
+// eslint-disable-next-line no-unused-vars
+export const processTransaction = async (blockHeader, tx, dbTrx) => {
+	Promise.resolve({ blockHeader, tx });
+};
