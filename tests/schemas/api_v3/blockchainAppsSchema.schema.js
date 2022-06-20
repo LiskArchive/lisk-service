@@ -14,8 +14,11 @@
  *
  */
 import Joi from 'joi';
+import regex from './regex';
 
-const goodRequestSchema = {
+const validStatuses = ['registered', 'active', 'terminated', 'any'];
+
+const goodRequestSchemaForStats = {
 	data: Joi.object().required(),
 	meta: Joi.object().optional(),
 	links: Joi.object().optional(),
@@ -27,7 +30,17 @@ const blockchainAppsStatsSchema = {
 	terminated: Joi.number().integer().min(0).required(),
 };
 
+const blockchainAppSchema = {
+	name: Joi.string().pattern(regex.NAME).required(),
+	chainID: Joi.string().required(),
+	state: Joi.string().valid(...validStatuses).required(),
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	lastCertificateHeight: Joi.string().required(),
+	lastUpdated: Joi.string().required(),
+};
+
 module.exports = {
 	blockchainAppsStatsSchema: Joi.object(blockchainAppsStatsSchema).required(),
-	goodRequestSchema: Joi.object(goodRequestSchema).required(),
+	blockchainAppSchema: Joi.object(blockchainAppSchema).required(),
+	goodRequestSchemaForStats: Joi.object(goodRequestSchemaForStats).required(),
 };

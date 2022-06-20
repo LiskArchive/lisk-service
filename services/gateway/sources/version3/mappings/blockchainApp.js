@@ -13,13 +13,11 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
-
-const getBlockchainAppsStatistics = async () => {
-	const result = await dataService.getBlockchainAppsStatistics();
-	return result;
-};
-
 module.exports = {
-	getBlockchainAppsStatistics,
+	name: '=,string',
+	chainID: '=,string',
+	state: '=,string',
+	address: '=,string',
+	lastCertificateHeight: '=,string',
+	lastUpdated: '=,string',
 };

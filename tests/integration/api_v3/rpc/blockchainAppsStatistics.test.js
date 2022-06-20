@@ -25,8 +25,8 @@ const {
 
 const {
 	blockchainAppsStatsSchema,
-	goodRequestSchema,
-} = require('../../../schemas/api_v3/blockchainAppsStatsSchema.schema');
+	goodRequestSchemaForStats,
+} = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsStatistics = async (params) => request(wsRpcUrl, 'get.blockchain.apps.statistics', params);
@@ -35,7 +35,7 @@ describe('get.blockchain.apps.statistics', () => {
 	it('returns apps statistics', async () => {
 		const response = await getBlockchainAppsStatistics();
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaForStats);
 		expect(result.data).toMap(blockchainAppsStatsSchema);
 	});
 
