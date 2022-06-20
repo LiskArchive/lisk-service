@@ -19,7 +19,7 @@ import regex from './regex';
 const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
 const generatorSchema = {
-	address: Joi.string().pattern(regex.ADDRESS).required(),
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
 	nextForgingTime: Joi.number().integer().min(getCurrentTimestamp()).optional(),
 };
