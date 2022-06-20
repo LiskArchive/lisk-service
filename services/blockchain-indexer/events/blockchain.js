@@ -18,7 +18,7 @@ const { Logger, Signals } = require('lisk-service-framework');
 
 const {
 	reloadAllPendingTransactions,
-	getTransactionsByBlockId,
+	getTransactionsByBlockID,
 	reloadGeneratorsCache,
 	getGenerators,
 } = require('../shared/dataService');
@@ -69,7 +69,7 @@ module.exports = [
 						const [block] = data.data;
 						if (block.numberOfTransactions > 0) {
 							logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
-							const transactionData = await getTransactionsByBlockId(block.id);
+							const transactionData = await getTransactionsByBlockID(block.id);
 							callback(transactionData);
 						}
 					}

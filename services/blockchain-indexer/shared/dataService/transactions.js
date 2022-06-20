@@ -144,7 +144,7 @@ const getCommandsParamsSchemas = async params => {
 	return commandsParamsSchemas;
 };
 
-const initPendingTransactionsList = (() => dataService.loadAllPendingTransactions())();
+const initPendingTransactionsList = () => dataService.loadAllPendingTransactions();
 
 const reload = () => dataService.loadAllPendingTransactions();
 
@@ -155,5 +155,5 @@ module.exports = {
 	reloadAllPendingTransactions: reload,
 	postTransactions,
 	getCommandsParamsSchemas,
-	getTransactionsByBlockId: dataService.getTransactionsByBlockId,
+	getTransactionsByBlockID: dataService.getTransactionsByBlockID,
 };

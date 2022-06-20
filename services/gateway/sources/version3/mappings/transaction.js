@@ -23,7 +23,7 @@ module.exports = {
 	block: {
 		id: 'blockID,string',
 		height: '=,number',
-		timestamp: 'unixTimestamp,number',
+		timestamp: '=,number',
 	},
 	sender: {
 		address: 'senderID,string',
