@@ -15,15 +15,14 @@
  */
 const generatorsSource = require('../../../sources/version3/generators');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/generators',
 	rpcMethod: 'get.generators',
 	params: {
-		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10, pattern: regex.LIMIT },
-		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
+		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	tags: ['Generators'],
 	source: generatorsSource,
