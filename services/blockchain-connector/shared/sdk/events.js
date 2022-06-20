@@ -18,6 +18,7 @@ const { Signals } = require('lisk-service-framework');
 const { getRegisteredEvents } = require('./endpoints');
 const { getApiClient } = require('./client');
 
+// TODO: Update the implementation to avoid any hardcoding with the issue https://github.com/liskhq/lisk-service/issues/1097
 const EVENT_CHAIN_FORK = 'chain_forked';
 const EVENT_CHAIN_BLOCK_NEW = 'chain_newBlock';
 const EVENT_CHAIN_BLOCK_DELETE = 'chain_deleteBlock';

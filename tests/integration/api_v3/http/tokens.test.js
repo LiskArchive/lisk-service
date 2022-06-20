@@ -30,12 +30,39 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/tokens`;
 
-describe('Legacy accounts API', () => {
+describe('Tokens API', () => {
 	// TODO: Enable/update when token modules endpoints works
 	xit('retrieves tokens info when call with address-> ok', async () => {
 		const address = '';
 		const response = await api.get(`endpoint?address=${address}`);
 		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(response.data).toMap(tokensSchema);
+		expect(response.meta).toMap(tokensMetaSchema);
+	});
+
+	// TODO: Enable/update when token modules endpoints works
+	xit('retrieves token info when call with address and limit 10-> ok', async () => {
+		const address = '';
+		const response = await api.get(`endpoint?address=${address}&limit=10`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		expect(response.data).toMap(tokensSchema);
+		expect(response.meta).toMap(tokensMetaSchema);
+	});
+
+	// TODO: Enable/update when token modules endpoints works
+	xit('retrieves token info when call with address, limit=10 and offset=1-> ok', async () => {
+		const address = '';
+		const response = await api.get(`endpoint?address=${address}&limit=10&offset=1`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
 		expect(response.data).toMap(tokensSchema);
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
@@ -46,6 +73,8 @@ describe('Legacy accounts API', () => {
 		const tokenID = '';
 		const response = await api.get(`endpoint?address=${address}&tokenID=${tokenID}`);
 		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(1);
 		expect(response.data).toMap(tokensSchema);
 		expect(response.meta).toMap(tokensMetaSchema);
 	});
@@ -55,7 +84,7 @@ describe('Legacy accounts API', () => {
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('invalid request param: TokenID with No address -> bad request', async () => {
+	it('invalid request param: TtkenID with NO address -> bad request', async () => {
 		const response = await api.get(endpoint, 400);
 		expect(response).toMap(badRequestSchema);
 	});

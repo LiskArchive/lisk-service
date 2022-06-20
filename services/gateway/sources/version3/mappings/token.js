@@ -18,7 +18,7 @@ module.exports = {
 	name: '=,string',
 	symbol: '=,string',
 	availableBalance: '=,string',
-	lockedAmount: ['lockedBalances', {
+	lockedBalances: ['lockedBalances', {
 		moduleID: '=,string',
 		amount: '=,string',
 	}],

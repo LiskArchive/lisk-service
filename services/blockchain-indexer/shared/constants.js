@@ -17,7 +17,7 @@ const { requestConnector } = require('./utils/request');
 
 let genesisConfig;
 let genesisHeight;
-let modulesCommands;
+let moduleCommands;
 let registeredModules;
 
 const getFinalizedHeight = async () => {
@@ -62,11 +62,11 @@ const resolveModuleCommands = (data) => {
 };
 
 const getAvailableModuleCommands = async () => {
-	if (!modulesCommands) {
+	if (!moduleCommands) {
 		const response = await requestConnector('getSystemMetadata');
-		modulesCommands = resolveModuleCommands(response.modules);
+		moduleCommands = resolveModuleCommands(response.modules);
 	}
-	return modulesCommands;
+	return moduleCommands;
 };
 
 const getRegisteredModules = async () => {

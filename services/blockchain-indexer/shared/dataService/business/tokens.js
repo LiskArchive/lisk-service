@@ -20,7 +20,7 @@ const {
 const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 
-const getTokensInfo = async (params) => {
+const getTokens = async (params) => {
 	let tokensInfo;
 	const tokens = {
 		data: [],
@@ -59,5 +59,5 @@ const getTokensInfo = async (params) => {
 };
 
 module.exports = {
-	getTokensInfo,
+	getTokens,
 };

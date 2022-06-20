@@ -39,12 +39,12 @@ const {
 	getCachedAccountByPublicKey,
 	getCachedAccountBySecondPublicKey,
 	getCachedAccountByUsername,
+	getTokens,
 } = require('./business');
 
 const {
 	getAccounts,
 	getLegacyAccountInfo,
-	getTokensInfo,
 } = require('./accounts');
 
 const {
@@ -122,7 +122,7 @@ module.exports = {
 
 	getAccounts,
 	getLegacyAccountInfo,
-	getTokensInfo,
+	getTokens,
 	getBlocks,
 	getBlocksAssets,
 	setLastBlock,
