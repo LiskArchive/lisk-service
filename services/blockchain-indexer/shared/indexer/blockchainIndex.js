@@ -27,7 +27,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { processTransaction } = require('./module');
+const { processTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
@@ -37,7 +37,6 @@ const {
 } = require('../dataService');
 
 const {
-	getBase32AddressFromHex,
 	getBase32AddressFromPublicKey,
 } = require('../utils/accountUtils');
 
@@ -89,26 +88,6 @@ const getGeneratorPkInfoArray = async (blocks) => {
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
-const getTransactionIndexingInfo = async (block) => {
-	const availableModuleCommands = await getAvailableModuleCommands();
-	const transactions = block.transactions.map(tx => {
-		const { id } = availableModuleCommands
-			.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
-		tx.height = block.height;
-		tx.blockID = block.id;
-		tx.moduleCommandID = id;
-		tx.timestamp = block.timestamp;
-		tx.amount = tx.params.amount || null;
-		tx.data = tx.params.data || null;
-		if (tx.params.recipientAddress) {
-			tx.recipientID = getBase32AddressFromHex(tx.params.recipientAddress);
-		}
-		return tx;
-	});
-
-	return transactions;
-};
-
 const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
@@ -122,12 +101,22 @@ const indexBlock = async job => {
 
 	try {
 		if (block.transactions.length) {
-			const { transactions: t, assets, ...blockHeader } = block;
-			const transactions = await getTransactionIndexingInfo(block);
+			const availableModuleCommands = await getAvailableModuleCommands();
+
+			const { transactions, assets, ...blockHeader } = block;
 			await BluebirdPromise.map(
-				transactions,
-				async (tx) => processTransaction(blockHeader, tx, dbTrx),
-				{ concurrency: transactions.length },
+				block.transactions,
+				async (tx) => {
+					const { id } = availableModuleCommands
+						.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
+					tx.moduleCommandID = id;
+					tx.blockID = block.id;
+					tx.height = block.height;
+					tx.timestamp = block.timestamp;
+
+					await processTransaction(blockHeader, tx, dbTrx);
+				},
+				{ concurrency: block.transactions.length },
 			);
 		}
 
