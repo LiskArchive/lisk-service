@@ -37,7 +37,7 @@ const { genDocs } = require('./shared/generateDocs');
 const mapper = require('./shared/customMapper');
 const { definition: blocksDefinition } = require('./sources/version3/blocks');
 const { definition: feesDefinition } = require('./sources/version2/fees');
-const { definition: forgersDefinition } = require('./sources/version2/forgers');
+const { definition: generatorsDefinition } = require('./sources/version3/generators');
 const { definition: transactionsDefinition } = require('./sources/version3/transactions');
 
 const { host, port } = config;
@@ -136,7 +136,7 @@ const gatewayConfig = {
 		'block.change': (payload) => sendSocketIoEvent('update.block', mapper(payload, blocksDefinition)),
 		'transactions.new': (payload) => sendSocketIoEvent('update.transactions', mapper(payload, transactionsDefinition)),
 		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
-		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, forgersDefinition)),
+		'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
 	},

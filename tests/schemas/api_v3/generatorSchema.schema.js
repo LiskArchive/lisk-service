@@ -13,27 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { InvalidParamsException },
-} = require('lisk-service-framework');
+import Joi from 'joi';
+import regex from './regex';
 
-const dataService = require('../../../shared/dataService');
+const getCurrentTimestamp = () => Math.floor(Date.now() / 1000);
 
-const getTokens = async params => {
-	try {
-		const response = await dataService.getTokens(params);
-		return {
-			data: response.data,
-			meta: response.meta,
-		};
-	} catch (error) {
-		let status;
-		if (error instanceof InvalidParamsException) status = 'INVALID_PARAMS';
-		if (status) return { status, data: { error: error.message } };
-		throw error;
-	}
+const generatorSchema = {
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	name: Joi.string().pattern(regex.NAME).optional(),
+	nextForgingTime: Joi.number().integer().min(getCurrentTimestamp()).required(),
 };
 
 module.exports = {
-	getTokens,
+	generatorSchema: Joi.object(generatorSchema).required(),
 };

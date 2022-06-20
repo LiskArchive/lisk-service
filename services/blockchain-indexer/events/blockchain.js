@@ -19,8 +19,8 @@ const { Logger, Signals } = require('lisk-service-framework');
 const {
 	reloadAllPendingTransactions,
 	getTransactionsByBlockId,
-	// reloadNextForgersCache,
-	// getForgers,
+	reloadGeneratorsCache,
+	getGenerators,
 } = require('../shared/dataService');
 
 const logger = Logger();
@@ -80,23 +80,22 @@ module.exports = [
 			Signals.get('newBlock').add(newTransactionsListener);
 		},
 	},
-	// TODO: Enable when getForgers method is available from core
-	// {
-	// 	name: 'forgers.change',
-	// 	description: 'Track round change updates',
-	// 	controller: callback => {
-	// 		const forgersChangeListener = async () => {
-	// 			try {
-	// 				await reloadNextForgersCache();
-	// 				const forgers = await getForgers({ limit: 25, offset: 0 });
-	// 				callback(forgers);
-	// 			} catch (err) {
-	// 				logger.error(`Error occured when processing 'forgers.change' event:\n${err.stack}`);
-	// 			}
-	// 		};
-	// 		Signals.get('newBlock').add(forgersChangeListener);
-	// 	},
-	// },
+	{
+		name: 'generators.change',
+		description: 'Keep generators list up-to-date',
+		controller: callback => {
+			const generatorsChangeListener = async () => {
+				try {
+					await reloadGeneratorsCache();
+					const generators = await getGenerators({ limit: 103 });
+					callback(generators);
+				} catch (err) {
+					logger.error(`Error occured when processing 'generators.change' event:\n${err.stack}`);
+				}
+			};
+			Signals.get('newBlock').add(generatorsChangeListener);
+		},
+	},
 	{
 		name: 'round.change',
 		description: 'Track round change updates',

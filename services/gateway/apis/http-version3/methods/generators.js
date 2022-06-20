@@ -13,27 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { InvalidParamsException },
-} = require('lisk-service-framework');
-
-const dataService = require('../../../shared/dataService');
-
-const getTokens = async params => {
-	try {
-		const response = await dataService.getTokens(params);
-		return {
-			data: response.data,
-			meta: response.meta,
-		};
-	} catch (error) {
-		let status;
-		if (error instanceof InvalidParamsException) status = 'INVALID_PARAMS';
-		if (status) return { status, data: { error: error.message } };
-		throw error;
-	}
-};
+const generatorsSource = require('../../../sources/version3/generators');
+const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 
 module.exports = {
-	getTokens,
+	version: '2.0',
+	swaggerApiPath: '/generators',
+	rpcMethod: 'get.generators',
+	params: {
+		limit: { optional: true, type: 'number', min: 1, max: 103, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
+	},
+	tags: ['Generators'],
+	source: generatorsSource,
+	envelope,
 };

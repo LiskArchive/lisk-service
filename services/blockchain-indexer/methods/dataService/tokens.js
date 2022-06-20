@@ -14,13 +14,13 @@
  *
  */
 const {
-	getTokensInfo,
+	getTokens,
 } = require('./controllers/tokens');
 
 module.exports = [
 	{
 		name: 'tokens',
-		controller: getTokensInfo,
+		controller: getTokens,
 		params: {
 			address: { optional: false, type: 'string' },
 			tokenID: { optional: true, type: 'string' },

@@ -13,27 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Exceptions: { InvalidParamsException },
-} = require('lisk-service-framework');
-
-const dataService = require('../../../shared/dataService');
-
-const getTokens = async params => {
-	try {
-		const response = await dataService.getTokens(params);
-		return {
-			data: response.data,
-			meta: response.meta,
-		};
-	} catch (error) {
-		let status;
-		if (error instanceof InvalidParamsException) status = 'INVALID_PARAMS';
-		if (status) return { status, data: { error: error.message } };
-		throw error;
-	}
-};
-
 module.exports = {
-	getTokens,
+	address: '=,string',
+	name: '=,string',
+	nextForgingTime: '=,number',
 };

@@ -20,6 +20,7 @@ const MODULE_COMMAND_ID = /^\b(?:[0-9]+:[0-9]+)\b$/;
 const MODULE_COMMAND_NAME = /^\b(?:[0-9a-zA-Z]+:[0-9a-zA-Z]+)\b$/;
 const SEMVER = /^([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?$/;
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
+const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
 
 module.exports = {
 	ADDRESS_BASE32,
@@ -29,4 +30,5 @@ module.exports = {
 	MODULE_COMMAND_NAME,
 	PUBLIC_KEY,
 	SEMVER,
+	NAME,
 };
