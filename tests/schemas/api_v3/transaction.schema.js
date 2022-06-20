@@ -27,6 +27,12 @@ const block = {
 	timestamp: Joi.number().required(),
 };
 
+const TRANSACTION_EXECUTION_STATUSES = [
+	'pending',
+	'succeeded',
+	'failed',
+];
+
 const transactionSchema = {
 	id: Joi.string().required(),
 	moduleCommandID: Joi.string().required(),
@@ -38,7 +44,7 @@ const transactionSchema = {
 	params: Joi.object().required(),
 	sender: Joi.object(sender).required(),
 	block: Joi.object(block).required(),
-	executionStatus: Joi.string().required(),
+	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
 };
 
 const postTransactionSchema = {

@@ -20,6 +20,7 @@ const LIMIT = /^\b((?:[1-9][0-9]?)|100)\b$/;
 const OFFSET = /^\b([0-9][0-9]*)\b$/;
 const TIMESTAMP = /([0-9]+|[0-9]+:[0-9]+)/;
 const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
+const TRANSACTION_EXECUTION_STATUS = /^(?:\b(?:pending|succeeded|failed|any)\b|\b(?:pending|succeeded|failed|any|,){3,}\b){1}$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -29,4 +30,5 @@ module.exports = {
 	OFFSET,
 	TIMESTAMP,
 	NAME,
+	TRANSACTION_EXECUTION_STATUS,
 };

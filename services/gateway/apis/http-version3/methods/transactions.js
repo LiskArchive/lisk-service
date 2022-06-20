@@ -33,7 +33,7 @@ module.exports = {
 		executionStatus: {
 			optional: true,
 			type: 'string',
-			enum: ['pending', 'succeeded', 'failed', 'any'],
+			pattern: regex.TRANSACTION_EXECUTION_STATUS,
 			default: 'any',
 		},
 		nonce: { optional: true, type: 'string', min: 1, pattern: regex.NONCE },
