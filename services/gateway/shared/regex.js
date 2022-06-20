@@ -15,12 +15,16 @@
  */
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
+const NONCE = /^[0-9]+$/;
 const LIMIT = /^\b((?:[1-9][0-9]?)|100)\b$/;
 const OFFSET = /^\b([0-9][0-9]*)\b$/;
+const TIMESTAMP = /([0-9]+|[0-9]+:[0-9]+)/;
 
 module.exports = {
 	PUBLIC_KEY,
 	ADDRESS_BASE32,
+	NONCE,
 	LIMIT,
 	OFFSET,
+	TIMESTAMP,
 };

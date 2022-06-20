@@ -15,6 +15,7 @@
  */
 const transactionsSource = require('../../../sources/version3/transactions');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -25,25 +26,22 @@ module.exports = {
 		transactionID: { optional: true, type: 'string', min: 1, max: 64 },
 		moduleCommandID: { optional: true, type: 'string', min: 1, max: 21 },
 		moduleCommandName: { optional: true, type: 'string', min: 1 },
-		address: { optional: true, type: 'string', min: 38, max: 41, pattern: /^lsk[a-hjkm-z2-9]{38}$/ },
-		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: /^lsk[a-hjkm-z2-9]{38}$/ },
-		senderPublicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
-		recipientAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: /^lsk[a-hjkm-z2-9]{38}$/ },
-		recipientPublicKey: { optional: true, type: 'string', min: 64, max: 64, pattern: /^([A-Fa-f0-9]{2}){32}$/ },
-		amount: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
-		timestamp: { optional: true, type: 'string', min: 1, pattern: /([0-9]+|[0-9]+:[0-9]+)/ },
-		nonce: { optional: true, type: 'string', min: 1 },
+		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
 		blockID: { optional: true, type: 'string', min: 1 },
 		height: { optional: true, type: 'string', min: 1 },
-		search: { optional: true, type: 'string' },
-		data: { optional: true, type: 'string' },
+		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP },
+		executionStatus: {
+			optional: true,
+			type: 'string',
+			enum: ['pending', 'succeeded', 'failed', 'any'],
+			default: 'any',
+		},
+		nonce: { optional: true, type: 'string', min: 1, pattern: regex.NONCE },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
-		includePending: { optional: true, type: 'boolean', default: false },
 		sort: {
 			optional: true,
 			type: 'string',
-			min: 1,
 			enum: ['amount:asc', 'amount:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'timestamp:desc',
 		},
