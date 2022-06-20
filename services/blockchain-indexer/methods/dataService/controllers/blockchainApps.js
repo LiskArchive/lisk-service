@@ -20,8 +20,8 @@ const getBlockchainAppsStatistics = async () => {
 	return result;
 };
 
-const getBlockchainApps = async () => {
-	const result = await dataService.getBlockchainApps();
+const getBlockchainApps = async (params) => {
+	const result = await dataService.getBlockchainApps(params);
 	return result;
 };
 

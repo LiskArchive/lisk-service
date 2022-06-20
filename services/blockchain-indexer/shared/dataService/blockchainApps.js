@@ -27,7 +27,7 @@ const getBlockchainAppsStatistics = async () => {
 	};
 };
 
-const getBlockchainApps = async () => {
+const getBlockchainApps = async (params) => {
 	// TODO: Replace it with the real implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1111
 	const response = [{
 		name: 'test',
@@ -43,7 +43,7 @@ const getBlockchainApps = async () => {
 		data: response,
 		meta: {
 			count: 1,
-			offset: 0,
+			offset: params.offset,
 			total: 150,
 
 		},

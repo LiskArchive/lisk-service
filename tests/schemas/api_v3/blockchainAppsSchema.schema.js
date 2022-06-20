@@ -18,7 +18,7 @@ import regex from './regex';
 
 const validStatuses = ['registered', 'active', 'terminated', 'any'];
 
-const goodRequestSchema = {
+const goodRequestSchemaForStats = {
 	data: Joi.object().required(),
 	meta: Joi.object().optional(),
 	links: Joi.object().optional(),
@@ -42,5 +42,5 @@ const blockchainAppSchema = {
 module.exports = {
 	blockchainAppsStatsSchema: Joi.object(blockchainAppsStatsSchema).required(),
 	blockchainAppSchema: Joi.object(blockchainAppSchema).required(),
-	goodRequestSchema: Joi.object(goodRequestSchema).required(),
+	goodRequestSchemaForStats: Joi.object(goodRequestSchemaForStats).required(),
 };

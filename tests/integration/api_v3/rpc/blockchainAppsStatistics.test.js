@@ -25,7 +25,7 @@ const {
 
 const {
 	blockchainAppsStatsSchema,
-	goodRequestSchema,
+	goodRequestSchemaForStats,
 } = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
@@ -35,7 +35,7 @@ describe('get.blockchain.apps.statistics', () => {
 	it('returns apps statistics', async () => {
 		const response = await getBlockchainAppsStatistics();
 		const { result } = response;
-		expect(result).toMap(goodRequestSchema);
+		expect(result).toMap(goodRequestSchemaForStats);
 		expect(result.data).toMap(blockchainAppsStatsSchema);
 	});
 

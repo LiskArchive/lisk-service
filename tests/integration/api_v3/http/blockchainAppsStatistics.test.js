@@ -22,7 +22,7 @@ const {
 
 const {
 	blockchainAppsStatsSchema,
-	goodRequestSchema,
+	goodRequestSchemaForStats,
 } = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
@@ -32,7 +32,7 @@ const endpoint = `${baseUrlV3}/blockchain/apps/statistics`;
 describe('Blockchain apps statistics API', () => {
 	it('returns apps statistics', async () => {
 		const response = await api.get(endpoint);
-		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodRequestSchemaForStats);
 		expect(response.data).toMap(blockchainAppsStatsSchema);
 	});
 
