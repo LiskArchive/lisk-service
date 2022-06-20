@@ -30,6 +30,7 @@ module.exports = {
 		size: { type: 'integer' },
 		fee: { type: 'bigInteger' },
 		minFee: { type: 'bigInteger' },
+		executionStatus: { type: 'string' },
 	},
 	indexes: {
 		height: { type: 'range' },
@@ -41,6 +42,7 @@ module.exports = {
 		recipientAddress: { type: 'key' },
 		amount: { type: 'range' },
 		data: { type: 'key' },
+		executionStatus: { type: 'key' },
 	},
 	purge: {},
 };

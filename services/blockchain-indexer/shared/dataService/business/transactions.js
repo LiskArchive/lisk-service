@@ -126,6 +126,13 @@ const validateParams = async params => {
 		params.moduleCommandId = await resolveModuleCommand(moduleCommandName);
 	}
 
+	if (params.executionStatus) {
+		const { executionStatus, ...remParams } = params;
+		params = remParams;
+		const executionStatuses = executionStatus.split(',').map(e => e.trim()).filter(e => e !== 'any');
+		params.whereIn = { property: 'executionStatus', values: executionStatuses };
+	}
+
 	return params;
 };
 
