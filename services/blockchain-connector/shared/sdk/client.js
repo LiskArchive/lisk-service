@@ -59,7 +59,7 @@ const instantiateClient = async () => {
 				if (config.isUseLiskIPCClient) {
 					clientCache = await createIPCClient(config.liskAppDataPath);
 				} else {
-					clientCache = await createWSClient(`${liskAddress}/ws`);
+					clientCache = await createWSClient(`${liskAddress}/rpc`);
 				}
 
 				// Inform listeners about the newly instantiated ApiClient

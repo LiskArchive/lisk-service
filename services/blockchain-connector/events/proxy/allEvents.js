@@ -16,8 +16,7 @@
 const { Signals } = require('lisk-service-framework');
 
 const { getRegisteredEvents } = require('../../shared/sdk/endpoints');
-const { subscribeToAllRegisteredEvents } = require('../../shared/sdk/events');
-const { decodeEventPayload } = require('../../shared/sdk/decoder');
+const { subscribeToAllRegisteredEvents, events } = require('../../shared/sdk/events');
 
 const toCamelCase = (words) => {
 	let result = '';
@@ -31,18 +30,19 @@ const toCamelCase = (words) => {
 	return result;
 };
 
+// TODO: Update implementation to the generic with the issue https://github.com/liskhq/lisk-service/issues/1097
 const exportAllEvents = async () => {
 	// Re-subscribe to the events when apiClient is re-instantiated
 	Signals.get('newApiClient').add(subscribeToAllRegisteredEvents);
 	await subscribeToAllRegisteredEvents();
 
 	const registeredEvents = await getRegisteredEvents();
-	const allMethods = registeredEvents.map(event => {
+	const allEvents = events.concat(registeredEvents);
+	const allMethods = allEvents.map(event => {
 		const genericController = (regEvent) => (cb) => {
 			const eventListener = async (payload) => {
 				Signals.get(toCamelCase(regEvent.split('_'))).dispatch(payload);
-				const decodedEvent = decodeEventPayload(regEvent, payload);
-				cb(decodedEvent);
+				cb(payload);
 			};
 			Signals.get(regEvent).add(eventListener);
 		};

@@ -30,16 +30,16 @@
     "test:functional": "jest --config=jest.config.functional.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
-    "@liskhq/lisk-api-client": "canary",
-    "@liskhq/lisk-codec": "canary",
-    "@liskhq/lisk-cryptography": "canary",
+    "@liskhq/lisk-api-client": "6.0.0-alpha.0",
+    "@liskhq/lisk-codec": "0.3.0-alpha.0",
+    "@liskhq/lisk-cryptography": "4.0.0-alpha.0",
     "big-json": "^3.1.0",
     "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ea50a102c3e65268c024a4904a5e70c0940b0000/framework/dist/lisk-service-framework-1.4.1.tgz",
     "signals": "^1.0.0",
     "tar": "^6.1.11",
     "sodium-native": "3.2.1",
-    "@chainsafe/blst": "0.2.0"
+    "@chainsafe/blst": "0.2.4"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.14.0",

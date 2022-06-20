@@ -15,17 +15,6 @@
  */
 const { Signals } = require('lisk-service-framework');
 
-const {
-	decodeBlock,
-	decodeTransaction,
-} = require('../../shared/sdk/decoder');
-
-const { parseToJSONCompatObj } = require('../../shared/parser');
-
-const decodeBlockEventPayload = (payload) => parseToJSONCompatObj({
-	block: { ...(decodeBlock(payload.block)), _raw: payload.block },
-});
-
 const appReadyController = async (cb) => {
 	const appReadyListener = async (payload) => cb(payload);
 	Signals.get('appReady').add(appReadyListener);
@@ -46,41 +35,30 @@ const appNetworkEventController = async (cb) => {
 	Signals.get('appNetworkEvent').add(appNetworkEventListener);
 };
 
-const appNewTransactionController = async (cb) => {
-	const appNewTransactionListener = async (payload) => {
-		const decodedPayload = { transaction: decodeTransaction(payload) };
-		cb(decodedPayload);
-	};
-	Signals.get('appNewTransaction').add(appNewTransactionListener);
+// TODO: Handle the new transaction event with the issue https://github.com/liskhq/lisk-service/issues/1097
+const txpoolNewTransactionController = async (cb) => {
+	const txpoolNewTransactionListener = async (payload) => cb(payload);
+	Signals.get('txpoolNewTransaction').add(txpoolNewTransactionListener);
 };
 
-const appChainForkedController = async (cb) => {
-	const appChainForkedListener = async (payload) => {
-		const decodedPayload = await decodeBlockEventPayload(payload);
-		cb(decodedPayload);
-	};
-	Signals.get('appChainForked').add(appChainForkedListener);
+const chainForkedController = async (cb) => {
+	const chainForkedListener = async (payload) => cb(payload);
+	Signals.get('chainForked').add(chainForkedListener);
 };
 
-const appChainValidatorsChangeController = async (cb) => {
-	const appChainValidatorsChangeListener = async (payload) => cb(payload);
-	Signals.get('appChainValidatorsChange').add(appChainValidatorsChangeListener);
+const chainValidatorsChangeController = async (cb) => {
+	const chainValidatorsChangeListener = async (payload) => cb(payload);
+	Signals.get('chainValidatorsChanged').add(chainValidatorsChangeListener);
 };
 
-const appNewBlockController = async (cb) => {
-	const appNewBlockListener = async (payload) => {
-		const decodedPayload = await decodeBlockEventPayload(payload);
-		cb(decodedPayload);
-	};
-	Signals.get('appNewBlock').add(appNewBlockListener);
+const chainNewBlockController = async (cb) => {
+	const chainNewBlockListener = async (payload) => cb(payload);
+	Signals.get('chainNewBlock').add(chainNewBlockListener);
 };
 
-const appDeleteBlockController = async (cb) => {
-	const appDeleteBlockListener = async (payload) => {
-		const decodedPayload = decodeBlockEventPayload(payload);
-		cb(decodedPayload);
-	};
-	Signals.get('appDeleteBlock').add(appDeleteBlockListener);
+const chainDeleteBlockController = async (cb) => {
+	const chainDeleteBlockListener = async (payload) => cb(payload);
+	Signals.get('chainDeleteBlock').add(chainDeleteBlockListener);
 };
 
 module.exports = {
@@ -88,9 +66,9 @@ module.exports = {
 	appShutdownController,
 	appNetworkReadyController,
 	appNetworkEventController,
-	appNewTransactionController,
-	appChainForkedController,
-	appChainValidatorsChangeController,
-	appNewBlockController,
-	appDeleteBlockController,
+	txpoolNewTransactionController,
+	chainForkedController,
+	chainValidatorsChangeController,
+	chainNewBlockController,
+	chainDeleteBlockController,
 };

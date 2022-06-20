@@ -23,7 +23,6 @@ const {
 	reloadDelegateCache,
 	getGenerators,
 	getNumberOfGenerators,
-	normalizeBlocks,
 } = require('./dataService');
 
 const { deleteBlock } = require('./indexer/blockchainIndex');
@@ -40,9 +39,8 @@ const eventsQueue = new MessageQueue(
 
 const newBlockProcessor = async (block) => {
 	logger.debug(`New block arrived at height ${block.height}`);
-	const [normalizedBlock] = await normalizeBlocks([block]);
-	await performLastBlockUpdate(normalizedBlock);
-	const response = await getBlocks({ height: normalizedBlock.height });
+	const response = await getBlocks({ height: block.height });
+	await performLastBlockUpdate(response.data[0]);
 	Signals.get('newBlock').dispatch(response);
 };
 
@@ -68,11 +66,11 @@ const initEventsProcess = async () => {
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {
-			const { block } = job.data;
-			await newBlockProcessor(block);
+			const { blockHeader } = job.data;
+			await newBlockProcessor(blockHeader);
 		} else if (isDeleteBlock) {
-			const { block } = job.data;
-			await deleteBlockProcessor(block);
+			const { blockHeader } = job.data;
+			await deleteBlockProcessor(blockHeader);
 		} else if (isNewRound) await newRoundProcessor();
 	});
 };

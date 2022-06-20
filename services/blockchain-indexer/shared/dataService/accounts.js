@@ -86,7 +86,10 @@ const getLegacyAccountInfo = async (params) => {
 	return legacyAccountInfo;
 };
 
+const getTokensInfo = async (params) => dataService.getTokensInfo(params);
+
 module.exports = {
 	getAccounts,
 	getLegacyAccountInfo,
+	getTokensInfo,
 };

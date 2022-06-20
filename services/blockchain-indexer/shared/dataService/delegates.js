@@ -122,7 +122,7 @@ const loadAllGenerators = async () => {
 };
 
 const reload = async () => {
-	if (!await dataService.isDPoSModuleRegistered()) {
+	if (!await dataService.isDposModuleRegistered()) {
 		return;
 	}
 

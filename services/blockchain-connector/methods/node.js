@@ -20,6 +20,7 @@ const {
 	getRegisteredEvents,
 	getRegisteredModules,
 	getNodeInfo,
+	getSystemMetadata,
 } = require('../shared/sdk/endpoints');
 
 module.exports = [
@@ -54,6 +55,11 @@ module.exports = [
 	{
 		name: 'getNodeInfo',
 		controller: getNodeInfo,
+		params: {},
+	},
+	{
+		name: 'getSystemMetadata',
+		controller: getSystemMetadata,
 		params: {},
 	},
 ];

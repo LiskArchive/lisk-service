@@ -32,9 +32,8 @@ const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
 const LAST_BLOCK_KEY = 'lastBlock';
 
 const isDposModuleRegistered = async () => {
-	const networkStatus = await requestConnector('getNetworkStatus');
-	const isRegistered = networkStatus.registeredModules
-		.some(module => module.id === MODULE_ID.DPOS);
+	const response = await requestConnector('getSystemMetadata');
+	const isRegistered = response.modules.some(module => module.id === MODULE_ID.DPOS);
 	return isRegistered;
 };
 

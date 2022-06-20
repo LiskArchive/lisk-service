@@ -13,14 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
-const LIMIT = /^\b((?:[1-9][0-9]?)|100)\b$/;
-const OFFSET = /^\b([0-9][0-9]*)\b$/;
-
 module.exports = {
-	PUBLIC_KEY,
-	ADDRESS_BASE32,
-	LIMIT,
-	OFFSET,
+	tokenID: '=,string',
+	name: '=,string',
+	symbol: '=,string',
+	availableBalance: '=,string',
+	lockedBalances: ['lockedBalances', {
+		moduleID: '=,string',
+		amount: '=,string',
+	}],
 };

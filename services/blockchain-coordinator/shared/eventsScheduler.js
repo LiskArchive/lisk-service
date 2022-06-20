@@ -25,13 +25,13 @@ const eventsQueue = new MessageQueue(
 );
 
 const scheduleUpdatesOnNewBlock = async (payload) => {
-	const { block } = payload;
-	await eventsQueue.add({ block, isNewBlock: true });
+	const { blockHeader } = payload;
+	await eventsQueue.add({ blockHeader, isNewBlock: true });
 };
 
 const scheduleDeleteBlock = async (payload) => {
-	const { block } = payload;
-	await eventsQueue.add({ block, isDeleteBlock: true });
+	const { blockHeader } = payload;
+	await eventsQueue.add({ blockHeader, isDeleteBlock: true });
 };
 
 const scheduleUpdatesOnNewRound = async (payload) => {

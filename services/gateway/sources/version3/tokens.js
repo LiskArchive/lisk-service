@@ -13,14 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
-const LIMIT = /^\b((?:[1-9][0-9]?)|100)\b$/;
-const OFFSET = /^\b([0-9][0-9]*)\b$/;
+const token = require('./mappings/token');
 
 module.exports = {
-	PUBLIC_KEY,
-	ADDRESS_BASE32,
-	LIMIT,
-	OFFSET,
+	type: 'moleculer',
+	method: 'indexer.tokens',
+	params: {
+		address: '=,string',
+		tokenID: '=,string',
+		offset: '=,number',
+		limit: '=,number',
+	},
+	definition: {
+		data: ['data', token],
+		meta: {
+			address: '=,string',
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
