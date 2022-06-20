@@ -16,12 +16,25 @@
 
 const {
 	getBlockchainAppsStatistics,
-} = require('./controllers/blockchainAppsStatistics');
+	getBlockchainApps,
+} = require('./controllers/blockchainApps');
 
 module.exports = [
 	{
 		name: 'blockchain.apps.statistics',
 		controller: getBlockchainAppsStatistics,
 		params: {},
+	},
+	{
+		name: 'blockchain.apps',
+		controller: getBlockchainApps,
+		params: {
+			chainID: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			state: { optional: true, type: 'string' },
+			search: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
 	},
 ];

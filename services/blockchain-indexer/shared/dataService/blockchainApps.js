@@ -27,6 +27,30 @@ const getBlockchainAppsStatistics = async () => {
 	};
 };
 
+const getBlockchainApps = async () => {
+	// TODO: Replace it with the real implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1111
+	const response = [{
+		name: 'test',
+		chainID: '2ba563cf98003d',
+		state: 'active',
+		address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+		lastCertificateHeight: '20',
+		lastUpdated: '1651756153',
+
+	}];
+
+	return {
+		data: response,
+		meta: {
+			count: 1,
+			offset: 0,
+			total: 150,
+
+		},
+	};
+};
+
 module.exports = {
 	getBlockchainAppsStatistics,
+	getBlockchainApps,
 };

@@ -20,6 +20,12 @@ const getBlockchainAppsStatistics = async () => {
 	return result;
 };
 
+const getBlockchainApps = async () => {
+	const result = await dataService.getBlockchainApps();
+	return result;
+};
+
 module.exports = {
 	getBlockchainAppsStatistics,
+	getBlockchainApps,
 };
