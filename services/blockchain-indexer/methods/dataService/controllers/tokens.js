@@ -19,13 +19,12 @@ const {
 
 const dataService = require('../../../shared/dataService');
 
-const getTokensInfo = async params => {
+const getTokens = async params => {
 	try {
-		const tokensInfo = await dataService.getTokensInfo(params);
-
+		const response = await dataService.getTokens(params);
 		return {
-			data: tokensInfo.data,
-			meta: tokensInfo.meta,
+			data: response.data,
+			meta: response.meta,
 		};
 	} catch (error) {
 		let status;
@@ -36,5 +35,5 @@ const getTokensInfo = async params => {
 };
 
 module.exports = {
-	getTokensInfo,
+	getTokens,
 };

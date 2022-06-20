@@ -57,7 +57,7 @@ const {
 	postTransactions,
 } = require('./postTransactions');
 
-const { getTokensInfo } = require('./tokens');
+const { getTokens } = require('./tokens');
 
 const {
 	getTransactions,
@@ -107,7 +107,7 @@ module.exports = {
 	getGenerators,
 	getNumberOfGenerators,
 	postTransactions,
-	getTokensInfo,
+	getTokens,
 	getPendingTransactions,
 	loadAllPendingTransactions,
 	getTransactions,
