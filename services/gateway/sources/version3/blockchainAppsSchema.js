@@ -13,15 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const blockchainApp = require('./mappings/blockchainApp');
 
-const {
-	getBlockchainAppsStatistics,
-} = require('./controllers/blockchainAppsStatistics');
-
-module.exports = [
-	{
-		name: 'blockchain.apps.statistics',
-		controller: getBlockchainAppsStatistics,
-		params: {},
+module.exports = {
+	type: 'moleculer',
+	method: 'indexer.blockchain.apps',
+	params: {
+		chainID: '=,string',
+		name: '=,string',
+		search: '=,string',
+		state: '=,string',
+		offset: '=,number',
+		limit: '=,number',
 	},
-];
+	definition: {
+		data: ['data', blockchainApp],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
+};

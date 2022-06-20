@@ -22,8 +22,8 @@ const {
 
 const {
 	blockchainAppsStatsSchema,
-	goodRequestSchema,
-} = require('../../../schemas/api_v3/blockchainAppsStatsSchema.schema');
+	goodRequestSchemaForStats,
+} = require('../../../schemas/api_v3/blockchainAppsSchema.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -32,7 +32,7 @@ const endpoint = `${baseUrlV3}/blockchain/apps/statistics`;
 describe('Blockchain apps statistics API', () => {
 	it('returns apps statistics', async () => {
 		const response = await api.get(endpoint);
-		expect(response).toMap(goodRequestSchema);
+		expect(response).toMap(goodRequestSchemaForStats);
 		expect(response.data).toMap(blockchainAppsStatsSchema);
 	});
 
