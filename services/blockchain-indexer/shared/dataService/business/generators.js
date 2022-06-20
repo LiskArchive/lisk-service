@@ -13,46 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const BluebirdPromise = require('bluebird');
-const { Utils } = require('lisk-service-framework');
-const {
-	// getIndexedAccountInfo,
-	getBase32AddressFromHex,
-} = require('../../utils/accountUtils');
+const BluebirdPromise = require('bluebird');
 
+const { getBase32AddressFromHex } = require('../../utils/accountUtils');
 const { getGenesisConfig } = require('../../constants');
-
 const { requestConnector } = require('../../utils/request');
-
-const ObjectUtilService = Utils.Data;
-const { isProperObject } = ObjectUtilService;
+const { getNameByAddress } = require('../../utils/delegateUtils');
 
 const getGenerators = async () => {
-	const generators = await requestConnector('getGenerators');
-	generators.data = generators
-		.map(generator => ({
-			...generator,
-			address: getBase32AddressFromHex(generator.address),
+	const { list: generatorsAddresses } = await requestConnector('getGenerators');
+	const generators = await BluebirdPromise.map(
+		generatorsAddresses,
+		async address => ({
+			address: getBase32AddressFromHex(address),
+			name: await getNameByAddress(address),
+			// TODO: Update when nextForgingTime is available from SDK
+			nextForgingTime: Math.floor(Date.now() / 1000) + 1000,
 		}));
 
-	// TODO: Update when generators list is available from SDK
-	// generators.data = await BluebirdPromise.map(
-	// 	generators.data,
-	// 	async forger => {
-	// 		const account = await getIndexedAccountInfo(
-	// 			{ address: forger.address, limit: 1 },
-	// 			['address', 'username', 'totalVotesReceived']);
-	// 		forger.username = account && account.username
-	// 			? account.username
-	// 			: null;
-	// 		forger.totalVotesReceived = account && account.totalVotesReceived
-	// 			? Number(account.totalVotesReceived)
-	// 			: null;
-	// 		return forger;
-	// 	},
-	// 	{ concurrency: generators.data.length },
-	// );
-	return isProperObject(generators) && Array.isArray(generators.data) ? generators.data : [];
+	return generators;
 };
 
 const getNumberOfGenerators = async () => {
