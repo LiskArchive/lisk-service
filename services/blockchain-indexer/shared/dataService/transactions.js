@@ -15,6 +15,19 @@
  */
 const dataService = require('./business');
 
+const isIncludePendingTransactions = (executionStatus) => {
+	const INCLUDE_PENDING_WHEN_STATUSES = ['pending', 'any'];
+	const execStatuses = executionStatus.split(',');
+	const isIncludePending = execStatuses.reduce(
+		(isInclude, status) => {
+			isInclude = isInclude || INCLUDE_PENDING_WHEN_STATUSES.includes(status);
+			return isInclude;
+		},
+		false,
+	);
+	return isIncludePending;
+};
+
 const getPendingTransactions = async params => {
 	const pendingtransactions = {
 		data: [],
@@ -79,12 +92,10 @@ const getTransactions = async params => {
 		meta: {},
 	};
 
-	const { includePending, ...remParams } = params;
-	params = remParams;
-
-	const response = includePending
+	const response = isIncludePendingTransactions(params.executionStatus)
 		? await mergeTransactions(params)
 		: await dataService.getTransactions(params);
+
 	if (response.data) transactions.data = response.data;
 	if (response.meta) transactions.meta = response.meta;
 	return transactions;

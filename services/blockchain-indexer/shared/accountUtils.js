@@ -62,12 +62,6 @@ const getUsernameByAddress = async address => {
 	return account && account.username;
 };
 
-const getAddressByPublicKey = async publicKey => {
-	if (!publicKey || typeof publicKey !== 'string') return '';
-	const account = await dataService.getCachedAccountByPublicKey(publicKey);
-	return account ? account.address : '';
-};
-
 const getAddressByUsername = async username => {
 	if (!username || typeof username !== 'string') return '';
 	const account = await dataService.getCachedAccountByUsername(username);
@@ -76,9 +70,7 @@ const getAddressByUsername = async username => {
 
 const getAddressByAny = async param => {
 	const paramNames = {
-		'username:': getAddressByUsername,
 		'address:': parseAddress,
-		'publickey:': getAddressByPublicKey,
 	};
 
 	const hasPrefix = p => !!Object.keys(paramNames).filter(item => p.indexOf(item) === 0).length;
@@ -89,8 +81,9 @@ const getAddressByAny = async param => {
 
 	if (!hasPrefix(param)) {
 		const parsedAddress = parseAddress(param);
-		if (validateAddress(parsedAddress)
-			&& await confirmAddress(parsedAddress)) return parsedAddress;
+		if (validateAddress(parsedAddress) && await confirmAddress(parsedAddress)) {
+			return parsedAddress;
+		}
 	}
 
 	const [prefix, body] = separateParam(param);
