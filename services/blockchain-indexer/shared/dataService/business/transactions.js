@@ -17,6 +17,7 @@ const BluebirdPromise = require('bluebird');
 const {
 	Exceptions: { InvalidParamsException },
 	MySQL: { getTableInstance },
+	Utils: { isEmptyObject },
 } = require('lisk-service-framework');
 
 const { getBlockByID } = require('./blocks');
@@ -183,7 +184,7 @@ const getTransactions = async params => {
 				name: senderAccount.name,
 			};
 
-			if (transaction.params && transaction.params.recipientAddress) {
+			if (!isEmptyObject(transaction.params) && transaction.params.recipientAddress) {
 				const recipientAccount = await getIndexedAccountInfo(
 					{ address: transaction.params.recipientAddress, limit: 1 },
 					['address', 'publicKey', 'name'],
@@ -205,8 +206,8 @@ const getTransactions = async params => {
 			transaction.executionStatus = indexedTxInfo.executionStatus;
 
 			// The two lines below are necessary for transaction statistics
-			if (transaction.moduleAssetID) transaction.type = transaction.moduleAssetID;
-			transaction.amount = transaction.asset.amount || 0;
+			if (transaction.moduleCommandID) transaction.type = transaction.moduleCommandID;
+			transaction.amount = transaction.params.amount || 0;
 
 			return transaction;
 		},
@@ -224,7 +225,7 @@ const getTransactionsByBlockID = async blockID => {
 	const block = await getBlockByID(blockID);
 	const transactions = await BluebirdPromise.map(
 		block.payload,
-		async transaction => {
+		async (transaction) => {
 			const senderAccount = await getIndexedAccountInfo(
 				{ address: transaction.senderAddress, limit: 1 },
 				['address', 'publicKey', 'name'],
@@ -236,7 +237,7 @@ const getTransactionsByBlockID = async blockID => {
 				name: senderAccount.name,
 			};
 
-			if (transaction.params && transaction.params.recipientAddress) {
+			if (!isEmptyObject(transaction.params) && transaction.params.recipientAddress) {
 				const recipientAccount = await getIndexedAccountInfo(
 					{ address: transaction.params.recipientAddress, limit: 1 },
 					['address', 'publicKey', 'name'],

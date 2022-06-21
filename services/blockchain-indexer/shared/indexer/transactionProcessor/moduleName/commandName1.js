@@ -33,12 +33,12 @@ const entityIndexSchema = require('../../../database/schema/transactions');
 
 const getEntityIndex = () => getTableInstance('entity_index_name', entityIndexSchema, MYSQL_ENDPOINT);
 
-// Declare and export the following asset specific constants
-export const assetID = 0;
-export const assetName = 'assetName';
+// Declare and export the following command specific constants
+const commandID = 0;
+const commandName = 'commandName';
 
 // Implement the custom logic in the 'processTransaction' method and export it
-export const processTransaction = async (blockHeader, tx, dbTrx) => {
+const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const entityDB = await getEntityIndex();
 
 	const entityIndexEntry = { ...tx };
@@ -48,4 +48,10 @@ export const processTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug('Add custom logs');
 
 	Promise.resolve({ blockHeader, tx });
+};
+
+module.exports = {
+	commandID,
+	commandName,
+	processTransaction,
 };

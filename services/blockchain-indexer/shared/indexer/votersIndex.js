@@ -28,7 +28,7 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
 
 const dposModuleID = 5;
-const voteTransactionAssetID = 1;
+const voteTransactionCommandID = 1;
 
 const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
@@ -37,9 +37,9 @@ const getVoteIndexingInfo = async (blocks) => {
 	const votesToAggregateArray = [];
 	const votesMultiArray = blocks.map(block => {
 		const votesArray = block.payload
-			.filter(tx => tx.moduleID === dposModuleID && tx.assetID === voteTransactionAssetID)
+			.filter(tx => tx.moduleID === dposModuleID && tx.commandID === voteTransactionCommandID)
 			.map(tx => {
-				const voteEntries = tx.asset.votes.map(async vote => {
+				const voteEntries = tx.params.votes.map(async vote => {
 					const voteEntry = {};
 
 					voteEntry.sentAddress = getBase32AddressFromHex(

@@ -26,9 +26,9 @@ const transactionsIndexSchema = require('../../../database/schema/transactions')
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
-// Asset specific constants
-const assetID = 0;
-const assetName = 'transfer';
+// Command specific constants
+const commandID = 0;
+const commandName = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
 const processTransaction = async (blockHeader, tx, dbTrx) => {
@@ -44,7 +44,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	assetID,
-	assetName,
+	commandID,
+	commandName,
 	processTransaction,
 };

@@ -132,19 +132,19 @@ const getPendingTransactions = async params => {
 			&& (!params.senderPublicKey
 				|| transaction.senderPublicKey === params.senderPublicKey)
 			&& (!params.recipientAddress
-				|| transaction.asset.recipientAddress === params.recipientAddress)
-			&& (!params.moduleAssetId
-				|| transaction.moduleAssetId === params.moduleAssetId)
-			&& (!params.moduleAssetName
-				|| transaction.moduleAssetName === params.moduleAssetName)
+				|| transaction.params.recipientAddress === params.recipientAddress)
+			&& (!params.moduleCommandID
+				|| transaction.moduleCommandID === params.moduleCommandID)
+			&& (!params.moduleCommandName
+				|| transaction.moduleCommandName === params.moduleCommandName)
 			&& (!params.data
-				|| transaction.asset.data.includes(params.data))
+				|| transaction.params.data.includes(params.data))
 			&& (!params.data
-				|| transaction.asset.data.includes(params.data))
+				|| transaction.params.data.includes(params.data))
 			&& (!params.from
-				|| Number(transaction.asset.amount) >= params.minAmount)
+				|| Number(transaction.params.amount) >= params.minAmount)
 			&& (!params.to
-				|| Number(transaction.asset.amount) <= params.maxAmount)
+				|| Number(transaction.params.amount) <= params.maxAmount)
 		));
 		pendingTransactions.data = filteredPendingTxs
 			.sort(sortComparator(params.sort))

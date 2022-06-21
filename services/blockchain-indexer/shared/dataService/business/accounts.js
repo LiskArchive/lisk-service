@@ -238,7 +238,7 @@ const resolveDelegateInfo = async accounts => {
 			if (account.isDelegate) {
 				const blocksDB = await getBlocksIndex();
 				const transactionsDB = await getTransactionsIndex();
-				const delegateRegTxModuleAssetId = '5:0';
+				const delegateRegTxModuleCommandId = '5:0';
 
 				account.account = {
 					address: account.address,
@@ -297,7 +297,7 @@ const resolveDelegateInfo = async accounts => {
 				const [delegateRegTx = {}] = await transactionsDB.find(
 					{
 						senderPublicKey: account.publicKey,
-						moduleAssetId: delegateRegTxModuleAssetId,
+						moduleCommandID: delegateRegTxModuleCommandId,
 						limit: 1,
 					},
 					['height'],
@@ -319,11 +319,11 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {};
 
 	// Check if the account was already migrated
-	const reclaimTxModuleAssetId = '1000:0';
+	const reclaimTxModuleCommandID = '1000:0';
 	const transactionsDB = await getTransactionsIndex();
 	const [reclaimTx] = await transactionsDB.find({
-		senderPublicKey: publicKey,
-		moduleAssetId: reclaimTxModuleAssetId,
+		senderAddress: getBase32AddressFromPublicKey(publicKey),
+		moduleCommandID: reclaimTxModuleCommandID,
 		limit: 1,
 	}, ['id']);
 

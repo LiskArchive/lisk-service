@@ -19,7 +19,7 @@ const { requestConnector } = require('../../utils/request');
 const { getAllDirectories } = require('../../utils/file');
 
 // Is a map of maps, where the first level keys are moduleIDs, value are maps
-// The keys for the secon-level map are assetIDs, values are custom 'processTransaction' methods
+// The keys for the second-level map are commandIDs, values are custom 'processTransaction' methods
 const moduleProcessorMap = new Map();
 
 const getAvailableModuleProcessors = async () => {
@@ -28,28 +28,28 @@ const getAvailableModuleProcessors = async () => {
 	return processors.filter(e => !IGNORE_DIRS.includes(e));
 };
 
-const getAssetProcessors = async (moduleName) => requireAll({
+const getCommandProcessors = async (moduleName) => requireAll({
 	dirname: `${__dirname}/${moduleName}`,
 	filter: /(.+)\.js$/,
 	excludeDirs: /^\.(git|svn)$/,
 	recursive: false,
 });
 
-const buildModuleAssetProcessorMap = async () => {
+const buildModuleCommandProcessorMap = async () => {
 	const registeredModules = await requestConnector('getRegisteredModules');
 	const registeredModuleIDs = registeredModules.map(m => m.id);
 	const availableModuleProcessors = await getAvailableModuleProcessors();
 
 	const promises = availableModuleProcessors.map(async (moduleName) => {
-		const { index, ...availableAssetProcessors } = await getAssetProcessors(moduleName);
+		const { index, ...availableCommandProcessors } = await getCommandProcessors(moduleName);
 		const { moduleID } = index;
 
 		if (registeredModuleIDs.includes(moduleID)) {
 			if (!moduleProcessorMap.has(moduleID)) moduleProcessorMap.set(moduleID, new Map());
 
-			const moduleAssetProcessorMap = moduleProcessorMap.get(moduleID);
-			Object.values(availableAssetProcessors)
-				.forEach(e => moduleAssetProcessorMap.set(e.assetID, e.processTransaction));
+			const moduleCommandProcessorMap = moduleProcessorMap.get(moduleID);
+			Object.values(availableCommandProcessors)
+				.forEach(e => moduleCommandProcessorMap.set(e.commandID, e.processTransaction));
 		}
 	});
 
@@ -57,13 +57,13 @@ const buildModuleAssetProcessorMap = async () => {
 };
 
 const processTransaction = async (blockHeader, tx, dbTrx) => {
-	if (moduleProcessorMap.size === 0) await buildModuleAssetProcessorMap();
+	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
 	if (!moduleProcessorMap.has(tx.moduleID)) throw Error(`No processors implemented for transactions related to moduleID: ${tx.moduleID}`);
-	const moduleAssetProcessorMap = moduleProcessorMap.get(tx.moduleID);
+	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.moduleID);
 
-	if (!moduleAssetProcessorMap.has(tx.assetID)) throw Error(`No transaction processor implemented for transactions with moduleID: ${tx.moduleID} and assetID: ${tx.assetID}`);
-	const transactionProcessor = moduleAssetProcessorMap.get(tx.assetID);
+	if (!moduleCommandProcessorMap.has(tx.commandID)) throw Error(`No transaction processor implemented for transactions with moduleID: ${tx.moduleID} and commandID: ${tx.commandID}`);
+	const transactionProcessor = moduleCommandProcessorMap.get(tx.commandID);
 
 	return transactionProcessor(blockHeader, tx, dbTrx);
 };
