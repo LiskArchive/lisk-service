@@ -23,7 +23,7 @@ const { getAllDirectories } = require('../../utils/file');
 const moduleProcessorMap = new Map();
 
 const getAvailableModuleProcessors = async () => {
-	const IGNORE_DIRS = ['moduleName'];
+	const IGNORE_DIRS = ['0_moduleName'];
 	const processors = await getAllDirectories(__dirname);
 	return processors.filter(e => !IGNORE_DIRS.includes(e));
 };
