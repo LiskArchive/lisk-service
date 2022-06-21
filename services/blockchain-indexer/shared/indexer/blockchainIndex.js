@@ -102,11 +102,13 @@ const indexBlock = async job => {
 	try {
 		if (block.transactions.length) {
 			const availableModuleCommands = await getAvailableModuleCommands();
-
 			const { transactions, assets, ...blockHeader } = block;
+
+			const transactionsDB = await getTransactionsIndex();
 			await BluebirdPromise.map(
 				block.transactions,
 				async (tx) => {
+					// Apply default transformations and index with minimal information by default
 					const { id } = availableModuleCommands
 						.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
 					tx.moduleCommandID = id;
@@ -114,6 +116,9 @@ const indexBlock = async job => {
 					tx.height = block.height;
 					tx.timestamp = block.timestamp;
 
+					await transactionsDB.upsert(tx, dbTrx);
+
+					// Invoke 'processTransaction' to execute command specific processing logic
 					await processTransaction(blockHeader, tx, dbTrx);
 				},
 				{ concurrency: block.transactions.length },
