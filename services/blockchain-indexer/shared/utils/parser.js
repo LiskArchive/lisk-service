@@ -63,7 +63,7 @@ const parseInputBySchema = (input, schema) => {
 	}
 
 	// For situations where the schema for a property states 'bytes'
-	// but has already been de-serialized into object, e.g. tx.asset
+	// but has already been de-serialized into object, e.g. tx.params
 	return input;
 };
 

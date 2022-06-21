@@ -70,9 +70,9 @@ const normalizeBlock = async (originalblock) => {
 			const schema = await requestConnector('getSchema');
 			const { schema: paramsSchema } = schema.commands
 				.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
-			const parsedTxAsset = parseInputBySchema(txn.params, paramsSchema);
+			const parsedTxParams = parseInputBySchema(txn.params, paramsSchema);
 			const parsedTx = parseInputBySchema(txn, schema.transaction);
-			txn = { ...parsedTx, params: parsedTxAsset };
+			txn = { ...parsedTx, params: parsedTxParams };
 			txn.minFee = await getTxnMinFee(txn);
 			block.size += txn.size;
 			block.totalForged += BigInt(txn.fee);
@@ -218,11 +218,11 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const filterAssets = (moduleIDs, block) => {
-	const filteredAssets = moduleIDs.length
+const filterBlockAssets = (moduleIDs, block) => {
+	const filteredBlockAssets = moduleIDs.length
 		? block.assets.filter(asset => moduleIDs.includes(String(asset.moduleID)))
 		: block.assets;
-	return filteredAssets;
+	return filteredBlockAssets;
 };
 
 const getBlocksAssets = async (params) => {
@@ -271,7 +271,7 @@ const getBlocksAssets = async (params) => {
 					height: block.height,
 					timestamp: block.timestamp,
 				},
-				assets: filterAssets(moduleIDs, block),
+				assets: filterBlockAssets(moduleIDs, block),
 			};
 		},
 		{ concurrency: blocksFromDB.length },
