@@ -124,7 +124,7 @@ const validateParams = async params => {
 		const { moduleCommandName, ...remParams } = params;
 		params = remParams;
 
-		params.moduleCommandId = await resolveModuleCommand(moduleCommandName);
+		params.moduleCommandID = await resolveModuleCommand(moduleCommandName);
 	}
 
 	if (params.executionStatus) {
