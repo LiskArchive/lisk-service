@@ -21,14 +21,14 @@ module.exports = {
 	height: '=,number',
 	nonce: '=,string',
 	block: {
-		id: 'blockID,string',
+		id: '=,string',
 		height: '=,number',
 		timestamp: '=,number',
 	},
 	sender: {
-		address: 'senderID,string',
-		publicKey: 'senderPublicKey,string',
-		username: '=,string',
+		address: '=,string',
+		publicKey: '=,string',
+		name: '=,string',
 	},
 	signatures: '=',
 	params: '=',
