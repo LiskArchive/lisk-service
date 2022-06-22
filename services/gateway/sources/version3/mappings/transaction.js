@@ -32,5 +32,5 @@ module.exports = {
 	},
 	signatures: '=',
 	params: '=',
-	isPending: '=,boolean',
+	executionStatus: '=,string',
 };

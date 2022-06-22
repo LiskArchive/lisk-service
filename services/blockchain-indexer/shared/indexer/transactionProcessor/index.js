@@ -36,8 +36,8 @@ const getCommandProcessors = async (moduleName) => requireAll({
 });
 
 const buildModuleCommandProcessorMap = async () => {
-	const registeredModules = await requestConnector('getRegisteredModules');
-	const registeredModuleIDs = registeredModules.map(m => m.id);
+	const systemMetadata = await requestConnector('getSystemMetadata');
+	const registeredModuleIDs = systemMetadata.modules.map(m => m.id);
 	const availableModuleProcessors = await getAvailableModuleProcessors();
 
 	const promises = availableModuleProcessors.map(async (moduleName) => {

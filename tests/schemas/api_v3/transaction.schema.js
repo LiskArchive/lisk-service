@@ -15,9 +15,11 @@
  */
 import Joi from 'joi';
 
+const regex = require('./regex');
+
 const sender = {
-	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
-	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).required(),
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().optional(),
 };
 

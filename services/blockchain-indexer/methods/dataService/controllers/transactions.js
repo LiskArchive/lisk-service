@@ -30,12 +30,9 @@ const dataService = require('../../../shared/dataService');
 const getTransactions = async (params) => {
 	try {
 		if (params.senderAddress) {
-			let addressLookupResult = false;
+			// TODO: Check if this section can be removed
 			const address = await getAddressByAny(params.senderAddress);
-			if (address) addressLookupResult = true;
-			params.senderAddress = address;
-
-			if (addressLookupResult === false) {
+			if (!address) {
 				return {
 					status: NOT_FOUND,
 					data: { error: `Address ${params.senderAddress} not found.` },
