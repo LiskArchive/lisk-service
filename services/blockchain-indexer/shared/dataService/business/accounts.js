@@ -238,7 +238,7 @@ const resolveDelegateInfo = async accounts => {
 			if (account.isDelegate) {
 				const blocksDB = await getBlocksIndex();
 				const transactionsDB = await getTransactionsIndex();
-				const delegateRegTxModuleCommandId = '5:0';
+				const delegateRegTxModuleCommandID = '5:0';
 
 				account.account = {
 					address: account.address,
@@ -297,7 +297,7 @@ const resolveDelegateInfo = async accounts => {
 				const [delegateRegTx = {}] = await transactionsDB.find(
 					{
 						senderPublicKey: account.publicKey,
-						moduleCommandID: delegateRegTxModuleCommandId,
+						moduleCommandID: delegateRegTxModuleCommandID,
 						limit: 1,
 					},
 					['height'],

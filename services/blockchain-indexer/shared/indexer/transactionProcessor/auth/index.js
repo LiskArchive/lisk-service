@@ -13,24 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+// Module specific constants
+const moduleID = 12;
+const moduleName = 'auth';
+
 module.exports = {
-	id: '=,string',
-	moduleCommandID: '=,string',
-	moduleCommandName: '=,string',
-	fee: '=,string',
-	height: '=,number',
-	nonce: '=,string',
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-	},
-	sender: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-	},
-	signatures: '=',
-	params: '=',
-	isPending: '=,boolean',
+	moduleID,
+	moduleName,
 };
