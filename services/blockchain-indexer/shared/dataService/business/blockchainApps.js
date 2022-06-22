@@ -47,26 +47,33 @@ const getBlockchainAppsStatistics = async () => {
 };
 
 const getBlockchainApps = async (params) => {
-	// TODO: Replace it with the real implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1111
-	const response = [{
-		name: 'test',
-		chainID: '2ba563cf98003d',
-		state: 'active',
-		address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-		lastCertificateHeight: '20',
-		lastUpdated: '1651756153',
+	const blockchainAppsDB = await getBlockchainAppsIndex();
 
-	}];
-
-	return {
-		data: response,
-		meta: {
-			count: 1,
-			offset: params.offset,
-			total: 150,
-
-		},
+	const blockchainAppsInfo = {
+		data: [],
+		meta: {},
 	};
+
+	if (params.search) {
+		const { search, ...remParams } = params;
+		params = remParams;
+
+		params.search = {
+			property: 'name',
+			pattern: search,
+		};
+	}
+
+	const total = await blockchainAppsDB.count(params);
+
+	blockchainAppsInfo.data = await blockchainAppsDB.find(params);
+	blockchainAppsInfo.meta = {
+		count: 1,
+		offset: params.offset,
+		total,
+	};
+
+	return blockchainAppsInfo;
 };
 
 module.exports = {
