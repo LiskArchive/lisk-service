@@ -41,18 +41,19 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const blockchainAppsDB = await getBlockchainAppsIndex();
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	await transactionsDB.upsert(tx, dbTrx);
 
 	tx.name = tx.params.name;
 	await crossChainMessagesDB.upsert(tx, dbTrx);
 
+	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
 	const appInfo = {
 		name: tx.params.name,
-		chainID: tx.params.chainID,
+		chainID: '',
 		state: tx.status,
 	};
 	await blockchainAppsDB.upsert(appInfo, dbTrx);
 
+	await transactionsDB.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
