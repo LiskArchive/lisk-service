@@ -19,26 +19,46 @@ const {
 } = require('lisk-service-framework');
 const config = require('../../../../config');
 
+const {
+	getBase32AddressFromPublicKey,
+} = require('../../../utils/accountUtils');
+
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
+const multisignatureIndexSchema = require('../../../database/schema/multisignature');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const commandID = 0;
 const commandName = 'registerMultisignatureGroup';
 
+const resolveMultisignatureMemberships = (tx) => {
+	const multisignatureInfoToIndex = [];
+	const allKeys = tx.params.mandatoryKeys.concat(tx.params.optionalKeys);
+
+	allKeys.forEach(key => {
+		const members = {
+			id: tx.senderAddress.concat('_', getBase32AddressFromPublicKey(key)),
+			memberAddress: getBase32AddressFromPublicKey(key),
+			groupAddress: tx.senderAddress,
+		};
+		multisignatureInfoToIndex.push(members);
+	});
+
+	return multisignatureInfoToIndex;
+};
+
 // eslint-disable-next-line no-unused-vars
 const processTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
+	const multisignatureDB = await getMultisignatureIndex();
 
-	// TODO: Implement logic
+	const multisignatureInfoToIndex = resolveMultisignatureMemberships(tx);
 
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Indexing multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
+	await multisignatureDB.upsert(multisignatureInfoToIndex, dbTrx);
+	logger.debug(`Indexed multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
 module.exports = {

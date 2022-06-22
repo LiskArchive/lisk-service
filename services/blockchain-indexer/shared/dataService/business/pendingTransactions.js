@@ -63,9 +63,9 @@ const validateParams = async params => {
 	}
 
 	if (params.id) validatedParams.id = params.id;
-	if (params.senderAddress) validatedParams.senderAddress = account.senderAddress;
-	if (params.moduleCommandID) validatedParams.moduleCommandID = account.moduleCommandID;
-	if (params.moduleCommandName) validatedParams.moduleCommandName = account.moduleCommandName;
+	if (params.senderAddress) validatedParams.senderAddress = params.senderAddress;
+	if (params.moduleCommandID) validatedParams.moduleCommandID = params.moduleCommandID;
+	if (params.moduleCommandName) validatedParams.moduleCommandName = params.moduleCommandName;
 	if (params.sort) validatedParams.sort = params.sort;
 
 	return validatedParams;
