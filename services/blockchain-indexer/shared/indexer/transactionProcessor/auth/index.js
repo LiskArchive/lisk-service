@@ -14,19 +14,11 @@
  *
  */
 
-// Asset specific constants
-const assetID = 0;
-const assetName = 'transfer';
-
-const processTransaction = async (blockHeader, tx) => {
-	// TODO: Implement
-
-	console.info(blockHeader, tx);
-	return Promise.resolve({ blockHeader, tx });
-};
+// Module specific constants
+const moduleID = 12;
+const moduleName = 'auth';
 
 module.exports = {
-	assetID,
-	assetName,
-	processTransaction,
+	moduleID,
+	moduleName,
 };

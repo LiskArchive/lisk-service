@@ -14,9 +14,11 @@
  *
  */
 
-// Declare and export the following asset specific constants
-export const assetID = 0;
-export const assetName = 'assetName';
+// Module specific constants
+const moduleID = 13;
+const moduleName = 'dpos';
 
-// Implement the custom logic in the 'processTransaction' method and export it
-export const processTransaction = async (blockHeader, tx) => Promise.resolve({ blockHeader, tx });
+module.exports = {
+	moduleID,
+	moduleName,
+};

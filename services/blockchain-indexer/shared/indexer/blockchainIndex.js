@@ -13,6 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const {
 	Logger,
 	Queue,
@@ -25,11 +27,7 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const BluebirdPromise = require('bluebird');
-
-const logger = Logger();
-
-const config = require('../../config');
+const { processTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
@@ -47,14 +45,13 @@ const {
 } = require('../utils/arrayUtils');
 
 const {
-	getTransactionIndexingInfo,
-} = require('./transactionIndex');
-
-const {
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisHeight,
+	getAvailableModuleCommands,
 } = require('../constants');
+
+const config = require('../../config');
 
 const blocksIndexSchema = require('../database/schema/blocks');
 const accountsIndexSchema = require('../database/schema/accounts');
@@ -63,13 +60,12 @@ const votesIndexSchema = require('../database/schema/votes');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+const logger = Logger();
+
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
-
-const validateBlocks = (blocks) => blocks.length
-	&& blocks.every(block => !!block && block.height >= 0);
 
 const getGeneratorPkInfoArray = async (blocks) => {
 	const blocksDB = await getBlocksIndex();
@@ -90,32 +86,55 @@ const getGeneratorPkInfoArray = async (blocks) => {
 	return pkInfoArray;
 };
 
+const validateBlock = (block) => !!block && block.height >= 0;
+
 const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const blocks = await getBlockByHeight(height);
-	const blocksToIndex = blocks.map(block => {
-		const moduleIDs = block.assets.map(blockAsset => blockAsset.moduleID);
-		return { ...block, assetsModuleIDs: moduleIDs };
-	});
+	const block = await getBlockByHeight(height);
 
-	if (!validateBlocks(blocks)) {
-		throw new Error(`Error: Invalid block ${height} }`);
-	}
+	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
 
 	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
+	const dbTrx = await startDbTransaction(connection);
 	logger.debug(`Created new MySQL transaction to index block at height ${height}`);
 
 	try {
-		const transactionsDB = await getTransactionsIndex();
-		const transactions = await getTransactionIndexingInfo(blocksToIndex);
-		if (transactions.length) await transactionsDB.upsert(transactions, trx);
-		if (blocks.length) await blocksDB.upsert(blocksToIndex, trx);
-		await commitDbTransaction(trx);
+		if (block.transactions.length) {
+			const availableModuleCommands = await getAvailableModuleCommands();
+			const { transactions, assets, ...blockHeader } = block;
+
+			const transactionsDB = await getTransactionsIndex();
+			await BluebirdPromise.map(
+				block.transactions,
+				async (tx) => {
+					// Apply default transformations and index with minimal information by default
+					const { id } = availableModuleCommands
+						.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
+					tx.moduleCommandID = id;
+					tx.blockID = block.id;
+					tx.height = block.height;
+					tx.timestamp = block.timestamp;
+
+					await transactionsDB.upsert(tx, dbTrx);
+
+					// Invoke 'processTransaction' to execute command specific processing logic
+					await processTransaction(blockHeader, tx, dbTrx);
+				},
+				{ concurrency: block.transactions.length },
+			);
+		}
+
+		const blockToIndex = {
+			...block,
+			assetsModuleIDs: block.assets.map(asset => asset.moduleID),
+		};
+
+		await blocksDB.upsert(blockToIndex, dbTrx);
+		await commitDbTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
 	} catch (error) {
-		await rollbackDbTransaction(trx);
+		await rollbackDbTransaction(dbTrx);
 		logger.debug(`Rolled back MySQL transaction to index block at height ${height}`);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
@@ -197,7 +216,7 @@ const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [blo
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
-	const [block] = await getBlockByHeight(height);
+	const block = await getBlockByHeight(height);
 	logger.info(`Indexing new block: ${block.id} at height ${block.height}`);
 
 	const [blockInfo] = await blocksDB.find({ height: block.height, limit: 1 }, ['id', 'isFinal']);
@@ -298,25 +317,25 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-const getNonFinalHeights = async () => {
+const getMinNonFinalHeight = async () => {
 	const blocksDB = await getBlocksIndex();
 
 	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
 		sort: 'height:asc',
-		limit: 5000, // TODO: Check later for improvements
+		limit: 1,
 		isFinal: false,
 	}, ['height']);
 
-	return lastIndexedHeight || [];
+	return lastIndexedHeight;
 };
 
 const updateNonFinalBlocks = async () => {
 	const cHeight = await getCurrentHeight();
-	const nfHeights = await getNonFinalHeights();
+	const minNFHeight = await getMinNonFinalHeight();
 
-	if (nfHeights.length > 0) {
-		logger.info(`Re-indexing ${nfHeights.length} non-finalized blocks in the search index database`);
-		await buildIndex(nfHeights[0].height, cHeight);
+	if (typeof minNFHeight === 'number') {
+		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks`);
+		await buildIndex(minNFHeight, cHeight);
 	}
 };
 

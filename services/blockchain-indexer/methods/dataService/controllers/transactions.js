@@ -14,47 +14,32 @@
  *
  */
 const {
-	HTTP,
-	Utils,
 	Exceptions: {
 		InvalidParamsException,
 		ValidationException,
 		NotFoundException,
 	},
+	HTTP: { StatusCodes: { NOT_FOUND, BAD_REQUEST } },
+	Utils: { isEmptyArray, isEmptyObject },
 } = require('lisk-service-framework');
 
-const { StatusCodes: { NOT_FOUND, BAD_REQUEST } } = HTTP;
-const { isEmptyArray, isEmptyObject } = Utils.Data;
+const { getAddressByAny } = require('../../../shared/accountUtils');
 
 const dataService = require('../../../shared/dataService');
 
-const {
-	getAddressByAny,
-} = require('../../../shared/accountUtils');
-
 const getTransactions = async (params) => {
-	const addressParam = [
-		'senderId',
-		'recipientId',
-		'senderIdOrRecipientId',
-	].filter((item) => typeof params[item] === 'string');
-
-	const addressLookupResult = await Promise.all(
-		addressParam.map(async (param) => {
-			const paramVal = params[param];
-			const address = await getAddressByAny(paramVal);
-			if (!address) return false;
-			params[param] = address;
-			return true;
-		}),
-	);
-	if (addressLookupResult.includes(false)) {
-		return {
-			status: NOT_FOUND,
-			data: { error: `Account ${params[addressParam[0]]} not found.` },
-		};
-	}
 	try {
+		if (params.senderAddress) {
+			// TODO: Check if this section can be removed
+			const address = await getAddressByAny(params.senderAddress);
+			if (!address) {
+				return {
+					status: NOT_FOUND,
+					data: { error: `Address ${params.senderAddress} not found.` },
+				};
+			}
+		}
+
 		const result = await dataService.getTransactions({
 			sort: 'timestamp:desc',
 			...params,

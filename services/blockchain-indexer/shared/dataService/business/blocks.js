@@ -44,46 +44,51 @@ const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 
 let latestBlock;
 
+const normalizeBlock = async (originalblock) => {
+	const block = {
+		...originalblock.header,
+		transactions: originalblock.transactions,
+		assets: originalblock.assets,
+	};
+
+	if (block.generatorAddress) {
+		block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
+	}
+
+	block.isFinal = block.height <= (await getFinalizedHeight());
+	block.numberOfTransactions = block.transactions.length;
+
+	block.size = 0;
+	// TODO: get reward value from block event
+	block.totalForged = BigInt(block.reward || '0');
+	block.totalBurnt = BigInt('0');
+	block.totalFee = BigInt('0');
+
+	await BluebirdPromise.map(
+		block.transactions,
+		async (txn) => {
+			const schema = await requestConnector('getSchema');
+			const { schema: paramsSchema } = schema.commands
+				.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
+			const parsedTxParams = parseInputBySchema(txn.params, paramsSchema);
+			const parsedTx = parseInputBySchema(txn, schema.transaction);
+			txn = { ...parsedTx, params: parsedTxParams };
+			txn.minFee = await getTxnMinFee(txn);
+			block.size += txn.size;
+			block.totalForged += BigInt(txn.fee);
+			block.totalBurnt += BigInt(txn.minFee);
+			block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
+		},
+		{ concurrency: 1 },
+	);
+
+	return parseToJSONCompatObj(block);
+};
+
 const normalizeBlocks = async (blocks) => {
 	const normalizedBlocks = await BluebirdPromise.map(
-		blocks.map(block => ({
-			...block.header,
-			transactions: block.transactions,
-			assets: block.assets,
-		})),
-		async block => {
-			if (block.generatorAddress) {
-				block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
-			}
-			block.isFinal = block.height <= (await getFinalizedHeight());
-			block.numberOfTransactions = block.transactions.length;
-
-			block.size = 0;
-			// TODO: get reward value from block event
-			block.totalForged = BigInt(block.reward || '0');
-			block.totalBurnt = BigInt('0');
-			block.totalFee = BigInt('0');
-
-			await BluebirdPromise.map(
-				block.transactions,
-				async (txn) => {
-					const schema = await requestConnector('getSchema');
-					const { schema: paramsSchema } = schema.commands
-						.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
-					const parsedTxAsset = parseInputBySchema(txn.params, paramsSchema);
-					const parsedTx = parseInputBySchema(txn, schema.transaction);
-					txn = { ...parsedTx, params: parsedTxAsset };
-					txn.minFee = await getTxnMinFee(txn);
-					block.size += txn.size;
-					block.totalForged += BigInt(txn.fee);
-					block.totalBurnt += BigInt(txn.minFee);
-					block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
-				},
-				{ concurrency: 1 },
-			);
-
-			return parseToJSONCompatObj(block);
-		},
+		blocks,
+		async block => normalizeBlock(block),
 		{ concurrency: blocks.length },
 	);
 
@@ -92,12 +97,12 @@ const normalizeBlocks = async (blocks) => {
 
 const getBlockByHeight = async (height) => {
 	const response = await requestConnector('getBlockByHeight', { height });
-	return normalizeBlocks([response]);
+	return normalizeBlock(response);
 };
 
 const getBlockByID = async id => {
 	const response = await requestConnector('getBlockByID', { id });
-	return normalizeBlocks([response]);
+	return normalizeBlock(response);
 };
 
 const getBlocksByIDs = async ids => {
@@ -112,9 +117,11 @@ const getBlocksByHeightBetween = async (from, to) => {
 
 const getLastBlock = async () => {
 	const response = await requestConnector('getLastBlock');
-	[latestBlock] = await normalizeBlocks([response]);
-	if (latestBlock && latestBlock.id) await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
-	return [latestBlock];
+	latestBlock = await normalizeBlock(response);
+	if (latestBlock && latestBlock.id) {
+		await latestBlockCache.set('latestBlock', JSON.stringify(latestBlock));
+	}
+	return latestBlock;
 };
 
 const isQueryFromIndex = params => {
@@ -169,14 +176,14 @@ const getBlocks = async params => {
 
 	try {
 		if (params.ids) {
-			if (Array.isArray(params.ids) && !params.ids.length) throw new NotFoundException('Blocks not found.');
+			if (Array.isArray(params.ids) && !params.ids.length) throw new NotFoundException(`Block with IDs: ${params.ids.join(', ')} not found.`);
 			blocks.data = await getBlocksByIDs(params.ids);
 		} else if (params.id) {
-			blocks.data = await getBlockByID(params.id);
+			blocks.data.push(await getBlockByID(params.id));
 			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Block ID ${params.id} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.height) {
-			blocks.data = await getBlockByHeight(Number(params.height));
+			blocks.data.push(await getBlockByHeight(Number(params.height)));
 			if (Array.isArray(blocks.data) && !blocks.data.length) throw new NotFoundException(`Height ${params.height} not found.`);
 			if ('offset' in params && params.limit) blocks.data = blocks.data.slice(params.offset, params.offset + params.limit);
 		} else if (params.heightBetween) {
@@ -189,7 +196,7 @@ const getBlocks = async params => {
 				);
 			}
 		} else {
-			blocks.data = await getLastBlock();
+			blocks.data.push(await getLastBlock());
 		}
 	} catch (err) {
 		// Block does not exist
@@ -211,11 +218,11 @@ const getBlocks = async params => {
 	return blocks;
 };
 
-const filterAssets = (moduleIDs, block) => {
-	const filteredAssets = moduleIDs.length
+const filterBlockAssets = (moduleIDs, block) => {
+	const filteredBlockAssets = moduleIDs.length
 		? block.assets.filter(asset => moduleIDs.includes(String(asset.moduleID)))
 		: block.assets;
-	return filteredAssets;
+	return filteredBlockAssets;
 };
 
 const getBlocksAssets = async (params) => {
@@ -264,7 +271,7 @@ const getBlocksAssets = async (params) => {
 					height: block.height,
 					timestamp: block.timestamp,
 				},
-				assets: filterAssets(moduleIDs, block),
+				assets: filterBlockAssets(moduleIDs, block),
 			};
 		},
 		{ concurrency: blocksFromDB.length },

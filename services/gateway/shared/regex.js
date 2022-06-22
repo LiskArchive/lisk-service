@@ -15,14 +15,20 @@
  */
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
+const NONCE = /^[0-9]+$/;
 const LIMIT = /^\b((?:[1-9][0-9]?)|100)\b$/;
 const OFFSET = /^\b([0-9][0-9]*)\b$/;
+const TIMESTAMP = /([0-9]+|[0-9]+:[0-9]+)/;
 const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
+const TRANSACTION_EXECUTION_STATUS = /^(?:\b(?:pending|succeeded|failed|any)\b|\b(?:pending|succeeded|failed|any|,){3,}\b){1}$/;
 
 module.exports = {
 	PUBLIC_KEY,
 	ADDRESS_BASE32,
+	NONCE,
 	LIMIT,
 	OFFSET,
+	TIMESTAMP,
 	NAME,
+	TRANSACTION_EXECUTION_STATUS,
 };

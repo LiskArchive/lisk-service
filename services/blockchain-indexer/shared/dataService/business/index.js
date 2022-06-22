@@ -28,7 +28,6 @@ const {
 
 const {
 	getBlocks,
-	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getLastBlock,
@@ -62,7 +61,7 @@ const { getTokens } = require('./tokens');
 const {
 	getTransactions,
 	getTransactionsByBlockIDs,
-	getTransactionsByBlockId,
+	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
 } = require('./transactions');
@@ -74,13 +73,6 @@ const {
 const {
 	getVotesByTransactionIDs,
 } = require('./voters');
-
-const {
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
-} = require('./coreCache');
 
 module.exports = {
 	getAccounts,
@@ -94,7 +86,6 @@ module.exports = {
 	resolveMultisignatureMemberships,
 	getNumberOfForgers,
 	getBlocks,
-	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getLastBlock,
@@ -112,13 +103,9 @@ module.exports = {
 	loadAllPendingTransactions,
 	getTransactions,
 	getTransactionsByBlockIDs,
-	getTransactionsByBlockId,
+	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	getCommandsParamsSchemas,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
 };
