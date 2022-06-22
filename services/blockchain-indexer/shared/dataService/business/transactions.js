@@ -20,7 +20,7 @@ const {
 	Utils: { isEmptyObject },
 } = require('lisk-service-framework');
 
-const { getBlockByID } = require('./blocks');
+const { getLastBlock, getBlockByID } = require('./blocks');
 const { getAvailableModuleCommands } = require('../../constants');
 
 const {
@@ -203,9 +203,10 @@ const getTransactions = async params => {
 				timestamp: indexedTxInfo.timestamp,
 			};
 
+			transaction.confirmations = (await getLastBlock()).height - indexedTxInfo.height + 1;
 			transaction.executionStatus = indexedTxInfo.executionStatus;
 
-			// The two lines below are necessary for transaction statistics
+			// The following two lines below are necessary for transaction statistics
 			if (transaction.moduleCommandID) transaction.type = transaction.moduleCommandID;
 			transaction.amount = transaction.params.amount || 0;
 

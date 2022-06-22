@@ -77,15 +77,15 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions with known moduleAssetName', async () => {
-			const response = await api.get(`${endpoint}?moduleAssetName=${refTransaction.moduleAssetName}`);
+		it('returns transactions with known moduleCommandName', async () => {
+			const response = await api.get(`${endpoint}?moduleCommandName=${refTransaction.moduleCommandName}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((transaction, i) => {
 				expect(transaction)
-					.toMap(transactionSchema, { moduleAssetName: refTransaction.moduleAssetName });
+					.toMap(transactionSchema, { moduleCommandName: refTransaction.moduleCommandName });
 				if (i > 0) {
 					const prevTx = response.data[i - 1];
 					const prevTxTimestamp = prevTx.block.timestamp;

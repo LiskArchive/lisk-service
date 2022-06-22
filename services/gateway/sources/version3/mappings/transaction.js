@@ -17,20 +17,19 @@ module.exports = {
 	id: '=,string',
 	moduleCommandID: '=,string',
 	moduleCommandName: '=,string',
-	fee: '=,string',
-	height: '=,number',
 	nonce: '=,string',
-	block: {
-		id: '=,string',
-		height: '=,number',
-		timestamp: '=,number',
-	},
+	fee: '=,string',
 	sender: {
 		address: '=,string',
 		publicKey: '=,string',
 		name: '=,string',
 	},
-	signatures: '=',
 	params: '=',
-	isPending: '=,boolean',
+	block: {
+		id: '=,string',
+		height: '=,number',
+		timestamp: '=,number',
+	},
+	confirmations: '=',
+	executionStatus: '=,string',
 };

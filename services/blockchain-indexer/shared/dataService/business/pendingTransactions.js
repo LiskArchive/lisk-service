@@ -109,7 +109,8 @@ const getPendingTransactions = async params => {
 			.sort(sortComparator(params.sort))
 			.slice(offset, offset + limit)
 			.forEach(transaction => {
-				// Assign 'executionStatus'
+				// Assign 'confirmations' and 'executionStatus'
+				transaction.confirmations = 0;
 				transaction.executionStatus = 'pending';
 				return transaction;
 			});

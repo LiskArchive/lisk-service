@@ -15,16 +15,21 @@
  */
 import Joi from 'joi';
 
+const regex = require('./regex');
+
 const sender = {
-	address: Joi.string().pattern(/^lsk[a-hjkm-z2-9]{38}$/).required(),
-	publicKey: Joi.string().pattern(/^([A-Fa-f0-9]{2}){32}$/).required(),
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
+	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().optional(),
 };
 
+const getCurrentTime = () => Math.floor(Date.now() / 1000);
+
 const block = {
 	id: Joi.string().required(),
-	height: Joi.number().required(),
-	timestamp: Joi.number().required(),
+	height: Joi.number().integer().min(1).required(),
+	timestamp: Joi.number().integer().positive().max(getCurrentTime())
+		.required(),
 };
 
 const TRANSACTION_EXECUTION_STATUSES = [
@@ -37,13 +42,12 @@ const transactionSchema = {
 	id: Joi.string().required(),
 	moduleCommandID: Joi.string().required(),
 	moduleCommandName: Joi.string().required(),
-	fee: Joi.string().required(),
-	height: Joi.number().integer().min(1).required(),
 	nonce: Joi.string().required(),
-	confirmations: Joi.number().required(),
-	params: Joi.object().required(),
+	fee: Joi.string().required(),
 	sender: Joi.object(sender).required(),
+	params: Joi.object().required(),
 	block: Joi.object(block).required(),
+	confirmations: Joi.number().required(),
 	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
 };
 
