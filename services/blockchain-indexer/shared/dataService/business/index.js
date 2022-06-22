@@ -37,6 +37,11 @@ const {
 } = require('./blocks');
 
 const {
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+} = require('./blockchainApps');
+
+const {
 	getDelegates,
 	getAllDelegates,
 	isDposModuleRegistered,
@@ -92,6 +97,8 @@ module.exports = {
 	getBlockByHeight,
 	getBlockByID,
 	getBlocksAssets,
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
 	getDelegates,
 	getAllDelegates,
 	isDposModuleRegistered,

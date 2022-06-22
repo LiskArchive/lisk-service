@@ -40,6 +40,8 @@ const {
 	getCachedAccountBySecondPublicKey,
 	getCachedAccountByUsername,
 	getTokens,
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
 } = require('./business');
 
 const {
@@ -55,11 +57,6 @@ const {
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 } = require('./blocks');
-
-const {
-	getBlockchainAppsStatistics,
-	getBlockchainApps,
-} = require('./blockchainApps');
 
 const {
 	reloadDelegateCache,

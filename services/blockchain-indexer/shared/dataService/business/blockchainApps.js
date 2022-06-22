@@ -13,12 +13,31 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+
+const config = require('../../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const blockchainAppsIndexSchema = require('../../database/schema/blockchainApps');
+
+const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
+
 const getBlockchainAppsStatistics = async () => {
-	// TODO: Replace it with the real implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1111
+	const blockchainAppsDB = await getBlockchainAppsIndex();
+
+	const activeChain = await blockchainAppsDB.count({ state: 'active' });
+	const registeredChain = await blockchainAppsDB.count({ state: 'registered' });
+	const terminatedChain = await blockchainAppsDB.count({ state: 'terminated' });
+
 	const response = {
-		registered: 2503,
-		active: 2328,
-		terminated: 35,
+		registered: registeredChain,
+		active: activeChain,
+		terminated: terminatedChain,
+		// TODO: Get these information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
+		totalSupplyLSK: '',
+		stakedLSK: '',
+		inflationRate: '',
 	};
 
 	return {
