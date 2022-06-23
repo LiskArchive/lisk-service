@@ -19,10 +19,10 @@ const {
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
 	getIndexedAccountInfo,
-} = require('../../utils/accountUtils');
-const { getAddressByName } = require('../../utils/delegateUtils');
-const { parseToJSONCompatObj } = require('../../utils/parser');
-const { requestConnector } = require('../../utils/request');
+} = require('../../../utils/accountUtils');
+const { getAddressByName } = require('../../../utils/delegateUtils');
+const { parseToJSONCompatObj } = require('../../../utils/parser');
+const { requestConnector } = require('../../../utils/request');
 
 const normalizeVote = vote => {
 	const normalizedVote = parseToJSONCompatObj(vote);
