@@ -183,21 +183,11 @@ const getDelegates = async params => {
 	if (params.address) {
 		delegates.data = filterBy(delegates.data, 'address');
 	}
-	if (params.publicKey) {
-		delegates.data = filterBy(delegates.data, 'publicKey');
-	}
-	if (params.secondPublicKey) {
-		delegates.data = filterBy(delegates.data, 'secondPublicKey');
-	}
-	if (params.username) {
-		delegates.data = filterBy(delegates.data, 'username');
+	if (params.name) {
+		delegates.data = filterBy(delegates.data, 'name');
 	}
 	if (params.status) {
 		delegates.data = filterBy(delegates.data, 'status');
-	}
-	if (params.search) {
-		delegates.data = delegates.data.filter((acc) => (acc.username
-			&& String(acc.username).match(new RegExp(params.search, 'i'))));
 	}
 
 	if (delegates.data.every(delegate => !delegate.rank)) await computeDelegateRank();
