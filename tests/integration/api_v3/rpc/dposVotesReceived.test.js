@@ -32,7 +32,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 	'get.votes_received',
 ].forEach(methodName => {
 	const getVoters = async params => request(wsRpcUrl, methodName, params);
-
+	// TODO: Enable when test blockchain is updated
 	xdescribe(`Method ${methodName}`, () => {
 		let refDelegate;
 		let refDelegateAddress;
