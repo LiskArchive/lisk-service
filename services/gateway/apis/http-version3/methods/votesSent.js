@@ -19,8 +19,8 @@ const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/votes_sent',
-	rpcMethod: 'get.votes_sent',
+	swaggerApiPath: '/votes/sent',
+	rpcMethod: 'get.votes.sent',
 	tags: ['Accounts'],
 	envelope,
 	params: {
