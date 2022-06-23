@@ -14,18 +14,21 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 
-const { getAccounts } = require('./accounts');
 const {
 	getBase32AddressFromHex,
+	getHexAddressFromBase32,
 	getIndexedAccountInfo,
 } = require('../../utils/accountUtils');
+const { getAddressByName } = require('../../utils/delegateUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
+const { requestConnector } = require('../../utils/request');
 
-const normalizeVote = vote => parseToJSONCompatObj(vote);
-
-const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
+const normalizeVote = vote => {
+	const normalizedVote = parseToJSONCompatObj(vote);
+	normalizedVote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress);
+	return normalizedVote;
+};
 
 const getVotes = async params => {
 	const voter = {
@@ -33,47 +36,30 @@ const getVotes = async params => {
 		meta: {},
 	};
 
-	if (params.address) {
-		const { address, ...remParams } = params;
-		params = remParams;
-
-		params.sentAddress = address;
-	}
-	if (params.username) {
-		const { username, ...remParams } = params;
-		params = remParams;
-
-		const accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['address']);
-		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
-		params.sentAddress = accountInfo.address;
-	}
-	if (params.publicKey) {
-		const { publicKey, ...remParams } = params;
-		params = remParams;
-
-		params.sentAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
+	if (params.name) {
+		params.address = await getAddressByName(params.name);
 	}
 
-	const response = await getAccounts({ id: params.sentAddress });
-	if (response.data) response.data
-		.forEach(acc => voter.data.votes = voter.data.votes.concat(normalizeVote(acc).dpos.sentVotes));
+	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromBase32(params.address) });
+	if (response) response.sentVotes
+		.forEach(sentVote => voter.data.votes = voter.data.votes.concat(normalizeVote(sentVote)));
 	if (response.meta) voter.meta = response.meta;
 
 	voter.data.votes = await BluebirdPromise.map(
 		voter.data.votes,
 		async vote => {
 			const accountInfo = await getIndexedAccountInfo({ address: vote.delegateAddress, limit: 1 }, ['username']);
-			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
-			const { amount, delegateAddress, username } = vote;
-			return { amount, address: delegateAddress, username };
+			vote.name = accountInfo && accountInfo.name ? accountInfo.name : undefined;
+			vote.publicKey = accountInfo && accountInfo.publicKey ? accountInfo.publicKey : undefined;
+			return vote;
 		},
 		{ concurrency: voter.data.votes.length },
 	);
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.sentAddress, limit: 1 }, ['username']);
 	voter.data.account = {
-		address: params.sentAddress,
-		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
+		address: params.address,
+		name: accountInfo && accountInfo.name ? accountInfo.name : undefined,
 		votesUsed: voter.data.votes.length,
 	};
 
