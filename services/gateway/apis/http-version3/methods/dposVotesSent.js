@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/dpos/votes/sent',
 	rpcMethod: 'get.dpos.votes.sent',
-	tags: ['Accounts'],
+	tags: ['DPoS'],
 	envelope,
 	params: {
 		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
