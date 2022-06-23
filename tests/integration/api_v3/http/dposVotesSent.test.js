@@ -46,9 +46,6 @@ const {
 		describe(`GET ${endpoint}`, () => {
 			it('Returns list of votes when requested for existing account by address', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}`);
-				expect(response.data.votes).toBeInstanceOf(Array);
-				expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-				expect(response.data.votes.length).toBeLessThanOrEqual(10);
 				expect(response.data).toMap(voteSchema);
 				expect(response.meta).toMap(metaSchema);
 			});
@@ -56,9 +53,6 @@ const {
 			it('Returns list of votes when requested for existing account by name', async () => {
 				if (refDelegate.name) {
 					const response = await api.get(`${endpoint}?name=${refDelegate.name}`);
-					expect(response.data.votes).toBeInstanceOf(Array);
-					expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-					expect(response.data.votes.length).toBeLessThanOrEqual(10);
 					expect(response.data).toMap(voteSchema);
 					expect(response.meta).toMap(metaSchema);
 				}
@@ -66,18 +60,12 @@ const {
 
 			it('Returns list of votes when requested for existing account by address and limit=10', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}&limit=10`);
-				expect(response.data.votes).toBeInstanceOf(Array);
-				expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-				expect(response.data.votes.length).toBeLessThanOrEqual(10);
 				expect(response.data).toMap(voteSchema);
 				expect(response.meta).toMap(metaSchema);
 			});
 
 			it('Returns list of votes when requested for existing account by address, limit=10 and offset=1', async () => {
 				const response = await api.get(`${endpoint}?address=${refDelegate.address}&limit=10&offset=1`);
-				expect(response.data.votes).toBeInstanceOf(Array);
-				expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
-				expect(response.data.votes.length).toBeLessThanOrEqual(10);
 				expect(response.data).toMap(voteSchema);
 				expect(response.meta).toMap(metaSchema);
 			});
