@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const votesSource = require('../../../sources/version3/votes');
+const dposVotesSource = require('../../../sources/version3/dposVotes');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
 
@@ -29,5 +29,5 @@ module.exports = {
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
 		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
 	},
-	source: votesSource,
+	source: dposVotesSource,
 };

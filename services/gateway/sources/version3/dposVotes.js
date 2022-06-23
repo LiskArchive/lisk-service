@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const vote = require('./mappings/vote');
+const dposVote = require('./mappings/dposVote');
 
 module.exports = {
 	type: 'moleculer',
@@ -32,7 +32,7 @@ module.exports = {
 				publicKey: '=,string',
 				votesUsed: '=,number',
 			},
-			votes: ['data.votes', vote],
+			votes: ['data.votes', dposVote],
 		},
 		meta: {
 			count: '=,number',
