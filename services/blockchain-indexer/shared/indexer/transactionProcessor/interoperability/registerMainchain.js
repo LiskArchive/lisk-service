@@ -40,7 +40,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const crossChainMessagesDB = await getCrossChainMessagesIndex();
 	const blockchainAppsDB = await getBlockchainAppsIndex();
 
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.trace(`Indexing cross chain register transaction ${tx.id} contained in block at height ${tx.height}`);
 
 	tx.name = tx.params.ownName;
 	await crossChainMessagesDB.upsert(tx, dbTrx);
@@ -48,12 +48,13 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const appInfo = {
 		name: tx.params.ownName,
 		chainID: tx.params.ownChainID,
+		address: tx.sendingChainID,
 		state: tx.status,
 	};
 	await blockchainAppsDB.upsert(appInfo, dbTrx);
 
 	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
+	logger.debug(`Indexed cross chain register transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
 module.exports = {
