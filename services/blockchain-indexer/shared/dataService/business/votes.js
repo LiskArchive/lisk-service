@@ -41,9 +41,8 @@ const getVotes = async params => {
 	}
 
 	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromBase32(params.address) });
-	if (response) response.sentVotes
+	response.sentVotes
 		.forEach(sentVote => voter.data.votes = voter.data.votes.concat(normalizeVote(sentVote)));
-	if (response.meta) voter.meta = response.meta;
 
 	voter.data.votes = await BluebirdPromise.map(
 		voter.data.votes,
@@ -63,7 +62,15 @@ const getVotes = async params => {
 		votesUsed: voter.data.votes.length,
 	};
 
-	voter.meta.total = voter.data.votes.length;
+	const total = voter.data.votes.length;
+	voter.data.votes = voter.data.votes.slice(params.offset, params.offset + params.limit);
+
+	voter.meta = {
+		count: voter.data.votes.length,
+		offset: params.offset,
+		total,
+	};
+
 	return voter;
 };
 

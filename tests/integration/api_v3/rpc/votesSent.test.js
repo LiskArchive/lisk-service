@@ -29,7 +29,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
 [
-	'get.votes.sent',
+	'get.dpos.votes.sent',
 ].forEach(methodName => {
 	const getVotes = async params => request(wsRpcUrl, methodName, params);
 	// TODO: Enable when test blockchain is updated
@@ -39,7 +39,7 @@ const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 			let response;
 			do {
 				// eslint-disable-next-line no-await-in-loop
-				response = await request(wsRpcUrl, 'get.accounts', { isDelegate: true, limit: 1 });
+				response = await request(wsRpcUrl, 'get.dpos.delegates', { limit: 1 });
 			} while (!response.result);
 			[refDelegate] = response.result.data;
 		});

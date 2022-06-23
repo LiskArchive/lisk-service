@@ -29,7 +29,7 @@ const {
 } = require('../../../schemas/api_v3/vote.schema');
 
 [
-	`${baseUrlV3}/votes/sent`,
+	`${baseUrlV3}/dpos/votes/sent`,
 ].forEach(endpoint => {
 	// TODO: Enable when test blockchain is updated
 	xdescribe('Votes Sent (Votes) API', () => {

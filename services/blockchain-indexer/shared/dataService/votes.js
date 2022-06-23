@@ -16,22 +16,8 @@
 const dataService = require('./business');
 
 const getVotes = async params => {
-	const votes = {
-		data: [],
-		meta: {},
-	};
-
 	const response = await dataService.getVotes(params);
-	votes.data = response.data;
-
-	votes.meta = {
-		limit: response.meta.limit,
-		count: response.data.votes.length,
-		offset: response.meta.offset,
-		total: response.data.account.votesUsed || response.meta.total,
-	};
-
-	return votes;
+	return response;
 };
 
 module.exports = {
