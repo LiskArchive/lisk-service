@@ -19,10 +19,10 @@ const {
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
 	getIndexedAccountInfo,
-} = require('../../../utils/accountUtils');
-const { getAddressByName } = require('../../../utils/delegateUtils');
-const { parseToJSONCompatObj } = require('../../../utils/parser');
-const { requestConnector } = require('../../../utils/request');
+} = require('../../utils/accountUtils');
+const { getAddressByName } = require('../../utils/delegateUtils');
+const { parseToJSONCompatObj } = require('../../utils/parser');
+const { requestConnector } = require('../../utils/request');
 
 const normalizeVote = vote => {
 	const normalizedVote = parseToJSONCompatObj(vote);
@@ -47,18 +47,18 @@ const getVotes = async params => {
 	voter.data.votes = await BluebirdPromise.map(
 		voter.data.votes,
 		async vote => {
-			const accountInfo = await getIndexedAccountInfo({ address: vote.delegateAddress, limit: 1 }, ['username']);
+			const accountInfo = await getIndexedAccountInfo({ address: vote.delegateAddress, limit: 1 }, ['name']);
 			vote.name = accountInfo && accountInfo.name ? accountInfo.name : undefined;
-			vote.publicKey = accountInfo && accountInfo.publicKey ? accountInfo.publicKey : undefined;
 			return vote;
 		},
 		{ concurrency: voter.data.votes.length },
 	);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.sentAddress, limit: 1 }, ['username']);
+	const accountInfo = await getIndexedAccountInfo({ address: params.sentAddress, limit: 1 }, ['name']);
 	voter.data.account = {
 		address: params.address,
 		name: accountInfo && accountInfo.name ? accountInfo.name : undefined,
+		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : undefined,
 		votesUsed: voter.data.votes.length,
 	};
 

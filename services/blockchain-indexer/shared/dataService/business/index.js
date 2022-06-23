@@ -72,7 +72,7 @@ const {
 
 const {
 	getVotes,
-} = require('./dpos/votesSent');
+} = require('./dposVotesSent');
 
 const {
 	getVotesByTransactionIDs,
