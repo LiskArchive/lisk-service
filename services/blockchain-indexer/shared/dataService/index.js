@@ -89,7 +89,7 @@ const {
 
 const { getVoters } = require('./voters');
 
-const { getVotes } = require('./dpos/dposVotesSent');
+const { getVotes } = require('./dpos');
 
 module.exports = {
 	getMultisignatureGroups,
