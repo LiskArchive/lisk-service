@@ -15,14 +15,14 @@
  */
 const BluebirdPromise = require('bluebird');
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
-const votesIndexSchema = require('../../database/schema/votes');
-const votesAggregateIndexSchema = require('../../database/schema/votesAggregate');
+const votesIndexSchema = require('../../../database/schema/votes');
+const votesAggregateIndexSchema = require('../../../database/schema/votesAggregate');
 
 const {
 	getIndexedAccountInfo,
-} = require('../../utils/accountUtils');
+} = require('../../../utils/accountUtils');
 
-const config = require('../../../config');
+const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 

@@ -73,7 +73,7 @@ const {
 const {
 	getVotesByTransactionIDs,
 	getVoters,
-} = require('./dposVotesReceived');
+} = require('./dpos');
 
 module.exports = {
 	getAccounts,

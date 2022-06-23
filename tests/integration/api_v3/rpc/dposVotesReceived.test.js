@@ -28,86 +28,91 @@ const {
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 
-[
-	'get.votes_received',
-].forEach(methodName => {
-	const getVoters = async params => request(wsRpcUrl, methodName, params);
-	// TODO: Enable when test blockchain is updated
-	xdescribe(`Method ${methodName}`, () => {
-		let refDelegate;
-		let refDelegateAddress;
-		beforeAll(async () => {
-			do {
-				// eslint-disable-next-line no-await-in-loop
-				const response1 = await request(wsRpcUrl, 'get.transactions', { moduleCommandID: '13:1', limit: 1 });
-				const { data: [voteTx] = [] } = response1.result;
-				if (voteTx) {
-					// Destructure to refer first entry of all the sent votes within the transaction
-					const { params: { votes: [vote] } } = voteTx;
-					refDelegateAddress = vote.delegateAddress;
-				}
-			} while (!refDelegateAddress);
-			const response2 = await request(wsRpcUrl, 'get.dpos.delegates', { address: refDelegateAddress });
-			[refDelegate] = response2.result.data;
-		});
+const getVoters = async params => request(wsRpcUrl, 'get.dpos.votes.received', params);
 
-		it('Returns list of voters when requested for existing account by address', async () => {
-			const response = await getVoters({ address: refDelegate.address });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toMap(voterSchema);
-			expect(result.meta).toMap(metaSchema);
-		});
-
-		it('Returns list of voters when requested for existing account by name', async () => {
-			if (refDelegate.name) {
-				const response = await getVoters({ name: refDelegate.name });
-				expect(response).toMap(jsonRpcEnvelopeSchema);
-				const { result } = response;
-				expect(result.data).toMap(voterSchema);
-				expect(result.meta).toMap(metaSchema);
+// TODO: Enable when test blockchain is updated
+xdescribe('get.dpos.votes.received', () => {
+	let refDelegate;
+	let refDelegateAddress;
+	beforeAll(async () => {
+		do {
+			// eslint-disable-next-line no-await-in-loop
+			const response1 = await request(wsRpcUrl, 'get.transactions', { moduleCommandID: '13:1', limit: 1 });
+			const { data: [voteTx] = [] } = response1.result;
+			if (voteTx) {
+				// Destructure to refer first entry of all the sent votes within the transaction
+				const { params: { votes: [vote] } } = voteTx;
+				refDelegateAddress = vote.delegateAddress;
 			}
-		});
+		} while (!refDelegateAddress);
+		const response2 = await request(wsRpcUrl, 'get.dpos.delegates', { address: refDelegateAddress });
+		[refDelegate] = response2.result.data;
+	});
 
-		it('Returns list of voters when requested with address and offset=1', async () => {
-			const response = await getVoters({ address: refDelegate.address, offset: 1 });
+	it('Returns list of voters when requested for existing account by address', async () => {
+		const response = await getVoters({ address: refDelegate.address });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toMap(voterSchema);
+		expect(result.meta).toMap(metaSchema);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+	});
+
+	it('Returns list of voters when requested for existing account by name', async () => {
+		if (refDelegate.name) {
+			const response = await getVoters({ name: refDelegate.name });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toMap(voterSchema);
 			expect(result.meta).toMap(metaSchema);
-		});
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+		}
+	});
 
-		it('Returns list of voters when requested with address and limit=10', async () => {
-			const response = await getVoters({ address: refDelegate.summary.address, limit: 10 });
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toMap(voterSchema);
-			expect(result.meta).toMap(metaSchema);
-		});
+	it('Returns list of voters when requested with address and offset=1', async () => {
+		const response = await getVoters({ address: refDelegate.address, offset: 1 });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toMap(voterSchema);
+		expect(result.meta).toMap(metaSchema);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(10);
+	});
 
-		it('Returns list of voters when requested with address, offset=1 and limit=10', async () => {
-			const response = await getVoters({
-				address: refDelegate.summary.address, offset: 1, limit: 10,
-			});
-			expect(response).toMap(jsonRpcEnvelopeSchema);
-			const { result } = response;
-			expect(result.data).toMap(voterSchema);
-			expect(result.meta).toMap(metaSchema);
-		});
+	it('Returns list of voters when requested with address and limit=10', async () => {
+		const response = await getVoters({ address: refDelegate.address, limit: 10 });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toMap(voterSchema);
+		expect(result.meta).toMap(metaSchema);
+		expect(result.data.length).toEqual(10);
+	});
 
-		it('No address -> invalid param', async () => {
-			const response = await getVoters();
-			expect(response).toMap(invalidParamsSchema);
+	it('Returns list of voters when requested with address, offset=1 and limit=10', async () => {
+		const response = await getVoters({
+			address: refDelegate.address, offset: 1, limit: 10,
 		});
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toMap(voterSchema);
+		expect(result.meta).toMap(metaSchema);
+		expect(result.data.length).toEqual(10);
+	});
 
-		it('invalid request param -> invalid param', async () => {
-			const response = await getVoters({ invalidParam: 'invalid' });
-			expect(response).toMap(invalidParamsSchema);
-		});
+	it('No address -> invalid param', async () => {
+		const response = await getVoters();
+		expect(response).toMap(invalidParamsSchema);
+	});
 
-		it('invalid address -> invalid param', async () => {
-			const response = await getVoters({ address: 'L' });
-			expect(response).toMap(invalidParamsSchema);
-		});
+	it('invalid request param -> invalid param', async () => {
+		const response = await getVoters({ invalidParam: 'invalid' });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
+	it('invalid address -> invalid param', async () => {
+		const response = await getVoters({ address: 'L' });
+		expect(response).toMap(invalidParamsSchema);
 	});
 });
