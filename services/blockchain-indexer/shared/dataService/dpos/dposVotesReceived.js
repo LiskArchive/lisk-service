@@ -13,20 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getVoters,
-} = require('./controllers/voters');
+const dataService = require('../business');
 
-module.exports = [
-	{
-		name: 'voters',
-		controller: getVoters,
-		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
-	},
-];
+const getVoters = async params => {
+	const voters = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await dataService.getVoters(params);
+	voters.data = response.data.voters ? response.data.voters : response.data;
+	voters.meta = response.meta;
+
+	return voters;
+};
+
+module.exports = {
+	getVoters,
+};

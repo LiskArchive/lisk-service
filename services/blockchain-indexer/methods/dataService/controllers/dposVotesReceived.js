@@ -26,23 +26,14 @@ const {
 
 const getVoters = async params => {
 	const isFound = await confirmAnyId(params);
-	if (typeof params.anyId === 'string' && !params.address) return { status: NOT_FOUND, data: { error: `Account ${params.anyId} not found.` } };
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account ${params.address} not found.` } };
-	if (!isFound && params.username) return { status: NOT_FOUND, data: { error: `Account ${params.username} not found.` } };
-	if (!isFound && params.publicKey) return { status: NOT_FOUND, data: { error: `Account with a public key ${params.publicKey} not found.` } };
-	if (!isFound && params.secondPublicKey) return { status: NOT_FOUND, data: { error: `Account with a second public key ${params.secondPublicKey} not found.` } };
+	if (!isFound && params.name) return { status: NOT_FOUND, data: { error: `Account ${params.name} not found.` } };
 
 	const response = await dataService.getVoters(params);
 
 	if (isEmptyObject(response)) {
 		response.data = [];
 		response.meta = {};
-	}
-
-	if (response.data.length === 0) {
-		response.meta.limit = params.limit;
-		response.meta.offset = params.offset;
-		response.meta.address = params.address;
 	}
 
 	return response;

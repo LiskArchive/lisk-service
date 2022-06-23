@@ -87,7 +87,7 @@ const {
 	getTransactionsByBlockID,
 } = require('./transactions');
 
-const { getVoters } = require('./voters');
+const { getVoters } = require('./dpos/dposVotesReceived');
 
 const { getVotes } = require('./votes');
 
