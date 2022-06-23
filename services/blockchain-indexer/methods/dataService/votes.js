@@ -22,9 +22,10 @@ module.exports = [
 		name: 'votes',
 		controller: getVotes,
 		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
 		},
 	},
 ];
