@@ -51,7 +51,7 @@ const getAllDelegates = async () => {
 	const delegatesFromApp = await requestConnector('dpos_getAllDelegates');
 	const delegates = await BluebirdPromise.map(
 		delegatesFromApp,
-		// TODO: Get delegateWeight from SDK direvctly once available
+		// TODO: Get delegateWeight from SDK directly when available
 		async delegate => {
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
 				delegate.delegateWeight = BigInt('0');
