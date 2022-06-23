@@ -17,7 +17,7 @@ const dposVote = require('./mappings/dposVote');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.votes',
+	method: 'indexer.dpos.votes.sent',
 	params: {
 		address: '=,string',
 		name: '=,string',
