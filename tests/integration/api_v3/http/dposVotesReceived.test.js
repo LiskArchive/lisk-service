@@ -52,41 +52,43 @@ xdescribe('Votes Received (Voters) API', () => {
 		it('Returns list of voters when requested for existing account by address', async () => {
 			const response = await api.get(`${endpoint}?address=${refDelegate.address}`);
 			expect(response.data).toMap(voterSchema);
-			expect(response.meta).toMap(metaSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(10);
+			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('Returns list of voters when requested for existing account by name', async () => {
 			if (refDelegate.name) {
 				const response = await api.get(`${endpoint}?name=${refDelegate.name}`);
 				expect(response.data).toMap(voterSchema);
-				expect(response.meta).toMap(metaSchema);
 				expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 				expect(response.data.votes.length).toBeLessThanOrEqual(10);
+				expect(response.meta).toMap(metaSchema);
 			}
 		});
 
 		it('Returns list of voters when requested with address and offset=1', async () => {
 			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1`);
 			expect(response.data).toMap(voterSchema);
-			expect(response.meta).toMap(metaSchema);
 			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.votes.length).toBeLessThanOrEqual(10);
+			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('Returns list of voters when requested with address and limit=10', async () => {
-			const response = await api.get(`${endpoint}?address=${refDelegate.address}&limit=10`);
+		it('Returns list of voters when requested with address and limit=5', async () => {
+			const response = await api.get(`${endpoint}?address=${refDelegate.address}&limit=5`);
 			expect(response.data).toMap(voterSchema);
+			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 			expect(response.meta).toMap(metaSchema);
-			expect(response.data.votes.length).toEqual(10);
 		});
 
-		it('Returns list of voters when requested with address, offset=1 and limit=10', async () => {
-			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1&limit=10`);
+		it('Returns list of voters when requested with address, offset=1 and limit=5', async () => {
+			const response = await api.get(`${endpoint}?address=${refDelegate.address}&offset=1&limit=5`);
 			expect(response.data).toMap(voterSchema);
+			expect(response.data.votes.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.votes.length).toBeLessThanOrEqual(5);
 			expect(response.meta).toMap(metaSchema);
-			expect(response.data.votes.length).toEqual(10);
 		});
 
 		it('No address -> bad request', async () => {

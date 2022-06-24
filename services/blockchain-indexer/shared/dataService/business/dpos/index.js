@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVoters, getVotesByTransactionIDs } = require('./dposVotesReceived');
+const { getVoters, getVotesByTransactionIDs } = require('./votesReceived');
 
 const {
 	constants,

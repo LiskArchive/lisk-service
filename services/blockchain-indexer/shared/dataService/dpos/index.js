@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVoters } = require('./dposVotesReceived');
+const { getVoters } = require('./votesReceived');
 
 module.exports = {
 	getVoters,

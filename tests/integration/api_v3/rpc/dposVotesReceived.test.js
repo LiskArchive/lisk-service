@@ -54,9 +54,9 @@ xdescribe('get.dpos.votes.received', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(voterSchema);
-		expect(result.meta).toMap(metaSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('Returns list of voters when requested for existing account by name', async () => {
@@ -65,9 +65,9 @@ xdescribe('get.dpos.votes.received', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toMap(voterSchema);
-			expect(result.meta).toMap(metaSchema);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.meta).toMap(metaSchema);
 		}
 	});
 
@@ -76,29 +76,31 @@ xdescribe('get.dpos.votes.received', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(voterSchema);
-		expect(result.meta).toMap(metaSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('Returns list of voters when requested with address and limit=10', async () => {
-		const response = await getVoters({ address: refDelegate.address, limit: 10 });
+	it('Returns list of voters when requested with address and limit=5', async () => {
+		const response = await getVoters({ address: refDelegate.address, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(voterSchema);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 		expect(result.meta).toMap(metaSchema);
-		expect(result.data.length).toEqual(10);
 	});
 
-	it('Returns list of voters when requested with address, offset=1 and limit=10', async () => {
+	it('Returns list of voters when requested with address, offset=1 and limit=5', async () => {
 		const response = await getVoters({
-			address: refDelegate.address, offset: 1, limit: 10,
+			address: refDelegate.address, offset: 1, limit: 5,
 		});
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(voterSchema);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 		expect(result.meta).toMap(metaSchema);
-		expect(result.data.length).toEqual(10);
 	});
 
 	it('No address -> invalid param', async () => {
