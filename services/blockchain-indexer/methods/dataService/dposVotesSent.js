@@ -13,18 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
-const NONCE = /^[0-9]+$/;
-const TIMESTAMP = /([0-9]+|[0-9]+:[0-9]+)/;
-const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
-const TRANSACTION_EXECUTION_STATUS = /^(?:\b(?:pending|succeeded|failed|any)\b|\b(?:pending|succeeded|failed|any|,){3,}\b){1}$/;
+const {
+	getVotesSent,
+} = require('./controllers/dposVotesSent');
 
-module.exports = {
-	PUBLIC_KEY,
-	ADDRESS_BASE32,
-	NONCE,
-	TIMESTAMP,
-	NAME,
-	TRANSACTION_EXECUTION_STATUS,
-};
+module.exports = [
+	{
+		name: 'dpos.votes.sent',
+		controller: getVotesSent,
+		params: {
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+];

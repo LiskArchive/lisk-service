@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,18 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
-const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
-const NONCE = /^[0-9]+$/;
-const TIMESTAMP = /([0-9]+|[0-9]+:[0-9]+)/;
-const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
-const TRANSACTION_EXECUTION_STATUS = /^(?:\b(?:pending|succeeded|failed|any)\b|\b(?:pending|succeeded|failed|any|,){3,}\b){1}$/;
+const WAIT_TIME_VOTER = 2000;
+const WAIT_TIME_SELF_VOTE = 260000;
+const PUNISH_TIME_VOTER = 260000;
+const PUNISH_TIME_SELF_VOTE = 780000;
 
 module.exports = {
-	PUBLIC_KEY,
-	ADDRESS_BASE32,
-	NONCE,
-	TIMESTAMP,
-	NAME,
-	TRANSACTION_EXECUTION_STATUS,
+	WAIT_TIME_VOTER,
+	WAIT_TIME_SELF_VOTE,
+	PUNISH_TIME_VOTER,
+	PUNISH_TIME_SELF_VOTE,
 };

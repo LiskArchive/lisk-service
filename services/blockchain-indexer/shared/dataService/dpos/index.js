@@ -13,18 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getVotes,
-} = require('./controllers/votes');
+const { getVotesReceived } = require('./votesReceived');
+const { getVotesSent } = require('./votesSent');
 
-module.exports = [
-	{
-		name: 'votes',
-		controller: getVotes,
-		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-		},
-	},
-];
+module.exports = {
+	getVotesSent,
+	getVotesReceived,
+};
