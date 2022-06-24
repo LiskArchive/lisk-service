@@ -16,11 +16,16 @@
 const dataService = require('../../../shared/dataService');
 
 const getEvents = async (params) => {
-	const result = await dataService.getEvents(params);
-	return {
-		data: result.data,
-		meta: result.meta,
+	const events = {
+		data: {},
+		meta: {},
 	};
+
+	const response = await dataService.getEvents(params);
+	if (response.data) events.data = response.data;
+	if (response.meta) events.meta = response.meta;
+
+	return events;
 };
 
 module.exports = {
