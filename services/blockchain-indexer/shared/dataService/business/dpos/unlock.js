@@ -21,8 +21,6 @@ const {
 } = require('./constants');
 
 const {
-	calculatePomEndHeight,
-	standardizePomHeight,
 	findPomHeightForUnlock,
 } = require('./pom');
 
@@ -46,15 +44,6 @@ const standardizeUnlockHeight = (unlock, account, delegateAcc) => ({
 });
 
 module.exports = {
-	constants: {
-		WAIT_TIME_VOTER,
-		WAIT_TIME_SELF_VOTE,
-		PUNISH_TIME_VOTER,
-		PUNISH_TIME_SELF_VOTE,
-	},
-	calculatePomEndHeight,
-	standardizePomHeight,
-	findPomHeightForUnlock,
 	calculateUnlockEndHeight,
 	standardizeUnlockHeight,
 };

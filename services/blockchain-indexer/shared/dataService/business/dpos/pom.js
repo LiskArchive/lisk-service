@@ -54,8 +54,8 @@ const findPomHeightForUnlock = (unlock, account, isSelfVote) => {
 		.sort((a, b) => b - a)
 		.filter(
 			pomHeight => pomHeight < unvoteHeight + unlockWaitingPeriod
-                && unvoteHeight < pomHeight + pomWaitingPeriod
-                && unvoteHeight + unlockWaitingPeriod < pomHeight + pomWaitingPeriod,
+				&& unvoteHeight < pomHeight + pomWaitingPeriod
+				&& unvoteHeight + unlockWaitingPeriod < pomHeight + pomWaitingPeriod,
 		);
 
 	return pomHeightForUnlock || null;
