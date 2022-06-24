@@ -91,6 +91,8 @@ const { getVoters } = require('./voters');
 
 const { getVotes } = require('./dpos');
 
+const { getEvents } = require('./events');
+
 module.exports = {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
@@ -147,4 +149,5 @@ module.exports = {
 	getTransactionsByBlockID,
 	getVoters,
 	getVotes,
+	getEvents,
 };
