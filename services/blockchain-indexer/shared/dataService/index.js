@@ -40,8 +40,6 @@ const {
 	getCachedAccountBySecondPublicKey,
 	getCachedAccountByUsername,
 	getTokens,
-	getBlockchainApps,
-	getBlockchainAppsStatistics,
 } = require('./business');
 
 const {
@@ -85,6 +83,11 @@ const {
 } = require('./transactions');
 
 const { getVotesSent, getVotesReceived } = require('./dpos');
+
+const {
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+} = require('./interoperability');
 
 module.exports = {
 	getMultisignatureGroups,

@@ -39,7 +39,7 @@ const {
 const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
-} = require('./blockchainApps');
+} = require('./interoperability');
 
 const {
 	getDelegates,

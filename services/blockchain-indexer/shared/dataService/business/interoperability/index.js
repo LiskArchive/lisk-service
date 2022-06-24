@@ -13,20 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const { getBlockchainApps } = require('./blockchainApps');
+const { getBlockchainAppsStatistics } = require('./blockchainAppsStats');
+
 module.exports = {
-	primaryKey: 'chainID',
-	schema: {
-		chainID: { type: 'string' },
-		name: { type: 'string' },
-		state: { type: 'string' },
-		address: { type: 'string' },
-		lastUpdated: { type: 'string' },
-		lastCertificateHeight: { type: 'string' },
-	},
-	indexes: {
-		chainID: { type: 'key' },
-		state: { type: 'key' },
-		name: { type: 'key' },
-	},
-	purge: {},
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
 };
