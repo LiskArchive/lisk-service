@@ -18,5 +18,5 @@ const { getVotes } = require('./votesSent');
 
 module.exports = {
 	getVotes,
-    getVoters
+	getVoters,
 };
