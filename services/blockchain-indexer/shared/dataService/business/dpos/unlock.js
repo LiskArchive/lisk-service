@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,8 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVotes } = require('./votesSent');
-
 const {
 	WAIT_TIME_VOTER,
 	WAIT_TIME_SELF_VOTE,
@@ -28,22 +26,34 @@ const {
 	findPomHeightForUnlock,
 } = require('./pom');
 
-const {
-	calculateUnlockEndHeight,
-	standardizeUnlockHeight,
-} = require('./unlock');
+const calculateUnlockEndHeight = (unlock, account, delegateAcc) => {
+	if (unlock.delegateAddress === account.address) { // self-unvote
+		const pomHeight = findPomHeightForUnlock(unlock, account, true);
+		return pomHeight
+			? pomHeight + PUNISH_TIME_SELF_VOTE
+			: unlock.unvoteHeight + WAIT_TIME_SELF_VOTE;
+	}
+
+	const pomHeight = findPomHeightForUnlock(unlock, delegateAcc, false);
+	return pomHeight
+		? pomHeight + PUNISH_TIME_VOTER
+		: unlock.unvoteHeight + WAIT_TIME_VOTER;
+};
+
+const standardizeUnlockHeight = (unlock, account, delegateAcc) => ({
+	start: unlock.unvoteHeight,
+	end: calculateUnlockEndHeight(unlock, account, delegateAcc),
+});
 
 module.exports = {
-	getVotes,
-
-	WAIT_TIME_VOTER,
-	WAIT_TIME_SELF_VOTE,
-	PUNISH_TIME_VOTER,
-	PUNISH_TIME_SELF_VOTE,
-
+	constants: {
+		WAIT_TIME_VOTER,
+		WAIT_TIME_SELF_VOTE,
+		PUNISH_TIME_VOTER,
+		PUNISH_TIME_SELF_VOTE,
+	},
 	calculatePomEndHeight,
 	standardizePomHeight,
-
 	findPomHeightForUnlock,
 	calculateUnlockEndHeight,
 	standardizeUnlockHeight,
