@@ -13,10 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVoters } = require('./votesReceived');
-const { getVotes } = require('./votesSent');
+const dataService = require('../business');
+
+const getVotes = async params => {
+	const response = await dataService.getVotes(params);
+	return response;
+};
 
 module.exports = {
 	getVotes,
-    getVoters
 };
