@@ -20,9 +20,7 @@ module.exports = {
 	method: 'indexer.dpos.votes.received',
 	params: {
 		address: '=,string',
-		username: '=,string',
-		publicKey: '=,string',
-		aggregate: '=,boolean',
+		name: '=,string',
 		limit: '=,number',
 		offset: '=,number',
 	},
