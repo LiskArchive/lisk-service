@@ -318,7 +318,7 @@ xdescribe('Method get.events', () => {
 					expect(event.block.timestamp).toBeGreaterThanOrEqual(from);
 					if (i > 0) {
 						const prevEvent = result.data[i];
-						if (event.block.timestamp && prevEvent.block.timestamp) {
+						if (prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
 						}
