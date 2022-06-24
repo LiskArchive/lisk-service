@@ -32,7 +32,10 @@ const normalizeVote = vote => {
 
 const getVotes = async params => {
 	const voter = {
-		data: { votes: [] },
+		data: {
+			account: {},
+			votes: [],
+		},
 		meta: {},
 	};
 

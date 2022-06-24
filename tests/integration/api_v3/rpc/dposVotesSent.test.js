@@ -47,9 +47,9 @@ xdescribe('get.dpos.votes.sent', () => {
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(voteSchema);
-		expect(result.meta).toMap(metaSchema);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
+		expect(result.meta).toMap(metaSchema);
 	});
 
 	it('Returns list of votes when requested for existing account by name', async () => {
@@ -58,28 +58,30 @@ xdescribe('get.dpos.votes.sent', () => {
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toMap(voteSchema);
-			expect(result.meta).toMap(metaSchema);
 			expect(result.data.length).toBeGreaterThanOrEqual(1);
 			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(result.meta).toMap(metaSchema);
 		}
 	});
 
-	it('Returns list of votes when requested for existing account by address and limit=10', async () => {
-		const response = await getVotes({ address: refDelegate.address, limit: 10 });
+	it('Returns list of votes when requested for existing account by address and limit=5', async () => {
+		const response = await getVotes({ address: refDelegate.address, limit: 5 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(voteSchema);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 		expect(result.meta).toMap(metaSchema);
-		expect(result.data.length).toEqual(10);
 	});
 
-	it('Returns list of votes when requested for existing account by address, limit=10 and offset=1', async () => {
-		const response = await getVotes({ address: refDelegate.address, limit: 10, offset: 1 });
+	it('Returns list of votes when requested for existing account by address, limit=5 and offset=1', async () => {
+		const response = await getVotes({ address: refDelegate.address, limit: 5, offset: 1 });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toMap(voteSchema);
+		expect(result.data.length).toBeGreaterThanOrEqual(1);
+		expect(result.data.length).toBeLessThanOrEqual(5);
 		expect(result.meta).toMap(metaSchema);
-		expect(result.data.length).toEqual(10);
 	});
 
 	it('No address -> invalid param', async () => {
