@@ -15,11 +15,11 @@
  */
 const dataService = require('../business');
 
-const getVotes = async params => {
-	const response = await dataService.getVotes(params);
+const getVotesSent = async params => {
+	const response = await dataService.getVotesSent(params);
 	return response;
 };
 
 module.exports = {
-	getVotes,
+	getVotesSent,
 };

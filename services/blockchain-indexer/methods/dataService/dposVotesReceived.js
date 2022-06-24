@@ -13,10 +13,19 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-
-module.exports = {
-	getVotesSent,
+const {
 	getVotesReceived,
-};
+} = require('./controllers/dposVotesReceived');
+
+module.exports = [
+	{
+		name: 'voters',
+		controller: getVotesReceived,
+		params: {
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+];

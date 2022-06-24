@@ -13,7 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVotes } = require('./votesSent');
+const { getVotesReceived, getVotesByTransactionIDs } = require('./votesReceived');
+const { getVotesSent } = require('./votesSent');
 
 const {
 	WAIT_TIME_VOTER,
@@ -34,7 +35,10 @@ const {
 } = require('./unlock');
 
 module.exports = {
-	getVotes,
+	getVotesSent,
+
+	getVotesReceived,
+	getVotesByTransactionIDs,
 
 	WAIT_TIME_VOTER,
 	WAIT_TIME_SELF_VOTE,
