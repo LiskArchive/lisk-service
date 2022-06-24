@@ -28,12 +28,16 @@ const getVotesReceived = async params => {
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account with address ${params.address} not found.` } };
 	if (!isFound && params.name) return { status: NOT_FOUND, data: { error: `Account with name ${params.name} not found.` } };
 
-	const response = await dataService.getVotesReceived(params);
-
-	return {
-		data: response.data,
-		meta: response.meta,
+	const votesReceived = {
+		data: {},
+		meta: {},
 	};
+
+	const response = await dataService.getVotesReceived(params);
+	if (response.data) votesReceived.data = response.data;
+	if (response.meta) votesReceived.meta = response.meta;
+
+	return votesReceived;
 };
 
 module.exports = {
