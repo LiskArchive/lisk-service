@@ -13,10 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { HTTP, Utils } = require('lisk-service-framework');
+const { HTTP } = require('lisk-service-framework');
 
 const { StatusCodes: { NOT_FOUND } } = HTTP;
-const { isEmptyObject } = Utils.Data;
 
 const dataService = require('../../../shared/dataService');
 
@@ -24,21 +23,19 @@ const {
 	confirmAnyId,
 } = require('../../../shared/accountUtils');
 
-const getVoters = async params => {
+const getVotesReceived = async params => {
 	const isFound = await confirmAnyId(params);
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account with address ${params.address} not found.` } };
 	if (!isFound && params.name) return { status: NOT_FOUND, data: { error: `Account with name ${params.name} not found.` } };
 
-	const response = await dataService.getVoters(params);
+	const response = await dataService.getVotesReceived(params);
 
-	if (isEmptyObject(response)) {
-		response.data = [];
-		response.meta = {};
-	}
-
-	return response;
+	return {
+		data: response.data,
+		meta: response.meta,
+	};
 };
 
 module.exports = {
-	getVoters,
+	getVotesReceived,
 };

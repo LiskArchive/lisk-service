@@ -14,13 +14,13 @@
  *
  */
 const {
-	getVoters,
+	getVotesReceived,
 } = require('./controllers/dposVotesReceived');
 
 module.exports = [
 	{
 		name: 'voters',
-		controller: getVoters,
+		controller: getVotesReceived,
 		params: {
 			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },

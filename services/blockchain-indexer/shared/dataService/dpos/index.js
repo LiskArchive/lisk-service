@@ -13,10 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVoters } = require('./votesReceived');
-const { getVotes } = require('./votesSent');
+const { getVotesReceived } = require('./votesReceived');
+const { getVotesSent } = require('./votesSent');
 
 module.exports = {
-	getVotes,
-	getVoters,
+	getVotesSent,
+	getVotesReceived,
 };

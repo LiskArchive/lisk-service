@@ -40,7 +40,7 @@ const getVotesByTransactionIDs = async transactionIDs => {
 	return votes;
 };
 
-const getVoters = async params => {
+const getVotesReceived = async params => {
 	const votesDB = await getVotesIndex();
 	const votesAggregateDB = await getVotesAggregateIndex();
 	const votes = {
@@ -60,7 +60,7 @@ const getVoters = async params => {
 		params = remParams;
 
 		const accountInfo = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
-		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with name: ${name} does not exist`);
+		if (!accountInfo || !accountInfo.address) return new Error(`Account with name: ${name} does not exist`);
 		params.receivedAddress = accountInfo.address;
 	}
 
@@ -101,7 +101,7 @@ const getVoters = async params => {
 		votes.data.votes,
 		async vote => {
 			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress, limit: 1 }, ['name']);
-			vote.name = accountInfo && accountInfo.name ? accountInfo.name : undefined;
+			vote.name = accountInfo && accountInfo.name ? accountInfo.name : null;
 			const { amount, sentAddress, name } = vote;
 			return { amount, delegateAddress: sentAddress, name };
 		},
@@ -111,8 +111,8 @@ const getVoters = async params => {
 	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress, limit: 1 }, ['name']);
 	votes.data.account = {
 		address: params.receivedAddress,
-		name: accountInfo && accountInfo.name ? accountInfo.name : undefined,
-		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : undefined,
+		name: accountInfo && accountInfo.name ? accountInfo.name : null,
+		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
 		votesReceived: numVotesReceived,
 	};
 	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
@@ -124,5 +124,5 @@ const getVoters = async params => {
 
 module.exports = {
 	getVotesByTransactionIDs,
-	getVoters,
+	getVotesReceived,
 };
