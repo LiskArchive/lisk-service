@@ -30,7 +30,7 @@ const normalizeVote = vote => {
 	return normalizedVote;
 };
 
-const getVotes = async params => {
+const getVotesSent = async params => {
 	const voter = {
 		data: {
 			account: {},
@@ -78,5 +78,5 @@ const getVotes = async params => {
 };
 
 module.exports = {
-	getVotes,
+	getVotesSent,
 };

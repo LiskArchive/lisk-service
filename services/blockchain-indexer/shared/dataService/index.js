@@ -87,9 +87,7 @@ const {
 	getTransactionsByBlockID,
 } = require('./transactions');
 
-const { getVoters } = require('./voters');
-
-const { getVotes } = require('./dpos');
+const { getVotesSent, getVotesReceived } = require('./dpos');
 
 const { getEvents } = require('./events');
 
@@ -147,7 +145,7 @@ module.exports = {
 	postTransactions,
 	getCommandsParamsSchemas,
 	getTransactionsByBlockID,
-	getVoters,
-	getVotes,
+	getVotesReceived,
+	getVotesSent,
 	getEvents,
 };

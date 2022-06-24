@@ -23,23 +23,23 @@ const {
 	confirmAnyId,
 } = require('../../../shared/accountUtils');
 
-const getVotesSent = async params => {
+const getVotesReceived = async params => {
 	const isFound = await confirmAnyId(params);
 	if (!isFound && params.address) return { status: NOT_FOUND, data: { error: `Account with address ${params.address} not found.` } };
 	if (!isFound && params.name) return { status: NOT_FOUND, data: { error: `Account with name ${params.name} not found.` } };
 
-	const votesSent = {
+	const votesReceived = {
 		data: {},
 		meta: {},
 	};
 
-	const response = await dataService.getVotesSent(params);
-	if (response.data) votesSent.data = response.data;
-	if (response.meta) votesSent.meta = response.meta;
+	const response = await dataService.getVotesReceived(params);
+	if (response.data) votesReceived.data = response.data;
+	if (response.meta) votesReceived.meta = response.meta;
 
-	return votesSent;
+	return votesReceived;
 };
 
 module.exports = {
-	getVotesSent,
+	getVotesReceived,
 };

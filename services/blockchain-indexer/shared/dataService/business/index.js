@@ -71,12 +71,10 @@ const {
 } = require('./commandsParamsSchemas');
 
 const {
-	getVotes,
-} = require('./dpos');
-
-const {
 	getVotesByTransactionIDs,
-} = require('./voters');
+	getVotesReceived,
+	getVotesSent,
+} = require('./dpos');
 
 module.exports = {
 	getAccounts,
@@ -112,5 +110,6 @@ module.exports = {
 	getCommandsParamsSchemas,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
-	getVotes,
+	getVotesReceived,
+	getVotesSent,
 };

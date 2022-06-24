@@ -14,24 +14,20 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
-const votesIndexSchema = require('../../database/schema/votes');
-const votesAggregateIndexSchema = require('../../database/schema/votesAggregate');
+const votesIndexSchema = require('../../../database/schema/votes');
+const votesAggregateIndexSchema = require('../../../database/schema/votesAggregate');
 
 const {
-	getBase32AddressFromHex,
 	getIndexedAccountInfo,
-} = require('../../utils/accountUtils');
+} = require('../../../utils/accountUtils');
 
-const config = require('../../../config');
+const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
 const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema, MYSQL_ENDPOINT);
-
-const extractAddressFromPublicKey = pk => (getAddressFromPublicKey(Buffer.from(pk, 'hex'))).toString('hex');
 
 const getVotesByTransactionIDs = async transactionIDs => {
 	const votesDB = await getVotesIndex();
@@ -44,7 +40,7 @@ const getVotesByTransactionIDs = async transactionIDs => {
 	return votes;
 };
 
-const getVoters = async params => {
+const getVotesReceived = async params => {
 	const votesDB = await getVotesIndex();
 	const votesAggregateDB = await getVotesAggregateIndex();
 	const votes = {
@@ -58,19 +54,14 @@ const getVoters = async params => {
 
 		params.receivedAddress = address;
 	}
-	if (params.username) {
-		const { username, ...remParams } = params;
+
+	if (params.name) {
+		const { name, ...remParams } = params;
 		params = remParams;
 
-		const accountInfo = await getIndexedAccountInfo({ username, limit: 1 }, ['address']);
-		if (!accountInfo || accountInfo.address === undefined) return new Error(`Account with username: ${username} does not exist`);
+		const accountInfo = await getIndexedAccountInfo({ name, limit: 1 }, ['address']);
+		if (!accountInfo || !accountInfo.address) return new Error(`Account with name: ${name} does not exist`);
 		params.receivedAddress = accountInfo.address;
-	}
-	if (params.publicKey) {
-		const { publicKey, ...remParams } = params;
-		params = remParams;
-
-		params.receivedAddress = getBase32AddressFromHex(extractAddressFromPublicKey(publicKey));
 	}
 
 	const numVotesReceived = params.aggregate
@@ -109,18 +100,19 @@ const getVoters = async params => {
 	votes.data.votes = await BluebirdPromise.map(
 		votes.data.votes,
 		async vote => {
-			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress, limit: 1 }, ['username']);
-			vote.username = accountInfo && accountInfo.username ? accountInfo.username : undefined;
-			const { amount, sentAddress, username } = vote;
-			return { amount, address: sentAddress, username };
+			const accountInfo = await getIndexedAccountInfo({ address: vote.sentAddress, limit: 1 }, ['name']);
+			vote.name = accountInfo && accountInfo.name ? accountInfo.name : null;
+			const { amount, sentAddress, name } = vote;
+			return { amount, delegateAddress: sentAddress, name };
 		},
 		{ concurrency: votes.data.votes.length },
 	);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress, limit: 1 }, ['username']);
+	const accountInfo = await getIndexedAccountInfo({ address: params.receivedAddress, limit: 1 }, ['name']);
 	votes.data.account = {
 		address: params.receivedAddress,
-		username: accountInfo && accountInfo.username ? accountInfo.username : undefined,
+		name: accountInfo && accountInfo.name ? accountInfo.name : null,
+		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
 		votesReceived: numVotesReceived,
 	};
 	votes.data.votes = votes.data.votes.slice(params.offset, params.offset + params.limit);
@@ -132,5 +124,5 @@ const getVoters = async params => {
 
 module.exports = {
 	getVotesByTransactionIDs,
-	getVoters,
+	getVotesReceived,
 };
