@@ -34,11 +34,11 @@ const confirmAddress = async address => {
 	return account && account.address.toUpperCase() === address;
 };
 
-const confirmUsername = async username => {
-	if (!username || typeof username !== 'string') return false;
-	const result = await dataService.getDelegates({ username });
+const confirmName = async name => {
+	if (!name || typeof name !== 'string') return false;
+	const result = await dataService.getDelegates({ name });
 	if (!Array.isArray(result.data) || isEmptyArray(result.data)) return false;
-	return result.data[0].username === username;
+	return result.data[0].name === name;
 };
 
 const confirmPublicKey = async publicKey => {
@@ -49,9 +49,8 @@ const confirmPublicKey = async publicKey => {
 
 const confirmAnyId = async params => {
 	if (
-		(typeof params.username === 'string' && !(await confirmUsername(params.username)))
+		(typeof params.name === 'string' && !(await confirmName(params.name)))
 		|| (typeof params.address === 'string' && !(await confirmAddress(parseAddress(params.address))))
-		|| (typeof params.publicKey === 'string' && (!(await confirmPublicKey(params.publicKey))))
 	) return false;
 
 	return true;
