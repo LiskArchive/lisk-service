@@ -52,9 +52,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i - 1];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -71,9 +73,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i - 1];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -102,9 +106,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i - 1];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -131,7 +137,7 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(event => {
 				expect(event).toMap(eventSchema);
-				if (event.block.id) {
+				if (event.block && event.block.id) {
 					expect(event.block.id).toBe(refTransaction.block.id);
 				}
 			});
@@ -148,9 +154,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i - 1];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -172,7 +180,7 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach(event => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBe(refTransaction.block.height);
 				}
 			});
@@ -189,9 +197,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i - 1];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -215,9 +225,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i - 1];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -234,9 +246,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i - 1];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -260,12 +274,12 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.timestamp) {
+				if (event.block && event.block.timestamp) {
 					expect(event.block.timestamp).toBeGreaterThanOrEqual(from);
 					expect(event.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 					if (i > 0) {
 						const prevEvent = response.data[i];
-						if (prevEvent.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
 						}
@@ -284,11 +298,11 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.timestamp) {
+				if (event.block && event.block.timestamp) {
 					expect(event.block.timestamp).toBeGreaterThanOrEqual(from);
 					if (i > 0) {
 						const prevEvent = response.data[i];
-						if (prevEvent.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
 						}
@@ -307,11 +321,11 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.timestamp) {
+				if (event.block && event.block.timestamp) {
 					expect(event.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 					if (i > 0) {
 						const prevEvent = response.data[i];
-						if (prevEvent.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
 						}
@@ -333,15 +347,17 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBeGreaterThanOrEqual(minHeight);
 					expect(event.block.height).toBeLessThanOrEqual(maxHeight);
 				}
 				if (i > 0) {
 					const prevEvent = response.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -357,14 +373,16 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBeGreaterThanOrEqual(minHeight);
 				}
 				if (i > 0) {
 					const prevEvent = response.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -380,14 +398,16 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBeLessThanOrEqual(maxHeight);
 				}
 				if (i > 0) {
 					const prevEvent = response.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -414,9 +434,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -431,11 +453,13 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block && i > 0) {
+				if (i > 0) {
 					const prevEvent = response.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -451,7 +475,7 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toEqual(1);
 			response.data.forEach(event => {
 				expect(event).toMap(eventSchema);
-				if (event.block.id) {
+				if (event.block && event.block.id) {
 					expect(event.block.id).toBe(refTransaction.block.id);
 				}
 			});
@@ -465,7 +489,7 @@ xdescribe('Events API', () => {
 			expect(response.data.length).toEqual(1);
 			response.data.forEach(event => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBe(refTransaction.block.height);
 				}
 			});
@@ -488,9 +512,11 @@ xdescribe('Events API', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = response.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});

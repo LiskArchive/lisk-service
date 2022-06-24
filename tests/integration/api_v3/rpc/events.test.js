@@ -56,9 +56,11 @@ xdescribe('Method get.events', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -77,9 +79,11 @@ xdescribe('Method get.events', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -98,9 +102,11 @@ xdescribe('Method get.events', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -148,9 +154,11 @@ xdescribe('Method get.events', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -189,7 +197,7 @@ xdescribe('Method get.events', () => {
 			expect(result).toMap(emptyResultEnvelopeSchema);
 		});
 
-		it('Blocks with min...max height -> ok', async () => {
+		it('Events with min...max height -> ok', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getEvents({ height: `${minHeight}:${maxHeight}` });
@@ -200,22 +208,24 @@ xdescribe('Method get.events', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBeGreaterThanOrEqual(minHeight);
 					expect(event.block.height).toBeLessThanOrEqual(maxHeight);
 				}
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Blocks with min... height -> ok', async () => {
+		it('Events with min... height -> ok', async () => {
 			const minHeight = refTransaction.block.height;
 			const response = await getEvents({ height: `${minHeight}:` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -225,21 +235,23 @@ xdescribe('Method get.events', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBeGreaterThanOrEqual(minHeight);
 				}
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Blocks with ...max height -> ok', async () => {
+		it('Events with ...max height -> ok', async () => {
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getEvents({ height: `:${maxHeight}` });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
@@ -249,21 +261,23 @@ xdescribe('Method get.events', () => {
 			expect(result.data.length).toBeLessThanOrEqual(10);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBeLessThanOrEqual(maxHeight);
 				}
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
 			expect(result.meta).toMap(metaSchema);
 		});
 
-		it('Blocks with max...min height -> empty response', async () => {
+		it('Events with max...min height -> empty response', async () => {
 			const minHeight = refTransaction.block.height;
 			const maxHeight = refTransaction.block.height + 100;
 			const response = await getEvents({ height: `${maxHeight}:${minHeight}` });
@@ -287,12 +301,12 @@ xdescribe('Method get.events', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.timestamp) {
+				if (event.block && event.block.timestamp) {
 					expect(event.block.timestamp).toBeGreaterThanOrEqual(from);
 					expect(event.block.timestamp).toBeLessThanOrEqual(toTimestamp);
 					if (i > 0) {
 						const prevEvent = result.data[i];
-						if (prevEvent.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
 						}
@@ -314,11 +328,11 @@ xdescribe('Method get.events', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.timestamp) {
+				if (event.block && event.block.timestamp) {
 					expect(event.block.timestamp).toBeGreaterThanOrEqual(from);
 					if (i > 0) {
 						const prevEvent = result.data[i];
-						if (prevEvent.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
 							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
 						}
@@ -340,14 +354,14 @@ xdescribe('Method get.events', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((event, i) => {
 				expect(event).toMap(eventSchema);
-				if (event.block.timestamp) {
+				if (event.block && event.block.timestamp) {
 					expect(event.block.timestamp).toBeLessThanOrEqual(toTimestamp);
-				}
-				if (i > 0) {
-					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (i > 0) {
+						const prevEvent = result.data[i];
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -368,9 +382,11 @@ xdescribe('Method get.events', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -389,9 +405,11 @@ xdescribe('Method get.events', () => {
 				expect(event).toMap(eventSchema);
 				if (i > 0) {
 					const prevEvent = result.data[i];
-					if (event.block.timestamp && prevEvent.block.timestamp) {
-						const prevEventTimestamp = prevEvent.block.timestamp;
-						expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+						}
 					}
 				}
 			});
@@ -411,7 +429,7 @@ xdescribe('Method get.events', () => {
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(event => {
 				expect(event).toMap(eventSchema);
-				if (event.block.id) {
+				if (event.block && event.block.id) {
 					expect(event.block.id).toBe(refTransaction.block.id);
 				}
 			});
@@ -429,7 +447,7 @@ xdescribe('Method get.events', () => {
 			expect(result.data.length).toEqual(1);
 			result.data.forEach(event => {
 				expect(event).toMap(eventSchema);
-				if (event.block.height) {
+				if (event.block && event.block.height) {
 					expect(event.block.height).toBe(refTransaction.block.height);
 				}
 			});
