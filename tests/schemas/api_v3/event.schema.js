@@ -17,16 +17,11 @@ import Joi from 'joi';
 
 const regex = require('./regex');
 
-const data = {
-	recipientAddress: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
-	data: Joi.string().required(),
-	amount: Joi.string().optional(),
-};
-
 const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
 const block = {
-	id: Joi.string().required(),
+	id: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
+		.required(),
 	height: Joi.number().integer().min(1).required(),
 	timestamp: Joi.number().integer().positive().max(getCurrentTime())
 		.required(),
@@ -36,7 +31,7 @@ const eventSchema = {
 	moduleID: Joi.string().required(),
 	moduleName: Joi.string().required(),
 	typeID: Joi.string().required(),
-	data: Joi.object(data).required(),
+	data: Joi.object().required(),
 	topics: Joi.array().required(),
 	block: Joi.object(block).optional(),
 };

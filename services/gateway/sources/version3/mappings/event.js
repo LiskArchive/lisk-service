@@ -17,11 +17,7 @@ module.exports = {
 	moduleID: '=,string',
 	moduleName: '=,string',
 	typeID: '=',
-	data: {
-		amount: '=,string',
-		recipientAddress: '=,string',
-		data: '=,string',
-	},
+	data: '=',
 	topics: '=',
 	block: {
 		id: '=,string',

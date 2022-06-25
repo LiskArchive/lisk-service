@@ -23,9 +23,9 @@ module.exports = {
 	rpcMethod: 'get.events',
 	tags: ['Events'],
 	params: {
-		transactionID: { optional: true, type: 'string', min: 1, max: 64 },
+		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
-		blockID: { optional: true, type: 'string', min: 1 },
+		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		height: { optional: true, type: 'string', min: 1 },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
