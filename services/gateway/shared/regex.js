@@ -19,6 +19,7 @@ const NONCE = /^[0-9]+$/;
 const TIMESTAMP = /([0-9]+|[0-9]+:[0-9]+)/;
 const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
 const TRANSACTION_EXECUTION_STATUS = /^(?:\b(?:pending|succeeded|failed|any)\b|\b(?:pending|succeeded|failed|any|,){3,}\b){1}$/;
+const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -27,4 +28,5 @@ module.exports = {
 	TIMESTAMP,
 	NAME,
 	TRANSACTION_EXECUTION_STATUS,
+	NEWSFEED_SOURCE,
 };
