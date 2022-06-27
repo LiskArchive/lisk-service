@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getValidator } = require('./validator');
+const { getValidator } = require('./validatorInfo');
 
 module.exports = {
 	getValidator,

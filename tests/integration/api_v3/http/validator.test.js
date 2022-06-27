@@ -22,7 +22,7 @@ const {
 
 const {
 	goodRequestSchemaForValidator,
-	validatorSchema,
+	validatorInfoSchema,
 	validatorMetaSchema,
 } = require('../../../schemas/api_v3/validatorSchema.schema');
 
@@ -32,16 +32,16 @@ const endpoint = `${baseUrlV3}/validator`;
 
 // TODO: Enable when test blockchain is updated
 xdescribe('Validator API', () => {
-	let refTransaction;
+	let refGenerator;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrlV3}/transactions?limit=1&moduleCommandID=2:0`);
-		[refTransaction] = response.data;
+		const response = await api.get(`${baseUrlV3}/generators?limit=1`);
+		[refGenerator] = response.data;
 	});
 
 	it('retrieves validator info -> ok', async () => {
-		const response = await api.get(`endpoint?address=${refTransaction.sender.address}`);
+		const response = await api.get(`endpoint?address=${refGenerator.address}`);
 		expect(response).toMap(goodRequestSchemaForValidator);
-		expect(response.data).toMap(validatorSchema);
+		expect(response.data).toMap(validatorInfoSchema);
 		expect(response.meta).toMap(validatorMetaSchema);
 	});
 

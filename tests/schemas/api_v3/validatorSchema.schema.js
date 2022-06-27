@@ -27,13 +27,13 @@ const validatorMetaSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
 };
 
-const validatorSchema = {
+const validatorInfoSchema = {
 	generatorKey: Joi.string().required(),
 	blsKey: Joi.string().required(),
 };
 
 module.exports = {
-	validatorSchema: Joi.object(validatorSchema).required(),
+	validatorInfoSchema: Joi.object(validatorInfoSchema).required(),
 	validatorMetaSchema: Joi.object(validatorMetaSchema).required(),
 	goodRequestSchemaForValidator: Joi.object(goodRequestSchemaForValidator).required(),
 };

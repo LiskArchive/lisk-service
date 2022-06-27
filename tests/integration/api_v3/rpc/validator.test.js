@@ -25,26 +25,26 @@ const {
 
 const {
 	goodRequestSchemaForValidator,
-	validatorSchema,
+	validatorInfoSchema,
 	validatorMetaSchema,
 } = require('../../../schemas/api_v3/validatorSchema.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getValidator = async (params) => request(wsRpcUrl, 'get.validator', params);
-const getTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
+const getGenerators = async (params) => request(wsRpcUrl, 'get.generators', params);
 
 // TODO: Enable when test blockchain is updated
 xdescribe('get.validator', () => {
-	let refTransaction;
+	let refGenerator;
 	beforeAll(async () => {
-		const response = await getTransactions({ moduleCommandID: '2:0', limit: 1 });
-		[refTransaction] = response.result.data;
+		const response = await getGenerators({ limit: 1 });
+		[refGenerator] = response.result.data;
 	});
 
 	it('returns validator info', async () => {
-		const response = await getValidator({ address: refTransaction.sender.address });
+		const response = await getValidator({ address: refGenerator.address });
 		expect(response).toMap(goodRequestSchemaForValidator);
-		expect(response.data).toMap(validatorSchema);
+		expect(response.data).toMap(validatorInfoSchema);
 		expect(response.meta).toMap(validatorMetaSchema);
 	});
 
