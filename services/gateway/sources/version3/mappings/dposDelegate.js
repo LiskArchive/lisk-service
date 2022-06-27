@@ -13,20 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
+	name: '=,string',
+	totalVotesReceived: '=,string',
+	selfVotes: '=,string',
+	voteWeight: '=,string',
+	address: '=,string',
+	lastGeneratedHeight: '=,number',
+	status: '=,string',
+	isBanned: '=,boolean',
+	pomHeights: ['pomHeights', {
+		start: '=,number',
+		end: '=,number',
+	}],
+	consecutiveMissedBlocks: '=,number',
 };

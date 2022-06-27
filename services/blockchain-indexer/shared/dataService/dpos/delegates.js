@@ -14,28 +14,31 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-
-const { Logger, CacheRedis, Signals } = require('lisk-service-framework');
 const Transactions = require('@liskhq/lisk-transactions');
 
-const { getLastBlock } = require('./blocks');
-const dataService = require('./business');
+const {
+	CacheRedis,
+	Logger,
+	Signals,
+} = require('lisk-service-framework');
+const dataService = require('../business');
 
+const { getLastBlock } = require('../blocks');
+const { getAllGenerators } = require('../generators');
 const {
 	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
 	getBase32AddressFromHex,
-} = require('../utils/accountUtils');
-const { parseToJSONCompatObj } = require('../utils/parser');
-
-const { MODULE_ID, COMMAND_ID } = require('../constants');
-const config = require('../../config');
+} = require('../../utils/accountUtils');
+const { MODULE_ID, COMMAND_ID } = require('../../constants');
+const { parseToJSONCompatObj } = require('../../utils/parser');
+const config = require('../../../config');
 
 const delegatesCache = CacheRedis('delegates', config.endpoints.cache);
 
 const logger = Logger();
 
-const delegateStatus = {
+const DELEGATE_STATUS = {
 	ACTIVE: 'active',
 	STANDBY: 'standby',
 	BANNED: 'banned',
@@ -43,7 +46,6 @@ const delegateStatus = {
 	INELIGIBLE: 'ineligible',
 };
 
-let generatorsList = [];
 let delegateList = [];
 
 const delegateComparator = (a, b) => {
@@ -65,9 +67,10 @@ const computeDelegateStatus = async () => {
 	const MIN_ELIGIBLE_VOTE_WEIGHT = Transactions.convertLSKToBeddows('1000');
 
 	const lastestBlock = getLastBlock();
+	const generatorsList = await getAllGenerators();
 	const activeGeneratorsList = generatorsList.map(generator => generator.address);
 
-	const verifyIfPunished = delegate => {
+	const verifyIfPunished = (delegate) => {
 		const isPunished = delegate.pomHeights
 			.some(pomHeight => pomHeight.start <= lastestBlock.height
 				&& lastestBlock.height <= pomHeight.end);
@@ -78,17 +81,17 @@ const computeDelegateStatus = async () => {
 		logger.debug('Determine delegate status');
 
 		// Default delegate status
-		delegate.status = delegateStatus.INELIGIBLE;
+		delegate.status = DELEGATE_STATUS.INELIGIBLE;
 
 		// Update delegate status, if applicable
 		if (delegate.isBanned) {
-			delegate.status = delegateStatus.BANNED;
+			delegate.status = DELEGATE_STATUS.BANNED;
 		} else if (verifyIfPunished(delegate)) {
-			delegate.status = delegateStatus.PUNISHED;
+			delegate.status = DELEGATE_STATUS.PUNISHED;
 		} else if (activeGeneratorsList.includes(delegate.address)) {
-			delegate.status = delegateStatus.ACTIVE;
+			delegate.status = DELEGATE_STATUS.ACTIVE;
 		} else if (BigInt(delegate.delegateWeight) >= BigInt(MIN_ELIGIBLE_VOTE_WEIGHT)) {
-			delegate.status = delegateStatus.STANDBY;
+			delegate.status = DELEGATE_STATUS.STANDBY;
 		}
 		return delegate;
 	});
@@ -116,18 +119,12 @@ const loadAllDelegates = async () => {
 	}
 };
 
-const loadAllGenerators = async () => {
-	generatorsList = await dataService.getGenerators();
-	logger.info(`Updated generators list with ${generatorsList.length} delegates.`);
-};
-
 const reload = async () => {
 	if (!await dataService.isDposModuleRegistered()) {
 		return;
 	}
 
 	await loadAllDelegates();
-	await loadAllGenerators();
 	await computeDelegateRank();
 	await computeDelegateStatus();
 };
@@ -140,31 +137,10 @@ const getAllDelegates = async () => {
 const getTotalNumberOfDelegates = async (params = {}) => {
 	const allDelegates = await getAllDelegates();
 	const relevantDelegates = allDelegates.filter(delegate => (
-		(!params.search || delegate.username.includes(params.search))
-		&& (!params.username || delegate.username === params.username)
+		(!params.name || delegate.name === params.name)
 		&& (!params.address || delegate.account.address === params.address)
-		&& (!params.publickey || delegate.account.publicKey === params.publickey)
-		&& (!params.secpubkey || delegate.account.secondPublicKey === params.secpubkey)
-		&& (!params.status || params.status.includes(delegate.status))
 	));
 	return relevantDelegates.length;
-};
-
-const getGenerators = async params => {
-	const generators = {
-		data: [],
-		meta: {},
-	};
-
-	const { offset, limit } = params;
-
-	generators.data = generatorsList.slice(offset, offset + limit);
-
-	generators.meta.count = generators.data.length;
-	generators.meta.offset = offset;
-	generators.meta.total = generatorsList.length;
-
-	return parseToJSONCompatObj(generators);
 };
 
 const getDelegates = async params => {
@@ -207,21 +183,11 @@ const getDelegates = async params => {
 	if (params.address) {
 		delegates.data = filterBy(delegates.data, 'address');
 	}
-	if (params.publicKey) {
-		delegates.data = filterBy(delegates.data, 'publicKey');
-	}
-	if (params.secondPublicKey) {
-		delegates.data = filterBy(delegates.data, 'secondPublicKey');
-	}
-	if (params.username) {
-		delegates.data = filterBy(delegates.data, 'username');
+	if (params.name) {
+		delegates.data = filterBy(delegates.data, 'name');
 	}
 	if (params.status) {
 		delegates.data = filterBy(delegates.data, 'status');
-	}
-	if (params.search) {
-		delegates.data = delegates.data.filter((acc) => (acc.username
-			&& String(acc.username).match(new RegExp(params.search, 'i'))));
 	}
 
 	if (delegates.data.every(delegate => !delegate.rank)) await computeDelegateRank();
@@ -338,6 +304,4 @@ module.exports = {
 	reloadDelegateCache: reload,
 	getTotalNumberOfDelegates,
 	getDelegates,
-	reloadGeneratorsCache: loadAllGenerators,
-	getGenerators,
 };

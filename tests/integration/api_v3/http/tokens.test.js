@@ -24,7 +24,7 @@ const {
 const {
 	tokensSchema,
 	tokensMetaSchema,
-} = require('../../../schemas/api_v3/tokensSchema.schema');
+} = require('../../../schemas/api_v3/tokens.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;

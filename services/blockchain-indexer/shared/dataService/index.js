@@ -25,7 +25,6 @@ const {
 	getAllDelegates,
 	isDposModuleRegistered,
 	getNumberOfGenerators,
-	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getBlockByHeight,
@@ -35,11 +34,6 @@ const {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
-	getTokens,
 } = require('./business');
 
 const {
@@ -57,12 +51,15 @@ const {
 } = require('./blocks');
 
 const {
+	getDelegates,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
-	getDelegates,
+} = require('./dpos');
+
+const {
 	reloadGeneratorsCache,
 	getGenerators,
-} = require('./delegates');
+} = require('./generators');
 
 const { getNetworkStatus } = require('./network');
 
@@ -72,6 +69,10 @@ const {
 	getDisconnectedPeers,
 	getPeersStatistics,
 } = require('./peers');
+
+const {
+	getTokens,
+} = require('./token');
 
 const {
 	getTransactions,
@@ -105,7 +106,6 @@ module.exports = {
 	getAllDelegates,
 	isDposModuleRegistered,
 	getNumberOfGenerators,
-	getGenesisHeight,
 	getFinalizedHeight,
 	normalizeBlocks,
 	getBlockByHeight,
@@ -120,10 +120,6 @@ module.exports = {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
-	getCachedAccountByAddress,
-	getCachedAccountByPublicKey,
-	getCachedAccountBySecondPublicKey,
-	getCachedAccountByUsername,
 
 	getAccounts,
 	getLegacyAccountInfo,

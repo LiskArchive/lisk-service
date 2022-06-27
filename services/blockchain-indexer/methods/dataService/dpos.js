@@ -13,20 +13,18 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
+const { getDelegates } = require('./controllers/dpos');
 
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-
-module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-};
+module.exports = [
+	{
+		name: 'dpos.delegates',
+		controller: getDelegates,
+		params: {
+			address: { optional: true, type: 'any' },
+			name: { optional: true, type: 'any' },
+			status: { optional: true, type: 'any' },
+			offset: { optional: true, type: 'any' },
+			limit: { optional: true, type: 'any' },
+		},
+	},
+];
