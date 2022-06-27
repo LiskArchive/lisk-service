@@ -139,13 +139,13 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('long invalid transactionID -> 400', async () => {
+		it('long invalid transactionID -> 400 BAD REQUEST', async () => {
 			const response = await api.get(`${endpoint}?transactionID=a0833fb5b5534a0c53c3a766bf356c92df2a28e1730fba85667b24f139f65b35578`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 
-		it('short invalid transactionID -> 404', async () => {
-			const response = await api.get(`${endpoint}?transactionID=41287`, 404);
+		it('short invalid transactionID -> 400 BAD REQUEST', async () => {
+			const response = await api.get(`${endpoint}?transactionID=41287`, 400);
 			expect(response).toMap(badRequestSchema);
 		});
 	});
