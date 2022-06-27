@@ -32,12 +32,18 @@ const getNewsFeedIndex = () => getTableInstance(
 );
 
 const refreshTwitterData = async () => {
-	logger.debug('Updating Twitter data...');
-	const newsfeedDB = await getNewsFeedIndex();
+	try {
+		logger.debug('Updating Twitter data...');
+		const newsfeedDB = await getNewsFeedIndex();
 
-	const response = await getData();
-	const normalizedData = normalizeData(config.sources.twitter_lisk, response);
-	await newsfeedDB.upsert(normalizedData);
+		const response = await getData();
+		const normalizedData = normalizeData(config.sources.twitter_lisk, response);
+		await newsfeedDB.upsert(normalizedData);
+	} catch (error) {
+		let errorMsg = error.message;
+		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		logger.error(`Unable to retrieve data from Twitter: ${errorMsg}`);
+	}
 };
 
 module.exports = [
