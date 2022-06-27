@@ -16,17 +16,21 @@
 const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const ADDRESS_BASE32 = /^lsk[a-hjkm-z2-9]{38}$/;
 const NONCE = /^[0-9]+$/;
-const TIMESTAMP = /([0-9]+|[0-9]+:[0-9]+)/;
+const TIMESTAMP_RANGE = /^\b(?:[0-9]{1,}(?::[0-9]{1,})?)\b$/;
+const HEIGHT_RANGE = /^\b(?:[0-9]{1,}(?::[0-9]{1,})?)\b$/;
 const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
 const TRANSACTION_EXECUTION_STATUS = /^(?:\b(?:pending|succeeded|failed|any)\b|\b(?:pending|succeeded|failed|any|,){3,}\b){1}$/;
 const DPOS_DELEGATE_STATUS = /^(?:\b(?:active|standby|banned|punished|ineligible)\b|\b(?:active|standby|banned|punished|ineligible|,){3,}\b){1}$/;
+const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
 	ADDRESS_BASE32,
 	NONCE,
-	TIMESTAMP,
 	NAME,
 	TRANSACTION_EXECUTION_STATUS,
 	DPOS_DELEGATE_STATUS,
+	HASH_SHA256,
+	TIMESTAMP_RANGE,
+	HEIGHT_RANGE,
 };
