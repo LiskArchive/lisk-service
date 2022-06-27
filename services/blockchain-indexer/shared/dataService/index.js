@@ -87,7 +87,11 @@ const {
 	getTransactionsByBlockID,
 } = require('./transactions');
 
-const { getVotesSent, getVotesReceived } = require('./dpos');
+const {
+	getVotesSent,
+	getVotesReceived,
+	getUnlocks,
+} = require('./dpos');
 
 const { getEvents } = require('./events');
 const { getAuthAccountInfo } = require('./auth');
@@ -149,6 +153,7 @@ module.exports = {
 	getTransactionsByBlockID,
 	getVotesReceived,
 	getVotesSent,
+	getUnlocks,
 	getEvents,
 	getAuthAccountInfo,
 	getValidator,
