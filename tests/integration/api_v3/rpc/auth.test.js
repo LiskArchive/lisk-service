@@ -48,7 +48,7 @@ xdescribe('get.auth', () => {
 		expect(response.meta).toMap(authAccountMetaSchema);
 	});
 
-	it('invalid senderAddress -> invalid params', async () => {
+	it('invalid address -> invalid params', async () => {
 		const response = await getAuthAccountInfo({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 		expect(response).toMap(invalidParamsSchema);
 	});
