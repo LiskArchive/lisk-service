@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const util = require('util');
 const { Logger, MySQL: { getTableInstance } } = require('lisk-service-framework');
 
 const { normalizeData } = require('../shared/normalizers');
