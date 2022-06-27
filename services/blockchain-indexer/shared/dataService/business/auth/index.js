@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getAuthAccountInfo } = require('./auth');
+const { getAuthAccountInfo } = require('./accountInfo');
 
 module.exports = {
 	getAuthAccountInfo,

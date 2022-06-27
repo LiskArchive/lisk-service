@@ -27,7 +27,7 @@ const authAccountMetaSchema = {
 	name: Joi.string().pattern(regex.NAME).required(),
 };
 
-const authAccountSchema = {
+const authAccountInfoSchema = {
 	nonce: Joi.string().required(),
 	numberOfSignatures: Joi.number().integer().min(0).required(),
 	mandatoryKeys: Joi.array().items(Joi.string()).optional(),
@@ -35,7 +35,7 @@ const authAccountSchema = {
 };
 
 module.exports = {
-	authAccountSchema: Joi.object(authAccountSchema).required(),
+	authAccountInfoSchema: Joi.object(authAccountInfoSchema).required(),
 	authAccountMetaSchema: Joi.object(authAccountMetaSchema).required(),
 	goodRequestSchemaForAuth: Joi.object(goodRequestSchemaForAuth).required(),
 };

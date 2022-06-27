@@ -25,7 +25,7 @@ const {
 
 const {
 	goodRequestSchemaForAuth,
-	authAccountSchema,
+	authAccountInfoSchema,
 	authAccountMetaSchema,
 } = require('../../../schemas/api_v3/authAccountSchema.schema');
 
@@ -44,7 +44,7 @@ xdescribe('get.auth', () => {
 	it('returns auth account info', async () => {
 		const response = await getAuthAccountInfo({ address: refTransaction.sender.address });
 		expect(response).toMap(goodRequestSchemaForAuth);
-		expect(response.data).toMap(authAccountSchema);
+		expect(response.data).toMap(authAccountInfoSchema);
 		expect(response.meta).toMap(authAccountMetaSchema);
 	});
 
