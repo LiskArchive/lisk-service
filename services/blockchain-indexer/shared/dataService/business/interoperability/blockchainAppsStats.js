@@ -15,7 +15,7 @@
 */
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 
-const { appstatus } = require('./states');
+const { APP_STATE } = require('./states');
 const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -27,9 +27,9 @@ const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockch
 const getBlockchainAppsStatistics = async () => {
 	const blockchainAppsDB = await getBlockchainAppsIndex();
 
-	const activeChain = await blockchainAppsDB.count({ state: appstatus.ACTIVE });
-	const registeredChain = await blockchainAppsDB.count({ state: appstatus.REGISTERED });
-	const terminatedChain = await blockchainAppsDB.count({ state: appstatus.TERMINATED });
+	const activeChain = await blockchainAppsDB.count({ state: APP_STATE.ACTIVE });
+	const registeredChain = await blockchainAppsDB.count({ state: APP_STATE.REGISTERED });
+	const terminatedChain = await blockchainAppsDB.count({ state: APP_STATE.TERMINATED });
 
 	const response = {
 		registered: registeredChain,

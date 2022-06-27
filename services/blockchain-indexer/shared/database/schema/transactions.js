@@ -20,7 +20,6 @@ module.exports = {
 		id: { type: 'string' },
 		height: { type: 'integer' },
 		moduleCommandID: { type: 'string' },
-		crossChainCommandID: { type: 'string' },
 		nonce: { type: 'integer' },
 		blockID: { type: 'string' },
 		timestamp: { type: 'integer' },

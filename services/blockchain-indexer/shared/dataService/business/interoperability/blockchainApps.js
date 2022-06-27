@@ -43,9 +43,13 @@ const getBlockchainApps = async (params) => {
 
 	const total = await blockchainAppsDB.count(params);
 
-	blockchainAppsInfo.data = await blockchainAppsDB.find(params);
+	blockchainAppsInfo.data = await blockchainAppsDB.find(
+		{ ...params, limit: params.limit || total },
+		Object.getOwnPropertyNames(blockchainAppsIndexSchema.schema),
+	);
+
 	blockchainAppsInfo.meta = {
-		count: 1,
+		count: blockchainAppsInfo.data.length,
 		offset: params.offset,
 		total,
 	};

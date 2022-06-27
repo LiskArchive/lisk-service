@@ -13,12 +13,12 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const appstatus = {
+const APP_STATE = {
 	ACTIVE: 'active',
 	REGISTERED: 'registered',
 	TERMINATED: 'terminated',
 };
 
 module.exports = {
-	appstatus,
+	APP_STATE,
 };
