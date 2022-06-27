@@ -16,22 +16,22 @@
 const dposUnlock = require('./mappings/dposUnlock');
 
 module.exports = {
-    type: 'moleculer',
-    method: 'indexer.dpos.unlocks',
-    params: {
-        address: '=,string',
-        name: '=,string',
-        publicKey: '=,string',
-        limit: '=,number',
-        offset: '=,number',
-    },
-    definition: {
-        data: ['data', dposUnlock],
-        meta: {
-            count: '=,number',
-            offset: '=,number',
-            total: '=,number',
-        },
-        links: {},
-    },
+	type: 'moleculer',
+	method: 'indexer.dpos.unlocks',
+	params: {
+		address: '=,string',
+		name: '=,string',
+		publicKey: '=,string',
+		limit: '=,number',
+		offset: '=,number',
+	},
+	definition: {
+		data: ['data', dposUnlock],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };
