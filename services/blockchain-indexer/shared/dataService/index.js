@@ -90,6 +90,8 @@ const {
 const { getVotesSent, getVotesReceived } = require('./dpos');
 
 const { getEvents } = require('./events');
+const { getAuthAccountInfo } = require('./auth');
+const { getValidator } = require('./validator');
 
 module.exports = {
 	getMultisignatureGroups,
@@ -148,4 +150,6 @@ module.exports = {
 	getVotesReceived,
 	getVotesSent,
 	getEvents,
+	getAuthAccountInfo,
+	getValidator,
 };
