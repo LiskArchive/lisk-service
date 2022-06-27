@@ -89,6 +89,10 @@ const {
 	getBlockchainAppsStatistics,
 } = require('./interoperability');
 
+const { getEvents } = require('./events');
+const { getAuthAccountInfo } = require('./auth');
+const { getValidator } = require('./validator');
+
 module.exports = {
 	getMultisignatureGroups,
 	getMultisignatureMemberships,
@@ -145,4 +149,7 @@ module.exports = {
 	getTransactionsByBlockID,
 	getVotesReceived,
 	getVotesSent,
+	getEvents,
+	getAuthAccountInfo,
+	getValidator,
 };
