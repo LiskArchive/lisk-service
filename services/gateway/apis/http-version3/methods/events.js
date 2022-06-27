@@ -26,8 +26,8 @@ module.exports = {
 		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
 		blockID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
-		height: { optional: true, type: 'string', min: 1 },
-		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP },
+		height: { optional: true, type: 'string', min: 1, pattern: regex.HEIGHT_RANGE },
+		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
