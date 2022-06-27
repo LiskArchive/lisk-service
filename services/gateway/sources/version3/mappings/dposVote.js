@@ -13,20 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getVoters,
-} = require('./controllers/voters');
-
-module.exports = [
-	{
-		name: 'voters',
-		controller: getVoters,
-		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-		},
-	},
-];
+module.exports = {
+	delegateAddress: '=,string',
+	amount: '=,string',
+	name: '=,string',
+};

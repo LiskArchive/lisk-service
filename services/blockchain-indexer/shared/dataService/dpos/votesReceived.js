@@ -13,18 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	getVotes,
-} = require('./controllers/votes');
+const dataService = require('../business');
 
-module.exports = [
-	{
-		name: 'votes',
-		controller: getVotes,
-		params: {
-			address: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-		},
-	},
-];
+const getVotesReceived = async params => {
+	const response = await dataService.getVotesReceived(params);
+	return response;
+};
+
+module.exports = {
+	getVotesReceived,
+};

@@ -14,19 +14,18 @@
  *
  */
 const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-
-module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
 	getVotesSent,
-	getVotesReceived,
-};
+} = require('./controllers/dposVotesSent');
+
+module.exports = [
+	{
+		name: 'dpos.votes.sent',
+		controller: getVotesSent,
+		params: {
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+];

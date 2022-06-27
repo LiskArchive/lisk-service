@@ -1,6 +1,6 @@
 /*
  * LiskHQ/lisk-service
- * Copyright © 2022 Lisk Foundation
+ * Copyright © 2021 Lisk Foundation
  *
  * See the LICENSE file at the top-level directory of this distribution
  * for licensing information.
@@ -13,20 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
+const WAIT_TIME_VOTER = 2000;
+const WAIT_TIME_SELF_VOTE = 260000;
+const PUNISH_TIME_VOTER = 260000;
+const PUNISH_TIME_SELF_VOTE = 780000;
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
+	WAIT_TIME_VOTER,
+	WAIT_TIME_SELF_VOTE,
+	PUNISH_TIME_VOTER,
+	PUNISH_TIME_SELF_VOTE,
 };
