@@ -76,6 +76,8 @@ const {
 	getVotesSent,
 } = require('./dpos');
 
+const { getAuthAccountInfo } = require('./auth');
+
 module.exports = {
 	getAccounts,
 	getMultisignatureGroups,
@@ -112,4 +114,5 @@ module.exports = {
 	getVotesByTransactionIDs,
 	getVotesReceived,
 	getVotesSent,
+	getAuthAccountInfo,
 };
