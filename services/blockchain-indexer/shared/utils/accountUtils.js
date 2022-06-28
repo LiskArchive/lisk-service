@@ -188,6 +188,14 @@ const getPublicKeyByAny = async param => {
 	return getPublicKeyByUsername(param);
 };
 
+const updateAccountPublicKey = async (publicKey) => {
+	const accountsDB = await getAccountsIndex();
+	await accountsDB.upsert({
+		address: getBase32AddressFromPublicKey(publicKey),
+		publicKey,
+	});
+};
+
 module.exports = {
 	parseAddress,
 	validateAddress,
@@ -200,6 +208,7 @@ module.exports = {
 	getBase32AddressFromHex,
 	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
+	updateAccountPublicKey,
 
 	confirmAnyId,
 	getUsernameByAddress,

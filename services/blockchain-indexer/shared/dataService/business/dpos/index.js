@@ -32,6 +32,7 @@ const {
 const {
 	calculateUnlockEndHeight,
 	standardizeUnlockHeight,
+	getUnlocks,
 } = require('./unlock');
 
 module.exports = {
@@ -51,4 +52,5 @@ module.exports = {
 	findPomHeightForUnlock,
 	calculateUnlockEndHeight,
 	standardizeUnlockHeight,
+	getUnlocks,
 };
