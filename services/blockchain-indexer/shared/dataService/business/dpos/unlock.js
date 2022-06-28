@@ -74,11 +74,9 @@ const getUnlocks = async params => {
 	}
 
 	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromBase32(params.address) });
-
 	const normalizedUnlocks = response.pendingUnlocks.map(unlock => normalizeUnlock(unlock));
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name', 'publicKey']);
-
 	unlocks.data = {
 		address: params.address,
 		publicKey: accountInfo && accountInfo.publicKey ? accountInfo.publicKey : null,
