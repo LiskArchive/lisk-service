@@ -22,7 +22,7 @@ module.exports = [
 		name: 'dpos.unlocks',
 		controller: getUnlocks,
 		params: {
-			address: { optional: false, type: 'string' },
+			address: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			publicKey: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
