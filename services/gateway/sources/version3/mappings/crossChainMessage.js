@@ -25,10 +25,11 @@ module.exports = {
 		name: '=,string',
 	},
 	params: '=',
-	block: {
+	block: ['block', {
 		id: '=,string',
 		height: '=,number',
 		timestamp: '=,number',
-	},
+		transactionID: '=,string',
+	}],
 	executionStatus: '=,string',
 };

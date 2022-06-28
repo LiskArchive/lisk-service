@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const ccm = require('./mappings/ccm');
+const crossChainMessage = require('./mappings/crossChainMessage');
 
 module.exports = {
 	type: 'moleculer',
@@ -31,7 +31,7 @@ module.exports = {
 		sort: '=,string',
 	},
 	definition: {
-		data: ['data', ccm],
+		data: ['data', crossChainMessage],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

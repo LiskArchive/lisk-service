@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const ccmSource = require('../../../sources/version3/ccm');
+const crossChainMessagesSource = require('../../../sources/version3/crossChainMessages');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
 
@@ -43,6 +43,6 @@ module.exports = {
 			default: 'timestamp:desc',
 		},
 	},
-	source: ccmSource,
+	source: crossChainMessagesSource,
 	envelope,
 };
