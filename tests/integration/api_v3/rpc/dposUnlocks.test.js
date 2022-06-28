@@ -133,7 +133,7 @@ xdescribe('get.dpos.unlocks', () => {
 	});
 
 	it('No Params -> invalid param', async () => {
-		const response = await getUnlocks();
+		const response = await getUnlocks({});
 		expect(response).toMap(invalidParamsSchema);
 	});
 

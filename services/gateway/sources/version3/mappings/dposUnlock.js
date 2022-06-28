@@ -17,7 +17,7 @@ module.exports = {
 	address: '=,string',
 	publicKey: '=,string',
 	name: '=,string',
-	unlocking: ['unlocking', {
+	unlocking: ['data.unlocking', {
 		delegateAddress: '=,string',
 		amount: '=,string',
 		unvoteHeight: '=,number',

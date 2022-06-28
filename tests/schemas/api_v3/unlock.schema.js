@@ -18,15 +18,15 @@ import regex from './regex';
 
 const unlocking = {
 	delegateAddress: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
-	amount: Joi.string().required(),
-	unvoteHeight: Joi.number().integer().min(0).required(),
+	amount: Joi.string().min(10).required(),
+	unvoteHeight: Joi.number().integer().min(1).required(),
 };
 
 const unlockSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 	name: Joi.string().pattern(regex.NAME).optional(),
-	unlocking: Joi.array().items(unlocking).optional(),
+	unlocking: Joi.array().items(unlocking).max(20).optional(),
 };
 
 module.exports = {

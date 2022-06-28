@@ -26,7 +26,7 @@ module.exports = {
 		offset: '=,number',
 	},
 	definition: {
-		data: ['data', dposUnlock],
+		data: dposUnlock,
 		meta: {
 			count: '=,number',
 			offset: '=,number',

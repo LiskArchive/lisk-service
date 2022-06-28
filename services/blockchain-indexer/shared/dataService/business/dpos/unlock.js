@@ -29,6 +29,7 @@ const {
 	getHexAddressFromBase32,
 	getIndexedAccountInfo,
 	getBase32AddressFromPublicKey,
+	updateAccountPublicKey,
 } = require('../../../utils/accountUtils');
 const { getAddressByName } = require('../../../utils/delegateUtils');
 const { parseToJSONCompatObj } = require('../../../utils/parser');
@@ -83,6 +84,9 @@ const getUnlocks = async params => {
 		name: accountInfo && accountInfo.name ? accountInfo.name : null,
 		unlocking: normalizedUnlocks,
 	};
+
+	// Update index when public key is not indexed
+	if (params.publicKey && !accountInfo.publicKey) updateAccountPublicKey(params.publicKey);
 
 	const total = unlocks.data.unlocking.length;
 	unlocks.data.unlocking = unlocks.data.unlocking
