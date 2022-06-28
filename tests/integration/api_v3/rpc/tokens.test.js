@@ -27,7 +27,7 @@ const {
 const {
 	tokensSchema,
 	tokensMetaSchema,
-} = require('../../../schemas/api_v3/tokensSchema.schema');
+} = require('../../../schemas/api_v3/tokens.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTokensInfo = async (params) => request(wsRpcUrl, 'get.tokens', params);

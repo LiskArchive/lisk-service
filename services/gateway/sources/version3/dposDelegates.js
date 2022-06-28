@@ -13,23 +13,25 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
+const delegate = require('./mappings/dposDelegate');
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-
-	getUnlocks,
+	type: 'moleculer',
+	method: 'indexer.dpos.delegates',
+	params: {
+		address: '=,string',
+		name: '=,string',
+		status: '=,string',
+		offset: '=,number',
+		limit: '=,number',
+	},
+	definition: {
+		data: ['data', delegate],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
 };

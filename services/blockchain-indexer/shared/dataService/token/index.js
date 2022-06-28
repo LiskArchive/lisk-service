@@ -13,23 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
+const { getTokens } = require('./token');
 
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-
-	getUnlocks,
+	getTokens,
 };
