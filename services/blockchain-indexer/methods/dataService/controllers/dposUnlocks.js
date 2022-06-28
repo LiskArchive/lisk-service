@@ -35,7 +35,10 @@ const getUnlocks = async params => {
 				{
 					delegateAddress: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
 					amount: '10000000',
-					unvoteHeight: 30,
+					unvoteHeight: {
+						start: 30,
+						end: 300,
+					},
 				},
 			],
 		},
