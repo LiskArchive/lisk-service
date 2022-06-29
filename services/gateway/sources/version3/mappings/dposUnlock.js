@@ -13,23 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
-
 module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-
-	getUnlocks,
+	address: '=,string',
+	publicKey: '=,string',
+	name: '=,string',
+	unlocking: ['data.unlocking', {
+		delegateAddress: '=,string',
+		amount: '=,string',
+		unvoteHeight: {
+			start: '=,number',
+			end: '=,number',
+		},
+	}],
 };

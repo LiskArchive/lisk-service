@@ -14,22 +14,19 @@
  *
  */
 const {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-} = require('./delegates');
-
-const { getVotesReceived } = require('./votesReceived');
-const { getVotesSent } = require('./votesSent');
-const { getUnlocks } = require('./unlocks');
-
-module.exports = {
-	reloadDelegateCache,
-	getTotalNumberOfDelegates,
-	getDelegates,
-
-	getVotesSent,
-	getVotesReceived,
-
 	getUnlocks,
-};
+} = require('./controllers/dposUnlocks');
+
+module.exports = [
+	{
+		name: 'dpos.unlocks',
+		controller: getUnlocks,
+		params: {
+			address: { optional: true, type: 'string' },
+			name: { optional: true, type: 'string' },
+			publicKey: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+		},
+	},
+];
