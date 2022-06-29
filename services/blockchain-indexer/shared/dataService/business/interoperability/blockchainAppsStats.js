@@ -15,7 +15,7 @@
 */
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 
-const { APP_STATE } = require('./states');
+const { APP_STATE } = require('./constants');
 const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -27,14 +27,14 @@ const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockch
 const getBlockchainAppsStatistics = async () => {
 	const blockchainAppsDB = await getBlockchainAppsIndex();
 
-	const activeChain = await blockchainAppsDB.count({ state: APP_STATE.ACTIVE });
-	const registeredChain = await blockchainAppsDB.count({ state: APP_STATE.REGISTERED });
-	const terminatedChain = await blockchainAppsDB.count({ state: APP_STATE.TERMINATED });
+	const numActiveChains = await blockchainAppsDB.count({ state: APP_STATE.ACTIVE });
+	const numRegisteredChains = await blockchainAppsDB.count({ state: APP_STATE.REGISTERED });
+	const numTerminatedChains = await blockchainAppsDB.count({ state: APP_STATE.TERMINATED });
 
 	const response = {
-		registered: registeredChain,
-		active: activeChain,
-		terminated: terminatedChain,
+		registered: numRegisteredChains,
+		active: numActiveChains,
+		terminated: numTerminatedChains,
 		// TODO: Get these information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
 		totalSupplyLSK: '',
 		stakedLSK: '',
