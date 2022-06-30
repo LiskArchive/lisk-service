@@ -46,7 +46,7 @@ const crossChainMessageSchema = {
 	fee: Joi.string().required(),
 	status: Joi.string().valid(...CCM_STATUS).required(),
 	params: Joi.object().required(),
-	block: Joi.array.items(block).required(),
+	block: Joi.object(block).required(),
 	ccms: Joi.array.items(Joi.string()).required(),
 };
 
