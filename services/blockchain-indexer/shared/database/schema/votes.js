@@ -14,10 +14,9 @@
  *
  */
 module.exports = {
-	primaryKey: 'tempId',
+	primaryKey: ['id', 'receivedAddress'],
 	schema: {
-		// TODO: Remove 'tempId' after composite PK support is added
-		tempId: { type: 'string' }, // ['id', 'receivedAddress']
+		tempId: { type: 'string' },
 		id: { type: 'string' },
 		sentAddress: { type: 'string' },
 		receivedAddress: { type: 'string' },
