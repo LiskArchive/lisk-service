@@ -19,9 +19,9 @@ const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/events',
-	rpcMethod: 'get.events',
-	tags: ['Events'],
+	swaggerApiPath: '/ccm',
+	rpcMethod: 'get.ccm',
+	tags: ['Interoperability'],
 	params: {
 		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		moduleCrossChainCommandID: { optional: true, type: 'string', min: 1, max: 21 },

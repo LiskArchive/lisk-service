@@ -20,8 +20,8 @@ module.exports = {
 	method: 'indexer.ccm',
 	params: {
 		transactionID: '=,string',
-		moduleCommandID: '=',
-		moduleCommandName: '=',
+		moduleCrossChainCommandID: '=,string',
+		moduleCrossChainCommandName: '=,string',
 		senderAddress: '=,string',
 		status: '=,string',
 		timestamp: '=,string',

@@ -17,12 +17,12 @@ const { getCCMs } = require('./controllers/crossChainMessages');
 
 module.exports = [
 	{
-		name: 'events',
+		name: 'ccm',
 		controller: getCCMs,
 		params: {
 			transactionID: { optional: true, type: 'string' },
-			moduleCommandID: { optional: true, type: 'string' },
-			moduleCommandName: { optional: true, type: 'string' },
+			moduleCrossChainCommandID: { optional: true, type: 'string' },
+			moduleCrossChainCommandName: { optional: true, type: 'string' },
 			senderAddress: { optional: true, type: 'string' },
 			nonce: { optional: true, type: 'string' },
 			timestamp: { optional: true, type: 'string' },
