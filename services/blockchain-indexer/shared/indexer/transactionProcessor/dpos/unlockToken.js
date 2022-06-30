@@ -34,8 +34,6 @@ const commandName = 'unlockToken';
 const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
 
-	// TODO: Implement logic
-
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 	await transactionsDB.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
