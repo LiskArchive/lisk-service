@@ -14,24 +14,18 @@
  *
  */
 module.exports = {
-	primaryKey: 'id',
+	primaryKey: 'transactionID',
 	charset: 'utf8mb4',
 	schema: {
-		id: { type: 'string' }, // CCM ID
-		transactionID: { type: 'string' }, // CCU ID - foreign key to transactions.id
-		nonce: { type: 'bigInteger' },
-		moduleCrossChainCommandID: { type: 'string' },
-		name: { type: 'string' },
-		sendingChainID: { type: 'string' },
-		receivingChainID: { type: 'string' },
-		fee: { type: 'bigInteger' },
-		status: { type: 'string' },
-		ccms: { type: 'json' },
+		transactionID: { type: 'string', null: false },
+		recipientAddress: { type: 'string' },
+		amount: { type: 'bigInteger' },
+		data: { type: 'string' },
 	},
 	indexes: {
-		sendingChainID: { type: 'key' },
-		receivingChainID: { type: 'key' },
-		status: { type: 'key' },
+		recipientAddress: { type: 'key' },
+		amount: { type: 'range' },
+		data: { type: 'key' },
 	},
 	purge: {},
 };
