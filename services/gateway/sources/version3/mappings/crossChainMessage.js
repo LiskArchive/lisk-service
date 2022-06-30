@@ -22,11 +22,11 @@ module.exports = {
 	fee: '=,string',
 	status: '=,string',
 	params: '=',
-	block: ['block', {
+	block: {
 		id: '=,string',
 		height: '=,number',
 		timestamp: '=,number',
 		transactionID: '=,string',
-	}],
+	},
 	ccms: '=',
 };

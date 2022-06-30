@@ -17,12 +17,6 @@ import Joi from 'joi';
 
 const regex = require('./regex');
 
-const sender = {
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
-	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).optional(),
-	name: Joi.string().pattern(regex.NAME).optional(),
-};
-
 const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
 const block = {
@@ -33,14 +27,7 @@ const block = {
 		.required(),
 	transactionID: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
 		.required(),
-
 };
-
-const TRANSACTION_EXECUTION_STATUSES = [
-	'pending',
-	'succeeded',
-	'failed',
-];
 
 const CCM_STATUS = [
 	'ok',
@@ -51,15 +38,16 @@ const CCM_STATUS = [
 ];
 
 const crossChainMessageSchema = {
-	moduleCommandID: Joi.string().required(),
-	moduleCommandName: Joi.string().required(),
+	moduleCrossChainCommandID: Joi.string().required(),
+	moduleCrossChainCommandName: Joi.string().required(),
+	sendingChainID: Joi.string().required(),
+	receivingChainID: Joi.string().required(),
 	nonce: Joi.string().pattern(regex.NONCE).required(),
 	fee: Joi.string().required(),
 	status: Joi.string().valid(...CCM_STATUS).required(),
-	sender: Joi.object(sender).required(),
 	params: Joi.object().required(),
 	block: Joi.array.items(block).required(),
-	executionStatus: Joi.string().valid(...TRANSACTION_EXECUTION_STATUSES).required(),
+	ccms: Joi.array.items(Joi.string()).required(),
 };
 
 module.exports = {

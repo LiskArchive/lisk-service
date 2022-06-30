@@ -43,12 +43,13 @@ const getCCMs = async params => {
 					},
 					data: 'message',
 				},
-				block: [{
+				block: {
 					id: '6258354802676165798',
 					height: 8350681,
 					timestamp: 28227090,
 					transactionID: '12435autb1353anmbmab',
-				}],
+				},
+				ccms: ['ccmID1', 'ccmID2'],
 			},
 		],
 		meta: {
