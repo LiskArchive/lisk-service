@@ -17,6 +17,7 @@ const {
 	Logger,
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
+const { reloadDelegateCache } = require('../../../dataService');
 const config = require('../../../../config');
 
 const logger = Logger();
@@ -34,8 +35,7 @@ const commandName = 'reportDelegateMisbehavior';
 const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
 
-	// TODO: Implement logic
-
+	await reloadDelegateCache();
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 	await transactionsDB.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
