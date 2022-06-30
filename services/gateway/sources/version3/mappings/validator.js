@@ -16,4 +16,5 @@
 module.exports = {
 	generatorKey: '=,string',
 	blsKey: '=,string',
+	proofOfPosession: '=,string',
 };
