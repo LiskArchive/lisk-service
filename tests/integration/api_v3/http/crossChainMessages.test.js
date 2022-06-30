@@ -35,10 +35,14 @@ const endpoint = `${baseUrl}/ccm`;
 
 // TODO: Enable once Lisk Core is updated
 xdescribe('Cross-chain Messages API', () => {
+	let refCCM;
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${baseUrl}/transactions?limit=1&moduleCommandID=64:1`);
-		[refTransaction] = response.data;
+		const response1 = await api.get(`${endpoint}?limit=1`);
+		[refCCM] = response1.data;
+
+		const response2 = await api.get(`${baseUrl}/transactions?transactionID=${refCCM.block.transactionID}`);
+		refTransaction = response2.data;
 	});
 
 	describe('Retrieve Cross-chain Messages', () => {
@@ -48,27 +52,50 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(ccm => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns CCMS with known moduleCrossChainCommandID', async () => {
-			const response = await api.get(`${endpoint}?moduleCrossChainCommandID=${refTransaction.moduleCommandID}`);
+			const response = await api.get(`${endpoint}?moduleCrossChainCommandID=${refCCM.moduleCrossChainCommandID}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema,
+					{ moduleCrossChainCommandID: refCCM.moduleCrossChainCommandID });
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('returns CCMS with known moduleCrossChainCommandName', async () => {
-			const response = await api.get(`${endpoint}?moduleCrossChainCommandName=${refTransaction.moduleCommandName}`);
+			const response = await api.get(`${endpoint}?moduleCrossChainCommandName=${refCCM.moduleCrossChainCommandName}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema,
+					{ moduleCrossChainCommandName: refCCM.moduleCrossChainCommandName });
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -83,17 +110,27 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(ccm => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
 
 	describe('Retrieve a CCM by transactionID', () => {
-		it('returns requested CCM with known transactionID', async () => {
-			const response = await api.get(`${endpoint}?transactionID=${refTransaction.id}`);
+		it('returns CCM with known transactionID', async () => {
+			const response = await api.get(`${endpoint}?transactionID=${refCCM.block.transactionID}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeArrayOfSize(1);
-			response.data.forEach(ccm => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				expect(ccm.block.transactionID).toEqual(refCCM.block.transactionID);
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -103,7 +140,14 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -125,7 +169,14 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -135,7 +186,14 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -147,36 +205,61 @@ xdescribe('Cross-chain Messages API', () => {
 
 	describe('Retrieve CCMS list within timestamps', () => {
 		it('CCMS within set timestamps are returned', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
-			const toTimestamp = refTransaction.block.timestamp;
+			const from = moment(refCCM.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const toTimestamp = refCCM.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=${from}:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				expect(ccm.block.timestamp).toBeGreaterThanOrEqual(from);
+				expect(ccm.block.timestamp).toBeLessThanOrEqual(toTimestamp);
+				if (i > 0) {
+					const prevCCM = response.data[i];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('CCMS with half bounded range: fromTimestamp', async () => {
-			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
+			const from = moment(refCCM.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
 			const response = await api.get(`${endpoint}?timestamp=${from}:`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				expect(ccm.block.timestamp).toBeGreaterThanOrEqual(from);
+				if (i > 0) {
+					const prevCCM = response.data[i];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
 		it('CCMS with half bounded range: toTimestamp', async () => {
-			const toTimestamp = refTransaction.block.timestamp;
+			const toTimestamp = refCCM.block.timestamp;
 			const response = await api.get(`${endpoint}?timestamp=:${toTimestamp}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				expect(ccm.block.timestamp).toBeLessThanOrEqual(toTimestamp);
+				if (i > 0) {
+					const prevCCM = response.data[i];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
@@ -188,7 +271,14 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -198,7 +288,14 @@ xdescribe('Cross-chain Messages API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeLessThanOrEqual(ccm.block.timestamp);
+				}
+			});
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
@@ -232,7 +329,14 @@ xdescribe('Cross-chain Messages API', () => {
 				expect(response.data).toBeInstanceOf(Array);
 				expect(response.data.length).toBeGreaterThanOrEqual(1);
 				expect(response.data.length).toBeLessThanOrEqual(5);
-				response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema));
+				response.data.forEach((ccm, i) => {
+					expect(ccm).toMap(crossChainMessageSchema);
+					if (i > 0) {
+						const prevCCM = response.data[i - 1];
+						const prevCCMTimestamp = prevCCM.block.timestamp;
+						expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+					}
+				});
 				expect(response.meta).toMap(metaSchema);
 			} catch (_) {
 				const expectedStatusCode = 404;
