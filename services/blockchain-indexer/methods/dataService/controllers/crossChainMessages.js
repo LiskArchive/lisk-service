@@ -27,16 +27,13 @@ const getCCMs = async params => {
 	const ccms = {
 		data: [
 			{
-				moduleCommandID: '2:0',
-				moduleCommandName: 'token:transfer',
+				moduleCrossChainCommandID: '64:3',
+				moduleCrossChainCommandName: 'interoperability:mainchainCCUpdate',
+				sendingChainID: 'sendingChainIdentifier',
+				receivingChainID: 'receivingChainIdentifier',
 				nonce: '0',
 				fee: '1000000',
 				status: 'ok',
-				sender: {
-					address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-					publicKey: '2ca9a7...c23079',
-					name: 'genesis_51',
-				},
 				params: {
 					amount: '150000000',
 					recipient: {
@@ -52,7 +49,6 @@ const getCCMs = async params => {
 					timestamp: 28227090,
 					transactionID: '12435autb1353anmbmab',
 				}],
-				executio: false,
 			},
 		],
 		meta: {

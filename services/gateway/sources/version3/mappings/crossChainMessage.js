@@ -14,16 +14,13 @@
  *
  */
 module.exports = {
-	moduleCommandID: '=,string',
-	moduleCommandName: '=,string',
+	moduleCrossChainCommandID: '=,string',
+	moduleCrossChainCommandName: '=,string',
+	sendingChainID: '=,string',
+	receivingChainID: '=,string',
 	nonce: '=,string',
 	fee: '=,string',
 	status: '=,string',
-	sender: {
-		address: '=,string',
-		publicKey: '=,string',
-		name: '=,string',
-	},
 	params: '=',
 	block: ['block', {
 		id: '=,string',
@@ -31,5 +28,5 @@ module.exports = {
 		timestamp: '=,number',
 		transactionID: '=,string',
 	}],
-	executionStatus: '=,string',
+	ccms: '=',
 };
