@@ -38,6 +38,8 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const crossChainMessagesDB = await getCrossChainMessagesIndex();
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
+	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
+
 	// TODO: Get name directly from SDK endpoint wher available
 	tx.name = '';
 	await crossChainMessagesDB.upsert(tx, dbTrx);

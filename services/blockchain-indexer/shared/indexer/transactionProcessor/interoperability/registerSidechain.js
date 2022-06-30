@@ -43,6 +43,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.trace(`Indexing cross chain register transaction ${tx.id} contained in block at height ${tx.height}`);
 
 	tx.name = tx.params.name;
+	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
 	await crossChainMessagesDB.upsert(tx, dbTrx);
 
 	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed

@@ -43,6 +43,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.trace(`Indexing cross chain register transaction ${tx.id} contained in block at height ${tx.height}`);
 
 	tx.name = tx.params.ownName;
+	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
 	await crossChainMessagesDB.upsert(tx, dbTrx);
 
 	const appInfo = {

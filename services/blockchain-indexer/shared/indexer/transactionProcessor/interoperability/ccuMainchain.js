@@ -42,6 +42,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}`);
 
+	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
 	// TODO: Get these information directly from SDK
 	tx.name = '';
 	await crossChainMessagesDB.upsert(tx, dbTrx);
