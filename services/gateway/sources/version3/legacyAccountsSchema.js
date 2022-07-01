@@ -25,6 +25,7 @@ module.exports = {
 			balance: '=,number',
 		},
 		meta: {
+			address: '=,string',
 			publicKey: '=,string',
 		},
 		links: {},
