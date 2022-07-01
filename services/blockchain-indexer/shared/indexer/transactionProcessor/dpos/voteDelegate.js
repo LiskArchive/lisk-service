@@ -39,7 +39,7 @@ const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAg
 const commandID = 1;
 const commandName = 'voteDelegate';
 
-const getVoteIndexingInfo = async (tx) => {
+const getVoteIndexingInfo = async (blockHeader, tx) => {
 	const votesDB = await getVotesIndex();
 	const votesToAggregateArray = [];
 	const votesMultiArray = tx.params.votes.map(async vote => {
@@ -48,6 +48,7 @@ const getVoteIndexingInfo = async (tx) => {
 		voteEntry.sentAddress = getBase32AddressFromPublicKey(tx.senderPublicKey);
 		voteEntry.receivedAddress = getBase32AddressFromHex(vote.delegateAddress);
 		voteEntry.amount = vote.amount;
+		voteEntry.timestamp = blockHeader.timestamp;
 
 		const [row] = await votesDB.find({
 			id: tx.id,
@@ -55,16 +56,9 @@ const getVoteIndexingInfo = async (tx) => {
 			limit: 1,
 		}, ['isAggregated']);
 		if (!row || !row.isAggregated) {
-			votesToAggregateArray.push({
-				amount: BigInt(vote.amount),
-				id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-				voteObject: {
-					...voteEntry,
-					id: voteEntry.receivedAddress.concat(voteEntry.sentAddress),
-				},
-			});
+			votesToAggregateArray.push(voteEntry);
 		}
-		voteEntry.id = tx.id;
+		voteEntry.transactionID = tx.id;
 		return voteEntry;
 	});
 	let allVotePromises = [];
@@ -81,8 +75,8 @@ const updateVoteAggregatesTrx = async (voteToAggregate, trx) => {
 			amount: BigInt(voteToAggregate.amount),
 		},
 		where: {
-			property: 'id',
-			value: voteToAggregate.id,
+			sentAddress: voteToAggregate.sentAddress,
+			receivedAddress: voteToAggregate.receivedAddress,
 		},
 	};
 
@@ -92,11 +86,10 @@ const updateVoteAggregatesTrx = async (voteToAggregate, trx) => {
 	}
 };
 
-// eslint-disable-next-line no-unused-vars
 const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const votesDB = await getVotesIndex();
 
-	const { votes, votesToAggregateArray } = await getVoteIndexingInfo(tx);
+	const { votes, votesToAggregateArray } = await getVoteIndexingInfo(blockHeader, tx);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 

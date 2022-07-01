@@ -33,10 +33,10 @@ const getVotesByTransactionIDs = async transactionIDs => {
 	const votesDB = await getVotesIndex();
 	const votes = await votesDB.find({
 		whereIn: {
-			property: 'id',
+			property: 'transactionID',
 			values: transactionIDs,
 		},
-	}, ['tempId']);
+	});
 	return votes;
 };
 
