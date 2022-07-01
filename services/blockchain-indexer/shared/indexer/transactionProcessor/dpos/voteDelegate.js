@@ -29,13 +29,11 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
 const votesIndexSchema = require('../../../database/schema/votes');
 const votesAggregateIndexSchema = require('../../../database/schema/votesAggregate');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema);
-const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema);
+const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
+const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const commandID = 1;
@@ -96,7 +94,6 @@ const updateVoteAggregatesTrx = async (voteToAggregate, trx) => {
 
 // eslint-disable-next-line no-unused-vars
 const processTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
 	const votesDB = await getVotesIndex();
 
 	const { votes, votesToAggregateArray } = await getVoteIndexingInfo(tx);
@@ -111,7 +108,6 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 		{ concurrency: 1 },
 	);
 
-	await transactionsDB.upsert(tx, dbTrx);
 	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 

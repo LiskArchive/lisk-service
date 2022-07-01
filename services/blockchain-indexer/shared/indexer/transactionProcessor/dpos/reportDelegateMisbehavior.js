@@ -15,17 +15,10 @@
  */
 const {
 	Logger,
-	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 const { reloadDelegateCache } = require('../../../dataService');
-const config = require('../../../../config');
 
 const logger = Logger();
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
-const transactionsIndexSchema = require('../../../database/schema/transactions');
-
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const commandID = 3;
@@ -33,12 +26,8 @@ const commandName = 'reportDelegateMisbehavior';
 
 // eslint-disable-next-line no-unused-vars
 const processTransaction = async (blockHeader, tx, dbTrx) => {
-	const transactionsDB = await getTransactionsIndex();
-
+	logger.debug('Reloading delegates cache on reportDelegateMisbehavior transaction');
 	await reloadDelegateCache();
-	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
-	await transactionsDB.upsert(tx, dbTrx);
-	logger.debug(`Indexed transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
 module.exports = {
