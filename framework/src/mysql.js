@@ -412,7 +412,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		const query = knex(tableName)
 			.transacting(trx)
-			.where(params.where.property, '=', params.where.value)
+			.where(params.where)
 			.increment(params.increment);
 
 		if (isDefaultTrx) return query
@@ -436,7 +436,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		const query = knex(tableName)
 			.transacting(trx)
-			.where(params.where.property, '=', params.where.value)
+			.where(params.where)
 			.decrement(params.decrement);
 
 		if (isDefaultTrx) return query
