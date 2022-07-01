@@ -58,7 +58,7 @@ const get = async (key) => {
 
 const deleteEntry = async (key) => {
 	const keyValueDB = await getKeyValueStoreIndex();
-	return keyValueDB.deleteIds([key]);
+	return keyValueDB.deleteByPrimaryKey([key]);
 };
 
 module.exports = {

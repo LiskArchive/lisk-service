@@ -36,7 +36,7 @@ const getVotesByTransactionIDs = async transactionIDs => {
 			property: 'transactionID',
 			values: transactionIDs,
 		},
-	});
+	}, ['transactionID']);
 	return votes;
 };
 

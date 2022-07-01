@@ -170,9 +170,9 @@ const deleteIndexedBlocks = async job => {
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
 		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
-		const forkedVotes = await getVotesByTransactionIDs(forkedTransactionIDs);
-		await transactionsDB.deleteIds(forkedTransactionIDs, trx);
-		await votesDB.deleteIds(forkedVotes.map(v => v.tempId), trx);
+		const forkedVotesTransactionIDs = await getVotesByTransactionIDs(forkedTransactionIDs);
+		await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, trx);
+		await votesDB.delete({ whereIn: { property: 'transactionID', values: forkedVotesTransactionIDs } }, trx);
 
 		// Update producedBlocks & rewards
 		await BluebirdPromise.map(
@@ -189,7 +189,7 @@ const deleteIndexedBlocks = async job => {
 					},
 				}, trx);
 			});
-		await blocksDB.deleteIds(blocks.map(b => b.height), trx);
+		await blocksDB.deleteByPrimaryKey(blocks.map(b => b.height), trx);
 		await commitDbTransaction(trx);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	} catch (error) {
