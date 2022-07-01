@@ -64,13 +64,29 @@ const getGenerators = async params => {
 	};
 };
 
+// eslint-disable-next-line no-unused-vars
 const getLegacyAccountInfo = async params => {
-	const legacyAccountInfo = await dataService.getLegacyAccountInfo(params);
+	// const legacyAccountInfo = {
+	// 	data: {},
+	// 	meta: {},
+	// };
 
-	return {
-		data: legacyAccountInfo.data,
-		meta: legacyAccountInfo.meta,
+	// const response = await dataService.getLegacyAccountInfo(params);
+	// if (response.data) legacyAccountInfo.data = response.data;
+	// if (response.meta) legacyAccountInfo.meta = response.meta;
+
+	const legacyAccountInfo = {
+		data: {
+			legacyAddress: '3057001998458191401L',
+			address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+			balance: '10000000',
+		},
+		meta: {
+			publicKey: 'd5aa0d647b5d9ff0285321d606c870348711266ea8f0df627ef8f39d1c9959c7',
+		},
 	};
+
+	return legacyAccountInfo;
 };
 
 const getTokensInfo = async params => {
