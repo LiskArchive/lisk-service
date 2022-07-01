@@ -14,7 +14,19 @@
  *
  */
 module.exports = {
-	generatorKey: '=,string',
-	blsKey: '=,string',
-	proofOfPosession: '=,string',
+	moduleCrossChainCommandID: '=,string',
+	moduleCrossChainCommandName: '=,string',
+	sendingChainID: '=,string',
+	receivingChainID: '=,string',
+	nonce: '=,string',
+	fee: '=,string',
+	status: '=,string',
+	params: '=',
+	block: {
+		id: '=,string',
+		height: '=,number',
+		timestamp: '=,number',
+		transactionID: '=,string',
+	},
+	ccms: '=',
 };
