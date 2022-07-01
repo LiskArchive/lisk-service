@@ -89,6 +89,25 @@ xdescribe('Method get.ccm', () => {
 		});
 	});
 
+	describe('is able to retrieve ccm using CCM ID', () => {
+		it('known id -> ok', async () => {
+			const response = await getCCMs({ id: refCCM.id });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeArrayOfSize(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema, { id: refCCM.id }));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('empty id -> empty response', async () => {
+			const response = await getCCMs({ id: '' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+	});
+
 	describe('is able to retrieve CCMs using moduleCrossChainCommands', () => {
 		it('known ccm moduleCrossChainCommandID -> ok', async () => {
 			const response = await getCCMs({

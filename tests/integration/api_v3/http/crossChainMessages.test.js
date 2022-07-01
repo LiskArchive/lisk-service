@@ -162,6 +162,38 @@ xdescribe('Cross-chain Messages API', () => {
 		});
 	});
 
+	describe('Retrieve a CCM by CCM ID', () => {
+		it('returns CCM with known id', async () => {
+			const response = await api.get(`${endpoint}?id=${refCCM.id}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeArrayOfSize(1);
+			response.data.forEach((ccm) => expect(ccm).toMap(crossChainMessageSchema, { id: refCCM.id }));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('empty id -> ok', async () => {
+			const response = await api.get(`${endpoint}?id=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((ccm, i) => {
+				expect(ccm).toMap(crossChainMessageSchema);
+				if (i > 0) {
+					const prevCCM = response.data[i - 1];
+					const prevCCMTimestamp = prevCCM.block.timestamp;
+					expect(prevCCMTimestamp).toBeGreaterThanOrEqual(ccm.block.timestamp);
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid id -> 400 BAD REQUEST', async () => {
+			const response = await api.get(`${endpoint}?id=invalid_id`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+	});
+
 	describe('Retrieve CCMS list by senderAddress', () => {
 		it('known senderAddress -> ok', async () => {
 			const response = await api.get(`${endpoint}?senderAddress=${refTransaction.sender.address}`);

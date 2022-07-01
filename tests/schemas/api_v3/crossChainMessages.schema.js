@@ -48,7 +48,7 @@ const crossChainMessageSchema = {
 	status: Joi.string().valid(...CCM_STATUSES).required(),
 	params: Joi.object().required(),
 	block: Joi.object(block).required(),
-	ccms: Joi.array.items(Joi.string()).required(),
+	ccms: Joi.array.items(Joi.string().pattern(regex.HASH_SHA256)).required(),
 };
 
 module.exports = {
