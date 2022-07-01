@@ -16,8 +16,7 @@
 module.exports = {
 	primaryKey: ['id', 'receivedAddress'],
 	schema: {
-		tempId: { type: 'string' },
-		id: { type: 'string' },
+		transactionID: { type: 'string' },
 		sentAddress: { type: 'string' },
 		receivedAddress: { type: 'string' },
 		amount: { type: 'bigInteger' },
@@ -25,7 +24,7 @@ module.exports = {
 		isAggregated: { type: 'boolean', null: false, defaultValue: false },
 	},
 	indexes: {
-		id: { type: 'key' },
+		transactionID: { type: 'key' },
 		sentAddress: { type: 'key' },
 		receivedAddress: { type: 'key' },
 		amount: { type: 'range' },

@@ -17,19 +17,9 @@ module.exports = {
 	primaryKey: 'address',
 	schema: {
 		address: { type: 'string' },
-		balance: { type: 'bigInteger', null: false, defaultValue: 0 },
-		isDelegate: { type: 'boolean', null: false, defaultValue: false },
+		isGenerator: { type: 'boolean', null: false, defaultValue: false },
 		publicKey: { type: 'string', null: true },
-		name: { type: 'string', null: true },
-		generatorKey: { type: 'string', null: true },
-		blsKey: { type: 'string', null: true },
-		proofOfPosession: { type: 'string', null: true }, // Probably unnecessary
-		rewards: { type: 'bigInteger', null: false, defaultValue: 0 },
-		producedBlocks: { type: 'integer', null: false, defaultValue: 0 },
 	},
-	indexes: {
-		balance: { type: 'range' },
-		name: { type: 'key' },
-	},
+	indexes: {},
 	purge: {},
 };
