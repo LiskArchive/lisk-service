@@ -19,6 +19,7 @@ module.exports = {
 	type: 'moleculer',
 	method: 'indexer.ccm',
 	params: {
+		id: '=,string',
 		transactionID: '=,string',
 		moduleCrossChainCommandID: '=,string',
 		moduleCrossChainCommandName: '=,string',

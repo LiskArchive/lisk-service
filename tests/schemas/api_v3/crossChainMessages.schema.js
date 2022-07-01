@@ -29,7 +29,7 @@ const block = {
 		.required(),
 };
 
-const CCM_STATUS = [
+const CCM_STATUSES = [
 	'ok',
 	'module_not_supported',
 	'ccm_not_supported',
@@ -38,13 +38,14 @@ const CCM_STATUS = [
 ];
 
 const crossChainMessageSchema = {
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	moduleCrossChainCommandID: Joi.string().required(),
 	moduleCrossChainCommandName: Joi.string().required(),
 	sendingChainID: Joi.string().required(),
 	receivingChainID: Joi.string().required(),
 	nonce: Joi.string().pattern(regex.NONCE).required(),
 	fee: Joi.string().required(),
-	status: Joi.string().valid(...CCM_STATUS).required(),
+	status: Joi.string().valid(...CCM_STATUSES).required(),
 	params: Joi.object().required(),
 	block: Joi.object(block).required(),
 	ccms: Joi.array.items(Joi.string()).required(),

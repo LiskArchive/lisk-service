@@ -23,6 +23,7 @@ const TRANSACTION_EXECUTION_STATUS = /^(?:\b(?:pending|succeeded|failed|any)\b|\
 const DPOS_DELEGATE_STATUS = /^(?:\b(?:active|standby|banned|punished|ineligible)\b|\b(?:active|standby|banned|punished|ineligible|,){3,}\b){1}$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
+const CCM_STATUS = /^(?:\b(?:ok|module_not_supported|ccm_not_supported|channel_unavailable|recovered)\b|\b(?:ok|module_not_supported|ccm_not_supported|channel_unavailable|recovered|,){3,}\b){1}$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -35,4 +36,5 @@ module.exports = {
 	HASH_SHA256,
 	TIMESTAMP_RANGE,
 	HEIGHT_RANGE,
+	CCM_STATUS,
 };

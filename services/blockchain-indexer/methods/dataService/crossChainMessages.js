@@ -20,6 +20,7 @@ module.exports = [
 		name: 'ccm',
 		controller: getCCMs,
 		params: {
+			id: { optional: true, type: 'string' },
 			transactionID: { optional: true, type: 'string' },
 			moduleCrossChainCommandID: { optional: true, type: 'string' },
 			moduleCrossChainCommandName: { optional: true, type: 'string' },

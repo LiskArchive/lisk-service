@@ -27,6 +27,7 @@ const getCCMs = async params => {
 	const ccms = {
 		data: [
 			{
+				id: '6a0e4f33eb',
 				moduleCrossChainCommandID: '64:3',
 				moduleCrossChainCommandName: 'interoperability:mainchainCCUpdate',
 				sendingChainID: 'sendingChainIdentifier',

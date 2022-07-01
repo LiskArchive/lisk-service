@@ -23,15 +23,12 @@ module.exports = {
 	rpcMethod: 'get.ccm',
 	tags: ['Interoperability'],
 	params: {
+		id: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
 		moduleCrossChainCommandID: { optional: true, type: 'string', min: 1, max: 21 },
 		moduleCrossChainCommandName: { optional: true, type: 'string', min: 1 },
 		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
-		status: {
-			optional: true,
-			type: 'string',
-			enum: ['ok', 'module_not_supported', 'ccm_not_supported', 'channel_unavailable', 'recovered'],
-		},
+		status: { optional: true, type: 'string', pattern: regex.CCM_STATUS },
 		nonce: { optional: true, type: 'string', min: 1, pattern: regex.NONCE },
 		timestamp: { optional: true, type: 'string', min: 1, pattern: regex.TIMESTAMP_RANGE },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
