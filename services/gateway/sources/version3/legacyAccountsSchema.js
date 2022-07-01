@@ -22,10 +22,10 @@ module.exports = {
 	definition: {
 		data: {
 			legacyAddress: '=,string',
-			address: '=,string',
 			balance: '=,number',
 		},
 		meta: {
+			address: '=,string',
 			publicKey: '=,string',
 		},
 		links: {},

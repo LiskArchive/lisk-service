@@ -78,10 +78,10 @@ const getLegacyAccountInfo = async params => {
 	const legacyAccountInfo = {
 		data: {
 			legacyAddress: '3057001998458191401L',
-			address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
 			balance: '10000000',
 		},
 		meta: {
+			address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
 			publicKey: 'd5aa0d647b5d9ff0285321d606c870348711266ea8f0df627ef8f39d1c9959c7',
 		},
 	};

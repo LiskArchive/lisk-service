@@ -22,12 +22,12 @@ const goodRequestSchema = {
 };
 
 const legacyAccountsMetaSchema = {
+	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
 };
 
 const legacyAccountsSchema = {
 	legacyAddress: Joi.string().required(),
-	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	balance: Joi.number().integer().min(0).required(),
 };
 

@@ -28,14 +28,15 @@ const getLegacyAccountInfo = async ({ publicKey }) => {
 
 	const response = await requestConnector('legacy_getLegacyAccount', { publicKey });
 	legacyAccountInfo.data = {
-		address: getBase32AddressFromPublicKey(publicKey),
 		legacyAddress: getLegacyAddressFromPublicKey(publicKey),
 		balance: response.balance,
 	};
 
 	legacyAccountInfo.meta = {
+		address: getBase32AddressFromPublicKey(publicKey),
 		publicKey,
 	};
+
 	return legacyAccountInfo;
 };
 
