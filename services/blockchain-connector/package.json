@@ -35,7 +35,7 @@
     "@liskhq/lisk-cryptography": "4.0.0-alpha.0",
     "big-json": "^3.1.0",
     "bluebird": "^3.7.2",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/ff75143b776406957a0bf81c33de5aea8e951768/framework/dist/lisk-service-framework-1.4.2.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/c618b29bb8e605c0890a202d56cc5c28c1ef6f5f/framework/dist/lisk-service-framework-1.4.2.tgz",
     "signals": "^1.0.0",
     "tar": "^6.1.11",
     "sodium-native": "3.2.1",
