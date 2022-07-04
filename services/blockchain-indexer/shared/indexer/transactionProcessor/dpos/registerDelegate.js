@@ -37,7 +37,7 @@ const commandName = 'registerDelegate';
 // eslint-disable-next-line no-unused-vars
 const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const accountsDB = await getAccountsIndex();
-	const generatorsDB = await getGeneratorsIndex();
+	const validatorsDB = await getGeneratorsIndex();
 
 	const account = {
 		address: getBase32AddressFromPublicKey(tx.senderPublicKey),
@@ -54,7 +54,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug(`Updated account index for the account with address ${account.address}`);
 
 	logger.trace(`Indexing generator with address ${account.address}`);
-	await generatorsDB.upsert(account, dbTrx);
+	await validatorsDB.upsert(account, dbTrx);
 	logger.debug(`Indexed generator with address ${account.address}`);
 };
 

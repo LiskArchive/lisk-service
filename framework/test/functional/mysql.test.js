@@ -108,8 +108,7 @@ describe('Test MySQL', () => {
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: {
-					property: 'id',
-					value: emptyBlock.id,
+					id: emptyBlock.id,
 				},
 			});
 
@@ -211,8 +210,7 @@ describe('Test MySQL', () => {
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: {
-					property: 'id',
-					value: emptyBlock.id,
+					id: emptyBlock.id,
 				},
 			}, trx);
 			await commitDbTransaction(trx);
