@@ -34,9 +34,10 @@ const {
 
 const { waitForSuccess } = require('../../../helpers/utils');
 
-const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v2`;
+const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const requestTransactionExport = async (params) => request(wsRpcUrl, 'get.exports.transactions', params);
 const requestTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
+
 describe('Export API', () => {
 	const startDate = moment('2021-01-10').format(exportConfig.csv.dateFormat);
 	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
