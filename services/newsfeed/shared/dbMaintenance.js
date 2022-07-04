@@ -40,7 +40,7 @@ const prune = async (source, table, expiryInDays) => {
 	const result = await db.find({ source, propBetweens });
 
 	logger.debug(`Removing ${result.length} entries from '${table}' index for source '${source}' with '${newsfeedIndexSchema.primaryKey}':\n${result.map(r => r[`${newsfeedIndexSchema.primaryKey}`])}`);
-	await db.deleteIds(result.map(r => r[`${newsfeedIndexSchema.primaryKey}`]));
+	await db.deleteByPrimaryKey(result.map(r => r[`${newsfeedIndexSchema.primaryKey}`]));
 };
 
 module.exports = {

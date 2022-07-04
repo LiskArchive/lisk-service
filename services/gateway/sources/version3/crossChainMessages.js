@@ -13,20 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const crossChainMessage = require('./mappings/crossChainMessage');
+
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.legacy',
+	method: 'indexer.ccm',
 	params: {
-		publicKey: '=,string',
+		id: '=,string',
+		transactionID: '=,string',
+		moduleCrossChainCommandID: '=,string',
+		moduleCrossChainCommandName: '=,string',
+		senderAddress: '=,string',
+		status: '=,string',
+		timestamp: '=,string',
+		nonce: '=',
+		limit: '=,number',
+		offset: '=,number',
+		sort: '=,string',
 	},
 	definition: {
-		data: {
-			legacyAddress: '=,string',
-			balance: '=,number',
-		},
+		data: ['data', crossChainMessage],
 		meta: {
-			address: '=,string',
-			publicKey: '=,string',
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
 		},
 		links: {},
 	},

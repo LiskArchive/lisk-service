@@ -123,7 +123,7 @@ const insertToDb = async (statsList, date) => {
 	try {
 		try {
 			const [{ id }] = db.find({ date, limit: 1 }, ['id']);
-			await db.deleteIds([id]);
+			await db.deleteByPrimaryKey([id]);
 			logger.debug(`Removed the following date from the database: ${date}`);
 		} catch (err) {
 			logger.debug(`The database does not contain the entry with the following date: ${date}`);

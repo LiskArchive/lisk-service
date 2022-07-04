@@ -30,6 +30,7 @@ const validatorMetaSchema = {
 const validatorInfoSchema = {
 	generatorKey: Joi.string().required(),
 	blsKey: Joi.string().required(),
+	proofOfPosession: Joi.string().required(),
 };
 
 module.exports = {

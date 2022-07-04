@@ -39,7 +39,7 @@ describe('Test DB Maintenance', () => {
 
 	afterAll(async () => {
 		const result = await db.find();
-		await db.deleteIds(result.map(r => r[`${schema.primaryKey}`]));
+		await db.deleteByPrimaryKey(result.map(r => r[`${schema.primaryKey}`]));
 		db.rawQuery(`DROP TABLE IF EXISTS ${tableName} CASCADE`);
 	});
 

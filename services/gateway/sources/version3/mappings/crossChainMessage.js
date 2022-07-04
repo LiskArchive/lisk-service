@@ -14,12 +14,19 @@
  *
  */
 module.exports = {
-	primaryKey: 'address',
-	schema: {
-		address: { type: 'string' },
-		isValidator: { type: 'boolean', null: false, defaultValue: false },
-		publicKey: { type: 'string', null: true },
+	moduleCrossChainCommandID: '=,string',
+	moduleCrossChainCommandName: '=,string',
+	sendingChainID: '=,string',
+	receivingChainID: '=,string',
+	nonce: '=,string',
+	fee: '=,string',
+	status: '=,string',
+	params: '=',
+	block: {
+		id: '=,string',
+		height: '=,number',
+		timestamp: '=,number',
+		transactionID: '=,string',
 	},
-	indexes: {},
-	purge: {},
+	ccms: '=',
 };
