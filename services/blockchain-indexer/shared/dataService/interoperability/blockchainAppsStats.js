@@ -13,20 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const dataService = require('../business');
+
+const getBlockchainAppsStatistics = async params => {
+	const response = await dataService.getBlockchainAppsStatistics(params);
+	return response;
+};
+
 module.exports = {
-	primaryKey: 'id',
-	schema: {
-		id: { type: 'string' },
-		sentAddress: { type: 'string' },
-		receivedAddress: { type: 'string' },
-		amount: { type: 'bigInteger', defaultValue: 0 },
-		timestamp: { type: 'integer' },
-	},
-	indexes: {
-		sentAddress: { type: 'key' },
-		receivedAddress: { type: 'key' },
-		amount: { type: 'range' },
-		timestamp: { type: 'range' },
-	},
-	purge: {},
+	getBlockchainAppsStatistics,
 };

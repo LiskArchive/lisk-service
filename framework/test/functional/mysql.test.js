@@ -108,8 +108,7 @@ describe('Test MySQL', () => {
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: {
-					property: 'id',
-					value: emptyBlock.id,
+					id: emptyBlock.id,
 				},
 			});
 
@@ -118,15 +117,41 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.timestamp).toBe(5 + emptyBlock.timestamp);
 		});
 
-		it('Delete row by id', async () => {
+		it('Delete row by primary key', async () => {
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
-			const count = await testTable.deleteIds([existingBlockId]);
+			const count = await testTable.deleteByPrimaryKey([existingBlockId]);
 			expect(count).toEqual(1);
 
 			const result = await testTable.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
 			expect(result.length).toBe(0);
 			expect(result.every(b => b.id !== existingBlock.id)).toBeTruthy();
+		});
+
+		it('Delete rows', async () => {
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const existingBlock = await testTable.find({}, ['id']);
+			const existingBlockCount = await testTable.count();
+
+			const existingIds = existingBlock.map(block => block.id);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingIds } });
+			expect(numAffectedRows).toEqual(existingBlockCount);
+
+			const count = await testTable.count({});
+			expect(count).toBe(0);
+		});
+
+		it('Delete row', async () => {
+			await testTable.upsert([emptyBlock]);
+			const existingBlock = await testTable.find({}, ['id']);
+			const existingBlockCount = await testTable.count();
+
+			const existingId = existingBlock.map(block => block.id);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingId } });
+			expect(numAffectedRows).toEqual(existingBlockCount);
+
+			const count = await testTable.count({});
+			expect(count).toBe(0);
 		});
 
 		it('Batch row insert', async () => {
@@ -185,8 +210,7 @@ describe('Test MySQL', () => {
 			await testTable.increment({
 				increment: { timestamp: 5 },
 				where: {
-					property: 'id',
-					value: emptyBlock.id,
+					id: emptyBlock.id,
 				},
 			}, trx);
 			await commitDbTransaction(trx);
@@ -195,18 +219,55 @@ describe('Test MySQL', () => {
 			expect(retrievedBlock.timestamp).toBe(5 + emptyBlock.timestamp);
 		});
 
-		it('Delete row by id', async () => {
+		it('Delete row by primary key', async () => {
 			const connection = await getDbConnection();
 			const trx = await startDbTransaction(connection);
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
-			const count = await testTable.deleteIds([existingBlockId], trx);
+			const numAffectedRows = await testTable.deleteByPrimaryKey([existingBlockId], trx);
 			await commitDbTransaction(trx);
-			expect(count).toEqual(1);
+			expect(numAffectedRows).toEqual(1);
 
-			const result = await testTable.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
-			expect(result.length).toBe(0);
-			expect(result.every(b => b.id !== existingBlock.id)).toBeTruthy();
+			const count = await testTable.count({ [schema.primaryKey]: existingBlock[schema.primaryKey] });
+			expect(count).toBe(0);
+		});
+
+
+		it('Delete rows', async () => {
+			const connection = await getDbConnection();
+			const trx = await startDbTransaction(connection);
+
+			await testTable.upsert([emptyBlock, nonEmptyBlock]);
+			const existingBlock = await testTable.find({}, ['id']);
+			const existingBlockCount = await testTable.count();
+
+			const existingIds = existingBlock.map(block => block.id);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingIds } }, trx);
+			await commitDbTransaction(trx);
+
+			expect(numAffectedRows).toEqual(existingBlockCount);
+
+			const count = await testTable.count({});
+			expect(count).toBe(0);
+		});
+
+
+		it('Delete row', async () => {
+			const connection = await getDbConnection();
+			const trx = await startDbTransaction(connection);
+
+			await testTable.upsert([emptyBlock]);
+			const existingBlock = await testTable.find({}, ['id']);
+			const existingBlockCount = await testTable.count();
+
+			const existingId = existingBlock.map(block => block.id);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingId } }, trx);
+			await commitDbTransaction(trx);
+
+			expect(numAffectedRows).toEqual(existingBlockCount);
+
+			const count = await testTable.count({});
+			expect(count).toBe(0);
 		});
 
 		it('Batch row insert', async () => {
@@ -267,7 +328,7 @@ describe('Test MySQL', () => {
 			// Start a new transaction, perform upsert/delete and rollback
 			await testTable
 				.upsert([{ ...emptyBlock, height, timestamp: emptyBlock.timestamp + 100 }], trx2);
-			const numRowsAffected = await testTable.deleteIds([height], trx2);
+			const numRowsAffected = await testTable.deleteByPrimaryKey([height], trx2);
 			expect(numRowsAffected).toEqual(1);
 
 			await rollbackDbTransaction(trx2);
