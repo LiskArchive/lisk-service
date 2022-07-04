@@ -25,6 +25,7 @@ const blockchainAppsIndexSchema = require('../../../database/schema/blockchainAp
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
 
 const getBlockchainAppsStatistics = async () => {
+	// TODO: Update implementation once interoperability_getOwnChainAccount is available
 	const blockchainAppsDB = await getBlockchainAppsIndex();
 
 	const numActiveChains = await blockchainAppsDB.count({ state: APP_STATE.ACTIVE });

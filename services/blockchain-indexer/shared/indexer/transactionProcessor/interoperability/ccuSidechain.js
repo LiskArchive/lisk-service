@@ -43,8 +43,6 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.trace(`Indexing cross chain update transaction ${tx.id} contained in block at height ${tx.height}`);
 
 	tx.moduleCrossChainCommandID = tx.moduleID.concat(tx.crossChainCommandID);
-	// TODO: Get these information directly from SDK
-	tx.name = '';
 	await crossChainMessagesDB.upsert(tx, dbTrx);
 
 	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
@@ -52,7 +50,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 		name: '',
 		chainID: tx.sendingChainID,
 		state: tx.status,
-		address: tx.sendingChainID,
+		address: '', // TODO: Verify and update address
 		lastCertificateHeight: '',
 		lastUpdated: '',
 	};
