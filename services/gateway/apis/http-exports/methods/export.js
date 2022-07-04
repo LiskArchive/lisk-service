@@ -13,8 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const exportSource = require('../../../sources/version2/export');
-const envelope = require('../../../sources/version2/mappings/stdEnvelope');
+const exportSource = require('../../../sources/version3/export');
+const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
