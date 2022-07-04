@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'validators',
 	primaryKey: 'address',
 	schema: {
 		address: { type: 'string' },

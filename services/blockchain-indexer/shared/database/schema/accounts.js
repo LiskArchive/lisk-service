@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'accounts',
 	primaryKey: 'address',
 	schema: {
 		address: { type: 'string' },

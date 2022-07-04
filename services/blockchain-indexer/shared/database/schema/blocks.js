@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'blocks',
 	primaryKey: 'height',
 	schema: {
 		id: { type: 'string' },
