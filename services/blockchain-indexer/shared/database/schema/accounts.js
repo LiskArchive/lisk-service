@@ -23,7 +23,7 @@ module.exports = {
 		name: { type: 'string', null: true },
 		generatorKey: { type: 'string', null: true },
 		blsKey: { type: 'string', null: true },
-		proofOfPosession: { type: 'string', null: true }, // Probably unnecessary
+		proofOfPosession: { type: 'string', null: true },
 		rewards: { type: 'bigInteger', null: false, defaultValue: 0 },
 		producedBlocks: { type: 'integer', null: false, defaultValue: 0 },
 	},
