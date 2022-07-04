@@ -209,9 +209,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	};
 
 	const queryBuilder = (params, columns, trx) => {
-		const query = knex(tableName).transacting(trx).select(columns);
+		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
+		if (columns) query.select(columns);
 		query.where(queryParams);
 
 		if (params.propBetweens) {
@@ -300,13 +301,34 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			});
 	};
 
-	const deleteIds = async (ids, trx) => {
+	const deleteByParams = async (params, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
 			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
 
+		const query = queryBuilder(params, tableConfig.primaryKey, trx).del();
+		if (isDefaultTrx) return query
+			.then(async result => {
+				await trx.commit();
+				return result;
+			}).catch(async err => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+		return query;
+	};
+
+	const deleteByPrimaryKey = async (ids, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		ids = Array.isArray(ids) ? ids : [ids];
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -412,7 +434,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		const query = knex(tableName)
 			.transacting(trx)
-			.where(params.where.property, '=', params.where.value)
+			.where(params.where)
 			.increment(params.increment);
 
 		if (isDefaultTrx) return query
@@ -436,7 +458,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		const query = knex(tableName)
 			.transacting(trx)
-			.where(params.where.property, '=', params.where.value)
+			.where(params.where)
 			.decrement(params.decrement);
 
 		if (isDefaultTrx) return query
@@ -454,7 +476,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	return {
 		upsert,
 		find,
-		deleteIds,
+		delete: deleteByParams,
+		deleteByPrimaryKey,
 		count,
 		rawQuery,
 		increment,

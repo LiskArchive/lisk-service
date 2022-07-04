@@ -16,8 +16,6 @@
 const BluebirdPromise = require('bluebird');
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 const votesIndexSchema = require('../../../database/schema/votes');
-const votesAggregateIndexSchema = require('../../../database/schema/votesAggregate');
-
 const {
 	getIndexedAccountInfo,
 } = require('../../../utils/accountUtils');
@@ -27,22 +25,9 @@ const config = require('../../../../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
-const getVotesAggregateIndex = () => getTableInstance('votes_aggregate', votesAggregateIndexSchema, MYSQL_ENDPOINT);
-
-const getVotesByTransactionIDs = async transactionIDs => {
-	const votesDB = await getVotesIndex();
-	const votes = await votesDB.find({
-		whereIn: {
-			property: 'id',
-			values: transactionIDs,
-		},
-	}, ['tempId']);
-	return votes;
-};
 
 const getVotesReceived = async params => {
 	const votesDB = await getVotesIndex();
-	const votesAggregateDB = await getVotesAggregateIndex();
 	const votes = {
 		data: { votes: [] },
 		meta: {},
@@ -65,7 +50,7 @@ const getVotesReceived = async params => {
 	}
 
 	const numVotesReceived = params.aggregate
-		? await votesAggregateDB.count({
+		? await votesDB.count({
 			receivedAddress: params.receivedAddress,
 			propBetweens: [{
 				property: 'amount',
@@ -75,9 +60,8 @@ const getVotesReceived = async params => {
 		: await votesDB.count({ receivedAddress: params.receivedAddress });
 
 	const resultSet = params.aggregate
-		? await votesAggregateDB.find(
+		? await votesDB.find(
 			{
-				sort: 'timestamp:desc',
 				receivedAddress: params.receivedAddress,
 				propBetweens: [{
 					property: 'amount',
@@ -85,11 +69,10 @@ const getVotesReceived = async params => {
 				}],
 				limit: numVotesReceived,
 			},
-			Object.keys(votesAggregateIndexSchema.schema),
+			Object.keys(votesIndexSchema.schema),
 		)
 		: await votesDB.find(
 			{
-				sort: 'timestamp:desc',
 				receivedAddress: params.receivedAddress,
 				limit: numVotesReceived,
 			},
@@ -123,6 +106,5 @@ const getVotesReceived = async params => {
 };
 
 module.exports = {
-	getVotesByTransactionIDs,
 	getVotesReceived,
 };

@@ -14,19 +14,20 @@
  *
  */
 module.exports = {
-	primaryKey: 'id',
+	primaryKey: 'address',
 	schema: {
-		id: { type: 'string' },
-		sentAddress: { type: 'string' },
-		receivedAddress: { type: 'string' },
-		amount: { type: 'bigInteger', defaultValue: 0 },
-		timestamp: { type: 'integer' },
+		address: { type: 'string' },
+		name: { type: 'string', null: true },
+		generatorKey: { type: 'string', null: true },
+		blsKey: { type: 'string', null: true },
+		proofOfPosession: { type: 'string', null: true },
+		rewards: { type: 'bigInteger', null: false, defaultValue: 0 },
+		producedBlocks: { type: 'integer', null: false, defaultValue: 0 },
 	},
 	indexes: {
-		sentAddress: { type: 'key' },
-		receivedAddress: { type: 'key' },
-		amount: { type: 'range' },
-		timestamp: { type: 'range' },
+		name: { type: 'key' },
+		generatorKey: { type: 'key' },
+		blsKey: { type: 'key' },
 	},
 	purge: {},
 };
