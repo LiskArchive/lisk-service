@@ -26,10 +26,10 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const accountsIndexSchema = require('../../../database/schema/accounts');
-const generatorsIndexSchema = require('../../../database/schema/generators');
+const validatorsIndexSchema = require('../../../database/schema/validators');
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
-const getGeneratorsIndex = () => getTableInstance('generators', generatorsIndexSchema, MYSQL_ENDPOINT);
+const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
 const commandID = 4;
@@ -38,7 +38,7 @@ const commandName = 'updateGeneratorKey';
 // eslint-disable-next-line no-unused-vars
 const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const accountsDB = await getAccountsIndex();
-	const validatorsDB = await getGeneratorsIndex();
+	const validatorsDB = await getValidatorsIndex();
 
 	const account = {
 		address: getBase32AddressFromPublicKey(tx.senderPublicKey),
@@ -51,9 +51,9 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	await accountsDB.upsert(account, dbTrx);
 	logger.debug(`Updated account index for the account with address ${account.address}`);
 
-	logger.trace(`Indexing generator with address ${account.address}`);
+	logger.trace(`Indexing validator with address ${account.address}`);
 	await validatorsDB.upsert(account, dbTrx);
-	logger.debug(`Indexed generator with address ${account.address}`);
+	logger.debug(`Indexed validator with address ${account.address}`);
 };
 
 module.exports = {
