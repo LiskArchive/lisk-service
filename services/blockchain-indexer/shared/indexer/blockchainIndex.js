@@ -167,6 +167,7 @@ const deleteIndexedBlocks = async job => {
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
 		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
 		await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, trx);
+		// TODO: Invoke revertTransaction method
 
 		// Update producedBlocks & rewards
 		await BluebirdPromise.map(

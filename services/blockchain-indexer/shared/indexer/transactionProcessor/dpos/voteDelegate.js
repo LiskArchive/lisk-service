@@ -64,7 +64,7 @@ const indexVoteTrx = async (vote, trx) => {
 
 	const numRowsAffected = await votesDB.increment(incrementParam, trx);
 	if (numRowsAffected === 0) {
-		await votesDB.upsert(vote.voteObject, trx);
+		await votesDB.upsert(vote, trx);
 	}
 };
 

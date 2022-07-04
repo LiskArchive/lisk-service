@@ -41,7 +41,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 
 	const account = {
 		address: getBase32AddressFromPublicKey(tx.senderPublicKey),
-		isGenerator: true,
+		isValidator: true,
 		publicKey: tx.senderPublicKey,
 		name: tx.params.name,
 		generatorKey: tx.params.generatorKey,

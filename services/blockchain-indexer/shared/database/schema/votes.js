@@ -20,6 +20,8 @@ module.exports = {
 		receivedAddress: { type: 'string' },
 		amount: { type: 'bigInteger' },
 	},
-	indexes: {},
+	indexes: {
+		receivedAddress: { type: 'key' },
+	},
 	purge: {},
 };

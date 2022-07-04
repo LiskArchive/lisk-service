@@ -135,11 +135,11 @@ describe('Test MySQL', () => {
 			const existingBlockCount = await testTable.count();
 
 			const existingIds = existingBlock.map(block => block.id);
-			const count = await testTable.delete({ whereIn: { property: 'id', values: existingIds } });
-			expect(count).toEqual(existingBlockCount);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingIds } });
+			expect(numAffectedRows).toEqual(existingBlockCount);
 
-			const result = await testTable.find();
-			expect(result.length).toBe(0);
+			const count = await testTable.count({});
+			expect(count).toBe(0);
 		});
 
 		it('Delete row', async () => {
@@ -148,11 +148,11 @@ describe('Test MySQL', () => {
 			const existingBlockCount = await testTable.count();
 
 			const existingId = existingBlock.map(block => block.id);
-			const count = await testTable.delete({ whereIn: { property: 'id', values: existingId } });
-			expect(count).toEqual(existingBlockCount);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingId } });
+			expect(numAffectedRows).toEqual(existingBlockCount);
 
-			const result = await testTable.find();
-			expect(result.length).toBe(0);
+			const count = await testTable.count({});
+			expect(count).toBe(0);
 		});
 
 		it('Batch row insert', async () => {
@@ -226,13 +226,12 @@ describe('Test MySQL', () => {
 			const trx = await startDbTransaction(connection);
 			const [existingBlock] = await testTable.find();
 			const existingBlockId = existingBlock[`${schema.primaryKey}`];
-			const count = await testTable.deleteByPrimaryKey([existingBlockId], trx);
+			const numAffectedRows = await testTable.deleteByPrimaryKey([existingBlockId], trx);
 			await commitDbTransaction(trx);
-			expect(count).toEqual(1);
+			expect(numAffectedRows).toEqual(1);
 
-			const result = await testTable.find({ [schema.primaryKey]: existingBlock[schema.primaryKey] }, ['id']);
-			expect(result.length).toBe(0);
-			expect(result.every(b => b.id !== existingBlock.id)).toBeTruthy();
+			const count = await testTable.count({ [schema.primaryKey]: existingBlock[schema.primaryKey] });
+			expect(count).toBe(0);
 		});
 
 
@@ -245,12 +244,13 @@ describe('Test MySQL', () => {
 			const existingBlockCount = await testTable.count();
 
 			const existingIds = existingBlock.map(block => block.id);
-			const count = await testTable.delete({ whereIn: { property: 'id', values: existingIds } }, trx);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingIds } }, trx);
 			await commitDbTransaction(trx);
 
-			expect(count).toEqual(existingBlockCount);
-			const result = await testTable.find();
-			expect(result.length).toBe(0);
+			expect(numAffectedRows).toEqual(existingBlockCount);
+
+			const count = await testTable.count({});
+			expect(count).toBe(0);
 		});
 
 
@@ -263,12 +263,13 @@ describe('Test MySQL', () => {
 			const existingBlockCount = await testTable.count();
 
 			const existingId = existingBlock.map(block => block.id);
-			const count = await testTable.delete({ whereIn: { property: 'id', values: existingId } }, trx);
+			const numAffectedRows = await testTable.delete({ whereIn: { property: 'id', values: existingId } }, trx);
 			await commitDbTransaction(trx);
 
-			expect(count).toEqual(existingBlockCount);
-			const result = await testTable.find();
-			expect(result.length).toBe(0);
+			expect(numAffectedRows).toEqual(existingBlockCount);
+
+			const count = await testTable.count({});
+			expect(count).toBe(0);
 		});
 
 		it('Batch row insert', async () => {
