@@ -102,7 +102,6 @@ const indexSchemas = {
 	multisignature: require('../database/schema/multisignature'),
 	transactions: require('../database/schema/transactions'),
 	votes: require('../database/schema/votes'),
-	votes_aggregate: require('../database/schema/votesAggregate'),
 	key_value_store: require('../database/schema/kvStore'),
 };
 

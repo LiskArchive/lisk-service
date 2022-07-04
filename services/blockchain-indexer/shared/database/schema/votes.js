@@ -14,21 +14,12 @@
  *
  */
 module.exports = {
-	primaryKey: ['id', 'receivedAddress'],
+	primaryKey: ['receivedAddress', 'sentAddress'],
 	schema: {
-		transactionID: { type: 'string' },
 		sentAddress: { type: 'string' },
 		receivedAddress: { type: 'string' },
 		amount: { type: 'bigInteger' },
-		timestamp: { type: 'integer' },
-		isAggregated: { type: 'boolean', null: false, defaultValue: false },
 	},
-	indexes: {
-		transactionID: { type: 'key' },
-		sentAddress: { type: 'key' },
-		receivedAddress: { type: 'key' },
-		amount: { type: 'range' },
-		timestamp: { type: 'range' },
-	},
+	indexes: {},
 	purge: {},
 };

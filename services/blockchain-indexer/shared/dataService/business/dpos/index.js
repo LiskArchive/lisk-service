@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getVotesReceived, getVotesByTransactionIDs } = require('./votesReceived');
+const { getVotesReceived } = require('./votesReceived');
 const { getVotesSent } = require('./votesSent');
 
 const {
@@ -39,7 +39,6 @@ module.exports = {
 	getVotesSent,
 
 	getVotesReceived,
-	getVotesByTransactionIDs,
 
 	WAIT_TIME_VOTER,
 	WAIT_TIME_SELF_VOTE,

@@ -31,7 +31,6 @@ const { processTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
-	getVotesByTransactionIDs,
 	getTransactionsByBlockIDs,
 	getAccountsByPublicKey,
 } = require('../dataService');
@@ -56,7 +55,6 @@ const config = require('../../config');
 const blocksIndexSchema = require('../database/schema/blocks');
 const accountsIndexSchema = require('../database/schema/accounts');
 const transactionsIndexSchema = require('../database/schema/transactions');
-const votesIndexSchema = require('../database/schema/votes');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -65,7 +63,6 @@ const logger = Logger();
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
 
 const getGeneratorPkInfoArray = async (blocks) => {
 	const blocksDB = await getBlocksIndex();
@@ -165,14 +162,11 @@ const deleteIndexedBlocks = async job => {
 	try {
 		const accountsDB = await getAccountsIndex();
 		const transactionsDB = await getTransactionsIndex();
-		const votesDB = await getVotesIndex();
 		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
 		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
 		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
 		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
-		const forkedVotesTransactionIDs = await getVotesByTransactionIDs(forkedTransactionIDs);
 		await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, trx);
-		await votesDB.delete({ whereIn: { property: 'transactionID', values: forkedVotesTransactionIDs } }, trx);
 
 		// Update producedBlocks & rewards
 		await BluebirdPromise.map(
