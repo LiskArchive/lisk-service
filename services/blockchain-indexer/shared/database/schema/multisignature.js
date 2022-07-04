@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'multisignature',
 	primaryKey: 'id',
 	schema: {
 		id: { type: 'string' },

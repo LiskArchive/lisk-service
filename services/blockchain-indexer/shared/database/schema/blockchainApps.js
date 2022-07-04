@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'blockchain_apps',
 	primaryKey: 'chainID',
 	schema: {
 		chainID: { type: 'string' },

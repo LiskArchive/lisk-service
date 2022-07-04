@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'ccm',
 	primaryKey: 'id',
 	charset: 'utf8mb4',
 	schema: {

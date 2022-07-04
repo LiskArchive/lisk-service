@@ -14,24 +14,9 @@
  *
  */
 module.exports = {
-	tableName: 'blocks',
-	primaryKey: 'height',
-	schema: {
-		id: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
-		generatorAddress: { type: 'string' },
-		size: { type: 'integer' },
-		isFinal: { type: 'boolean', defaultValue: false },
-		assetsModuleIDs: { type: 'json' },
-	},
-	indexes: {
-		id: { type: 'key' },
-		height: { type: 'range' },
-		timestamp: { type: 'range' },
-		generatorAddress: { type: 'key' },
-		size: { type: 'range' },
-		isFinal: { type: 'key' },
-	},
-	purge: {},
+	address: '=,string',
+	publicKey: '=,string',
+	interval: '=,string',
+	filename: 'fileName,string',
+	fileUrl: '=,string',
 };

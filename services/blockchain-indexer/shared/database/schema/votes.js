@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	tableName: 'votes',
 	primaryKey: ['receivedAddress', 'sentAddress'],
 	schema: {
 		sentAddress: { type: 'string' },

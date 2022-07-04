@@ -13,25 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const exportInfo = require('./mappings/scheduleExport');
+
 module.exports = {
-	tableName: 'blocks',
-	primaryKey: 'height',
-	schema: {
-		id: { type: 'string' },
-		height: { type: 'integer' },
-		timestamp: { type: 'integer' },
-		generatorAddress: { type: 'string' },
-		size: { type: 'integer' },
-		isFinal: { type: 'boolean', defaultValue: false },
-		assetsModuleIDs: { type: 'json' },
+	type: 'moleculer',
+	method: 'export.transactions.schedule',
+	params: {
+		address: '=,string',
+		publicKey: '=,string',
+		interval: '=,string',
 	},
-	indexes: {
-		id: { type: 'key' },
-		height: { type: 'range' },
-		timestamp: { type: 'range' },
-		generatorAddress: { type: 'key' },
-		size: { type: 'range' },
-		isFinal: { type: 'key' },
+	definition: {
+		data: exportInfo,
+		meta: {
+			ready: '=,boolean',
+		},
+		links: {},
 	},
-	purge: {},
 };

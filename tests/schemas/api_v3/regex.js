@@ -23,6 +23,9 @@ const PUBLIC_KEY = /^([A-Fa-f0-9]{2}){32}$/;
 const NAME = /^[a-z0-9!@$&_.]{1,20}$/;
 const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter_lisk),?)+\b$/;
 const NONCE = /^[0-9]+$/;
+const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/;
+const FILE_NAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/;
+const FILE_URL = /^\/api\/v2\/exports\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/;
 
 module.exports = {
 	ADDRESS_BASE32,
@@ -35,4 +38,7 @@ module.exports = {
 	NAME,
 	NEWSFEED_SOURCE,
 	NONCE,
+	INTERVAL,
+	FILE_NAME,
+	FILE_URL,
 };
