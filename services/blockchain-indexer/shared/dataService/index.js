@@ -51,11 +51,6 @@ const {
 } = require('./blocks');
 
 const {
-	getBlockchainAppsStatistics,
-	getBlockchainApps,
-} = require('./blockchainApps');
-
-const {
 	getDelegates,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,
@@ -93,6 +88,11 @@ const {
 	getVotesReceived,
 	getUnlocks,
 } = require('./dpos');
+
+const {
+	getBlockchainApps,
+	getBlockchainAppsStatistics,
+} = require('./interoperability');
 
 const { getEvents } = require('./events');
 const { getAuthAccountInfo } = require('./auth');

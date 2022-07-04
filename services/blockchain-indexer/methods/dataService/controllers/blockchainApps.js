@@ -13,15 +13,45 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
+// TODO: Enable when available from SDK
+// const dataService = require('../../../shared/dataService');
 
 const getBlockchainAppsStatistics = async () => {
-	const result = await dataService.getBlockchainAppsStatistics();
+	// const result = await dataService.getBlockchainAppsStatistics();
+
+	const result = {
+		data: {
+			registered: 2503,
+			active: 2328,
+			terminated: 35,
+			totalSupplyLSK: '5000000',
+			stakedLSK: '3000000',
+			inflationRate: '4.50',
+		},
+	};
+
 	return result;
 };
 
 const getBlockchainApps = async (params) => {
-	const result = await dataService.getBlockchainApps(params);
+	// const result = await dataService.getBlockchainApps(params);
+
+	const result = {
+		data: [{
+			name: 'Test app',
+			chainID: 'aq02qkbb35u4jdq8szo3pnsq',
+			state: 'active',
+			address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+			lastCertificateHeight: 1000,
+			lastUpdated: 123456789,
+		}],
+		meta: {
+			count: 10,
+			offset: params.offset,
+			total: 150,
+		},
+	};
+
 	return result;
 };
 

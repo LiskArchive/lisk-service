@@ -13,11 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+
+// Module specific constants
+const moduleID = 64;
+const moduleName = 'interoperability';
+
 module.exports = {
-	name: '=,string',
-	chainID: '=,string',
-	state: '=,string',
-	address: '=,string',
-	lastCertificateHeight: '=,number',
-	lastUpdated: '=,number',
+	moduleID,
+	moduleName,
 };
