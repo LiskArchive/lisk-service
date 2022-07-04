@@ -301,7 +301,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			});
 	};
 
-	const deleteWhere = async (params, trx) => {
+	const deleteByParams = async (params, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
 			trx = await createDefaultTransaction(knex);
@@ -328,6 +328,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			isDefaultTrx = true;
 		}
 
+		ids = Array.isArray(ids) ? ids : [ids];
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -475,7 +476,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	return {
 		upsert,
 		find,
-		delete: deleteWhere,
+		delete: deleteByParams,
 		deleteByPrimaryKey,
 		count,
 		rawQuery,
