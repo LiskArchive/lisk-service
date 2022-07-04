@@ -35,10 +35,11 @@ const {
 const { waitForSuccess } = require('../../../helpers/utils');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
-const requestTransactionExport = async (params) => request(wsRpcUrl, 'get.exports.transactions', params);
+const requestTransactionExport = async (params) => request(wsRpcUrl, 'get.export.transactions', params);
 const requestTransactions = async (params) => request(wsRpcUrl, 'get.transactions', params);
 
-describe('Export API', () => {
+// TODO: Enable tests once test blockchain is updated with transactions
+xdescribe('Export API', () => {
 	const startDate = moment('2021-01-10').format(exportConfig.csv.dateFormat);
 	const endDate = moment('2021-11-30').format(exportConfig.csv.dateFormat);
 	let refTransaction1;

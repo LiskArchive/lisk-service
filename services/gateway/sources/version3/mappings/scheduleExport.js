@@ -17,6 +17,6 @@ module.exports = {
 	address: '=,string',
 	publicKey: '=,string',
 	interval: '=,string',
-	fileName: '=,string',
+	filename: 'fileName,string',
 	fileUrl: '=,string',
 };

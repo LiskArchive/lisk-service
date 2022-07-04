@@ -17,7 +17,7 @@ const exportInfo = require('./mappings/scheduleExport');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'export.transactions.export',
+	method: 'export.transactions.schedule',
 	params: {
 		address: '=,string',
 		publicKey: '=,string',

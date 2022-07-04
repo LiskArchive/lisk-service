@@ -20,8 +20,8 @@ const { transformParams, response, getSwaggerDescription } = require('../../../s
 
 module.exports = {
 	version: '2.0',
-	swaggerApiPath: '/exports/transactions',
-	rpcMethod: 'get.exports.transactions',
+	swaggerApiPath: '/export/transactions',
+	rpcMethod: 'get.export.transactions',
 	tags: ['Transaction Export'],
 	params: {
 		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
