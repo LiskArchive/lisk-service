@@ -30,29 +30,30 @@ const getEventsByHeight = async (height) => {
 	return parseToJSONCompatObj(events);
 };
 
-const getEventsIndexInfo = async (blockHeader, events) => {
-	const eventsInfo = [];
-	const eventTopicsInfo = [];
+const getEventsInfoToIndex = async (blockHeader, events) => {
+	const eventsInfoToIndex = {
+		eventsInfo: [],
+		eventTopicsInfo: [],
+	};
 
 	await BluebirdPromise.map(
 		events,
 		async (event) => {
 			const id = await encodeEvent(event);
 
-			// Resolve event info
-			eventsInfo.push({
+			const eventInfo = {
 				id,
 				typeID: event.typeID,
 				moduleID: event.moduleID,
 				height: blockHeader.height,
 				index: event.index,
-			});
+			};
 
-			// Resolve event topics info
+			eventsInfoToIndex.eventsInfo.push(eventInfo);
+
 			event.topics.forEach(topic => {
-				eventTopicsInfo.push({
-					id,
-					height: blockHeader.height,
+				eventsInfoToIndex.eventTopicsInfo.push({
+					...eventInfo,
 					topic,
 				});
 			});
@@ -60,10 +61,10 @@ const getEventsIndexInfo = async (blockHeader, events) => {
 		{ concurrency: events.length },
 	);
 
-	return { eventsInfo, eventTopicsInfo };
+	return eventsInfoToIndex;
 };
 
 module.exports = {
 	getEventsByHeight,
-	getEventsIndexInfo,
+	getEventsInfoToIndex,
 };

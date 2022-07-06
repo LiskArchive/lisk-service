@@ -28,7 +28,7 @@ const {
 } = require('lisk-service-framework');
 
 const { processTransaction } = require('./transactionProcessor');
-const { getEventsByHeight, getEventsIndexInfo } = require('./eventsIndex');
+const { getEventsByHeight, getEventsInfoToIndex } = require('./eventsIndex');
 
 const {
 	getBlockByHeight,
@@ -132,7 +132,7 @@ const indexBlock = async job => {
 			const eventsDB = await getEventsIndex();
 			const eventTopicsDB = await getEventTopicsIndex();
 
-			const { eventsInfo, eventTopicsInfo } = getEventsIndexInfo(block.header, events);
+			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
 			await eventsDB.upsert(eventsInfo, dbTrx);
 			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
 		}
