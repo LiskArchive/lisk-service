@@ -14,7 +14,7 @@
  *
  */
 module.exports = {
-	tableName: 'events_topics',
+	tableName: 'event_topics',
 	primaryKey: ['id', 'topic'],
 	schema: {
 		id: { type: 'string' }, // Unique event identifier
