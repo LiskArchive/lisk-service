@@ -28,6 +28,7 @@ const {
 } = require('lisk-service-framework');
 
 const { processTransaction } = require('./transactionProcessor');
+const { getEventsByHeight, getEventsIndexInfo } = require('./eventsIndex');
 
 const {
 	getBlockByHeight,
@@ -52,8 +53,10 @@ const {
 
 const config = require('../../config');
 
-const blocksIndexSchema = require('../database/schema/blocks');
 const accountsIndexSchema = require('../database/schema/accounts');
+const blocksIndexSchema = require('../database/schema/blocks');
+const eventsIndexSchema = require('../database/schema/events');
+const eventTopicsIndexSchema = require('../database/schema/eventsTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -62,6 +65,8 @@ const logger = Logger();
 
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
+const getEventsIndex = () => getTableInstance('events', eventsIndexSchema, MYSQL_ENDPOINT);
+const getEventTopicsIndex = () => getTableInstance('events_topics', eventTopicsIndexSchema, MYSQL_ENDPOINT);
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 const getGeneratorPkInfoArray = async (blocks) => {
@@ -89,6 +94,7 @@ const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const block = await getBlockByHeight(height);
+	const events = await getEventsByHeight(height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
 
@@ -120,6 +126,15 @@ const indexBlock = async job => {
 				},
 				{ concurrency: block.transactions.length },
 			);
+		}
+
+		if (events.length) {
+			const eventsDB = await getEventsIndex();
+			const eventTopicsDB = await getEventTopicsIndex();
+
+			const { eventsInfo, eventTopicsInfo } = getEventsIndexInfo(block.header, events);
+			await eventsDB.upsert(eventsInfo, dbTrx);
+			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
 		}
 
 		const blockToIndex = {
