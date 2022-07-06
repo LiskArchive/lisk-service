@@ -16,13 +16,13 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/components/core # move into core component folder
+cd lisk-service/services/core # move into core microservice directory
 npm install # install required Node.js modules
 ```
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations.
+To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations.
 
 A list of the most commonly used environment variables can be seen below:
 
@@ -60,8 +60,8 @@ node app.js
 ### Start
 
 ```bash
-cd lisk-service/components/core # move into root folder of the core component
-npm start # start the component with running nodes locally
+cd lisk-service/services/core # move into root directory of the core microservice
+npm start # start the microservice with running nodes locally
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.

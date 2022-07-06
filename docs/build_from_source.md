@@ -112,7 +112,7 @@ npm test
 
 Functional tests ensure that a project build on the top of the framework is able to process requests and collect responses involving the API gateway.
 
-In order to run them successfully, it is necessary to have the template component running alongside.
+In order to run them successfully, it is necessary to have the template microservice running alongside.
 
 ```bash
 cd service/template
