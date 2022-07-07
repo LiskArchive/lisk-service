@@ -15,6 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 const { codec } = require('@liskhq/lisk-codec');
+const { hash } = require('@liskhq/lisk-cryptography');
 
 const { requestConnector } = require('../utils/request');
 const { parseToJSONCompatObj } = require('../utils/parser');
@@ -39,7 +40,8 @@ const getEventsInfoToIndex = async (blockHeader, events) => {
 	await BluebirdPromise.map(
 		events,
 		async (event) => {
-			const id = await encodeEvent(event);
+			const encodedEvent = await encodeEvent(event);
+			const id = hash(event);
 
 			const eventInfo = {
 				id,
@@ -47,6 +49,7 @@ const getEventsInfoToIndex = async (blockHeader, events) => {
 				moduleID: event.moduleID,
 				height: blockHeader.height,
 				index: event.index,
+				event: encodedEvent,
 			};
 
 			eventsInfoToIndex.eventsInfo.push(eventInfo);
