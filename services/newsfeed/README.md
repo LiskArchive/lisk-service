@@ -16,13 +16,13 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/services/newsfeed # move into newsfeed component folder
-npm install # install required Node.js modules
+cd lisk-service/services/newsfeed # move into newsfeed microservice directory
+npm install # install required Node.js dependencies
 ```
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations. A list of the most commonly used environment variables can be seen below:
+To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations. A list of the most commonly used environment variables can be seen below:
 
 - `SERVICE_BROKER`: URL of the microservice message broker (Redis)
 - `SERVICE_NEWSFEED_MYSQL`: URL of the local Lisk Service Core database
@@ -32,8 +32,8 @@ To configure the different components, there are a number of environment variabl
 ### Start
 
 ```bash
-cd lisk-service/services/newsfeed # move into root folder of the newsfeed component
-npm start # start the component
+cd lisk-service/services/newsfeed # move into root directory of the newsfeed microservice
+npm start # start the microservice
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.

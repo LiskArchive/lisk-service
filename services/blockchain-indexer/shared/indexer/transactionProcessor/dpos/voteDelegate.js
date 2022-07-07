@@ -85,7 +85,7 @@ const removeVoteFromIndex = async (vote, trx) => {
 };
 
 // eslint-disable-next-line no-unused-vars
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const votes = await getVoteIndexingInfo(tx);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
@@ -117,6 +117,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 module.exports = {
 	commandID,
 	commandName,
-	processTransaction,
+	applyTransaction,
 	revertTransaction,
 };

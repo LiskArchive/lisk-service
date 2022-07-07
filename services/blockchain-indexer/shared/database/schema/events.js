@@ -13,25 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	Logger,
-} = require('lisk-service-framework');
-const { reloadDelegateCache } = require('../../../dataService');
-
-const logger = Logger();
-
-// Command specific constants
-const commandID = 3;
-const commandName = 'reportDelegateMisbehavior';
-
-// eslint-disable-next-line no-unused-vars
-const applyTransaction = async (blockHeader, tx, dbTrx) => {
-	logger.debug('Reloading delegates cache on reportDelegateMisbehavior transaction');
-	await reloadDelegateCache();
-};
-
 module.exports = {
-	commandID,
-	commandName,
-	applyTransaction,
+	tableName: 'events',
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string' }, // Unique event identifier
+		typeID: { type: 'string' }, // Type of event
+		moduleID: { type: 'string' },
+		height: { type: 'integer' },
+		index: { type: 'integer' },
+		event: { type: 'string' },
+	},
+	indexes: {},
+	purge: {},
 };

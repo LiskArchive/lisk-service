@@ -35,7 +35,7 @@ const commandID = 2;
 const commandName = 'sidechainCCUpdate';
 
 // eslint-disable-next-line no-unused-vars
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
 	const crossChainMessagesDB = await getCrossChainMessagesIndex();
 	const blockchainAppsDB = await getBlockchainAppsIndex();
@@ -49,7 +49,7 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 	const appInfo = {
 		name: '',
 		chainID: tx.sendingChainID,
-		state: tx.status,
+		state: tx.status, // TODO: Verify and update
 		address: '', // TODO: Verify and update address
 		lastCertificateHeight: '',
 		lastUpdated: '',
@@ -63,5 +63,5 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 module.exports = {
 	commandID,
 	commandName,
-	processTransaction,
+	applyTransaction,
 };

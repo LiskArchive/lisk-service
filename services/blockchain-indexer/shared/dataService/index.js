@@ -34,6 +34,7 @@ const {
 	getTransactionsByIDs,
 	normalizeTransaction,
 	getVotesByTransactionIDs,
+	getEventsByHeight,
 } = require('./business');
 
 const {
@@ -151,6 +152,7 @@ module.exports = {
 	getVotesSent,
 	getUnlocks,
 	getEvents,
+	getEventsByHeight,
 	getAuthAccountInfo,
 	getValidator,
 };

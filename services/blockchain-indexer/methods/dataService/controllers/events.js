@@ -13,17 +13,53 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../../../shared/dataService');
+// const dataService = require('../../../shared/dataService');
 
 const getEvents = async (params) => {
-	const events = {
-		data: {},
-		meta: {},
-	};
+	// try {
+	//     const events = {
+	//         data: {},
+	//         meta: {},
+	//     };
 
-	const response = await dataService.getEvents(params);
-	if (response.data) events.data = response.data;
-	if (response.meta) events.meta = response.meta;
+	//     const response = await dataService.getEvents(params);
+	//     if (response.data) events.data = response.data;
+	//     if (response.meta) events.meta = response.meta;
+
+	//     return events;
+	// } catch (error) {
+	//     let status;
+	//     if (err instanceof NotFoundException) status = NOT_FOUND;
+	//     if (status) return { status, data: { error: err.message } };
+	//     throw err;
+	// }
+
+	const events = {
+		data: [
+			{
+				moduleID: '2',
+				moduleName: 'token',
+				typeID: '2',
+				data: {
+					amount: '150000000',
+					recipientAddress: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+					data: 'message',
+				},
+				topics: [],
+				block: {
+					id: '6258354802676165798',
+					height: 8350681,
+					timestamp: 28227090,
+				},
+			},
+		],
+		meta: {
+			count: 1,
+			offset: params.offset,
+			total: 100,
+		},
+		links: {},
+	};
 
 	return events;
 };

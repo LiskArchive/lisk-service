@@ -27,12 +27,13 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { processTransaction } = require('./transactionProcessor');
+const { applyTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
 	getTransactionsByBlockIDs,
 	getAccountsByPublicKey,
+	getEventsByHeight,
 } = require('../dataService');
 
 const {
@@ -43,6 +44,8 @@ const {
 	range,
 } = require('../utils/arrayUtils');
 
+const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+
 const {
 	getFinalizedHeight,
 	getCurrentHeight,
@@ -52,17 +55,41 @@ const {
 
 const config = require('../../config');
 
-const blocksIndexSchema = require('../database/schema/blocks');
 const accountsIndexSchema = require('../database/schema/accounts');
+const blocksIndexSchema = require('../database/schema/blocks');
+const eventsIndexSchema = require('../database/schema/events');
+const eventTopicsIndexSchema = require('../database/schema/eventTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getAccountsIndex = () => getTableInstance(
+	accountsIndexSchema.name,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getBlocksIndex = () => getTableInstance(
+	blocksIndexSchema.name,
+	blocksIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getEventsIndex = () => getTableInstance(
+	eventsIndexSchema.name,
+	eventsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getEventTopicsIndex = () => getTableInstance(
+	eventTopicsIndexSchema.name,
+	eventTopicsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getTransactionsIndex = () => getTableInstance(
+	transactionsIndexSchema.name,
+	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getGeneratorPkInfoArray = async (blocks) => {
 	const blocksDB = await getBlocksIndex();
@@ -89,6 +116,7 @@ const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const block = await getBlockByHeight(height);
+	const events = await getEventsByHeight(height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
 
@@ -115,11 +143,20 @@ const indexBlock = async job => {
 
 					await transactionsDB.upsert(tx, dbTrx);
 
-					// Invoke 'processTransaction' to execute command specific processing logic
-					await processTransaction(blockHeader, tx, dbTrx);
+					// Invoke 'applyTransaction' to execute command specific processing logic
+					await applyTransaction(blockHeader, tx, dbTrx);
 				},
 				{ concurrency: block.transactions.length },
 			);
+		}
+
+		if (events.length) {
+			const eventsDB = await getEventsIndex();
+			const eventTopicsDB = await getEventTopicsIndex();
+
+			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
+			await eventsDB.upsert(eventsInfo, dbTrx);
+			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
 		}
 
 		const blockToIndex = {
