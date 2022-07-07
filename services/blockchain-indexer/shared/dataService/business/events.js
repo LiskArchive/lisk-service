@@ -13,13 +13,14 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { codec } = require('@liskhq/lisk-codec');
+const BluebirdPromise = require('bluebird');
 
+const { codec } = require('@liskhq/lisk-codec');
 const {
-    Exceptions: { ValidationException },
-    MySQL: {
-        getTableInstance,
-    },
+	Exceptions: { ValidationException },
+	MySQL: {
+		getTableInstance,
+	},
 } = require('lisk-service-framework');
 
 const config = require('../../../config');
@@ -28,6 +29,7 @@ const blocksIndexSchema = require('../../database/schema/blocks');
 const eventsIndexSchema = require('../../database/schema/events');
 const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
 
+const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -37,92 +39,96 @@ const getEventsIndex = () => getTableInstance('events', eventsIndexSchema, MYSQL
 const getEventTopicsIndex = () => getTableInstance('events_topics', eventTopicsIndexSchema, MYSQL_ENDPOINT);
 
 const decodeEvent = async (event) => {
-    const schemas = await requestConnector('getSchema');
-    const eventID = codec.decode(schemas.event, event);
-    return eventID;
+	const schemas = await requestConnector('getSchema');
+	const eventID = codec.decode(schemas.event, event);
+	return eventID;
 };
 
 const getModuleNameByID = async (moduleID) => {
-    const response = await requestConnector('getSystemMetadata');
-    const module = response.modules.map(module => module.id === moduleID);
-    return module.name;
+	const response = await requestConnector('getSystemMetadata');
+	const filteredModule = response.modules.map(module => module.id === moduleID);
+	return filteredModule.name;
 };
 
 const getEvents = async (params) => {
-    const blocksDB = await getBlocksIndex();
-    const eventsDB = await getEventsIndex();
-    const eventTopicsDB = await getEventTopicsIndex();
+	const blocksDB = await getBlocksIndex();
+	const eventsDB = await getEventsIndex();
+	const eventTopicsDB = await getEventTopicsIndex();
 
-    const events = {
-        data: [],
-        meta: {},
-    };
+	const events = {
+		data: [],
+		meta: {},
+	};
 
-    if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
-        params = normalizeRangeParam(params, 'height');
-    }
+	if (params.height && typeof params.height === 'string' && params.height.includes(':')) {
+		params = normalizeRangeParam(params, 'height');
+	}
 
-    if (params.timestamp && params.timestamp.includes(':')) {
-        params = normalizeRangeParam(params, 'timestamp');
-    }
+	if (params.timestamp && params.timestamp.includes(':')) {
+		params = normalizeRangeParam(params, 'timestamp');
+	}
 
-    if (params.blockID) {
-        const { blockID, ...remParams } = params;
-        params = remParams;
-        const [block] = await blocksDB.find({ id: blockID }, ['height']);
-        if ('height' in params && params.height !== block.height) {
-            throw new ValidationException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
-        }
-        params.height = block.height;
-    }
+	if (params.blockID) {
+		const { blockID, ...remParams } = params;
+		params = remParams;
+		const [block] = await blocksDB.find({ id: blockID }, ['height']);
+		if ('height' in params && params.height !== block.height) {
+			throw new ValidationException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+		}
+		params.height = block.height;
+	}
 
-    if (params.transactionID) {
-        const { transactionID, ...remParams } = params;
-        params = remParams;
-        params.topic = transactionID;
-    }
+	if (params.transactionID) {
+		const { transactionID, ...remParams } = params;
+		params = remParams;
+		params.topic = transactionID;
+	}
 
-    if (params.senderAddress) {
-        const { senderAddress, topic, ...remParams } = params;
-        params = remParams;
-        if (!topic) {
-            params.topic = senderAddress;
-        } else {
-            params.andWhere = { topic: senderAddress };
-        }
-    }
+	if (params.senderAddress) {
+		const { senderAddress, topic, ...remParams } = params;
+		params = remParams;
+		if (!topic) {
+			params.topic = senderAddress;
+		} else {
+			params.andWhere = { topic: senderAddress };
+		}
+	}
 
-    const total = await eventTopicsDB.count(params);
-    const response = await eventTopicsDB.find(params, ['id']);
+	const total = await eventTopicsDB.count(params);
+	const response = await eventTopicsDB.find(params, ['id']);
 
-    const eventIDs = response.map(entry => entry.id);
-    const eventsInfo = await eventsDB.find({ whereIn: { property: 'id', values: eventIDs } }, ['event', 'height']);
+	const eventIDs = response.map(entry => entry.id);
+	const eventsInfo = await eventsDB.find({ whereIn: { property: 'id', values: eventIDs } }, ['event', 'height']);
 
-    events.data = await eventsInfo.map(eventInfo => {
-        const decodedEvent = await decodeEvent(eventInfo.event);
-        decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
+	events.data = await BluebirdPromise.map(
+		eventsInfo,
+		async (eventInfo) => {
+			const decodedEvent = await decodeEvent(eventInfo.event);
+			decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
 
-        const [blockInfo] = await blocksDB.find({ height: eventInfo.height }, ['id', 'timestamp']);
+			const [blockInfo] = await blocksDB.find({ height: eventInfo.height }, ['id', 'timestamp']);
 
-        return {
-            ...decodedEvent,
-            block: {
-                id: blockInfo.id,
-                height: eventInfo.height,
-                timestamp: blockInfo.timestamp,
-            }
-        }
-    })
+			return {
+				...decodedEvent,
+				block: {
+					id: blockInfo.id,
+					height: eventInfo.height,
+					timestamp: blockInfo.timestamp,
+				},
+			};
+		},
+		{ concurrency: eventsInfo.length },
+	);
 
-    events.meta = {
-        count: events.data.length,
-        offset: params.offset,
-        total,
-    }
+	events.meta = {
+		count: events.data.length,
+		offset: params.offset,
+		total,
+	};
 
-    return events;
+	return events;
 };
 
 module.exports = {
-    getEvents,
+	getEvents,
 };
