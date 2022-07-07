@@ -84,13 +84,17 @@ const cast = (val, type) => {
 	if (type === 'string') return String(val);
 	if (type === 'boolean') return Boolean(val);
 	if (type === 'bigInteger') return BigInt(val);
+	if (type === 'json') return JSON.stringify(val);
 	return val;
 };
 
 const resolveQueryParams = params => {
+	const KNOWN_QUERY_PARAMS = [
+		'sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset',
+		'whereIn', 'orWhereIn', 'search', 'aggregate', 'whereJsonSupersetOf',
+	];
 	const queryParams = Object.keys(params)
-		.filter(key => !['sort', 'limit', 'propBetweens', 'orWhere', 'orWhereWith', 'offset', 'whereIn', 'orWhereIn', 'search', 'aggregate']
-			.includes(key))
+		.filter(key => !KNOWN_QUERY_PARAMS.includes(key))
 		.reduce((obj, key) => {
 			obj[key] = params[key];
 			return obj;
@@ -205,9 +209,10 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	};
 
 	const queryBuilder = (params, columns, trx) => {
-		const query = knex(tableName).transacting(trx).select(columns);
+		const query = knex(tableName).transacting(trx);
 		const queryParams = resolveQueryParams(params);
 
+		if (columns) query.select(columns);
 		query.where(queryParams);
 
 		if (params.propBetweens) {
@@ -230,6 +235,17 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
+		}
+
+		if (params.whereJsonSupersetOf) {
+			const { property, values } = params.whereJsonSupersetOf;
+			query.where(function () {
+				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
+				this.whereJsonSupersetOf(property, val0);
+				remValues.forEach(value => this.orWhere(function () {
+					this.whereJsonSupersetOf(property, value);
+				}));
+			});
 		}
 
 		if (params.orWhere) {
@@ -285,13 +301,34 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 			});
 	};
 
-	const deleteIds = async (ids, trx) => {
+	const deleteByParams = async (params, trx) => {
 		let isDefaultTrx = false;
 		if (!trx) {
 			trx = await createDefaultTransaction(knex);
 			isDefaultTrx = true;
 		}
 
+		const query = queryBuilder(params, tableConfig.primaryKey, trx).del();
+		if (isDefaultTrx) return query
+			.then(async result => {
+				await trx.commit();
+				return result;
+			}).catch(async err => {
+				await trx.rollback();
+				logger.error(err.message);
+				throw err;
+			});
+		return query;
+	};
+
+	const deleteByPrimaryKey = async (ids, trx) => {
+		let isDefaultTrx = false;
+		if (!trx) {
+			trx = await createDefaultTransaction(knex);
+			isDefaultTrx = true;
+		}
+
+		ids = Array.isArray(ids) ? ids : [ids];
 		const query = knex(tableName).transacting(trx).whereIn(primaryKey, ids).del();
 		if (isDefaultTrx) return query
 			.then(async result => {
@@ -331,6 +368,17 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 		if (params.whereIn) {
 			const { property, values } = params.whereIn;
 			query.whereIn(property, values);
+		}
+
+		if (params.whereJsonSupersetOf) {
+			const { property, values } = params.whereJsonSupersetOf;
+			query.where(function () {
+				const [val0, ...remValues] = Array.isArray(values) ? values : [values];
+				this.whereJsonSupersetOf(property, val0);
+				remValues.forEach(value => this.orWhere(function () {
+					this.whereJsonSupersetOf(property, value);
+				}));
+			});
 		}
 
 		if (params.orWhere) {
@@ -386,7 +434,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		const query = knex(tableName)
 			.transacting(trx)
-			.where(params.where.property, '=', params.where.value)
+			.where(params.where)
 			.increment(params.increment);
 
 		if (isDefaultTrx) return query
@@ -410,7 +458,7 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 
 		const query = knex(tableName)
 			.transacting(trx)
-			.where(params.where.property, '=', params.where.value)
+			.where(params.where)
 			.decrement(params.decrement);
 
 		if (isDefaultTrx) return query
@@ -428,7 +476,8 @@ const getTableInstance = async (tableName, tableConfig, connEndpoint = CONN_ENDP
 	return {
 		upsert,
 		find,
-		deleteIds,
+		delete: deleteByParams,
+		deleteByPrimaryKey,
 		count,
 		rawQuery,
 		increment,
