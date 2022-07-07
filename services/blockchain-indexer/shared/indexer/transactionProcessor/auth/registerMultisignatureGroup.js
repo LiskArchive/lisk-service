@@ -61,8 +61,14 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug(`Indexed multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
+// eslint-disable-next-line no-unused-vars
+const revertTransaction = async (blockHeader, tx, dbTrx) => {
+	// TODO: Implement
+};
+
 module.exports = {
 	commandID,
 	commandName,
 	applyTransaction,
+	revertTransaction,
 };

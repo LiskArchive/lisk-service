@@ -21,8 +21,14 @@ const commandName = 'unlockToken';
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
+// eslint-disable-next-line no-unused-vars
+const revertTransaction = async (blockHeader, tx, dbTrx) => {
+	// TODO: Implement
+};
+
 module.exports = {
 	commandID,
 	commandName,
 	applyTransaction,
+	revertTransaction,
 };
