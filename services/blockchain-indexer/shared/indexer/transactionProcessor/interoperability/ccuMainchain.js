@@ -49,7 +49,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const appInfo = {
 		name: '',
 		chainID: tx.sendingChainID,
-		state: tx.status,
+		state: tx.status, // TODO: Verify and update
 		address: '', // TODO: Verify and update address
 		lastCertificateHeight: '',
 		lastUpdated: '',

@@ -13,13 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('./business');
-
-const getEvents = async (params) => {
-	const response = await dataService.getEvents(params);
-	return response;
-};
-
 module.exports = {
-	getEvents,
+	tableName: 'events',
+	primaryKey: 'id',
+	schema: {
+		id: { type: 'string' }, // Unique event identifier
+		typeID: { type: 'string' }, // Type of event
+		moduleID: { type: 'string' },
+		height: { type: 'integer' },
+		index: { type: 'integer' },
+		event: { type: 'string' },
+	},
+	indexes: {},
+	purge: {},
 };
