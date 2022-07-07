@@ -20,6 +20,7 @@ module.exports = {
 		id: { type: 'string' }, // Unique event identifier
 		topic: { type: 'string' },
 		height: { type: 'integer' },
+		timestamp: { type: 'integer' },
 	},
 	indexes: {
 		topic: { type: 'key' },
