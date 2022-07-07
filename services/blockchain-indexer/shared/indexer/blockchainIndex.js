@@ -27,8 +27,8 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { processTransaction } = require('./transactionProcessor');
 const { getEventsByHeight, getEventsInfoToIndex } = require('./eventsIndex');
+const { applyTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
@@ -121,8 +121,8 @@ const indexBlock = async job => {
 
 					await transactionsDB.upsert(tx, dbTrx);
 
-					// Invoke 'processTransaction' to execute command specific processing logic
-					await processTransaction(blockHeader, tx, dbTrx);
+					// Invoke 'applyTransaction' to execute command specific processing logic
+					await applyTransaction(blockHeader, tx, dbTrx);
 				},
 				{ concurrency: block.transactions.length },
 			);

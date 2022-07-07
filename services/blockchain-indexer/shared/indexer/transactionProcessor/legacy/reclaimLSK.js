@@ -31,7 +31,7 @@ const commandID = 0;
 const commandName = 'reclaimLSK';
 
 // eslint-disable-next-line no-unused-vars
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
 
 	// TODO: Implement logic
@@ -44,5 +44,5 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 module.exports = {
 	commandID,
 	commandName,
-	processTransaction,
+	applyTransaction,
 };
