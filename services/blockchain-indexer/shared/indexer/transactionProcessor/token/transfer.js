@@ -31,7 +31,7 @@ const commandID = 0;
 const commandName = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
 
 	tx.amount = tx.params.amount;
@@ -46,5 +46,5 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 module.exports = {
 	commandID,
 	commandName,
-	processTransaction,
+	applyTransaction,
 };

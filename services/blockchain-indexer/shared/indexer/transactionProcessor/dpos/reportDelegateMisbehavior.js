@@ -25,7 +25,7 @@ const commandID = 3;
 const commandName = 'reportDelegateMisbehavior';
 
 // eslint-disable-next-line no-unused-vars
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	logger.debug('Reloading delegates cache on reportDelegateMisbehavior transaction');
 	await reloadDelegateCache();
 };
@@ -33,5 +33,5 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 module.exports = {
 	commandID,
 	commandName,
-	processTransaction,
+	applyTransaction,
 };

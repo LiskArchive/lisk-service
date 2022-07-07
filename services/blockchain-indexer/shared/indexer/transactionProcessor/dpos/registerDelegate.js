@@ -35,7 +35,7 @@ const commandID = 0;
 const commandName = 'registerDelegate';
 
 // eslint-disable-next-line no-unused-vars
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const accountsDB = await getAccountsIndex();
 	const validatorsDB = await getValidatorsIndex();
 
@@ -61,5 +61,5 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 module.exports = {
 	commandID,
 	commandName,
-	processTransaction,
+	applyTransaction,
 };

@@ -37,14 +37,28 @@ const getEntityIndex = () => getTableInstance('entity_index_name', entityIndexSc
 export const commandID = 0;
 export const commandName = 'commandName';
 
-// Implement the custom logic in the 'processTransaction' method and export it
-export const processTransaction = async (blockHeader, tx, dbTrx) => {
+// Implement the custom logic in the 'applyTransaction' method and export it
+export const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const entityDB = await getEntityIndex();
 
 	const entityIndexEntry = { ...tx };
 	// Process the transaction to create the entityIndexEntry
 	// And, finally, perform DB operations to update the index
 	await entityDB.upsert(entityIndexEntry, dbTrx); // it is important to pass dbTrx
+	logger.debug('Add custom logs');
+
+	Promise.resolve({ blockHeader, tx });
+};
+
+// Implement the custom logic in the 'revertTransaction' method and export it
+// This logic is executed to revert the effect of 'applyTransaction' method in case of deleteBlock
+export const revertTransaction = async (blockHeader, tx, dbTrx) => {
+	const entityDB = await getEntityIndex();
+
+	const entityIndexEntry = { ...tx };
+	// Process the transaction to create the entityIndexEntry
+	// And, finally, perform DB operations to update the index and revert the induced changes
+	await entityDB.delete(entityIndexEntry, dbTrx); // it is important to pass dbTrx
 	logger.debug('Add custom logs');
 
 	Promise.resolve({ blockHeader, tx });

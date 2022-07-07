@@ -33,7 +33,7 @@ const commandID = 5;
 const commandName = 'messageRecovery';
 
 // eslint-disable-next-line no-unused-vars
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
 	const crossChainMessagesDB = await getCrossChainMessagesIndex();
 
@@ -48,5 +48,5 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 module.exports = {
 	commandID,
 	commandName,
-	processTransaction,
+	applyTransaction,
 };

@@ -19,7 +19,7 @@ const { requestConnector } = require('../../utils/request');
 const { getAllDirectories } = require('../../utils/file');
 
 // Is a map of maps, where the first level keys are moduleIDs, value are maps
-// The keys for the second-level map are commandIDs, values are custom 'processTransaction' methods
+// The keys for the second-level map are commandIDs, values are custom 'applyTransaction' methods
 const moduleProcessorMap = new Map();
 
 const getAvailableModuleProcessors = async () => {
@@ -49,14 +49,14 @@ const buildModuleCommandProcessorMap = async () => {
 
 			const moduleCommandProcessorMap = moduleProcessorMap.get(moduleID);
 			Object.values(availableCommandProcessors)
-				.forEach(e => moduleCommandProcessorMap.set(e.commandID, e.processTransaction));
+				.forEach(e => moduleCommandProcessorMap.set(e.commandID, e.applyTransaction));
 		}
 	});
 
 	return Promise.all(promises);
 };
 
-const processTransaction = async (blockHeader, tx, dbTrx) => {
+const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	if (moduleProcessorMap.size === 0) await buildModuleCommandProcessorMap();
 
 	if (!moduleProcessorMap.has(tx.moduleID)) throw Error(`No processors implemented for transactions related to moduleID: ${tx.moduleID}`);
@@ -69,5 +69,5 @@ const processTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	processTransaction,
+	applyTransaction,
 };
