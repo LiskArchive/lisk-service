@@ -22,6 +22,7 @@ module.exports = {
 		moduleID: { type: 'string' },
 		height: { type: 'integer' },
 		index: { type: 'integer' },
+		event: { type: 'string' },
 	},
 	indexes: {},
 	purge: {},
