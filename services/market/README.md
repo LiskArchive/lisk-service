@@ -14,21 +14,21 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/components/market # move into core component folder
-npm install # install required Node.js modules
+cd lisk-service/services/market # move into market microservice directory
+npm install # install required Node.js dependencies
 ```
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations.
+To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations.
 
 ## Management
 
 ### Start
 
 ```bash
-cd lisk-service/components/market # move into root folder of the core component
-npm start # start the component with running nodes locally
+cd lisk-service/services/market # move into root directory of the market microservice
+npm start # start the microservice with running nodes locally
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.
