@@ -56,7 +56,7 @@ const config = require('../../config');
 const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
 const eventsIndexSchema = require('../database/schema/events');
-const eventTopicsIndexSchema = require('../database/schema/eventsTopics');
+const eventTopicsIndexSchema = require('../database/schema/eventTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;

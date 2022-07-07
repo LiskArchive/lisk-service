@@ -16,17 +16,17 @@
 const { codec } = require('@liskhq/lisk-codec');
 
 const {
+    Exceptions: { ValidationException },
     MySQL: {
         getTableInstance,
     },
 } = require('lisk-service-framework');
-const event = require('../../../../gateway/sources/version3/mappings/event');
 
 const config = require('../../../config');
 
 const blocksIndexSchema = require('../../database/schema/blocks');
 const eventsIndexSchema = require('../../database/schema/events');
-const eventTopicsIndexSchema = require('../../database/schema/eventsTopics');
+const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
 
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 
@@ -62,40 +62,53 @@ const getEvents = async (params) => {
         params = normalizeRangeParam(params, 'height');
     }
 
-    if (params.transactionID) {
-        const { transactionID, ...remParams } = params;
-        params = remParams;
-        params.whereIn = { property: 'topic', values: transactionID };
-    }
-
-    if (params.senderAddress) {
-        const { senderAddress, ...remParams } = params;
-        params = remParams;
-        params.whereIn = { property: 'topic', values: senderAddress };
+    if (params.timestamp && params.timestamp.includes(':')) {
+        params = normalizeRangeParam(params, 'timestamp');
     }
 
     if (params.blockID) {
         const { blockID, ...remParams } = params;
         params = remParams;
         const [block] = await blocksDB.find({ id: blockID }, ['height']);
+        if ('height' in params && params.height !== block.height) {
+            throw new ValidationException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+        }
         params.height = block.height;
     }
 
-    const response = await eventTopicsDB.find(params, ['height']);
+    if (params.transactionID) {
+        const { transactionID, ...remParams } = params;
+        params = remParams;
+        params.topic = transactionID;
+    }
+
+    if (params.senderAddress) {
+        const { senderAddress, topic, ...remParams } = params;
+        params = remParams;
+        if (!topic) {
+            params.topic = senderAddress;
+        } else {
+            params.andWhere = { topic: senderAddress };
+        }
+    }
+
     const total = await eventTopicsDB.count(params);
+    const response = await eventTopicsDB.find(params, ['id']);
 
-    events.data = await response.map(acc => {
-        const [eventInfo] = await eventsDB.find({ height: acc.height }, ['event']);
-        const [blockInfo] = await blocksDB.find({ height: acc.height }, ['id', 'timestamp']);
+    const eventIDs = response.map(entry => entry.id);
+    const eventsInfo = await eventsDB.find({ whereIn: { property: 'id', values: eventIDs } }, ['event', 'height']);
 
+    events.data = await eventsInfo.map(eventInfo => {
         const decodedEvent = await decodeEvent(eventInfo.event);
-        decodedEvent.moduleName =  await getModuleNameByID(decodedEvent.moduleID);
+        decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
+
+        const [blockInfo] = await blocksDB.find({ height: eventInfo.height }, ['id', 'timestamp']);
 
         return {
             ...decodedEvent,
             block: {
                 id: blockInfo.id,
-                height: blockInfo.height,
+                height: eventInfo.height,
                 timestamp: blockInfo.timestamp,
             }
         }
