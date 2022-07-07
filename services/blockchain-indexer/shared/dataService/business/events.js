@@ -31,6 +31,7 @@ const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
 const { decodeEvent } = require('../../utils/eventsUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
+const { parseToJSONCompatObj } = require('../../utils/parser');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -51,6 +52,11 @@ const getEventTopicsIndex = () => getTableInstance(
 );
 
 let registeredModules;
+
+const getEventsByHeight = async (height) => {
+	const events = await requestConnector('chain_getEvents', { height });
+	return parseToJSONCompatObj(events);
+};
 
 const getModuleNameByID = async (moduleID) => {
 	if (!registeredModules) {
@@ -148,4 +154,5 @@ const getEvents = async (params) => {
 
 module.exports = {
 	getEvents,
+	getEventsByHeight,
 };

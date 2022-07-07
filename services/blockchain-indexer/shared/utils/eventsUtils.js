@@ -13,7 +13,10 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
 const { codec } = require('@liskhq/lisk-codec');
+const { hash } = require('@liskhq/lisk-cryptography');
+
 const { requestConnector } = require('./request');
 
 let eventSchema;
@@ -35,7 +38,47 @@ const encodeEvent = async (event) => {
 	const eventID = codec.encode(eventSchema, event);
 	return eventID;
 };
+
+const getEventsInfoToIndex = async (blockHeader, events) => {
+	const eventsInfoToIndex = {
+		eventsInfo: [],
+		eventTopicsInfo: [],
+	};
+
+	await BluebirdPromise.map(
+		events,
+		async (event) => {
+			const id = hash(event);
+			const encodedEvent = await encodeEvent(event);
+
+			const eventInfo = {
+				id,
+				typeID: event.typeID,
+				moduleID: event.moduleID,
+				height: blockHeader.height,
+				index: event.index,
+				event: encodedEvent,
+			};
+
+			eventsInfoToIndex.eventsInfo.push(eventInfo);
+
+			event.topics.forEach(topic => {
+				eventsInfoToIndex.eventTopicsInfo.push({
+					id,
+					height: blockHeader.height,
+					timestamp: blockHeader.timestamp,
+					topic,
+				});
+			});
+		},
+		{ concurrency: events.length },
+	);
+
+	return eventsInfoToIndex;
+};
+
 module.exports = {
 	decodeEvent,
 	encodeEvent,
+	getEventsInfoToIndex,
 };

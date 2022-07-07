@@ -84,6 +84,7 @@ const {
 
 const { getAuthAccountInfo } = require('./auth');
 const { getValidator } = require('./validator');
+const { getEvents, getEventsByHeight } = require('./events');
 
 module.exports = {
 	getAccounts,
@@ -126,4 +127,6 @@ module.exports = {
 	getUnlocks,
 	getAuthAccountInfo,
 	getValidator,
+	getEvents,
+	getEventsByHeight,
 };

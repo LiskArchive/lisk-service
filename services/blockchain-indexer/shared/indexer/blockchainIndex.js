@@ -27,13 +27,13 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { getEventsByHeight, getEventsInfoToIndex } = require('./eventsIndex');
 const { applyTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
 	getTransactionsByBlockIDs,
 	getAccountsByPublicKey,
+	getEventsByHeight,
 } = require('../dataService');
 
 const {
@@ -43,6 +43,8 @@ const {
 const {
 	range,
 } = require('../utils/arrayUtils');
+
+const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
 const {
 	getFinalizedHeight,
