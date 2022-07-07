@@ -16,14 +16,23 @@
 // const dataService = require('../../../shared/dataService');
 
 const getEvents = async (params) => {
-	// const events = {
-	// 	data: {},
-	// 	meta: {},
-	// };
+	// try {
+	//     const events = {
+	//         data: {},
+	//         meta: {},
+	//     };
 
-	// const response = await dataService.getEvents(params);
-	// if (response.data) events.data = response.data;
-	// if (response.meta) events.meta = response.meta;
+	//     const response = await dataService.getEvents(params);
+	//     if (response.data) events.data = response.data;
+	//     if (response.meta) events.meta = response.meta;
+
+	//     return events;
+	// } catch (error) {
+	//     let status;
+	//     if (err instanceof NotFoundException) status = NOT_FOUND;
+	//     if (status) return { status, data: { error: err.message } };
+	//     throw err;
+	// }
 
 	const events = {
 		data: [

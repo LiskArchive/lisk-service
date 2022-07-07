@@ -15,9 +15,8 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { codec } = require('@liskhq/lisk-codec');
 const {
-	Exceptions: { ValidationException },
+	Exceptions: { NotFoundException },
 	MySQL: {
 		getTableInstance,
 	},
@@ -29,24 +28,36 @@ const blocksIndexSchema = require('../../database/schema/blocks');
 const eventsIndexSchema = require('../../database/schema/events');
 const eventTopicsIndexSchema = require('../../database/schema/eventTopics');
 
+const { decodeEvent } = require('../../utils/eventsUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
-const getEventsIndex = () => getTableInstance('events', eventsIndexSchema, MYSQL_ENDPOINT);
-const getEventTopicsIndex = () => getTableInstance('events_topics', eventTopicsIndexSchema, MYSQL_ENDPOINT);
+const getBlocksIndex = () => getTableInstance(
+	blocksIndexSchema.name,
+	blocksIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getEventsIndex = () => getTableInstance(
+	eventsIndexSchema.name,
+	eventsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getEventTopicsIndex = () => getTableInstance(
+	eventTopicsIndexSchema.name,
+	eventTopicsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
-const decodeEvent = async (event) => {
-	const schemas = await requestConnector('getSchema');
-	const eventID = codec.decode(schemas.event, event);
-	return eventID;
-};
+let registeredModules;
 
 const getModuleNameByID = async (moduleID) => {
-	const response = await requestConnector('getSystemMetadata');
-	const filteredModule = response.modules.map(module => module.id === moduleID);
+	if (!registeredModules) {
+		const response = await requestConnector('getSystemMetadata');
+		registeredModules = response.modules;
+	}
+	const filteredModule = registeredModules.map(module => module.id === moduleID);
 	return filteredModule.name;
 };
 
@@ -73,7 +84,7 @@ const getEvents = async (params) => {
 		params = remParams;
 		const [block] = await blocksDB.find({ id: blockID }, ['height']);
 		if ('height' in params && params.height !== block.height) {
-			throw new ValidationException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
 		}
 		params.height = block.height;
 	}
@@ -98,7 +109,10 @@ const getEvents = async (params) => {
 	const response = await eventTopicsDB.find(params, ['id']);
 
 	const eventIDs = response.map(entry => entry.id);
-	const eventsInfo = await eventsDB.find({ whereIn: { property: 'id', values: eventIDs } }, ['event', 'height']);
+	const eventsInfo = await eventsDB.find(
+		{ whereIn: { property: 'id', values: eventIDs } },
+		['event', 'height'],
+	);
 
 	events.data = await BluebirdPromise.map(
 		eventsInfo,
@@ -106,7 +120,10 @@ const getEvents = async (params) => {
 			const decodedEvent = await decodeEvent(eventInfo.event);
 			decodedEvent.moduleName = await getModuleNameByID(decodedEvent.moduleID);
 
-			const [blockInfo] = await blocksDB.find({ height: eventInfo.height }, ['id', 'timestamp']);
+			const [blockInfo] = await blocksDB.find(
+				{ height: eventInfo.height },
+				['id', 'timestamp'],
+			);
 
 			return {
 				...decodedEvent,

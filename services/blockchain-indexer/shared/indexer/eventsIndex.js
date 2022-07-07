@@ -14,17 +14,11 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { codec } = require('@liskhq/lisk-codec');
 const { hash } = require('@liskhq/lisk-cryptography');
 
+const { encodeEvent } = require('../utils/eventsUtils');
 const { requestConnector } = require('../utils/request');
 const { parseToJSONCompatObj } = require('../utils/parser');
-
-const encodeEvent = async (event) => {
-	const schemas = await requestConnector('getSchema');
-	const eventID = codec.encode(schemas.event, event);
-	return eventID;
-};
 
 const getEventsByHeight = async (height) => {
 	const events = await requestConnector('chain_getEvents', { height });
@@ -56,7 +50,8 @@ const getEventsInfoToIndex = async (blockHeader, events) => {
 
 			event.topics.forEach(topic => {
 				eventsInfoToIndex.eventTopicsInfo.push({
-					...eventInfo,
+					id,
+					height: blockHeader.height,
 					timestamp: blockHeader.timestamp,
 					topic,
 				});

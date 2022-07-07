@@ -63,11 +63,31 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
-const getBlocksIndex = () => getTableInstance('blocks', blocksIndexSchema, MYSQL_ENDPOINT);
-const getEventsIndex = () => getTableInstance('events', eventsIndexSchema, MYSQL_ENDPOINT);
-const getEventTopicsIndex = () => getTableInstance('events_topics', eventTopicsIndexSchema, MYSQL_ENDPOINT);
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getAccountsIndex = () => getTableInstance(
+	accountsIndexSchema.name,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getBlocksIndex = () => getTableInstance(
+	blocksIndexSchema.name,
+	blocksIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getEventsIndex = () => getTableInstance(
+	eventsIndexSchema.name,
+	eventsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getEventTopicsIndex = () => getTableInstance(
+	eventTopicsIndexSchema.name,
+	eventTopicsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getTransactionsIndex = () => getTableInstance(
+	transactionsIndexSchema.name,
+	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getGeneratorPkInfoArray = async (blocks) => {
 	const blocksDB = await getBlocksIndex();
