@@ -42,6 +42,12 @@ const decodeEvent = async (event) => {
     return eventID;
 };
 
+const getModuleNameByID = async (moduleID) => {
+    const response = await requestConnector('getSystemMetadata');
+    const module = response.modules.map(module => module.id === moduleID);
+    return module.name;
+};
+
 const getEvents = async (params) => {
     const blocksDB = await getBlocksIndex();
     const eventsDB = await getEventsIndex();
@@ -83,6 +89,7 @@ const getEvents = async (params) => {
         const [blockInfo] = await blocksDB.find({ height: acc.height }, ['id', 'timestamp']);
 
         const decodedEvent = await decodeEvent(eventInfo.event);
+        decodedEvent.moduleName =  await getModuleNameByID(decodedEvent.moduleID);
 
         return {
             ...decodedEvent,
