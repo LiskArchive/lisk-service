@@ -2,7 +2,7 @@
 
 The Lisk Service is a web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing market data, and interacting with social media.
 
-The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller components. The overall strategy is to provide one component for one specific purpose.
+The main focus of this project is to provide data to Lisk blockchain users by serving them in standardized JSON format and exposing a public RESTful API. The project is planned to split into several smaller microservices. The overall strategy is to provide one microservice for one specific purpose.
 
 As a pure backend project, it is designed to meet the requirements of frontend developers, especially Lisk Hub and Lisk Mobile.
 

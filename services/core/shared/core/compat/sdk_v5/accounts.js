@@ -639,6 +639,7 @@ const removeReclaimedLegacyAccountInfoFromCache = () => {
 			});
 		}
 	};
+	Signals.get('blockIndexed').add(removeReclaimedAccountFromCacheListener);
 	Signals.get('newBlock').add(removeReclaimedAccountFromCacheListener);
 };
 

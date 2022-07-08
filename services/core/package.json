@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-core",
-  "version": "0.6.3-alpha.1",
+  "version": "0.6.4",
   "description": "Lisk Service Core",
   "keywords": [
     "lisk",
@@ -43,9 +43,9 @@
     "debug": "=4.1.1",
     "ioredis": "^4.28.5",
     "knex": "^2.0.0",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/00bd8bb564ca275224b07fcb7707f0567df7ccf9/framework/dist/lisk-service-framework-1.4.0.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/f401073c992ec9c2eca045664082353857cceebd/framework/dist/lisk-service-framework-1.4.3.tgz",
     "method-override": "^3.0.0",
-    "moment": "^2.29.3",
+    "moment": "^2.29.4",
     "mysql2": "^2.3.3",
     "semver": "^7.3.5",
     "signals": "^1.0.0",

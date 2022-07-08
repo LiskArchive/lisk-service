@@ -231,6 +231,7 @@ const indexBlock = async job => {
 
 		if (blocks.length) await blocksDB.upsert(blocks, trx);
 		await commitDbTransaction(trx);
+		Signals.get('blockIndexed').dispatch({ data: blocks });
 		logger.debug(`Committed MySQL transaction to index block at height ${height}`);
 	} catch (error) {
 		await rollbackDbTransaction(trx);

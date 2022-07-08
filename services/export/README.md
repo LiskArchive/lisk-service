@@ -14,21 +14,21 @@ Clone the Lisk Service Repository:
 
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
-cd lisk-service/services/template # move into template component folder
+cd lisk-service/services/export # move into export microservice directory
 npm install # install required Node.js modules
 ```
 
 ## Configuration
 
-To configure the different components, there are a number of environment variables, the user can define in order to customize the configurations. The template service does not use any of them by default.
+To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations. The template service does not use any of them by default.
 
 ## Management
 
 ### Start
 
 ```bash
-cd lisk-service/services/export # move into root folder of the template component
-npm start # start the component
+cd lisk-service/services/export # move into root directory of the export microservice
+npm start # start the microservice
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test specific service endpoints.
