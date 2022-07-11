@@ -17,7 +17,7 @@ const logger = require('lisk-service-framework').Logger();
 
 const {
 	reloadBlockchainAppsStats,
-} = require('../../shared/dataService/business');
+} = require('../../shared/dataService');
 
 module.exports = [
 	{
