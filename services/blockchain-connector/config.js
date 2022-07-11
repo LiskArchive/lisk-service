@@ -53,6 +53,11 @@ config.networks = [
 		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
 		genesisBlockUrl: 'https://downloads.lisk.com/lisk/testnet/genesis_block.json.tar.gz',
 	},
+	{
+		name: 'betanet',
+		identifier: '15f0dacc1060e91818224a94286b13aa04279c640bd5d6f193182031d133df7c',
+		genesisBlockUrl: 'https://downloads.lisk.com/lisk/betanet/genesis_block.json.tar.gz',
+	},
 ];
 
 /**

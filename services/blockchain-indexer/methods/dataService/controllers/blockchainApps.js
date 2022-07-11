@@ -14,27 +14,30 @@
  *
  */
 // TODO: Enable when available from SDK
+// const { HTTP } = require('lisk-service-framework');
 // const dataService = require('../../../shared/dataService');
 
-const getBlockchainAppsStatistics = async () => {
-	// const result = await dataService.getBlockchainAppsStatistics();
+// const isMainchain = async () => {
+// 	// TODO: Implement logic
+// };
 
-	const result = {
-		data: {
-			registered: 2503,
-			active: 2328,
-			terminated: 35,
-			totalSupplyLSK: '5000000',
-			stakedLSK: '3000000',
-			inflationRate: '4.50',
-		},
-	};
-
-	return result;
-};
+// const resolveServiceURL = async () => {
+// 	// TODO: Implement logic
+// }
 
 const getBlockchainApps = async (params) => {
-	// const result = await dataService.getBlockchainApps(params);
+	// if (await isMainchain()) {
+	// 	const result = await dataService.getBlockchainApps(params);
+	// } else {
+	// 	// Redirect call to the mainchain service
+	// 	const serviceURL = await resolveServiceURL();
+	// 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`
+	// 	const response = HTTP.request(
+	// 		blockchainAppsEndpoint,
+	// 		params,
+	// 	)
+	// 	return response;
+	// }
 
 	const result = {
 		data: [{
@@ -55,7 +58,32 @@ const getBlockchainApps = async (params) => {
 	return result;
 };
 
+const getBlockchainAppsStatistics = async () => {
+	// if (await isMainchain()) {
+	// 	 const result = await dataService.getBlockchainAppsStatistics();
+	// } else {
+	// 	// Redirect call to the mainchain service
+	// 	const serviceURL = await resolveServiceURL();
+	// 	const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/statistics`
+	// 	const response = HTTP.get(blockchainAppsStatsEndpoint);
+	// 	return response;
+	// }
+
+	const result = {
+		data: {
+			registered: 2503,
+			active: 2328,
+			terminated: 35,
+			totalSupplyLSK: '5000000',
+			stakedLSK: '3000000',
+			inflationRate: '4.50',
+		},
+	};
+
+	return result;
+};
+
 module.exports = {
-	getBlockchainAppsStatistics,
 	getBlockchainApps,
+	getBlockchainAppsStatistics,
 };
