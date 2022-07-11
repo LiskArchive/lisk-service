@@ -93,7 +93,6 @@ const {
 const {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
 } = require('./interoperability');
 
 const { getEvents } = require('./events');
@@ -137,7 +136,6 @@ module.exports = {
 	getTotalNumberOfBlocks,
 	performLastBlockUpdate,
 	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
 	getBlockchainApps,
 	reloadDelegateCache,
 	getTotalNumberOfDelegates,

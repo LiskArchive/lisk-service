@@ -20,9 +20,6 @@ const getBlockchainAppsStatistics = async params => {
 	return response;
 };
 
-const reloadBlockchainAppsStats = async () => dataService.reloadBlockchainAppsStats();
-
 module.exports = {
 	getBlockchainAppsStatistics,
-	reloadBlockchainAppsStats,
 };
