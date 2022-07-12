@@ -53,19 +53,19 @@ const getBlockchainApps = async (params) => {
 
 	blockchainAppsInfo.data = await BluebirdPromise.map(
 		response,
-		async (entry) => {
-			if (!entry.isDefault) {
-				const isDefault = !!config.defaultApps.some(e => e.includes(entry.name));
+		async (appInfo) => {
+			if (!appInfo.isDefault) {
+				const isDefault = !!config.defaultApps.some(e => e.includes(appInfo.name));
 
 				const blockchainAppInfo = {
-					...entry,
+					...appInfo,
 					isDefault,
 				};
 
 				if (isDefault) await blockchainAppsDB.upsert(blockchainAppInfo);
 				return blockchainAppInfo;
 			}
-			return entry;
+			return appInfo;
 		},
 		{ concurrency: response.length },
 	);
