@@ -24,6 +24,7 @@ module.exports = {
 	tags: ['Blockchain Applications'],
 	params: {
 		chainID: { optional: true, type: 'string', min: 1, max: 32 },
+		isDefault: { optional: true, type: 'boolean', min: 1, pattern: regex.IS_DEFAULT },
 		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		state: { optional: true, type: 'string', enum: ['registered', 'active', 'terminated', 'any'], default: 'any' },
 		search: { optional: true, type: 'string' },

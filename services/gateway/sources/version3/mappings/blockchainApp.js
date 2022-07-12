@@ -18,6 +18,7 @@ module.exports = {
 	chainID: '=,string',
 	state: '=,string',
 	address: '=,string',
+	isDefault: '=,boolean',
 	lastCertificateHeight: '=,number',
 	lastUpdated: '=,number',
 };
