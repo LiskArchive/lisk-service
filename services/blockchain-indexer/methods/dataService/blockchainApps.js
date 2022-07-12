@@ -29,7 +29,7 @@ module.exports = [
 		name: 'blockchain.apps',
 		controller: getBlockchainApps,
 		params: {
-			chainID: { optional: true, type: 'number' },
+			chainID: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			state: { optional: true, type: 'string' },
 			isDefault: { optional: true, type: 'boolean' },

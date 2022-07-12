@@ -25,6 +25,7 @@ const NEWSFEED_SOURCE = /^\b(?:(?:drupal_lisk(?:_general|_announcements)|twitter
 const HASH_SHA256 = /^\b([A-Fa-f0-9]){1,64}\b$/;
 const CCM_STATUS = /^(?:\b(?:ok|module_not_supported|ccm_not_supported|channel_unavailable|recovered)\b|\b(?:ok|module_not_supported|ccm_not_supported|channel_unavailable|recovered|,){3,}\b){1}$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
+const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -39,4 +40,5 @@ module.exports = {
 	HEIGHT_RANGE,
 	CCM_STATUS,
 	INTERVAL,
+	CHAINID_RANGE,
 };

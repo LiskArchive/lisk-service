@@ -21,6 +21,7 @@ const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+const { normalizeRangeParam } = require('../../../utils/paramUtils');
 const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
 
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
@@ -33,6 +34,10 @@ const getBlockchainApps = async (params) => {
 		data: [],
 		meta: {},
 	};
+
+	if (params.chainID && params.chainID.includes(':')) {
+		params = normalizeRangeParam(params, 'chainID');
+	}
 
 	if (params.search) {
 		const { search, ...remParams } = params;
@@ -56,13 +61,12 @@ const getBlockchainApps = async (params) => {
 		async (appInfo) => {
 			if (!appInfo.isDefault) {
 				const isDefault = config.defaultApps.some(e => e === appInfo.name);
-
 				const blockchainAppInfo = {
 					...appInfo,
 					isDefault,
 				};
 
-				if (isDefault) await blockchainAppsDB.upsert(blockchainAppInfo);
+				if (isDefault) blockchainAppsDB.upsert(blockchainAppInfo);
 				return blockchainAppInfo;
 			}
 			return appInfo;
@@ -70,9 +74,9 @@ const getBlockchainApps = async (params) => {
 		{ concurrency: response.length },
 	);
 
-	blockchainAppsInfo.data = !params.isDefault
-		? blockchainAppsInfo.data.sort((a, b) => b.isDefault - a.isDefault)
-		: blockchainAppsInfo.data;
+	blockchainAppsInfo.data = 'isDefault' in params
+		? blockchainAppsInfo.data
+		: blockchainAppsInfo.data.sort((a, b) => b.isDefault - a.isDefault);
 
 	blockchainAppsInfo.meta = {
 		count: blockchainAppsInfo.data.length,
