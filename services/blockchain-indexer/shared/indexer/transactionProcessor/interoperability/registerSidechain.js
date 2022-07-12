@@ -50,7 +50,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 		name: tx.params.name,
 		chainID: '',
 		address: '', // TODO: Verify and update address
-		isDefault: !!config.defaultApps.some(e => e.includes(tx.params.name)),
+		isDefault: config.defaultApps.some(e => e === tx.params.name),
 		state: tx.status,
 	};
 	await blockchainAppsDB.upsert(appInfo, dbTrx);

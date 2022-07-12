@@ -55,7 +55,7 @@ const getBlockchainApps = async (params) => {
 		response,
 		async (appInfo) => {
 			if (!appInfo.isDefault) {
-				const isDefault = !!config.defaultApps.some(e => e.includes(appInfo.name));
+				const isDefault = config.defaultApps.some(e => e === appInfo.name);
 
 				const blockchainAppInfo = {
 					...appInfo,

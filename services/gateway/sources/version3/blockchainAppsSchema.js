@@ -19,7 +19,7 @@ module.exports = {
 	type: 'moleculer',
 	method: 'indexer.blockchain.apps',
 	params: {
-		chainID: '=,string',
+		chainID: '=,number',
 		isDefault: '=,boolean',
 		name: '=,string',
 		search: '=,string',
