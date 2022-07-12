@@ -40,14 +40,25 @@ const getBlockchainApps = async (params) => {
 	// }
 
 	const result = {
-		data: [{
-			name: 'Test app',
-			chainID: 'aq02qkbb35u4jdq8szo3pnsq',
-			state: 'active',
-			address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-			lastCertificateHeight: 1000,
-			lastUpdated: 123456789,
-		}],
+		data: [
+			{
+				name: 'Lisk',
+				chainID: 'qw02kibb35u4jloaoezo3mnch',
+				state: 'active',
+				address: 'lsk123bhithjdq8szo3poyqe5dsxwrnazyqnzqhsy',
+				isDefault: true,
+				lastCertificateHeight: 900,
+				lastUpdated: 123456789,
+			},
+			{
+				name: 'Test app',
+				chainID: 'aq02qkbb35u4jdq8szo3pnsq',
+				state: 'active',
+				address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+				isDefault: false,
+				lastCertificateHeight: 1000,
+				lastUpdated: 123456789,
+			}],
 		meta: {
 			count: 10,
 			offset: params.offset,
