@@ -66,27 +66,27 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const logger = Logger();
 
 const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.name,
+	accountsIndexSchema.tableName,
 	accountsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 const getBlocksIndex = () => getTableInstance(
-	blocksIndexSchema.name,
+	blocksIndexSchema.tableName,
 	blocksIndexSchema,
 	MYSQL_ENDPOINT,
 );
 const getEventsIndex = () => getTableInstance(
-	eventsIndexSchema.name,
+	eventsIndexSchema.tableName,
 	eventsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 const getEventTopicsIndex = () => getTableInstance(
-	eventTopicsIndexSchema.name,
+	eventTopicsIndexSchema.tableName,
 	eventTopicsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 const getTransactionsIndex = () => getTableInstance(
-	transactionsIndexSchema.name,
+	transactionsIndexSchema.tableName,
 	transactionsIndexSchema,
 	MYSQL_ENDPOINT,
 );
