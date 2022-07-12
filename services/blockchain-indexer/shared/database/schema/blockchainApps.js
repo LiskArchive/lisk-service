@@ -21,6 +21,7 @@ module.exports = {
 		name: { type: 'string' },
 		state: { type: 'string' },
 		address: { type: 'string' },
+		isDefault: { type: 'boolean', null: false, defaultValue: false },
 		lastUpdated: { type: 'string' },
 		lastCertificateHeight: { type: 'string' },
 	},
@@ -28,6 +29,7 @@ module.exports = {
 		chainID: { type: 'key' },
 		state: { type: 'key' },
 		name: { type: 'key' },
+		isDefault: { type: 'key' },
 	},
 	purge: {},
 };

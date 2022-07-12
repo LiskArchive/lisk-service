@@ -99,4 +99,9 @@ config.networks = [
 	},
 ];
 
+const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
+const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
+
+config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
+
 module.exports = config;

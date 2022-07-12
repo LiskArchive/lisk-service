@@ -15,9 +15,10 @@
  */
 module.exports = {
 	name: '=,string',
-	chainID: '=,string',
+	chainID: '=,number',
 	state: '=,string',
 	address: '=,string',
+	isDefault: '=,boolean',
 	lastCertificateHeight: '=,number',
 	lastUpdated: '=,number',
 };
