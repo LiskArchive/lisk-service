@@ -15,8 +15,8 @@
  */
 const { requestConnector } = require('../utils/request');
 
-const getEnabledModules = async () => requestConnector('getRegisteredModules');
+const getSystemMetadata = async () => requestConnector('getSystemMetadata');
 
 module.exports = {
-	getEnabledModules,
+	getSystemMetadata,
 };

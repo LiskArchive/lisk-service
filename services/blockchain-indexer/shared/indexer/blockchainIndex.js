@@ -33,7 +33,7 @@ const {
 	getBlockByHeight,
 	getTransactionsByBlockIDs,
 	getAccountsByPublicKey,
-	getEventsByHeight,
+	// getEventsByHeight,
 } = require('../dataService');
 
 const {
@@ -44,7 +44,7 @@ const {
 	range,
 } = require('../utils/arrayUtils');
 
-const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+// const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
 const {
 	getFinalizedHeight,
@@ -57,8 +57,8 @@ const config = require('../../config');
 
 const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
-const eventsIndexSchema = require('../database/schema/events');
-const eventTopicsIndexSchema = require('../database/schema/eventTopics');
+// const eventsIndexSchema = require('../database/schema/events');
+// const eventTopicsIndexSchema = require('../database/schema/eventTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -75,16 +75,16 @@ const getBlocksIndex = () => getTableInstance(
 	blocksIndexSchema,
 	MYSQL_ENDPOINT,
 );
-const getEventsIndex = () => getTableInstance(
-	eventsIndexSchema.tableName,
-	eventsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-const getEventTopicsIndex = () => getTableInstance(
-	eventTopicsIndexSchema.tableName,
-	eventTopicsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+// const getEventsIndex = () => getTableInstance(
+// 	eventsIndexSchema.tableName,
+// 	eventsIndexSchema,
+// 	MYSQL_ENDPOINT,
+// );
+// const getEventTopicsIndex = () => getTableInstance(
+// 	eventTopicsIndexSchema.tableName,
+// 	eventTopicsIndexSchema,
+// 	MYSQL_ENDPOINT,
+// );
 const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema.tableName,
 	transactionsIndexSchema,
@@ -116,7 +116,7 @@ const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const block = await getBlockByHeight(height);
-	const events = await getEventsByHeight(height);
+	// const events = await getEventsByHeight(height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
 
@@ -150,14 +150,15 @@ const indexBlock = async job => {
 			);
 		}
 
-		if (events.length) {
-			const eventsDB = await getEventsIndex();
-			const eventTopicsDB = await getEventTopicsIndex();
+		// TODO: Enable events indexing logic when chain_getEvents is available
+		// if (events.length) {
+		// 	const eventsDB = await getEventsIndex();
+		// 	const eventTopicsDB = await getEventTopicsIndex();
 
-			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
-			await eventsDB.upsert(eventsInfo, dbTrx);
-			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
-		}
+		// 	const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
+		// 	await eventsDB.upsert(eventsInfo, dbTrx);
+		// 	await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
+		// }
 
 		const blockToIndex = {
 			...block,
