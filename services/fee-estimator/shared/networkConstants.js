@@ -60,7 +60,9 @@ const resolveBaseFees = (networkConstants) => {
 const setNetworkFeeConstants = async () => {
 	if (!networkFees) {
 		const result = await requestConnector('getNetworkStatus');
-		networkFees = resolveBaseFees(result);
+		// Enable once network fee constants is available from SDK
+		// networkFees = resolveBaseFees(result);
+		networkFees = result.genesis.baseFees ? resolveBaseFees(result) : networkFeeConstants;
 	}
 };
 

@@ -19,8 +19,8 @@ const {
 	hash,
 	getFirstEightBytesReversed,
 	getAddressFromPublicKey,
-	getBase32AddressFromAddress,
-	getAddressFromBase32Address,
+	getLisk32AddressFromAddress,
+	getAddressFromLisk32Address,
 	getLegacyAddressFromPublicKey,
 } = require('@liskhq/lisk-cryptography');
 
@@ -81,12 +81,12 @@ const getHexAddressFromPublicKey = publicKey => {
 };
 
 const getBase32AddressFromHex = address => {
-	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
+	const base32Address = getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
 	return base32Address;
 };
 
 const getHexAddressFromBase32 = address => {
-	const binaryAddress = getAddressFromBase32Address(address).toString('hex');
+	const binaryAddress = getAddressFromLisk32Address(address).toString('hex');
 	return binaryAddress;
 };
 
