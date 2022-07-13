@@ -13,12 +13,15 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
+const BluebirdPromise = require('bluebird');
+
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 
 const config = require('../../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+const { normalizeRangeParam } = require('../../../utils/paramUtils');
 const blockchainAppsIndexSchema = require('../../../database/schema/blockchainApps');
 
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
@@ -32,6 +35,10 @@ const getBlockchainApps = async (params) => {
 		meta: {},
 	};
 
+	if (params.chainID && params.chainID.includes(':')) {
+		params = normalizeRangeParam(params, 'chainID');
+	}
+
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
@@ -44,10 +51,32 @@ const getBlockchainApps = async (params) => {
 
 	const total = await blockchainAppsDB.count(params);
 
-	blockchainAppsInfo.data = await blockchainAppsDB.find(
+	const response = await blockchainAppsDB.find(
 		{ ...params, limit: params.limit || total },
 		Object.getOwnPropertyNames(blockchainAppsIndexSchema.schema),
 	);
+
+	blockchainAppsInfo.data = await BluebirdPromise.map(
+		response,
+		async (appInfo) => {
+			if (!appInfo.isDefault) {
+				const isDefault = config.defaultApps.some(e => e === appInfo.name);
+				const blockchainAppInfo = {
+					...appInfo,
+					isDefault,
+				};
+
+				if (isDefault) blockchainAppsDB.upsert(blockchainAppInfo);
+				return blockchainAppInfo;
+			}
+			return appInfo;
+		},
+		{ concurrency: response.length },
+	);
+
+	blockchainAppsInfo.data = 'isDefault' in params
+		? blockchainAppsInfo.data
+		: blockchainAppsInfo.data.sort((a, b) => b.isDefault - a.isDefault);
 
 	blockchainAppsInfo.meta = {
 		count: blockchainAppsInfo.data.length,

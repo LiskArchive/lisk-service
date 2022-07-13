@@ -47,7 +47,6 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 	// TODO: Get more apps information directly from SDK once issue https://github.com/LiskHQ/lisk-sdk/issues/7225 is closed
 	const appInfo = {
-		name: '',
 		chainID: tx.sendingChainID,
 		state: tx.status, // TODO: Verify and update
 		address: '', // TODO: Verify and update address

@@ -61,6 +61,30 @@ describe('Blockchain apps API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
+	// TODO: Enable test case once blockchain app implementation is done
+	xit('retrieves list of all default blockchain applications', async () => {
+		const response = await api.get(`${endpoint}?isDefault=true`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		response.data.map(blockchainApp => expect(blockchainApp)
+			.toMap(blockchainAppSchema, { isDefault: true }));
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	// TODO: Enable test case once blockchain app implementation is done
+	xit('retrieves list of all non-default blockchain applications', async () => {
+		const response = await api.get(`${endpoint}?isDefault=false`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		response.data.map(blockchainApp => expect(blockchainApp)
+			.toMap(blockchainAppSchema, { isDefault: false }));
+		expect(response.meta).toMap(metaSchema);
+	});
+
 	// TODO: Update test case once implementation for indexing blockchain apps is done
 	xit('retrieves blockchain application by chainID', async () => {
 		const response = await api.get(`${endpoint}?chainID=`);

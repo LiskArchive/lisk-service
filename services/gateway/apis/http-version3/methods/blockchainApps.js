@@ -23,7 +23,8 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps',
 	tags: ['Blockchain Applications'],
 	params: {
-		chainID: { optional: true, type: 'string', min: 1, max: 32 },
+		chainID: { optional: true, type: 'string', min: 1, max: 21, pattern: regex.CHAINID_RANGE },
+		isDefault: { optional: true, type: 'boolean' },
 		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		state: { optional: true, type: 'string', enum: ['registered', 'active', 'terminated', 'any'], default: 'any' },
 		search: { optional: true, type: 'string' },

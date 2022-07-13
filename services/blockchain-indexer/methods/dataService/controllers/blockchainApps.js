@@ -14,10 +14,71 @@
  *
  */
 // TODO: Enable when available from SDK
+// const { HTTP } = require('lisk-service-framework');
 // const dataService = require('../../../shared/dataService');
 
+// const isMainchain = async () => {
+// 	// TODO: Implement logic
+// };
+
+// const resolveServiceURL = async () => {
+// 	// TODO: Implement logic
+// }
+
+const getBlockchainApps = async (params) => {
+	// if (await isMainchain()) {
+	// 	const result = await dataService.getBlockchainApps(params);
+	// } else {
+	// 	// Redirect call to the mainchain service
+	// 	const serviceURL = await resolveServiceURL();
+	// 	const blockchainAppsEndpoint = `${serviceURL}/api/v3/blockchain/apps`
+	// 	const response = HTTP.request(
+	// 		blockchainAppsEndpoint,
+	// 		params,
+	// 	)
+	// 	return response;
+	// }
+
+	const result = {
+		data: [
+			{
+				name: 'Lisk',
+				chainID: 1,
+				state: 'active',
+				address: 'lsk123bhithjdq8szo3poyqe5dsxwrnazyqnzqhsy',
+				isDefault: true,
+				lastCertificateHeight: 900,
+				lastUpdated: 123456789,
+			},
+			{
+				name: 'Test app',
+				chainID: 120,
+				state: 'active',
+				address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
+				isDefault: false,
+				lastCertificateHeight: 1000,
+				lastUpdated: 123456789,
+			}],
+		meta: {
+			count: 10,
+			offset: params.offset,
+			total: 150,
+		},
+	};
+
+	return result;
+};
+
 const getBlockchainAppsStatistics = async () => {
-	// const result = await dataService.getBlockchainAppsStatistics();
+	// if (await isMainchain()) {
+	// 	 const result = await dataService.getBlockchainAppsStatistics();
+	// } else {
+	// 	// Redirect call to the mainchain service
+	// 	const serviceURL = await resolveServiceURL();
+	// 	const blockchainAppsStatsEndpoint = `${serviceURL}/api/v3/blockchain/apps/statistics`
+	// 	const response = HTTP.get(blockchainAppsStatsEndpoint);
+	// 	return response;
+	// }
 
 	const result = {
 		data: {
@@ -33,29 +94,7 @@ const getBlockchainAppsStatistics = async () => {
 	return result;
 };
 
-const getBlockchainApps = async (params) => {
-	// const result = await dataService.getBlockchainApps(params);
-
-	const result = {
-		data: [{
-			name: 'Test app',
-			chainID: 'aq02qkbb35u4jdq8szo3pnsq',
-			state: 'active',
-			address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-			lastCertificateHeight: 1000,
-			lastUpdated: 123456789,
-		}],
-		meta: {
-			count: 10,
-			offset: params.offset,
-			total: 150,
-		},
-	};
-
-	return result;
-};
-
 module.exports = {
-	getBlockchainAppsStatistics,
 	getBlockchainApps,
+	getBlockchainAppsStatistics,
 };

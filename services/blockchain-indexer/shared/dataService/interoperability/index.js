@@ -14,9 +14,10 @@
  *
  */
 const { getBlockchainApps } = require('./blockchainApps');
-const { getBlockchainAppsStatistics } = require('./blockchainAppsStats');
+const { getBlockchainAppsStatistics, reloadBlockchainAppsStats } = require('./blockchainAppsStats');
 
 module.exports = {
 	getBlockchainApps,
 	getBlockchainAppsStatistics,
+	reloadBlockchainAppsStats,
 };
