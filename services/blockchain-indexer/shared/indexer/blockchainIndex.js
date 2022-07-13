@@ -27,18 +27,13 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { applyTransaction } = require('./transactionProcessor');
+const { applyTransaction, revertTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
 	getTransactionsByBlockIDs,
-	getAccountsByPublicKey,
 	// getEventsByHeight,
 } = require('../dataService');
-
-const {
-	getBase32AddressFromPublicKey,
-} = require('../utils/accountUtils');
 
 const {
 	range,
@@ -55,7 +50,6 @@ const {
 
 const config = require('../../config');
 
-const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
 // const eventsIndexSchema = require('../database/schema/events');
 // const eventTopicsIndexSchema = require('../database/schema/eventTopics');
@@ -65,11 +59,6 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.tableName,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
 const getBlocksIndex = () => getTableInstance(
 	blocksIndexSchema.tableName,
 	blocksIndexSchema,
@@ -91,24 +80,24 @@ const getTransactionsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const getGeneratorPkInfoArray = async (blocks) => {
-	const blocksDB = await getBlocksIndex();
-	const pkInfoArray = [];
-	await BluebirdPromise.map(
-		blocks,
-		async block => {
-			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-			pkInfoArray.push({
-				publicKey: block.generatorPublicKey,
-				reward: block.reward,
-				isForger: true,
-				isBlockIndexed: !!blockInfo,
-			});
-		},
-		{ concurrency: blocks.length },
-	);
-	return pkInfoArray;
-};
+// const getGeneratorPkInfoArray = async (blocks) => {
+// 	const blocksDB = await getBlocksIndex();
+// 	const pkInfoArray = [];
+// 	await BluebirdPromise.map(
+// 		blocks,
+// 		async block => {
+// 			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+// 			pkInfoArray.push({
+// 				publicKey: block.generatorPublicKey,
+// 				reward: block.reward,
+// 				isForger: true,
+// 				isBlockIndexed: !!blockInfo,
+// 			});
+// 		},
+// 		{ concurrency: blocks.length },
+// 	);
+// 	return pkInfoArray;
+// };
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -189,53 +178,45 @@ const updateBlockIndex = async job => {
 	await blocksDB.upsert(blocks);
 };
 
-const deleteIndexedBlocks = async job => {
-	const { blocks } = job.data;
-	const blockIDs = blocks.map(b => b.id).join(', ');
-
+const deleteIndexedBlock = async job => {
+	const { block } = job.data;
 	const blocksDB = await getBlocksIndex();
+	const blockFromCore = await getBlockByHeight(block.height);
 	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
-	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
+	const dbTrx = await startDbTransaction(connection);
+	logger.trace(`Created new MySQL transaction to delete block with ID: ${block.id}`);
 	try {
-		const accountsDB = await getAccountsIndex();
-		const transactionsDB = await getTransactionsIndex();
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
-		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
-		await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, trx);
-		// TODO: Invoke revertTransaction method
+		if (blockFromCore.transactions.length) {
+			const transactionsDB = await getTransactionsIndex();
+			const { transactions, assets, ...blockHeader } = blockFromCore;
 
-		// Update producedBlocks & rewards
-		await BluebirdPromise.map(
-			generatorPkInfoArray,
-			async pkInfoArray => {
-				await accountsDB.decrement({
-					decrement: {
-						rewards: BigInt(pkInfoArray.reward),
-						producedBlocks: 1,
-					},
-					where: {
-						property: 'address',
-						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-					},
-				}, trx);
-			});
-		await blocksDB.deleteByPrimaryKey(blocks.map(b => b.height), trx);
-		await commitDbTransaction(trx);
-		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
+			await BluebirdPromise.map(
+				transactions,
+				async (tx) => {
+					const forkedTransactionIDs = await getTransactionsByBlockIDs([block.id]);
+					await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+
+					// Invoke 'revertTransaction' to execute command specific reverting logic
+					await revertTransaction(blockHeader, tx, dbTrx);
+				},
+				{ concurrency: blockFromCore.transactions.length },
+			);
+		}
+
+		await blocksDB.deleteByPrimaryKey(block.id);
+		await commitDbTransaction(dbTrx);
+		logger.debug(`Committed MySQL transaction to delete block with ID: ${block.id}`);
 	} catch (error) {
-		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
-		await rollbackDbTransaction(trx);
+		logger.debug(`Rolled back MySQL transaction to delete block with ID: ${block.id}`);
+		await rollbackDbTransaction(dbTrx);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;
+			const errMessage = `Deadlock encountered while deleting block with ID: ${block.id}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
+		logger.warn(`Error occured while deleting block with ID: ${block.id}. Will retry later.`);
 		throw error;
 	}
 };
@@ -243,9 +224,9 @@ const deleteIndexedBlocks = async job => {
 // Initialize queues
 const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 30);
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
+const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlock, 1);
 
-const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
+const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ block });
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
