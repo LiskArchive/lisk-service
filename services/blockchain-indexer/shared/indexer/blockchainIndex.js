@@ -181,42 +181,41 @@ const updateBlockIndex = async job => {
 const deleteIndexedBlock = async job => {
 	const { block } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const blockFromCore = await getBlockByHeight(block.height);
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block with ID: ${block.id}`);
 	try {
-		if (blockFromCore.transactions.length) {
+		if (block.transactions.length) {
 			const transactionsDB = await getTransactionsIndex();
-			const { transactions, assets, ...blockHeader } = blockFromCore;
+			const { transactions, assets, ...blockHeader } = block;
 
 			await BluebirdPromise.map(
 				transactions,
 				async (tx) => {
-					const forkedTransactionIDs = await getTransactionsByBlockIDs([block.id]);
-					await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
-
 					// Invoke 'revertTransaction' to execute command specific reverting logic
 					await revertTransaction(blockHeader, tx, dbTrx);
+
+					const forkedTransactionIDs = await getTransactionsByBlockIDs([blockHeader.id]);
+					await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
 				},
-				{ concurrency: blockFromCore.transactions.length },
+				{ concurrency: block.transactions.length },
 			);
 		}
 
-		await blocksDB.deleteByPrimaryKey(block.id);
+		await blocksDB.deleteByPrimaryKey(block.blockHeader.id);
 		await commitDbTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to delete block with ID: ${block.id}`);
+		logger.debug(`Committed MySQL transaction to delete block with ID: ${block.blockHeader.id}`);
 	} catch (error) {
-		logger.debug(`Rolled back MySQL transaction to delete block with ID: ${block.id}`);
+		logger.debug(`Rolled back MySQL transaction to delete block with ID: ${block.blockHeader.id}`);
 		await rollbackDbTransaction(dbTrx);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			const errMessage = `Deadlock encountered while deleting block with ID: ${block.id}. Will retry later.`;
+			const errMessage = `Deadlock encountered while deleting block with ID: ${block.blockHeader.id}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while deleting block with ID: ${block.id}. Will retry later.`);
+		logger.warn(`Error occured while deleting block with ID: ${block.blockHeader.id}. Will retry later.`);
 		throw error;
 	}
 };
