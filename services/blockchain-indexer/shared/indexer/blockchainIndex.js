@@ -178,44 +178,50 @@ const updateBlockIndex = async job => {
 	await blocksDB.upsert(blocks);
 };
 
-const deleteIndexedBlock = async job => {
-	const { block } = job.data;
+const deleteIndexedBlocks = async job => {
+	const { blocks } = job.data;
+	const blockIDs = blocks.map(b => b.id).join(', ');
+
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
 	const dbTrx = await startDbTransaction(connection);
-	logger.trace(`Created new MySQL transaction to delete block with ID: ${block.id}`);
+	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	try {
-		if (block.transactions.length) {
-			const transactionsDB = await getTransactionsIndex();
-			const { transactions, assets, ...blockHeader } = block;
+		await BluebirdPromise.map(
+			blocks,
+			async block => {
+				if (block.transactions.length) {
+					const transactionsDB = await getTransactionsIndex();
+					const { transactions, assets, ...blockHeader } = block;
 
-			await BluebirdPromise.map(
-				transactions,
-				async (tx) => {
-					// Invoke 'revertTransaction' to execute command specific reverting logic
-					await revertTransaction(blockHeader, tx, dbTrx);
+					await BluebirdPromise.map(
+						transactions,
+						async (tx) => {
+							// Invoke 'revertTransaction' to execute command specific reverting logic
+							await revertTransaction(blockHeader, tx, dbTrx);
 
-					const forkedTransactionIDs = await getTransactionsByBlockIDs([blockHeader.id]);
-					await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
-				},
-				{ concurrency: block.transactions.length },
-			);
-		}
+							const forkedTransactionIDs = await getTransactionsByBlockIDs([blockHeader.id]);
+							await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+						},
+						{ concurrency: block.transactions.length },
+					);
+				}
+			});
 
-		await blocksDB.deleteByPrimaryKey(block.blockHeader.id);
+		await blocksDB.deleteByPrimaryKey(blockIDs);
 		await commitDbTransaction(dbTrx);
-		logger.debug(`Committed MySQL transaction to delete block with ID: ${block.blockHeader.id}`);
+		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	} catch (error) {
-		logger.debug(`Rolled back MySQL transaction to delete block with ID: ${block.blockHeader.id}`);
+		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 		await rollbackDbTransaction(dbTrx);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
-			const errMessage = `Deadlock encountered while deleting block with ID: ${block.blockHeader.id}. Will retry later.`;
+			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;
 			logger.warn(errMessage);
 			throw new Error(errMessage);
 		}
 
-		logger.warn(`Error occured while deleting block with ID: ${block.blockHeader.id}. Will retry later.`);
+		logger.warn(`Error occured while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`);
 		throw error;
 	}
 };
@@ -223,9 +229,9 @@ const deleteIndexedBlock = async job => {
 // Initialize queues
 const indexBlocksQueue = Queue(config.endpoints.cache, 'indexBlocksQueue', indexBlock, 30);
 const updateBlockIndexQueue = Queue(config.endpoints.cache, 'updateBlockIndexQueue', updateBlockIndex, 1);
-const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlock, 1);
+const deleteIndexedBlocksQueue = Queue(config.endpoints.cache, 'deleteIndexedBlocksQueue', deleteIndexedBlocks, 1);
 
-const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ block });
+const deleteBlock = async (block) => deleteIndexedBlocksQueue.add({ blocks: [block] });
 
 const indexNewBlock = async height => {
 	const blocksDB = await getBlocksIndex();
