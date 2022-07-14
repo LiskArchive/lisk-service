@@ -30,8 +30,15 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	await reloadDelegateCache();
 };
 
+// eslint-disable-next-line no-unused-vars
+const revertTransaction = async (blockHeader, tx, dbTrx) => {
+	logger.debug('Reloading delegates cache on reversal of reportDelegateMisbehavior transaction');
+	await reloadDelegateCache();
+};
+
 module.exports = {
 	commandID,
 	commandName,
 	applyTransaction,
+	revertTransaction,
 };

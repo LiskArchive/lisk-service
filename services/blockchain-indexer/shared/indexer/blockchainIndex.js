@@ -27,24 +27,19 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { applyTransaction } = require('./transactionProcessor');
+const { applyTransaction, revertTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
 	getTransactionsByBlockIDs,
-	getAccountsByPublicKey,
-	getEventsByHeight,
+	// getEventsByHeight,
 } = require('../dataService');
-
-const {
-	getBase32AddressFromPublicKey,
-} = require('../utils/accountUtils');
 
 const {
 	range,
 } = require('../utils/arrayUtils');
 
-const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+// const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
 const {
 	getFinalizedHeight,
@@ -55,60 +50,54 @@ const {
 
 const config = require('../../config');
 
-const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
-const eventsIndexSchema = require('../database/schema/events');
-const eventTopicsIndexSchema = require('../database/schema/eventTopics');
+// const eventsIndexSchema = require('../database/schema/events');
+// const eventTopicsIndexSchema = require('../database/schema/eventTopics');
 const transactionsIndexSchema = require('../database/schema/transactions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
 
-const getAccountsIndex = () => getTableInstance(
-	accountsIndexSchema.name,
-	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
 const getBlocksIndex = () => getTableInstance(
-	blocksIndexSchema.name,
+	blocksIndexSchema.tableName,
 	blocksIndexSchema,
 	MYSQL_ENDPOINT,
 );
-const getEventsIndex = () => getTableInstance(
-	eventsIndexSchema.name,
-	eventsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-const getEventTopicsIndex = () => getTableInstance(
-	eventTopicsIndexSchema.name,
-	eventTopicsIndexSchema,
-	MYSQL_ENDPOINT,
-);
+// const getEventsIndex = () => getTableInstance(
+// 	eventsIndexSchema.tableName,
+// 	eventsIndexSchema,
+// 	MYSQL_ENDPOINT,
+// );
+// const getEventTopicsIndex = () => getTableInstance(
+// 	eventTopicsIndexSchema.tableName,
+// 	eventTopicsIndexSchema,
+// 	MYSQL_ENDPOINT,
+// );
 const getTransactionsIndex = () => getTableInstance(
-	transactionsIndexSchema.name,
+	transactionsIndexSchema.tableName,
 	transactionsIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
-const getGeneratorPkInfoArray = async (blocks) => {
-	const blocksDB = await getBlocksIndex();
-	const pkInfoArray = [];
-	await BluebirdPromise.map(
-		blocks,
-		async block => {
-			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-			pkInfoArray.push({
-				publicKey: block.generatorPublicKey,
-				reward: block.reward,
-				isForger: true,
-				isBlockIndexed: !!blockInfo,
-			});
-		},
-		{ concurrency: blocks.length },
-	);
-	return pkInfoArray;
-};
+// const getGeneratorPkInfoArray = async (blocks) => {
+// 	const blocksDB = await getBlocksIndex();
+// 	const pkInfoArray = [];
+// 	await BluebirdPromise.map(
+// 		blocks,
+// 		async block => {
+// 			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
+// 			pkInfoArray.push({
+// 				publicKey: block.generatorPublicKey,
+// 				reward: block.reward,
+// 				isForger: true,
+// 				isBlockIndexed: !!blockInfo,
+// 			});
+// 		},
+// 		{ concurrency: blocks.length },
+// 	);
+// 	return pkInfoArray;
+// };
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -116,7 +105,7 @@ const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const block = await getBlockByHeight(height);
-	const events = await getEventsByHeight(height);
+	// const events = await getEventsByHeight(height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
 
@@ -150,14 +139,15 @@ const indexBlock = async job => {
 			);
 		}
 
-		if (events.length) {
-			const eventsDB = await getEventsIndex();
-			const eventTopicsDB = await getEventTopicsIndex();
+		// TODO: Enable events indexing logic when chain_getEvents is available
+		// if (events.length) {
+		// 	const eventsDB = await getEventsIndex();
+		// 	const eventTopicsDB = await getEventTopicsIndex();
 
-			const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
-			await eventsDB.upsert(eventsInfo, dbTrx);
-			await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
-		}
+		// 	const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
+		// 	await eventsDB.upsert(eventsInfo, dbTrx);
+		// 	await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
+		// }
 
 		const blockToIndex = {
 			...block,
@@ -194,39 +184,36 @@ const deleteIndexedBlocks = async job => {
 
 	const blocksDB = await getBlocksIndex();
 	const connection = await getDbConnection();
-	const trx = await startDbTransaction(connection);
+	const dbTrx = await startDbTransaction(connection);
 	logger.trace(`Created new MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	try {
-		const accountsDB = await getAccountsIndex();
-		const transactionsDB = await getTransactionsIndex();
-		const generatorPkInfoArray = await getGeneratorPkInfoArray(blocks);
-		const accountsByPublicKey = await getAccountsByPublicKey(generatorPkInfoArray);
-		if (accountsByPublicKey.length) await accountsDB.upsert(accountsByPublicKey, trx);
-		const forkedTransactionIDs = await getTransactionsByBlockIDs(blocks.map(b => b.id));
-		await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, trx);
-		// TODO: Invoke revertTransaction method
-
-		// Update producedBlocks & rewards
 		await BluebirdPromise.map(
-			generatorPkInfoArray,
-			async pkInfoArray => {
-				await accountsDB.decrement({
-					decrement: {
-						rewards: BigInt(pkInfoArray.reward),
-						producedBlocks: 1,
-					},
-					where: {
-						property: 'address',
-						value: getBase32AddressFromPublicKey(pkInfoArray.publicKey),
-					},
-				}, trx);
+			blocks,
+			async block => {
+				if (block.transactions.length) {
+					const transactionsDB = await getTransactionsIndex();
+					const { transactions, assets, ...blockHeader } = block;
+
+					await BluebirdPromise.map(
+						transactions,
+						async (tx) => {
+							// Invoke 'revertTransaction' to execute command specific reverting logic
+							await revertTransaction(blockHeader, tx, dbTrx);
+
+							const forkedTransactionIDs = await getTransactionsByBlockIDs([blockHeader.id]);
+							await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+						},
+						{ concurrency: block.transactions.length },
+					);
+				}
 			});
-		await blocksDB.deleteByPrimaryKey(blocks.map(b => b.height), trx);
-		await commitDbTransaction(trx);
+
+		await blocksDB.deleteByPrimaryKey(blockIDs);
+		await commitDbTransaction(dbTrx);
 		logger.debug(`Committed MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
 	} catch (error) {
 		logger.debug(`Rolled back MySQL transaction to delete block(s) with ID(s): ${blockIDs}`);
-		await rollbackDbTransaction(trx);
+		await rollbackDbTransaction(dbTrx);
 
 		if (error.message.includes('ER_LOCK_DEADLOCK')) {
 			const errMessage = `Deadlock encountered while deleting block(s) with ID(s): ${blockIDs}. Will retry later.`;

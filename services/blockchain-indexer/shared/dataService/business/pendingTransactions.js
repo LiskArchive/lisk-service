@@ -29,7 +29,7 @@ let pendingTransactionsList = [];
 
 const getPendingTransactionsFromCore = async () => {
 	const response = await requestConnector('getTransactionsFromPool');
-	let pendingTx = await normalizeTransaction(response);
+	let pendingTx = response.length ? await normalizeTransaction(response) : [];
 	pendingTx = await BluebirdPromise.map(
 		pendingTx,
 		async transaction => {
