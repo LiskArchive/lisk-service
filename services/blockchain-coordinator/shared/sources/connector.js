@@ -15,8 +15,11 @@
  */
 const { requestConnector } = require('../utils/request');
 
-const getSystemMetadata = async () => requestConnector('getSystemMetadata');
+const getRegisteredModules = async () => {
+	const systemMetada = await requestConnector('getSystemMetadata');
+	return systemMetada.modules;
+};
 
 module.exports = {
-	getSystemMetadata,
+	getRegisteredModules,
 };

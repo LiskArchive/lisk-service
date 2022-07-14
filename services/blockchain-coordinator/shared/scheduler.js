@@ -34,7 +34,7 @@ const {
 } = require('./sources/indexer');
 
 const {
-	getSystemMetadata,
+	getRegisteredModules,
 } = require('./sources/connector');
 
 const config = require('../config');
@@ -52,7 +52,6 @@ const blockIndexQueue = new MessageQueue(
 // );
 
 let registeredLiskModules;
-const setRegisteredModules = modules => registeredLiskModules = modules;
 const getRegisteredModuleAssets = () => registeredLiskModules;
 
 const scheduleGenesisBlockIndexing = async () => {
@@ -94,7 +93,7 @@ const initIndexingScheduler = async () => {
 	Signals.get('newBlock').add(newBlockListener);
 
 	// Retrieve enabled modules from connector
-	setRegisteredModules((await getSystemMetadata()).modules);
+	registeredLiskModules = await getRegisteredModules();
 
 	// Get all delegates and schedule indexing
 	// const delegates = await getDelegateAccounts();
