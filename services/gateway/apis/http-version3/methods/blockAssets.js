@@ -15,6 +15,7 @@
  */
 const blockAssetsSource = require('../../../sources/version3/blockAssets');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -34,6 +35,27 @@ module.exports = {
 			enum: ['height:asc', 'height:desc', 'timestamp:asc', 'timestamp:desc'],
 			default: 'height:desc',
 		},
+	},
+	get schema() {
+		const blockAssetSchema = {};
+		blockAssetSchema[this.swaggerApiPath] = { get: {} };
+		blockAssetSchema[this.swaggerApiPath].get.tags = this.tags;
+		blockAssetSchema[this.swaggerApiPath].get.summary = 'Requests blocks assets data';
+		blockAssetSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns blocks assets data',
+		});
+		blockAssetSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
+		blockAssetSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Array of blocks assets',
+				schema: {
+					$ref: '#/definitions/BlocksAssetsWithEnvelope',
+				},
+			},
+		};
+		Object.assign(blockAssetSchema[this.swaggerApiPath].get.responses, response);
+		return blockAssetSchema;
 	},
 	source: blockAssetsSource,
 	envelope,
