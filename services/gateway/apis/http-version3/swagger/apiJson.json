@@ -16,8 +16,8 @@
         "basePath": "/api/v3",
         "tags": [
             {
-                "name": "Transaction Export",
-                "description": "Lisk Network transaction history export API"
+                "name": "Blocks",
+                "description": "Lisk Network block API calls"
             }
         ],
         "schemes": [
