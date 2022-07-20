@@ -1,0 +1,29 @@
+{
+    "blockID": {
+        "name": "blockID",
+        "in": "query",
+        "description": "Block id to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 20
+    },
+    "generatorAddress": {
+        "name": "generatorAddress",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "format": "address",
+        "minLength": 1,
+        "maxLength": 22
+    },
+    "moduleID": {
+        "name": "moduleID",
+        "in": "query",
+        "description": "Module id to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 4294967295
+    }
+}

@@ -1,0 +1,124 @@
+{
+    "BlockchainApp": {
+        "type": "object",
+        "required": [
+            "name",
+            "chainID",
+            "state",
+            "address",
+            "isDefault"
+        ],
+        "properties": {
+            "name": {
+                "type": "string",
+                "example": "Lisk",
+                "description": "Name of blockchain application"
+            },
+            "chainID": {
+                "type": "integer",
+                "format": "id",
+                "minLength": 1,
+                "example": 1,
+                "description": "chain ID of blockchain application"
+            },
+            "state": {
+                "type": "string",
+                "example": "active",
+                "description": "Current state of the application"
+            },
+            "address": {
+                "type": "string",
+                "format": "address",
+                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+            },
+            "isDefault": {
+                "type": "boolean",
+                "example": "true"
+            },
+            "lastCertificateHeight": {
+                "type": "integer",
+                "example": 160,
+                "minimum": 1,
+                "description": "Last certiticate Height"
+            },
+            "lastUpdated": {
+                "type": "string",
+                "example": "1616008148",
+                "description": "timestamp"
+            }
+        }
+    },
+    "BlockchainAppsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of blockchain applications",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/BlockchainApp"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
+    },
+    "blockchainAppsStatsEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "description": "Blockchain applications statistics",
+                "type": "object",
+                "properties": {
+                    "registered": {
+                        "type": "integer",
+                        "example": 2503,
+                        "description": "List of registered blockchain applications"
+                    },
+                    "active": {
+                        "type": "integer",
+                        "example": 2328,
+                        "description": "List of active blockchain applications"
+                    },
+                    "terminated": {
+                        "type": "integer",
+                        "example": 35,
+                        "description": "List of terminated blockchain applications"
+                    },
+                    "totalSupplyLSK": {
+                        "type": "string",
+                        "example": "5000000"
+                    },
+                    "stakedLSK": {
+                        "type": "string",
+                        "example": "3000000"
+                    },
+                    "inflationRate": {
+                        "type": "string",
+                        "example": "4.50"
+                    }
+                }
+            },
+            "meta": {
+                "type": "object"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
+    }
+}

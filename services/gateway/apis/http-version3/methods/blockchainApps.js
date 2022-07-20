@@ -16,6 +16,7 @@
 const blockchainAppsSchemaSource = require('../../../sources/version3/blockchainAppsSchema');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -30,6 +31,27 @@ module.exports = {
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
+	},
+	get schema() {
+		const blockchainAppsSchema = {};
+		blockchainAppsSchema[this.swaggerApiPath] = { get: {} };
+		blockchainAppsSchema[this.swaggerApiPath].get.tags = this.tags;
+		blockchainAppsSchema[this.swaggerApiPath].get.summary = 'Requests list of blockchain applications';
+		blockchainAppsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns blockchain applications',
+		});
+		blockchainAppsSchema[this.swaggerApiPath].get.parameters = transformParams('blockchain apps', this.params);
+		blockchainAppsSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'List of blockchain applications',
+				schema: {
+					$ref: '#/definitions/BlockchainAppsWithEnvelope',
+				},
+			},
+		};
+		Object.assign(blockchainAppsSchema[this.swaggerApiPath].get.responses, response);
+		return blockchainAppsSchema;
 	},
 	source: blockchainAppsSchemaSource,
 	envelope,

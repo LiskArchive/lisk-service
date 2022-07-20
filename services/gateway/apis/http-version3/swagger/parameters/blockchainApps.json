@@ -1,0 +1,33 @@
+{
+    "name": {
+        "name": "name",
+        "in": "query",
+        "description": "Blockchain application name",
+        "type": "string",
+        "format": "name",
+        "minLength": 1,
+        "maxLength": 20
+    },
+    "chainID": {
+        "name": "chainID",
+        "in": "query",
+        "description": "chain id to query",
+        "type": "integer",
+        "format": "id",
+        "minLength": 1
+    },
+    "state": {
+        "name": "state",
+        "in": "query",
+        "description": "State of Blockchain application",
+        "type": "string",
+        "minLength": 1
+    },
+    "isDefault": {
+        "name": "isDefault",
+        "in": "query",
+        "description": "Filter default blockchain application",
+        "type": "string",
+        "minLength": 1
+    }
+}
