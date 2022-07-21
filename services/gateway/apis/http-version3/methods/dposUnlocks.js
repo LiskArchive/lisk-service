@@ -16,6 +16,7 @@
 const dposUnlocksSource = require('../../../sources/version3/dposUnlocks');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -36,5 +37,26 @@ module.exports = {
 		['name'],
 		['publicKey'],
 	],
+	get schema() {
+		const unlocksSchema = {};
+		unlocksSchema[this.swaggerApiPath] = { get: {} };
+		unlocksSchema[this.swaggerApiPath].get.tags = this.tags;
+		unlocksSchema[this.swaggerApiPath].get.summary = 'Requests delegate unlocks';
+		unlocksSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns delegate unlocks',
+		});
+		unlocksSchema[this.swaggerApiPath].get.parameters = transformParams('DPoS', this.params);
+		unlocksSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Array of delegate unlocks',
+				schema: {
+					$ref: '#/definitions/unlocksWithEnvelope',
+				},
+			},
+		};
+		Object.assign(unlocksSchema[this.swaggerApiPath].get.responses, response);
+		return unlocksSchema;
+	},
 	source: dposUnlocksSource,
 };
