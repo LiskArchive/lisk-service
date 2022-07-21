@@ -1,0 +1,16 @@
+{
+    "moduleCommandID": {
+        "name": "moduleCommandID",
+        "in": "query",
+        "description": "Combination of module:command ID",
+        "type": "string",
+        "minLength": 1
+    },
+    "moduleCommandName": {
+        "name": "moduleCommandName",
+        "in": "query",
+        "description": "Combination of module:command Name",
+        "type": "string",
+        "minLength": 1
+    }
+}

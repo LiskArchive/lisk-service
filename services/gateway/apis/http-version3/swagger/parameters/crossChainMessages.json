@@ -1,0 +1,63 @@
+{
+    "id": {
+        "name": "id",
+        "in": "query",
+        "description": "CCM ID to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 64
+    },
+    "transactionID": {
+        "name": "transactionID",
+        "in": "query",
+        "description": "Transaction ID to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 64
+    },
+    "moduleCrossChainCommandID": {
+        "name": "moduleCrossChainCommandID",
+        "in": "query",
+        "description": "Combination of module:command ID",
+        "type": "string",
+        "minLength": 1
+    },
+    "moduleCrossChainCommandName": {
+        "name": "moduleCrossChainCommandName",
+        "in": "query",
+        "description": "Combination of module:command Name",
+        "type": "string",
+        "minLength": 1
+    },
+    "senderAddress": {
+        "name": "senderAddress",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "minLength": 1
+    },
+    "amount": {
+        "name": "amount",
+        "in": "query",
+        "description": "Amount range of from:to amount",
+        "type": "string",
+        "minimum": 0
+    },
+    "status": {
+        "name": "status",
+        "in": "query",
+        "description": "Status of CCM",
+        "type": "string",
+        "minLength": 1,
+        "default": false
+    },
+    "nonce": {
+        "name": "nonce",
+        "in": "query",
+        "description": "Query by nonce",
+        "type": "string",
+        "minLength": 1
+    }
+}
