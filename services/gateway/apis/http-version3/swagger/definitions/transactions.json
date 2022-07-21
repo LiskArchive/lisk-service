@@ -1,0 +1,74 @@
+{
+    "TransactionsStatisticsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "$ref": "#/definitions/TransactionsStatistics"
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
+    },
+    "TransactionsStatistics": {
+        "type": "object",
+        "description": "Transactions statistics",
+        "required": [
+            "timeline",
+            "distributionByType",
+            "distributionByAmount"
+        ],
+        "properties": {
+            "timeline": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "required": [
+                        "timestamp",
+                        "date",
+                        "transactionCount",
+                        "volume"
+                    ],
+                    "properties": {
+                        "timestamp": {
+                            "type": "integer",
+                            "description": "UNIX timestamp representing the beginning of the aggregation interval",
+                            "example": 1556100060
+                        },
+                        "date": {
+                            "type": "string",
+                            "description": "Date representing the beginning of the aggregation interval",
+                            "example": "2019-11-27"
+                        },
+                        "transactionCount": {
+                            "type": "integer",
+                            "description": "Count of all transactions in the given time span",
+                            "example": "14447177193385"
+                        },
+                        "volume": {
+                            "type": "string",
+                            "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows unit)",
+                            "example": "14447177193385"
+                        }
+                    }
+                }
+            },
+            "distributionByType": {
+                "type": "object",
+                "description": "Count of transactions by transaction type in the whole time interval"
+            },
+            "distributionByAmount": {
+                "type": "object",
+                "description": "Count of transactions by amount range in the whole time interval"
+            }
+        }
+    }
+}

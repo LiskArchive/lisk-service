@@ -15,6 +15,7 @@
  */
 const transactionsStatisticsSource = require('../../../sources/version3/transactionsStatistics');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -25,6 +26,27 @@ module.exports = {
 		interval: { optional: false, type: 'string', enum: ['day', 'month'] },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
 		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+	},
+	get schema() {
+		const transactionSchema = {};
+		transactionSchema[this.swaggerApiPath] = { get: {} };
+		transactionSchema[this.swaggerApiPath].get.tags = this.tags;
+		transactionSchema[this.swaggerApiPath].get.summary = 'Requests transaction statistics';
+		transactionSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns transaction statistics',
+		});
+		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		transactionSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'array of transactions statistics',
+				schema: {
+					$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
+				},
+			},
+		};
+		Object.assign(transactionSchema[this.swaggerApiPath].get.responses, response);
+		return transactionSchema;
 	},
 	source: transactionsStatisticsSource,
 	envelope,

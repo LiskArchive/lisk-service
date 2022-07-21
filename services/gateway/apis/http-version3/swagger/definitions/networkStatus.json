@@ -1,0 +1,174 @@
+{
+    "NetworkStatus": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "type": "object",
+                "description": "Number of items returned in the request.",
+                "properties": {
+                    "version": {
+                        "type": "string",
+                        "format": "App versiopn",
+                        "example": "4.0.0",
+                        "description": "Current application version"
+                    },
+                    "networkVersion": {
+                        "type": "string",
+                        "format": "networkVersion",
+                        "example": "3.0",
+                        "description": "Current network version"
+                    },
+                    "networkIdentifier": {
+                        "type": "string",
+                        "format": "networkIdentifier",
+                        "example": "4c09e6a781fc4c7bdb936ee815de8f94190f8a7519becd9de2081832be309a99",
+                        "description": "Network identifier"
+                    },
+                    "lastBlockID": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+                        "description": "Last blockID"
+                    },
+                    "height": {
+                        "type": "integer",
+                        "example": 16550779,
+                        "minimum": 0,
+                        "description": "Current block height"
+                    },
+                    "finalizedHeight": {
+                        "type": "integer",
+                        "example": 16550609,
+                        "minimum": 0,
+                        "description": "Last finalized block height"
+                    },
+                    "syncing": {
+                        "type": "boolean",
+                        "example": "true"
+                    },
+                    "unconfirmedTransactions": {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "Unconfirmed transactions count"
+                    },
+                    "genesis": {
+                        "type": "object",
+                        "properties": {
+                            "blockTime": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "communityIdentifier": {
+                                "type": "string",
+                                "example": "Lisk"
+                            },
+                            "minFeePerByte": {
+                                "type": "integer",
+                                "example": 1000
+                            },
+                            "maxTransactionsSize": {
+                                "type": "integer",
+                                "example": 15360
+                            },
+                            "bftBatchSize": {
+                                "type": "integer",
+                                "example": 10
+                            }
+                        }
+                    },
+                    "registeredModules": {
+                        "type": "array",
+                        "items": {
+                            "example": [
+                                "token",
+                                "reward",
+                                "validators",
+                                "auth",
+                                "dpos",
+                                "fee",
+                                "random",
+                                "legacy"
+                            ]
+                        },
+                        "description": "Array of all the current registered modules"
+                    },
+                    "moduleCommands": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "string",
+                                    "example": "2:0"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "token:transfer"
+                                }
+                            }
+                        },
+                        "description": "Array of all current supported transaction types"
+                    },
+                    "network": {
+                        "type": "object",
+                        "properties": {
+                            "port": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "hostIp": {
+                                "type": "string",
+                                "example": "Lisk"
+                            },
+                            "seedPeers": {
+                                "type": "integer",
+                                "example": 1000
+                            },
+                            "blacklistedIPs": {
+                                "type": "integer",
+                                "example": 15360
+                            },
+                            "fixedPeers": {
+                                "type": "integer",
+                                "example": 10
+                            },
+                            "whitelistedPeers": {
+                                
+                            }
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "required": [
+                    "lastUpdate",
+                    "lastBlockHeight",
+                    "lastBlockId"
+                ],
+                "properties": {
+                    "lastUpdate": {
+                        "type": "string",
+                        "example": "1632471013",
+                        "description": "Current timestamp"
+                    },
+                    "lastBlockHeight": {
+                        "type": "integer",
+                        "example": 16550779,
+                        "description": "Height of the current block"
+                    },
+                    "lastBlockId": {
+                        "type": "string",
+                        "example": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f",
+                        "description": "ID of the current block"
+                    }
+                }
+            }
+        }
+    }
+}

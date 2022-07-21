@@ -1,0 +1,71 @@
+{
+    "NetworkStatistics": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "type": "object",
+                "description": "Number of items returned in the request.",
+                "properties": {
+                    "basic": {
+                        "type": "object",
+                        "description": "Total number of items in the database.",
+                        "properties": {
+                            "connectedPeers": {
+                                "type": "integer",
+                                "description": "Number of connected peers",
+                                "example": 134
+                            },
+                            "disconnectedPeers": {
+                                "type": "integer",
+                                "description": "Number of disconnected peers",
+                                "example": 48
+                            },
+                            "totalPeers": {
+                                "type": "integer",
+                                "description": "Total number of peers",
+                                "example": 181
+                            }
+                        }
+                    },
+                    "height": {
+                        "type": "object",
+                        "description": "Number of nodes on the given height.",
+                        "properties": {
+                            "7982598": {
+                                "type": "integer",
+                                "example": 24
+                            }
+                        }
+                    },
+                    "networkVersion": {
+                        "type": "object",
+                        "description": "Number of nodes on the given Lisk Core versions.",
+                        "properties": {
+                            "2.0": {
+                                "type": "integer",
+                                "example": 12
+                            },
+                            "2.1": {
+                                "type": "integer",
+                                "example": 41
+                            }
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "description": "Defines how many items are skipped."
+            },
+            "links": {
+                "type": "object",
+                "description": "Total number of items in the database."
+            }
+        }
+    }
+}
