@@ -15,6 +15,7 @@
  */
 const authSource = require('../../../sources/version3/auth');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -23,6 +24,27 @@ module.exports = {
 	tags: ['Auth'],
 	params: {
 		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
+	},
+	get schema() {
+		const authSchema = {};
+		authSchema[this.swaggerApiPath] = { get: {} };
+		authSchema[this.swaggerApiPath].get.tags = this.tags;
+		authSchema[this.swaggerApiPath].get.summary = 'Requests auth details by address';
+		authSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns auth details by address',
+		});
+		authSchema[this.swaggerApiPath].get.parameters = transformParams('Auth', this.params);
+		authSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Auth details',
+				schema: {
+					$ref: '#/definitions/authWithEnvelope',
+				},
+			},
+		};
+		Object.assign(authSchema[this.swaggerApiPath].get.responses, response);
+		return authSchema;
 	},
 	source: authSource,
 };
