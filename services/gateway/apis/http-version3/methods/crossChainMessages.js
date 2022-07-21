@@ -50,7 +50,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns CCMs',
 		});
-		crossChainMessagesSchema[this.swaggerApiPath].get.parameters = transformParams('Interoperability', this.params);
+		crossChainMessagesSchema[this.swaggerApiPath].get.parameters = transformParams('interoperability', this.params);
 		crossChainMessagesSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Array of CCMs',

@@ -1,0 +1,96 @@
+{
+    "events": {
+        "type": "object",
+        "required": [
+            "moduleID",
+            "moduleName",
+            "topics",
+            "data"
+        ],
+        "properties": {
+            "moduleID": {
+                "type": "string",
+                "example": "2",
+                "description": "module ID of transaction.\n"
+            },
+            "moduleName": {
+                "type": "string",
+                "example": "token",
+                "description": "module Name of transaction.\n"
+            },
+            "data": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "string",
+                        "example": "15000000"
+                    },
+                    "recipientAddress": {
+                        "type": "string",
+                        "format": "address",
+                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                        "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                    },
+                    "data": {
+                        "type": "string",
+                        "example": "test"
+                    }
+                }
+            },
+            "block": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+                        "description": "Unique identifier of the block.\nDerived from the block signature.\n"
+                    },
+                    "height": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 8350681,
+                        "description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
+                    },
+                    "timestamp": {
+                        "type": "integer",
+                        "example": 1613323667,
+                        "description": "UNIX Timestamp"
+                    }
+                }
+            },
+            "topics": {
+                "type": "array",
+                "items":{
+                    "type": "string",
+                    "example": "478842a844914f18a1c620a6494bf9931d0a862e96212bf5fc6f3ca18658febe"
+                }
+                }
+        }
+    },
+    "eventsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of events",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/events"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
+    }
+}

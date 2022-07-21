@@ -16,6 +16,7 @@
 const tokensSource = require('../../../sources/version3/tokens');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -27,6 +28,27 @@ module.exports = {
 		tokenID: { optional: true, type: 'string', min: 1 },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
 		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
+	},
+	get schema() {
+		const tokenSchema = {};
+		tokenSchema[this.swaggerApiPath] = { get: {} };
+		tokenSchema[this.swaggerApiPath].get.tags = this.tags;
+		tokenSchema[this.swaggerApiPath].get.summary = 'Requests tokens information';
+		tokenSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns tokens information',
+		});
+		tokenSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
+		tokenSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Array of tokens',
+				schema: {
+					$ref: '#/definitions/tokenWithEnvelope',
+				},
+			},
+		};
+		Object.assign(tokenSchema[this.swaggerApiPath].get.responses, response);
+		return tokenSchema;
 	},
 	source: tokensSource,
 	envelope,

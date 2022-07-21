@@ -16,6 +16,7 @@
 const eventsSource = require('../../../sources/version3/events');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -36,6 +37,27 @@ module.exports = {
 			enum: ['timestamp:asc', 'timestamp:desc'],
 			default: 'timestamp:desc',
 		},
+	},
+	get schema() {
+		const eventsSchema = {};
+		eventsSchema[this.swaggerApiPath] = { get: {} };
+		eventsSchema[this.swaggerApiPath].get.tags = this.tags;
+		eventsSchema[this.swaggerApiPath].get.summary = 'Requests events data';
+		eventsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns events data',
+		});
+		eventsSchema[this.swaggerApiPath].get.parameters = transformParams('events', this.params);
+		eventsSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Array of events',
+				schema: {
+					$ref: '#/definitions/eventsWithEnvelope',
+				},
+			},
+		};
+		Object.assign(eventsSchema[this.swaggerApiPath].get.responses, response);
+		return eventsSchema;
 	},
 	source: eventsSource,
 	envelope,

@@ -1,0 +1,46 @@
+{
+    "generators": {
+        "type": "object",
+        "properties": {
+            "address": {
+                "type": "string",
+                "format": "address",
+                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+            },
+            "name": {
+                "type": "string",
+                "example": "genesis_84",
+                "description": "Generator name"
+            },
+            "nextForgingTime": {
+                "type": "integer",
+                "example": 1616058987,
+                "description": "UNIX Timestamp"
+            }
+        }
+    },
+    "generatorsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of generators",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/generators"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
+    }
+}

@@ -70,5 +70,200 @@
                 "description": "Count of transactions by amount range in the whole time interval"
             }
         }
+    },
+    "Transaction": {
+        "type": "object",
+        "required": [
+            "id",
+            "moduleCommandID",
+            "moduleCommandName",
+            "fee",
+            "nonce",
+            "block",
+            "sender",
+            "params"
+        ],
+        "properties": {
+            "id": {
+                "type": "string",
+                "format": "id",
+                "example": "f9593f101c4acafc3ede650ab4c10fa2ecb59b225813eddbbb17b47e96932e9b",
+                "minLength": 1,
+                "maxLength": 64,
+                "description": "Unique identifier of the transaction.\nDerived from the transaction signature.\n"
+            },
+            "moduleCommandID": {
+                "type": "string",
+                "example": "2:0",
+                "description": "Combination of transaction module:command ID.\n"
+            },
+            "moduleCommandName": {
+                "type": "string",
+                "example": "token:transfer",
+                "description": "Combination of transaction module:command Name.\n"
+            },
+            "nonce": {
+                "type": "string",
+                "example": "0"
+            },
+            "fee": {
+                "type": "string",
+                "example": "1000000",
+                "description": "Transaction fee associated with this transaction.\n"
+            },
+            "block": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "maxLength": 64,
+                        "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
+                        "description": "Unique identifier of the block.\nDerived from the block signature.\n"
+                    },
+                    "height": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 8350681,
+                        "description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
+                    },
+                    "timestamp": {
+                        "type": "integer",
+                        "example": 1613323667,
+                        "description": "UNIX Timestamp"
+                    }
+                }
+            },
+            "sender": {
+                "type": "object",
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "format": "address",
+                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                        "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                    },
+                    "publicKey": {
+                        "type": "string",
+                        "format": "publicKey",
+                        "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+                        "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "genesis_84",
+                        "description": "Delegate name"
+                    }
+                }
+            },
+            "params": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "string",
+                        "example": "100003490",
+                        "description": "Amount of Lisk to be transferred in this transaction.\n"
+                    },
+                    "recipient": {
+                        "type": "object",
+                        "properties":{
+                            "address": {
+                                "type": "string",
+                                "format": "address",
+                                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "genesis_84",
+                                "description": "Delegate name"
+                            },
+                            "publicKey": {
+                                "type": "string",
+                                "format": "publicKey",
+                                "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                            }
+                        }
+                    },
+                    "data": {
+                        "type": "string",
+                        "example": "test"
+                    }
+                }
+            },
+            "confirmations": {
+                "type": "integer",
+                "example": 0
+            },
+            "executionStatus": {
+                "type": "string",
+                "example": "pending"
+            }
+        }
+    },
+    "TransactionsWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta",
+            "links"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of transactions",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/Transaction"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            },
+            "links": {
+                "type": "object"
+            }
+        }
+    },
+    "postTransactionWithEnvelope": {
+        "type": "object",
+        "properties": {
+            "message": {
+                "type": "string",
+                "example": "Transaction payload was successfully passed to the network node"
+            },
+            "transactionId": {
+                "type": "string",
+                "example": "123456789",
+                "description": "Transaction Id"
+            }
+        }
+    },
+    "badRequestEnvelope": {
+        "type": "object",
+        "properties": {
+            "error": {
+                "type": "boolean",
+                "example": true
+            },
+            "message": {
+                "type": "string",
+                "example": "Transaction payload was rejected by the network node"
+            }
+        }
+    },
+    "serverErrorEnvelope": {
+        "type": "object",
+        "properties": {
+            "error": {
+                "type": "boolean",
+                "example": true
+            },
+            "message": {
+                "type": "string",
+                "example": "Unable to reach a network node"
+            }
+        }
     }
 }
