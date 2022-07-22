@@ -49,7 +49,7 @@
             "status": {
                 "type": "string",
                 "example": "active",
-                "description": "Current state of the application"
+                "description": "Current state of the CCM"
             },
             "block": {
                 "type": "object",

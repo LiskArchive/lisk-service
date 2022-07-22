@@ -2,7 +2,14 @@
     "delegate": {
         "type": "object",
         "required": [
-            "name"
+            "name",
+            "address",
+            "totalVotesReceived",
+            "selfVotes",
+            "voteWeight",
+            "status",
+            "isBanned",
+            "pomHeights"
         ],
         "properties": {
             "name": {
@@ -38,7 +45,7 @@
             "status": {
                 "type": "string",
                 "example": "active",
-                "description": ""
+                "description": "Delegate status"
             },
             "isBanned": {
                 "type": "boolean",

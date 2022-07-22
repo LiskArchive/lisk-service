@@ -52,7 +52,7 @@
             "generatorAddress": {
                 "type": "string",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "Generator address."
+                "description": "The address of the block generator."
             },
             "transactionRoot": {
                 "type": "string",
@@ -63,12 +63,12 @@
             "assetsRoot": {
                 "type": "string",
                 "example": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
-                "description": "Asset root."
+                "description": "The root of the Merkle tree computed from the block assets array."
             },
             "stateRoot": {
                 "type": "string",
                 "example": "95d9b1773b78034b8df9ac741c903b881da761d8ba002a939de28a4b86982c04",
-                "description": "State root."
+                "description": "The root of the sparse Merkle tree that is computed from the state of the blockchain."
             },
             "maxHeightGenerated": {
                 "type": "integer",
@@ -81,7 +81,7 @@
             "validatorsHash": {
                 "type": "string",
                 "example": "ad0076aa444f6cda608bb163c3bd77d9bf172f1d2803d53095bc0f277db6bcb3",
-                "description": "Validator hash."
+                "description": "Hash to authenticates the active set of validators"
             },
             "aggregateCommit": {
                 "type": "object",

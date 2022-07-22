@@ -11,12 +11,12 @@
             "moduleID": {
                 "type": "string",
                 "example": "2",
-                "description": "module ID of transaction.\n"
+                "description": "module ID of the transaction.\n"
             },
             "moduleName": {
                 "type": "string",
                 "example": "token",
-                "description": "module Name of transaction.\n"
+                "description": "module Name of the transaction.\n"
             },
             "data": {
                 "type": "object",
