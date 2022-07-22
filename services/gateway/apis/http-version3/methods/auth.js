@@ -29,15 +29,15 @@ module.exports = {
 		const authSchema = {};
 		authSchema[this.swaggerApiPath] = { get: {} };
 		authSchema[this.swaggerApiPath].get.tags = this.tags;
-		authSchema[this.swaggerApiPath].get.summary = 'Requests auth details by address';
+		authSchema[this.swaggerApiPath].get.summary = 'Requests auth account details by address';
 		authSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns auth details by address',
+			description: 'Returns auth account details by address',
 		});
 		authSchema[this.swaggerApiPath].get.parameters = transformParams('Auth', this.params);
 		authSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Auth details',
+				description: 'Auth account details',
 				schema: {
 					$ref: '#/definitions/authWithEnvelope',
 				},

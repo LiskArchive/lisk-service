@@ -43,7 +43,7 @@ module.exports = {
 		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
 		peerSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of peers with details',
+				description: 'Array of peers with details',
 				schema: {
 					$ref: '#/definitions/PeersWithEnvelope',
 				},

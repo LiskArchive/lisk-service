@@ -41,15 +41,15 @@ module.exports = {
 		const unlocksSchema = {};
 		unlocksSchema[this.swaggerApiPath] = { get: {} };
 		unlocksSchema[this.swaggerApiPath].get.tags = this.tags;
-		unlocksSchema[this.swaggerApiPath].get.summary = 'Requests delegate unlocks';
+		unlocksSchema[this.swaggerApiPath].get.summary = 'Requests delegate unlocks data';
 		unlocksSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns delegate unlocks',
+			description: 'Returns delegate unlocks data',
 		});
 		unlocksSchema[this.swaggerApiPath].get.parameters = transformParams('DPoS', this.params);
 		unlocksSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of delegate unlocks',
+				description: 'Array of delegate unlocks data',
 				schema: {
 					$ref: '#/definitions/unlocksWithEnvelope',
 				},

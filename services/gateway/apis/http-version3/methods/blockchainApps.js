@@ -39,7 +39,7 @@ module.exports = {
 		blockchainAppsSchema[this.swaggerApiPath].get.summary = 'Requests list of blockchain applications';
 		blockchainAppsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns blockchain applications',
+			description: 'Returns list of blockchain applications',
 		});
 		blockchainAppsSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainApps', this.params);
 		blockchainAppsSchema[this.swaggerApiPath].get.responses = {

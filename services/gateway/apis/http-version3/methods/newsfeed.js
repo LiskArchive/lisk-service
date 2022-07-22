@@ -43,7 +43,7 @@ module.exports = {
 		});
 		newsfeedSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of newsfeed articles',
+				description: 'Array of newsfeed articles',
 				schema: {
 					$ref: '#/definitions/NewsfeedWithEnvelope',
 				},

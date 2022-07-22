@@ -33,7 +33,7 @@ module.exports = {
 		});
 		networkSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'network statistics info',
+				description: 'Network statistics info',
 				schema: {
 					$ref: '#/definitions/NetworkStatistics',
 				},

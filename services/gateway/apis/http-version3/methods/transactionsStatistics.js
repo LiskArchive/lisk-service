@@ -39,7 +39,7 @@ module.exports = {
 		transactionSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		transactionSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of transactions statistics',
+				description: 'Array of transactions statistics',
 				schema: {
 					$ref: '#/definitions/TransactionsStatisticsWithEnvelope',
 				},
