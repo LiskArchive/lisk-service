@@ -20,14 +20,14 @@
     "moduleCrossChainCommandID": {
         "name": "moduleCrossChainCommandID",
         "in": "query",
-        "description": "Combination of module:command ID",
+        "description": "Combination of cross-chain module:command ID",
         "type": "string",
         "minLength": 1
     },
     "moduleCrossChainCommandName": {
         "name": "moduleCrossChainCommandName",
         "in": "query",
-        "description": "Combination of module:command Name",
+        "description": "Combination of cross-chain module:command Name",
         "type": "string",
         "minLength": 1
     },
@@ -48,7 +48,7 @@
     "status": {
         "name": "status",
         "in": "query",
-        "description": "Status of CCM",
+        "description": "Query CCMs by status",
         "type": "string",
         "minLength": 1,
         "default": false

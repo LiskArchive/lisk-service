@@ -16,7 +16,7 @@
             "moduleCrossChainCommandID": {
                 "type": "string",
                 "example": "64:3",
-                "description": "Combination of cross-chain transaction module:command ID.\n"
+                "description": "Combination of cross-chain module:command ID.\n"
             },
             "moduleCrossChainCommandName": {
                 "type": "string",
