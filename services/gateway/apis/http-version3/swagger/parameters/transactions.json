@@ -1,0 +1,17 @@
+{
+    "executionStatus": {
+        "name": "executionStatus",
+        "in": "query",
+        "description": "Retrieve pending transactions",
+        "type": "string",
+        "minLength": 1
+    },
+    "transaction": {
+        "name": "transaction",
+        "in": "body",
+        "description": "Binary payload",
+        "schema": {
+            "$ref": "#/definitions/transactionParamEnvelope"
+        }
+    }
+}

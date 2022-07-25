@@ -1,0 +1,29 @@
+{
+    "Pagination": {
+        "type": "object",
+        "required": [
+            "count",
+            "offset"
+        ],
+        "properties": {
+            "count": {
+                "type": "integer",
+                "example": 10,
+                "minimum": 0,
+                "description": "Number of items returned in the request."
+            },
+            "offset": {
+                "type": "integer",
+                "example": 10,
+                "minimum": 0,
+                "description": "Number of items skipped in the response."
+            },
+            "total": {
+                "type": "integer",
+                "example": 400,
+                "minimum": 0,
+                "description": "Number of items returned in the response."
+            }
+        }
+    }
+}

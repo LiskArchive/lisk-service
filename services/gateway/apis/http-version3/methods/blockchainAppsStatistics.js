@@ -14,12 +14,35 @@
  *
  */
 const blockchainAppsStatsSchemaSource = require('../../../sources/version3/blockchainAppsStatsSchema');
+const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blockchain/apps/statistics',
 	rpcMethod: 'get.blockchain.apps.statistics',
-	tags: ['Blockchain Applications'],
+	tags: ['Interoperability'],
 	params: {},
+	get schema() {
+		const blockchainAppsStatsSchema = {};
+		blockchainAppsStatsSchema[this.swaggerApiPath] = { get: {} };
+		blockchainAppsStatsSchema[this.swaggerApiPath].get.tags = this.tags;
+		blockchainAppsStatsSchema[this.swaggerApiPath].get.summary = 'Requests blockchain application statistics';
+		blockchainAppsStatsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns blockchain applications statistics',
+		});
+		blockchainAppsStatsSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns statistics for the blockchain applications in the Lisk ecosystem',
+				schema: {
+					$ref: '#/definitions/blockchainAppsStatsEnvelope',
+				},
+			},
+			404: {
+				$ref: '#/responses/notFound',
+			},
+		};
+		return blockchainAppsStatsSchema;
+	},
 	source: blockchainAppsStatsSchemaSource,
 };

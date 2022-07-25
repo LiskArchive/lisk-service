@@ -16,6 +16,7 @@
 const crossChainMessagesSource = require('../../../sources/version3/crossChainMessages');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -39,6 +40,27 @@ module.exports = {
 			enum: ['timestamp:asc', 'timestamp:desc'],
 			default: 'timestamp:desc',
 		},
+	},
+	get schema() {
+		const crossChainMessagesSchema = {};
+		crossChainMessagesSchema[this.swaggerApiPath] = { get: {} };
+		crossChainMessagesSchema[this.swaggerApiPath].get.tags = this.tags;
+		crossChainMessagesSchema[this.swaggerApiPath].get.summary = 'Requests CCM data';
+		crossChainMessagesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns CCMs',
+		});
+		crossChainMessagesSchema[this.swaggerApiPath].get.parameters = transformParams('interoperability', this.params);
+		crossChainMessagesSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns a list of CCMs',
+				schema: {
+					$ref: '#/definitions/crossChainMessagesWithEnvelope',
+				},
+			},
+		};
+		Object.assign(crossChainMessagesSchema[this.swaggerApiPath].get.responses, response);
+		return crossChainMessagesSchema;
 	},
 	source: crossChainMessagesSource,
 	envelope,

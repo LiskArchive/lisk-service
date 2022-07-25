@@ -15,6 +15,7 @@
  */
 const peersSource = require('../../../sources/version3/peers');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -29,6 +30,27 @@ module.exports = {
 		limit: { optional: true, min: 1, max: 100, type: 'number', integer: true, default: 10 },
 		offset: { optional: true, min: 0, type: 'number', integer: true, default: 0 },
 		sort: { optional: true, type: 'string', enum: ['height:asc', 'height:desc', 'networkVersion:asc', 'networkVersion:desc'], default: 'height:desc' },
+	},
+	get schema() {
+		const peerSchema = {};
+		peerSchema[this.swaggerApiPath] = { get: {} };
+		peerSchema[this.swaggerApiPath].get.tags = this.tags;
+		peerSchema[this.swaggerApiPath].get.summary = 'Requests peers data';
+		peerSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns peers data',
+		});
+		peerSchema[this.swaggerApiPath].get.parameters = transformParams('peers', this.params);
+		peerSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns a list of peer nodes in the network',
+				schema: {
+					$ref: '#/definitions/PeersWithEnvelope',
+				},
+			},
+		};
+		Object.assign(peerSchema[this.swaggerApiPath].get.responses, response);
+		return peerSchema;
 	},
 	source: peersSource,
 	envelope,

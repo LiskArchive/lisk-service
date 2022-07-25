@@ -1,0 +1,60 @@
+{
+    "validatorWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "type": "object",
+                "description": "Validator information for a given address.",
+                "properties": {
+                    "generatorKey": {
+                        "type": "string",
+                        "format": "id",
+                        "example": "4f3034d6704e8a38098083695822a3da",
+                        "description": "Generator key"
+                    },
+                    "blsKey": {
+                        "type": "string",
+                        "format": "id",
+                        "example": "3c95f7931d61909ff092375fc8ad2bc35e393b62d5cca902",
+                        "description": "BLS key"
+                    },
+                    "proofOfPosession": {
+                        "type": "string",
+                        "format": "id",
+                        "example": "96c5b026b1030eb73e5dfd9bfe78b0fb35e6bc7add5793fdca3d3e6a1dacb77390e998178b89f80ab8892212838bd5b2",
+                        "description": "Proof Of Posession"
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "required": [
+                    "address",
+                    "publicKey"
+                ],
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "format": "address",
+                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                    },
+                    "publicKey": {
+                        "type": "string",
+                        "format": "publicKey",
+                        "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd"
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "genesis_84",
+                        "description": "Validator name"
+                    }
+                }
+            }
+        }
+    }
+}

@@ -15,6 +15,7 @@
  */
 const generatorsSource = require('../../../sources/version3/generators');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -25,6 +26,27 @@ module.exports = {
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	tags: ['Generators'],
+	get schema() {
+		const generatorSchema = {};
+		generatorSchema[this.swaggerApiPath] = { get: {} };
+		generatorSchema[this.swaggerApiPath].get.tags = this.tags;
+		generatorSchema[this.swaggerApiPath].get.summary = 'Requests generators list';
+		generatorSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns generators list',
+		});
+		generatorSchema[this.swaggerApiPath].get.parameters = transformParams('Generators', this.params);
+		generatorSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns a list of generators',
+				schema: {
+					$ref: '#/definitions/generatorsWithEnvelope',
+				},
+			},
+		};
+		Object.assign(generatorSchema[this.swaggerApiPath].get.responses, response);
+		return generatorSchema;
+	},
 	source: generatorsSource,
 	envelope,
 };

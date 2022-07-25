@@ -1,0 +1,57 @@
+{
+    "id": {
+        "name": "id",
+        "in": "query",
+        "description": "CCM ID to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 64
+    },
+    "transactionID": {
+        "name": "transactionID",
+        "in": "query",
+        "description": "Transaction ID to query",
+        "type": "string",
+        "format": "id",
+        "minLength": 1,
+        "maxLength": 64
+    },
+    "moduleCrossChainCommandID": {
+        "name": "moduleCrossChainCommandID",
+        "in": "query",
+        "description": "Combination of cross-chain moduleID:commandID",
+        "type": "string",
+        "minLength": 1
+    },
+    "moduleCrossChainCommandName": {
+        "name": "moduleCrossChainCommandName",
+        "in": "query",
+        "description": "Combination of cross-chain moduleName:commandName",
+        "type": "string",
+        "minLength": 1
+    },
+    "senderAddress": {
+        "name": "senderAddress",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 41
+    },
+    "status": {
+        "name": "status",
+        "in": "query",
+        "description": "Query CCMs by status",
+        "type": "string",
+        "minLength": 1,
+        "default": false
+    },
+    "nonce": {
+        "name": "nonce",
+        "in": "query",
+        "description": "Query by nonce",
+        "type": "string",
+        "minLength": 1
+    }
+}

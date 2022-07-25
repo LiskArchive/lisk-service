@@ -15,6 +15,7 @@
  */
 const marketPricesSource = require('../../../sources/version3/marketPrices');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -22,6 +23,30 @@ module.exports = {
 	rpcMethod: 'get.market.prices',
 	tags: ['Market'],
 	params: {},
+	get schema() {
+		const marketPricesSchema = {};
+		marketPricesSchema[this.swaggerApiPath] = { get: {} };
+		marketPricesSchema[this.swaggerApiPath].get.tags = this.tags;
+		marketPricesSchema[this.swaggerApiPath].get.parameters = transformParams(
+			'marketPrices',
+			this.params,
+		);
+		marketPricesSchema[this.swaggerApiPath].get.summary = 'Requests market prices';
+		marketPricesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns market prices',
+		});
+		marketPricesSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns a list of market prices by currency pairs',
+				schema: {
+					$ref: '#/definitions/MarketPricesWithEnvelope',
+				},
+			},
+		};
+		Object.assign(marketPricesSchema[this.swaggerApiPath].get.responses, response);
+		return marketPricesSchema;
+	},
 	source: marketPricesSource,
 	envelope,
 };

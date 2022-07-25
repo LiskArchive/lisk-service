@@ -15,6 +15,7 @@
  */
 const validatorSource = require('../../../sources/version3/validator');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -23,6 +24,27 @@ module.exports = {
 	tags: ['Validator'],
 	params: {
 		address: { optional: false, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
+	},
+	get schema() {
+		const validatorSchema = {};
+		validatorSchema[this.swaggerApiPath] = { get: {} };
+		validatorSchema[this.swaggerApiPath].get.tags = this.tags;
+		validatorSchema[this.swaggerApiPath].get.summary = 'Requests validator information';
+		validatorSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns validator information',
+		});
+		validatorSchema[this.swaggerApiPath].get.parameters = transformParams('validator', this.params);
+		validatorSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns validator information by address',
+				schema: {
+					$ref: '#/definitions/validatorWithEnvelope',
+				},
+			},
+		};
+		Object.assign(validatorSchema[this.swaggerApiPath].get.responses, response);
+		return validatorSchema;
 	},
 	source: validatorSource,
 };

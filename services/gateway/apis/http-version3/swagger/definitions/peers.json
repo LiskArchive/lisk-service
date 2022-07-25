@@ -1,0 +1,96 @@
+{
+    "Peer": {
+        "type": "object",
+        "required": [
+            "wsPort",
+            "state"
+        ],
+        "properties": {
+            "ip": {
+                "type": "string",
+                "example": "127.0.0.1",
+                "format": "ip",
+                "description": "IPv4 address of the peer node."
+            },
+            "port": {
+                "type": "integer",
+                "example": "4000",
+                "format": "port",
+                "description": "Port of the peer node."
+            },
+            "networkVersion": {
+                "type": "string",
+                "example": "2.0",
+                "format": "networkVersion",
+                "description": "Network version of Lisk Core that the peer node runs on."
+            },
+            "networkIdentifier": {
+                "type": "string",
+                "example": "258974416d58533227c6a3da1b6333f0541b06c65b41e45cf31926847a3db1ea",
+                "format": "networkVersion",
+                "description": "Network identifier"
+            },
+            "state": {
+                "type": "integer",
+                "example": 2,
+                "format": "int32",
+                "minimum": 0,
+                "maximum": 2,
+                "description": "The state of the Peer.\nAvailable values: Connected, Disconnected\n"
+            },
+            "height": {
+                "type": "integer",
+                "minimum": 1,
+                "example": 8350681,
+                "description": "Network height on the peer node.\nRepresents the current number of blocks in the chain on the peer node.\n"
+            },
+            "location": {
+                "$ref": "#/definitions/Location"
+            }
+        }
+    },
+    "PeersWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of peers",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/Peer"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
+    },
+    "Location": {
+        "type": "object",
+        "properties": {
+            "countryCode": {
+                "type": "string",
+                "example": "DE",
+                "description": "ISO 3166-1 country code."
+            },
+            "countryName": {
+                "type": "string",
+                "example": "Germany",
+                "description": "Name of the country."
+            },
+            "hostname": {
+                "type": "string",
+                "example": "host.210.239.23.62.rev.coltfrance.com",
+                "description": "Hostname associated with the node's IP."
+            },
+            "ip": {
+                "type": "string",
+                "example": "210.239.23.62",
+                "description": "Node's IP address."
+            }
+        }
+    }
+}

@@ -16,6 +16,7 @@
 const dposVotesSentSource = require('../../../sources/version3/dposVotesSent');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const regex = require('../../../shared/regex');
+const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -28,6 +29,27 @@ module.exports = {
 		name: { optional: true, type: 'string', min: 3, max: 20, pattern: regex.NAME },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
+	},
+	get schema() {
+		const votesSchema = {};
+		votesSchema[this.swaggerApiPath] = { get: {} };
+		votesSchema[this.swaggerApiPath].get.tags = this.tags;
+		votesSchema[this.swaggerApiPath].get.summary = 'Requests votes sent data';
+		votesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns votes sent data',
+		});
+		votesSchema[this.swaggerApiPath].get.parameters = transformParams('DPoS', this.params);
+		votesSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns a list of votes sent for the specified address or name',
+				schema: {
+					$ref: '#/definitions/VotesSentWithEnvelope',
+				},
+			},
+		};
+		Object.assign(votesSchema[this.swaggerApiPath].get.responses, response);
+		return votesSchema;
 	},
 	source: dposVotesSentSource,
 };

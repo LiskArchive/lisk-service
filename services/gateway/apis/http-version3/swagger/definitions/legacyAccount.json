@@ -1,0 +1,48 @@
+{
+    "legacyAccountWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "type": "object",
+                "description": "Legacy balance information for a given public key.",
+                "properties": {
+                    "legacyAddress": {
+                        "type": "string",
+                        "format": "address",
+                        "example": "3057001998458191401L",
+                        "description": "Lisk account address (Legacy address)"
+                    },
+                    "balance": {
+                        "type": "string",
+                        "example": "10000000",
+                        "description": "Legacy account balance"
+                    }
+                }
+            },
+            "meta": {
+                "type": "object",
+                "required": [
+                    "address",
+                    "publicKey"
+                ],
+                "properties": {
+                    "address": {
+                        "type": "string",
+                        "format": "address",
+                        "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                    },
+                    "publicKey": {
+                        "type": "string",
+                        "format": "publicKey",
+                        "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd"
+                    }
+                }
+            }
+        }
+    }
+}

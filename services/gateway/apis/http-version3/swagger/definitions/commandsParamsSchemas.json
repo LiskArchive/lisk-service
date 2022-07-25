@@ -1,0 +1,147 @@
+{
+    "commandsParamsSchema": {
+        "type": "object",
+        "required": [
+            "moduleCommandID",
+            "moduleCommandName",
+            "schema"
+        ],
+        "properties": {
+            "moduleCommandID": {
+                "type": "string",
+                "example": "2:0",
+                "description": "Combination of transaction moduleID:commandID.\n"
+            },
+            "moduleCommandName": {
+                "type": "string",
+                "example": "token:transfer",
+                "description": "Combination of transaction moduleName:commandName.\n"
+            },
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "$id": {
+                        "type": "string",
+                        "format": "id",
+                        "minLength": 1,
+                        "example": "lisk/transfer-asset",
+                        "description": "Unique identifier of the transaction schema\n"
+                    },
+                    "title": {
+                        "type": "string",
+                        "minimum": 1,
+                        "example": "Transfer transaction asset",
+                        "description": "Title of schema\n"
+                    },
+                    "type": {
+                        "type": "string",
+                        "example": "object",
+                        "description": "type of schema"
+                    },
+                    "required": {
+                        "type": "array",
+                        "items": {
+                            "example": [
+                                "amount",
+                                "recipientAddress",
+                                "data"
+                            ]
+                        }
+                    },
+                    "properties": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "uint64"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                }
+                            },
+                            "recipientAddress": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 2
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 20
+                                    }
+                                }
+                            },
+                            "data": {
+                                "type": "object",
+                                "properties": {
+                                    "dataType": {
+                                        "type": "string",
+                                        "example": "bytes"
+                                    },
+                                    "fieldNumber": {
+                                        "type": "integer",
+                                        "example": 3
+                                    },
+                                    "minLength": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "maxLength": {
+                                        "type": "integer",
+                                        "example": 64
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "commandsParamsSchemaWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of commands params schemas",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/commandsParamsSchema"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
+    },
+    "notFoundEnvelope": {
+        "type": "object",
+        "properties": {
+            "error": {
+                "type": "boolean",
+                "example": true
+            },
+            "message": {
+                "type": "string",
+                "example": "Schema corresponding moduleCommandID: '3:1' not found."
+            }
+        }
+    }
+}

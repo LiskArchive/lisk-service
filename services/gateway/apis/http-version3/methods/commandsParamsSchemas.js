@@ -15,6 +15,7 @@
  */
 const commandsParamsSchemaSource = require('../../../sources/version3/commandsParamsSchemas');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
+const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -30,6 +31,38 @@ module.exports = {
 		['moduleCommandID'],
 		['moduleCommandName'],
 	],
+	get schema() {
+		const commandsParamsSchema = {};
+		commandsParamsSchema[this.swaggerApiPath] = { get: {} };
+		commandsParamsSchema[this.swaggerApiPath].get.tags = this.tags;
+		commandsParamsSchema[this.swaggerApiPath].get.summary = 'Requests commands params schema';
+		commandsParamsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+			rpcMethod: this.rpcMethod,
+			description: 'Returns commands params schema',
+		});
+		commandsParamsSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
+		commandsParamsSchema[this.swaggerApiPath].get.responses = {
+			200: {
+				description: 'Returns a list of commands params schemas',
+				schema: {
+					$ref: '#/definitions/commandsParamsSchemaWithEnvelope',
+				},
+			},
+			404: {
+				description: 'Not found',
+				schema: {
+					$ref: '#/definitions/notFoundEnvelope',
+				},
+			},
+			400: {
+				description: 'Bad input parameter',
+				schema: {
+					$ref: '#/definitions/badRequest',
+				},
+			},
+		};
+		return commandsParamsSchema;
+	},
 	source: commandsParamsSchemaSource,
 	envelope,
 };
