@@ -62,7 +62,7 @@ const newRoundProcessor = async () => {
 
 const initEventsProcess = async () => {
 	eventsQueue.process(async (job) => {
-		logger.debug('Subscribed to events');
+		logger.debug('Subscribed to the events from coordinator');
 		const { isNewBlock, isDeleteBlock, isNewRound } = job.data;
 
 		if (isNewBlock) {

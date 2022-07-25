@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -42,9 +41,18 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 	events: {
-		chainNewBlock: async (payload) => Signals.get('newBlock').dispatch(payload),
-		chainDeleteBlock: async (payload) => Signals.get('deleteBlock').dispatch(payload),
-		chainValidatorsChange: async (payload) => Signals.get('newRound').dispatch(payload),
+		chainNewBlock: async (payload) => {
+			logger.info('Subscribed to the new block event from connecter');
+			Signals.get('newBlock').dispatch(payload);
+		},
+		chainDeleteBlock: async (payload) => {
+			logger.info('Subscribed to the delete block event from connecter');
+			Signals.get('deleteBlock').dispatch(payload);
+		},
+		chainValidatorsChange: async (payload) => {
+			logger.info('Subscribed to the validators change event from connecter');
+			Signals.get('newRound').dispatch(payload);
+		},
 	},
 	dependencies: [
 		'connector',
@@ -53,9 +61,6 @@ const app = Microservice({
 });
 
 setAppContext(app);
-
-// Add routes, events & jobs
-app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
 app.run().then(async () => {
