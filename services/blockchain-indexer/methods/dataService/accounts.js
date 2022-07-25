@@ -20,10 +20,6 @@ const {
 	getTokensInfo,
 } = require('./controllers/accounts');
 
-const {
-	reloadDelegateCache,
-} = require('../../shared/dataService');
-
 module.exports = [
 	{
 		name: 'accounts',
@@ -48,11 +44,6 @@ module.exports = [
 			limit: { type: 'any', optional: true },
 			offset: { type: 'any', optional: true },
 		},
-	},
-	{
-		name: 'delegates.reload',
-		controller: reloadDelegateCache,
-		params: {},
 	},
 	{
 		name: 'legacy',
