@@ -10,12 +10,12 @@
             "moduleCommandID": {
                 "type": "string",
                 "example": "2:0",
-                "description": "Combination of transaction module:command ID.\n"
+                "description": "Combination of transaction moduleID:commandID.\n"
             },
             "moduleCommandName": {
                 "type": "string",
                 "example": "token:transfer",
-                "description": "Combination of transaction module:command Name.\n"
+                "description": "Combination of transaction moduleName:commandName.\n"
             },
             "schema": {
                 "type": "object",
@@ -116,8 +116,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -129,9 +128,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     },
@@ -144,7 +140,7 @@
             },
             "message": {
                 "type": "string",
-                "example": "Schema corresponding moduleAssetId: '3:1' not found."
+                "example": "Schema corresponding moduleCommandID: '3:1' not found."
             }
         }
     }

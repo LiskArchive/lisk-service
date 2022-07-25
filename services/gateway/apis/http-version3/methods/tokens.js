@@ -41,7 +41,7 @@ module.exports = {
 		tokenSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
 		tokenSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of tokens',
+				description: 'Returns a list of supported tokens by the blockchain application',
 				schema: {
 					$ref: '#/definitions/tokenWithEnvelope',
 				},

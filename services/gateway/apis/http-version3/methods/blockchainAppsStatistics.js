@@ -33,7 +33,7 @@ module.exports = {
 		});
 		blockchainAppsStatsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Blockchain applications statistics',
+				description: 'Returns statistics for the blockchain applications in the Lisk ecosystem',
 				schema: {
 					$ref: '#/definitions/blockchainAppsStatsEnvelope',
 				},

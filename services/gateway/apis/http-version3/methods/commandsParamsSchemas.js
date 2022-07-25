@@ -38,12 +38,12 @@ module.exports = {
 		commandsParamsSchema[this.swaggerApiPath].get.summary = 'Requests commands params schema';
 		commandsParamsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns commands params schemas',
+			description: 'Returns commands params schema',
 		});
 		commandsParamsSchema[this.swaggerApiPath].get.parameters = transformParams('transactions', this.params);
 		commandsParamsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of commands params schemas',
+				description: 'Returns a list of commands params schemas',
 				schema: {
 					$ref: '#/definitions/commandsParamsSchemaWithEnvelope',
 				},
@@ -56,6 +56,9 @@ module.exports = {
 			},
 			400: {
 				description: 'Bad input parameter',
+				schema: {
+					$ref: '#/definitions/badRequest',
+				},
 			},
 		};
 		return commandsParamsSchema;

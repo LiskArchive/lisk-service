@@ -39,12 +39,12 @@ module.exports = {
 		blockchainAppsSchema[this.swaggerApiPath].get.summary = 'Requests list of blockchain applications';
 		blockchainAppsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns list of blockchain applications',
+			description: 'Returns a list of blockchain applications',
 		});
 		blockchainAppsSchema[this.swaggerApiPath].get.parameters = transformParams('blockchainApps', this.params);
 		blockchainAppsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'List of blockchain applications',
+				description: 'Returns a list of blockchain applications in the Lisk ecosystem',
 				schema: {
 					$ref: '#/definitions/BlockchainAppsWithEnvelope',
 				},

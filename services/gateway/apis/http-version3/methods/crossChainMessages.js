@@ -53,7 +53,7 @@ module.exports = {
 		crossChainMessagesSchema[this.swaggerApiPath].get.parameters = transformParams('interoperability', this.params);
 		crossChainMessagesSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of CCMs',
+				description: 'Returns a list of CCMs',
 				schema: {
 					$ref: '#/definitions/crossChainMessagesWithEnvelope',
 				},

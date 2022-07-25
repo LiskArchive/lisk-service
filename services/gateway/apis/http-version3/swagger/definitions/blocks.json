@@ -30,13 +30,13 @@
                 "type": "integer",
                 "example": 0,
                 "minimum": 0,
-                "description": "Versioning for future upgrades of the Lisk protocol."
+                "description": "Lisk protocol version to which this block adheres to."
             },
             "height": {
                 "type": "integer",
                 "example": 8344448,
                 "minimum": 1,
-                "description": "Height of the network, when the block got forged.\nThe height of the networks represents the number of blocks,\nthat have been forged on the network since Genesis Block.\n"
+                "description": "Height of the network, when the block got forged.\nThe height of the networks represents the number of blocks, that have been forged on the network since Genesis Block.\n"
             },
             "timestamp": {
                 "type": "integer",
@@ -47,23 +47,23 @@
                 "type": "string",
                 "format": "id",
                 "example": "827080df7829cd2757501a85f80a0767fcb40615304b701c2890dbbaf214bb89",
-                "description": "The id of the previous block of the chain."
+                "description": "ID of the parent block."
             },
             "generatorAddress": {
                 "type": "string",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The address of the block generator."
+                "description": "Address of the block generator."
             },
             "transactionRoot": {
                 "type": "string",
                 "format": "hex",
                 "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                "description": "Hash of the payload of the block.\nThe payload of a block is comprised of the transactions contained in the block.\nFor each type of transaction a different maximum size exists for the payload.\n"
+                "description": "Merkle root of the block payload.\nThe block payload comprises the transactions contained within the block.\n"
             },
             "assetsRoot": {
                 "type": "string",
                 "example": "6e904b2f678eb3b6c3042acb188a607d903d441d61508d047fe36b3c982995c8",
-                "description": "The root of the Merkle tree computed from the block assets array."
+                "description": "Merkle root of the block assets array."
             },
             "stateRoot": {
                 "type": "string",
@@ -116,8 +116,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -129,9 +128,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     },
@@ -177,8 +173,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -190,9 +185,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     }

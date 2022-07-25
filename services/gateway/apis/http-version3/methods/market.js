@@ -38,7 +38,7 @@ module.exports = {
 		});
 		marketPricesSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of market prices',
+				description: 'Returns a list of market prices by currency pairs',
 				schema: {
 					$ref: '#/definitions/MarketPricesWithEnvelope',
 				},

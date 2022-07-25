@@ -12,14 +12,14 @@
             "name": {
                 "type": "string",
                 "example": "Lisk",
-                "description": "Name of blockchain application"
+                "description": "Name of the blockchain application"
             },
             "chainID": {
                 "type": "integer",
                 "format": "id",
                 "minLength": 1,
                 "example": 1,
-                "description": "chain ID of blockchain application"
+                "description": "Chain ID of the blockchain application"
             },
             "state": {
                 "type": "string",
@@ -30,7 +30,7 @@
                 "type": "string",
                 "format": "address",
                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
             },
             "isDefault": {
                 "type": "boolean",
@@ -53,8 +53,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -66,9 +65,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     },
@@ -76,8 +72,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -114,9 +109,6 @@
                 }
             },
             "meta": {
-                "type": "object"
-            },
-            "links": {
                 "type": "object"
             }
         }

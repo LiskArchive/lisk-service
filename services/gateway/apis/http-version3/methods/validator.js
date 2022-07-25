@@ -37,7 +37,7 @@ module.exports = {
 		validatorSchema[this.swaggerApiPath].get.parameters = transformParams('validator', this.params);
 		validatorSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Validator information',
+				description: 'Returns validator information by address',
 				schema: {
 					$ref: '#/definitions/validatorWithEnvelope',
 				},

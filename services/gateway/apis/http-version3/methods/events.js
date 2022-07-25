@@ -50,7 +50,7 @@ module.exports = {
 		eventsSchema[this.swaggerApiPath].get.parameters = transformParams('events', this.params);
 		eventsSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of events',
+				description: 'Returns a list of events',
 				schema: {
 					$ref: '#/definitions/eventsWithEnvelope',
 				},

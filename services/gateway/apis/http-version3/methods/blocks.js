@@ -48,7 +48,7 @@ module.exports = {
 		blockSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
 		blockSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of blocks',
+				description: 'Returns a list of blocks',
 				schema: {
 					$ref: '#/definitions/BlocksWithEnvelope',
 				},

@@ -34,7 +34,7 @@ module.exports = {
 		});
 		feeEstimatePerByteSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'fee estimate per byte',
+				description: 'Returns the fee estimate per byte used for transaction fee calculation',
 				schema: {
 					$ref: '#/definitions/FeeEstimateEnvelope',
 				},

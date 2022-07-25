@@ -2,14 +2,14 @@
     "moduleCommandID": {
         "name": "moduleCommandID",
         "in": "query",
-        "description": "Combination of module:command ID",
+        "description": "Combination of moduleID:commandID",
         "type": "string",
         "minLength": 1
     },
     "moduleCommandName": {
         "name": "moduleCommandName",
         "in": "query",
-        "description": "Combination of module:command Name",
+        "description": "Combination of moduleName:commandName",
         "type": "string",
         "minLength": 1
     }

@@ -38,7 +38,7 @@ module.exports = {
 		generatorSchema[this.swaggerApiPath].get.parameters = transformParams('Generators', this.params);
 		generatorSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of generators',
+				description: 'Returns a list of generators',
 				schema: {
 					$ref: '#/definitions/generatorsWithEnvelope',
 				},

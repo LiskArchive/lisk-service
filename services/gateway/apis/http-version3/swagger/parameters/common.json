@@ -2,7 +2,7 @@
     "limit": {
         "in": "query",
         "name": "limit",
-        "description": "Limit applied to results",
+        "description": "Limit to apply to the query results",
         "type": "integer",
         "format": "int32",
         "minimum": 1,
@@ -12,7 +12,7 @@
     "offset": {
         "name": "offset",
         "in": "query",
-        "description": "Offset value for results",
+        "description": "Offset to apply to the query results",
         "type": "integer",
         "format": "int32",
         "minimum": 0,
@@ -21,16 +21,16 @@
     "height": {
         "name": "height",
         "in": "query",
-        "description": "Query for block(s) by height or a height range (fromHeight:toHeight, both inclusive)",
+        "description": "Query by height or a height range (fromHeight:toHeight, both inclusive)",
         "type": "string",
-        "minimum": 1
+        "minimum": 0
     },
     "timestamp": {
         "name": "timestamp",
         "in": "query",
-        "description": "Range fromTimestamp:toTimestamp",
+        "description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive)",
         "type": "string",
-        "minimum": 1
+        "minLength": 1
     },
     "address": {
         "name": "address",
@@ -46,6 +46,7 @@
         "name": "search",
         "required": true,
         "description": "Search query",
-        "type": "string"
+        "type": "string",
+        "minLength": 1
     }
 }

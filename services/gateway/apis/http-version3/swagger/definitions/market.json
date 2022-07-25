@@ -47,12 +47,11 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
-                "description": "Array of news",
+                "description": "Market price by currency pairs",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/market"

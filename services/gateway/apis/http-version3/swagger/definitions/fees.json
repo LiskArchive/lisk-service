@@ -3,8 +3,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -37,7 +36,7 @@
                         "properties": {
                             "5:0": {
                                 "type": "string",
-                                "description": "base fees by Id",
+                                "description": "Base fee for specified moduleCommandID",
                                 "example": 1000000000
                             }
                         }
@@ -47,7 +46,7 @@
                         "properties": {
                             "5:0": {
                                 "type": "string",
-                                "description": "base fees by Name",
+                                "description": "Base fees for specified moduleCommandName",
                                 "example": 1000000000
                             }
                         }
@@ -63,28 +62,25 @@
                 "required": [
                     "lastUpdate",
                     "lastBlockHeight",
-                    "lastBlockId"
+                    "lastBlockID"
                 ],
                 "properties": {
                     "lastUpdate": {
                         "type": "string",
                         "example": "1616008148",
-                        "description": "timestamp"
+                        "description": "Timestamp of the block for which the estimates were last calculated"
                     },
                     "lastBlockHeight": {
                         "type": "integer",
                         "example": 25,
-                        "description": "Height of a block"
+                        "description": "Height of the block for which the estimates were last calculated"
                     },
-                    "blockId": {
+                    "lastBlockID": {
                         "type": "string",
                         "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                        "description": "Id of a block"
+                        "description": "ID of the block for which the estimates were last calculated"
                     }
                 }
-            },
-            "links": {
-                "type": "object"
             }
         }
     }

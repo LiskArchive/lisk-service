@@ -66,12 +66,11 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
-                "description": "Array of news items",
+                "description": "List of news items",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/news"
@@ -89,9 +88,6 @@
                         "description": "count"
                     }
                 }
-            },
-            "links": {
-                "type": "object"
             }
         }
     }

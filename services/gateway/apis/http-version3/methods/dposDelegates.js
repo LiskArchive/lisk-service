@@ -43,7 +43,7 @@ module.exports = {
 		delegatesSchema[this.swaggerApiPath].get.parameters = transformParams('DPoS', this.params);
 		delegatesSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of delegates',
+				description: 'Returns a list of delegates',
 				schema: {
 					$ref: '#/definitions/delegatesWithEnvelope',
 				},

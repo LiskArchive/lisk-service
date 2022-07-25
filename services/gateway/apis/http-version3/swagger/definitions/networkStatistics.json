@@ -3,17 +3,15 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
                 "type": "object",
-                "description": "Number of items returned in the request.",
+                "description": "Network statistics information.",
                 "properties": {
                     "basic": {
                         "type": "object",
-                        "description": "Total number of items in the database.",
                         "properties": {
                             "connectedPeers": {
                                 "type": "integer",
@@ -34,7 +32,7 @@
                     },
                     "height": {
                         "type": "object",
-                        "description": "Number of nodes on the given height.",
+                        "description": "Number of nodes at the given height.",
                         "properties": {
                             "7982598": {
                                 "type": "integer",
@@ -44,7 +42,7 @@
                     },
                     "networkVersion": {
                         "type": "object",
-                        "description": "Number of nodes on the given Lisk Core versions.",
+                        "description": "Number of nodes on the given Lisk Core network versions.",
                         "properties": {
                             "2.0": {
                                 "type": "integer",
@@ -61,10 +59,6 @@
             "meta": {
                 "type": "object",
                 "description": "Defines how many items are skipped."
-            },
-            "links": {
-                "type": "object",
-                "description": "Total number of items in the database."
             }
         }
     }

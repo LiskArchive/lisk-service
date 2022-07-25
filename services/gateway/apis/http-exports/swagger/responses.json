@@ -1,10 +1,16 @@
 {
     "responses": {
         "badParameter": {
-            "description": "Bad input parameter"
+            "description": "Bad request",
+            "schema": {
+                "$ref": "#/definitions/badRequest"
+            }
         },
         "notFound": {
-            "description": "Not found"
+            "description": "Internal server error",
+            "schema": {
+                "$ref": "#/definitions/notFound"
+            }
         }
     }
 }

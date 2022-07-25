@@ -66,7 +66,7 @@
                         "type": "integer",
                         "minimum": 1,
                         "example": 8350681,
-                        "description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
+                        "description": "The height of the block in which this transaction was included.\n"
                     },
                     "timestamp": {
                         "type": "integer",
@@ -89,7 +89,7 @@
                     "amount": {
                         "type": "string",
                         "example": "100003490",
-                        "description": "Amount of Lisk to be transferred in this transaction.\n"
+                        "description": "Amount of Lisk (in Beddows) to be transferred in this transaction.\n"
                     },
                     "recipient": {
                         "type": "object",
@@ -98,7 +98,7 @@
                                 "type": "string",
                                 "format": "address",
                                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
                             },
                             "name": {
                                 "type": "string",
@@ -132,8 +132,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -145,9 +144,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     }

@@ -36,7 +36,7 @@
                 "format": "int32",
                 "minimum": 0,
                 "maximum": 2,
-                "description": "The state of the Peer.\nAvailable values: Connected, Disconnected, Banned\n"
+                "description": "The state of the Peer.\nAvailable values: Connected, Disconnected\n"
             },
             "height": {
                 "type": "integer",
@@ -53,8 +53,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -66,9 +65,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     },

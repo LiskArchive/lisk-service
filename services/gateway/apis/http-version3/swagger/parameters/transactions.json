@@ -8,9 +8,10 @@
     },
     "transaction": {
         "name": "transaction",
-        "in": "query",
+        "in": "body",
         "description": "Binary payload",
-        "type": "string",
-        "minLength": 1
+        "schema": {
+            "$ref": "#/definitions/transactionParamEnvelope"
+        }
     }
 }

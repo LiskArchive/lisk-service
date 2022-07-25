@@ -37,7 +37,7 @@ module.exports = {
 		legacyAccountSchema[this.swaggerApiPath].get.parameters = transformParams('legacyAccount', this.params);
 		legacyAccountSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Legacy account details',
+				description: 'Returns legacy account details for the specified publicKey',
 				schema: {
 					$ref: '#/definitions/legacyAccountWithEnvelope',
 				},

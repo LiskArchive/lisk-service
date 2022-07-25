@@ -3,13 +3,12 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
                 "type": "object",
-                "description": "Number of items returned in the request.",
+                "description": "Validator information for a given address.",
                 "properties": {
                     "generatorKey": {
                         "type": "string",
@@ -42,7 +41,7 @@
                         "type": "string",
                         "format": "address",
                         "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                        "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
                     },
                     "publicKey": {
                         "type": "string",
@@ -55,9 +54,6 @@
                         "description": "Validator name"
                     }
                 }
-            },
-            "links": {
-                "type": "object"
             }
         }
     }

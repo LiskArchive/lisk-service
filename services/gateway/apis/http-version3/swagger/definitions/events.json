@@ -16,7 +16,7 @@
             "moduleName": {
                 "type": "string",
                 "example": "token",
-                "description": "module Name of the transaction.\n"
+                "description": "module name of the transaction.\n"
             },
             "data": {
                 "type": "object",
@@ -29,7 +29,7 @@
                         "type": "string",
                         "format": "address",
                         "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                        "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
                     },
                     "data": {
                         "type": "string",
@@ -52,7 +52,7 @@
                         "type": "integer",
                         "minimum": 1,
                         "example": 8350681,
-                        "description": "The height of the network, at the moment where this transaction was included in the blockchain.\n"
+                        "description": "The height of the block in which the transaction was included.\n"
                     },
                     "timestamp": {
                         "type": "integer",
@@ -63,19 +63,18 @@
             },
             "topics": {
                 "type": "array",
-                "items":{
+                "items": {
                     "type": "string",
                     "example": "478842a844914f18a1c620a6494bf9931d0a862e96212bf5fc6f3ca18658febe"
                 }
-                }
+            }
         }
     },
     "eventsWithEnvelope": {
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -87,9 +86,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     }

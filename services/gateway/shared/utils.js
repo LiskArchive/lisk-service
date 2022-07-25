@@ -53,10 +53,16 @@ const transformParams = (type, params) => {
 
 const response = {
 	400: {
-		description: 'Bad input parameter',
+		description: 'Bad request',
+		schema: {
+			$ref: '#/definitions/badRequest',
+		},
 	},
 	404: {
-		description: 'Not found',
+		description: 'Internal server error',
+		schema: {
+			$ref: '#/definitions/notFound',
+		},
 	},
 };
 

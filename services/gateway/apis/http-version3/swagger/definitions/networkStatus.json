@@ -12,7 +12,7 @@
                 "properties": {
                     "version": {
                         "type": "string",
-                        "format": "App versiopn",
+                        "format": "App version",
                         "example": "4.0.0",
                         "description": "Current application version"
                     },
@@ -34,7 +34,7 @@
                         "minLength": 1,
                         "maxLength": 64,
                         "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                        "description": "Last blockID"
+                        "description": "Current block ID"
                     },
                     "height": {
                         "type": "integer",
@@ -149,7 +149,7 @@
                 "required": [
                     "lastUpdate",
                     "lastBlockHeight",
-                    "lastBlockId"
+                    "lastBlockID"
                 ],
                 "properties": {
                     "lastUpdate": {
@@ -162,7 +162,7 @@
                         "example": 16550779,
                         "description": "Height of the current block"
                     },
-                    "lastBlockId": {
+                    "lastBlockID": {
                         "type": "string",
                         "example": "6266b07d18ef072896b79110a59fab4b0635796e870dba1783b21e296aaac36f",
                         "description": "ID of the current block"

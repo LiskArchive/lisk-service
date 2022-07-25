@@ -36,14 +36,14 @@ module.exports = {
 			'newsfeed',
 			this.params,
 		);
-		newsfeedSchema[this.swaggerApiPath].get.summary = 'Requests news/blog posts';
+		newsfeedSchema[this.swaggerApiPath].get.summary = 'Requests Lisk news/blog posts';
 		newsfeedSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns news/blog posts',
+			description: 'Returns Lisk news/blog posts',
 		});
 		newsfeedSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of newsfeed articles',
+				description: 'Returns a list of newsfeed articles',
 				schema: {
 					$ref: '#/definitions/NewsfeedWithEnvelope',
 				},

@@ -16,13 +16,13 @@
                 "type": "integer",
                 "example": 10,
                 "minimum": 0,
-                "description": "Defines how many items are skipped."
+                "description": "Number of items skipped in the response."
             },
             "total": {
                 "type": "integer",
                 "example": 400,
                 "minimum": 0,
-                "description": "Total number of items in the database."
+                "description": "Number of items returned in the response."
             }
         }
     }

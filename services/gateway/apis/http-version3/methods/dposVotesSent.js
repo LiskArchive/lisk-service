@@ -42,7 +42,7 @@ module.exports = {
 		votesSchema[this.swaggerApiPath].get.parameters = transformParams('DPoS', this.params);
 		votesSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'array of votes sent',
+				description: 'Returns a list of votes sent for the specified address or name',
 				schema: {
 					$ref: '#/definitions/VotesSentWithEnvelope',
 				},

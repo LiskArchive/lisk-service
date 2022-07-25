@@ -3,8 +3,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -12,9 +11,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     },
@@ -55,7 +51,7 @@
                         },
                         "volume": {
                             "type": "string",
-                            "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows unit)",
+                            "description": "Sum of all transaction amounts and fees sent in the given time span (in Beddows)",
                             "example": "14447177193385"
                         }
                     }
@@ -95,12 +91,12 @@
             "moduleCommandID": {
                 "type": "string",
                 "example": "2:0",
-                "description": "Combination of transaction module:command ID.\n"
+                "description": "Combination of transaction moduleID:commandID.\n"
             },
             "moduleCommandName": {
                 "type": "string",
                 "example": "token:transfer",
-                "description": "Combination of transaction module:command Name.\n"
+                "description": "Combination of transaction moduleName:commandName.\n"
             },
             "nonce": {
                 "type": "string",
@@ -142,7 +138,7 @@
                         "type": "string",
                         "format": "address",
                         "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                        "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                        "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
                     },
                     "publicKey": {
                         "type": "string",
@@ -163,16 +159,16 @@
                     "amount": {
                         "type": "string",
                         "example": "100003490",
-                        "description": "Amount of Lisk to be transferred in this transaction.\n"
+                        "description": "Amount of Beddows to be transferred in this transaction.\n"
                     },
                     "recipient": {
                         "type": "object",
-                        "properties":{
+                        "properties": {
                             "address": {
                                 "type": "string",
                                 "format": "address",
                                 "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
-                                "description": "The Lisk Address is the human readable representation of the accounts owners' public key.\nIt is 41 character long address thats begins with `lsk`.\n"
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
                             },
                             "name": {
                                 "type": "string",
@@ -207,8 +203,7 @@
         "type": "object",
         "required": [
             "data",
-            "meta",
-            "links"
+            "meta"
         ],
         "properties": {
             "data": {
@@ -220,9 +215,6 @@
             },
             "meta": {
                 "$ref": "#/definitions/Pagination"
-            },
-            "links": {
-                "type": "object"
             }
         }
     },
@@ -233,10 +225,10 @@
                 "type": "string",
                 "example": "Transaction payload was successfully passed to the network node"
             },
-            "transactionId": {
+            "transactionID": {
                 "type": "string",
-                "example": "123456789",
-                "description": "Transaction Id"
+                "example": "bfd3521aeddd586f43931b6972b5771e9919e18f2cc91e940a15eacb588ecc6c",
+                "description": "Transaction ID"
             }
         }
     },
@@ -263,6 +255,16 @@
             "message": {
                 "type": "string",
                 "example": "Unable to reach a network node"
+            }
+        }
+    },
+    "transactionParamEnvelope": {
+        "type": "object",
+        "properties": {
+            "transaction": {
+                "type": "string",
+                "example": "0a040000000212040000000018002080c2d72f2a2044c3cb523c0a069e3f2dcb2d5994b6ba8ff9f73cac9ae746922aac4bc22f95b132310a0800000001000000001080c2d72f1a14632228a3e6a67ac6892de2eb4f60abe2e3bc42a1220a73656e6420746f6b656e3a40964d81e28727e6567b0fcd8a7fcf0a03f401cadbc1c16b9a7f300a52c372022b51a4553865199af34b5f73765f970704fc443d2a6dd510a26748905c306e530b",
+                "description": "Binary payload"
             }
         }
     }

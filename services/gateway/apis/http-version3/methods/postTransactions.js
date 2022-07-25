@@ -32,7 +32,7 @@ module.exports = {
 		postTransactionSchema[this.swaggerApiPath].post.summary = 'Post transactions';
 		postTransactionSchema[this.swaggerApiPath].post.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Post transactions and return transactionId',
+			description: 'Post transactions and return transactionID',
 		});
 		postTransactionSchema[this.swaggerApiPath].post.parameters = transformParams('transactions', this.params);
 		postTransactionSchema[this.swaggerApiPath].post.responses = {

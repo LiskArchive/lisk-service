@@ -40,15 +40,15 @@ module.exports = {
 		const blockAssetSchema = {};
 		blockAssetSchema[this.swaggerApiPath] = { get: {} };
 		blockAssetSchema[this.swaggerApiPath].get.tags = this.tags;
-		blockAssetSchema[this.swaggerApiPath].get.summary = 'Requests blocks assets data';
+		blockAssetSchema[this.swaggerApiPath].get.summary = 'Requests block assets data';
 		blockAssetSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns blocks assets data',
+			description: 'Returns block assets data',
 		});
 		blockAssetSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
 		blockAssetSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Array of blocks assets',
+				description: 'Array of block assets',
 				schema: {
 					$ref: '#/definitions/BlocksAssetsWithEnvelope',
 				},
