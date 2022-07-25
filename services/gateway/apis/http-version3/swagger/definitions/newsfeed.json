@@ -77,17 +77,7 @@
                 }
             },
             "meta": {
-                "type": "object",
-                "required": [
-                    "count"
-                ],
-                "properties": {
-                    "count": {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "count"
-                    }
-                }
+                "$ref": "#/definitions/Pagination"
             }
         }
     }

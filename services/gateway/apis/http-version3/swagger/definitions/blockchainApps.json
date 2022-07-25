@@ -40,7 +40,7 @@
                 "type": "integer",
                 "example": 160,
                 "minimum": 1,
-                "description": "Last certiticate Height"
+                "description": "Last certificate height"
             },
             "lastUpdated": {
                 "type": "string",

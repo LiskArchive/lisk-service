@@ -57,8 +57,7 @@
                 }
             },
             "meta": {
-                "type": "object",
-                "description": "Defines how many items are skipped."
+                "type": "object"
             }
         }
     }

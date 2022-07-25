@@ -12,7 +12,7 @@
                 "properties": {
                     "feeEstimatePerByte": {
                         "type": "object",
-                        "description": "Estimated fees based on priority",
+                        "description": "Estimated fees per byte based on priority",
                         "properties": {
                             "low": {
                                 "type": "integer",

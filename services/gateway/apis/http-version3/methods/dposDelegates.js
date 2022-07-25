@@ -38,7 +38,7 @@ module.exports = {
 		delegatesSchema[this.swaggerApiPath].get.summary = 'Requests delegates list';
 		delegatesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns list of delegates',
+			description: 'Returns delegates list',
 		});
 		delegatesSchema[this.swaggerApiPath].get.parameters = transformParams('DPoS', this.params);
 		delegatesSchema[this.swaggerApiPath].get.responses = {

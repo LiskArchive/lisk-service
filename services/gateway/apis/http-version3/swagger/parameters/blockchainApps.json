@@ -11,7 +11,7 @@
     "chainID": {
         "name": "chainID",
         "in": "query",
-        "description": "Chain ID to query (Can be expressed as an interval from:to)",
+        "description": "Chain ID to query (can be expressed as an interval from:to)",
         "type": "integer",
         "format": "id",
         "minLength": 1

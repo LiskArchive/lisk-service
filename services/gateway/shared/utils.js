@@ -59,7 +59,7 @@ const response = {
 		},
 	},
 	404: {
-		description: 'Internal server error',
+		description: 'Not found',
 		schema: {
 			$ref: '#/definitions/notFound',
 		},

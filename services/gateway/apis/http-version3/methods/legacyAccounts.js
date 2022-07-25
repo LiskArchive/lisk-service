@@ -21,7 +21,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/legacy',
 	rpcMethod: 'get.legacy',
-	tags: ['Accounts'],
+	tags: ['Legacy'],
 	params: {
 		publicKey: { optional: false, type: 'string', min: 64, max: 64, pattern: regex.PUBLIC_KEY },
 	},

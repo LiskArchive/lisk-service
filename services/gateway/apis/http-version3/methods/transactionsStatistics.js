@@ -45,6 +45,14 @@ module.exports = {
 				},
 			},
 		};
+		transactionSchema[this.swaggerApiPath].get.parameters = [{
+			name: 'interval',
+			in: 'query',
+			description: 'interval to query statistics',
+			required: true,
+			type: 'string',
+			enum: ['day', 'month'],
+		}];
 		Object.assign(transactionSchema[this.swaggerApiPath].get.responses, response);
 		return transactionSchema;
 	},

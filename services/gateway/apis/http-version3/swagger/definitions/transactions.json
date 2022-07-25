@@ -159,7 +159,7 @@
                     "amount": {
                         "type": "string",
                         "example": "100003490",
-                        "description": "Amount of Beddows to be transferred in this transaction.\n"
+                        "description": "Amount of Lisk (in Beddows) to be transferred in this transaction.\n"
                     },
                     "recipient": {
                         "type": "object",
