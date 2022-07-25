@@ -13,11 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Signals } = require('lisk-service-framework');
+const { Signals, Logger } = require('lisk-service-framework');
 
 const { getRegisteredEvents } = require('./endpoints');
 const { getApiClient } = require('./client');
 
+const logger = Logger();
 // TODO: Update the implementation to avoid any hardcoding with the issue https://github.com/liskhq/lisk-service/issues/1097
 const EVENT_CHAIN_FORK = 'chain_forked';
 const EVENT_CHAIN_BLOCK_NEW = 'chain_newBlock';
@@ -40,7 +41,10 @@ const subscribeToAllRegisteredEvents = async () => {
 	allEvents.forEach(event => {
 		apiClient.subscribe(
 			event,
-			payload => Signals.get(event).dispatch(payload),
+			payload => {
+				logger.info(`Subscribed to the API client event: ${event}`);
+				Signals.get(event).dispatch(payload)
+			},
 		);
 	});
 };
