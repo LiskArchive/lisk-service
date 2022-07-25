@@ -459,4 +459,33 @@ xdescribe('Method get.events', () => {
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});
+
+	describe('is able to retrieve events using topic', () => {
+		it('known transactionID -> ok', async () => {
+			const response = await getEvents({ topic: refTransaction.id });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeArrayOfSize(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('known senderAddress -> ok', async () => {
+			const response = await getEvents({ topic: refTransaction.sender.address });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeArrayOfSize(1);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('empty topic -> empty response', async () => {
+			const response = await getEvents({ transactionID: '' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+	});
 });
