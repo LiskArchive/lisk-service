@@ -7,7 +7,7 @@
             }
         },
         "notFound": {
-            "description": "Internal server error",
+            "description": "Not found",
             "schema": {
                 "$ref": "#/definitions/notFound"
             }
