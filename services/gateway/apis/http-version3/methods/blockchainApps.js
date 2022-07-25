@@ -22,7 +22,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blockchain/apps',
 	rpcMethod: 'get.blockchain.apps',
-	tags: ['Blockchain Applications'],
+	tags: ['Interoperability'],
 	params: {
 		chainID: { optional: true, type: 'string', min: 1, max: 21, pattern: regex.CHAINID_RANGE },
 		isDefault: { optional: true, type: 'boolean' },

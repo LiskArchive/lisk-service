@@ -32,12 +32,8 @@
                 "description": "Lisk Auth module API calls"
             },
             {
-                "name": "Blockchain Applications",
-                "description": "Lisk Blockchain Applications API calls"
-            },
-            {
                 "name": "Interoperability",
-                "description": "Lisk Interoperability module API calls"
+                "description": "Lisk Blockchain Interoperability related API calls"
             },
             {
                 "name": "DPoS",

@@ -20,7 +20,7 @@ module.exports = {
 	version: '2.0',
 	swaggerApiPath: '/blockchain/apps/statistics',
 	rpcMethod: 'get.blockchain.apps.statistics',
-	tags: ['Blockchain Applications'],
+	tags: ['Interoperability'],
 	params: {},
 	get schema() {
 		const blockchainAppsStatsSchema = {};
