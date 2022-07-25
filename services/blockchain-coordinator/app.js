@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -52,7 +51,7 @@ const app = Microservice({
 		},
 		chainValidatorsChange: async (payload) => {
 			logger.info('Subscribed to the validators change event from connecter');
-			Signals.get('newRound').dispatch(payload)
+			Signals.get('newRound').dispatch(payload);
 		},
 	},
 	dependencies: [

@@ -43,7 +43,7 @@ const subscribeToAllRegisteredEvents = async () => {
 			event,
 			payload => {
 				logger.info(`Subscribed to the API client event: ${event}`);
-				Signals.get(event).dispatch(payload)
+				Signals.get(event).dispatch(payload);
 			},
 		);
 	});
