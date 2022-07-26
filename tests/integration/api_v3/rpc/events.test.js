@@ -474,7 +474,7 @@ xdescribe('Method get.events', () => {
 		});
 
 		it('as CSV transactionID,senderrAddress -> ok', async () => {
-			const topic = refTransaction.id.concat(',', refTransaction.sender.address)
+			const topic = refTransaction.id.concat(',', refTransaction.sender.address);
 			const response = await getEvents({ topic });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;

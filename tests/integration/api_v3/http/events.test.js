@@ -537,7 +537,7 @@ xdescribe('Events API', () => {
 		});
 
 		it('returns event with topic as CSV - transactionID,senderAddress', async () => {
-			const topic = refTransaction.id.concat(',', refTransaction.sender.address)
+			const topic = refTransaction.id.concat(',', refTransaction.sender.address);
 			const response = await api.get(`${endpoint}?topic=${topic}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
