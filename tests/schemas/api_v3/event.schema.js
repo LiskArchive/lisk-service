@@ -31,7 +31,7 @@ const eventSchema = {
 	moduleID: Joi.string().required(),
 	moduleName: Joi.string().required(),
 	typeID: Joi.string().required(),
-	data: Joi.object().required(),
+	data: Joi.string().required(),
 	topics: Joi.array().required(),
 	block: Joi.object(block).optional(),
 };
