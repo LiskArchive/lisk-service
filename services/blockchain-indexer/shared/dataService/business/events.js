@@ -91,7 +91,7 @@ const getEvents = async (params) => {
 		params.whereIn = {
 			property: 'topic',
 			values: topic.split(','),
-		}
+		};
 	}
 
 	if (params.transactionID) {
