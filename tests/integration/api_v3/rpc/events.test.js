@@ -482,7 +482,7 @@ xdescribe('Method get.events', () => {
 		});
 
 		it('empty topic -> empty response', async () => {
-			const response = await getEvents({ transactionID: '' });
+			const response = await getEvents({ topic: '' });
 			expect(response).toMap(emptyResponseSchema);
 			const { result } = response;
 			expect(result).toMap(emptyResultEnvelopeSchema);

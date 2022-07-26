@@ -545,7 +545,7 @@ xdescribe('Events API', () => {
 		});
 
 		it('empty topic -> ok', async () => {
-			const response = await api.get(`${endpoint}?topic`);
+			const response = await api.get(`${endpoint}?topic=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
