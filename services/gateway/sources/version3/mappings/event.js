@@ -16,7 +16,7 @@
 module.exports = {
 	moduleID: '=,string',
 	moduleName: '=,string',
-	typeID: '=',
+	typeID: '=,string',
 	data: '=,string',
 	topics: '=',
 	block: {

@@ -465,7 +465,22 @@ xdescribe('Method get.events', () => {
 			const response = await getEvents({ topic: refTransaction.id });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toBeArrayOfSize(1);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('as CSV transactionID,senderrAddress -> ok', async () => {
+			const topic = refTransaction.id.concat(',', refTransaction.sender.address)
+			const response = await getEvents({ topic });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(event => expect(event).toMap(eventSchema));
 			expect(result.meta).toMap(metaSchema);
@@ -475,7 +490,9 @@ xdescribe('Method get.events', () => {
 			const response = await getEvents({ topic: refTransaction.sender.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
-			expect(result.data).toBeArrayOfSize(1);
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach(event => expect(event).toMap(eventSchema));
 			expect(result.meta).toMap(metaSchema);
