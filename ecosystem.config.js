@@ -46,6 +46,23 @@ module.exports = {
 			},
 		},
 		{
+			name: 'lisk-service-blockchain-app-registry',
+			script: 'app.js',
+			cwd: './services/blockchain-app-registry',
+			pid_file: './pids/service_blockchain_app_registry.pid',
+			out_file: './logs/service_blockchain_app_registry.log',
+			error_file: './logs/service_blockchain_app_registry.err',
+			log_date_format: 'YYYY-MM-DD HH:mm:ss SSS',
+			watch: false,
+			kill_timeout: 10000,
+			max_memory_restart: '150M',
+			autorestart: true,
+			env: {
+				// --- Remember to set the properties below
+				SERVICE_BROKER: 'redis://localhost:6379/0',
+			},
+		},
+		{
 			name: 'lisk-service-blockchain-connector',
 			script: 'app.js',
 			cwd: './services/blockchain-connector',
