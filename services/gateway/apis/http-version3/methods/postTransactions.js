@@ -14,7 +14,7 @@
  *
  */
 const postTransactionsSource = require('../../../sources/version3/postTransactions');
-const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
+const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -34,7 +34,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Post transactions and return transactionID',
 		});
-		postTransactionSchema[this.swaggerApiPath].post.parameters = transformParams('transactions', this.params);
+		postTransactionSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/transaction' }];
 		postTransactionSchema[this.swaggerApiPath].post.responses = {
 			200: {
 				description: 'Broadcast transaction',

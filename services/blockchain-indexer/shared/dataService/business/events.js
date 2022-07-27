@@ -85,20 +85,23 @@ const getEvents = async (params) => {
 		params = normalizeRangeParam(params, 'timestamp');
 	}
 
-	if (params.blockID) {
-		const { blockID, ...remParams } = params;
+	if (params.topic) {
+		const { topic, ...remParams } = params;
 		params = remParams;
-		const [block] = await blocksDB.find({ id: blockID }, ['height']);
-		if ('height' in params && params.height !== block.height) {
-			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
-		}
-		params.height = block.height;
+		params.whereIn = {
+			property: 'topic',
+			values: topic.split(','),
+		};
 	}
 
 	if (params.transactionID) {
-		const { transactionID, ...remParams } = params;
+		const { transactionID, topic, ...remParams } = params;
 		params = remParams;
-		params.topic = transactionID;
+		if (!topic) {
+			params.topic = transactionID;
+		} else {
+			params.andWhere = { topic: transactionID };
+		}
 	}
 
 	if (params.senderAddress) {
@@ -109,6 +112,16 @@ const getEvents = async (params) => {
 		} else {
 			params.andWhere = { topic: senderAddress };
 		}
+	}
+
+	if (params.blockID) {
+		const { blockID, ...remParams } = params;
+		params = remParams;
+		const [block] = await blocksDB.find({ id: blockID }, ['height']);
+		if ('height' in params && params.height !== block.height) {
+			throw new NotFoundException(`Invalid combination of blockID: ${blockID} and height: ${params.height}`);
+		}
+		params.height = block.height;
 	}
 
 	const total = await eventTopicsDB.count(params);

@@ -20,5 +20,11 @@ module.exports = {
 		endpoint: '=,string',
 		params: '=,object',
 	},
-	definition: '=', // Passthrough the response object as is
+	definition: {
+		data: '=',
+		meta: {
+			endpoint: '=,string',
+			params: '=',
+		},
+	},
 };

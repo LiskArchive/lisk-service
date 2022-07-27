@@ -523,4 +523,57 @@ xdescribe('Events API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 	});
+	describe('Retrieve events by topic', () => {
+		it('returns event with topic as transactionID', async () => {
+			const response = await api.get(`${endpoint}?topic=${refTransaction.id}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns event with topic as CSV - transactionID,senderAddress', async () => {
+			const topic = refTransaction.id.concat(',', refTransaction.sender.address);
+			const response = await api.get(`${endpoint}?topic=${topic}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('returns event with topic as senderAddress', async () => {
+			const response = await api.get(`${endpoint}?topic=${refTransaction.sender.address}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach(event => expect(event).toMap(eventSchema));
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('empty topic -> ok', async () => {
+			const response = await api.get(`${endpoint}?topic=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((event, i) => {
+				expect(event).toMap(eventSchema);
+				if (i > 0) {
+					const prevEvent = response.data[i - 1];
+					if (event.block && event.block.timestamp) {
+						if (prevEvent.block && prevEvent.block.timestamp) {
+							const prevEventTimestamp = prevEvent.block.timestamp;
+							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
+						}
+					}
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+	});
 });

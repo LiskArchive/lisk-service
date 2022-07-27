@@ -1,0 +1,11 @@
+{
+    "invokeParams": {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "description": "The request body can contain 2 properties:\n- endpoint (required): Blockchain application endpoint to invoke\n- params (optional): Parameters to be passed to the application endpoint",
+        "schema": {
+            "$ref": "#/definitions/invokeParamsEnvelope"
+        }
+    }
+}

@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const util = require('util');
 const { Signals, Logger } = require('lisk-service-framework');
 
 const { getRegisteredEvents } = require('./endpoints');
@@ -42,10 +43,11 @@ const subscribeToAllRegisteredEvents = async () => {
 		apiClient.subscribe(
 			event,
 			payload => {
-				logger.info(`Subscribed to the API client event: ${event}`);
+				logger.debug(`Received event: ${event} with payload:\n${util.inspect(payload)}`);
 				Signals.get(event).dispatch(payload);
 			},
 		);
+		logger.info(`Subscribed to the API client event: ${event}`);
 	});
 };
 
