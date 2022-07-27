@@ -7,9 +7,10 @@
         "minLength": 1
     },
     "transaction": {
-        "name": "transaction",
+        "name": "body",
         "in": "body",
-        "description": "Binary payload",
+        "required": true,
+        "description": "The request body can contain only one property:\n- transaction (required): Binary payload",
         "schema": {
             "$ref": "#/definitions/transactionParamEnvelope"
         }

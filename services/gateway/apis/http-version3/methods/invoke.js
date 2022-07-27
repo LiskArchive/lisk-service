@@ -14,7 +14,7 @@
  *
  */
 const invokeEndpointSource = require('../../../sources/version3/invoke');
-const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const { response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -35,7 +35,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns endpoint response from the blockchain application in its original form',
 		});
-		invokeEndpointSchema[this.swaggerApiPath].post.parameters = transformParams('Proxy', this.params);
+		invokeEndpointSchema[this.swaggerApiPath].post.parameters = [{ $ref: '#/parameters/invokeParams' }];
 		invokeEndpointSchema[this.swaggerApiPath].post.responses = {
 			200: {
 				description: 'Returns endpoint response from the blockchain application in its original form',

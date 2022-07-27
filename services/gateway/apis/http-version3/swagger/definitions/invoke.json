@@ -216,9 +216,5 @@
                 }
             }
         }
-    },
-    "endpointEnvelope": {
-        "type": "string",
-        "example": "chain_getBlockByHeight"
     }
 }

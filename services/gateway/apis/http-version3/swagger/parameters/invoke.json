@@ -1,16 +1,9 @@
 {
-    "endpoint": {
-        "name": "endpoint",
+    "invokeParams": {
+        "name": "body",
         "in": "body",
-        "description": "Application endpoint",
-        "schema": {
-            "$ref": "#/definitions/endpointEnvelope"
-        }
-    },
-    "params": {
-        "name": "params",
-        "in": "body",
-        "description": "Parameters to be passed to the application endpoint",
+        "required": true,
+        "description": "The request body can contain 2 properties:\n- endpoint (required): Blockchain application endpoint to invoke\n- params (optional): Parameters to be passed to the application endpoint",
         "schema": {
             "$ref": "#/definitions/invokeParamsEnvelope"
         }
