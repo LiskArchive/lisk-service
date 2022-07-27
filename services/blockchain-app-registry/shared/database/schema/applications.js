@@ -14,9 +14,24 @@
  *
  */
 module.exports = {
-    tableName: 'applications',
-    primaryKey: '',
-    schema: {},
-    indexes: {},
-    purge: {},
+	tableName: 'applications',
+	primaryKey: ['chainID', 'network'],
+	schema: {
+		chainID: { type: 'string' },
+		name: { type: 'string' },
+		title: { type: 'string' },
+		description: { type: 'string' },
+		network: { type: 'string' },
+		genesisBlock: { type: 'string' },
+		homepage: { type: 'string' },
+		apis: { type: 'json' },
+		explorers: { type: 'json' },
+		images: { type: 'json' },
+	},
+	indexes: {
+		chainID: { type: 'key' },
+		name: { type: 'key' },
+		network: { type: 'key' },
+	},
+	purge: {},
 };
