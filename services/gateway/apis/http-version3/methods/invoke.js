@@ -14,7 +14,7 @@
  *
  */
 const invokeEndpointSource = require('../../../sources/version3/invoke');
-const { response, getSwaggerDescription } = require('../../../shared/utils');
+const { getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
 	version: '2.0',
@@ -43,8 +43,13 @@ module.exports = {
 					$ref: '#/definitions/invokeWithEnvelope',
 				},
 			},
+			400: {
+				description: 'Bad request',
+				schema: {
+					$ref: '#/definitions/badRequest',
+				},
+			},
 		};
-		Object.assign(invokeEndpointSchema[this.swaggerApiPath].post.responses, response);
 		return invokeEndpointSchema;
 	},
 	source: invokeEndpointSource,
