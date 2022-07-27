@@ -22,6 +22,9 @@ module.exports = {
 	},
 	definition: {
 		data: '=',
-		meta: '=',
+		meta: {
+			endpoint: '=,string',
+			params: '=',
+		},
 	},
 };
