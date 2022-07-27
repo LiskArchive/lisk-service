@@ -1,0 +1,18 @@
+{
+    "endpoint": {
+        "name": "endpoint",
+        "in": "body",
+        "description": "Application endpoint",
+        "schema": {
+            "$ref": "#/definitions/endpointEnvelope"
+        }
+    },
+    "params": {
+        "name": "params",
+        "in": "body",
+        "description": "Parameters to be passed to the application endpoint",
+        "schema": {
+            "$ref": "#/definitions/invokeParamsEnvelope"
+        }
+    }
+}

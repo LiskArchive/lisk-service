@@ -1,0 +1,9 @@
+{
+    "topic": {
+        "name": "topic",
+        "in": "query",
+        "description": "Event topic to query (can be expressed as CSV)",
+        "type": "string",
+        "minLength": 1
+    }
+}
