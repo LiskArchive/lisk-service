@@ -530,9 +530,7 @@ xdescribe('Events API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(event => {
-				expect(event).toMap(eventSchema);
-			});
+			response.data.forEach(event => expect(event).toMap(eventSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -543,9 +541,7 @@ xdescribe('Events API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(event => {
-				expect(event).toMap(eventSchema);
-			});
+			response.data.forEach(event => expect(event).toMap(eventSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -555,9 +551,7 @@ xdescribe('Events API', () => {
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach(event => {
-				expect(event).toMap(eventSchema);
-			});
+			response.data.forEach(event => expect(event).toMap(eventSchema));
 			expect(response.meta).toMap(metaSchema);
 		});
 
@@ -574,7 +568,7 @@ xdescribe('Events API', () => {
 					if (event.block && event.block.timestamp) {
 						if (prevEvent.block && prevEvent.block.timestamp) {
 							const prevEventTimestamp = prevEvent.block.timestamp;
-							expect(prevEventTimestamp).toBeGreaterThanOrEqual(event.block.timestamp);
+							expect(prevEventTimestamp).toBeLessThanOrEqual(event.block.timestamp);
 						}
 					}
 				}
