@@ -14,11 +14,11 @@
  *
  */
 const { initDatabase } = require('./database/index');
-const { downloadRepo } = require('./utils/cloneRepo');
+const { downloadRepositoryToFS } = require('./utils/downloadRepository');
 
 const init = async () => {
 	await initDatabase();
-	await downloadRepo();
+	await downloadRepositoryToFS();
 };
 
 module.exports = {
