@@ -19,11 +19,11 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const config = require('../config');
+const config = require('../../config');
 
 const indexSchemas = {
-	applications: require('./database/schema/applications'),
-	tokens: require('./database/schema/tokens'),
+	applications: require('./schema/applications'),
+	tokens: require('./schema/tokens'),
 };
 
 const initializeSearchIndex = async () => {
@@ -45,11 +45,11 @@ const truncateTable = async () => {
 	);
 };
 
-const init = async () => {
+const initDatabase = async () => {
 	if (config.isTruncateTableEnable) await truncateTable();
 	await initializeSearchIndex();
 };
 
 module.exports = {
-	init,
+	initDatabase,
 };

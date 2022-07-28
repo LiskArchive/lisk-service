@@ -22,7 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { init } = require('./shared/init');
+const { init } = require('./shared/metadataIndex');
 
 // Configure logger
 const loggerConf = {
