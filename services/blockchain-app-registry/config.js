@@ -19,6 +19,12 @@ const config = {};
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
+/**
+ * External endpoints
+ */
+config.endpoints = {};
+config.endpoints.mysql = process.env.SERVICE_APP_REGISTRY_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+
 // Logging
 config.log = {};
 /**
@@ -46,5 +52,7 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
+
+config.isTruncateTableEnable = Boolean(String(process.env.ENABLE_TRUNCATE_TABLE).toLowerCase() === 'true');
 
 module.exports = config;

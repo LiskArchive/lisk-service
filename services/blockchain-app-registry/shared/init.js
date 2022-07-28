@@ -19,6 +19,8 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
+const config = require('../config');
+
 const indexSchemas = {
 	applications: require('./database/schema/applications'),
 	tokens: require('./database/schema/tokens'),
@@ -32,7 +34,19 @@ const initializeSearchIndex = async () => {
 	);
 };
 
+const truncateTable = async () => {
+	await BluebirdPromise.map(
+		Object.keys(indexSchemas),
+		async key => {
+			const db = await getTableInstance(key, indexSchemas[key]);
+			await db.rawQuery(`TRUNCATE TABLE ${key};`);
+		},
+		{ concurrency: 1 },
+	);
+};
+
 const init = async () => {
+	if (config.isTruncateTableEnable) await truncateTable();
 	await initializeSearchIndex();
 };
 
