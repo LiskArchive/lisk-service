@@ -22,6 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
+const { init } = require('./shared/init');
 
 // Configure logger
 const loggerConf = {
@@ -45,11 +46,11 @@ const app = Microservice({
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
-app.addEvents(path.join(__dirname, 'events'));
 app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
-app.run().then(() => {
+app.run().then(async () => {
+	await init();
 	logger.info(`Service started ${packageJson.name}`);
 }).catch(err => {
 	logger.fatal(`Could not start the service ${packageJson.name} + ${err.message}`);
