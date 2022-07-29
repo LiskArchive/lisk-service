@@ -67,10 +67,18 @@ const getFiles = async (directoryPath, options = { withFileTypes: true }) => {
 		.map(dir => path.join(directoryPath, dir.name)).filter(isFile);
 };
 
+const rename = async (olddir, newDir) => {
+	await fs.rename(olddir, newDir, (err) => {
+		if (err) logger.error('Error when renaming directory:', err.message);
+		else logger.debug('Successfully renamed directory');
+	});
+};
+
 module.exports = {
 	exists,
 	mkdir,
 	getDirectories,
 	read,
 	getFiles,
+	rename,
 };

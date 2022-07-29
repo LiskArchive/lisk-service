@@ -17,14 +17,13 @@ const http = require('http');
 const https = require('https');
 const tar = require('tar');
 const { Octokit } = require('octokit');
-const path = require('path');
 
 const {
 	Logger,
 	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
-const { exists, mkdir } = require('./fsUtils');
+const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
 const config = require('../../config');
 
 const logger = Logger();
@@ -66,12 +65,16 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 });
 
 const downloadRepositoryToFS = async () => {
-	const localRepoPath = './data/repo';
-	const directoryPath = path.dirname(localRepoPath);
+	const directoryPath = './data';
+	const appPath = config.gitHub.localExtractPath;
+	if (!(await exists(appPath))) {
+		if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
+		const { url } = await getPrivateRepoDownloadURL();
+		await downloadAndExtractTarball(url, directoryPath);
 
-	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-	const { url } = await getPrivateRepoDownloadURL();
-	await downloadAndExtractTarball(url, directoryPath);
+		const [oldDir] = await getDirectories(directoryPath);
+		await rename(oldDir, appPath);
+	}
 };
 
 module.exports = {

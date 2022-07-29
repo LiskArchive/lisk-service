@@ -97,7 +97,7 @@ const indexChainInfo = async (filePath) => {
 };
 
 const indexBlockchainMetadata = async () => {
-	const localRepoPath = './data/chain-registry';
+	const localRepoPath = config.gitHub.extractPath;
 	const allAvailableDir = await getDirectories(localRepoPath);
 
 	await BluebirdPromise.map(

@@ -60,6 +60,7 @@ config.gitHub = {
 	url: process.env.GITHUB_REPO_URL || 'https://github.com/LiskHQ/lisk-service',
 	accessTokenGitHub: process.env.GITHUB_ACCESS_TOKEN || '',
 	branch: process.env.GITHUB_BRANCH_NAME || 'main',
+	localExtractPath: process.env.LOCAL_EXTRACT_PATH || './data/app-registry',
 };
 
 module.exports = config;
