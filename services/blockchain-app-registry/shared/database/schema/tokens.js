@@ -15,9 +15,9 @@
  */
 module.exports = {
 	tableName: 'tokens',
-	primaryKey: ['chainID', 'name'],
+	primaryKey: ['chainName', 'name'],
 	schema: {
-		chainID: { type: 'string' },
+		// chainID: { type: 'string' },
 		chainName: { type: 'string' },
 		description: { type: 'string' },
 		name: { type: 'string' },
@@ -28,8 +28,8 @@ module.exports = {
 		logo: { type: 'json' },
 	},
 	indexes: {
-		chainID: { type: 'key' },
 		name: { type: 'key' },
+		// chainID: { type: 'key' },
 	},
 	purge: {},
 };

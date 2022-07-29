@@ -13,15 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const fs = require('fs');
 
 const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const exists = async (path) => {
+const exists = async (filePath) => {
 	try {
-		await fs.promises.access(path);
+		await fs.promises.access(filePath);
 		return true;
 	} catch (_) {
 		return false;
@@ -40,15 +41,36 @@ const mkdir = async (directoryPath, options = { recursive: true, mode: '0o777' }
 	);
 };
 
+const read = (filePath) => new Promise((resolve, reject) => {
+	fs.readFile(filePath, 'utf8', (err, data) => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve(data);
+	});
+});
+
+const isDirectory = directoryPath => fs.lstatSync(directoryPath).isDirectory();
+
+const isFile = directoryPath => fs.lstatSync(directoryPath).isFile();
+
 const getDirectories = async (directoryPath, options = { withFileTypes: true }) => {
 	const allDir = await fs.promises.readdir(directoryPath, options);
 	return allDir
-		.filter(dir => dir.isDirectory())
-		.map(dir => dir.name);
+		.map(dir => path.join(directoryPath, dir.name)).filter(isDirectory);
+};
+
+const getFiles = async (directoryPath, options = { withFileTypes: true }) => {
+	const allDir = await fs.promises.readdir(directoryPath, options);
+	return allDir
+		.map(dir => path.join(directoryPath, dir.name)).filter(isFile);
 };
 
 module.exports = {
 	exists,
 	mkdir,
 	getDirectories,
+	read,
+	getFiles,
 };
