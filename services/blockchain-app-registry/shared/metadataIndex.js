@@ -16,8 +16,8 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-	Logger,
-	MySQL: { getTableInstance },
+    Logger,
+    MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const config = require('../config');
@@ -30,14 +30,14 @@ const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
 
 const getApplicationsIndex = () => getTableInstance(
-	applicationsIndexSchema.tableName,
-	applicationsIndexSchema,
-	MYSQL_ENDPOINT,
+    applicationsIndexSchema.tableName,
+    applicationsIndexSchema,
+    MYSQL_ENDPOINT,
 );
 const getTokensIndex = () => getTableInstance(
-	tokensIndexSchema.tableName,
-	tokensIndexSchema,
-	MYSQL_ENDPOINT,
+    tokensIndexSchema.tableName,
+    tokensIndexSchema,
+    MYSQL_ENDPOINT,
 );
 
 const { downloadRepositoryToFS } = require('./utils/downloadRepository');
@@ -47,87 +47,87 @@ const { getDirectories, read, getFiles } = require('./utils/fsUtils');
 const logger = Logger();
 
 const indexTokensInfo = async (filePath) => {
-	const tokensDB = await getTokensIndex();
+    const tokensDB = await getTokensIndex();
 
-	const response = await read(filePath);
-	const tokenInfo = JSON.parse(response);
+    const response = await read(filePath);
+    const tokenInfo = JSON.parse(response);
 
-	const tokenInfoToIndex = await BluebirdPromise.map(
-		tokenInfo.assets,
-		async (asset) => {
-			const result = {
-				// chainID: '', // TODO: Discuss
-				chainName: tokenInfo.chain_name,
-				description: asset.description,
-				name: asset.name,
-				Symbol: asset.symbol,
-				display: asset.display,
-				base: asset.base,
-				exponent: 8,
-				// logo: JSON.stringify(asset.token_logo_URIs),
-				logo: JSON.stringify(asset.logo_URIs),
-			};
-			return result;
-		}, { concurrency: tokenInfo.assets.length },
-	);
+    const tokenInfoToIndex = await BluebirdPromise.map(
+        tokenInfo.assets,
+        async (asset) => {
+            const result = {
+                // chainID: '', // TODO: Discuss
+                chainName: tokenInfo.chain_name,
+                description: asset.description,
+                name: asset.name,
+                Symbol: asset.symbol,
+                display: asset.display,
+                base: asset.base,
+                exponent: 8,
+                // logo: JSON.stringify(asset.token_logo_URIs),
+                logo: JSON.stringify(asset.logo_URIs),
+            };
+            return result;
+        }, { concurrency: tokenInfo.assets.length },
+    );
 
-	await tokensDB.upsert(tokenInfoToIndex);
+    await tokensDB.upsert(tokenInfoToIndex);
 };
 
 const indexChainInfo = async (filePath) => {
-	const applicationsDB = await getApplicationsIndex();
+    const applicationsDB = await getApplicationsIndex();
 
-	const response = await read(filePath);
-	const chainInfo = JSON.parse(response);
+    const response = await read(filePath);
+    const chainInfo = JSON.parse(response);
 
-	const chainInfoToIndex = {
-		chainID: chainInfo.chain_id, // TODO: Discuss
-		name: chainInfo.chain_name,
-		// description: '',
-		// title: asset.description,
-		// network: asset.description,
-		// genesisBlock: asset.description,
-		homepage: chainInfo.homepage,
-		apis: JSON.stringify(chainInfo.apis),
-		images: JSON.stringify(chainInfo.logos),
-		explorers: JSON.stringify(chainInfo.explorers),
-	};
+    const chainInfoToIndex = {
+        chainID: chainInfo.chain_id, // TODO: Discuss
+        name: chainInfo.chain_name,
+        // description: '',
+        // title: asset.description,
+        // network: asset.description,
+        // genesisBlock: asset.description,
+        homepage: chainInfo.homepage,
+        apis: JSON.stringify(chainInfo.apis),
+        images: JSON.stringify(chainInfo.logos),
+        explorers: JSON.stringify(chainInfo.explorers),
+    };
 
-	await applicationsDB.upsert(chainInfoToIndex);
+    await applicationsDB.upsert(chainInfoToIndex);
 };
 
 const indexBlockchainMetadata = async () => {
-	const localRepoPath = config.gitHub.extractPath;
-	const allAvailableDir = await getDirectories(localRepoPath);
+    const localRepoPath = config.gitHub.localExtractPath;
+    const allAvailableApps = await getDirectories(localRepoPath);
 
-	await BluebirdPromise.map(
-		allAvailableDir,
-		async dir => {
-			const allFilesPath = await getFiles(`${dir}`);
-			await BluebirdPromise.map(
-				allFilesPath,
-				async filePath => {
-					if (filePath.includes('/assetlist.json')) {
-						logger.info(`Indexing tokens information for the app: ${filePath.split('/')[2]}`);
-						await indexTokensInfo(filePath);
-					} else if (filePath.includes('/chain.json')) {
-						logger.info(`Indexing chain information for the app: ${filePath.split('/')[1]}`);
-						await indexChainInfo(filePath);
-					}
-				},
-				{ concurrency: allFilesPath.length },
-			);
-		},
-		{ concurrency: allAvailableDir.length },
-	);
+    await BluebirdPromise.map(
+        allAvailableApps,
+        async app => {
+            const allFilesFromApp = await getFiles(`${app}`);
+            await BluebirdPromise.map(
+                allFilesFromApp,
+                async file => {
+                    if (file.includes('assetlist.json')) {
+                        logger.info(`Indexing tokens information for the app: ${file.split('/')[2]}`);
+                        await indexTokensInfo(file);
+                    } else if (file.includes('chain.json')) {
+                        logger.info(`Indexing chain information for the app: ${file.split('/')[2]}`);
+                        await indexChainInfo(file);
+                    }
+                },
+                { concurrency: allFilesFromApp.length },
+            );
+        },
+        { concurrency: allAvailableApps.length },
+    );
 };
 
 const init = async () => {
-	await initDatabase();
-	await downloadRepositoryToFS();
-	await indexBlockchainMetadata();
+    await initDatabase();
+    await downloadRepositoryToFS();
+    await indexBlockchainMetadata();
 };
 
 module.exports = {
-	init,
+    init,
 };
