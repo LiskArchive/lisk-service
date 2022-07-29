@@ -13,12 +13,30 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const { initDatabase } = require('./database/index');
 const { downloadRepositoryToFS } = require('./utils/downloadRepository');
+
+const { getDirectories } = require('./utils/fsUtils');
+
+const indexBlockchainMetadata = async () => {
+	const localRepoPath = './data/repo';
+	const allAvailableDir = await getDirectories(localRepoPath);
+
+	await BluebirdPromise.map(
+		allAvailableDir,
+		dir => {
+			// Placeholder for indexing
+		},
+		{ concurrency: allAvailableDir.length },
+	);
+};
 
 const init = async () => {
 	await initDatabase();
 	await downloadRepositoryToFS();
+	await indexBlockchainMetadata();
 };
 
 module.exports = {

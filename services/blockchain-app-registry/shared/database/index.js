@@ -34,7 +34,7 @@ const initializeSearchIndex = async () => {
 	);
 };
 
-const truncateTable = async () => {
+const truncateAllTables = async () => {
 	await BluebirdPromise.map(
 		Object.keys(indexSchemas),
 		async key => {
@@ -46,7 +46,7 @@ const truncateTable = async () => {
 };
 
 const initDatabase = async () => {
-	if (config.isTruncateTableEnable) await truncateTable();
+	if (config.isRebuildIndexAtInit) await truncateAllTables();
 	await initializeSearchIndex();
 };
 

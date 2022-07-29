@@ -54,11 +54,12 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
 
 //  Truncate tables at init, default to false
-config.isTruncateTableEnable = Boolean(String(process.env.ENABLE_TRUNCATE_TABLE).toLowerCase() === 'true');
+config.isRebuildIndexAtInit = Boolean(String(process.env.ENABLE_REBUILD_INDEX_AT_INIT).toLowerCase() === 'true');
 
 config.gitHub = {
-    url: process.env.GITHUB_REPO_URL || '',
-    accessTokenGitHub: process.env.GITHUB_ACCESS_TOKEN || '',
+	url: process.env.GITHUB_REPO_URL || 'https://github.com/LiskHQ/lisk-service',
+	accessTokenGitHub: process.env.GITHUB_ACCESS_TOKEN || '',
+	branch: process.env.GITHUB_BRANCH_NAME || 'main',
 };
 
 module.exports = config;

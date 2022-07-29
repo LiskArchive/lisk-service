@@ -40,7 +40,15 @@ const mkdir = async (directoryPath, options = { recursive: true, mode: '0o777' }
 	);
 };
 
+const getDirectories = async (directoryPath, options = { withFileTypes: true }) => {
+	const allDir = await fs.promises.readdir(directoryPath, options);
+	return allDir
+		.filter(dir => dir.isDirectory())
+		.map(dir => dir.name);
+};
+
 module.exports = {
 	exists,
 	mkdir,
+	getDirectories,
 };

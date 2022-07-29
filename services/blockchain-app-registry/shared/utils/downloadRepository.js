@@ -39,9 +39,10 @@ const getRepoInfoFromURL = async (url) => {
 const getPrivateRepoDownloadURL = async () => {
 	const { owner, repo } = await getRepoInfoFromURL(config.gitHub.url);
 	const octokit = new Octokit({ auth: config.gitHub.accessTokenGitHub });
-	const result = await octokit.request(`GET /repos/${owner}/${repo}/tarball`, {
+	const result = await octokit.request(`GET /repos/${owner}/${repo}/tarball/${config.gitHub.branch}`, {
 		owner,
 		repo,
+		ref: `${config.gitHub.branch}`,
 	});
 	return result;
 };
