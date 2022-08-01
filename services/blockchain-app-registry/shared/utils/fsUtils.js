@@ -20,18 +20,24 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
-const isDirectory = directoryPath => fs.lstatSync(directoryPath).isDirectory();
+const stats = filePath => new Promise((resolve, reject) => {
+	fs.stat(filePath, (err, stat) => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve(stat);
+	});
+});
 
-const isFile = directoryPath => fs.lstatSync(directoryPath).isFile();
-
-const exists = async (filePath) => {
-	try {
-		await fs.promises.access(filePath);
-		return true;
-	} catch (_) {
-		return false;
-	}
-};
+const exists = (filePath) => new Promise((resolve) => {
+	fs.access(filePath, (err, data) => {
+		if (err) {
+			return resolve(false);
+		}
+		return resolve(true);
+	});
+});
 
 const mkdir = async (directoryPath, options = { recursive: true }) => {
 	logger.debug(`Creating directory: ${directoryPath}`);
@@ -41,6 +47,18 @@ const mkdir = async (directoryPath, options = { recursive: true }) => {
 		(err) => {
 			if (err) logger.error(`Error when creating directory: ${directoryPath}\n`, err.message);
 			else logger.debug(`Successfully created directory: ${directoryPath}`);
+		},
+	);
+};
+
+const rmdir = async (directoryPath, options = { recursive: true }) => {
+	logger.debug(`Creating directory: ${directoryPath}`);
+	await fs.rmdir(
+		directoryPath,
+		options,
+		(err) => {
+			if (err) logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
+			else logger.debug(`Successfully removed directory: ${directoryPath}`);
 		},
 	);
 };
@@ -65,17 +83,35 @@ const write = (filePath, content) => new Promise((resolve, reject) => {
 	});
 });
 
-const getDirectories = async (directoryPath, options = { withFileTypes: true }) => {
-	const allDir = await fs.promises.readdir(directoryPath, options);
-	return allDir
-		.map(dir => path.join(directoryPath, dir.name)).filter(isDirectory);
-};
+const getDirectories = (directoryPath, options = { withFileTypes: true }) => new Promise(
+	(resolve, reject) => {
+		fs.readdir(directoryPath, options, (err, files) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+			const directoriesInDirectory = files
+				.filter((dir) => dir.isDirectory())
+				.map((dir) => path.join(directoryPath, dir.name));
 
-const getFiles = async (directoryPath, options = { withFileTypes: true }) => {
-	const allDir = await fs.promises.readdir(directoryPath, options);
-	return allDir
-		.map(dir => path.join(directoryPath, dir.name)).filter(isFile);
-};
+			return resolve(directoriesInDirectory);
+		});
+	});
+
+const getFiles = (directoryPath, options = { withFileTypes: true }) => new Promise(
+	(resolve, reject) => {
+		fs.readdir(directoryPath, options, (err, files) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+			const filesInDirectory = files
+				.filter((file) => file.isFile())
+				.map((file) => path.join(directoryPath, file.name));
+
+			return resolve(filesInDirectory);
+		});
+	});
 
 const rename = async (olddir, newDir) => {
 	await fs.rename(olddir, newDir, (err) => {
@@ -87,9 +123,11 @@ const rename = async (olddir, newDir) => {
 module.exports = {
 	exists,
 	mkdir,
+	rmdir,
 	getDirectories,
 	read,
 	write,
 	getFiles,
 	rename,
+	stats,
 };

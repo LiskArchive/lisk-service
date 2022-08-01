@@ -6,6 +6,7 @@ module.exports = {
 
 	testMatch: [
 		'<rootDir>/tests/unit/*.test.js',
+		'<rootDir>/tests/functional/*.test.js',
 	],
 
 	testTimeout: 15000,

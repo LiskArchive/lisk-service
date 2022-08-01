@@ -29,7 +29,10 @@ const indexSchemas = {
 const initializeSearchIndex = async () => {
 	await BluebirdPromise.map(
 		Object.keys(indexSchemas),
-		key => getTableInstance(key, indexSchemas[key]),
+		async key => {
+			const schema = indexSchemas[key];
+			await getTableInstance(schema.tableName, schema);
+		},
 		{ concurrency: 1 },
 	);
 };
@@ -38,8 +41,9 @@ const truncateAllTables = async () => {
 	await BluebirdPromise.map(
 		Object.keys(indexSchemas),
 		async key => {
-			const db = await getTableInstance(key, indexSchemas[key]);
-			await db.rawQuery(`TRUNCATE TABLE ${key};`);
+			const schema = indexSchemas[key];
+			const db = await getTableInstance(schema.tableName, schema);
+			await db.rawQuery(`TRUNCATE TABLE ${schema.tableName};`);
 		},
 		{ concurrency: 1 },
 	);

@@ -33,7 +33,7 @@ const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
 
 const { getChainIDByName } = require('./utils/chainUtils');
-const { downloadRepositoryToFS } = require('./utils/downloadRepository');
+const { downloadRepositoryToFS, getRepoInfoFromURL } = require('./utils/downloadRepository');
 const { getDirectories, read, getFiles } = require('./utils/fsUtils');
 
 const config = require('../config');
@@ -70,11 +70,12 @@ const indexTokensInfo = async (filePath, dbTrx) => {
 				Symbol: asset.symbol,
 				display: asset.display,
 				base: asset.base,
-				exponent: 8,
+				exponent: asset.exponent,
 				logo: JSON.stringify(asset.token_logo_URIs),
 			};
 			return result;
-		}, { concurrency: tokenInfo.assets.length },
+		},
+		{ concurrency: tokenInfo.assets.length },
 	);
 
 	await tokensDB.upsert(tokenInfoToIndex, dbTrx);
@@ -86,12 +87,12 @@ const indexChainInfo = async (filePath, dbTrx) => {
 	const response = await read(filePath);
 	const chainInfo = JSON.parse(response);
 
-	const ChainID = chainInfo.chain_id
+	const chainID = chainInfo.chain_id
 		? chainInfo.chain_id
 		: await getChainIDByName(chainInfo.chain_name, chainInfo.network);
 
 	const chainInfoToIndex = {
-		chainID: ChainID,
+		chainID,
 		name: chainInfo.chain_name,
 		description: chainInfo.description,
 		title: chainInfo.title,
@@ -107,14 +108,15 @@ const indexChainInfo = async (filePath, dbTrx) => {
 };
 
 const indexBlockchainMetadata = async () => {
-	const directoryPath = './data';
-	const appDirPath = path.join(directoryPath, config.gitHub.appPath);
+	const dataDirectory = './data';
+	const { repo } = await getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+	const appDirPath = path.join(dataDirectory, repo);
 	const allAvailableApps = await getDirectories(appDirPath);
 
 	await BluebirdPromise.map(
 		allAvailableApps,
 		async app => {
-			// TODO: Add check to filter out non-blockchain apps dir
+			// TODO: Add a check to filter out files and non-blockchain apps
 			const allFilesFromApp = await getFiles(`${app}`);
 			await BluebirdPromise.map(
 				allFilesFromApp,

@@ -29,7 +29,7 @@ module.exports = {
 	},
 	indexes: {
 		name: { type: 'key' },
-		chainID: { type: 'key' },
+		chainName: { type: 'key' },
 	},
 	purge: {},
 };

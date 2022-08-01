@@ -15,17 +15,21 @@
  */
 const {
 	HTTP,
+	Logger,
 } = require('lisk-service-framework');
 
 const { requestIndexer } = require('./request');
 
 const config = require('../../config');
 
+const logger = Logger();
+
 const getChainIDByName = async (name, network) => {
 	try {
 		const [response] = await requestIndexer('blockchain.apps', { name });
 		return response.chainID;
 	} catch (error) {
+		logger.debug('Unable to fetch blockchain application information from indexer, fetching directly using HTTP call');
 		const serviceURL = config.serviceURL[network];
 		const [response] = HTTP.get(`${serviceURL}/api/v3/blockchain/apps`, { name });
 		return response.chainID;

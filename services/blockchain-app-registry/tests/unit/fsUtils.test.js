@@ -14,16 +14,17 @@
  *
  */
 const path = require('path');
-const fs = require('fs');
 
 const {
 	exists,
 	mkdir,
+	rmdir,
 	getDirectories,
 	read,
 	write,
 	getFiles,
 	rename,
+	stats,
 } = require('../../shared/utils/fsUtils');
 
 const testData = {
@@ -33,57 +34,62 @@ const testData = {
 };
 
 describe('Test filesystem util methods', () => {
-	let dirPath;
-	beforeAll(async () => {
-		// Test directory
-		dirPath = `${path.dirname(__dirname)}/testDir`;
-	});
+	const dirPath = `${path.dirname(__dirname)}/testDir`;
+	const filePath = `${dirPath}/chain.json`;
 
 	afterAll(async () => {
 		// Remove test directory
-		await fs.rmdirSync(dirPath, { recursive: true, force: true });
+		await rmdir(dirPath, { recursive: true, force: true });
 	});
 
 	it('mkdir() method', async () => {
+		expect(exists(dirPath)).resolves.toBe(false);
 		await mkdir(dirPath);
-		const isExists = await exists(dirPath);
-		expect(isExists).toBe(true);
+		expect(exists(dirPath)).resolves.toBe(true);
 	});
 
 	it('write() method', async () => {
-		const filePath = `${dirPath}/chain.json`;
+		expect(exists(filePath)).resolves.toBe(false);
 
 		// Write data into the file
 		await write(filePath, JSON.stringify(testData));
 
 		// Verify if data is written into the file
-		expect((fs.statSync(filePath)).size).toBeGreaterThan(0);
+		expect(exists(filePath)).resolves.toBe(true);
+
+		const fileStats = await stats(filePath);
+		expect(fileStats.size).toBeGreaterThan(0);
 	});
 
 	it('read() method', async () => {
-		const filePath = `${dirPath}/chain.json`;
-
+		expect(exists(filePath)).resolves.toBe(true);
 		// Read data from file
 		const result = await read(filePath);
 		expect(result).toEqual(JSON.stringify(testData));
 	});
 
 	it('getDirectories() method', async () => {
-		const availableDir = await getDirectories(`${path.dirname(__dirname)}`);
-		expect(availableDir.length).toBeGreaterThanOrEqual(1);
+		const availableDirs = await getDirectories(`${path.dirname(__dirname)}`);
+		expect(availableDirs.length).toBeGreaterThanOrEqual(1);
+		expect(availableDirs).toContain(dirPath);
 	});
 
 	it('getFiles() method', async () => {
 		const availableFiles = await getFiles(dirPath);
 		expect(availableFiles.length).toBeGreaterThanOrEqual(1);
+		expect(availableFiles).toContain(filePath);
 	});
 
 	it('rename() method', async () => {
-		const oldDir = dirPath;
-		dirPath = `${path.dirname(__dirname)}/testDirNew`;
-		await rename(oldDir, dirPath);
+		const subDirPath = path.join(dirPath, 'test');
+		const subDirPathNew = path.join(dirPath, 'testNew');
 
-		const isExists = await exists(dirPath);
-		expect(isExists).toBe(true);
+		expect(exists(subDirPath)).resolves.toBe(false);
+		await mkdir(subDirPath);
+		expect(exists(subDirPath)).resolves.toBe(true);
+
+		expect(exists(subDirPathNew)).resolves.toBe(false);
+		await rename(subDirPath, subDirPathNew);
+		expect(exists(subDirPathNew)).resolves.toBe(true);
 	});
 });

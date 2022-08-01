@@ -38,18 +38,21 @@ const getRepoInfoFromURL = async (url) => {
 
 const getPrivateRepoDownloadURL = async () => {
 	try {
-		const { owner, repo } = await getRepoInfoFromURL(config.gitHub.url);
-		const octokit = new Octokit({ auth: config.gitHub.accessTokenGitHub });
-		const result = await octokit.request(`GET /repos/${owner}/${repo}/tarball/${config.gitHub.branch}`, {
-			owner,
-			repo,
-			ref: `${config.gitHub.branch}`,
-		});
+		const { owner, repo } = await getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+		const octokit = new Octokit({ auth: config.gitHub.accessToken });
+		const result = await octokit.request(
+			`GET /repos/${owner}/${repo}/tarball/${config.gitHub.branch}`,
+			{
+				owner,
+				repo,
+				ref: `${config.gitHub.branch}`,
+			},
+		);
 		return result;
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to retrieve private repository download URL: ${errorMsg}`);
+		logger.error(`Unable to access the repository due to: ${errorMsg}`);
 		throw error;
 	}
 };
@@ -73,21 +76,25 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 });
 
 const downloadRepositoryToFS = async () => {
-	const directoryPath = './data';
-	const appDirPath = path.join(directoryPath, config.gitHub.appPath);
+	const dataDirectory = './data';
+	const { repo } = await getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+	const appDirPath = path.join(dataDirectory, repo);
 
 	if (await exists(appDirPath)) {
 		// TODO: Pull latest changes
 	} else {
-		if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
+		if (!(await exists(dataDirectory))) {
+			await mkdir(dataDirectory, { recursive: true });
+		}
 		const { url } = await getPrivateRepoDownloadURL();
-		await downloadAndExtractTarball(url, directoryPath);
+		await downloadAndExtractTarball(url, dataDirectory);
 
-		const [oldDir] = await getDirectories(directoryPath);
+		const [oldDir] = await getDirectories(dataDirectory);
 		await rename(oldDir, appDirPath);
 	}
 };
 
 module.exports = {
 	downloadRepositoryToFS,
+	getRepoInfoFromURL,
 };
