@@ -57,10 +57,16 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.isRebuildIndexAtInit = Boolean(String(process.env.ENABLE_REBUILD_INDEX_AT_INIT).toLowerCase() === 'true');
 
 config.gitHub = {
-	url: process.env.GITHUB_REPO_URL || 'https://github.com/LiskHQ/lisk-service',
+	url: process.env.GITHUB_REPO_URL || 'https://github.com/Lisk/lisk-service',
 	accessTokenGitHub: process.env.GITHUB_ACCESS_TOKEN || '',
-	branch: process.env.GITHUB_BRANCH_NAME || 'main',
-	localExtractPath: process.env.LOCAL_EXTRACT_PATH || './data/app-registry',
+	branch: 'main',
+	appPath: '/app-registry',
+};
+
+config.serviceURL = {
+	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
+	testnet: process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',
+	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
 };
 
 module.exports = config;
