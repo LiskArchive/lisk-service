@@ -14,20 +14,31 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+const path = require('path');
 
 const {
 	Logger,
-	MySQL: { getTableInstance },
+	MySQL: {
+		getTableInstance,
+		getDbConnection,
+		startDbTransaction,
+		commitDbTransaction,
+		rollbackDbTransaction,
+	},
 } = require('lisk-service-framework');
-
-const config = require('../config');
-
-const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const { initDatabase } = require('./database/index');
 
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
+
+const { getChainIDByName } = require('./utils/chainUtils');
+const { downloadRepositoryToFS } = require('./utils/downloadRepository');
+const { getDirectories, read, getFiles } = require('./utils/fsUtils');
+
+const config = require('../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getApplicationsIndex = () => getTableInstance(
 	applicationsIndexSchema.tableName,
@@ -40,13 +51,9 @@ const getTokensIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const { downloadRepositoryToFS } = require('./utils/downloadRepository');
-
-const { getDirectories, read, getFiles } = require('./utils/fsUtils');
-
 const logger = Logger();
 
-const indexTokensInfo = async (filePath) => {
+const indexTokensInfo = async (filePath, dbTrx) => {
 	const tokensDB = await getTokensIndex();
 
 	const response = await read(filePath);
@@ -56,7 +63,7 @@ const indexTokensInfo = async (filePath) => {
 		tokenInfo.assets,
 		async (asset) => {
 			const result = {
-				// chainID: '', // TODO: Discuss
+				chainID: tokenInfo.chain_id,
 				chainName: tokenInfo.chain_name,
 				description: asset.description,
 				name: asset.name,
@@ -64,55 +71,73 @@ const indexTokensInfo = async (filePath) => {
 				display: asset.display,
 				base: asset.base,
 				exponent: 8,
-				// logo: JSON.stringify(asset.token_logo_URIs),
-				logo: JSON.stringify(asset.logo_URIs),
+				logo: JSON.stringify(asset.token_logo_URIs),
 			};
 			return result;
 		}, { concurrency: tokenInfo.assets.length },
 	);
 
-	await tokensDB.upsert(tokenInfoToIndex);
+	await tokensDB.upsert(tokenInfoToIndex, dbTrx);
 };
 
-const indexChainInfo = async (filePath) => {
+const indexChainInfo = async (filePath, dbTrx) => {
 	const applicationsDB = await getApplicationsIndex();
 
 	const response = await read(filePath);
 	const chainInfo = JSON.parse(response);
 
+	const ChainID = chainInfo.chain_id
+		? chainInfo.chain_id
+		: await getChainIDByName(chainInfo.chain_name, chainInfo.network);
+
 	const chainInfoToIndex = {
-		chainID: chainInfo.chain_id, // TODO: Discuss
+		chainID: ChainID,
 		name: chainInfo.chain_name,
-		// description: '',
-		// title: asset.description,
-		// network: asset.description,
-		// genesisBlock: asset.description,
+		description: chainInfo.description,
+		title: chainInfo.title,
+		network: chainInfo.network,
+		genesisBlock: chainInfo.genesis_url,
 		homepage: chainInfo.homepage,
 		apis: JSON.stringify(chainInfo.apis),
-		images: JSON.stringify(chainInfo.logos),
+		images: JSON.stringify(chainInfo.images),
 		explorers: JSON.stringify(chainInfo.explorers),
 	};
 
-	await applicationsDB.upsert(chainInfoToIndex);
+	await applicationsDB.upsert(chainInfoToIndex, dbTrx);
 };
 
 const indexBlockchainMetadata = async () => {
-	const localRepoPath = config.gitHub.localExtractPath;
-	const allAvailableApps = await getDirectories(localRepoPath);
+	const directoryPath = './data';
+	const appDirPath = path.join(directoryPath, config.gitHub.appPath);
+	const allAvailableApps = await getDirectories(appDirPath);
 
 	await BluebirdPromise.map(
 		allAvailableApps,
 		async app => {
+			// TODO: Add check to filter out non-blockchain apps dir
 			const allFilesFromApp = await getFiles(`${app}`);
 			await BluebirdPromise.map(
 				allFilesFromApp,
 				async file => {
-					if (file.includes('assetlist.json')) {
-						logger.info(`Indexing tokens information for the app: ${file.split('/')[2]}`);
-						await indexTokensInfo(file);
-					} else if (file.includes('chain.json')) {
-						logger.info(`Indexing chain information for the app: ${file.split('/')[2]}`);
-						await indexChainInfo(file);
+					const connection = await getDbConnection();
+					const dbTrx = await startDbTransaction(connection);
+
+					try {
+						logger.debug('Created new MySQL transaction to index blockchain metadata information');
+
+						if (file.includes('token.json')) {
+							logger.info(`Indexing tokens information for the app: ${file.split('/')[2]}`);
+							await indexTokensInfo(file, dbTrx);
+						} else if (file.includes('chain.json')) {
+							logger.info(`Indexing chain information for the app: ${file.split('/')[2]}`);
+							await indexChainInfo(file, dbTrx);
+						}
+
+						await commitDbTransaction(dbTrx);
+						logger.debug('Committed MySQL transaction to index blockchain metadata information');
+					} catch (error) {
+						await rollbackDbTransaction(dbTrx);
+						logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
 					}
 				},
 				{ concurrency: allFilesFromApp.length },
