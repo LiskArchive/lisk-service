@@ -74,8 +74,8 @@ describe('Test filesystem util methods', () => {
 	});
 
 	it('getFiles() method', async () => {
-		const availableDir = await getFiles(dirPath);
-		expect(availableDir.length).toBeGreaterThanOrEqual(1);
+		const availableFiles = await getFiles(dirPath);
+		expect(availableFiles.length).toBeGreaterThanOrEqual(1);
 	});
 
 	it('rename() method', async () => {

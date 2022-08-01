@@ -57,7 +57,7 @@ config.log.docker_host = process.env.DOCKER_HOST || 'local';
 config.isRebuildIndexAtInit = Boolean(String(process.env.ENABLE_REBUILD_INDEX_AT_INIT).toLowerCase() === 'true');
 
 config.gitHub = {
-	url: process.env.GITHUB_REPO_URL || 'https://github.com/Lisk/lisk-service',
+	url: process.env.GITHUB_REPO_URL || 'https://github.com/LiskHQ/app-registry',
 	accessTokenGitHub: process.env.GITHUB_ACCESS_TOKEN || '',
 	branch: 'main',
 	appPath: '/app-registry',
