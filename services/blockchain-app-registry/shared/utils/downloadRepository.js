@@ -16,6 +16,7 @@
 const http = require('http');
 const https = require('https');
 const tar = require('tar');
+const path = require('path');
 const { Octokit } = require('octokit');
 
 const {
@@ -65,15 +66,16 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 });
 
 const downloadRepositoryToFS = async () => {
-	const directoryPath = './data';
-	const appPath = config.gitHub.localExtractPath;
-	if (!(await exists(appPath))) {
-		if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-		const { url } = await getPrivateRepoDownloadURL();
-		await downloadAndExtractTarball(url, directoryPath);
+	const appDirPath = config.gitHub.localExtractPath;
+	const rootDirPath = path.dirname(appDirPath);
 
-		const [oldDir] = await getDirectories(directoryPath);
-		await rename(oldDir, appPath);
+	if (!(await exists(appDirPath))) {
+		if (!(await exists(rootDirPath))) await mkdir(rootDirPath, { recursive: true });
+		const { url } = await getPrivateRepoDownloadURL();
+		await downloadAndExtractTarball(url, rootDirPath);
+
+		const [oldDir] = await getDirectories(rootDirPath);
+		await rename(oldDir, appDirPath);
 	}
 };
 
