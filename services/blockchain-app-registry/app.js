@@ -23,6 +23,7 @@ const {
 const config = require('./config');
 const packageJson = require('./package.json');
 const { init } = require('./shared/metadataIndex');
+const { setAppContext } = require('./shared/utils/request');
 
 // Configure logger
 const loggerConf = {
@@ -43,6 +44,8 @@ const app = Microservice({
 	packageJson,
 	logger: loggerConf,
 });
+
+setAppContext(app);
 
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
