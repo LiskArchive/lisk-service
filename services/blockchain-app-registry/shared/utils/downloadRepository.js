@@ -37,14 +37,21 @@ const getRepoInfoFromURL = async (url) => {
 };
 
 const getPrivateRepoDownloadURL = async () => {
-	const { owner, repo } = await getRepoInfoFromURL(config.gitHub.url);
-	const octokit = new Octokit({ auth: config.gitHub.accessTokenGitHub });
-	const result = await octokit.request(`GET /repos/${owner}/${repo}/tarball/${config.gitHub.branch}`, {
-		owner,
-		repo,
-		ref: `${config.gitHub.branch}`,
-	});
-	return result;
+	try {
+		const { owner, repo } = await getRepoInfoFromURL(config.gitHub.url);
+		const octokit = new Octokit({ auth: config.gitHub.accessTokenGitHub });
+		const result = await octokit.request(`GET /repos/${owner}/${repo}/tarball/${config.gitHub.branch}`, {
+			owner,
+			repo,
+			ref: `${config.gitHub.branch}`,
+		});
+		return result;
+	} catch (error) {
+		let errorMsg = error.message;
+		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		logger.error(`Unable to retrieve private repository download URL: ${errorMsg}`);
+		throw error;
+	}
 };
 
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
