@@ -44,6 +44,7 @@ pipeline {
 				script { echoBanner(STAGE_NAME) }
 				nvm(readFile('.nvmrc').trim()) {
 					dir('./framework') { sh "npm run test:unit" }
+					dir('./services/blockchain-app-registry') { sh "npm run test:unit" }
 					dir('./services/blockchain-connector') { sh "npm run test:unit" }
 					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
 					dir('./services/fee-estimator') { sh "npm run test:unit" }
