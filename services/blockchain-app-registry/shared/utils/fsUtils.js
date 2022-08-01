@@ -20,6 +20,10 @@ const { Logger } = require('lisk-service-framework');
 
 const logger = Logger();
 
+const isDirectory = directoryPath => fs.lstatSync(directoryPath).isDirectory();
+
+const isFile = directoryPath => fs.lstatSync(directoryPath).isFile();
+
 const exists = async (filePath) => {
 	try {
 		await fs.promises.access(filePath);
@@ -50,10 +54,6 @@ const read = (filePath) => new Promise((resolve, reject) => {
 		return resolve(data);
 	});
 });
-
-const isDirectory = directoryPath => fs.lstatSync(directoryPath).isDirectory();
-
-const isFile = directoryPath => fs.lstatSync(directoryPath).isFile();
 
 const getDirectories = async (directoryPath, options = { withFileTypes: true }) => {
 	const allDir = await fs.promises.readdir(directoryPath, options);
