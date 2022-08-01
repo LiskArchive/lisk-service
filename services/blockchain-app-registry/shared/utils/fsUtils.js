@@ -33,7 +33,7 @@ const exists = async (filePath) => {
 	}
 };
 
-const mkdir = async (directoryPath, options = { recursive: true, mode: '0o777' }) => {
+const mkdir = async (directoryPath, options = { recursive: true }) => {
 	logger.debug(`Creating directory: ${directoryPath}`);
 	await fs.mkdir(
 		directoryPath,
@@ -52,6 +52,16 @@ const read = (filePath) => new Promise((resolve, reject) => {
 			return reject(err);
 		}
 		return resolve(data);
+	});
+});
+
+const write = (filePath, content) => new Promise((resolve, reject) => {
+	fs.writeFile(filePath, content, (err) => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve();
 	});
 });
 
@@ -79,6 +89,7 @@ module.exports = {
 	mkdir,
 	getDirectories,
 	read,
+	write,
 	getFiles,
 	rename,
 };
