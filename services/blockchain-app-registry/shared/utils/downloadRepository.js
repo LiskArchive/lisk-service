@@ -66,15 +66,17 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 });
 
 const downloadRepositoryToFS = async () => {
-	const appDirPath = config.gitHub.localExtractPath;
-	const rootDirPath = path.dirname(appDirPath);
+	const directoryPath = './data';
+	const appDirPath = path.join(directoryPath, config.gitHub.appPath);
 
-	if (!(await exists(appDirPath))) {
-		if (!(await exists(rootDirPath))) await mkdir(rootDirPath, { recursive: true });
+	if (await exists(appDirPath)) {
+		// TODO: Pull latest changes
+	} else {
+		if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 		const { url } = await getPrivateRepoDownloadURL();
-		await downloadAndExtractTarball(url, rootDirPath);
+		await downloadAndExtractTarball(url, directoryPath);
 
-		const [oldDir] = await getDirectories(rootDirPath);
+		const [oldDir] = await getDirectories(directoryPath);
 		await rename(oldDir, appDirPath);
 	}
 };
