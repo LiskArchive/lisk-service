@@ -31,7 +31,7 @@ const stats = filePath => new Promise((resolve, reject) => {
 });
 
 const exists = (filePath) => new Promise((resolve) => {
-	fs.access(filePath, (err, data) => {
+	fs.access(filePath, (err) => {
 		if (err) {
 			return resolve(false);
 		}
