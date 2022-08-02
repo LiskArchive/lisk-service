@@ -31,8 +31,9 @@ const getChainIDByName = async (name, network) => {
 	} catch (error) {
 		logger.debug('Unable to fetch blockchain application information from indexer, fetching directly using HTTP call');
 		const serviceURL = config.serviceURL[network];
-		const [response] = HTTP.get(`${serviceURL}/api/v3/blockchain/apps`, { name });
-		return response.chainID;
+		const response = HTTP.get(`${serviceURL}/api/v3/blockchain/apps`, { name });
+		const { chainID } = response.data[0];
+		return chainID;
 	}
 };
 

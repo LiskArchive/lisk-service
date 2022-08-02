@@ -30,7 +30,7 @@ const stats = filePath => new Promise((resolve, reject) => {
 	});
 });
 
-const exists = (filePath) => new Promise((resolve) => {
+const exists = filePath => new Promise((resolve) => {
 	fs.access(filePath, (err) => {
 		if (err) {
 			return resolve(false);
@@ -52,7 +52,7 @@ const mkdir = async (directoryPath, options = { recursive: true }) => {
 };
 
 const rmdir = async (directoryPath, options = { recursive: true }) => {
-	logger.debug(`Creating directory: ${directoryPath}`);
+	logger.debug(`Removing directory: ${directoryPath}`);
 	await fs.rmdir(
 		directoryPath,
 		options,
@@ -85,16 +85,26 @@ const write = (filePath, content) => new Promise((resolve, reject) => {
 
 const getDirectories = (directoryPath, options = { withFileTypes: true }) => new Promise(
 	(resolve, reject) => {
-		fs.readdir(directoryPath, options, (err, files) => {
+		fs.readdir(directoryPath, options, async (err, dirs) => {
 			if (err) {
 				logger.error(err);
 				return reject(err);
 			}
-			const directoriesInDirectory = files
-				.filter((dir) => dir.isDirectory())
-				.map((dir) => path.join(directoryPath, dir.name));
 
-			return resolve(directoriesInDirectory);
+			const subDirsWithTime = [];
+			const subDirectories = dirs.filter((subDir) => subDir.isDirectory());
+			for (let i = 0; i < subDirectories.length; i++) {
+				const fullSubDirPath = path.join(directoryPath, subDirectories[i].name);
+				// eslint-disable-next-line no-await-in-loop
+				const stat = await stats(fullSubDirPath);
+				subDirsWithTime.push({ name: fullSubDirPath, time: stat.ctime.getTime() });
+			}
+
+			const sortedDirs = subDirsWithTime
+				.sort((a, b) => b.time - a.time)
+				.map(file => file.name);
+
+			return resolve(sortedDirs);
 		});
 	});
 
@@ -113,10 +123,13 @@ const getFiles = (directoryPath, options = { withFileTypes: true }) => new Promi
 		});
 	});
 
-const rename = async (olddir, newDir) => {
-	await fs.rename(olddir, newDir, (err) => {
-		if (err) logger.error('Error when renaming directory:', err.message);
-		else logger.debug('Successfully renamed directory');
+const rename = async (oldName, newName) => {
+	await fs.rename(oldName, newName, (err) => {
+		if (err) {
+			logger.error('Error while renaming resource:', err.message);
+		} else {
+			logger.debug('Successfully renamed');
+		}
 	});
 };
 
