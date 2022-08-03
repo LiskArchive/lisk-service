@@ -15,11 +15,11 @@
  */
 module.exports = {
 	tableName: 'tokens',
-	primaryKey: ['chainID', 'name'],
+	primaryKey: ['chainName', 'name'],
 	schema: {
-		chainID: { type: 'string' },
+		chainID: { type: 'string', null: true },
 		chainName: { type: 'string' },
-		description: { type: 'string' },
+		description: { type: 'string', null: true },
 		name: { type: 'string' },
 		symbol: { type: 'string' },
 		display: { type: 'string' },
@@ -28,8 +28,8 @@ module.exports = {
 		logo: { type: 'json' },
 	},
 	indexes: {
-		chainID: { type: 'key' },
 		name: { type: 'key' },
+		chainName: { type: 'key' },
 	},
 	purge: {},
 };

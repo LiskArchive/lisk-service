@@ -15,14 +15,14 @@
  */
 module.exports = {
 	tableName: 'applications',
-	primaryKey: ['chainID', 'network'],
+	primaryKey: ['name', 'network'],
 	schema: {
-		chainID: { type: 'string' },
 		name: { type: 'string' },
-		title: { type: 'string' },
-		description: { type: 'string' },
+		chainID: { type: 'string', null: true },
+		title: { type: 'string', null: true },
+		description: { type: 'string', null: true },
 		network: { type: 'string' },
-		genesisBlock: { type: 'string' },
+		genesisBlock: { type: 'string', null: true },
 		homepage: { type: 'string' },
 		apis: { type: 'json' },
 		explorers: { type: 'json' },

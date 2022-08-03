@@ -13,17 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-module.exports = [
-	{
-		name: 'event.hello',
-		description: 'Generic hello event',
-		controller: callback => {
-			setInterval(() => {
-				callback({
-					data: ['Hello!'],
-					meta: { count: 1 },
-				});
-			}, 1000);
-		},
-	},
-];
+
+let app;
+
+const setAppContext = (h) => app = h;
+
+const getAppContext = () => app;
+
+const requestRpc = async (service, method, params = {}) => {
+	const data = await getAppContext().requestRpc(`${service}.${method}`, params);
+	return data;
+};
+
+const requestIndexer = async (method, params) => requestRpc('indexer', method, params);
+
+module.exports = {
+	setAppContext,
+	requestIndexer,
+};

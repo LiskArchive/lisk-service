@@ -19,6 +19,12 @@ const config = {};
 config.transporter = process.env.SERVICE_BROKER || 'redis://localhost:6379/0';
 config.brokerTimeout = Number(process.env.SERVICE_BROKER_TIMEOUT) || 5; // in seconds
 
+/**
+ * External endpoints
+ */
+config.endpoints = {};
+config.endpoints.mysql = process.env.SERVICE_APP_REGISTRY_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+
 // Logging
 config.log = {};
 /**
@@ -46,5 +52,20 @@ config.log.file = process.env.SERVICE_LOG_FILE || 'false';
 
 // Set docker host if running inside the container
 config.log.docker_host = process.env.DOCKER_HOST || 'local';
+
+//  Truncate tables at init, default to false
+config.isRebuildIndexAtInit = Boolean(String(process.env.ENABLE_REBUILD_INDEX_AT_INIT).toLowerCase() === 'true');
+
+config.gitHub = {
+	accessToken: process.env.GITHUB_ACCESS_TOKEN,
+	appRegistryRepo: process.env.GITHUB_APP_REGISTRY_REPO || 'https://github.com/LiskHQ/app-registry',
+	branch: process.env.GITHUB_APP_REGISTRY_REPO_BRANCH || 'main',
+};
+
+config.serviceURL = {
+	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
+	testnet: process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',
+	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
+};
 
 module.exports = config;
