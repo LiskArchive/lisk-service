@@ -14,8 +14,12 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const { getAddressFromPublicKey } = require('@liskhq/lisk-cryptography');
-const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+const {
+	address: { getAddressFromPublicKey },
+} = require('@liskhq/lisk-cryptography');
+const {
+	MySQL: { getTableInstance },
+} = require('lisk-service-framework');
 
 const { getBase32AddressFromHex } = require('../utils/accountUtils');
 

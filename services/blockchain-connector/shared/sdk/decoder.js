@@ -14,7 +14,9 @@
  *
  */
 const { codec } = require('@liskhq/lisk-codec');
-const { hash } = require('@liskhq/lisk-cryptography');
+const {
+	utils: { hash },
+} = require('@liskhq/lisk-cryptography');
 
 const {
 	getBlockSchema,
