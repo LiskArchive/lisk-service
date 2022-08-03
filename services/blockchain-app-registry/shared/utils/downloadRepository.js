@@ -64,7 +64,7 @@ const getLatestCommitHash = async () => {
 
 const getCommitInfo = async () => {
 	const lastCommitHash = await keyValueDB.get(COMMIT_HASH_UNTIL_LAST_SYNC);
-	const latestCommitHash = await getLatestCommitHash(owner, repo);
+	const latestCommitHash = await getLatestCommitHash();
 	return { lastCommitHash, latestCommitHash };
 };
 
@@ -133,7 +133,7 @@ const syncRepoWithLatestChanges = async () => {
 		const dataDirectory = './data';
 		const appDirPath = path.join(dataDirectory, repo);
 
-		const { lastCommitHash, latestCommitHash } = await getCommitInfo(owner, repo);
+		const { lastCommitHash, latestCommitHash } = await getCommitInfo();
 
 		if (lastCommitHash !== latestCommitHash) {
 			logger.info('Database is already up-to-date');
