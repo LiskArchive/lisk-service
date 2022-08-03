@@ -22,7 +22,7 @@ const getNetworkStatus = async () => {
 	status.moduleCommands = await getAvailableModuleCommands();
 	status.registeredModules = await getRegisteredModules();
 	status.lastUpdate = Math.floor(Date.now() / 1000);
-	status.constants = { nethash: status.networkIdentifier };
+	status.constants = { networkIdentifier: status.networkIdentifier };
 
 	return {
 		data: status,

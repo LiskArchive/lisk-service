@@ -20,7 +20,7 @@ const statusSchema = {
 	description: Joi.string().required(),
 	name: Joi.string().required(),
 	version: Joi.string().required(),
-	networkId: Joi.string().required(),
+	networkID: Joi.string().required(),
 	networkNodeVersion: Joi.string().optional(),
 };
 

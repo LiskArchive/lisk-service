@@ -38,17 +38,17 @@ const reloadKnowledge = async () => {
 
 	try {
 		const netStatus = await requestConnector('getNetworkStatus');
-		const { nethash } = netStatus.data.constants;
+		const { networkIdentifier } = netStatus.data.constants;
 
 		const knownNetworks = await HTTP.request(`${staticUrl}/networks.json`);
-		if (knownNetworks.data[nethash]) {
-			const knownAccounts = await HTTP.request(`${staticUrl}/known_${knownNetworks.data[nethash]}.json`);
+		if (knownNetworks.data[networkIdentifier]) {
+			const knownAccounts = await HTTP.request(`${staticUrl}/known_${knownNetworks.data[networkIdentifier]}.json`);
 			if (isObject(knownAccounts.data)) {
 				knowledge = knownAccounts.data;
 				logger.debug(`Updated known accounts database with ${Object.keys(knowledge).length} entries`);
 			}
 		} else {
-			logger.debug(`NetworkId does not exist in the database: ${nethash}`);
+			logger.debug(`NetworkID does not exist in the database: ${networkIdentifier}`);
 		}
 	} catch (err) {
 		logger.debug(`Could not reload known accounts: ${err.message}`);

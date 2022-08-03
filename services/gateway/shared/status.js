@@ -49,7 +49,7 @@ const getStatus = async broker => {
 		description: 'Lisk Service Gateway',
 		name: packageJson.name,
 		version: packageJson.version,
-		networkId: networkstatus.data.constants.nethash,
+		networkID: networkstatus.data.constants.networkIdentifier,
 		networkNodeVersion,
 	};
 };
