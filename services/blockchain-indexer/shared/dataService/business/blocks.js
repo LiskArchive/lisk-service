@@ -264,7 +264,8 @@ const getBlocksAssets = async (params) => {
 	blockAssets.data = await BluebirdPromise.map(
 		blocksFromDB,
 		async (blockFromDB) => {
-			const [block] = await getBlockByID(blockFromDB.id);
+			const block = await getBlockByID(blockFromDB.id);
+
 			return {
 				block: {
 					id: block.id,
