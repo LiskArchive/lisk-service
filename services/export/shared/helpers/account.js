@@ -14,8 +14,10 @@
  *
  */
 const {
-	getAddressFromPublicKey,
-	getBase32AddressFromAddress,
+	address: {
+		getAddressFromPublicKey,
+		getLisk32AddressFromAddress,
+	},
 } = require('@liskhq/lisk-cryptography');
 
 const validateAddress = address => (typeof address === 'string' && (/^lsk[a-hjkm-z2-9]{38}$/g).test(address));
@@ -28,7 +30,7 @@ const getHexAddressFromPublicKey = publicKey => {
 };
 
 const getBase32AddressFromHex = address => {
-	const base32Address = getBase32AddressFromAddress(Buffer.from(address, 'hex'));
+	const base32Address = getLisk32AddressFromAddress(Buffer.from(address, 'hex'));
 	return base32Address;
 };
 

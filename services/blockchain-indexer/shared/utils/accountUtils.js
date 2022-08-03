@@ -13,16 +13,23 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Utils, MySQL: { getTableInstance } } = require('lisk-service-framework');
+const {
+	utils: { hash },
+	address: {
+		getAddressFromPublicKey,
+		getLisk32AddressFromAddress,
+		getAddressFromLisk32Address,
+	},
+	legacyAddress: {
+		getFirstEightBytesReversed,
+		getLegacyAddressFromPublicKey,
+	},
+} = require('@liskhq/lisk-cryptography');
 
 const {
-	hash,
-	getFirstEightBytesReversed,
-	getAddressFromPublicKey,
-	getLisk32AddressFromAddress,
-	getAddressFromLisk32Address,
-	getLegacyAddressFromPublicKey,
-} = require('@liskhq/lisk-cryptography');
+	Utils,
+	MySQL: { getTableInstance },
+} = require('lisk-service-framework');
 
 const ObjectUtilService = Utils.Data;
 const { isEmptyArray } = ObjectUtilService;
