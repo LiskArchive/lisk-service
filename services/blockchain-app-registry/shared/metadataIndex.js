@@ -27,13 +27,10 @@ const {
 	},
 } = require('lisk-service-framework');
 
-const { initDatabase } = require('./database/index');
-
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
 
 const { getChainIDByName } = require('./utils/chainUtils');
-const { downloadRepositoryToFS, getRepoInfoFromURL } = require('./utils/downloadRepository');
 const { getDirectories, read, getFiles } = require('./utils/fsUtils');
 
 const config = require('../config');
@@ -107,9 +104,19 @@ const indexChainInfo = async (filePath, dbTrx) => {
 	await applicationsDB.upsert(chainInfoToIndex, dbTrx);
 };
 
+const indexMetadataFromLocalFile = async (file, dbTrx) => {
+	if (file.includes('token.json')) {
+		logger.info(`Indexing tokens information for the app: ${file.split('/')[2]}`);
+		await indexTokensInfo(file, dbTrx);
+	} else if (file.includes('chain.json')) {
+		logger.info(`Indexing chain information for the app: ${file.split('/')[2]}`);
+		await indexChainInfo(file, dbTrx);
+	}
+};
+
 const indexBlockchainMetadata = async () => {
 	const dataDirectory = './data';
-	const { repo } = await getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+	const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
 	const appDirPath = path.join(dataDirectory, repo);
 	const allAvailableApps = await getDirectories(appDirPath);
 
@@ -126,15 +133,7 @@ const indexBlockchainMetadata = async () => {
 
 					try {
 						logger.debug('Created new MySQL transaction to index blockchain metadata information');
-
-						if (file.includes('token.json')) {
-							logger.info(`Indexing tokens information for the app: ${file.split('/')[2]}`);
-							await indexTokensInfo(file, dbTrx);
-						} else if (file.includes('chain.json')) {
-							logger.info(`Indexing chain information for the app: ${file.split('/')[2]}`);
-							await indexChainInfo(file, dbTrx);
-						}
-
+						await indexMetadataFromLocalFile(file, dbTrx);
 						await commitDbTransaction(dbTrx);
 						logger.debug('Committed MySQL transaction to index blockchain metadata information');
 					} catch (error) {
@@ -149,13 +148,7 @@ const indexBlockchainMetadata = async () => {
 	);
 };
 
-const init = async () => {
-	await initDatabase();
-	await downloadRepositoryToFS();
-	await indexBlockchainMetadata();
-};
-
 module.exports = {
-	init,
 	indexBlockchainMetadata,
+	indexMetadataFromLocalFile,
 };

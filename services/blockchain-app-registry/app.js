@@ -22,7 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { init } = require('./shared/metadataIndex');
+const { init } = require('./shared/init');
 const { setAppContext } = require('./shared/utils/request');
 
 // Configure logger

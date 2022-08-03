@@ -14,29 +14,26 @@
  *
  */
 const BluebirdPromise = require('bluebird');
-const http = require('http');
-const https = require('https');
-const fs = require('fs');
-const tar = require('tar');
 const path = require('path');
 const { Octokit } = require('octokit');
 
 const {
 	Logger,
-	Exceptions: { NotFoundException },
 } = require('lisk-service-framework');
 
+const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
 const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
+
 const keyValueDB = require('../database/mysqlKVStore');
+const { indexMetadataFromLocalFile } = require('../metadataIndex');
+
 const config = require('../../config');
 
 const logger = Logger();
 
-const commitHashUntilLastSync = 'commitHashUntilLastSync';
+const COMMIT_HASH_UNTIL_LAST_SYNC = 'commitHashUntilLastSync';
 
 const octokit = new Octokit({ auth: config.gitHub.accessToken });
-
-const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
 const getRepoInfoFromURL = (url) => {
 	const [, , , owner, repo] = url.split('/');
@@ -66,9 +63,9 @@ const getLatestCommitHash = async () => {
 };
 
 const getCommitInfo = async () => {
-	const base = await keyValueDB.get(commitHashUntilLastSync);
-	const head = await getLatestCommitHash(owner, repo);
-	return { base, head };
+	const lastCommitHash = await keyValueDB.get(COMMIT_HASH_UNTIL_LAST_SYNC);
+	const latestCommitHash = await getLatestCommitHash(owner, repo);
+	return { lastCommitHash, latestCommitHash };
 };
 
 const getPrivateRepoDownloadURL = async () => {
@@ -91,15 +88,30 @@ const getPrivateRepoDownloadURL = async () => {
 	}
 };
 
-const getDiff = async () => {
+const getFileDownloadURL = async (file) => {
 	try {
-		const { base, head } = await getCommitInfo(owner, repo);
-		if (base === head) {
-			logger.debug('Database is already synced');
-			return;
-		}
 		const result = await octokit.request(
-			`GET /repos/${owner}/${repo}/compare/${base}...${head}`,
+			`GET /repos/${owner}/${repo}/contents/${file}`,
+			{
+				owner,
+				repo,
+				ref: `${config.gitHub.branch}`,
+			},
+		);
+
+		return result;
+	} catch (error) {
+		let errorMsg = error.message;
+		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		logger.error(`Unable to access the file due to: ${errorMsg}`);
+		throw error;
+	}
+};
+
+const getDiff = async (lastCommitHash, latestCommitHash) => {
+	try {
+		const result = await octokit.request(
+			`GET /repos/${owner}/${repo}/compare/${lastCommitHash}...${latestCommitHash}`,
 			{
 				owner,
 				repo,
@@ -116,79 +128,35 @@ const getDiff = async () => {
 	}
 };
 
-const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
-	getHTTPProtocolByURL(url).get(url, (response) => {
-		if (response.statusCode === 200) {
-			response.pipe(tar.extract({ cwd: directoryPath }));
-			response.on('error', async (err) => reject(new Error(err)));
-			response.on('end', async () => {
-				logger.info('File downloaded successfully');
-				resolve();
-			});
-		} else {
-			const errMessage = `Download failed with HTTP status code: ${response.statusCode}(${response.statusMessage})`;
-			logger.error(errMessage);
-			if (response.statusCode === 404) reject(new NotFoundException(errMessage));
-			reject(new Error(errMessage));
-		}
-	});
-});
-
-const downloadFile = (url, dirPath) => new Promise((resolve, reject) => {
-	getHTTPProtocolByURL(url).get(url, (response) => {
-		if (response.statusCode === 200) {
-			const writeStream = fs.createWriteStream(dirPath);
-			response.pipe(writeStream);
-			response.on('error', async (err) => reject(new Error(err)));
-			response.on('end', async () => {
-				logger.info('File downloaded successfully');
-				resolve();
-			});
-		} else {
-			const errMessage = `Download failed with HTTP status code: ${response.statusCode} (${response.statusMessage})`;
-			logger.error(errMessage);
-			if (response.statusCode === 404) reject(new NotFoundException(errMessage));
-			reject(new Error(errMessage));
-		}
-	});
-});
-
-const getListOfFilesChanged = async () => {
-	try {
-		const result = await getDiff(owner, repo);
-		const filesChanged = result.data.files.map(file => file.filename);
-		return filesChanged;
-	} catch (error) {
-		let errorMsg = error.message;
-		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to get the list of files changed due to: ${errorMsg}`);
-		throw error;
-	}
-};
-
 const syncRepoWithLatestChanges = async () => {
 	try {
 		const dataDirectory = './data';
 		const appDirPath = path.join(dataDirectory, repo);
-		// TODO: Add a check to filter out non-blockchain apps related files
-		const filesChanged = await getListOfFilesChanged();
 
-		await BluebirdPromise.map(
-			filesChanged,
-			async file => {
-				const result = await octokit.request(
-					`GET /repos/${owner}/${repo}/contents/${file}`,
-					{
-						owner,
-						repo,
-						ref: `${config.gitHub.branch}`,
-					},
-				);
-				await downloadFile(result.data.download_url, path.join(appDirPath, file));
-				logger.debug(`Successfully updated: ${file}`);
-			},
-			{ concurrency: filesChanged.length },
-		);
+		const { lastCommitHash, latestCommitHash } = await getCommitInfo(owner, repo);
+
+		if (lastCommitHash !== latestCommitHash) {
+			logger.info('Database is already up-to-date');
+		} else {
+			const diffInfo = await getDiff(lastCommitHash, latestCommitHash);
+			// TODO: Add a check to filter out non-blockchain apps related files
+			const filesChanged = diffInfo.data.files.map(file => file.filename);
+
+			await BluebirdPromise.map(
+				filesChanged,
+				async file => {
+					const result = await getFileDownloadURL(file);
+					const filePath = path.join(appDirPath, file);
+					await downloadFile(result.data.download_url, filePath);
+					logger.debug(`Successfully downloaded: ${file}`);
+
+					await indexMetadataFromLocalFile(filePath);
+					logger.debug('Successfully updated the database with the latest changes');
+				},
+				{ concurrency: filesChanged.length },
+			);
+			await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+		}
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
@@ -214,7 +182,7 @@ const downloadRepositoryToFS = async () => {
 		await rename(oldDir, appDirPath);
 
 		const lastCommitHash = await getLatestCommitHash();
-		await keyValueDB.set(commitHashUntilLastSync, lastCommitHash);
+		await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, lastCommitHash);
 	}
 };
 

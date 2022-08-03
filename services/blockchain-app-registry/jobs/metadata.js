@@ -15,7 +15,6 @@
  */
 const logger = require('lisk-service-framework').Logger();
 
-const { indexBlockchainMetadata } = require('../shared/metadataIndex');
 const { syncRepoWithLatestChanges } = require('../shared/utils/downloadRepository');
 
 module.exports = [
@@ -26,8 +25,9 @@ module.exports = [
 		controller: async () => {
 			logger.debug('Refreshing blockchain application metadata...');
 			try {
+				logger.info('Starting process to sync database with the repo');
 				await syncRepoWithLatestChanges();
-				await indexBlockchainMetadata();
+				logger.info('Database has been Successfully synchronized');
 			} catch (err) {
 				logger.warn(`Refreshing blockchain application metadata failed due to: ${err.message}`);
 			}
