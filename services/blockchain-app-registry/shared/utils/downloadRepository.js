@@ -19,6 +19,7 @@ const { Octokit } = require('octokit');
 
 const {
 	Logger,
+	Signals,
 } = require('lisk-service-framework');
 
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
@@ -152,6 +153,7 @@ const syncRepoWithLatestChanges = async () => {
 
 					await indexMetadataFromLocalFile(filePath);
 					logger.debug('Successfully updated the database with the latest changes');
+					Signals.get('updateMetadata').dispatch({});
 				},
 				{ concurrency: filesChanged.length },
 			);
