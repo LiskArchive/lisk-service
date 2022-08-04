@@ -13,16 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const {
-	HTTP: {
-		StatusCodes: { NOT_FOUND },
-	},
-	Exceptions: {
-		ServiceUnavailableException,
-		NotFoundException,
-	},
-} = require('lisk-service-framework');
-
 const appRegistryService = require('../../shared/metadata');
 
 const getBlockchainAppsMetaList = async (params) => {
@@ -31,19 +21,11 @@ const getBlockchainAppsMetaList = async (params) => {
 		meta: {},
 	};
 
-	try {
-		const response = await appRegistryService.getBlockchainAppsMetaList(params);
-		if (response.data) blockchainAppsMetaList.data = response.data;
-		if (response.meta) blockchainAppsMetaList.meta = response.meta;
+	const response = await appRegistryService.getBlockchainAppsMetaList(params);
+	if (response.data) blockchainAppsMetaList.data = response.data;
+	if (response.meta) blockchainAppsMetaList.meta = response.meta;
 
-		return blockchainAppsMetaList;
-	} catch (err) {
-		let status;
-		if (err instanceof ServiceUnavailableException) status = 'SERVICE_UNAVAILABLE';
-		if (err instanceof NotFoundException) status = NOT_FOUND;
-		if (status) return { status, data: { error: err.message } };
-		throw err;
-	}
+	return blockchainAppsMetaList;
 };
 
 module.exports = {
