@@ -22,7 +22,7 @@ const {
 
 const config = require('./config');
 const packageJson = require('./package.json');
-const { init } = require('./shared/metadataIndex');
+const { init } = require('./shared/init');
 const { setAppContext } = require('./shared/utils/request');
 
 // Configure logger
@@ -50,6 +50,7 @@ setAppContext(app);
 // Add routes, events & jobs
 app.addMethods(path.join(__dirname, 'methods'));
 app.addJobs(path.join(__dirname, 'jobs'));
+app.addEvents(path.join(__dirname, 'events'));
 
 // Run the application
 app.run().then(async () => {
