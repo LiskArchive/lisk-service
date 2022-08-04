@@ -19,7 +19,7 @@ const {
 
 module.exports = [
 	{
-		name: 'blockchain.app.meta.list',
+		name: 'blockchain.apps.meta.list',
 		params: {
 			chainID: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },

@@ -13,8 +13,6 @@
 * Removal or modification of this copyright notice is prohibited.
 *
 */
-const BluebirdPromise = require('bluebird');
-
 const { MySQL: { getTableInstance } } = require('lisk-service-framework');
 
 const config = require('../config');
@@ -52,12 +50,36 @@ const getBlockchainAppsMetaList = async (params) => {
 		};
 	}
 
-	// const total = await applicationsDB.count(params);
+	const defaultApps = await applicationsDB.find(
+		{ ...params, isDefault: true },
+		Object.getOwnPropertyNames(applicationsIndexSchema.schema),
+	);
 
-	// const response = await applicationsDB.find(
-	// 	params,
-	// 	Object.getOwnPropertyNames(applicationsIndexSchema.schema),
-	// );
+	const mergeArrays = (arr) => {
+		const map = new Map(arr.map(({ name }) => [name, { name, networks: [] }]));
+		for (let i = 0; i < arr.length; i++) {
+			map.get(arr[i].name).networks.push({ network: arr[i].network, chainID: arr[i].chainID });
+		}
+		return [...map.values()];
+	};
+
+	blockchainAppsMetaList.data = mergeArrays(defaultApps);
+
+	if (blockchainAppsMetaList.data.length < params.limit) {
+		const nonDefaultApps = await applicationsDB.find(
+			{ ...params, isDefault: false },
+			Object.getOwnPropertyNames(applicationsIndexSchema.schema),
+		);
+
+		const mergedNonDefaultApps = mergeArrays(nonDefaultApps);
+		blockchainAppsMetaList.data = blockchainAppsMetaList.data.concat(mergedNonDefaultApps);
+	}
+
+	blockchainAppsMetaList.meta = {
+		count: blockchainAppsMetaList.data.length,
+		offset: params.offset,
+		total,
+	};
 
 	return blockchainAppsMetaList;
 };

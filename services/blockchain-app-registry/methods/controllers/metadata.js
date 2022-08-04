@@ -32,7 +32,7 @@ const getBlockchainAppsMetaList = async (params) => {
 	};
 
 	try {
-		const response = await appRegistryService.appRegistryService(params);
+		const response = await appRegistryService.getBlockchainAppsMetaList(params);
 		if (response.data) blockchainAppsMetaList.data = response.data;
 		if (response.meta) blockchainAppsMetaList.meta = response.meta;
 
