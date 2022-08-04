@@ -13,33 +13,64 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const http = require('http');
-const https = require('https');
-const tar = require('tar');
+const BluebirdPromise = require('bluebird');
 const path = require('path');
 const { Octokit } = require('octokit');
 
 const {
 	Logger,
-	Exceptions: { NotFoundException },
+	Signals,
 } = require('lisk-service-framework');
 
+const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
 const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
+
+const keyValueDB = require('../database/mysqlKVStore');
+const { indexMetadataFromFile } = require('../metadataIndex');
+
 const config = require('../../config');
 
 const logger = Logger();
 
-const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
+const COMMIT_HASH_UNTIL_LAST_SYNC = 'commitHashUntilLastSync';
 
-const getRepoInfoFromURL = async (url) => {
+const octokit = new Octokit({ auth: config.gitHub.accessToken });
+
+const getRepoInfoFromURL = (url) => {
 	const [, , , owner, repo] = url.split('/');
 	return { owner, repo };
 };
 
-const getPrivateRepoDownloadURL = async () => {
+const { owner, repo } = getRepoInfoFromURL(config.gitHub.appRegistryRepo);
+
+const getLatestCommitHash = async () => {
 	try {
-		const { owner, repo } = await getRepoInfoFromURL(config.gitHub.appRegistryRepo);
-		const octokit = new Octokit({ auth: config.gitHub.accessToken });
+		const result = await octokit.request(
+			`GET /repos/${owner}/${repo}/commits/${config.gitHub.branch}`,
+			{
+				owner,
+				repo,
+				ref: `${config.gitHub.branch}`,
+			},
+		);
+
+		return result.data.sha;
+	} catch (error) {
+		let errorMsg = error.message;
+		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		logger.error(`Unable to get latest commit hash due to: ${errorMsg}`);
+		throw error;
+	}
+};
+
+const getCommitInfo = async () => {
+	const lastSyncedCommitHash = await keyValueDB.get(COMMIT_HASH_UNTIL_LAST_SYNC);
+	const latestCommitHash = await getLatestCommitHash();
+	return { lastSyncedCommitHash, latestCommitHash };
+};
+
+const getRepoDownloadURL = async () => {
+	try {
 		const result = await octokit.request(
 			`GET /repos/${owner}/${repo}/tarball/${config.gitHub.branch}`,
 			{
@@ -48,6 +79,7 @@ const getPrivateRepoDownloadURL = async () => {
 				ref: `${config.gitHub.branch}`,
 			},
 		);
+
 		return result;
 	} catch (error) {
 		let errorMsg = error.message;
@@ -57,44 +89,111 @@ const getPrivateRepoDownloadURL = async () => {
 	}
 };
 
-const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
-	getHTTPProtocolByURL(url).get(url, (response) => {
-		if (response.statusCode === 200) {
-			response.pipe(tar.extract({ cwd: directoryPath }));
-			response.on('error', async (err) => reject(new Error(err)));
-			response.on('end', async () => {
-				logger.info('File downloaded successfully');
-				resolve();
-			});
+const getFileDownloadURL = async (file) => {
+	try {
+		const result = await octokit.request(
+			`GET /repos/${owner}/${repo}/contents/${file}`,
+			{
+				owner,
+				repo,
+				ref: `${config.gitHub.branch}`,
+			},
+		);
+
+		return result;
+	} catch (error) {
+		let errorMsg = error.message;
+		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		logger.error(`Unable to access the file due to: ${errorMsg}`);
+		throw error;
+	}
+};
+
+const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
+	try {
+		const result = await octokit.request(
+			`GET /repos/${owner}/${repo}/compare/${lastSyncedCommitHash}...${latestCommitHash}`,
+			{
+				owner,
+				repo,
+				ref: `${config.gitHub.branch}`,
+			},
+		);
+
+		return result;
+	} catch (error) {
+		let errorMsg = error.message;
+		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		logger.error(`Unable to get diff due to: ${errorMsg}`);
+		throw error;
+	}
+};
+
+const syncWithRemoteRepo = async () => {
+	try {
+		const dataDirectory = './data';
+		const appDirPath = path.join(dataDirectory, repo);
+
+		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
+
+		if (lastSyncedCommitHash === latestCommitHash) {
+			logger.info('Database is already up-to-date');
 		} else {
-			const errMessage = `Download failed with HTTP status code: ${response.statusCode}(${response.statusMessage})`;
-			logger.error(errMessage);
-			if (response.statusCode === 404) reject(new NotFoundException(errMessage));
-			reject(new Error(errMessage));
+			const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
+			// TODO: Add a check to filter out non-blockchain apps related files
+			const filesChanged = diffInfo.data.files.map(file => file.filename);
+
+			await BluebirdPromise.map(
+				filesChanged,
+				async file => {
+					const result = await getFileDownloadURL(file);
+					const filePath = path.join(appDirPath, file);
+					await downloadFile(result.data.download_url, filePath);
+					logger.debug(`Successfully downloaded: ${file}`);
+
+					await indexMetadataFromFile(filePath);
+					logger.debug('Successfully updated the database with the latest changes');
+				},
+				{ concurrency: filesChanged.length },
+			);
+
+			await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+			if (filesChanged.length) {
+				const appsUpdated = filesChanged.map(file => file.split('/')[0]);
+				Signals.get('metadataUpdated').dispatch([...new Set(appsUpdated)]);
+			}
 		}
-	});
-});
+	} catch (error) {
+		let errorMsg = error.message;
+		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
+		logger.error(`Unable to sync changes due to: ${errorMsg}`);
+		throw error;
+	}
+};
 
 const downloadRepositoryToFS = async () => {
 	const dataDirectory = './data';
-	const { repo } = await getRepoInfoFromURL(config.gitHub.appRegistryRepo);
 	const appDirPath = path.join(dataDirectory, repo);
 
 	if (await exists(appDirPath)) {
-		// TODO: Pull latest changes
+		await syncWithRemoteRepo();
 	} else {
 		if (!(await exists(dataDirectory))) {
 			await mkdir(dataDirectory, { recursive: true });
 		}
-		const { url } = await getPrivateRepoDownloadURL();
+		const { url } = await getRepoDownloadURL();
 		await downloadAndExtractTarball(url, dataDirectory);
 
 		const [oldDir] = await getDirectories(dataDirectory);
 		await rename(oldDir, appDirPath);
+
+		const latestCommitHash = await getLatestCommitHash();
+		await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 	}
 };
 
 module.exports = {
 	downloadRepositoryToFS,
 	getRepoInfoFromURL,
+	syncWithRemoteRepo,
 };

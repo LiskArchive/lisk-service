@@ -13,16 +13,20 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const logger = require('lisk-service-framework').Logger();
+const { Logger, Signals } = require('lisk-service-framework');
+
+const logger = Logger();
 
 module.exports = [
 	{
-		name: 'job.1',
-		description: 'Generic job template',
-		schedule: '* * * * *', // Every 1 min
-		controller: () => {
-			const operationResult = (() => ([1, 2, 3, 4, 5]))();
-			logger.info(`Dummy job is done, processed ${operationResult.length} items`);
+		name: 'update.metadata',
+		description: 'Emit event when the database is successfully synchronized',
+		controller: async callback => {
+			const updateMetadataListener = async (data) => {
+				logger.debug('Database has been successfully synchronized');
+				callback(data);
+			};
+			Signals.get('metadataUpdated').add(updateMetadataListener);
 		},
 	},
 ];
