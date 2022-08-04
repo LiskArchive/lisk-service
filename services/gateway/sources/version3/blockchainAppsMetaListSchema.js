@@ -17,7 +17,7 @@ const blockchainAppMetaList = require('./mappings/blockchainAppMetaList');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'indexer.blockchain.apps.meta.list',
+	method: 'app-registry.blockchain.apps.meta.list',
 	params: {
 		chainID: '=,string',
 		name: '=,string',
