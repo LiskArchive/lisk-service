@@ -129,7 +129,7 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	}
 };
 
-const syncWithRepo = async () => {
+const syncWithRemoteRepo = async () => {
 	try {
 		const dataDirectory = './data';
 		const appDirPath = path.join(dataDirectory, repo);
@@ -176,7 +176,7 @@ const downloadRepositoryToFS = async () => {
 	const appDirPath = path.join(dataDirectory, repo);
 
 	if (await exists(appDirPath)) {
-		await syncWithRepo();
+		await syncWithRemoteRepo();
 	} else {
 		if (!(await exists(dataDirectory))) {
 			await mkdir(dataDirectory, { recursive: true });
@@ -195,5 +195,5 @@ const downloadRepositoryToFS = async () => {
 module.exports = {
 	downloadRepositoryToFS,
 	getRepoInfoFromURL,
-	syncWithRepo,
+	syncWithRemoteRepo,
 };

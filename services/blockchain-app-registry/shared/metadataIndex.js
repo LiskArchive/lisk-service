@@ -108,10 +108,10 @@ const indexMetadataFromFile = async (file, dbTrx) => {
 	logger.info(`Indexing metadata information for the app: ${file.split('/')[2]}`);
 
 	if (file.includes('token.json')) {
-		logger.info(`Indexing tokens information for the app: ${file.split('/')[2]}`);
+		logger.debug(`Indexing tokens information for the app: ${file.split('/')[2]}`);
 		await indexTokensInfo(file, dbTrx);
 	} else if (file.includes('chain.json')) {
-		logger.info(`Indexing chain information for the app: ${file.split('/')[2]}`);
+		logger.debug(`Indexing chain information for the app: ${file.split('/')[2]}`);
 		await indexChainInfo(file, dbTrx);
 	}
 };
