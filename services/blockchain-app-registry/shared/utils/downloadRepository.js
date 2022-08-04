@@ -26,7 +26,7 @@ const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
 const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
 
 const keyValueDB = require('../database/mysqlKVStore');
-const { indexMetadataFromLocalFile } = require('../metadataIndex');
+const { indexMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
 
@@ -64,12 +64,12 @@ const getLatestCommitHash = async () => {
 };
 
 const getCommitInfo = async () => {
-	const lastCommitHash = await keyValueDB.get(COMMIT_HASH_UNTIL_LAST_SYNC);
+	const lastSyncedCommitHash = await keyValueDB.get(COMMIT_HASH_UNTIL_LAST_SYNC);
 	const latestCommitHash = await getLatestCommitHash();
-	return { lastCommitHash, latestCommitHash };
+	return { lastSyncedCommitHash, latestCommitHash };
 };
 
-const getPrivateRepoDownloadURL = async () => {
+const getRepoDownloadURL = async () => {
 	try {
 		const result = await octokit.request(
 			`GET /repos/${owner}/${repo}/tarball/${config.gitHub.branch}`,
@@ -109,10 +109,10 @@ const getFileDownloadURL = async (file) => {
 	}
 };
 
-const getDiff = async (lastCommitHash, latestCommitHash) => {
+const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	try {
 		const result = await octokit.request(
-			`GET /repos/${owner}/${repo}/compare/${lastCommitHash}...${latestCommitHash}`,
+			`GET /repos/${owner}/${repo}/compare/${lastSyncedCommitHash}...${latestCommitHash}`,
 			{
 				owner,
 				repo,
@@ -129,17 +129,17 @@ const getDiff = async (lastCommitHash, latestCommitHash) => {
 	}
 };
 
-const syncRepoWithLatestChanges = async () => {
+const syncWithRepo = async () => {
 	try {
 		const dataDirectory = './data';
 		const appDirPath = path.join(dataDirectory, repo);
 
-		const { lastCommitHash, latestCommitHash } = await getCommitInfo();
+		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
 
-		if (lastCommitHash !== latestCommitHash) {
+		if (lastSyncedCommitHash === latestCommitHash) {
 			logger.info('Database is already up-to-date');
 		} else {
-			const diffInfo = await getDiff(lastCommitHash, latestCommitHash);
+			const diffInfo = await getDiff(lastSyncedCommitHash, latestCommitHash);
 			// TODO: Add a check to filter out non-blockchain apps related files
 			const filesChanged = diffInfo.data.files.map(file => file.filename);
 
@@ -151,18 +151,22 @@ const syncRepoWithLatestChanges = async () => {
 					await downloadFile(result.data.download_url, filePath);
 					logger.debug(`Successfully downloaded: ${file}`);
 
-					await indexMetadataFromLocalFile(filePath);
+					await indexMetadataFromFile(filePath);
 					logger.debug('Successfully updated the database with the latest changes');
-					Signals.get('updateMetadata').dispatch({});
 				},
 				{ concurrency: filesChanged.length },
 			);
+
 			await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
+			if (filesChanged.length) {
+				const appsUpdated = filesChanged.map(file => file.split('/')[0]);
+				Signals.get('metadataUpdated').dispatch([...new Set(appsUpdated)]);
+			}
 		}
 	} catch (error) {
 		let errorMsg = error.message;
 		if (Array.isArray(error)) errorMsg = error.map(e => e.message).join('\n');
-		logger.error(`Unable to sync database due to: ${errorMsg}`);
+		logger.error(`Unable to sync changes due to: ${errorMsg}`);
 		throw error;
 	}
 };
@@ -172,24 +176,24 @@ const downloadRepositoryToFS = async () => {
 	const appDirPath = path.join(dataDirectory, repo);
 
 	if (await exists(appDirPath)) {
-		await syncRepoWithLatestChanges();
+		await syncWithRepo();
 	} else {
 		if (!(await exists(dataDirectory))) {
 			await mkdir(dataDirectory, { recursive: true });
 		}
-		const { url } = await getPrivateRepoDownloadURL();
+		const { url } = await getRepoDownloadURL();
 		await downloadAndExtractTarball(url, dataDirectory);
 
 		const [oldDir] = await getDirectories(dataDirectory);
 		await rename(oldDir, appDirPath);
 
-		const lastCommitHash = await getLatestCommitHash();
-		await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, lastCommitHash);
+		const latestCommitHash = await getLatestCommitHash();
+		await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 	}
 };
 
 module.exports = {
 	downloadRepositoryToFS,
 	getRepoInfoFromURL,
-	syncRepoWithLatestChanges,
+	syncWithRepo,
 };

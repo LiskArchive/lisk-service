@@ -104,7 +104,9 @@ const indexChainInfo = async (filePath, dbTrx) => {
 	await applicationsDB.upsert(chainInfoToIndex, dbTrx);
 };
 
-const indexMetadataFromLocalFile = async (file, dbTrx) => {
+const indexMetadataFromFile = async (file, dbTrx) => {
+	logger.info(`Indexing metadata information for the app: ${file.split('/')[2]}`);
+
 	if (file.includes('token.json')) {
 		logger.info(`Indexing tokens information for the app: ${file.split('/')[2]}`);
 		await indexTokensInfo(file, dbTrx);
@@ -133,7 +135,7 @@ const indexBlockchainMetadata = async () => {
 
 					try {
 						logger.debug('Created new MySQL transaction to index blockchain metadata information');
-						await indexMetadataFromLocalFile(file, dbTrx);
+						await indexMetadataFromFile(file, dbTrx);
 						await commitDbTransaction(dbTrx);
 						logger.debug('Committed MySQL transaction to index blockchain metadata information');
 					} catch (error) {
@@ -150,5 +152,5 @@ const indexBlockchainMetadata = async () => {
 
 module.exports = {
 	indexBlockchainMetadata,
-	indexMetadataFromLocalFile,
+	indexMetadataFromFile,
 };
