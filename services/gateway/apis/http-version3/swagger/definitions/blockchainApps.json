@@ -112,5 +112,53 @@
                 "type": "object"
             }
         }
+    },
+    "BlockchainAppMetaList": {
+        "type": "object",
+        "required": [
+            "name",
+            "chainID",
+            "networks"
+        ],
+        "properties": {
+            "name": {
+                "type": "string",
+                "example": "Lisk",
+                "description": "Name of the blockchain application"
+            },
+            "chainID": {
+                "type": "integer",
+                "format": "id",
+                "minLength": 1,
+                "example": 1,
+                "description": "Chain ID of the blockchain application"
+            },
+            "networks": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "example": "mainnet"
+                }
+            }
+        }
+    },
+    "BlockchainAppsMetaListWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of blockchain applications for which off-chain data is available",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/BlockchainAppMetaList"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
     }
 }
