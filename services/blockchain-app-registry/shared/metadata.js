@@ -50,7 +50,7 @@ const getBlockchainAppsMetaList = async (params) => {
 		};
 	}
 
-	const [{ 'COUNT(DISTINCT(name))': total }] = await applicationsDB.rawQuery('SELECT COUNT(DISTINCT(name)) from applications');
+	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(DISTINCT(name)) as count from applications');
 
 	const defaultApps = await applicationsDB.find(
 		{ ...params, isDefault: true },
