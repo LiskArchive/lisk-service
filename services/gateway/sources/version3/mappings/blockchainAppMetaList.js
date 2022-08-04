@@ -15,6 +15,8 @@
  */
 module.exports = {
 	name: '=,string',
-	chainID: '=,number',
-	networks: '=',
+	networks: ['networks', {
+		chainID: '=,number',
+		network: '=',
+	}]
 };
