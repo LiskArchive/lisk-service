@@ -32,8 +32,8 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: ['name:asc', 'name:desc', 'chainID:asc', 'chainID:desc'],
-			default: 'chainID:asc',
+			enum: ['name:asc', 'name:desc'],
+			default: 'name:asc',
 		},
 	},
 	get schema() {
