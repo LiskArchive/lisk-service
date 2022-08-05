@@ -89,7 +89,7 @@ xdescribe('get.blockchain.apps.meta.list', () => {
 	});
 
 	it('returns blockchain applications meta list by partial search', async () => {
-		const response = await getBlockchainApps({ search: 'Lisk' });
+		const response = await getBlockchainApps({ search: 'Lis' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

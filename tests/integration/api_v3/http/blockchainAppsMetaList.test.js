@@ -92,7 +92,7 @@ xdescribe('Blockchain application meta list API', () => {
 	});
 
 	it('retrieves blockchain applications meta list by partial search', async () => {
-		const response = await api.get(`${endpoint}?search=is`);
+		const response = await api.get(`${endpoint}?search=Lis`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);

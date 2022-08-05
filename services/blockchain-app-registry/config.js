@@ -68,6 +68,6 @@ config.serviceURL = {
 	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
 };
 
-config.numOfNetworksSupported = process.env.SUPPORTED_NETWORKS || ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
+config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
 
 module.exports = config;

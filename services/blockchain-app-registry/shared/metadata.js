@@ -53,14 +53,9 @@ const getBlockchainAppsMetaList = async (params) => {
 		};
 	}
 
-	const limit = params.limit * config.numOfNetworksSupported.length;
-
+	const limit = params.limit * config.supportedNetworks.length;
 	const defaultApps = await applicationsDB.find(
-		{
-			...params,
-			isDefault: true,
-			limit,
-		},
+		{ ...params, limit, isDefault: true },
 		['name', 'chainID', 'network'],
 	);
 
@@ -68,11 +63,7 @@ const getBlockchainAppsMetaList = async (params) => {
 
 	if (blockchainAppsMetaList.data.length < params.limit) {
 		const nonDefaultApps = await applicationsDB.find(
-			{
-				...params,
-				isDefault: false,
-				limit,
-			},
+			{ ...params, limit, isDefault: false },
 			['name', 'chainID', 'network'],
 		);
 
