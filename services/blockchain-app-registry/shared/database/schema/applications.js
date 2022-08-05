@@ -19,6 +19,7 @@ module.exports = {
 	schema: {
 		name: { type: 'string' },
 		chainID: { type: 'string', null: true },
+		isDefault: { type: 'boolean', null: false, defaultValue: false },
 		title: { type: 'string', null: true },
 		description: { type: 'string', null: true },
 		network: { type: 'string' },
@@ -32,6 +33,7 @@ module.exports = {
 		chainID: { type: 'key' },
 		name: { type: 'key' },
 		network: { type: 'key' },
+		isDefault: { type: 'key' },
 	},
 	purge: {},
 };

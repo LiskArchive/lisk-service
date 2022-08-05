@@ -13,17 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const packageJson = require('../package.json');
+const appRegistryService = require('../../shared/metadata');
 
-module.exports = [
-	{
-		name: 'status',
-		description: 'Status',
-		params: {},
-		controller: async () => ({
-			status: 'OK',
-			service: packageJson.name,
-			version: packageJson.version,
-		}),
-	},
-];
+const getBlockchainAppsMetaList = async (params) => {
+	const blockchainAppsMetaList = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await appRegistryService.getBlockchainAppsMetaList(params);
+	if (response.data) blockchainAppsMetaList.data = response.data;
+	if (response.meta) blockchainAppsMetaList.meta = response.meta;
+
+	return blockchainAppsMetaList;
+};
+
+module.exports = {
+	getBlockchainAppsMetaList,
+};
