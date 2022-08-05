@@ -163,5 +163,112 @@
                 "$ref": "#/definitions/Pagination"
             }
         }
+    },
+    "BlockchainAppMetadata": {
+        "type": "object",
+        "required": [
+            "name",
+            "chainID",
+            "isDefault",
+            "network",
+            "homepage",
+            "apis"
+        ],
+        "properties": {
+            "name": {
+                "type": "string",
+                "example": "Lisk",
+                "description": "Name of the blockchain application"
+            },
+            "chainID": {
+                "type": "integer",
+                "minLength": 1,
+                "example": 1,
+                "description": "Chain ID of the blockchain application"
+            },
+            "title": {
+                "type": "string",
+                "example": "Lisk blockchain application"
+            },
+            "description": {
+                "type": "string",
+                "example": "Lisk is a blockchain application platform"
+            },
+            "network": {
+                "type": "string",
+                "example": "mainnet"
+            },
+            "isDefault": {
+                "type": "boolean",
+                "example": "true"
+            },
+            "genesisBlock": {
+                "type": "string",
+                "example": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz"
+            },
+            "homepage": {
+                "type": "string",
+                "example": "https://lisk.com"
+            },
+            "apis": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "rest": {
+                            "type": "string",
+                            "example": "https://service.lisk.com"
+                        },
+                        "rpc": {
+                            "type": "string",
+                            "example": "wss://service.lisk.com"
+                        }
+                    }
+                }
+            },
+            "explorers": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "example": "https://explorer.lisk.io"
+                }
+            },
+            "logo": {
+                "type": "object",
+                "properties": {
+                    "png": {
+                        "type": "string",
+                        "example": "https://downloads.lisk.com/lisk/images/logo.png"
+                    },
+                    "svg": {
+                        "type": "string",
+                        "example": "https://downloads.lisk.com/lisk/images/logo.svg"
+                    }
+                }
+            },
+            "backgroundColor": {
+                "type": "string",
+                "example": "#0981D1"
+            }
+        }
+    },
+    "BlockchainAppsMetadataWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of blockchain applications for which off-chain data is available",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/BlockchainAppMetadata"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
     }
 }

@@ -29,5 +29,12 @@
         "description": "Filter default blockchain application",
         "type": "string",
         "minLength": 1
+    },
+    "network": {
+        "name": "network",
+        "in": "query",
+        "description": "Network to query (can be expressed as CSV)",
+        "type": "string",
+        "minLength": 1
     }
 }
