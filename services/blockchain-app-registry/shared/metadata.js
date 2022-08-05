@@ -53,13 +53,13 @@ const getBlockchainAppsMetaList = async (params) => {
 		};
 	}
 
-	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(DISTINCT(name)) as count from applications');
+	const limit = params.limit * config.numOfNetworksSupported.length;
 
 	const defaultApps = await applicationsDB.find(
 		{
 			...params,
 			isDefault: true,
-			limit: params.limit * config.numOfNetworksSupported.length,
+			limit,
 		},
 		['name', 'chainID', 'network'],
 	);
@@ -71,7 +71,7 @@ const getBlockchainAppsMetaList = async (params) => {
 			{
 				...params,
 				isDefault: false,
-				limit: params.limit * config.numOfNetworksSupported.length,
+				limit,
 			},
 			['name', 'chainID', 'network'],
 		);
@@ -82,6 +82,8 @@ const getBlockchainAppsMetaList = async (params) => {
 
 	blockchainAppsMetaList.data = blockchainAppsMetaList.data
 		.slice(params.offset, params.offset + params.limit);
+
+	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(DISTINCT(name)) as count from applications');
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,
