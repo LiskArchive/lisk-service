@@ -94,7 +94,7 @@ const indexChainInfo = async (filePath, dbTrx) => {
 		description: chainInfo.description,
 		title: chainInfo.title,
 		network: chainInfo.network,
-		isDefault: chainInfo.isDefault,
+		isDefault: chainInfo.isDefault || false,
 		genesisBlock: chainInfo.genesis_url,
 		homepage: chainInfo.homepage,
 		apis: JSON.stringify(chainInfo.apis),

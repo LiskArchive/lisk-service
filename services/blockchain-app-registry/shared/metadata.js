@@ -27,6 +27,14 @@ const getApplicationsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const formatResponseEntries = (arr) => {
+	const map = new Map(arr.map(entry => [entry.name, { name: entry.name, networks: [] }]));
+	for (let i = 0; i < arr.length; i++) {
+		map.get(arr[i].name).networks.push({ network: arr[i].network, chainID: arr[i].chainID });
+	}
+	return [...map.values()];
+};
+
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationsDB = await getApplicationsIndex();
 
@@ -48,28 +56,32 @@ const getBlockchainAppsMetaList = async (params) => {
 	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(DISTINCT(name)) as count from applications');
 
 	const defaultApps = await applicationsDB.find(
-		{ ...params, isDefault: true },
-		Object.getOwnPropertyNames(applicationsIndexSchema.schema),
+		{
+			...params,
+			isDefault: true,
+			limit: params.limit * config.numOfNetworksSupported.length,
+		},
+		['name', 'chainID', 'network'],
 	);
 
-	const mergeArrays = (arr) => {
-		const map = new Map(arr.map(value => [value.name, { name: value.name, networks: [] }]));
-		for (let i = 0; i < arr.length; i++) {
-			map.get(arr[i].name).networks.push({ network: arr[i].network, chainID: arr[i].chainID });
-		}
-		return [...map.values()];
-	};
-
-	blockchainAppsMetaList.data = mergeArrays(defaultApps);
+	blockchainAppsMetaList.data = formatResponseEntries(defaultApps);
 
 	if (blockchainAppsMetaList.data.length < params.limit) {
 		const nonDefaultApps = await applicationsDB.find(
-			{ ...params, isDefault: false },
-			Object.getOwnPropertyNames(applicationsIndexSchema.schema),
+			{
+				...params,
+				isDefault: false,
+				limit: params.limit * config.numOfNetworksSupported.length,
+			},
+			['name', 'chainID', 'network'],
 		);
 
-		blockchainAppsMetaList.data = blockchainAppsMetaList.data.concat(mergeArrays(nonDefaultApps));
+		blockchainAppsMetaList.data = blockchainAppsMetaList.data
+			.concat(formatResponseEntries(nonDefaultApps));
 	}
+
+	blockchainAppsMetaList.data = blockchainAppsMetaList.data
+		.slice(params.offset, params.offset + params.limit);
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,

@@ -98,6 +98,36 @@ xdescribe('get.blockchain.apps.meta.list', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
+	it('returns blockchain applications meta list by search', async () => {
+		const response = await getBlockchainApps({ search: 'Lisk' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain applications meta list by case-insensitive search (Upper-case)', async () => {
+		const response = await getBlockchainApps({ search: 'LISK' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain applications meta list by case-insensitive search (Lower-case)', async () => {
+		const response = await getBlockchainApps({ search: 'lisk' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
 	it('invalid request param -> invalid param', async () => {
 		const response = await getBlockchainApps({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);

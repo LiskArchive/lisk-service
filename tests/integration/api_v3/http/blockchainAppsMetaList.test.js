@@ -81,8 +81,38 @@ xdescribe('Blockchain application meta list API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications meta list by partial search', async () => {
+	it('retrieves blockchain applications meta list by search', async () => {
 		const response = await api.get(`${endpoint}?search=Lisk`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain applications meta list by partial search', async () => {
+		const response = await api.get(`${endpoint}?search=is`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain applications meta list by case-insensitive search (Upper-case)', async () => {
+		const response = await api.get(`${endpoint}?search=LISK`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toBeGreaterThanOrEqual(1);
+		expect(response.data.length).toBeLessThanOrEqual(10);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain applications meta list by case-insensitive search (Lower-case)', async () => {
+		const response = await api.get(`${endpoint}?search=lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);

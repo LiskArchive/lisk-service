@@ -17,7 +17,7 @@ const appRegistryService = require('../../shared/metadata');
 
 const getBlockchainAppsMetaList = async (params) => {
 	const blockchainAppsMetaList = {
-		data: {},
+		data: [],
 		meta: {},
 	};
 

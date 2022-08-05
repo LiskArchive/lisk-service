@@ -126,18 +126,23 @@
                 "example": "Lisk",
                 "description": "Name of the blockchain application"
             },
-            "chainID": {
-                "type": "integer",
-                "format": "id",
-                "minLength": 1,
-                "example": 1,
-                "description": "Chain ID of the blockchain application"
-            },
             "networks": {
                 "type": "array",
                 "items": {
-                    "type": "string",
-                    "example": "mainnet"
+                    "type": "object",
+                    "properties": {
+                        "chainID": {
+                            "type": "integer",
+                            "format": "id",
+                            "minLength": 1,
+                            "example": 1,
+                            "description": "Chain ID of the blockchain application"
+                        },
+                        "network": {
+                            "type": "string",
+                            "example": "mainnet"
+                        }
+                    }
                 }
             }
         }
