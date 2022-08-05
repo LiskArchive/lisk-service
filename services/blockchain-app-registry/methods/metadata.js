@@ -21,7 +21,6 @@ module.exports = [
 	{
 		name: 'blockchain.apps.meta.list',
 		params: {
-			chainID: { optional: true, type: 'string' },
 			name: { optional: true, type: 'string' },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },

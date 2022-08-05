@@ -20,7 +20,6 @@ const config = require('../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const applicationsIndexSchema = require('./database/schema/applications');
-const { normalizeRangeParam } = require('./utils/paramUtils');
 
 const getApplicationsIndex = () => getTableInstance(
 	applicationsIndexSchema.tableName,
@@ -35,10 +34,6 @@ const getBlockchainAppsMetaList = async (params) => {
 		data: [],
 		meta: {},
 	};
-
-	if (params.chainID && params.chainID.includes(':')) {
-		params = normalizeRangeParam(params, 'chainID');
-	}
 
 	if (params.search) {
 		const { search, ...remParams } = params;
@@ -58,7 +53,7 @@ const getBlockchainAppsMetaList = async (params) => {
 	);
 
 	const mergeArrays = (arr) => {
-		const map = new Map(arr.map(({ name }) => [name, { name, networks: [] }]));
+		const map = new Map(arr.map(value => [value.name, { name: value.name, networks: [] }]));
 		for (let i = 0; i < arr.length; i++) {
 			map.get(arr[i].name).networks.push({ network: arr[i].network, chainID: arr[i].chainID });
 		}
@@ -73,8 +68,7 @@ const getBlockchainAppsMetaList = async (params) => {
 			Object.getOwnPropertyNames(applicationsIndexSchema.schema),
 		);
 
-		const mergedNonDefaultApps = mergeArrays(nonDefaultApps);
-		blockchainAppsMetaList.data = blockchainAppsMetaList.data.concat(mergedNonDefaultApps);
+		blockchainAppsMetaList.data = blockchainAppsMetaList.data.concat(mergeArrays(nonDefaultApps));
 	}
 
 	blockchainAppsMetaList.meta = {

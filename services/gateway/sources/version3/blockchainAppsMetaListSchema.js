@@ -19,7 +19,6 @@ module.exports = {
 	type: 'moleculer',
 	method: 'app-registry.blockchain.apps.meta.list',
 	params: {
-		chainID: '=,string',
 		name: '=,string',
 		search: '=,string',
 		offset: '=,number',
