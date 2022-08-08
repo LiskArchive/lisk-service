@@ -171,7 +171,6 @@
             "chainID",
             "isDefault",
             "network",
-            "homepage",
             "apis"
         ],
         "properties": {
@@ -260,7 +259,7 @@
         ],
         "properties": {
             "data": {
-                "description": "List of blockchain applications for which off-chain data is available",
+                "description": "List of blockchain applications with off-chain metadata",
                 "type": "array",
                 "items": {
                     "$ref": "#/definitions/BlockchainAppMetadata"
