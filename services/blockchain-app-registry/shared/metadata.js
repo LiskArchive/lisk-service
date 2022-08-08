@@ -20,6 +20,8 @@ const config = require('../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const applicationsIndexSchema = require('./database/schema/applications');
+const tokensIndexSchema = require('./database/schema/tokens');
+const { normalizeRangeParam } = require('./utils/paramUtils');
 
 const getApplicationsIndex = () => getTableInstance(
 	applicationsIndexSchema.tableName,
@@ -27,10 +29,36 @@ const getApplicationsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const getTokensIndex = () => getTableInstance(
+	tokensIndexSchema.tableName,
+	tokensIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
 const formatResponseEntries = (arr) => {
 	const map = new Map(arr.map(entry => [entry.name, { name: entry.name, networks: [] }]));
 	for (let i = 0; i < arr.length; i++) {
 		map.get(arr[i].name).networks.push({ network: arr[i].network, chainID: arr[i].chainID });
+	}
+	return [...map.values()];
+};
+
+const formatResponseEntriesForTokens = (arr) => {
+	const map = new Map(arr.map(entry => [entry.chainName, {
+		chainID: entry.chainID,
+		chainName: entry.chainName,
+		assets: [],
+	}]));
+	for (let i = 0; i < arr.length; i++) {
+		map.get(arr[i].chainName).assets.push({
+			description: arr[i].description,
+			name: arr[i].name,
+			symbol: arr[i].symbol,
+			display: arr[i].display,
+			base: arr[i].base,
+			exponent: arr[i].exponent,
+			logo: JSON.parse(arr[i].logo),
+		});
 	}
 	return [...map.values()];
 };
@@ -85,6 +113,52 @@ const getBlockchainAppsMetaList = async (params) => {
 	return blockchainAppsMetaList;
 };
 
+const getBlockchainAppsTokenMetadata = async (params) => {
+	const tokensDB = await getTokensIndex();
+
+	const blockchainAppsTokenMetadata = {
+		data: [],
+		meta: {},
+	};
+
+	if (params.chainID && params.chainID.includes(':')) {
+		params = normalizeRangeParam(params, 'chainID');
+	}
+
+	if (params.name) {
+		const { name, ...remParams } = params;
+		params = remParams;
+		params.chainName = name;
+	}
+
+	if (params.search) {
+		const { search, ...remParams } = params;
+		params = remParams;
+		params.search = {
+			property: 'chainName',
+			pattern: search,
+		};
+	}
+
+	const response = await tokensDB.find(
+		params,
+		Object.getOwnPropertyNames(tokensIndexSchema.schema),
+	);
+
+	blockchainAppsTokenMetadata.data = formatResponseEntriesForTokens(response);
+
+	const total = await tokensDB.count(params);
+
+	blockchainAppsTokenMetadata.meta = {
+		count: blockchainAppsTokenMetadata.data.length,
+		offset: params.offset,
+		total,
+	};
+
+	return blockchainAppsTokenMetadata;
+};
+
 module.exports = {
 	getBlockchainAppsMetaList,
+	getBlockchainAppsTokenMetadata,
 };
