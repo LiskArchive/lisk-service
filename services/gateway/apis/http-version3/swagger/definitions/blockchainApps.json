@@ -163,5 +163,92 @@
                 "$ref": "#/definitions/Pagination"
             }
         }
+    },
+    "BlockchainAppTokenMetadata": {
+        "type": "object",
+        "required": [
+            "chainID",
+            "chainName",
+            "assets"
+        ],
+        "properties": {
+            "chainID": {
+                "type": "integer",
+                "format": "id",
+                "minLength": 1,
+                "example": 1,
+                "description": "Chain ID of the blockchain application"
+            },
+            "chainName": {
+                "type": "string",
+                "example": "Lisk",
+                "description": "Name of the blockchain application"
+            },
+            "assets": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string",
+                            "example": "LSK is the utility token of Lisk"
+                        },
+                        "name": {
+                            "type": "string",
+                            "example": "Lisk",
+                            "description": "Name of the blockchain application token"
+                        },
+                        "symbol": {
+                            "type": "string",
+                            "example": "LSK"
+                        },
+                        "display": {
+                            "type": "string",
+                            "example": "LSK"
+                        },
+                        "base": {
+                            "type": "string",
+                            "example": "beddows"
+                        },
+                        "exponent": {
+                            "type": "integer",
+                            "example": 8
+                        },
+                        "logo": {
+                            "type": "object",
+                            "properties": {
+                                "png": {
+                                    "type": "string",
+                                    "example": "https://downloads.lisk.com/lisk/images/logo.png"
+                                },
+                                "svg": {
+                                    "type": "string",
+                                    "example": "https://downloads.lisk.com/lisk/images/logo.svg"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "BlockchainAppsTokenMetadataWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of blockchain applications off-chain metadata for tokens",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/BlockchainAppTokenMetadata"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
     }
 }
