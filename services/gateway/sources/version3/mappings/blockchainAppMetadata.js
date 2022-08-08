@@ -22,8 +22,14 @@ module.exports = {
 	isDefault: '=,boolean',
 	genesisBlock: '=,string',
 	homepage: '=,string',
-	apis: '=',
+	apis: ['apis', {
+		rest: '=,string',
+		rpc: '=,string',
+	}],
 	explorers: '=',
-	logo: '=',
+	logo: {
+		png: '=,string',
+		svg: '=,string',
+	},
 	backgroundColor: '=,string',
 };
