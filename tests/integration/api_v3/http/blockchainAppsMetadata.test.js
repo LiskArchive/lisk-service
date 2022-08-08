@@ -28,7 +28,7 @@ const {
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
-const endpoint = `${baseUrlV3}/blockchain/apps/meta/list`;
+const endpoint = `${baseUrlV3}/blockchain/apps/meta`;
 
 // TODO: Enable test cases once off-chain data is available
 xdescribe('Blockchain applications metadata API', () => {
