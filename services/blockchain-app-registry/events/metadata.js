@@ -19,7 +19,7 @@ const logger = Logger();
 
 module.exports = [
 	{
-		name: 'update.metadata',
+		name: 'metadata.change',
 		description: 'Emit event when the database is successfully synchronized',
 		controller: async callback => {
 			const updateMetadataListener = async (data) => {
