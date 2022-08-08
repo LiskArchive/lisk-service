@@ -15,6 +15,7 @@
  */
 const {
 	getBlockchainAppsMetaList,
+	getBlockchainAppsTokenMetadata,
 } = require('./controllers/metadata');
 
 module.exports = [
@@ -28,5 +29,17 @@ module.exports = [
 			sort: { optional: true, type: 'string' },
 		},
 		controller: getBlockchainAppsMetaList,
+	},
+	{
+		name: 'blockchain.apps.meta.tokens',
+		params: {
+			name: { optional: true, type: 'string' },
+			chainID: { optional: true, type: 'string' },
+			search: { optional: true, type: 'string' },
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+			sort: { optional: true, type: 'string' },
+		},
+		controller: getBlockchainAppsTokenMetadata,
 	},
 ];

@@ -28,6 +28,20 @@ const getBlockchainAppsMetaList = async (params) => {
 	return blockchainAppsMetaList;
 };
 
+const getBlockchainAppsTokenMetadata = async (params) => {
+	const blockchainAppsMetaList = {
+		data: [],
+		meta: {},
+	};
+
+	const response = await appRegistryService.getBlockchainAppsTokenMetadata(params);
+	if (response.data) blockchainAppsMetaList.data = response.data;
+	if (response.meta) blockchainAppsMetaList.meta = response.meta;
+
+	return blockchainAppsMetaList;
+};
+
 module.exports = {
 	getBlockchainAppsMetaList,
+	getBlockchainAppsTokenMetadata,
 };
