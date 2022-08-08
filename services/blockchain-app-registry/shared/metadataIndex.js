@@ -98,8 +98,9 @@ const indexChainInfo = async (filePath, dbTrx) => {
 		genesisBlock: chainInfo.genesis_url,
 		homepage: chainInfo.homepage,
 		apis: JSON.stringify(chainInfo.apis),
-		images: JSON.stringify(chainInfo.images),
+		logo: JSON.stringify(chainInfo.logo),
 		explorers: JSON.stringify(chainInfo.explorers),
+		backgroundColor: chainInfo.backgroundColor,
 	};
 
 	await applicationsDB.upsert(chainInfoToIndex, dbTrx);
