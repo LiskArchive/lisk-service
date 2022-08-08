@@ -17,7 +17,7 @@ const blockchainAppTokenMetadata = require('./mappings/blockchainAppTokenMetadat
 
 module.exports = {
 	type: 'moleculer',
-	method: 'app-registry.blockchain.apps.meta.list',
+	method: 'app-registry.blockchain.apps.meta.tokens',
 	params: {
 		name: '=,string',
 		chainID: '=,string',
