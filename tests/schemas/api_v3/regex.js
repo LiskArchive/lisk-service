@@ -26,6 +26,7 @@ const NONCE = /^[0-9]+$/;
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/;
 const FILE_NAME = /^\btransactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv\b$/;
 const FILE_URL = /^\/api\/v2\/exports\/transactions_(lsk[a-hjkm-z2-9]{38})_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))_((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))\.csv$/;
+const NETWORK = /^(?:\b(?:mainnet|testnet|devnet|betanet|alphanet)\b|\b(?:mainnet|testnet|devnet|betanet|alphanet|,){3,}\b){1}$/;
 
 module.exports = {
 	ADDRESS_BASE32,
@@ -41,4 +42,5 @@ module.exports = {
 	INTERVAL,
 	FILE_NAME,
 	FILE_URL,
+	NETWORK,
 };
