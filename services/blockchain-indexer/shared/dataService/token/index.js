@@ -13,8 +13,12 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { getTokens } = require('./token');
+const {
+	getTokens,
+	getTopLiskAddresses,
+} = require('./token');
 
 module.exports = {
 	getTokens,
+	getTopLiskAddresses,
 };

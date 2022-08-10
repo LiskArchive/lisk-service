@@ -67,6 +67,8 @@ const getTopLiskAddresses = async params => {
 	const response = await dataService.getTopLiskAddresses(params);
 	if (response.data) topLiskAddresses.data = response.data;
 	if (response.meta) topLiskAddresses.meta = response.meta;
+
+	return topLiskAddresses;
 };
 
 module.exports = {

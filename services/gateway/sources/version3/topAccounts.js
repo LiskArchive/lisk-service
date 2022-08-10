@@ -24,7 +24,7 @@ module.exports = {
 		sort: '=,string',
 	},
 	definition: {
-		data: topAccount,
+		data: ['data', topAccount],
 		meta: {
 			count: '=,number',
 			offset: '=,number',
