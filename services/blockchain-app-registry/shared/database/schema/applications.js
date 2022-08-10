@@ -27,7 +27,8 @@ module.exports = {
 		homepage: { type: 'string' },
 		apis: { type: 'json' },
 		explorers: { type: 'json' },
-		images: { type: 'json' },
+		logo: { type: 'json' },
+		backgroundColor: { type: 'string' },
 	},
 	indexes: {
 		chainID: { type: 'key' },
