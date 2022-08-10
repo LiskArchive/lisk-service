@@ -13,20 +13,26 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
+const blockchainAppTokenMetadata = require('./mappings/blockchainAppTokenMetadata');
 
-const logger = Logger();
-
-module.exports = [
-	{
-		name: 'metadata.change',
-		description: 'Emit event when the database is successfully synchronized',
-		controller: async callback => {
-			const updateMetadataListener = async (data) => {
-				logger.debug('Database has been successfully synchronized');
-				callback(data);
-			};
-			Signals.get('metadataUpdated').add(updateMetadataListener);
-		},
+module.exports = {
+	type: 'moleculer',
+	method: 'app-registry.blockchain.apps.meta.tokens',
+	params: {
+		name: '=,string',
+		chainID: '=,string',
+		search: '=,string',
+		offset: '=,number',
+		limit: '=,number',
+		sort: '=,string',
 	},
-];
+	definition: {
+		data: ['data', blockchainAppTokenMetadata],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+			total: '=,number',
+		},
+		links: {},
+	},
+};

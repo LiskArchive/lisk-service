@@ -13,20 +13,16 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { Logger, Signals } = require('lisk-service-framework');
-
-const logger = Logger();
-
-module.exports = [
-	{
-		name: 'metadata.change',
-		description: 'Emit event when the database is successfully synchronized',
-		controller: async callback => {
-			const updateMetadataListener = async (data) => {
-				logger.debug('Database has been successfully synchronized');
-				callback(data);
-			};
-			Signals.get('metadataUpdated').add(updateMetadataListener);
-		},
-	},
-];
+module.exports = {
+	chainID: '=,string',
+	chainName: '=,string',
+	assets: ['assets', {
+		description: '=,string',
+		name: '=,string',
+		symbol: '=,string',
+		display: '=,string',
+		base: '=,string',
+		exponent: '=,string',
+		logo: '=',
+	}],
+};
