@@ -29,6 +29,7 @@ const {
 	getAccountsByPublicKey2,
 } = require('../dataService');
 
+const { getHexAddressFromBase32 } = require('../utils/accountUtils');
 const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
@@ -176,6 +177,23 @@ const keepAccountsCacheUpdated = async () => {
 
 Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
 
+const getLiskAccountBalanceByAddress = async (address) => {
+	const LISK_TOKEN_ID = config.knownTokensIds.lisk;
+
+	const response = await requestConnector('token_getBalances', { address: getHexAddressFromBase32(address) });
+	const lskTokenBalance = response.balances
+		.filter(token => token.tokenID === LISK_TOKEN_ID)
+		.map(item => {
+			const account = {
+				address,
+				balance: item.availableBalance,
+			};
+			return account;
+		});
+
+	return lskTokenBalance;
+};
+
 module.exports = {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
@@ -187,4 +205,5 @@ module.exports = {
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
 	getGenesisAccountAddresses,
+	getLiskAccountBalanceByAddress,
 };
