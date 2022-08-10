@@ -105,7 +105,7 @@ const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
 
 config.knownTokensIds = {
-	lisk: '0000000000000000'
+	lisk: '0000000000000000',
 };
 
 module.exports = config;

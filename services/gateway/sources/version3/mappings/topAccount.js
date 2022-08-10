@@ -14,8 +14,8 @@
  *
  */
 module.exports = {
-    address: '=,string',
-    balance: '=,number',
-    owner: '=,string',
-    description: '=,string',
+	address: '=,string',
+	balance: '=,number',
+	owner: '=,string',
+	description: '=,string',
 };
