@@ -22,9 +22,21 @@ const config = require('../../../../config');
 const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const { getLiskAccountBalanceByAddress } = require('../../accountIndex');
+const topAccountsIndexSchema = require('../../../database/schema/topAccounts');
 const transactionsIndexSchema = require('../../../database/schema/transactions');
 
-const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
+const getTopAccountsIndex = () => getTableInstance(
+	topAccountsIndexSchema.tableName,
+	topAccountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+const getTransactionsIndex = () => getTableInstance(
+	transactionsIndexSchema.tableName,
+	transactionsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 // Command specific constants
 const commandID = 0;
@@ -33,10 +45,14 @@ const commandName = 'transfer';
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const transactionsDB = await getTransactionsIndex();
+	const topAccountsDB = await getTopAccountsIndex();
 
 	tx.amount = tx.params.amount;
 	tx.data = tx.params.data;
 	tx.recipientAddress = tx.params.recipientAddress;
+
+	const recipientAccountInfo = await getLiskAccountBalanceByAddress(tx.recipientAddress);
+	await topAccountsDB.upsert(recipientAccountInfo, dbTrx);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 	await transactionsDB.upsert(tx, dbTrx);
