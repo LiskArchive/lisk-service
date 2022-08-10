@@ -24,7 +24,6 @@ const MYSQL_ENDPOINT = config.endpoints.mysql;
 const { normalizeRangeParam } = require('./utils/paramUtils');
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
-const { normalizeRangeParam } = require('./utils/paramUtils');
 
 const getApplicationsIndex = () => getTableInstance(
 	applicationsIndexSchema.tableName,
