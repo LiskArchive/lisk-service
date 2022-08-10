@@ -59,12 +59,12 @@ const getTokens = async params => {
 	}
 };
 
-const getTopLiskAddresses = async params => {
+const getTopLiskAccounts = async params => {
 	const topLiskAddresses = {
 		data: {},
 		meta: {},
 	};
-	const response = await dataService.getTopLiskAddresses(params);
+	const response = await dataService.getTopLiskAccounts(params);
 	if (response.data) topLiskAddresses.data = response.data;
 	if (response.meta) topLiskAddresses.meta = response.meta;
 
@@ -73,5 +73,5 @@ const getTopLiskAddresses = async params => {
 
 module.exports = {
 	getTokens,
-	getTopLiskAddresses,
+	getTopLiskAccounts,
 };

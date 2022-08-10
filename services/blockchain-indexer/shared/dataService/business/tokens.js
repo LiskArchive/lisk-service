@@ -73,7 +73,7 @@ const getTokens = async (params) => {
 	return tokens;
 };
 
-const getTopLiskAddresses = async (params) => {
+const getTopLiskAccounts = async (params) => {
 	const topAccountsDB = await getTopAccountsIndex();
 
 	const topLiskAddresses = {
@@ -109,5 +109,5 @@ const getTopLiskAddresses = async (params) => {
 
 module.exports = {
 	getTokens,
-	getTopLiskAddresses,
+	getTopLiskAccounts,
 };

@@ -17,9 +17,9 @@ const dataService = require('../business');
 
 const getTokens = async (params) => dataService.getTokens(params);
 
-const getTopLiskAddresses = async (params) => dataService.getTopLiskAddresses(params);
+const getTopLiskAccounts = async (params) => dataService.getTopLiskAccounts(params);
 
 module.exports = {
 	getTokens,
-	getTopLiskAddresses,
+	getTopLiskAccounts,
 };
