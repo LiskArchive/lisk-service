@@ -52,7 +52,9 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	tx.recipientAddress = tx.params.recipientAddress;
 
 	const recipientAccountInfo = await getLiskAccountBalanceByAddress(tx.recipientAddress);
-	await topAccountsDB.upsert(recipientAccountInfo, dbTrx);
+	if (recipientAccountInfo.length) {
+		await topAccountsDB.upsert(recipientAccountInfo, dbTrx);
+	}
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 	await transactionsDB.upsert(tx, dbTrx);

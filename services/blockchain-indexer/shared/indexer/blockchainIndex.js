@@ -143,7 +143,9 @@ const indexBlock = async job => {
 					tx.timestamp = block.timestamp;
 
 					const senderAccountInfo = await getLiskAccountBalanceByAddress(tx.senderAddress);
-					await topAccountsDB.upsert(senderAccountInfo, dbTrx);
+					if (senderAccountInfo.length) {
+						await topAccountsDB.upsert(senderAccountInfo, dbTrx);
+					}
 
 					await transactionsDB.upsert(tx, dbTrx);
 
@@ -166,7 +168,9 @@ const indexBlock = async job => {
 
 		if (block.generatorAddress) {
 			const generatorAccountInfo = await getLiskAccountBalanceByAddress(block.generatorAddress);
-			await topAccountsDB.upsert(generatorAccountInfo, dbTrx);
+			if (generatorAccountInfo.length) {
+				await topAccountsDB.upsert(generatorAccountInfo, dbTrx);
+			}
 		}
 
 		const blockToIndex = {
