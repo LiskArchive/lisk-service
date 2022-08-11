@@ -42,7 +42,7 @@ describe('get.tokens', () => {
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		expect(result.meta).toMap(tokensMetaSchema);
 	});
 
 	// TODO: Enable/update when token modules endpoints works
@@ -54,7 +54,7 @@ describe('get.tokens', () => {
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		expect(result.meta).toMap(tokensMetaSchema);
 	});
 
 	// TODO: Enable/update when token modules endpoints works
@@ -66,7 +66,7 @@ describe('get.tokens', () => {
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
 		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		expect(result.meta).toMap(tokensMetaSchema);
 	});
 
 	// TODO: Enable/update when token modules endpoints works
@@ -77,7 +77,7 @@ describe('get.tokens', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toEqual(1);
 		result.data.forEach(tokenInfo => expect(tokenInfo).toMap(tokensSchema));
-		expect(response.meta).toMap(tokensMetaSchema);
+		expect(result.meta).toMap(tokensMetaSchema);
 	});
 
 	it('invalid request param -> invalid param', async () => {

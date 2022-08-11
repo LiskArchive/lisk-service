@@ -13,13 +13,22 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
-
-const getTokens = async (params) => dataService.getTokens(params);
-
-const getTopLiskAddresses = async (params) => dataService.getTopLiskAddresses(params);
+const topLSKAddress = require('./mappings/topLSKAddress');
 
 module.exports = {
-	getTokens,
-	getTopLiskAddresses,
+	type: 'moleculer',
+	method: 'indexer.tokens.lsk.top',
+	params: {
+		offset: '=,number',
+		limit: '=,number',
+		sort: '=,string',
+	},
+	definition: {
+		data: ['data', topLSKAddress],
+		meta: {
+			count: '=,number',
+			offset: '=,number',
+		},
+		links: {},
+	},
 };

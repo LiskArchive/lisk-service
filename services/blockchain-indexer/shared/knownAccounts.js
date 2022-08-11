@@ -23,7 +23,6 @@ const config = require('../config');
 
 const logger = Logger();
 
-const knownExpireMiliseconds = 5 * 60 * 1000;
 const staticUrl = config.endpoints.liskStatic;
 
 let knowledge = {};
@@ -55,14 +54,7 @@ const reloadKnowledge = async () => {
 	}
 };
 
-const init = () => {
-	reloadKnowledge();
-	setInterval(reloadKnowledge, knownExpireMiliseconds);
-};
-
-init();
-
 module.exports = {
-	init,
+	reloadKnowledge,
 	getAccountKnowledge,
 };

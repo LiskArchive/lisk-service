@@ -15,6 +15,7 @@
  */
 const {
 	getTokens,
+	getTopLiskAddresses,
 } = require('./controllers/tokens');
 
 module.exports = [
@@ -26,6 +27,15 @@ module.exports = [
 			tokenID: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
+		},
+	},
+	{
+		name: 'tokens.lsk.top',
+		controller: getTopLiskAddresses,
+		params: {
+			limit: { optional: true, type: 'number' },
+			offset: { optional: true, type: 'number' },
+			sort: { optional: true, type: 'string' },
 		},
 	},
 ];

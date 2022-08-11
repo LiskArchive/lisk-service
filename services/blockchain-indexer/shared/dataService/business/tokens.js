@@ -13,12 +13,27 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const BluebirdPromise = require('bluebird');
+
 const {
+	MySQL: { getTableInstance },
 	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 
+const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
 const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
+const { getAccountKnowledge } = require('../../knownAccounts');
+
+const config = require('../../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const getTopLSKAddressesIndex = () => getTableInstance(
+	topLSKAddressesIndexSchema.tableName,
+	topLSKAddressesIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getTokens = async (params) => {
 	let tokensInfo;
@@ -58,6 +73,42 @@ const getTokens = async (params) => {
 	return tokens;
 };
 
+const getTopLiskAddresses = async (params) => {
+	const topLSKAddressesDB = await getTopLSKAddressesIndex();
+
+	const topLiskAddresses = {
+		data: [],
+		meta: {},
+	};
+	const EMPTY_STRING = '';
+
+	const response = await topLSKAddressesDB.find(
+		params,
+		Object.getOwnPropertyNames(topLSKAddressesIndexSchema.schema),
+	);
+
+	topLiskAddresses.data = await BluebirdPromise.map(
+		response,
+		async (account) => {
+			const accountKnowledge = await getAccountKnowledge(account.address);
+			return {
+				...account,
+				owner: accountKnowledge ? accountKnowledge.owner : EMPTY_STRING,
+				description: accountKnowledge ? accountKnowledge.description : EMPTY_STRING,
+			};
+		},
+		{ concurrency: response.length },
+	);
+
+	topLiskAddresses.meta = {
+		count: topLiskAddresses.data.length,
+		offset: params.offset,
+	};
+
+	return topLiskAddresses;
+};
+
 module.exports = {
 	getTokens,
+	getTopLiskAddresses,
 };

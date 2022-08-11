@@ -32,6 +32,7 @@ config.endpoints.cache = process.env.SERVICE_INDEXER_CACHE_REDIS || 'redis://loc
 config.endpoints.volatileRedis = process.env.SERVICE_INDEXER_REDIS_VOLATILE || 'redis://localhost:6379/3';
 config.endpoints.messageQueue = process.env.SERVICE_MESSAGE_QUEUE_REDIS || 'redis://localhost:6379/4';
 config.endpoints.mysql = process.env.SERVICE_INDEXER_MYSQL || 'mysql://lisk:password@localhost:3306/lisk';
+config.endpoints.liskStatic = process.env.LISK_STATIC || 'https://static-data.lisk.com';
 
 /**
  * LOGGING
@@ -103,5 +104,12 @@ const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
+
+// Global tokenIDs
+config.tokens = {
+	lisk: {
+		id: '0000000100000000',
+	},
+};
 
 module.exports = config;

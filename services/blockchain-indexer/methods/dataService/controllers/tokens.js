@@ -17,7 +17,7 @@ const {
 	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 
-// const dataService = require('../../../shared/dataService');
+const dataService = require('../../../shared/dataService');
 
 const getTokens = async params => {
 	try {
@@ -59,6 +59,19 @@ const getTokens = async params => {
 	}
 };
 
+const getTopLiskAddresses = async params => {
+	const topLiskAddresses = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.getTopLiskAddresses(params);
+	if (response.data) topLiskAddresses.data = response.data;
+	if (response.meta) topLiskAddresses.meta = response.meta;
+
+	return topLiskAddresses;
+};
+
 module.exports = {
 	getTokens,
+	getTopLiskAddresses,
 };

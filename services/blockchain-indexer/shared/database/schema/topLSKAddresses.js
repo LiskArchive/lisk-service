@@ -13,13 +13,13 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
-
-const getTokens = async (params) => dataService.getTokens(params);
-
-const getTopLiskAddresses = async (params) => dataService.getTopLiskAddresses(params);
-
 module.exports = {
-	getTokens,
-	getTopLiskAddresses,
+	tableName: 'topLSKAddresses',
+	primaryKey: 'address',
+	schema: {
+		address: { type: 'string' },
+		balance: { type: 'bigInteger' },
+	},
+	indexes: {},
+	purge: {},
 };
