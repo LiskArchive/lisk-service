@@ -38,7 +38,7 @@ const keyValueDB = require('../database/mysqlKVStore');
 const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('../database/schema/accounts');
-const topAccountsIndexSchema = require('../database/schema/topLSKAccounts');
+const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
@@ -48,9 +48,9 @@ const getAccountIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const getTopAccountsIndex = () => getTableInstance(
-	topAccountsIndexSchema.tableName,
-	topAccountsIndexSchema,
+const getTopLSKAddressesIndex = () => getTableInstance(
+	topLSKAddressesIndexSchema.tableName,
+	topLSKAddressesIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -210,11 +210,11 @@ const getLiskAccountBalanceByAddress = async (address) => {
 const updateLiskBalance = async (job) => {
 	const { address } = job.data;
 	const account = await getLiskAccountBalanceByAddress(address);
-	const topAccountsDB = await getTopAccountsIndex();
-	await topAccountsDB.upsert(account);
+	const topLSKAddressesDB = await getTopLSKAddressesIndex();
+	await topLSKAddressesDB.upsert(account);
 };
 
-const liskBalanceQueue = Queue(config.endpoints.cache, 'liskBalanceQueue', updateLiskBalance, 1);
+const updateAccountBalanceQueue = Queue(config.endpoints.cache, 'updateAccountBalanceQueue', updateLiskBalance, 10);
 
 module.exports = {
 	indexAccountByPublicKey,
@@ -227,5 +227,5 @@ module.exports = {
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
 	getGenesisAccountAddresses,
-	liskBalanceQueue,
+	updateAccountBalanceQueue,
 };

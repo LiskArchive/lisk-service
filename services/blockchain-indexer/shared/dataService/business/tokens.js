@@ -20,7 +20,7 @@ const {
 	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 
-const topAccountsIndexSchema = require('../../database/schema/topLSKAccounts');
+const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
 const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { getAccountKnowledge } = require('../../knownAccounts');
@@ -29,9 +29,9 @@ const config = require('../../../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getTopAccountsIndex = () => getTableInstance(
-	topAccountsIndexSchema.tableName,
-	topAccountsIndexSchema,
+const getTopLSKAddressesIndex = () => getTableInstance(
+	topLSKAddressesIndexSchema.tableName,
+	topLSKAddressesIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -73,8 +73,8 @@ const getTokens = async (params) => {
 	return tokens;
 };
 
-const getTopLiskAccounts = async (params) => {
-	const topAccountsDB = await getTopAccountsIndex();
+const getTopLiskAddresses = async (params) => {
+	const topLSKAddressesDB = await getTopLSKAddressesIndex();
 
 	const topLiskAddresses = {
 		data: [],
@@ -82,9 +82,9 @@ const getTopLiskAccounts = async (params) => {
 	};
 	const EMPTY_STRING = '';
 
-	const response = await topAccountsDB.find(
+	const response = await topLSKAddressesDB.find(
 		params,
-		Object.getOwnPropertyNames(topAccountsIndexSchema.schema),
+		Object.getOwnPropertyNames(topLSKAddressesIndexSchema.schema),
 	);
 
 	topLiskAddresses.data = await BluebirdPromise.map(
@@ -110,5 +110,5 @@ const getTopLiskAccounts = async (params) => {
 
 module.exports = {
 	getTokens,
-	getTopLiskAccounts,
+	getTopLiskAddresses,
 };

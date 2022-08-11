@@ -14,7 +14,7 @@
  *
  */
 module.exports = {
-	tableName: 'topLSKAccounts',
+	tableName: 'topLSKAddresses',
 	primaryKey: 'address',
 	schema: {
 		address: { type: 'string' },

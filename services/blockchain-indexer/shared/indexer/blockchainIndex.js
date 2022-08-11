@@ -43,7 +43,7 @@ const { getBase32AddressFromPublicKey } = require('../utils/accountUtils');
 
 // const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
-const { liskBalanceQueue } = require('./accountIndex');
+const { updateAccountBalanceQueue } = require('./accountIndex');
 
 const {
 	getFinalizedHeight,
@@ -135,7 +135,7 @@ const indexBlock = async job => {
 					tx.senderAddress = getBase32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
 
-					await liskBalanceQueue.add({ address: tx.senderAddress });
+					await updateAccountBalanceQueue.add({ address: tx.senderAddress });
 
 					await transactionsDB.upsert(tx, dbTrx);
 
@@ -157,7 +157,7 @@ const indexBlock = async job => {
 		// }
 
 		if (block.generatorAddress) {
-			await liskBalanceQueue.add({ address: block.generatorAddress });
+			await updateAccountBalanceQueue.add({ address: block.generatorAddress });
 		}
 
 		const blockToIndex = {
