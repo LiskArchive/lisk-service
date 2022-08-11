@@ -105,6 +105,7 @@ const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
 
+// Global tokenIDs
 config.tokens = {
 	lisk: {
 		id: '0000000100000000',
