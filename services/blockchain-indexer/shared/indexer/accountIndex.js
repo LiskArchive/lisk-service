@@ -29,7 +29,6 @@ const {
 	getAccountsByPublicKey2,
 } = require('../dataService');
 
-const { getHexAddressFromBase32 } = require('../utils/accountUtils');
 const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
@@ -38,19 +37,12 @@ const keyValueDB = require('../database/mysqlKVStore');
 const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('../database/schema/accounts');
-const topLSKAddressesIndexSchema = require('../database/schema/topLSKAddresses');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getAccountIndex = () => getTableInstance(
 	accountsIndexSchema.tableName,
 	accountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
-
-const getTopLSKAddressesIndex = () => getTableInstance(
-	topLSKAddressesIndexSchema.tableName,
-	topLSKAddressesIndexSchema,
 	MYSQL_ENDPOINT,
 );
 
@@ -188,34 +180,6 @@ const keepAccountsCacheUpdated = async () => {
 
 Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
 
-const getLiskAccountBalanceByAddress = async (address) => {
-	const LISK_TOKEN_ID = config.tokens.lisk.id;
-
-	const response = await requestConnector(
-		'token_getBalance',
-		{
-			address: getHexAddressFromBase32(address),
-			tokenID: LISK_TOKEN_ID,
-		},
-	);
-
-	const liskAccountBalance = {
-		address,
-		balance: response.availableBalance,
-	};
-
-	return liskAccountBalance;
-};
-
-const updateLiskBalance = async (job) => {
-	const { address } = job.data;
-	const account = await getLiskAccountBalanceByAddress(address);
-	const topLSKAddressesDB = await getTopLSKAddressesIndex();
-	await topLSKAddressesDB.upsert(account);
-};
-
-const updateAccountBalanceQueue = Queue(config.endpoints.cache, 'updateAccountBalanceQueue', updateLiskBalance, 10);
-
 module.exports = {
 	indexAccountByPublicKey,
 	indexAccountByAddress,
@@ -227,5 +191,4 @@ module.exports = {
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
 	getGenesisAccountAddresses,
-	updateAccountBalanceQueue,
 };

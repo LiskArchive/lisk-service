@@ -23,7 +23,7 @@ const logger = Logger();
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const { updateAccountBalanceQueue } = require('../../accountIndex');
+const { updateAddressBalanceQueue } = require('../../tokenIndex');
 const transactionsIndexSchema = require('../../../database/schema/transactions');
 
 const getTransactionsIndex = () => getTableInstance(
@@ -44,7 +44,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	tx.data = tx.params.data;
 	tx.recipientAddress = tx.params.recipientAddress;
 
-	await updateAccountBalanceQueue.add({ address: tx.recipientAddress });
+	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 	await transactionsDB.upsert(tx, dbTrx);
