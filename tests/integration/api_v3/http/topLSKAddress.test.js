@@ -22,9 +22,9 @@ const {
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
-	topAccountsSchema,
-	topAccountsMetaSchema,
-} = require('../../../schemas/api_v3/topAccounts.schema');
+	topLSKAddressSchema,
+	topLSKAddressMetaSchema,
+} = require('../../../schemas/api_v3/topLSKAddress.schema');
 
 const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
@@ -38,7 +38,7 @@ xdescribe('Top accounts API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(10);
-		response.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		response.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (response.data.length > 1) {
 			for (let i = 1; i < response.data.length; i++) {
 				const prevAccount = response.data[i - 1];
@@ -46,7 +46,7 @@ xdescribe('Top accounts API', () => {
 				expect(BigInt(prevAccount.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(response.meta).toMap(topAccountsMetaSchema);
+		expect(response.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('retrieves lisk top accounts list with limit=5', async () => {
@@ -55,7 +55,7 @@ xdescribe('Top accounts API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(5);
-		response.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		response.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (response.data.length > 1) {
 			for (let i = 1; i < response.data.length; i++) {
 				const prevAccount = response.data[i - 1];
@@ -63,7 +63,7 @@ xdescribe('Top accounts API', () => {
 				expect(BigInt(prevAccount.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(response.meta).toMap(topAccountsMetaSchema);
+		expect(response.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('retrieves lisk top accounts list with limit=5 & offset=1', async () => {
@@ -72,7 +72,7 @@ xdescribe('Top accounts API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(5);
-		response.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		response.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (response.data.length > 1) {
 			for (let i = 1; i < response.data.length; i++) {
 				const prevAccount = response.data[i - 1];
@@ -80,7 +80,7 @@ xdescribe('Top accounts API', () => {
 				expect(BigInt(prevAccount.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(response.meta).toMap(topAccountsMetaSchema);
+		expect(response.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('retrieves lisk top accounts list with limit=5, offset=1 & sort=balance:asc', async () => {
@@ -89,7 +89,7 @@ xdescribe('Top accounts API', () => {
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
 		expect(response.data.length).toBeLessThanOrEqual(5);
-		response.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		response.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (response.data.length > 1) {
 			for (let i = 1; i < response.data.length; i++) {
 				const prevAccount = response.data[i - 1];
@@ -97,7 +97,7 @@ xdescribe('Top accounts API', () => {
 				expect(BigInt(prevAccount.balance)).toBeLessThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(response.meta).toMap(topAccountsMetaSchema);
+		expect(response.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('invalid request param -> bad request', async () => {

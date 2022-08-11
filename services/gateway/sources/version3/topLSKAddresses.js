@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const topAccount = require('./mappings/topAccount');
+const topLSKAddress = require('./mappings/topLSKAddress');
 
 module.exports = {
 	type: 'moleculer',
@@ -24,7 +24,7 @@ module.exports = {
 		sort: '=,string',
 	},
 	definition: {
-		data: ['data', topAccount],
+		data: ['data', topLSKAddress],
 		meta: {
 			count: '=,number',
 			offset: '=,number',

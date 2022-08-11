@@ -25,9 +25,9 @@ const {
 } = require('../../../schemas/rpcGenerics.schema');
 
 const {
-	topAccountsSchema,
-	topAccountsMetaSchema,
-} = require('../../../schemas/api_v3/topAccounts.schema');
+	topLSKAddressSchema,
+	topLSKAddressMetaSchema,
+} = require('../../../schemas/api_v3/topLSKAddress.schema');
 
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getTopAccountsInfo = async (params) => request(wsRpcUrl, 'get.tokens.lsk.top', params);
@@ -41,7 +41,7 @@ xdescribe('get.tokens.lsk.top', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		result.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (result.data.length > 1) {
 			for (let i = 1; i < result.data.length; i++) {
 				const prevAccount = result.data[i - 1];
@@ -49,7 +49,7 @@ xdescribe('get.tokens.lsk.top', () => {
 				expect(BigInt(prevAccount.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(result.meta).toMap(topAccountsMetaSchema);
+		expect(result.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('returns lisk top accounts list with limit=5', async () => {
@@ -59,7 +59,7 @@ xdescribe('get.tokens.lsk.top', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(5);
-		result.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		result.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (result.data.length > 1) {
 			for (let i = 1; i < result.data.length; i++) {
 				const prevAccount = result.data[i - 1];
@@ -67,7 +67,7 @@ xdescribe('get.tokens.lsk.top', () => {
 				expect(BigInt(prevAccount.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(result.meta).toMap(topAccountsMetaSchema);
+		expect(result.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('returns lisk top accounts list with limit=5 & offset=1', async () => {
@@ -77,7 +77,7 @@ xdescribe('get.tokens.lsk.top', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(5);
-		result.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		result.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (result.data.length > 1) {
 			for (let i = 1; i < result.data.length; i++) {
 				const prevAccount = result.data[i - 1];
@@ -85,7 +85,7 @@ xdescribe('get.tokens.lsk.top', () => {
 				expect(BigInt(prevAccount.balance)).toBeGreaterThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(result.meta).toMap(topAccountsMetaSchema);
+		expect(result.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('returns lisk top accounts list with limit=5, offset=1 & sort=balance:asc', async () => {
@@ -95,7 +95,7 @@ xdescribe('get.tokens.lsk.top', () => {
 		expect(result.data).toBeInstanceOf(Array);
 		expect(result.data.length).toBeGreaterThanOrEqual(1);
 		expect(result.data.length).toBeLessThanOrEqual(10);
-		result.data.forEach(account => expect(account).toMap(topAccountsSchema));
+		result.data.forEach(account => expect(account).toMap(topLSKAddressSchema));
 		if (result.data.length > 1) {
 			for (let i = 1; i < result.data.length; i++) {
 				const prevAccount = result.data[i - 1];
@@ -103,7 +103,7 @@ xdescribe('get.tokens.lsk.top', () => {
 				expect(BigInt(prevAccount.balance)).toBeLessThanOrEqual(BigInt(currAccount.balance));
 			}
 		}
-		expect(result.meta).toMap(topAccountsMetaSchema);
+		expect(result.meta).toMap(topLSKAddressMetaSchema);
 	});
 
 	it('No address with tokenID -> invalid param', async () => {

@@ -16,12 +16,12 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const topAccountsMetaSchema = {
+const topLSKAddressMetaSchema = {
 	count: Joi.number().integer().min(1).required(),
 	offset: Joi.number().integer().min(0).required(),
 };
 
-const topAccountsSchema = {
+const topLSKAddressSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	balance: Joi.string().required(),
 	owner: Joi.string().allow('').required(),
@@ -29,6 +29,6 @@ const topAccountsSchema = {
 };
 
 module.exports = {
-	topAccountsSchema: Joi.object(topAccountsSchema).required(),
-	topAccountsMetaSchema: Joi.object(topAccountsMetaSchema).required(),
+	topLSKAddressSchema: Joi.object(topLSKAddressSchema).required(),
+	topLSKAddressMetaSchema: Joi.object(topLSKAddressMetaSchema).required(),
 };

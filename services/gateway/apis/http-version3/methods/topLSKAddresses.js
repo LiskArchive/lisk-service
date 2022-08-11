@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const topAccountsSource = require('../../../sources/version3/topAccounts');
+const topLSKAddressesSource = require('../../../sources/version3/topLSKAddresses');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
@@ -33,26 +33,26 @@ module.exports = {
 		},
 	},
 	get schema() {
-		const topAccountsSchema = {};
-		topAccountsSchema[this.swaggerApiPath] = { get: {} };
-		topAccountsSchema[this.swaggerApiPath].get.tags = this.tags;
-		topAccountsSchema[this.swaggerApiPath].get.summary = 'Requests list of addresses with the highest LSK balance on the chain';
-		topAccountsSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
+		const topLSKAddressesSchema = {};
+		topLSKAddressesSchema[this.swaggerApiPath] = { get: {} };
+		topLSKAddressesSchema[this.swaggerApiPath].get.tags = this.tags;
+		topLSKAddressesSchema[this.swaggerApiPath].get.summary = 'Requests list of addresses with the highest LSK balance on the chain';
+		topLSKAddressesSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
 			description: 'Returns list of addresses with the highest LSK balance on the chain',
 		});
-		topAccountsSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
-		topAccountsSchema[this.swaggerApiPath].get.responses = {
+		topLSKAddressesSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
+		topLSKAddressesSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns list of addresses with the highest LSK balance on the chain',
 				schema: {
-					$ref: '#/definitions/topAccountsWithEnvelope',
+					$ref: '#/definitions/topLSKAddressesWithEnvelope',
 				},
 			},
 		};
-		Object.assign(topAccountsSchema[this.swaggerApiPath].get.responses, response);
-		return topAccountsSchema;
+		Object.assign(topLSKAddressesSchema[this.swaggerApiPath].get.responses, response);
+		return topLSKAddressesSchema;
 	},
-	source: topAccountsSource,
+	source: topLSKAddressesSource,
 	envelope,
 };
