@@ -56,6 +56,17 @@ services:
       timeout: 20s
       retries: 10
 
+  blockchain-app-registry:
+    image: lisk/service_blockchain_app_registry
+    depends_on:
+      nats:
+        condition: service_started
+    networks:
+      - services_network
+    environment:
+      - SERVICE_BROKER=nats://nats:4222
+    restart: always
+
   blockchain-connector:
     image: lisk/service_blockchain_connector
     depends_on:

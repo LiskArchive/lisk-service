@@ -1,7 +1,7 @@
 {
-  "name": "lisk-service-template-moleculer",
+  "name": "lisk-service-blockchain-app-registry",
   "version": "0.6.1",
-  "description": "Lisk Service Template",
+  "description": "Lisk Service Blockchain Application Registry",
   "keywords": [
     "lisk",
     "blockchain"
@@ -27,11 +27,16 @@
     "eslint": "eslint . --ext .js",
     "eslint-fix": "eslint . --fix --ext .js",
     "clean": "rm -rf ./node_modules",
-    "watch": "supervisor -w . -i ./node_modules app.js"
+    "watch": "supervisor -w . -i ./node_modules app.js",
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
+    "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz",
-    "node-cron": "=2.0.3"
+    "octokit": "^2.0.4",
+    "tar": "^6.1.11"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "jest": "^27.3.0"
+  }
 }

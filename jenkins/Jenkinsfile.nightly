@@ -96,6 +96,7 @@ pipeline {
 								sh 'npm i -g pm2'
 								dir('./') { sh 'npm ci' }
 								dir('./framework') { sh 'npm ci' }
+								dir('./services/blockchain-app-registry') { sh 'npm ci' }
 								dir('./services/blockchain-connector') { sh 'npm ci' }
 								dir('./services/blockchain-indexer') { sh 'npm ci' }
 								dir('./services/blockchain-coordinator') { sh 'npm ci' }

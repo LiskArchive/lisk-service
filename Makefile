@@ -64,9 +64,12 @@ logs-live-%:
 print-config:
 	$(compose) config
 
-build: build-connector build-indexer build-coordinator build-statistics build-fees build-market build-newsfeed build-export build-gateway
+build: build-app-registry build-connector build-indexer build-coordinator build-statistics build-fees build-market build-newsfeed build-export build-gateway
 
 build-all: build build-template build-tests
+
+build-app-registry:
+	cd ./services/blockchain-app-registry && docker build --tag=lisk/service_blockchain_app_registry ./
 
 build-connector:
 	cd ./services/blockchain-connector && docker build --tag=lisk/service_blockchain_connector ./	
@@ -104,6 +107,7 @@ build-tests:
 build-local:
 	npm ci
 	cd ./framework && npm ci
+	cd ./services/blockchain-app-registry && npm ci
 	cd ./services/blockchain-connector && npm ci
 	cd ./services/blockchain-coordinator && npm ci
 	cd ./services/blockchain-indexer && npm ci
@@ -121,6 +125,7 @@ clean: clean-local clean-images
 clean-local:
 	rm -rf node_modules
 	cd ./framework && rm -rf node_modules
+	cd ./services/blockchain-app-registry && rm -rf node_modules
 	cd ./services/blockchain-connector && rm -rf node_modules
 	cd ./services/blockchain-coordinator && rm -rf node_modules
 	cd ./services/blockchain-indexer && rm -rf node_modules
@@ -135,6 +140,7 @@ clean-local:
 
 clean-images:
 	docker rmi lisk/service_gateway \
+	lisk/service_blockchain_app_registry \
 	lisk/service_blockchain_connector \
 	lisk/service_blockchain_indexer \
 	lisk/service_blockchain_coordinator \
@@ -149,6 +155,7 @@ clean-images:
 audit:
 	npm audit; :
 	cd ./framework && npm audit; :
+	cd ./services/blockchain-app-registry && npm audit; :
 	cd ./services/blockchain-connector && npm audit; :
 	cd ./services/blockchain-coordinator && npm audit; :
 	cd ./services/blockchain-indexer && npm audit; :
@@ -162,6 +169,7 @@ audit:
 audit-fix:
 	npm audit fix; :
 	cd ./framework && npm audit fix; :
+	cd ./services/blockchain-app-registry && npm audit fix; :
 	cd ./services/blockchain-connector && npm audit fix; :
 	cd ./services/blockchain-coordinator && npm audit fix; :
 	cd ./services/blockchain-indexer && npm audit fix; :
@@ -175,6 +183,7 @@ audit-fix:
 tag-%:
 	npm version --no-git-tag-version --allow-same-version $*
 	cd services/gateway && npm version --no-git-tag-version --allow-same-version $*
+	cd services/blockchain-app-registry && npm version --no-git-tag-version --allow-same-version $*
 	cd services/blockchain-connector && npm version --no-git-tag-version --allow-same-version $*
 	cd services/blockchain-coordinator && npm version --no-git-tag-version --allow-same-version $*
 	cd services/blockchain-indexer && npm version --no-git-tag-version --allow-same-version $*
@@ -185,6 +194,7 @@ tag-%:
 	cd services/export && npm version --no-git-tag-version --allow-same-version $*
 	cd services/template && npm version --no-git-tag-version --allow-same-version $*
 	git add ./services/gateway/package*.json
+	git add ./services/blockchain-app-registry/package*.json
 	git add ./services/blockchain-connector/package*.json
 	git add ./services/blockchain-coordinator/package*.json
 	git add ./services/blockchain-indexer/package*.json
