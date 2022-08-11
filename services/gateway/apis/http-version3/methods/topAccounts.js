@@ -41,7 +41,7 @@ module.exports = {
 			rpcMethod: this.rpcMethod,
 			description: 'Returns list of addresses with the highest LSK balance on the chain',
 		});
-		topAccountsSchema[this.swaggerApiPath].get.parameters = transformParams('blocks', this.params);
+		topAccountsSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
 		topAccountsSchema[this.swaggerApiPath].get.responses = {
 			200: {
 				description: 'Returns list of addresses with the highest LSK balance on the chain',

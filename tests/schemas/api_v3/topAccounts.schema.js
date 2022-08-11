@@ -17,15 +17,15 @@ import Joi from 'joi';
 import regex from './regex';
 
 const topAccountsMetaSchema = {
-	count: Joi.number().integer().min(0).required(),
+	count: Joi.number().integer().min(1).required(),
 	offset: Joi.number().integer().min(0).required(),
 };
 
 const topAccountsSchema = {
 	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	balance: Joi.string().required(),
-	owner: Joi.string().allow('').optional(),
-	description: Joi.string().allow('').optional(),
+	owner: Joi.string().allow('').required(),
+	description: Joi.string().allow('').required(),
 };
 
 module.exports = {

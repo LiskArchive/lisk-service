@@ -25,20 +25,20 @@ module.exports = [
 		description: 'Keep the known accounts list up-to-date',
 		schedule: '*/5 * * * *', // Every 5 min
 		init: async () => {
-			logger.debug('Initializing known accounts cache...');
+			logger.debug('Initializing the known accounts cache...');
 			try {
 				await reloadKnowledge();
-				logger.info('Successfully initialized known accounts cache');
+				logger.info('Successfully initialized the known accounts cache');
 			} catch (err) {
-				logger.warn(`Initializing known accounts cache failed due to: ${err.message}`);
+				logger.warn(`Initializing the known accounts cache failed due to: ${err.message}`);
 			}
 		},
 		controller: async () => {
-			logger.debug('Reloading known accounts cache...');
+			logger.debug('Updating the known accounts cache...');
 			try {
 				await reloadKnowledge();
 			} catch (err) {
-				logger.warn(`Reloading known accounts cache failed due to: ${err.message}`);
+				logger.warn(`Updating the known accounts cache failed due to: ${err.message}`);
 			}
 		},
 	},

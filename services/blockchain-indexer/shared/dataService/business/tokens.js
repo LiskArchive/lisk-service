@@ -20,7 +20,7 @@ const {
 	Exceptions: { InvalidParamsException },
 } = require('lisk-service-framework');
 
-const topAccountsIndexSchema = require('../../database/schema/topAccounts');
+const topAccountsIndexSchema = require('../../database/schema/topLSKAccounts');
 const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { getAccountKnowledge } = require('../../knownAccounts');
@@ -80,6 +80,7 @@ const getTopLiskAccounts = async (params) => {
 		data: [],
 		meta: {},
 	};
+	const EMPTY_STRING = '';
 
 	const response = await topAccountsDB.find(
 		params,
@@ -92,8 +93,8 @@ const getTopLiskAccounts = async (params) => {
 			const accountKnowledge = await getAccountKnowledge(account.address);
 			return {
 				...account,
-				owner: accountKnowledge && accountKnowledge.owner ? accountKnowledge.owner : '',
-				description: accountKnowledge && accountKnowledge.description ? accountKnowledge.description : '',
+				owner: accountKnowledge ? accountKnowledge.owner : EMPTY_STRING,
+				description: accountKnowledge ? accountKnowledge.description : EMPTY_STRING,
 			};
 		},
 		{ concurrency: response.length },

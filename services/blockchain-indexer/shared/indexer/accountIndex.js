@@ -38,10 +38,21 @@ const keyValueDB = require('../database/mysqlKVStore');
 const redis = new Redis(config.endpoints.cache);
 
 const accountsIndexSchema = require('../database/schema/accounts');
+const topAccountsIndexSchema = require('../database/schema/topLSKAccounts');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const getAccountIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
+const getAccountIndex = () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
+
+const getTopAccountsIndex = () => getTableInstance(
+	topAccountsIndexSchema.tableName,
+	topAccountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const legacyAccountCache = CacheRedis('legacyAccount', config.endpoints.cache);
 
@@ -178,21 +189,32 @@ const keepAccountsCacheUpdated = async () => {
 Signals.get('searchIndexInitialized').add(keepAccountsCacheUpdated);
 
 const getLiskAccountBalanceByAddress = async (address) => {
-	const LISK_TOKEN_ID = config.knownTokensIds.lisk;
+	const LISK_TOKEN_ID = config.tokens.lisk.id;
 
-	const response = await requestConnector('token_getBalances', { address: getHexAddressFromBase32(address) });
-	const lskTokenBalance = response.balances
-		.filter(token => token.tokenID === LISK_TOKEN_ID)
-		.map(item => {
-			const account = {
-				address,
-				balance: item.availableBalance,
-			};
-			return account;
-		});
+	const response = await requestConnector(
+		'token_getBalance',
+		{
+			address: getHexAddressFromBase32(address),
+			tokenID: LISK_TOKEN_ID,
+		},
+	);
 
-	return lskTokenBalance;
+	const liskAccountBalance = {
+		address,
+		balance: response.availableBalance,
+	};
+
+	return liskAccountBalance;
 };
+
+const updateLiskBalance = async (job) => {
+	const { address } = job.data;
+	const account = await getLiskAccountBalanceByAddress(address);
+	const topAccountsDB = await getTopAccountsIndex();
+	await topAccountsDB.upsert(account);
+};
+
+const liskBalanceQueue = Queue(config.endpoints.cache, 'liskBalanceQueue', updateLiskBalance, 1);
 
 module.exports = {
 	indexAccountByPublicKey,
@@ -205,5 +227,5 @@ module.exports = {
 	addAccountToAddrUpdateQueue,
 	addAccountToDirectUpdateQueue,
 	getGenesisAccountAddresses,
-	getLiskAccountBalanceByAddress,
+	liskBalanceQueue,
 };

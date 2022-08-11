@@ -43,7 +43,7 @@ const { getBase32AddressFromPublicKey } = require('../utils/accountUtils');
 
 // const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
-const { getLiskAccountBalanceByAddress } = require('./accountIndex');
+const { liskBalanceQueue } = require('./accountIndex');
 
 const {
 	getFinalizedHeight,
@@ -57,7 +57,6 @@ const config = require('../../config');
 const blocksIndexSchema = require('../database/schema/blocks');
 // const eventsIndexSchema = require('../database/schema/events');
 // const eventTopicsIndexSchema = require('../database/schema/eventTopics');
-const topAccountsIndexSchema = require('../database/schema/topAccounts');
 const transactionsIndexSchema = require('../database/schema/transactions');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
@@ -79,11 +78,6 @@ const getBlocksIndex = () => getTableInstance(
 // 	eventTopicsIndexSchema,
 // 	MYSQL_ENDPOINT,
 // );
-const getTopAccountsIndex = () => getTableInstance(
-	topAccountsIndexSchema.tableName,
-	topAccountsIndexSchema,
-	MYSQL_ENDPOINT,
-);
 const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema.tableName,
 	transactionsIndexSchema,
@@ -114,7 +108,6 @@ const validateBlock = (block) => !!block && block.height >= 0;
 const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
-	const topAccountsDB = await getTopAccountsIndex();
 	const block = await getBlockByHeight(height);
 	// const events = await getEventsByHeight(height);
 
@@ -142,10 +135,7 @@ const indexBlock = async job => {
 					tx.senderAddress = getBase32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
 
-					const senderAccountInfo = await getLiskAccountBalanceByAddress(tx.senderAddress);
-					if (senderAccountInfo.length) {
-						await topAccountsDB.upsert(senderAccountInfo, dbTrx);
-					}
+					await liskBalanceQueue.add({ address: tx.senderAddress });
 
 					await transactionsDB.upsert(tx, dbTrx);
 
@@ -167,10 +157,7 @@ const indexBlock = async job => {
 		// }
 
 		if (block.generatorAddress) {
-			const generatorAccountInfo = await getLiskAccountBalanceByAddress(block.generatorAddress);
-			if (generatorAccountInfo.length) {
-				await topAccountsDB.upsert(generatorAccountInfo, dbTrx);
-			}
+			await liskBalanceQueue.add({ address: block.generatorAddress });
 		}
 
 		const blockToIndex = {

@@ -35,7 +35,7 @@ module.exports = [
 		params: {
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
-			sort: { optional: true, type: 'any' },
+			sort: { optional: true, type: 'string' },
 		},
 	},
 ];
