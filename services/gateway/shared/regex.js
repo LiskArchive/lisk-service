@@ -27,6 +27,7 @@ const CCM_STATUS = /^\b(?:ok|module_not_supported|module_not_supported|channel_u
 const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31)))?\b$/g;
 const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
 const NETWORK = /^\b(?:mainnet|testnet|betanet|alphanet|devnet|,)+\b$/;
+const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -43,4 +44,5 @@ module.exports = {
 	INTERVAL,
 	CHAINID_RANGE,
 	NETWORK,
+	APPLICATION_STATE,
 };
