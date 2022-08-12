@@ -67,10 +67,12 @@ const normalizeBlock = async (originalblock) => {
 	await BluebirdPromise.map(
 		block.transactions,
 		async (txn) => {
+			const metadata = await requestConnector('getSystemMetadata');
+			const filteredModule = metadata.modules.find(module => module.id === txn.moduleID);
+			const filteredCommand = filteredModule.commands.find(s => s.id === txn.commandID);
+			const parsedTxParams = parseInputBySchema(txn.params, filteredCommand.params);
+
 			const schema = await requestConnector('getSchema');
-			const { schema: paramsSchema } = schema.commands
-				.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
-			const parsedTxParams = parseInputBySchema(txn.params, paramsSchema);
 			const parsedTx = parseInputBySchema(txn, schema.transaction);
 			txn = { ...parsedTx, params: parsedTxParams };
 			txn.minFee = await getTxnMinFee(txn);

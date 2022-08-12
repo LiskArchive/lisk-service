@@ -14,6 +14,7 @@
  *
  */
 module.exports = {
+	id: '=,string',
 	moduleID: '=,string',
 	moduleName: '=,string',
 	typeID: '=,string',

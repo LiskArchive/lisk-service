@@ -28,6 +28,7 @@ const block = {
 };
 
 const eventSchema = {
+	id: Joi.string().required(),
 	moduleID: Joi.string().required(),
 	moduleName: Joi.string().required(),
 	typeID: Joi.string().required(),

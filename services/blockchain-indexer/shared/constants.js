@@ -78,7 +78,7 @@ const getRegisteredModules = async () => {
 };
 
 const MODULE_ID = {
-	DPOS: process.env.MODULE_ID_DPOS || 13,
+	DPOS: process.env.MODULE_ID_DPOS || '0000000d',
 };
 
 const COMMAND_ID = {
