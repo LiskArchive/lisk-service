@@ -39,7 +39,11 @@ const {
 	range,
 } = require('../utils/arrayUtils');
 
+const { getBase32AddressFromPublicKey } = require('../utils/accountUtils');
+
 // const { getEventsInfoToIndex } = require('../utils/eventsUtils');
+
+const { updateAddressBalanceQueue } = require('./tokenIndex');
 
 const {
 	getFinalizedHeight,
@@ -128,7 +132,10 @@ const indexBlock = async job => {
 					tx.moduleCommandID = id;
 					tx.blockID = block.id;
 					tx.height = block.height;
+					tx.senderAddress = getBase32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
+
+					await updateAddressBalanceQueue.add({ address: tx.senderAddress });
 
 					await transactionsDB.upsert(tx, dbTrx);
 
@@ -148,6 +155,10 @@ const indexBlock = async job => {
 		// 	await eventsDB.upsert(eventsInfo, dbTrx);
 		// 	await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
 		// }
+
+		if (block.generatorAddress) {
+			await updateAddressBalanceQueue.add({ address: block.generatorAddress });
+		}
 
 		const blockToIndex = {
 			...block,

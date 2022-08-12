@@ -1,0 +1,42 @@
+{
+  "name": "lisk-service-blockchain-app-registry",
+  "version": "0.6.1",
+  "description": "Lisk Service Blockchain Application Registry",
+  "keywords": [
+    "lisk",
+    "blockchain"
+  ],
+  "homepage": "https://github.com/LiskHQ/lisk-service",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LiskHQ/lisk-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LiskHQ/lisk-service/issues"
+  },
+  "private": true,
+  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "engines": {
+    "node": ">=16.14.0 <=16",
+    "npm": ">=8.3.1"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "eslint": "eslint . --ext .js",
+    "eslint-fix": "eslint . --fix --ext .js",
+    "clean": "rm -rf ./node_modules",
+    "watch": "supervisor -w . -i ./node_modules app.js",
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
+  },
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz",
+    "octokit": "^2.0.4",
+    "tar": "^6.1.11"
+  },
+  "devDependencies": {
+    "jest": "^27.3.0"
+  }
+}

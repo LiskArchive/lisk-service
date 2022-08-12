@@ -40,7 +40,7 @@ const logger = Logger();
 
 const getConnectedPeers = async () => {
 	try {
-		const connectedPeers = await invokeEndpoint('app_getConnectedPeers');
+		const connectedPeers = await invokeEndpoint('network_getConnectedPeers');
 		return connectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -52,7 +52,7 @@ const getConnectedPeers = async () => {
 
 const getDisconnectedPeers = async () => {
 	try {
-		const disconnectedPeers = await invokeEndpoint('app_getDisconnectedPeers');
+		const disconnectedPeers = await invokeEndpoint('network_getDisconnectedPeers');
 		return disconnectedPeers;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {

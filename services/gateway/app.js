@@ -139,6 +139,7 @@ const gatewayConfig = {
 		'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
+		'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
 	},
 	dependencies: [
 		'connector',
