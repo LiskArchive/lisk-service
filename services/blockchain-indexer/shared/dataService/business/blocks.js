@@ -57,6 +57,7 @@ const normalizeBlock = async (originalblock) => {
 
 	block.isFinal = block.height <= (await getFinalizedHeight());
 	block.numberOfTransactions = block.transactions.length;
+	block.numberOfAssets = block.assets.length;
 
 	block.size = 0;
 	// TODO: get reward value from block event
