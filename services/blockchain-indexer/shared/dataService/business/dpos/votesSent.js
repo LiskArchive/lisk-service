@@ -44,7 +44,9 @@ const getVotesSent = async params => {
 	}
 
 	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromBase32(params.address) });
-	response.sentVotes
+
+	// TODO: Remove if condition when proper error handling implemented in SDK
+	if (!response.error) response.sentVotes
 		.forEach(sentVote => voter.data.votes = voter.data.votes.concat(normalizeVote(sentVote)));
 
 	voter.data.votes = await BluebirdPromise.map(
@@ -57,7 +59,7 @@ const getVotesSent = async params => {
 		{ concurrency: voter.data.votes.length },
 	);
 
-	const accountInfo = await getIndexedAccountInfo({ address: params.sentAddress, limit: 1 }, ['name']);
+	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name']);
 	voter.data.account = {
 		address: params.address,
 		name: accountInfo && accountInfo.name ? accountInfo.name : null,

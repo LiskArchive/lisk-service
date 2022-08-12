@@ -17,7 +17,7 @@
 
 // const { StatusCodes: { NOT_FOUND } } = HTTP;
 
-// const dataService = require('../../../shared/dataService');
+const dataService = require('../../../shared/dataService');
 
 // const {
 // 	confirmAnyId,
@@ -34,38 +34,14 @@ const getVotesSent = async params => {
 	// 	return { status: NOT_FOUND, data: { error: `Account with name ${params.name} not found.` } };
 	// }
 
-	// const votesSent = {
-	// 	data: {},
-	// 	meta: {},
-	// };
-
-	// const response = await dataService.getVotesSent(params);
-	// if (response.data) votesSent.data = response.data;
-	// if (response.meta) votesSent.meta = response.meta;
-
 	const votesSent = {
-		data: {
-			account: {
-				address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-				publicKey: 'aq02qkbb35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-				name: 'genesis_56',
-				votesUsed: 10,
-			},
-			votes: [
-				{
-					delegateAddress: 'lsk24cd35u4jdq8szo3ptrn47dsxwrnazyhhkg5eu',
-					amount: '1081560729258',
-					name: 'liskhq',
-				},
-			],
-		},
-		meta: {
-			count: 10,
-			offset: params.offset,
-			total: 10,
-		},
-		links: {},
+		data: {},
+		meta: {},
 	};
+
+	const response = await dataService.getVotesSent(params);
+	if (response.data) votesSent.data = response.data;
+	if (response.meta) votesSent.meta = response.meta;
 
 	return votesSent;
 };
