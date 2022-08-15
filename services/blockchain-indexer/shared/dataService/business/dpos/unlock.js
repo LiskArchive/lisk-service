@@ -75,9 +75,15 @@ const getUnlocks = async params => {
 	}
 
 	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromBase32(params.address) });
-	const normalizedUnlocks = response.pendingUnlocks
-		? response.pendingUnlocks.map(unlock => normalizeUnlock(unlock))
-		: [];
+
+	// TODO: Remove if condition when proper error handling implemented in SDK
+	let normalizedUnlocks;
+
+	if (!response.error) {
+		normalizedUnlocks = response.pendingUnlocks.map(unlock => normalizeUnlock(unlock));
+	} else {
+		normalizedUnlocks = [];
+	}
 
 	const accountInfo = await getIndexedAccountInfo({ address: params.address, limit: 1 }, ['name', 'publicKey']);
 	unlocks.data = {

@@ -53,7 +53,7 @@ const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicK
 const getIndexedAccountInfo = async (params, columns) => {
 	if (!('publicKey' in params) || params.publicKey) {
 		const accountsDB = await getAccountsIndex();
-		const [account] = await accountsDB.find(params, columns);
+		const [account = {}] = await accountsDB.find(params, columns);
 		return account;
 	}
 	return {};

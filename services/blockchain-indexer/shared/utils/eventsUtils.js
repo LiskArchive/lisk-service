@@ -41,14 +41,14 @@ const encodeEvent = async (event) => {
 	return eventID;
 };
 
-const getEventsInfoToIndex = async (block) => {
+const getEventsInfoToIndex = async (blockHeader, events) => {
 	const eventsInfoToIndex = {
 		eventsInfo: [],
 		eventTopicsInfo: [],
 	};
 
 	await BluebirdPromise.map(
-		block.events,
+		events,
 		async (event) => {
 			const id = hash(event);
 			const encodedEvent = await encodeEvent(event);
@@ -57,7 +57,7 @@ const getEventsInfoToIndex = async (block) => {
 				id,
 				typeID: event.typeID,
 				moduleID: event.moduleID,
-				height: block.height,
+				height: blockHeader.height,
 				index: event.index,
 				event: encodedEvent,
 			};
@@ -67,13 +67,13 @@ const getEventsInfoToIndex = async (block) => {
 			event.topics.forEach(topic => {
 				eventsInfoToIndex.eventTopicsInfo.push({
 					id,
-					height: block.height,
-					timestamp: block.timestamp,
+					height: blockHeader.height,
+					timestamp: blockHeader.timestamp,
 					topic,
 				});
 			});
 		},
-		{ concurrency: block.events.length },
+		{ concurrency: events.length },
 	);
 
 	return eventsInfoToIndex;

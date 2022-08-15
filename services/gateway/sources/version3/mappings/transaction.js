@@ -30,7 +30,13 @@ module.exports = {
 		height: '=,number',
 		timestamp: '=,number',
 	},
-	meta: '=',
-	confirmations: '=',
+	meta: {
+		recipient: {
+			address: '=,string',
+			publicKey: '=,string',
+			name: '=,string',
+		},
+	},
+	confirmations: '=,number',
 	executionStatus: '=,string',
 };

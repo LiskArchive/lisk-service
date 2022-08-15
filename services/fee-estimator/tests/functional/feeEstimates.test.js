@@ -44,7 +44,7 @@ describe('Fee estimation tests', () => {
 
 		it('Non-empty block', async () => {
 			const block = nonEmptyBlock;
-			block.payload = block.payload.map(transaction => {
+			block.transactions = block.transactions.map(transaction => {
 				transaction.fee = BigInt(transaction.fee);
 				return transaction;
 			});

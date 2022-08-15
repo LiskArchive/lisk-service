@@ -32,6 +32,7 @@ const { applyTransaction, revertTransaction } = require('./transactionProcessor'
 const {
 	getBlockByHeight,
 	getTransactionsByBlockIDs,
+	// getEventsByHeight,
 } = require('../dataService');
 
 const {
@@ -108,6 +109,7 @@ const indexBlock = async job => {
 	const { height } = job.data;
 	const blocksDB = await getBlocksIndex();
 	const block = await getBlockByHeight(height);
+	// const events = await getEventsByHeight(height);
 
 	if (!validateBlock(block)) throw new Error(`Error: Invalid block at height ${height} }`);
 
@@ -145,11 +147,11 @@ const indexBlock = async job => {
 		}
 
 		// TODO: Enable events indexing logic when chain_getEvents is available
-		// if (block.events.length) {
+		// if (events.length) {
 		// 	const eventsDB = await getEventsIndex();
 		// 	const eventTopicsDB = await getEventTopicsIndex();
 
-		// 	const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block);
+		// 	const { eventsInfo, eventTopicsInfo } = await getEventsInfoToIndex(block.header, events);
 		// 	await eventsDB.upsert(eventsInfo, dbTrx);
 		// 	await eventTopicsDB.upsert(eventTopicsInfo, dbTrx);
 		// }
@@ -161,6 +163,8 @@ const indexBlock = async job => {
 		const blockToIndex = {
 			...block,
 			assetsModuleIDs: block.assets.map(asset => asset.moduleID),
+			numberOfEvents: 1,
+			// numberOfEvents: events.length,
 		};
 
 		await blocksDB.upsert(blockToIndex, dbTrx);

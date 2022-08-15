@@ -94,6 +94,8 @@ const normalizeTransaction = async tx => {
 			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
 	}
 
+	// TODO: Set execution status from observing the events
+
 	return normalizedTransaction;
 };
 

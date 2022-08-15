@@ -48,9 +48,9 @@ const verifyIfPunished = async delegate => {
 };
 
 const getAllDelegates = async () => {
-	const delegatesFromApp = await requestConnector('dpos_getAllDelegates');
+	const { delegates: rawDelegates } = await requestConnector('dpos_getAllDelegates');
 	const delegates = await BluebirdPromise.map(
-		delegatesFromApp.delegates,
+		rawDelegates,
 		// TODO: Get delegateWeight from SDK directly when available
 		async delegate => {
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
@@ -66,7 +66,7 @@ const getAllDelegates = async () => {
 			}
 			return delegate;
 		},
-		{ concurrency: delegatesFromApp.delegates.length },
+		{ concurrency: rawDelegates.length },
 	);
 
 	return delegates;
