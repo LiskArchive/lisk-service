@@ -77,26 +77,24 @@ const normalizeTransaction = async tx => {
 	tx.size = txBuffer.length;
 	tx.params = decodedParams;
 
-	const normalizedTransaction = parseToJSONCompatObj(tx);
-
 	const availableModuleCommands = await getAvailableModuleCommands();
-	const [{ id, name }] = availableModuleCommands
-		.filter(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
+	const txModuleCommandID = String(tx.moduleID).concat(':', tx.commandID);
+	const { id, name } = availableModuleCommands.find(module => module.id === txModuleCommandID);
 
-	normalizedTransaction.moduleCommandID = id;
-	normalizedTransaction.moduleCommandName = name;
-	if (normalizedTransaction.params.recipientAddress) {
-		normalizedTransaction.params
+	tx.moduleCommandID = id;
+	tx.moduleCommandName = name;
+	if (tx.params.recipientAddress) {
+		tx.params
 			.recipientAddress = getBase32AddressFromHex(tx.params.recipientAddress);
 	}
-	if (normalizedTransaction.params.votes && normalizedTransaction.params.votes.length) {
-		normalizedTransaction.params.votes
+	if (tx.params.votes && tx.params.votes.length) {
+		tx.params.votes
 			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
 	}
 
 	// TODO: Set execution status from observing the events
 
-	return normalizedTransaction;
+	return parseToJSONCompatObj(tx);
 };
 
 module.exports = {

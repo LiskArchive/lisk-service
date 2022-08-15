@@ -153,13 +153,14 @@ const getTransactions = async params => {
 		async transaction => {
 			const indexedTxInfo = resultSet.find(txInfo => txInfo.id === transaction.id);
 
+			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
 			const senderAccount = await getIndexedAccountInfo(
-				{ address: getBase32AddressFromPublicKey(transaction.senderPublicKey), limit: 1 },
+				{ address: senderAddress, limit: 1 },
 				['name'],
 			);
 
 			transaction.sender = {
-				address: getBase32AddressFromPublicKey(transaction.senderPublicKey),
+				address: senderAddress,
 				publicKey: transaction.senderPublicKey,
 				name: senderAccount ? senderAccount.name : null,
 			};
@@ -209,13 +210,15 @@ const getTransactionsByBlockID = async blockID => {
 	const transactions = await BluebirdPromise.map(
 		block.transactions,
 		async (transaction) => {
+			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
+
 			const senderAccount = await getIndexedAccountInfo(
-				{ address: getBase32AddressFromPublicKey(transaction.senderPublicKey), limit: 1 },
+				{ address: senderAddress, limit: 1 },
 				['name'],
 			);
 
 			transaction.sender = {
-				address: getBase32AddressFromPublicKey(transaction.senderPublicKey),
+				address: senderAddress,
 				publicKey: transaction.senderPublicKey,
 				name: senderAccount ? senderAccount.name : null,
 			};
