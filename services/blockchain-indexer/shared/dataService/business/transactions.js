@@ -160,7 +160,7 @@ const getTransactions = async params => {
 			);
 
 			transaction.sender = {
-				address: senderAccount ? senderAccount.address : null,
+				address: getBase32AddressFromPublicKey(transaction.senderPublicKey),
 				publicKey: senderAccount ? senderAccount.publicKey : null,
 				name: senderAccount ? senderAccount.name : null,
 			};
@@ -172,7 +172,7 @@ const getTransactions = async params => {
 				);
 
 				transaction.meta = {
-					address: recipientAccount ? recipientAccount.address : null,
+					address: transaction.params.recipientAddress,
 					publicKey: recipientAccount ? recipientAccount.publicKey : null,
 					name: recipientAccount ? recipientAccount.name : null,
 				};
@@ -209,14 +209,14 @@ const getTransactionsByBlockID = async blockID => {
 		block.payload,
 		async (transaction) => {
 			const senderAccount = await getIndexedAccountInfo(
-				{ address: transaction.senderAddress, limit: 1 },
+				{ address: getBase32AddressFromPublicKey(transaction.senderPublicKey), limit: 1 },
 				['address', 'publicKey', 'name'],
 			);
 
 			transaction.sender = {
-				address: senderAccount.address,
-				publicKey: senderAccount.publicKey,
-				name: senderAccount.name,
+				address: getBase32AddressFromPublicKey(transaction.senderPublicKey),
+				publicKey: senderAccount ? senderAccount.publicKey : null,
+				name: senderAccount ? senderAccount.name : null,
 			};
 
 			if (!isEmptyObject(transaction.params) && transaction.params.recipientAddress) {
@@ -225,10 +225,10 @@ const getTransactionsByBlockID = async blockID => {
 					['address', 'publicKey', 'name'],
 				);
 
-				transaction.params.recipient = {
-					address: recipientAccount.address,
-					publicKey: recipientAccount.publicKey,
-					name: recipientAccount.name,
+				transaction.meta = {
+					address: transaction.params.recipientAddress,
+					publicKey: recipientAccount ? recipientAccount.publicKey : null,
+					name: recipientAccount ? recipientAccount.name : null,
 				};
 			}
 
