@@ -25,6 +25,7 @@ const {
 
 const logger = Logger();
 
+// const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
@@ -66,9 +67,14 @@ const normalizeBlock = async (originalblock) => {
 		};
 	}
 
+	// TODO: Enable when events are available
+	// block.events = await getEventsByHeight(block.height);
+
 	block.isFinal = block.height <= (await getFinalizedHeight());
 	block.numberOfTransactions = block.transactions.length;
 	block.numberOfAssets = block.assets.length;
+	block.numberOfEvents = 1;
+	// block.numberOfEvents = block.events.length;
 
 	block.size = 0;
 	// TODO: get reward value from block event
@@ -92,6 +98,7 @@ const normalizeBlock = async (originalblock) => {
 			block.totalForged += BigInt(txn.fee);
 			block.totalBurnt += BigInt(txn.minFee);
 			block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
+			// TODO: Set execution status from observing the events
 		},
 		{ concurrency: 1 },
 	);

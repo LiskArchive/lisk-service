@@ -53,7 +53,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
 };
 
 module.exports = {
