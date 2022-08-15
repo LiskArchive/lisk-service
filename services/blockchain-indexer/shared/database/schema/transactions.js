@@ -28,7 +28,9 @@ module.exports = {
 		size: { type: 'integer', null: false },
 		fee: { type: 'bigInteger', null: false },
 		minFee: { type: 'bigInteger', null: false },
-		executionStatus: { type: 'string', null: false },
+		// TODO: Fix executionStatus after events are resolved
+		// executionStatus: { type: 'string', null: false },
+		executionStatus: { type: 'string', null: true, defaultValue: null },
 		isCCU: { type: 'boolean', null: false, defaultValue: false },
 	},
 	indexes: {

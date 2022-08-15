@@ -30,7 +30,6 @@ const toCamelCase = (words) => {
 	return result;
 };
 
-// TODO: Update implementation to the generic with the issue https://github.com/liskhq/lisk-service/issues/1097
 const exportAllEvents = async () => {
 	// Re-subscribe to the events when apiClient is re-instantiated
 	Signals.get('newApiClient').add(subscribeToAllRegisteredEvents);

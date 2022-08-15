@@ -21,34 +21,13 @@ const dataService = require('../../../shared/dataService');
 
 const getTokens = async params => {
 	try {
-		// const tokensInfo = {
-		// 	data: [],
-		// 	meta: {},
-		// }
-		// const response = await dataService.getTokens(params);
-		// if (response.data) tokensInfo.data = response.data;
-		// if (response.meta) tokensInfo.meta = response.meta;
-
 		const tokensInfo = {
-			data: [
-				{
-					tokenID: '2ba563cf98003d',
-					name: 'Lisk',
-					symbol: 'LSK',
-					availableBalance: '5000000',
-					lockedBalances: [{
-						moduleID: '5',
-						amount: '1000000',
-					}],
-				},
-			],
-			meta: {
-				address: 'lsk6757819470afeb656',
-				count: 10,
-				offset: params.offset,
-				total: 120,
-			},
+			data: [],
+			meta: {},
 		};
+		const response = await dataService.getTokens(params);
+		if (response.data) tokensInfo.data = response.data;
+		if (response.meta) tokensInfo.meta = response.meta;
 
 		return tokensInfo;
 	} catch (error) {

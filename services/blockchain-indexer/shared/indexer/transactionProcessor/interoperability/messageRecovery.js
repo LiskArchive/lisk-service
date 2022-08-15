@@ -29,7 +29,7 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
 
 // command specific constants
-const commandID = 5;
+const commandID = '00000005';
 const commandName = 'messageRecovery';
 
 // eslint-disable-next-line no-unused-vars

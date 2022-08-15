@@ -32,7 +32,7 @@ const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema,
 const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandID = 4;
+const commandID = '00000004';
 const commandName = 'updateGeneratorKey';
 
 // eslint-disable-next-line no-unused-vars

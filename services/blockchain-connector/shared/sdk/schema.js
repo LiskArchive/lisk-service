@@ -21,27 +21,9 @@ const getAccountSchema = () => schemas.account;
 
 const getBlockSchema = () => schemas.block;
 
-const getBlockHeaderSchema = () => schemas.blockHeader;
+const getBlockHeaderSchema = () => schemas.header;
 
-const getBlockAssetSchema = () => {
-	// TODO: Retrieve block asset schema from core directly once available
-	const assetSchema = {
-		$id: '/block/assets/3',
-		type: 'object',
-		required: ['moduleID', 'data'],
-		properties: {
-			moduleID: {
-				dataType: 'uint32',
-				fieldNumber: 1,
-			},
-			data: {
-				dataType: 'bytes',
-				fieldNumber: 2,
-			},
-		},
-	};
-	return assetSchema;
-};
+const getBlockAssetSchema = () => schemas.asset;
 
 const getTransactionSchema = () => schemas.transaction;
 

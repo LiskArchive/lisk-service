@@ -16,7 +16,9 @@
 const dataService = require('./business');
 
 const isIncludePendingTransactions = (executionStatus) => {
-	const INCLUDE_PENDING_WHEN_STATUSES = ['pending', 'any'];
+	if (!executionStatus) return false;
+
+	const INCLUDE_PENDING_WHEN_STATUSES = ['pending'];
 	const execStatuses = executionStatus.split(',');
 	const isIncludePending = execStatuses.reduce(
 		(isInclude, status) => {

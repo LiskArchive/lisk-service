@@ -35,7 +35,6 @@ const appNetworkEventController = async (cb) => {
 	Signals.get('appNetworkEvent').add(appNetworkEventListener);
 };
 
-// TODO: Handle the new transaction event with the issue https://github.com/liskhq/lisk-service/issues/1097
 const txpoolNewTransactionController = async (cb) => {
 	const txpoolNewTransactionListener = async (payload) => cb(payload);
 	Signals.get('txpoolNewTransaction').add(txpoolNewTransactionListener);

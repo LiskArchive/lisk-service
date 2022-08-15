@@ -15,7 +15,7 @@
  */
 
 // Module specific constants
-const moduleID = 12;
+const moduleID = '0000000c';
 const moduleName = 'auth';
 
 module.exports = {

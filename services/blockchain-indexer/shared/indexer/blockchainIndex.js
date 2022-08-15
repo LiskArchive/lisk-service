@@ -163,6 +163,8 @@ const indexBlock = async job => {
 		const blockToIndex = {
 			...block,
 			assetsModuleIDs: block.assets.map(asset => asset.moduleID),
+			numberOfEvents: 1,
+			// numberOfEvents: events.length,
 		};
 
 		await blocksDB.upsert(blockToIndex, dbTrx);

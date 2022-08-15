@@ -33,7 +33,7 @@ const getTransactionsIndex = () => getTableInstance(
 );
 
 // Command specific constants
-const commandID = 0;
+const commandID = '00000000';
 const commandName = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
@@ -53,7 +53,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
 };
 
 module.exports = {

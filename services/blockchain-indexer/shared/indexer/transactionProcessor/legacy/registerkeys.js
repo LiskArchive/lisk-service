@@ -27,7 +27,7 @@ const transactionsIndexSchema = require('../../../database/schema/transactions')
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandID = 1;
+const commandID = '00000001';
 const commandName = 'registerkeys';
 
 // eslint-disable-next-line no-unused-vars

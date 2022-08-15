@@ -49,6 +49,15 @@ const getBlockchainApps = async (params) => {
 		};
 	}
 
+	if (params.state) {
+		const { state, ...remParams } = params;
+		params = remParams;
+		params.whereIn = {
+			property: 'state',
+			values: state.split(','),
+		};
+	}
+
 	const total = await blockchainAppsDB.count(params);
 
 	const response = await blockchainAppsDB.find(

@@ -14,6 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+
 const util = require('util');
 
 const {
@@ -25,14 +26,15 @@ const {
 
 const logger = Logger();
 
+// const { getEventsByHeight } = require('./events');
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getBase32AddressFromHex } = require('../../utils/accountUtils');
+const { getBase32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
-const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
-const { getTxnMinFee } = require('../../utils/transactionsUtils');
+const { parseToJSONCompatObj } = require('../../utils/parser');
+const { normalizeTransaction } = require('../../utils/transactionsUtils');
 
 const config = require('../../../config');
 
@@ -45,6 +47,8 @@ const latestBlockCache = CacheRedis('latestBlock', config.endpoints.cache);
 let latestBlock;
 
 const normalizeBlock = async (originalblock) => {
+	const blocksDB = await getBlocksIndex();
+
 	const block = {
 		...originalblock.header,
 		transactions: originalblock.transactions,
@@ -53,10 +57,24 @@ const normalizeBlock = async (originalblock) => {
 
 	if (block.generatorAddress) {
 		block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
+
+		const generatorInfo = await getIndexedAccountInfo(
+			{ address: block.generatorAddress, limit: 1 },
+			['publicKey', 'name'],
+		);
+
+		block.generator = {
+			address: block.generatorAddress,
+			publicKey: generatorInfo ? generatorInfo.publicKey : null,
+			name: generatorInfo ? generatorInfo.name : null,
+		};
 	}
 
 	block.isFinal = block.height <= (await getFinalizedHeight());
 	block.numberOfTransactions = block.transactions.length;
+	block.numberOfAssets = block.assets.length;
+	const [{ numberOfEvents }] = await blocksDB.find({ height: block.height }, ['numberOfEvents']);
+	block.numberOfEvents = numberOfEvents;
 
 	block.size = 0;
 	// TODO: get reward value from block event
@@ -64,20 +82,16 @@ const normalizeBlock = async (originalblock) => {
 	block.totalBurnt = BigInt('0');
 	block.totalFee = BigInt('0');
 
-	await BluebirdPromise.map(
+	block.transactions = await BluebirdPromise.map(
 		block.transactions,
 		async (txn) => {
-			const schema = await requestConnector('getSchema');
-			const { schema: paramsSchema } = schema.commands
-				.find(s => s.moduleID === txn.moduleID && s.commandID === txn.commandID);
-			const parsedTxParams = parseInputBySchema(txn.params, paramsSchema);
-			const parsedTx = parseInputBySchema(txn, schema.transaction);
-			txn = { ...parsedTx, params: parsedTxParams };
-			txn.minFee = await getTxnMinFee(txn);
+			txn = await normalizeTransaction(txn);
+
 			block.size += txn.size;
 			block.totalForged += BigInt(txn.fee);
 			block.totalBurnt += BigInt(txn.minFee);
 			block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
+			return txn;
 		},
 		{ concurrency: 1 },
 	);

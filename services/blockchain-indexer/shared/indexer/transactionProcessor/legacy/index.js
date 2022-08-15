@@ -15,7 +15,7 @@
  */
 
 // Module specific constants
-const moduleID = 32768;
+const moduleID = '00008000';
 const moduleName = 'legacy';
 
 module.exports = {

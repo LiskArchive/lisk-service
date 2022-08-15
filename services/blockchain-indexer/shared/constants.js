@@ -19,6 +19,7 @@ let genesisConfig;
 let genesisHeight;
 let moduleCommands;
 let registeredModules;
+let systemMetadata;
 
 const getFinalizedHeight = async () => {
 	const { finalizedHeight } = await requestConnector('getNodeInfo');
@@ -77,8 +78,15 @@ const getRegisteredModules = async () => {
 	return registeredModules;
 };
 
+const getSystemMetadata = async () => {
+	if (!systemMetadata) {
+		systemMetadata = await requestConnector('getSystemMetadata');
+	}
+	return systemMetadata;
+};
+
 const MODULE_ID = {
-	DPOS: process.env.MODULE_ID_DPOS || 13,
+	DPOS: process.env.MODULE_ID_DPOS || '0000000d',
 };
 
 const COMMAND_ID = {
@@ -94,6 +102,7 @@ module.exports = {
 	getAvailableModuleCommands,
 	resolveModuleCommands,
 	getRegisteredModules,
+	getSystemMetadata,
 
 	MODULE_ID,
 	COMMAND_ID,

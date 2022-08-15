@@ -14,22 +14,22 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+
 const {
 	Exceptions: { InvalidParamsException },
 	MySQL: { getTableInstance },
-	Utils: { isEmptyObject },
 } = require('lisk-service-framework');
 
 const { getLastBlock, getBlockByID } = require('./blocks');
 const { getAvailableModuleCommands } = require('../../constants');
 
 const {
-	getBase32AddressFromHex,
+	getBase32AddressFromPublicKey,
 	getIndexedAccountInfo,
 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
-const { parseToJSONCompatObj } = require('../../utils/parser');
+const { normalizeTransaction } = require('../../utils/transactionsUtils');
 
 const transactionsIndexSchema = require('../../database/schema/transactions');
 const config = require('../../../config');
@@ -66,26 +66,6 @@ const getTransactionsByBlockIDs = async blockIDs => {
 	}, ['id']);
 	const transactionsIds = transactions.map(t => t.id);
 	return transactionsIds;
-};
-
-const normalizeTransaction = async tx => {
-	const availableModuleCommands = await getAvailableModuleCommands();
-	const [{ id, name }] = availableModuleCommands
-		.filter(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
-
-	const normalizedTransaction = parseToJSONCompatObj(tx);
-	normalizedTransaction.moduleCommandID = id;
-	normalizedTransaction.moduleCommandName = name;
-	if (normalizedTransaction.params.recipientAddress) {
-		normalizedTransaction.params
-			.recipientAddress = getBase32AddressFromHex(tx.params.recipientAddress);
-	}
-	if (normalizedTransaction.params.votes && normalizedTransaction.params.votes.length) {
-		normalizedTransaction.params.votes
-			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
-	}
-
-	return normalizedTransaction;
 };
 
 const normalizeTransactions = async txs => {
@@ -173,27 +153,30 @@ const getTransactions = async params => {
 		async transaction => {
 			const indexedTxInfo = resultSet.find(txInfo => txInfo.id === transaction.id);
 
+			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
 			const senderAccount = await getIndexedAccountInfo(
-				{ address: transaction.senderAddress, limit: 1 },
-				['address', 'publicKey', 'name'],
+				{ address: senderAddress, limit: 1 },
+				['name'],
 			);
 
 			transaction.sender = {
-				address: senderAccount.address,
-				publicKey: senderAccount.publicKey,
-				name: senderAccount.name,
+				address: senderAddress,
+				publicKey: transaction.senderPublicKey,
+				name: senderAccount ? senderAccount.name : null,
 			};
 
-			if (!isEmptyObject(transaction.params) && transaction.params.recipientAddress) {
+			if (transaction.params.recipientAddress) {
 				const recipientAccount = await getIndexedAccountInfo(
 					{ address: transaction.params.recipientAddress, limit: 1 },
-					['address', 'publicKey', 'name'],
+					['publicKey', 'name'],
 				);
 
-				transaction.params.recipient = {
-					address: recipientAccount.address,
-					publicKey: recipientAccount.publicKey,
-					name: recipientAccount.name,
+				transaction.meta = {
+					recipient: {
+						address: transaction.params.recipientAddress,
+						publicKey: recipientAccount ? recipientAccount.publicKey : null,
+						name: recipientAccount ? recipientAccount.name : null,
+					},
 				};
 			}
 
@@ -225,29 +208,33 @@ const getTransactions = async params => {
 const getTransactionsByBlockID = async blockID => {
 	const block = await getBlockByID(blockID);
 	const transactions = await BluebirdPromise.map(
-		block.payload,
+		block.transactions,
 		async (transaction) => {
+			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
+
 			const senderAccount = await getIndexedAccountInfo(
-				{ address: transaction.senderAddress, limit: 1 },
-				['address', 'publicKey', 'name'],
+				{ address: senderAddress, limit: 1 },
+				['name'],
 			);
 
 			transaction.sender = {
-				address: senderAccount.address,
-				publicKey: senderAccount.publicKey,
-				name: senderAccount.name,
+				address: senderAddress,
+				publicKey: transaction.senderPublicKey,
+				name: senderAccount ? senderAccount.name : null,
 			};
 
-			if (!isEmptyObject(transaction.params) && transaction.params.recipientAddress) {
+			if (transaction.params.recipientAddress) {
 				const recipientAccount = await getIndexedAccountInfo(
 					{ address: transaction.params.recipientAddress, limit: 1 },
-					['address', 'publicKey', 'name'],
+					['publicKey', 'name'],
 				);
 
-				transaction.params.recipient = {
-					address: recipientAccount.address,
-					publicKey: recipientAccount.publicKey,
-					name: recipientAccount.name,
+				transaction.meta = {
+					recipient: {
+						address: transaction.params.recipientAddress,
+						publicKey: recipientAccount ? recipientAccount.publicKey : null,
+						name: recipientAccount ? recipientAccount.name : null,
+					},
 				};
 			}
 

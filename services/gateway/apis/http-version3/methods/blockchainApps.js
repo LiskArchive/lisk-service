@@ -27,7 +27,7 @@ module.exports = {
 		chainID: { optional: true, type: 'string', min: 1, max: 21, pattern: regex.CHAINID_RANGE },
 		isDefault: { optional: true, type: 'boolean' },
 		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
-		state: { optional: true, type: 'string', enum: ['registered', 'active', 'terminated', 'any'], default: 'any' },
+		state: { optional: true, type: 'string', pattern: regex.APPLICATION_STATE },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
