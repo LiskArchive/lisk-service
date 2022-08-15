@@ -19,7 +19,11 @@ module.exports = {
 	timestamp: '=,number',
 	height: '=,number',
 	previousBlockID: '=,string',
-	generatorAddress: '=,string',
+	generator: {
+		address: '=,string',
+		name: '=,string',
+		publicKey: '=,string',
+	},
 	transactionRoot: '=,string',
 	assetsRoot: '=,string',
 	stateRoot: '=,string',

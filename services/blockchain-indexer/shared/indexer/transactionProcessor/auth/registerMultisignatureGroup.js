@@ -63,7 +63,14 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 // eslint-disable-next-line no-unused-vars
 const revertTransaction = async (blockHeader, tx, dbTrx) => {
-	// TODO: Implement
+	const multisignatureDB = await getMultisignatureIndex();
+
+	const multisignatureInfo = resolveMultisignatureMemberships(tx);
+	const multisignatureIdsToDelete = multisignatureInfo.map(item => item.id);
+
+	logger.trace(`Reverting multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
+	await multisignatureDB.deleteByPrimaryKey(multisignatureIdsToDelete, dbTrx);
+	logger.debug(`Reverted multisignature information in transaction ${tx.id} contained in block at height ${tx.height}`);
 };
 
 module.exports = {

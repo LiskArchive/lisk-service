@@ -13,27 +13,9 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// const { HTTP } = require('lisk-service-framework');
-
-// const { StatusCodes: { NOT_FOUND } } = HTTP;
-
 const dataService = require('../../../shared/dataService');
 
-// const {
-// 	confirmAnyId,
-// } = require('../../../shared/accountUtils');
-
 const getVotesSent = async params => {
-	// const isFound = await confirmAnyId(params);
-	// if (!isFound && params.address) {
-	// 	return {
-	// 		status: NOT_FOUND, data: { error: `Account with address ${params.address} not found.` },
-	// 	};
-	// }
-	// if (!isFound && params.name) {
-	// 	return { status: NOT_FOUND, data: { error: `Account with name ${params.name} not found.` } };
-	// }
-
 	const votesSent = {
 		data: {},
 		meta: {},

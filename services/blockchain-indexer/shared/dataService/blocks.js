@@ -19,10 +19,7 @@ const util = require('util');
 const logger = Logger();
 
 const dataService = require('./business');
-const {
-	getGenesisHeight,
-	getFinalizedHeight,
-} = require('../constants');
+const { getGenesisHeight } = require('../constants');
 const { getNameByAddress } = require('../utils/delegateUtils');
 
 const config = require('../../config');
@@ -89,13 +86,6 @@ const getBlocks = async (params = {}) => {
 	} else {
 		total = await getTotalNumberOfBlocks();
 	}
-
-	// TODO: Remove if unnecessary
-	const finalHeight = await getFinalizedHeight();
-	const data = blocks.data.map((block) => Object.assign(block,
-		{ isFinal: block.height <= finalHeight },
-	));
-	blocks.data = data;
 
 	return {
 		data: blocks.data,

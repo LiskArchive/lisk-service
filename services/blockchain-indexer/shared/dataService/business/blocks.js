@@ -28,7 +28,7 @@ const logger = Logger();
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getBase32AddressFromHex } = require('../../utils/accountUtils');
+const { getBase32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
@@ -53,6 +53,17 @@ const normalizeBlock = async (originalblock) => {
 
 	if (block.generatorAddress) {
 		block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
+
+		const generatorInfo = await getIndexedAccountInfo(
+			{ address: block.generatorAddress, limit: 1 },
+			['address', 'publicKey', 'name'],
+		);
+
+		block.generator = {
+			address: block.generatorAddress,
+			publicKey: generatorInfo ? generatorInfo.publicKey : null,
+			name: generatorInfo ? generatorInfo.name : null,
+		};
 	}
 
 	block.isFinal = block.height <= (await getFinalizedHeight());
