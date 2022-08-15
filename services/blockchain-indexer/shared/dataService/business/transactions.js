@@ -172,9 +172,11 @@ const getTransactions = async params => {
 				);
 
 				transaction.meta = {
-					address: transaction.params.recipientAddress,
-					publicKey: recipientAccount ? recipientAccount.publicKey : null,
-					name: recipientAccount ? recipientAccount.name : null,
+					recipient: {
+						address: transaction.params.recipientAddress,
+						publicKey: recipientAccount ? recipientAccount.publicKey : null,
+						name: recipientAccount ? recipientAccount.name : null,
+					},
 				};
 			}
 
@@ -226,9 +228,11 @@ const getTransactionsByBlockID = async blockID => {
 				);
 
 				transaction.meta = {
-					address: transaction.params.recipientAddress,
-					publicKey: recipientAccount ? recipientAccount.publicKey : null,
-					name: recipientAccount ? recipientAccount.name : null,
+					recipient: {
+						address: transaction.params.recipientAddress,
+						publicKey: recipientAccount ? recipientAccount.publicKey : null,
+						name: recipientAccount ? recipientAccount.name : null,
+					},
 				};
 			}
 
