@@ -34,7 +34,7 @@ const votesIndexSchema = require('../../../database/schema/votes');
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandID = 1;
+const commandID = '00000001';
 const commandName = 'voteDelegate';
 
 const getVoteIndexingInfo = async (tx) => {

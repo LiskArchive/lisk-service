@@ -21,7 +21,7 @@ const { reloadDelegateCache } = require('../../../dataService');
 const logger = Logger();
 
 // Command specific constants
-const commandID = 3;
+const commandID = '00000003';
 const commandName = 'reportDelegateMisbehavior';
 
 // eslint-disable-next-line no-unused-vars

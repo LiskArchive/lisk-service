@@ -31,7 +31,7 @@ const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessa
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
 
 // command specific constants
-const commandID = 1;
+const commandID = '00000001';
 const commandName = 'mainchainRegistration';
 
 // eslint-disable-next-line no-unused-vars

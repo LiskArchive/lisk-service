@@ -27,7 +27,7 @@ const transactionsIndexSchema = require('../../../database/schema/transactions')
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandID = 0;
+const commandID = '00000000';
 const commandName = 'reclaimLSK';
 
 // eslint-disable-next-line no-unused-vars

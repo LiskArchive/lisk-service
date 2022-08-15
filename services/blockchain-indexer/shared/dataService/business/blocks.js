@@ -14,6 +14,7 @@
  *
  */
 const BluebirdPromise = require('bluebird');
+
 const util = require('util');
 
 const {
@@ -32,8 +33,8 @@ const blocksIndexSchema = require('../../database/schema/blocks');
 const { getBase32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
-const { parseToJSONCompatObj, parseInputBySchema } = require('../../utils/parser');
-const { getTxnMinFee } = require('../../utils/transactionsUtils');
+const { parseToJSONCompatObj } = require('../../utils/parser');
+const { normalizeTransaction } = require('../../utils/transactionsUtils');
 
 const config = require('../../../config');
 
@@ -82,23 +83,18 @@ const normalizeBlock = async (originalblock) => {
 	block.totalBurnt = BigInt('0');
 	block.totalFee = BigInt('0');
 
-	await BluebirdPromise.map(
+	block.transactions = await BluebirdPromise.map(
 		block.transactions,
 		async (txn) => {
-			const metadata = await requestConnector('getSystemMetadata');
-			const filteredModule = metadata.modules.find(module => module.id === txn.moduleID);
-			const filteredCommand = filteredModule.commands.find(s => s.id === txn.commandID);
-			const parsedTxParams = parseInputBySchema(txn.params, filteredCommand.params);
+			txn = await normalizeTransaction(txn);
 
-			const schema = await requestConnector('getSchema');
-			const parsedTx = parseInputBySchema(txn, schema.transaction);
-			txn = { ...parsedTx, params: parsedTxParams };
-			txn.minFee = await getTxnMinFee(txn);
 			block.size += txn.size;
 			block.totalForged += BigInt(txn.fee);
 			block.totalBurnt += BigInt(txn.minFee);
 			block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
 			// TODO: Set execution status from observing the events
+
+			return txn;
 		},
 		{ concurrency: 1 },
 	);

@@ -30,6 +30,7 @@ module.exports = {
 		height: '=,number',
 		timestamp: '=,number',
 	},
+	meta: '=',
 	confirmations: '=',
 	executionStatus: '=,string',
 };

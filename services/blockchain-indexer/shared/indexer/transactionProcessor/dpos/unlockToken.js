@@ -14,7 +14,7 @@
  *
  */
 // Command specific constants
-const commandID = 2;
+const commandID = '00000002';
 const commandName = 'unlockToken';
 
 // eslint-disable-next-line no-unused-vars

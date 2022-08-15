@@ -33,7 +33,7 @@ const getTransactionsIndex = () => getTableInstance(
 );
 
 // Command specific constants
-const commandID = 0;
+const commandID = '00000000';
 const commandName = 'transfer';
 
 // eslint-disable-next-line no-unused-vars

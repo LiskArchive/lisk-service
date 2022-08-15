@@ -65,7 +65,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	if (!moduleProcessorMap.has(tx.moduleID)) throw Error(`No processors implemented for transactions related to moduleID: ${tx.moduleID}`);
 	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.moduleID);
 
-	if (!moduleCommandProcessorMap.has(tx.commandID)) throw Error(`No applyTransaction hook implemented for transactions with moduleID: ${tx.moduleID} and commandID: ${tx.commandID}`);
+	if (!moduleCommandProcessorMap.has(`apply_${tx.commandID}`)) throw Error(`No applyTransaction hook implemented for transactions with moduleID: ${tx.moduleID} and commandID: ${tx.commandID}`);
 	const transactionProcessor = moduleCommandProcessorMap.get(`apply_${tx.commandID}`);
 
 	return transactionProcessor(blockHeader, tx, dbTrx);
@@ -77,7 +77,7 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 	if (!moduleProcessorMap.has(tx.moduleID)) throw Error(`No processors implemented for transactions related to moduleID: ${tx.moduleID}`);
 	const moduleCommandProcessorMap = moduleProcessorMap.get(tx.moduleID);
 
-	if (!moduleCommandProcessorMap.has(tx.commandID)) throw Error(`No revertTransaction hook implemented for transactions with moduleID: ${tx.moduleID} and commandID: ${tx.commandID}`);
+	if (!moduleCommandProcessorMap.has(`revert_${tx.commandID}`)) throw Error(`No revertTransaction hook implemented for transactions with moduleID: ${tx.moduleID} and commandID: ${tx.commandID}`);
 	const transactionProcessor = moduleCommandProcessorMap.get(`revert_${tx.commandID}`);
 
 	return transactionProcessor(blockHeader, tx, dbTrx);

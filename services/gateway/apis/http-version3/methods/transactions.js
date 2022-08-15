@@ -35,7 +35,6 @@ module.exports = {
 			optional: true,
 			type: 'string',
 			pattern: regex.TRANSACTION_EXECUTION_STATUS,
-			default: 'any',
 		},
 		nonce: { optional: true, type: 'string', min: 1, pattern: regex.NONCE },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
