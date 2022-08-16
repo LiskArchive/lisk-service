@@ -151,7 +151,8 @@ const syncWithRemoteRepo = async () => {
 					await downloadFile(result.data.download_url, filePath);
 					logger.debug(`Successfully downloaded: ${file}`);
 
-					await indexMetadataFromFile(filePath);
+					const [, network, appName, , filename] = file.split('/');
+					await indexMetadataFromFile(network, appName, filename);
 					logger.debug('Successfully updated the database with the latest changes');
 				},
 				{ concurrency: filesChanged.length },

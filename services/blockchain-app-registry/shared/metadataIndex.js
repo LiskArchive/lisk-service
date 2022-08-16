@@ -30,7 +30,6 @@ const {
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
 
-const { getChainIDByName } = require('./utils/chainUtils');
 const { getDirectories, read, getFiles } = require('./utils/fsUtils');
 
 const config = require('../config');
@@ -50,25 +49,25 @@ const getTokensIndex = () => getTableInstance(
 
 const logger = Logger();
 
-const indexTokensInfo = async (filePath, dbTrx) => {
+const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
+
+const indexTokensInfo = async (tokenInfo, dbTrx) => {
 	const tokensDB = await getTokensIndex();
 
-	const response = await read(filePath);
-	const tokenInfo = JSON.parse(response);
-
 	const tokenInfoToIndex = await BluebirdPromise.map(
-		tokenInfo.assets,
-		async (asset) => {
+		tokenInfo.tokens,
+		async (token) => {
 			const result = {
-				chainID: tokenInfo.chain_id,
-				chainName: tokenInfo.chain_name,
-				description: asset.description,
-				name: asset.name,
-				Symbol: asset.symbol,
-				display: asset.display,
-				base: asset.base,
-				exponent: asset.exponent,
-				logo: JSON.stringify(asset.token_logo_URIs),
+				chainID: tokenInfo.chainID,
+				chainName: tokenInfo.chainName,
+				tokenID: tokenInfo.tokenID,
+				tokenName: token.name,
+				description: token.description,
+				symbol: token.symbol,
+				displayDenom: token.displayDenom,
+				baseDenom: token.baseDenom,
+				denomUnits: JSON.stringify(token.denomUnits),
+				logo: JSON.stringify(token.logo),
 			};
 			return result;
 		},
@@ -78,77 +77,107 @@ const indexTokensInfo = async (filePath, dbTrx) => {
 	await tokensDB.upsert(tokenInfoToIndex, dbTrx);
 };
 
-const indexChainInfo = async (filePath, dbTrx) => {
+const indexChainInfo = async (chainInfo, dbTrx) => {
 	const applicationsDB = await getApplicationsIndex();
 
-	const response = await read(filePath);
-	const chainInfo = JSON.parse(response);
-
-	const chainID = chainInfo.chain_id
-		? chainInfo.chain_id
-		: await getChainIDByName(chainInfo.chain_name, chainInfo.network);
-
 	const chainInfoToIndex = {
-		chainID,
-		name: chainInfo.chain_name,
+		chainID: chainInfo.chainID,
+		chainName: chainInfo.chainName,
 		description: chainInfo.description,
 		title: chainInfo.title,
-		network: chainInfo.network,
+		network: chainInfo.networkType,
 		isDefault: chainInfo.isDefault || false,
-		genesisBlock: chainInfo.genesis_url,
-		homepage: chainInfo.homepage,
-		apis: JSON.stringify(chainInfo.apis),
+		genesisURL: chainInfo.genesisURL,
+		projectPage: chainInfo.projectPage,
+		backgroundColor: chainInfo.backgroundColor,
+		appPage: chainInfo.appPage,
+		serviceURLs: JSON.stringify(chainInfo.serviceURLs),
 		logo: JSON.stringify(chainInfo.logo),
 		explorers: JSON.stringify(chainInfo.explorers),
-		backgroundColor: chainInfo.backgroundColor,
+		appNodes: JSON.stringify(chainInfo.appNodes),
 	};
 
 	await applicationsDB.upsert(chainInfoToIndex, dbTrx);
 };
 
-const indexMetadataFromFile = async (file, dbTrx) => {
-	logger.info(`Indexing metadata information for the app: ${file.split('/')[2]}`);
+const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
+	logger.debug(`Indexing metadata information for the app: ${app} (${network})`);
+	const FILENAME = {
+		APP_JSON: 'app.json',
+		NATIVETOKENS_JSON: 'nativetokens.json',
+	};
 
-	if (file.includes('token.json')) {
-		logger.debug(`Indexing tokens information for the app: ${file.split('/')[2]}`);
-		await indexTokensInfo(file, dbTrx);
-	} else if (file.includes('chain.json')) {
-		logger.debug(`Indexing chain information for the app: ${file.split('/')[2]}`);
-		await indexChainInfo(file, dbTrx);
+	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
+
+	const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${network}/${app}`;
+	logger.trace('Reading chain information');
+	const chainInfoString = await read(`${appPathInClonedRepo}/app.json`);
+	const chainInfo = JSON.parse(chainInfoString);
+
+	if (filename === FILENAME.APP_JSON || filename === null) {
+		logger.debug(`Indexing chain information for the app: ${app} (${network})`);
+		await indexChainInfo(chainInfo, dbTrx);
+		logger.debug(`Indexed chain information for the app: ${app} (${network})`);
 	}
+
+	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
+		logger.trace('Reading tokens information');
+		const tokenInfoString = await read(`${appPathInClonedRepo}/nativetokens.json`);
+		const tokenInfo = {
+			...JSON.parse(tokenInfoString),
+			chainName: chainInfo.chainName,
+			chainID: chainInfo.chainID,
+			network,
+		};
+
+		logger.debug(`Indexing tokens information for the app: ${app} (${network})`);
+		await indexTokensInfo(tokenInfo, dbTrx);
+		logger.debug(`Indexed tokens information for the app: ${app} (${network})`);
+	}
+	logger.info(`Finished indexing metadata information for the app: ${app} (${network})`);
 };
 
 const indexBlockchainMetadata = async () => {
 	const dataDirectory = './data';
-	const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
-	const appDirPath = path.join(dataDirectory, repo);
-	const allAvailableApps = await getDirectories(appDirPath);
+	const repoPath = path.join(dataDirectory, repo);
+	const { supportedNetworks } = config;
 
 	await BluebirdPromise.map(
-		allAvailableApps,
-		async app => {
-			// TODO: Add a check to filter out files and non-blockchain apps
-			const allFilesFromApp = await getFiles(`${app}`);
-			await BluebirdPromise.map(
-				allFilesFromApp,
-				async file => {
-					const connection = await getDbConnection();
-					const dbTrx = await startDbTransaction(connection);
+		supportedNetworks,
+		async network => {
+			const appDirPath = path.join(repoPath, network);
+			const allAvailableApps = await getDirectories(appDirPath);
 
-					try {
-						logger.debug('Created new MySQL transaction to index blockchain metadata information');
-						await indexMetadataFromFile(file, dbTrx);
-						await commitDbTransaction(dbTrx);
-						logger.debug('Committed MySQL transaction to index blockchain metadata information');
-					} catch (error) {
-						await rollbackDbTransaction(dbTrx);
-						logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
-					}
+			await BluebirdPromise.map(
+				allAvailableApps,
+				async app => {
+					// TODO: Add a check to filter out files and non-blockchain apps
+					const allFilesFromApp = await getFiles(`${app}`);
+
+					await BluebirdPromise.map(
+						allFilesFromApp,
+						async file => {
+							const connection = await getDbConnection();
+							const dbTrx = await startDbTransaction(connection);
+							const [, , , appName, filename] = file.split('/');
+
+							try {
+								logger.debug('Created new MySQL transaction to index blockchain metadata information');
+								await indexMetadataFromFile(network, appName, filename, dbTrx);
+								await commitDbTransaction(dbTrx);
+								logger.debug('Committed MySQL transaction to index blockchain metadata information');
+							} catch (error) {
+								await rollbackDbTransaction(dbTrx);
+								logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
+							}
+						},
+						{ concurrency: allFilesFromApp.length },
+					);
 				},
-				{ concurrency: allFilesFromApp.length },
+				{ concurrency: allAvailableApps.length },
 			);
 		},
-		{ concurrency: allAvailableApps.length },
+		{ concurrency: supportedNetworks.length },
 	);
 };
 
