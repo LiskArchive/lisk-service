@@ -15,7 +15,7 @@
  */
 module.exports = {
 	tableName: 'tokens',
-	primaryKey: ['chainName', 'name'],
+	primaryKey: ['chainName', 'tokenName'],
 	schema: {
 		chainID: { type: 'string' },
 		chainName: { type: 'string' },
