@@ -59,3 +59,6 @@ xunit-report.xml
 
 # Service custom framework
 framework
+
+# Data download directory
+data
