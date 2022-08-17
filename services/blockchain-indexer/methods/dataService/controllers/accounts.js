@@ -15,17 +15,13 @@
  */
 const {
 	Logger,
-	Utils,
 	HTTP,
-	Exceptions: { ValidationException, InvalidParamsException },
+	Exceptions: { ValidationException },
 } = require('lisk-service-framework');
 
 const { StatusCodes: { BAD_REQUEST } } = HTTP;
 
 const dataService = require('../../../shared/dataService');
-
-const ObjectUtilService = Utils.Data;
-const { isEmptyObject } = ObjectUtilService;
 
 const logger = Logger();
 
@@ -54,60 +50,6 @@ const getAccounts = async params => {
 	}
 };
 
-const getGenerators = async params => {
-	const generators = await dataService.getGenerators(params);
-	if (isEmptyObject(generators)) return {};
-
-	return {
-		data: generators.data,
-		meta: generators.meta,
-	};
-};
-
-// eslint-disable-next-line no-unused-vars
-const getLegacyAccountInfo = async params => {
-	// const legacyAccountInfo = {
-	// 	data: {},
-	// 	meta: {},
-	// };
-
-	// const response = await dataService.getLegacyAccountInfo(params);
-	// if (response.data) legacyAccountInfo.data = response.data;
-	// if (response.meta) legacyAccountInfo.meta = response.meta;
-
-	const legacyAccountInfo = {
-		data: {
-			legacyAddress: '3057001998458191401L',
-			balance: '10000000',
-		},
-		meta: {
-			address: 'lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu',
-			publicKey: 'd5aa0d647b5d9ff0285321d606c870348711266ea8f0df627ef8f39d1c9959c7',
-		},
-	};
-
-	return legacyAccountInfo;
-};
-
-const getTokensInfo = async params => {
-	try {
-		const tokensInfo = await dataService.getTokensInfo(params);
-
-		return {
-			data: tokensInfo.data,
-			meta: tokensInfo.meta,
-		};
-	} catch (error) {
-		let status;
-		if (error instanceof InvalidParamsException) status = 'INVALID_PARAMS';
-		if (status) return { status, data: { error: error.message } };
-		throw error;
-	}
-};
-
 module.exports = {
 	getAccounts,
-	getGenerators,
-	getLegacyAccountInfo,
-	getTokensInfo,
 };

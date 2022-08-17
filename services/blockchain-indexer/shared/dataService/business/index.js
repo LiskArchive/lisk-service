@@ -14,19 +14,6 @@
  *
  */
 const {
-	getAccounts,
-	getMultisignatureGroups,
-	getMultisignatureMemberships,
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	getAccountsByPublicKey2,
-	getIndexedAccountInfo,
-	getAccountsBySearch,
-	resolveMultisignatureMemberships,
-	getNumberOfForgers,
-} = require('./accounts');
-
-const {
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -41,6 +28,10 @@ const {
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
+
+const {
+	getLegacyAccountInfo,
+} = require('./legacy');
 
 const {
 	getDelegates,
@@ -91,16 +82,6 @@ const { getValidator } = require('./validator');
 const { getEvents, getEventsByHeight } = require('./events');
 
 module.exports = {
-	getAccounts,
-	getMultisignatureGroups,
-	getMultisignatureMemberships,
-	getAccountsByAddress,
-	getAccountsByPublicKey,
-	getAccountsByPublicKey2,
-	getIndexedAccountInfo,
-	getAccountsBySearch,
-	resolveMultisignatureMemberships,
-	getNumberOfForgers,
 	getBlocks,
 	getFinalizedHeight,
 	normalizeBlocks,
@@ -135,4 +116,5 @@ module.exports = {
 	getValidator,
 	getEvents,
 	getEventsByHeight,
+	getLegacyAccountInfo,
 };

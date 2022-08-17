@@ -39,7 +39,6 @@ const {
 
 const {
 	getAccounts,
-	getLegacyAccountInfo,
 } = require('./accounts');
 
 const {
@@ -96,6 +95,10 @@ const {
 	getBlockchainAppsStatistics,
 	reloadBlockchainAppsStats,
 } = require('./interoperability');
+
+const {
+	getLegacyAccountInfo,
+} = require('./legacy');
 
 const { getEvents } = require('./events');
 const { getAuthAccountInfo } = require('./auth');

@@ -14,24 +14,16 @@
  *
  */
 const {
-	getAccounts,
-} = require('./controllers/accounts');
+	getGenerators,
+} = require('./controllers/generators');
 
 module.exports = [
 	{
-		name: 'accounts',
-		controller: getAccounts,
+		name: 'generators',
+		controller: getGenerators,
 		params: {
-			address: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			isDelegate: { optional: true, type: 'any' },
-			status: { optional: true, type: 'any' },
-			search: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-			sort: { optional: true, type: 'any' },
-
+			limit: { type: 'any', optional: true },
+			offset: { type: 'any', optional: true },
 		},
 	},
 ];

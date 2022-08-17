@@ -14,24 +14,15 @@
  *
  */
 const {
-	getAccounts,
-} = require('./controllers/accounts');
+	getLegacyAccountInfo,
+} = require('./controllers/legacy');
 
 module.exports = [
 	{
-		name: 'accounts',
-		controller: getAccounts,
+		name: 'legacy',
+		controller: getLegacyAccountInfo,
 		params: {
-			address: { optional: true, type: 'any' },
-			publicKey: { optional: true, type: 'any' },
-			username: { optional: true, type: 'any' },
-			isDelegate: { optional: true, type: 'any' },
-			status: { optional: true, type: 'any' },
-			search: { optional: true, type: 'any' },
-			limit: { optional: true, type: 'any' },
-			offset: { optional: true, type: 'any' },
-			sort: { optional: true, type: 'any' },
-
+			publicKey: { optional: false, type: 'string' },
 		},
 	},
 ];
