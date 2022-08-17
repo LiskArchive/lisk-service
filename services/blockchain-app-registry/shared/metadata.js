@@ -22,7 +22,6 @@ const config = require('../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const { read } = require('./utils/fsUtils');
-const { normalizeRangeParam } = require('./utils/paramUtils');
 
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
@@ -38,26 +37,6 @@ const getTokensIndex = () => getTableInstance(
 	tokensIndexSchema,
 	MYSQL_ENDPOINT,
 );
-
-const formatResponseEntriesForTokens = (arr) => {
-	const map = new Map(arr.map(entry => [entry.chainName, {
-		chainID: entry.chainID,
-		chainName: entry.chainName,
-		assets: [],
-	}]));
-	for (let i = 0; i < arr.length; i++) {
-		map.get(arr[i].chainName).assets.push({
-			description: arr[i].description,
-			name: arr[i].name,
-			symbol: arr[i].symbol,
-			display: arr[i].display,
-			base: arr[i].base,
-			exponent: arr[i].exponent,
-			logo: JSON.parse(arr[i].logo),
-		});
-	}
-	return [...map.values()];
-};
 
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationsDB = await getApplicationsIndex();
@@ -150,7 +129,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
 		blockchainAppsMetadata.data,
 		async (appMetadata) => {
-			const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
+			const [repo] = config.gitHub.appRegistryRepo.split('/').slice(-1);
 			const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
 			const chainMetaString = await read(`${appPathInClonedRepo}/app.json`);
 			const chainMeta = JSON.parse(chainMetaString);
@@ -171,6 +150,7 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
+	const applicationsDB = await getApplicationsIndex();
 	const tokensDB = await getTokensIndex();
 
 	const blockchainAppsTokenMetadata = {
@@ -178,14 +158,13 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		meta: {},
 	};
 
-	if (params.chainID && params.chainID.includes(':')) {
-		params = normalizeRangeParam(params, 'chainID');
-	}
-
-	if (params.name) {
-		const { name, ...remParams } = params;
+	if (params.network) {
+		const { network, ...remParams } = params;
 		params = remParams;
-		params.chainName = name;
+		params.whereIn = {
+			property: 'network',
+			values: network.split(','),
+		};
 	}
 
 	if (params.search) {
@@ -199,12 +178,26 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 
 	const response = await tokensDB.find(
 		params,
-		Object.getOwnPropertyNames(tokensIndexSchema.schema),
+		['network', 'chainID'],
 	);
 
-	blockchainAppsTokenMetadata.data = formatResponseEntriesForTokens(response);
+	blockchainAppsTokenMetadata.data = await BluebirdPromise.map(
+		response,
+		async (tokenMeta) => {
+			const [repo] = config.gitHub.appRegistryRepo.split('/').slice(-1);
+			const [{ appDirName }] = await applicationsDB.find(
+				{ network: tokenMeta.network, chainID: 1 },
+				['appDirName'],
+			);
+			const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${tokenMeta.network}/${appDirName}`;
+			const tokenMetaString = await read(`${appPathInClonedRepo}/nativetokens.json`);
+			const parsedTokenMeta = JSON.parse(tokenMetaString);
+			return parsedTokenMeta;
+		},
+		{ concurrency: response.length },
+	);
 
-	const total = await tokensDB.count(params);
+	const total = 10;
 
 	blockchainAppsTokenMetadata.meta = {
 		count: blockchainAppsTokenMetadata.data.length,
