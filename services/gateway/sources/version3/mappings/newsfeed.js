@@ -19,7 +19,7 @@ module.exports = {
 	image_url: '=,string',
 	imageUrl: 'image_url,string',
 	source: '=,string',
-	sourceId: 'source_id,string',
+	sourceID: 'source_id,string',
 	timestamp: 'modified_at,number',
 	createdAt: 'created_at,number',
 	modifiedAt: 'modified_at,number',
