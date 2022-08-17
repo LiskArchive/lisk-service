@@ -21,7 +21,9 @@ const config = require('../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
+const { read } = require('./utils/fsUtils');
 const { normalizeRangeParam } = require('./utils/paramUtils');
+
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
 
@@ -112,10 +114,6 @@ const getBlockchainAppsMetadata = async (params) => {
 		meta: {},
 	};
 
-	if (params.chainID && params.chainID.includes(':')) {
-		params = normalizeRangeParam(params, 'chainID');
-	}
-
 	if (params.network) {
 		const { network, ...remParams } = params;
 		params = remParams;
@@ -134,20 +132,31 @@ const getBlockchainAppsMetadata = async (params) => {
 		};
 	}
 
-	const response = await applicationsDB.find(
-		params,
-		Object.getOwnPropertyNames(applicationsIndexSchema.schema),
+	const limit = params.limit * config.supportedNetworks.length;
+	const defaultApps = await applicationsDB.find(
+		{ ...params, limit, isDefault: true },
+		['network', 'appDirName'],
 	);
 
+	if (defaultApps.length < params.limit) {
+		const nonDefaultApps = await applicationsDB.find(
+			{ ...params, limit, isDefault: false },
+			['network', 'appDirName'],
+		);
+
+		blockchainAppsMetadata.data = defaultApps.concat(nonDefaultApps);
+	}
+
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
-		response,
+		blockchainAppsMetadata.data,
 		async (appMetadata) => {
-			appMetadata.apis = JSON.parse(appMetadata.apis);
-			appMetadata.explorers = JSON.parse(appMetadata.explorers);
-			appMetadata.logo = JSON.parse(appMetadata.logo);
-			return appMetadata;
+			const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
+			const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
+			const chainMetaString = await read(`${appPathInClonedRepo}/app.json`);
+			const chainMeta = JSON.parse(chainMetaString);
+			return chainMeta;
 		},
-		{ concurrency: response.length },
+		{ concurrency: blockchainAppsMetadata.data.length },
 	);
 
 	const total = await applicationsDB.count(params);
