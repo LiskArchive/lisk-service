@@ -14,13 +14,13 @@
  *
  */
 const { initDatabase } = require('./database/index');
-const { indexBlockchainMetadata } = require('./metadataIndex');
+const { indexAllBlockchainAppsMeta } = require('./metadataIndex');
 const { downloadRepositoryToFS } = require('./utils/downloadRepository');
 
 const init = async () => {
 	await initDatabase();
 	await downloadRepositoryToFS();
-	await indexBlockchainMetadata();
+	await indexAllBlockchainAppsMeta();
 };
 
 module.exports = {

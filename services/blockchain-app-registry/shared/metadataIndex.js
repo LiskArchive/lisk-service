@@ -49,48 +49,48 @@ const getTokensIndex = () => getTableInstance(
 
 const logger = Logger();
 
-const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
+const [repo] = config.gitHub.appRegistryRepo.split('/').slice(-1);
 
-const FILENAME = {
+const FILENAME = Object.freeze({
 	APP_JSON: 'app.json',
 	NATIVETOKENS_JSON: 'nativetokens.json',
-};
+});
 
-const KNOWN_CONFIG_FILES = Object.values(FILENAME);
+const KNOWN_CONFIG_FILES = Object.freeze(Object.values(FILENAME));
 
-const indexTokensInfo = async (tokenInfo, dbTrx) => {
+const indexTokensMeta = async (tokenMeta, dbTrx) => {
 	const tokensDB = await getTokensIndex();
 
-	const tokenInfoToIndex = await BluebirdPromise.map(
-		tokenInfo.tokens,
+	const tokenMetaToIndex = await BluebirdPromise.map(
+		tokenMeta.tokens,
 		async (token) => {
 			const result = {
-				chainID: tokenInfo.chainID,
-				chainName: tokenInfo.chainName,
-				network: tokenInfo.network,
+				chainID: tokenMeta.chainID,
+				chainName: tokenMeta.chainName,
+				network: tokenMeta.network,
 				tokenID: token.tokenID,
 				tokenName: token.name,
 			};
 			return result;
 		},
-		{ concurrency: tokenInfo.assets.length },
+		{ concurrency: tokenMeta.tokens.length },
 	);
 
-	await tokensDB.upsert(tokenInfoToIndex, dbTrx);
+	await tokensDB.upsert(tokenMetaToIndex, dbTrx);
 };
 
-const indexChainInfo = async (chainInfo, dbTrx) => {
+const indexChainMeta = async (chainMeta, dbTrx) => {
 	const applicationsDB = await getApplicationsIndex();
 
-	const chainInfoToIndex = {
-		chainID: chainInfo.chainID,
-		chainName: chainInfo.chainName,
-		network: chainInfo.networkType,
-		isDefault: config.defaultApps.some(e => e === chainInfo.chainName),
-		appDirName: chainInfo.appDirName,
+	const chainMetaToIndex = {
+		chainID: chainMeta.chainID,
+		chainName: chainMeta.chainName,
+		network: chainMeta.networkType,
+		isDefault: config.defaultApps.some(e => e === chainMeta.chainName),
+		appDirName: chainMeta.appDirName,
 	};
 
-	await applicationsDB.upsert(chainInfoToIndex, dbTrx);
+	await applicationsDB.upsert(chainMetaToIndex, dbTrx);
 };
 
 const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
@@ -100,33 +100,33 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 
 	const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${network}/${app}`;
 	logger.trace('Reading chain information');
-	const chainInfoString = await read(`${appPathInClonedRepo}/app.json`);
-	const chainInfo = { ...JSON.parse(chainInfoString), appDirName: app };
+	const chainMetaString = await read(`${appPathInClonedRepo}/app.json`);
+	const chainMeta = { ...JSON.parse(chainMetaString), appDirName: app };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
 		logger.debug(`Indexing chain information for the app: ${app} (${network})`);
-		await indexChainInfo(chainInfo, dbTrx);
+		await indexChainMeta(chainMeta, dbTrx);
 		logger.debug(`Indexed chain information for the app: ${app} (${network})`);
 	}
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
 		logger.trace('Reading tokens information');
-		const tokenInfoString = await read(`${appPathInClonedRepo}/nativetokens.json`);
-		const tokenInfo = {
-			...JSON.parse(tokenInfoString),
-			chainName: chainInfo.chainName,
-			chainID: chainInfo.chainID,
+		const tokenMetaString = await read(`${appPathInClonedRepo}/nativetokens.json`);
+		const tokenMeta = {
+			...JSON.parse(tokenMetaString),
+			chainName: chainMeta.chainName,
+			chainID: chainMeta.chainID,
 			network,
 		};
 
 		logger.debug(`Indexing tokens information for the app: ${app} (${network})`);
-		await indexTokensInfo(tokenInfo, dbTrx);
+		await indexTokensMeta(tokenMeta, dbTrx);
 		logger.debug(`Indexed tokens information for the app: ${app} (${network})`);
 	}
 	logger.info(`Finished indexing metadata information for the app: ${app} (${network})`);
 };
 
-const indexBlockchainMetadata = async () => {
+const indexAllBlockchainAppsMeta = async () => {
 	const dataDirectory = './data';
 	const repoPath = path.join(dataDirectory, repo);
 	const { supportedNetworks } = config;
@@ -144,7 +144,7 @@ const indexBlockchainMetadata = async () => {
 					await BluebirdPromise.map(
 						allFilesFromApp,
 						async file => {
-							const [, , , appName, filename] = file.split('/');
+							const [appName, filename] = file.split('/').slice(-2);
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
 								const connection = await getDbConnection();
@@ -172,6 +172,6 @@ const indexBlockchainMetadata = async () => {
 };
 
 module.exports = {
-	indexBlockchainMetadata,
+	indexAllBlockchainAppsMeta,
 	indexMetadataFromFile,
 };
