@@ -19,8 +19,11 @@ module.exports = {
 	type: 'moleculer',
 	method: 'app-registry.blockchain.apps.meta.tokens',
 	params: {
-		name: '=,string',
+		chainName: '=,string',
 		chainID: '=,string',
+		tokenName: '=,string',
+		tokenID: '=,string',
+		network: '=,string',
 		search: '=,string',
 		offset: '=,number',
 		limit: '=,number',

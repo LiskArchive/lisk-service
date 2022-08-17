@@ -24,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps.meta',
 	tags: ['Interoperability'],
 	params: {
-		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
+		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
 		chainID: { optional: true, type: 'string', min: 1, max: 21, pattern: regex.CHAINID_RANGE },
 		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK },
 		search: { optional: true, type: 'string' },
@@ -33,8 +33,8 @@ module.exports = {
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: ['name:asc', 'name:desc', 'chainID:asc', 'chainID:desc'],
-			default: 'chainID:asc',
+			enum: ['chainName:asc', 'chainName:desc', 'chainID:asc', 'chainID:desc'],
+			default: 'chainName:asc',
 		},
 	},
 	get schema() {

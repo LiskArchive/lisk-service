@@ -24,7 +24,7 @@ module.exports = [
 		name: 'blockchain.apps.meta',
 		params: {
 			chainID: { optional: true, type: 'string' },
-			name: { optional: true, type: 'string' },
+			chainName: { optional: true, type: 'string' },
 			network: { optional: true, type: 'string' },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
@@ -36,7 +36,8 @@ module.exports = [
 	{
 		name: 'blockchain.apps.meta.list',
 		params: {
-			name: { optional: true, type: 'string' },
+			chainName: { optional: true, type: 'string' },
+			network: { optional: true, type: 'string' },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
@@ -47,8 +48,11 @@ module.exports = [
 	{
 		name: 'blockchain.apps.meta.tokens',
 		params: {
-			name: { optional: true, type: 'string' },
+			chainName: { optional: true, type: 'string' },
 			chainID: { optional: true, type: 'string' },
+			tokenName: { optional: true, type: 'string' },
+			tokenID: { optional: true, type: 'string' },
+			network: { optional: true, type: 'string' },
 			search: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },

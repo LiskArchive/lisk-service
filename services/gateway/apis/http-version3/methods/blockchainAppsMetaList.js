@@ -24,15 +24,16 @@ module.exports = {
 	rpcMethod: 'get.blockchain.apps.meta.list',
 	tags: ['Interoperability'],
 	params: {
-		name: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
+		chainName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
+		network: { optional: true, type: 'string', min: 1, pattern: regex.NETWORK },
 		search: { optional: true, type: 'string' },
 		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
 		offset: { optional: true, type: 'number', min: 0, default: 0 },
 		sort: {
 			optional: true,
 			type: 'string',
-			enum: ['name:asc', 'name:desc'],
-			default: 'name:asc',
+			enum: ['chainName:asc', 'chainName:desc'],
+			default: 'chainName:asc',
 		},
 	},
 	get schema() {

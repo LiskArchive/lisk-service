@@ -14,22 +14,24 @@
  *
  */
 module.exports = {
-	chainID: '=,number',
-	name: '=,string',
+	chainName: '=,string',
+	chainID: '=,string',
 	title: '=,string',
 	description: '=,string',
-	network: '=,string',
+	networkType: '=,string',
 	isDefault: '=,boolean',
-	genesisBlock: '=,string',
-	homepage: '=,string',
-	apis: ['apis', {
-		rest: '=,string',
-		rpc: '=,string',
+	genesisURL: '=,string',
+	projectPage: '=,string',
+	appPage: '=,string',
+	serviceURLs: ['serviceURLs', {
+		http: '=,string',
+		ws: '=,string',
 	}],
-	explorers: '=',
 	logo: {
 		png: '=,string',
 		svg: '=,string',
 	},
+	explorers: '=',
+	appNodes: '=',
 	backgroundColor: '=,string',
 };
