@@ -49,7 +49,7 @@ const getTokensIndex = () => getTableInstance(
 
 const logger = Logger();
 
-const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
+const [repo] = config.gitHub.appRegistryRepo.split('/').slice(-1);
 
 const FILENAME = Object.freeze({
 	APP_JSON: 'app.json',
@@ -144,7 +144,7 @@ const indexAllBlockchainAppsMeta = async () => {
 					await BluebirdPromise.map(
 						allFilesFromApp,
 						async file => {
-							const [, , , appName, filename] = file.split('/');
+							const [appName, filename] = file.split('/').slice(-2);
 							// Only process the known config files
 							if (KNOWN_CONFIG_FILES.includes(filename)) {
 								const connection = await getDbConnection();
