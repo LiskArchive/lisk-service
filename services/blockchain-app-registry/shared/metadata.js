@@ -37,14 +37,6 @@ const getTokensIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const formatResponseEntries = (arr) => {
-	const map = new Map(arr.map(entry => [entry.name, { name: entry.name, networks: [] }]));
-	for (let i = 0; i < arr.length; i++) {
-		map.get(arr[i].name).networks.push({ network: arr[i].network, chainID: arr[i].chainID });
-	}
-	return [...map.values()];
-};
-
 const formatResponseEntriesForTokens = (arr) => {
 	const map = new Map(arr.map(entry => [entry.chainName, {
 		chainID: entry.chainID,
@@ -78,7 +70,7 @@ const getBlockchainAppsMetaList = async (params) => {
 		params = remParams;
 
 		params.search = {
-			property: 'name',
+			property: 'chainName',
 			pattern: search,
 		};
 	}
@@ -86,25 +78,22 @@ const getBlockchainAppsMetaList = async (params) => {
 	const limit = params.limit * config.supportedNetworks.length;
 	const defaultApps = await applicationsDB.find(
 		{ ...params, limit, isDefault: true },
-		['name', 'chainID', 'network'],
+		['network', 'chainID', 'chainName'],
 	);
 
-	blockchainAppsMetaList.data = formatResponseEntries(defaultApps);
-
-	if (blockchainAppsMetaList.data.length < params.limit) {
+	if (defaultApps.length < params.limit) {
 		const nonDefaultApps = await applicationsDB.find(
 			{ ...params, limit, isDefault: false },
-			['name', 'chainID', 'network'],
+			['network', 'chainID', 'chainName'],
 		);
 
-		blockchainAppsMetaList.data = blockchainAppsMetaList.data
-			.concat(formatResponseEntries(nonDefaultApps));
+		blockchainAppsMetaList.data = defaultApps.concat(nonDefaultApps);
 	}
 
 	blockchainAppsMetaList.data = blockchainAppsMetaList.data
 		.slice(params.offset, params.offset + params.limit);
 
-	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(DISTINCT(name)) as count from applications');
+	const total = await applicationsDB.count(params);
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,

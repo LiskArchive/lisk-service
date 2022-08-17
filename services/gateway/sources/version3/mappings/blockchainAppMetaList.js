@@ -16,5 +16,5 @@
 module.exports = {
 	chainName: '=,string',
 	chainID: '=,string',
-	networkType: '=,string',
+	networkType: 'network,string',
 };
