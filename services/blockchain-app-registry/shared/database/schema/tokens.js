@@ -15,19 +15,13 @@
  */
 module.exports = {
 	tableName: 'tokens',
-	primaryKey: ['chainName', 'tokenName'],
+	primaryKey: ['network', 'chainName', 'tokenID'],
 	schema: {
 		chainID: { type: 'string' },
 		chainName: { type: 'string' },
 		network: { type: 'string' },
 		tokenID: { type: 'string' },
 		tokenName: { type: 'string' },
-		description: { type: 'string', null: true },
-		symbol: { type: 'string' },
-		displayDenom: { type: 'string' },
-		baseDenom: { type: 'string' },
-		denomUnits: { type: 'json' },
-		logo: { type: 'json' },
 	},
 	indexes: {
 		chainID: { type: 'key' },

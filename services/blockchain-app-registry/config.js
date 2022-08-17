@@ -68,6 +68,11 @@ config.serviceURL = {
 	betanet: process.env.SERVICE_URL_BETANET || 'https://betanet-service.lisk.com',
 };
 
-config.supportedNetworks = ['mainnet', 'testnet', 'betanet', 'alphanet', 'devnet'];
+config.supportedNetworks = ['mainnet', 'testnet', 'betanet'];
+
+const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
+const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
+
+config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
 
 module.exports = config;

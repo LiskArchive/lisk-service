@@ -15,22 +15,13 @@
  */
 module.exports = {
 	tableName: 'applications',
-	primaryKey: ['chainName', 'network'],
+	primaryKey: ['network', 'chainName'],
 	schema: {
 		chainName: { type: 'string' },
 		chainID: { type: 'string' },
-		genesisURL: { type: 'string' },
 		network: { type: 'string' },
-		projectPage: { type: 'string' },
-		logo: { type: 'json' },
-		backgroundColor: { type: 'string' },
-		serviceURLs: { type: 'json' },
-		explorers: { type: 'json' },
 		isDefault: { type: 'boolean', null: false, defaultValue: false },
-		title: { type: 'string', null: true },
-		description: { type: 'string', null: true },
-		appPage: { type: 'string', null: true },
-		appNodes: { type: 'json', null: true },
+		appDirName: { type: 'string' },
 	},
 	indexes: {
 		chainID: { type: 'key' },

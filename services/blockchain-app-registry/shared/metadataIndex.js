@@ -51,6 +51,13 @@ const logger = Logger();
 
 const [, , , , repo] = config.gitHub.appRegistryRepo.split('/');
 
+const FILENAME = {
+	APP_JSON: 'app.json',
+	NATIVETOKENS_JSON: 'nativetokens.json',
+};
+
+const KNOWN_CONFIG_FILES = Object.values(FILENAME);
+
 const indexTokensInfo = async (tokenInfo, dbTrx) => {
 	const tokensDB = await getTokensIndex();
 
@@ -60,14 +67,9 @@ const indexTokensInfo = async (tokenInfo, dbTrx) => {
 			const result = {
 				chainID: tokenInfo.chainID,
 				chainName: tokenInfo.chainName,
-				tokenID: tokenInfo.tokenID,
+				network: tokenInfo.network,
+				tokenID: token.tokenID,
 				tokenName: token.name,
-				description: token.description,
-				symbol: token.symbol,
-				displayDenom: token.displayDenom,
-				baseDenom: token.baseDenom,
-				denomUnits: JSON.stringify(token.denomUnits),
-				logo: JSON.stringify(token.logo),
 			};
 			return result;
 		},
@@ -83,18 +85,9 @@ const indexChainInfo = async (chainInfo, dbTrx) => {
 	const chainInfoToIndex = {
 		chainID: chainInfo.chainID,
 		chainName: chainInfo.chainName,
-		description: chainInfo.description,
-		title: chainInfo.title,
 		network: chainInfo.networkType,
-		isDefault: chainInfo.isDefault || false,
-		genesisURL: chainInfo.genesisURL,
-		projectPage: chainInfo.projectPage,
-		backgroundColor: chainInfo.backgroundColor,
-		appPage: chainInfo.appPage,
-		serviceURLs: JSON.stringify(chainInfo.serviceURLs),
-		logo: JSON.stringify(chainInfo.logo),
-		explorers: JSON.stringify(chainInfo.explorers),
-		appNodes: JSON.stringify(chainInfo.appNodes),
+		isDefault: config.defaultApps.some(e => e === chainInfo.chainName),
+		appDirName: chainInfo.appDirName,
 	};
 
 	await applicationsDB.upsert(chainInfoToIndex, dbTrx);
@@ -102,17 +95,13 @@ const indexChainInfo = async (chainInfo, dbTrx) => {
 
 const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 	logger.debug(`Indexing metadata information for the app: ${app} (${network})`);
-	const FILENAME = {
-		APP_JSON: 'app.json',
-		NATIVETOKENS_JSON: 'nativetokens.json',
-	};
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 
 	const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${network}/${app}`;
 	logger.trace('Reading chain information');
 	const chainInfoString = await read(`${appPathInClonedRepo}/app.json`);
-	const chainInfo = JSON.parse(chainInfoString);
+	const chainInfo = { ...JSON.parse(chainInfoString), appDirName: app };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
 		logger.debug(`Indexing chain information for the app: ${app} (${network})`);
@@ -151,24 +140,25 @@ const indexBlockchainMetadata = async () => {
 			await BluebirdPromise.map(
 				allAvailableApps,
 				async app => {
-					// TODO: Add a check to filter out files and non-blockchain apps
 					const allFilesFromApp = await getFiles(`${app}`);
-
 					await BluebirdPromise.map(
 						allFilesFromApp,
 						async file => {
-							const connection = await getDbConnection();
-							const dbTrx = await startDbTransaction(connection);
 							const [, , , appName, filename] = file.split('/');
+							// Only process the known config files
+							if (KNOWN_CONFIG_FILES.includes(filename)) {
+								const connection = await getDbConnection();
+								const dbTrx = await startDbTransaction(connection);
 
-							try {
-								logger.debug('Created new MySQL transaction to index blockchain metadata information');
-								await indexMetadataFromFile(network, appName, filename, dbTrx);
-								await commitDbTransaction(dbTrx);
-								logger.debug('Committed MySQL transaction to index blockchain metadata information');
-							} catch (error) {
-								await rollbackDbTransaction(dbTrx);
-								logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
+								try {
+									logger.debug('Created new MySQL transaction to index blockchain metadata information');
+									await indexMetadataFromFile(network, appName, filename, dbTrx);
+									await commitDbTransaction(dbTrx);
+									logger.debug('Committed MySQL transaction to index blockchain metadata information');
+								} catch (error) {
+									await rollbackDbTransaction(dbTrx);
+									logger.debug('Rolled back MySQL transaction to index blockchain metadata information');
+								}
 							}
 						},
 						{ concurrency: allFilesFromApp.length },
