@@ -21,7 +21,7 @@ module.exports = [
 	{
 		name: 'update.application.metadata',
 		description: 'Keep the blockchain applications metadata up-to-date',
-		schedule: '0 */3 * * *', // Every 3 hours
+		schedule: '*/10 * * * *', // Every 10 minutes
 		controller: async () => {
 			logger.debug('Refreshing blockchain application metadata...');
 			try {

@@ -5,7 +5,7 @@
             "author",
             "content",
             "source",
-            "sourceId",
+            "sourceID",
             "createdAt",
             "modifiedAt",
             "title",
@@ -18,7 +18,7 @@
                 "example": "LiskHQ",
                 "description": "Blog post author."
             },
-            "content_t": {
+            "content": {
                 "type": "string",
                 "example": "RT @newsbtc: Lisk.js 2021 Recap https://t.co/QpZOkBfrgA",
                 "description": "Blog post text."
@@ -28,7 +28,7 @@
                 "example": "twitter_lisk",
                 "description": "Source name"
             },
-            "source_id": {
+            "sourceID": {
                 "type": "string",
                 "example": "4584a7d2db15920e130eeaf1014f87c99b5af329",
                 "description": "External ID of the blog post."

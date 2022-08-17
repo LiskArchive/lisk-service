@@ -151,8 +151,11 @@ const syncWithRemoteRepo = async () => {
 					await downloadFile(result.data.download_url, filePath);
 					logger.debug(`Successfully downloaded: ${file}`);
 
-					await indexMetadataFromFile(filePath);
-					logger.debug('Successfully updated the database with the latest changes');
+					if (file.endsWith('.json')) {
+						const [network, appName, filename] = file.split('/').slice(-3);
+						await indexMetadataFromFile(network, appName, filename);
+						logger.debug('Successfully updated the database with the latest changes');
+					}
 				},
 				{ concurrency: filesChanged.length },
 			);

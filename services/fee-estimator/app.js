@@ -42,7 +42,7 @@ const app = Microservice({
 	brokerTimeout: config.brokerTimeout, // in seconds
 	logger: loggerConf,
 	events: {
-		appNewBlock: async (payload) => Signals.get('newBlock').dispatch(payload),
+		chainNewBlock: async (payload) => Signals.get('newBlock').dispatch(payload),
 	},
 	dependencies: [
 		'connector',

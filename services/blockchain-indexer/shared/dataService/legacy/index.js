@@ -13,16 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { initDatabase } = require('./database/index');
-const { indexAllBlockchainAppsMeta } = require('./metadataIndex');
-const { downloadRepositoryToFS } = require('./utils/downloadRepository');
-
-const init = async () => {
-	await initDatabase();
-	await downloadRepositoryToFS();
-	await indexAllBlockchainAppsMeta();
-};
+const { getLegacyAccountInfo } = require('./legacy');
 
 module.exports = {
-	init,
+	getLegacyAccountInfo,
 };

@@ -13,16 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { initDatabase } = require('./database/index');
-const { indexAllBlockchainAppsMeta } = require('./metadataIndex');
-const { downloadRepositoryToFS } = require('./utils/downloadRepository');
+const {
+	getGenerators,
+} = require('./controllers/generators');
 
-const init = async () => {
-	await initDatabase();
-	await downloadRepositoryToFS();
-	await indexAllBlockchainAppsMeta();
-};
-
-module.exports = {
-	init,
-};
+module.exports = [
+	{
+		name: 'generators',
+		controller: getGenerators,
+		params: {
+			limit: { type: 'any', optional: true },
+			offset: { type: 'any', optional: true },
+		},
+	},
+];

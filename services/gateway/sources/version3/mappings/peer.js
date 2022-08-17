@@ -19,7 +19,7 @@ module.exports = {
 	networkVersion: '=,string',
 	state: '=,string',
 	height: '=,number',
-	networkIdentifier: '=,string',
+	networkID: 'networkIdentifier,string',
 	location: {
 		countryCode: 'location.country_code,string',
 		latitude: 'location.latitude,string',

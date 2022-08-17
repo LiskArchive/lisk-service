@@ -70,12 +70,6 @@ const getAccounts = async params => {
 	return parseToJSONCompatObj(accounts);
 };
 
-const getLegacyAccountInfo = async (params) => {
-	const legacyAccountInfo = await dataService.getLegacyAccountInfo(params);
-	return legacyAccountInfo;
-};
-
 module.exports = {
 	getAccounts,
-	getLegacyAccountInfo,
 };

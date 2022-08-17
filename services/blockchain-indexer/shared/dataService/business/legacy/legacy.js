@@ -16,9 +16,9 @@
 const {
 	getLegacyAddressFromPublicKey,
 	getBase32AddressFromPublicKey,
-} = require('../../utils/accountUtils');
+} = require('../../../utils/accountUtils');
 
-const { requestConnector } = require('../../utils/request');
+const { requestConnector } = require('../../../utils/request');
 
 const getLegacyAccountInfo = async ({ publicKey }) => {
 	const legacyAccountInfo = {

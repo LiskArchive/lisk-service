@@ -15,9 +15,6 @@
  */
 const {
 	getAccounts,
-	getGenerators,
-	getLegacyAccountInfo,
-	getTokensInfo,
 } = require('./controllers/accounts');
 
 module.exports = [
@@ -35,31 +32,6 @@ module.exports = [
 			offset: { optional: true, type: 'any' },
 			sort: { optional: true, type: 'any' },
 
-		},
-	},
-	{
-		name: 'generators',
-		controller: getGenerators,
-		params: {
-			limit: { type: 'any', optional: true },
-			offset: { type: 'any', optional: true },
-		},
-	},
-	{
-		name: 'legacy',
-		controller: getLegacyAccountInfo,
-		params: {
-			publicKey: { optional: false, type: 'string' },
-		},
-	},
-	{
-		name: 'tokens',
-		controller: getTokensInfo,
-		params: {
-			address: { optional: false, type: 'string' },
-			tokenID: { optional: true, type: 'string' },
-			limit: { optional: true, type: 'number' },
-			offset: { optional: true, type: 'number' },
 		},
 	},
 ];

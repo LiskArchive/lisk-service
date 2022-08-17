@@ -13,16 +13,21 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const { initDatabase } = require('./database/index');
-const { indexAllBlockchainAppsMeta } = require('./metadataIndex');
-const { downloadRepositoryToFS } = require('./utils/downloadRepository');
+const dataService = require('../../../shared/dataService');
 
-const init = async () => {
-	await initDatabase();
-	await downloadRepositoryToFS();
-	await indexAllBlockchainAppsMeta();
+const getLegacyAccountInfo = async params => {
+	const legacyAccountInfo = {
+		data: {},
+		meta: {},
+	};
+
+	const response = await dataService.getLegacyAccountInfo(params);
+	if (response.data) legacyAccountInfo.data = response.data;
+	if (response.meta) legacyAccountInfo.meta = response.meta;
+
+	return legacyAccountInfo;
 };
 
 module.exports = {
-	init,
+	getLegacyAccountInfo,
 };
