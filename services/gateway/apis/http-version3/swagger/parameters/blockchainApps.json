@@ -12,7 +12,7 @@
         "name": "chainID",
         "in": "query",
         "description": "Chain ID to query (can be expressed as an interval from:to)",
-        "type": "integer",
+        "type": "string",
         "format": "id",
         "minLength": 1
     },
@@ -34,6 +34,13 @@
         "name": "network",
         "in": "query",
         "description": "Network for which the application metadata is to be queried (can be expressed as CSV)",
+        "type": "string",
+        "minLength": 1
+    },
+    "chainName": {
+        "name": "chainName",
+        "in": "query",
+        "description": "Chain Name to query",
         "type": "string",
         "minLength": 1
     }

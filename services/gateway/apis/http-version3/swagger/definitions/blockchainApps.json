@@ -116,32 +116,24 @@
     "BlockchainAppMetaList": {
         "type": "object",
         "required": [
-            "name",
-            "networks"
+            "chainName",
+            "chainID",
+            "networkType"
         ],
         "properties": {
-            "name": {
+            "chainName": {
                 "type": "string",
                 "example": "Lisk",
                 "description": "Name of the blockchain application"
             },
-            "networks": {
-                "type": "array",
-                "items": {
-                    "type": "object",
-                    "properties": {
-                        "chainID": {
-                            "type": "integer",
-                            "minLength": 1,
-                            "example": 1,
-                            "description": "Chain ID of the blockchain application"
-                        },
-                        "network": {
-                            "type": "string",
-                            "example": "mainnet"
-                        }
-                    }
-                }
+            "chainID": {
+                "type": "string",
+                "example": "00000001",
+                "description": "Chain ID of the blockchain application"
+            },
+            "networkType": {
+                "type": "string",
+                "example": "mainnet"
             }
         }
     },
@@ -167,22 +159,25 @@
     "BlockchainAppMetadata": {
         "type": "object",
         "required": [
-            "name",
+            "chainName",
             "chainID",
-            "isDefault",
-            "network",
-            "apis"
+            "genesisURL",
+            "networkType",
+            "projectPage",
+            "logo",
+            "backgroundColor",
+            "serviceURLs",
+            "explorers"
         ],
         "properties": {
-            "name": {
+            "chainName": {
                 "type": "string",
                 "example": "Lisk",
-                "description": "Name of the blockchain application"
+                "description": "Chain name of the blockchain application"
             },
             "chainID": {
-                "type": "integer",
-                "minLength": 1,
-                "example": 1,
+                "type": "string",
+                "example": "00000001",
                 "description": "Chain ID of the blockchain application"
             },
             "title": {
@@ -193,7 +188,7 @@
                 "type": "string",
                 "example": "Lisk is a blockchain application platform"
             },
-            "network": {
+            "networkType": {
                 "type": "string",
                 "example": "mainnet"
             },
@@ -201,35 +196,28 @@
                 "type": "boolean",
                 "example": "true"
             },
-            "genesisBlock": {
+            "genesisURL": {
                 "type": "string",
                 "example": "https://downloads.lisk.com/lisk/mainnet/genesis_block.json.tar.gz"
             },
-            "homepage": {
+            "projectPage": {
                 "type": "string",
                 "example": "https://lisk.com"
             },
-            "apis": {
+            "serviceURLs": {
                 "type": "array",
                 "items": {
                     "type": "object",
                     "properties": {
-                        "rest": {
+                        "http": {
                             "type": "string",
                             "example": "https://service.lisk.com"
                         },
-                        "rpc": {
+                        "ws": {
                             "type": "string",
                             "example": "wss://service.lisk.com"
                         }
                     }
-                }
-            },
-            "explorers": {
-                "type": "array",
-                "items": {
-                    "type": "string",
-                    "example": "https://explorer.lisk.io"
                 }
             },
             "logo": {
@@ -245,9 +233,45 @@
                     }
                 }
             },
+            "appPage": {
+                "type": "string",
+                "example": "https://lisk.com"
+            },
             "backgroundColor": {
                 "type": "string",
                 "example": "#0981D1"
+            },
+            "explorers": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "example": "https://lisk.observer"
+                        },
+                        "txnPage": {
+                            "type": "string",
+                            "example": "/transactions"
+                        }
+                    }
+                }
+            },
+            "appNodes": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "example": "https://mainnet.lisk.com"
+                        },
+                        "maintainer": {
+                            "type": "string",
+                            "example": "Lightcurve GmbH"
+                        }
+                    }
+                }
             }
         }
     },
@@ -275,14 +299,14 @@
         "required": [
             "chainID",
             "chainName",
-            "assets"
+            "tokenID",
+            "tokenName",
+            "logo"
         ],
         "properties": {
             "chainID": {
-                "type": "integer",
-                "format": "id",
-                "minLength": 1,
-                "example": 1,
+                "type": "string",
+                "example": "00000001",
                 "description": "Chain ID of the blockchain application"
             },
             "chainName": {
@@ -290,49 +314,58 @@
                 "example": "Lisk",
                 "description": "Name of the blockchain application"
             },
-            "assets": {
+            "tokenID": {
+                "type": "string",
+                "example": "Lisk",
+                "description": "Token name of the blockchain application"
+            },
+            "tokenName": {
+                "type": "string",
+                "example": "00000000",
+                "description": "Token ID of the blockchain application"
+            },
+            "description": {
+                "type": "string",
+                "example": "LSK is the utility token of Lisk"
+            },
+            "denomUnits": {
                 "type": "array",
                 "items": {
                     "type": "object",
                     "properties": {
-                        "description": {
+                        "denom": {
                             "type": "string",
-                            "example": "LSK is the utility token of Lisk"
+                            "example": "lsk"
                         },
-                        "name": {
-                            "type": "string",
-                            "example": "Lisk",
-                            "description": "Name of the blockchain application token"
-                        },
-                        "symbol": {
-                            "type": "string",
-                            "example": "LSK"
-                        },
-                        "display": {
-                            "type": "string",
-                            "example": "LSK"
-                        },
-                        "base": {
-                            "type": "string",
-                            "example": "beddows"
-                        },
-                        "exponent": {
+                        "decimal": {
                             "type": "integer",
                             "example": 8
-                        },
-                        "logo": {
-                            "type": "object",
-                            "properties": {
-                                "png": {
-                                    "type": "string",
-                                    "example": "https://downloads.lisk.com/lisk/images/logo.png"
-                                },
-                                "svg": {
-                                    "type": "string",
-                                    "example": "https://downloads.lisk.com/lisk/images/logo.svg"
-                                }
-                            }
                         }
+                    }
+                }
+            },
+            "symbol": {
+                "type": "string",
+                "example": "LSK"
+            },
+            "displayDenom": {
+                "type": "string",
+                "example": "LSK"
+            },
+            "baseDenom": {
+                "type": "string",
+                "example": "beddows"
+            },
+            "logo": {
+                "type": "object",
+                "properties": {
+                    "png": {
+                        "type": "string",
+                        "example": "https://downloads.lisk.com/lisk/images/logo.png"
+                    },
+                    "svg": {
+                        "type": "string",
+                        "example": "https://downloads.lisk.com/lisk/images/logo.svg"
                     }
                 }
             }
