@@ -24,7 +24,14 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const { updateAddressBalanceQueue } = require('../../tokenIndex');
+const accountsIndexSchema = require('../../../database/schema/accounts');
 const transactionsIndexSchema = require('../../../database/schema/transactions');
+
+const getAccountsIndex = () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema.tableName,
@@ -38,6 +45,7 @@ const commandName = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
 const applyTransaction = async (blockHeader, tx, dbTrx) => {
+	const accountsDB = await getAccountsIndex();
 	const transactionsDB = await getTransactionsIndex();
 
 	tx.amount = tx.params.amount;
@@ -45,6 +53,15 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	tx.recipientAddress = tx.params.recipientAddress;
 
 	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
+
+	const account = {
+		address: tx.senderAddress,
+		publicKey: tx.senderPublicKey,
+	};
+
+	logger.trace(`Updating account index for the account with address ${account.address}`);
+	await accountsDB.upsert(account, dbTrx);
+	logger.debug(`Updated account index for the account with address ${account.address}`);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);
 	await transactionsDB.upsert(tx, dbTrx);
