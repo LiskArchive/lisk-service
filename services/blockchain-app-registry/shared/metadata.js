@@ -110,7 +110,7 @@ const getBlockchainAppsMetadata = async (params) => {
 		const { search, ...remParams } = params;
 		params = remParams;
 		params.search = {
-			property: 'name',
+			property: 'chainName',
 			pattern: search,
 		};
 	}
