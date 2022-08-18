@@ -114,6 +114,14 @@ const validateParams = async params => {
 		params.whereIn = { property: 'executionStatus', values: executionStatuses };
 	}
 
+	if (params.address) {
+		const { address, ...remParams } = params;
+		params = remParams;
+
+		params.senderAddress = address;
+		params.orWhere = { recipientAddress: address };
+	}
+
 	return params;
 };
 
