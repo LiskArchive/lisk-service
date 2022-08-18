@@ -18,6 +18,7 @@ module.exports = {
 	chainName: '=,string',
 	tokenID: '=,string',
 	tokenName: '=,string',
+	networkType: 'network,string',
 	description: '=,string',
 	logo: {
 		png: '=,string',

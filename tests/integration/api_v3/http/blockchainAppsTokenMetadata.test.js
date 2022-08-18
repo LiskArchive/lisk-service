@@ -125,18 +125,7 @@ xdescribe('Blockchain application tokens metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata for tokens by network', async () => {
-		const response = await api.get(`${endpoint}?network=mainnet`);
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
-		response.data.forEach(blockchainAppsTokenMetadata => {
-			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
-		});
-		expect(response.meta).toMap(metaSchema);
-	});
-
-	it('retrieves blockchain application off-chain metadata for tokens by network as CSV', async () => {
-		const response = await api.get(`${endpoint}?network=mainnet,testnet`);
+		const response = await api.get(`${endpoint}?network=testnet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);

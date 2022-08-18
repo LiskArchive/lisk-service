@@ -32,6 +32,7 @@ const blockchainAppsTokenMetadataSchema = {
 	chainID: Joi.string().required(),
 	tokenName: Joi.string().pattern(regex.NAME).required(),
 	tokenID: Joi.string().required(),
+	networkType: Joi.string().pattern(regex.NETWORK).required(),
 	description: Joi.string().optional(),
 	symbol: Joi.string().required(),
 	displayDenom: Joi.string().required(),

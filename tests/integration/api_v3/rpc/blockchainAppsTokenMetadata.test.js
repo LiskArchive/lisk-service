@@ -135,19 +135,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by network', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ network: 'mainnet' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
-		result.data.forEach(blockchainAppsTokenMetadata => {
-			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
-		});
-		expect(result.meta).toMap(metaSchema);
-	});
-
-	it('returns blockchain application off-chain metadata for tokens by network as CSV', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ network: 'mainnet,testnet' });
+		const response = await getBlockchainAppsTokenMetadata({ network: 'testnet' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
