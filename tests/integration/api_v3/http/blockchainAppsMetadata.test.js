@@ -30,7 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta`;
 
-// TODO: Enable test cases once off-chain data is available
+// TODO: Enable/update test cases once off-chain data is available
 xdescribe('Blockchain applications metadata API', () => {
 	it('retrieves blockchain applications off-chain metadata', async () => {
 		const response = await api.get(endpoint);
@@ -62,8 +62,8 @@ xdescribe('Blockchain applications metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain applications off-chain metadata with limit=5, offset=1 and sort=name:desc', async () => {
-		const response = await api.get(`${endpoint}?limit=5&offset=1&sort=name:desc`);
+	it('retrieves blockchain applications off-chain metadata with limit=5, offset=1 and sort=chainName:desc', async () => {
+		const response = await api.get(`${endpoint}?limit=5&offset=1&sort=chainName:desc`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -73,7 +73,7 @@ xdescribe('Blockchain applications metadata API', () => {
 	});
 
 	it('retrieves blockchain application off-chain metadata by chainID', async () => {
-		const response = await api.get(`${endpoint}?chainID=1`);
+		const response = await api.get(`${endpoint}?chainID=00000001`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
@@ -99,8 +99,8 @@ xdescribe('Blockchain applications metadata API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application off-chain metadata by name', async () => {
-		const response = await api.get(`${endpoint}?name=Lisk`);
+	it('retrieves blockchain application off-chain metadata by chainName', async () => {
+		const response = await api.get(`${endpoint}?chainName=Lisk`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);

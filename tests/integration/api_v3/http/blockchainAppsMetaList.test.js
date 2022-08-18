@@ -30,7 +30,7 @@ const baseUrl = config.SERVICE_ENDPOINT;
 const baseUrlV3 = `${baseUrl}/api/v3`;
 const endpoint = `${baseUrlV3}/blockchain/apps/meta/list`;
 
-// TODO: Enable test cases once off-chain data is available
+// TODO: Enable/update test cases once off-chain data is available
 xdescribe('Blockchain application meta list API', () => {
 	it('retrieves list', async () => {
 		const response = await api.get(endpoint);
@@ -62,8 +62,8 @@ xdescribe('Blockchain application meta list API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves list with limit=10, offset=1 and sort=name:desc', async () => {
-		const response = await api.get(`${endpoint}?limit=10&offset=1&sort=name:desc`);
+	it('retrieves list with limit=10, offset=1 and sort=chainName:desc', async () => {
+		const response = await api.get(`${endpoint}?limit=10&offset=1&sort=chainName:desc`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);
@@ -72,8 +72,26 @@ xdescribe('Blockchain application meta list API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('retrieves blockchain application meta list by name', async () => {
-		const response = await api.get(`${endpoint}?name=Lisk`);
+	it('retrieves blockchain application meta list by chainName', async () => {
+		const response = await api.get(`${endpoint}?chainName=Lisk`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(1);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application meta list by network', async () => {
+		const response = await api.get(`${endpoint}?network=mainnet`);
+		expect(response).toMap(goodRequestSchema);
+		expect(response.data).toBeInstanceOf(Array);
+		expect(response.data.length).toEqual(1);
+		response.data.map(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('retrieves blockchain application meta list by network as CSV', async () => {
+		const response = await api.get(`${endpoint}?network=mainnet,testnet`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
