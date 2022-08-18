@@ -25,6 +25,7 @@ module.exports = {
 		blockID: { type: 'string', null: false },
 		timestamp: { type: 'integer', null: false },
 		senderAddress: { type: 'string', null: false },
+		recipientAddress: { type: 'string', null: false },
 		size: { type: 'integer', null: false },
 		fee: { type: 'bigInteger', null: false },
 		minFee: { type: 'bigInteger', null: false },
