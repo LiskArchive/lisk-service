@@ -22,6 +22,7 @@ const {
 	Signals,
 } = require('lisk-service-framework');
 
+const { resolveChainNameByFilePath } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
 const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
 
@@ -129,6 +130,38 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	}
 };
 
+const buildEventPayload = async (filesChanged) => {
+	const mainnetFilesUpdated = filesChanged.filter(file => file.startsWith('mainnet'));
+	const testnetFilesUpdated = filesChanged.filter(file => file.startsWith('testnet'));
+	const betanetFilesUpdated = filesChanged.filter(file => file.startsWith('betanet'));
+
+	const mainnetAppsUpdated = await BluebirdPromise.map(
+		mainnetFilesUpdated,
+		async filePath => resolveChainNameByFilePath(filePath),
+		{ concurrency: mainnetFilesUpdated.length },
+	);
+
+	const testnetAppsUpdated = await BluebirdPromise.map(
+		testnetFilesUpdated,
+		async filePath => resolveChainNameByFilePath(filePath),
+		{ concurrency: testnetFilesUpdated.length },
+	);
+
+	const betanetAppsUpdated = await BluebirdPromise.map(
+		betanetFilesUpdated,
+		async filePath => resolveChainNameByFilePath(filePath),
+		{ concurrency: betanetFilesUpdated.length },
+	);
+
+	const eventPayload = {
+		mainnet: [...new Set(mainnetAppsUpdated)],
+		testnet: [...new Set(testnetAppsUpdated)],
+		betanet: [...new Set(betanetAppsUpdated)],
+	};
+
+	return eventPayload;
+};
+
 const syncWithRemoteRepo = async () => {
 	try {
 		const dataDirectory = './data';
@@ -162,8 +195,8 @@ const syncWithRemoteRepo = async () => {
 
 			await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 			if (filesChanged.length) {
-				const appsUpdated = filesChanged.map(file => file.split('/')[0]);
-				Signals.get('metadataUpdated').dispatch([...new Set(appsUpdated)]);
+				const eventPayload = await buildEventPayload(filesChanged);
+				Signals.get('metadataUpdated').dispatch(eventPayload);
 			}
 		}
 	} catch (error) {

@@ -16,11 +16,22 @@
 const {
 	HTTP,
 	Logger,
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const { requestIndexer } = require('./request');
 
 const config = require('../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
+const applicationsIndexSchema = require('../database/schema/applications');
+
+const getApplicationsIndex = () => getTableInstance(
+	applicationsIndexSchema.tableName,
+	applicationsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const logger = Logger();
 
@@ -37,6 +48,14 @@ const getChainIDByName = async (name, network) => {
 	}
 };
 
+const resolveChainNameByFilePath = async (filePath) => {
+	const applicationsDB = await getApplicationsIndex();
+	const [network, appDirName] = filePath.split('/');
+	const [{ chainName }] = await applicationsDB.find({ network, appDirName }, ['chainName']);
+	return chainName;
+};
+
 module.exports = {
 	getChainIDByName,
+	resolveChainNameByFilePath,
 };
