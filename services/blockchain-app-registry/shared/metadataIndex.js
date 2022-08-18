@@ -49,12 +49,9 @@ const getTokensIndex = () => getTableInstance(
 
 const logger = Logger();
 
-const [repo] = config.gitHub.appRegistryRepo.split('/').slice(-1);
+const repo = config.gitHub.repoName;
 
-const FILENAME = Object.freeze({
-	APP_JSON: 'app.json',
-	NATIVETOKENS_JSON: 'nativetokens.json',
-});
+const { FILENAME } = config;
 
 const KNOWN_CONFIG_FILES = Object.freeze(Object.values(FILENAME));
 
@@ -100,7 +97,7 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 
 	const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${network}/${app}`;
 	logger.trace('Reading chain information');
-	const chainMetaString = await read(`${appPathInClonedRepo}/app.json`);
+	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
 	const chainMeta = { ...JSON.parse(chainMetaString), appDirName: app };
 
 	if (filename === FILENAME.APP_JSON || filename === null) {
@@ -111,7 +108,7 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 
 	if (filename === FILENAME.NATIVETOKENS_JSON || filename === null) {
 		logger.trace('Reading tokens information');
-		const tokenMetaString = await read(`${appPathInClonedRepo}/nativetokens.json`);
+		const tokenMetaString = await read(`${appPathInClonedRepo}/${FILENAME.NATIVETOKENS_JSON}`);
 		const tokenMeta = {
 			...JSON.parse(tokenMetaString),
 			chainName: chainMeta.chainName,

@@ -38,6 +38,10 @@ const getTokensIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
+const repo = config.gitHub.repoName;
+
+const dataDir = `${process.cwd()}/data`;
+
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationsDB = await getApplicationsIndex();
 
@@ -129,9 +133,8 @@ const getBlockchainAppsMetadata = async (params) => {
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
 		blockchainAppsMetadata.data,
 		async (appMetadata) => {
-			const [repo] = config.gitHub.appRegistryRepo.split('/').slice(-1);
-			const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
-			const chainMetaString = await read(`${appPathInClonedRepo}/app.json`);
+			const appPathInClonedRepo = `${dataDir}/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
+			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
 			const chainMeta = JSON.parse(chainMetaString);
 			return chainMeta;
 		},
@@ -176,28 +179,24 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
-	const response = await tokensDB.find(
-		params,
-		['network', 'chainID'],
-	);
+	const tokensResultSet = await tokensDB.find(params, ['network', 'chainID']);
 
 	blockchainAppsTokenMetadata.data = await BluebirdPromise.map(
-		response,
+		tokensResultSet,
 		async (tokenMeta) => {
-			const [repo] = config.gitHub.appRegistryRepo.split('/').slice(-1);
 			const [{ appDirName }] = await applicationsDB.find(
 				{ network: tokenMeta.network, chainID: 1 },
 				['appDirName'],
 			);
-			const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${tokenMeta.network}/${appDirName}`;
-			const tokenMetaString = await read(`${appPathInClonedRepo}/nativetokens.json`);
+			const appPathInClonedRepo = `${dataDir}/${repo}/${tokenMeta.network}/${appDirName}`;
+			const tokenMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.NATIVETOKENS_JSON}`);
 			const parsedTokenMeta = JSON.parse(tokenMetaString);
 			return parsedTokenMeta;
 		},
-		{ concurrency: response.length },
+		{ concurrency: tokensResultSet.length },
 	);
 
-	const total = 10;
+	const total = await applicationsDB.count(params);
 
 	blockchainAppsTokenMetadata.meta = {
 		count: blockchainAppsTokenMetadata.data.length,
