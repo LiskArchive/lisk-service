@@ -16,14 +16,10 @@
 import Joi from 'joi';
 import regex from './regex';
 
-const networks = {
-	chainID: Joi.number().integer().min(1).required(),
-	network: Joi.string().required(),
-};
-
 const blockchainAppMetaListSchema = {
-	name: Joi.string().pattern(regex.NAME).required(),
-	networks: Joi.array().items(networks).required(),
+	chainName: Joi.string().pattern(regex.NAME).required(),
+	chainID: Joi.string().required(),
+	network: Joi.string().required(),
 };
 
 module.exports = {
