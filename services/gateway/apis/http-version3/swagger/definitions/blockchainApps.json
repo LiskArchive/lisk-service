@@ -324,6 +324,10 @@
                 "example": "00000000",
                 "description": "Token ID of the blockchain application"
             },
+            "networkType": {
+                "type": "string",
+                "example": "mainnet"
+            },
             "description": {
                 "type": "string",
                 "example": "LSK is the utility token of Lisk"
