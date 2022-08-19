@@ -54,12 +54,9 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 
 	await updateAddressBalanceQueue.add({ address: tx.recipientAddress });
 
-	const account = {
-		address: tx.recipientAddress,
-	};
-
+	const account = { address: tx.recipientAddress };
 	logger.trace(`Updating account index for the account with address ${account.address}`);
-	await accountsDB.upsert(account);
+	await accountsDB.upsert(account, dbTrx);
 	logger.debug(`Updated account index for the account with address ${account.address}`);
 
 	logger.trace(`Indexing transaction ${tx.id} contained in block at height ${tx.height}`);

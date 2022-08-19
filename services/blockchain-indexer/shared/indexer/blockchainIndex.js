@@ -145,14 +145,9 @@ const indexBlock = async job => {
 
 					await updateAddressBalanceQueue.add({ address: tx.senderAddress });
 
-					const account = {
-						address: tx.senderAddress,
-						publicKey: tx.senderPublicKey,
-					};
-
-					logger.trace(`Updating account index for the account with address ${account.address}`);
-					await accountsDB.upsert(account);
-					logger.debug(`Updated account index for the account with address ${account.address}`);
+					// Store address -> publicKey mapping
+					const account = { address: tx.senderAddress, publicKey: tx.senderPublicKey };
+					accountsDB.upsert(account);
 
 					await transactionsDB.upsert(tx, dbTrx);
 
