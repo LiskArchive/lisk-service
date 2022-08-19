@@ -29,14 +29,25 @@ const dataService = require('../../../shared/dataService');
 
 const getTransactions = async (params) => {
 	try {
-		if (params.senderAddress) {
-			const address = await confirmAddress(params.senderAddress);
-			if (!address) {
-				return {
-					status: NOT_FOUND,
-					data: { error: `Address ${params.senderAddress} not found.` },
-				};
-			}
+		const addressParam = [
+			'senderAddress',
+			'recipientAddress',
+			'address',
+		].filter((item) => typeof params[item] === 'string');
+
+		const addressLookupResult = await Promise.all(
+			addressParam.map(async (param) => {
+				const paramVal = params[param];
+				const address = await confirmAddress(paramVal);
+				return address;
+			}),
+		);
+
+		if (addressLookupResult.includes(false)) {
+			return {
+				status: NOT_FOUND,
+				data: { error: `Account ${params[addressParam[0]]} not found.` },
+			};
 		}
 
 		const result = await dataService.getTransactions({
