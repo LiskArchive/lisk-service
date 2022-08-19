@@ -79,7 +79,7 @@ const getBlockchainAppsMetaList = async (params) => {
 		.slice(params.offset, params.offset + params.limit);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(chainName) as count from applications');
+	const [{ total }] = await applicationsDB.rawQuery('SELECT COUNT(chainName) as total from applications');
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,
@@ -143,7 +143,7 @@ const getBlockchainAppsMetadata = async (params) => {
 	);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(chainName) as count from applications');
+	const [{ total }] = await applicationsDB.rawQuery('SELECT COUNT(chainName) as total from applications');
 
 	blockchainAppsMetadata.meta = {
 		count: blockchainAppsMetadata.data.length,
@@ -199,7 +199,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	);
 
 	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
-	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(tokenName) as count from tokens');
+	const [{ total }] = await applicationsDB.rawQuery('SELECT COUNT(tokenName) as total from tokens');
 
 	blockchainAppsTokenMetadata.meta = {
 		count: blockchainAppsTokenMetadata.data.length,

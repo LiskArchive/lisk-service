@@ -27,5 +27,9 @@ module.exports = {
 	symbol: '=,string',
 	displayDenom: '=,string',
 	baseDenom: '=,string',
-	denomUnits: '=',
+	denomUnits: ['denomUnits', {
+		denom: '=,string',
+		decimal: '=,number',
+		aliases: '=',
+	}],
 };

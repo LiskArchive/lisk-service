@@ -31,7 +31,13 @@ module.exports = {
 		png: '=,string',
 		svg: '=,string',
 	},
-	explorers: '=',
-	appNodes: '=',
+	explorers: ['explorers', {
+		url: '=,string',
+		txnPage: '=,string',
+	}],
+	appNodes: ['appNodes', {
+		url: '=,string',
+		maintainer: '=,string',
+	}],
 	backgroundColor: '=,string',
 };
