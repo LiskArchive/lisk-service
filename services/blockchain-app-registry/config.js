@@ -60,7 +60,7 @@ config.gitHub = {
 	accessToken: process.env.GITHUB_ACCESS_TOKEN,
 	appRegistryRepo: process.env.GITHUB_APP_REGISTRY_REPO || 'https://github.com/LiskHQ/app-registry',
 	branch: process.env.GITHUB_APP_REGISTRY_REPO_BRANCH || 'main',
-	get repoName() { return this.appRegistryRepo.split('/').pop(); },
+	get appRegistryRepoName() { return this.appRegistryRepo.split('/').pop(); },
 };
 
 config.serviceURL = {

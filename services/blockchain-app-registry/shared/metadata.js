@@ -38,7 +38,7 @@ const getTokensIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const repo = config.gitHub.repoName;
+const repo = config.gitHub.appRegistryRepoName;
 
 const dataDir = `${process.cwd()}/data`;
 

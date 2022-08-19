@@ -51,8 +51,9 @@ const getChainIDByName = async (name, network) => {
 const resolveChainNameByFilePath = async (filePath) => {
 	const applicationsDB = await getApplicationsIndex();
 	const [network, appDirName] = filePath.split('/');
-	const [{ chainName }] = await applicationsDB.find({ network, appDirName }, ['chainName']);
-	return chainName;
+	const EMPTY_STRING = '';
+	const [{ chainName = EMPTY_STRING } = {}] = await applicationsDB.find({ network, appDirName }, ['chainName']);
+	return chainName.filter(n => n !== EMPTY_STRING);
 };
 
 module.exports = {

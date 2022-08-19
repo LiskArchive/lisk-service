@@ -49,7 +49,7 @@ const getTokensIndex = () => getTableInstance(
 
 const logger = Logger();
 
-const repo = config.gitHub.repoName;
+const repo = config.gitHub.appRegistryRepoName;
 
 const { FILENAME } = config;
 
