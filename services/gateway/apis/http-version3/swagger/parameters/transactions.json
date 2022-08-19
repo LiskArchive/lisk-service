@@ -20,7 +20,7 @@
         "in": "query",
         "description": "Lisk account address",
         "type": "string",
-        "minLength": 1,
+        "minLength": 3,
         "maxLength": 41
     }
 }

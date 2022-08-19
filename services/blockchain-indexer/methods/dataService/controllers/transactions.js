@@ -43,11 +43,10 @@ const getTransactions = async (params) => {
 			}),
 		);
 
+		const NOT_FOUND_RESPONSE = { status: NOT_FOUND, data: { error: 'Not found.' } };
+
 		if (addressLookupResult.includes(false)) {
-			return {
-				status: NOT_FOUND,
-				data: { error: `Account ${params[addressParam[0]]} not found.` },
-			};
+			return NOT_FOUND_RESPONSE;
 		}
 
 		const result = await dataService.getTransactions({
@@ -56,7 +55,7 @@ const getTransactions = async (params) => {
 		});
 
 		if (isEmptyObject(result) || isEmptyArray(result.data)) {
-			return { status: NOT_FOUND, data: { error: 'Not found.' } };
+			return NOT_FOUND_RESPONSE;
 		}
 
 		const meta = {

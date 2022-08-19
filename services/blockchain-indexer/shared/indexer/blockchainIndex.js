@@ -54,6 +54,7 @@ const {
 
 const config = require('../../config');
 
+const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
 // const eventsIndexSchema = require('../database/schema/events');
 // const eventTopicsIndexSchema = require('../database/schema/eventTopics');
@@ -62,6 +63,12 @@ const transactionsIndexSchema = require('../database/schema/transactions');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const logger = Logger();
+
+const getAccountsIndex = () => getTableInstance(
+	accountsIndexSchema.tableName,
+	accountsIndexSchema,
+	MYSQL_ENDPOINT,
+);
 
 const getBlocksIndex = () => getTableInstance(
 	blocksIndexSchema.tableName,
@@ -122,6 +129,7 @@ const indexBlock = async job => {
 			const availableModuleCommands = await getAvailableModuleCommands();
 			const { transactions, assets, ...blockHeader } = block;
 
+			const accountsDB = await getAccountsIndex();
 			const transactionsDB = await getTransactionsIndex();
 			await BluebirdPromise.map(
 				block.transactions,
@@ -136,6 +144,15 @@ const indexBlock = async job => {
 					tx.timestamp = block.timestamp;
 
 					await updateAddressBalanceQueue.add({ address: tx.senderAddress });
+
+					const account = {
+						address: tx.senderAddress,
+						publicKey: tx.senderPublicKey,
+					};
+
+					logger.trace(`Updating account index for the account with address ${account.address}`);
+					await accountsDB.upsert(account);
+					logger.debug(`Updated account index for the account with address ${account.address}`);
 
 					await transactionsDB.upsert(tx, dbTrx);
 
