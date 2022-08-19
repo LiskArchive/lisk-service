@@ -266,6 +266,77 @@ xdescribe('Transactions API', () => {
 		});
 	});
 
+	describe('Retrieve transaction list by recipientAddress', () => {
+		it('known address -> ok', async () => {
+			const response = await api.get(`${endpoint}?recipientAddress=${refTransaction.params.recipientAddress}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				expect(transaction.params.recipientAddress).toEqual(refTransaction.params.recipientAddress);
+				if (i > 0) {
+					const prevTx = response.data[i];
+					const prevTxTimestamp = prevTx.block.timestamp;
+					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('empty recipientAddress -> ok', async () => {
+			const response = await api.get(`${endpoint}?recipientAddress=`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			expect(response.data.length).toBeLessThanOrEqual(10);
+			response.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (i > 0) {
+					const prevTx = response.data[i];
+					const prevTxTimestamp = prevTx.block.timestamp;
+					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid recipientAddress -> 400', async () => {
+			const response = await api.get(`${endpoint}?recipientAddress=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+	});
+
+	describe('Retrieve transaction list by address', () => {
+		it('known address -> ok', async () => {
+			const response = await api.get(`${endpoint}?address=${refTransaction.sender.address}`);
+			expect(response).toMap(goodRequestSchema);
+			expect(response.data).toBeInstanceOf(Array);
+			expect(response.data.length).toBeGreaterThanOrEqual(1);
+			response.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (transaction.params.recipientAddress) {
+					expect([transaction.sender.address, transaction.params.recipientAddress])
+						.toContain(refTransaction.sender.address);
+				} else {
+					expect(transaction.sender.address).toMatch(refTransaction.sender.address);
+				}
+				if (i > 0) {
+					const prevTx = response.data[i];
+					const prevTxTimestamp = prevTx.block.timestamp;
+					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
+				}
+			});
+			expect(response.meta).toMap(metaSchema);
+		});
+
+		it('invalid address -> 400', async () => {
+			const response = await api.get(`${endpoint}?address=lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj`, 400);
+			expect(response).toMap(badRequestSchema);
+		});
+	});
+
 	describe('Retrieve transaction list within timestamps', () => {
 		it('transactions within set timestamps are returned', async () => {
 			const from = moment(refTransaction.block.timestamp * 10 ** 3).subtract(1, 'day').unix();
