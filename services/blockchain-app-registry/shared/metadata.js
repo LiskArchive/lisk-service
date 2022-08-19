@@ -187,7 +187,7 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		tokensResultSet,
 		async (tokenMeta) => {
 			const [{ appDirName }] = await applicationsDB.find(
-				{ network: tokenMeta.network, chainID: 1 },
+				{ network: tokenMeta.network, chainID: tokenMeta.chainID },
 				['appDirName'],
 			);
 			const appPathInClonedRepo = `${dataDir}/${repo}/${tokenMeta.network}/${appDirName}`;
