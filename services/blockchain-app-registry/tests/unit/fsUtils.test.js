@@ -49,7 +49,7 @@ describe('Test filesystem util methods', () => {
 	});
 
 	it('write() method', async () => {
-		// expect(exists(filePath)).resolves.toBe(false);
+		expect(exists(filePath)).resolves.toBe(false);
 
 		// Write data into the file
 		await write(filePath, JSON.stringify(testData));
