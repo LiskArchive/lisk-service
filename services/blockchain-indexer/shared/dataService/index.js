@@ -35,6 +35,9 @@ const {
 	normalizeTransaction,
 	getVotesByTransactionIDs,
 	getEventsByHeight,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountByName,
 } = require('./business');
 
 const {
@@ -162,4 +165,7 @@ module.exports = {
 	getEventsByHeight,
 	getAuthAccountInfo,
 	getValidator,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountByName,
 };

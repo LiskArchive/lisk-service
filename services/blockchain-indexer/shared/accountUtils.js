@@ -31,7 +31,7 @@ const validatePublicKey = publicKey => (typeof publicKey === 'string' && publicK
 const confirmAddress = async address => {
 	if (!address || typeof address !== 'string') return false;
 	const account = await dataService.getCachedAccountByAddress(parseAddress(address));
-	return account && account.address.toUpperCase() === address;
+	return !!(account && account.address);
 };
 
 const confirmName = async name => {
@@ -114,6 +114,7 @@ const getPublicKeyByAny = async param => {
 
 module.exports = {
 	parseAddress,
+	confirmAddress,
 	validateAddress,
 	validatePublicKey,
 	confirmAnyId,

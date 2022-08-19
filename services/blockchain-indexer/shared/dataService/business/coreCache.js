@@ -25,19 +25,19 @@ const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema,
 
 const getCachedAccountBy = async (key, value) => {
 	const accountsDB = await getAccountsIndex();
-	const [result] = await accountsDB.find({ [key]: value, limit: 1 }, ['address', 'username', 'publicKey']);
+	const [result] = await accountsDB.find({ [key]: value, limit: 1 }, ['address', 'name', 'publicKey']);
 	if (!result) return null;
-	const { address, username, publicKey } = result;
-	const account = { address, username, publicKey };
+	const { address, name, publicKey } = result;
+	const account = { address, name, publicKey };
 	return account;
 };
 
 const getCachedAccountByAddress = getCachedAccountBy.bind(null, 'address');
 const getCachedAccountByPublicKey = getCachedAccountBy.bind(null, 'publicKey');
-const getCachedAccountByUsername = getCachedAccountBy.bind(null, 'username');
+const getCachedAccountByName = getCachedAccountBy.bind(null, 'name');
 
 module.exports = {
 	getCachedAccountByAddress,
 	getCachedAccountByPublicKey,
-	getCachedAccountByUsername,
+	getCachedAccountByName,
 };

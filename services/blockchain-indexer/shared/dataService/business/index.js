@@ -34,6 +34,12 @@ const {
 } = require('./legacy');
 
 const {
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountByName,
+} = require('./coreCache');
+
+const {
 	getDelegates,
 	getAllDelegates,
 	isDposModuleRegistered,
@@ -117,4 +123,7 @@ module.exports = {
 	getEvents,
 	getEventsByHeight,
 	getLegacyAccountInfo,
+	getCachedAccountByAddress,
+	getCachedAccountByPublicKey,
+	getCachedAccountByName,
 };

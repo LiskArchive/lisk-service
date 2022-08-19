@@ -23,15 +23,14 @@ const {
 	Utils: { isEmptyArray, isEmptyObject },
 } = require('lisk-service-framework');
 
-const { getAddressByAny } = require('../../../shared/accountUtils');
+const { confirmAddress } = require('../../../shared/accountUtils');
 
 const dataService = require('../../../shared/dataService');
 
 const getTransactions = async (params) => {
 	try {
 		if (params.senderAddress) {
-			// TODO: Check if this section can be removed
-			const address = await getAddressByAny(params.senderAddress);
+			const address = await confirmAddress(params.senderAddress);
 			if (!address) {
 				return {
 					status: NOT_FOUND,
