@@ -48,7 +48,7 @@ describe('Test filesystem util methods', () => {
 		expect(exists(dirPath)).resolves.toBe(true);
 	});
 
-	xit('write() method', async () => {
+	it('write() method', async () => {
 		expect(exists(filePath)).resolves.toBe(false);
 
 		// Write data into the file
