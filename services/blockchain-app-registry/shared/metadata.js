@@ -38,10 +38,6 @@ const getTokensIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const repo = config.gitHub.appRegistryRepoName;
-
-const dataDir = `${process.cwd()}/data`;
-
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationsDB = await getApplicationsIndex();
 
@@ -91,6 +87,8 @@ const getBlockchainAppsMetaList = async (params) => {
 };
 
 const getBlockchainAppsMetadata = async (params) => {
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
 	const applicationsDB = await getApplicationsIndex();
 
 	const blockchainAppsMetadata = {
@@ -155,6 +153,8 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
 	const applicationsDB = await getApplicationsIndex();
 	const tokensDB = await getTokensIndex();
 

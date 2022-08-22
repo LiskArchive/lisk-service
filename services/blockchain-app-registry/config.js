@@ -63,6 +63,8 @@ config.gitHub = {
 	get appRegistryRepoName() { return this.appRegistryRepo.split('/').pop(); },
 };
 
+config.dataDir = `${process.cwd()}/data`;
+
 config.serviceURL = {
 	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
 	testnet: process.env.SERVICE_URL_TESTNET || 'https://testnet-service.lisk.com',

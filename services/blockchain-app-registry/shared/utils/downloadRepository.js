@@ -164,7 +164,7 @@ const buildEventPayload = async (filesChanged) => {
 
 const syncWithRemoteRepo = async () => {
 	try {
-		const dataDirectory = './data';
+		const dataDirectory = config.dataDir;
 		const appDirPath = path.join(dataDirectory, repo);
 
 		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
@@ -208,7 +208,7 @@ const syncWithRemoteRepo = async () => {
 };
 
 const downloadRepositoryToFS = async () => {
-	const dataDirectory = './data';
+	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
 
 	if (await exists(appDirPath)) {

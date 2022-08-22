@@ -49,8 +49,6 @@ const getTokensIndex = () => getTableInstance(
 
 const logger = Logger();
 
-const repo = config.gitHub.appRegistryRepoName;
-
 const { FILENAME } = config;
 
 const KNOWN_CONFIG_FILES = Object.freeze(Object.values(FILENAME));
@@ -91,11 +89,13 @@ const indexChainMeta = async (chainMeta, dbTrx) => {
 };
 
 const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
 	logger.debug(`Indexing metadata information for the app: ${app} (${network})`);
 
 	if (!network || !app) throw Error('Require both \'network\' and \'app\'.');
 
-	const appPathInClonedRepo = `${process.cwd()}/data/${repo}/${network}/${app}`;
+	const appPathInClonedRepo = `${dataDir}/${repo}/${network}/${app}`;
 	logger.trace('Reading chain information');
 	const chainMetaString = await read(`${appPathInClonedRepo}/${FILENAME.APP_JSON}`);
 	const chainMeta = { ...JSON.parse(chainMetaString), appDirName: app };
@@ -124,7 +124,8 @@ const indexMetadataFromFile = async (network, app, filename = null, dbTrx) => {
 };
 
 const indexAllBlockchainAppsMeta = async () => {
-	const dataDirectory = './data';
+	const dataDirectory = config.dataDir;
+	const repo = config.gitHub.appRegistryRepoName;
 	const repoPath = path.join(dataDirectory, repo);
 	const { supportedNetworks } = config;
 
