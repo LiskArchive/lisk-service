@@ -32,7 +32,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsTokenMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.tokens', params);
 
-// TODO: Enable test cases once off-chain data is available
+// TODO: Enable/update test cases once off-chain data is available
 xdescribe('get.blockchain.apps.meta.tokens', () => {
 	it('returns blockchain applications off-chain metadata for tokens', async () => {
 		const response = await getBlockchainAppsTokenMetadata();
@@ -73,8 +73,8 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata for tokens with limit=5, offset=1 and sort=name:desc', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ limit: 5, offset: 1, sort: 'name:desc' });
+	it('returns blockchain applications off-chain metadata for tokens with limit=5, offset=1 and sort=chainName:desc', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ limit: 5, offset: 1, sort: 'chainName:desc' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -87,7 +87,7 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 	});
 
 	it('returns blockchain application off-chain metadata for tokens by chainID', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ chainID: 1 });
+		const response = await getBlockchainAppsTokenMetadata({ chainID: '00000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -98,8 +98,44 @@ xdescribe('get.blockchain.apps.meta.tokens', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain application off-chain metadata for tokens by name', async () => {
-		const response = await getBlockchainAppsTokenMetadata({ name: 'Lisk' });
+	it('returns blockchain application off-chain metadata for tokens by chainName', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ chainName: 'Lisk' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain application off-chain metadata for tokens by tokenID', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenID: '00000000' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain application off-chain metadata for tokens by tokenName', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ tokenName: 'Lisk' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainAppsTokenMetadata => {
+			expect(blockchainAppsTokenMetadata).toMap(blockchainAppsTokenMetadataSchema);
+		});
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain application off-chain metadata for tokens by network', async () => {
+		const response = await getBlockchainAppsTokenMetadata({ network: 'testnet' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

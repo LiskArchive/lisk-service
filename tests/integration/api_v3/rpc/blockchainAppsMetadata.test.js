@@ -32,7 +32,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainAppsMetadata = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta', params);
 
-// TODO: Enable test cases once off-chain data is available
+// TODO: Enable/update test cases once off-chain data is available
 xdescribe('get.blockchain.apps.meta', () => {
 	it('returns blockchain applications off-chain metadata', async () => {
 		const response = await getBlockchainAppsMetadata();
@@ -67,8 +67,8 @@ xdescribe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications off-chain metadata with limit=5, offset=1 and sort=name:desc', async () => {
-		const response = await getBlockchainAppsMetadata({ limit: 5, offset: 1, sort: 'name:desc' });
+	it('returns blockchain applications off-chain metadata with limit=5, offset=1 and sort=chainName:desc', async () => {
+		const response = await getBlockchainAppsMetadata({ limit: 5, offset: 1, sort: 'chainName:desc' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -79,7 +79,7 @@ xdescribe('get.blockchain.apps.meta', () => {
 	});
 
 	it('returns blockchain application off-chain metadata by chainID', async () => {
-		const response = await getBlockchainAppsMetadata({ chainID: 1 });
+		const response = await getBlockchainAppsMetadata({ chainID: '00000001' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -88,8 +88,8 @@ xdescribe('get.blockchain.apps.meta', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain application off-chain metadata by name', async () => {
-		const response = await getBlockchainAppsMetadata({ name: 'Lisk' });
+	it('returns blockchain application off-chain metadata by chainName', async () => {
+		const response = await getBlockchainAppsMetadata({ chainName: 'Lisk' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

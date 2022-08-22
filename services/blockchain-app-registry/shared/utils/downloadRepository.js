@@ -22,6 +22,7 @@ const {
 	Signals,
 } = require('lisk-service-framework');
 
+const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
 const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
 
@@ -29,6 +30,8 @@ const keyValueDB = require('../database/mysqlKVStore');
 const { indexMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
+
+const { FILENAME } = config;
 
 const logger = Logger();
 
@@ -129,9 +132,65 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	}
 };
 
+const filterMetaConfigFilesByNetwork = async (network, filesChanged) => {
+	const filesUpdated = filesChanged.filter(
+		file => file.startsWith(network)
+			&& (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)),
+	);
+	return filesUpdated;
+};
+
+const getUniqueNetworkAppDirPairs = async (files) => {
+	const updatedAppDirs = files.map(file => {
+		const [network, appDirName] = file.split('/');
+		const updatedAppDir = `${network}/${appDirName}`;
+		return updatedAppDir;
+	});
+
+	const uniqueAppDirs = [...new Set(updatedAppDirs)];
+	const updatedNetworkAppDirs = uniqueAppDirs.map(dirPath => {
+		const [network, appDirName] = dirPath.split('/');
+		return { network, appDirName };
+	});
+
+	return updatedNetworkAppDirs;
+};
+
+const buildEventPayload = async (filesChanged) => {
+	const mainnetFilesUpdated = await filterMetaConfigFilesByNetwork('mainnet', filesChanged);
+	const testnetFilesUpdated = await filterMetaConfigFilesByNetwork('testnet', filesChanged);
+	const betanetFilesUpdated = await filterMetaConfigFilesByNetwork('betanet', filesChanged);
+
+	const mainnetAppsUpdated = await BluebirdPromise.map(
+		await getUniqueNetworkAppDirPairs(mainnetFilesUpdated),
+		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
+		{ concurrency: mainnetFilesUpdated.length },
+	);
+
+	const testnetAppsUpdated = await BluebirdPromise.map(
+		await getUniqueNetworkAppDirPairs(testnetFilesUpdated),
+		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
+		{ concurrency: testnetFilesUpdated.length },
+	);
+
+	const betanetAppsUpdated = await BluebirdPromise.map(
+		await getUniqueNetworkAppDirPairs(betanetFilesUpdated),
+		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
+		{ concurrency: betanetFilesUpdated.length },
+	);
+
+	const eventPayload = {
+		mainnet: mainnetAppsUpdated,
+		testnet: testnetAppsUpdated,
+		betanet: betanetAppsUpdated,
+	};
+
+	return eventPayload;
+};
+
 const syncWithRemoteRepo = async () => {
 	try {
-		const dataDirectory = './data';
+		const dataDirectory = config.dataDir;
 		const appDirPath = path.join(dataDirectory, repo);
 
 		const { lastSyncedCommitHash, latestCommitHash } = await getCommitInfo();
@@ -151,7 +210,7 @@ const syncWithRemoteRepo = async () => {
 					await downloadFile(result.data.download_url, filePath);
 					logger.debug(`Successfully downloaded: ${file}`);
 
-					if (file.endsWith('.json')) {
+					if (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)) {
 						const [network, appName, filename] = file.split('/').slice(-3);
 						await indexMetadataFromFile(network, appName, filename);
 						logger.debug('Successfully updated the database with the latest changes');
@@ -162,8 +221,8 @@ const syncWithRemoteRepo = async () => {
 
 			await keyValueDB.set(COMMIT_HASH_UNTIL_LAST_SYNC, latestCommitHash);
 			if (filesChanged.length) {
-				const appsUpdated = filesChanged.map(file => file.split('/')[0]);
-				Signals.get('metadataUpdated').dispatch([...new Set(appsUpdated)]);
+				const eventPayload = await buildEventPayload(filesChanged);
+				Signals.get('metadataUpdated').dispatch(eventPayload);
 			}
 		}
 	} catch (error) {
@@ -175,7 +234,7 @@ const syncWithRemoteRepo = async () => {
 };
 
 const downloadRepositoryToFS = async () => {
-	const dataDirectory = './data';
+	const dataDirectory = config.dataDir;
 	const appDirPath = path.join(dataDirectory, repo);
 
 	if (await exists(appDirPath)) {

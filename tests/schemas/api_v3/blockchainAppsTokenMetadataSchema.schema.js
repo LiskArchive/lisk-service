@@ -21,20 +21,24 @@ const logo = {
 	svg: Joi.string().optional(),
 };
 
-const assets = {
-	name: Joi.string().pattern(regex.NAME).required(),
-	description: Joi.string().optional(),
-	symbol: Joi.string().required(),
-	display: Joi.string().required(),
-	base: Joi.string().required(),
-	exponent: Joi.integer().min(1).required(),
-	logo: Joi.object(logo).optional(),
+const denomUnit = {
+	denom: Joi.string().pattern(regex.NAME).required(),
+	decimal: Joi.number().integer().required(),
+	aliases: Joi.array().items(Joi.string()).optional(),
 };
 
 const blockchainAppsTokenMetadataSchema = {
 	chainName: Joi.string().pattern(regex.NAME).required(),
-	chainID: Joi.number().integer().min(1).required(),
-	assets: Joi.array().items(assets).required(),
+	chainID: Joi.string().required(),
+	tokenName: Joi.string().pattern(regex.NAME).required(),
+	tokenID: Joi.string().required(),
+	networkType: Joi.string().pattern(regex.NETWORK).required(),
+	description: Joi.string().optional(),
+	symbol: Joi.string().required(),
+	displayDenom: Joi.string().required(),
+	baseDenom: Joi.string().required(),
+	denomUnits: Joi.array().items(denomUnit).required(),
+	logo: Joi.object(logo).optional(),
 };
 
 module.exports = {

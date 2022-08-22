@@ -21,24 +21,36 @@ const logo = {
 	svg: Joi.string().optional(),
 };
 
-const apis = {
-	rest: Joi.string().required(),
-	rpc: Joi.string().required(),
+const serviceURL = {
+	http: Joi.string().required(),
+	ws: Joi.string().required(),
+};
+
+const explorer = {
+	url: Joi.string().required(),
+	txnPage: Joi.string().required(),
+};
+
+const appNode = {
+	url: Joi.string().required(),
+	maintainer: Joi.string().required(),
 };
 
 const blockchainAppMetadataSchema = {
-	name: Joi.string().pattern(regex.NAME).required(),
-	chainID: Joi.number().integer().min(1).required(),
-	network: Joi.string().pattern(regex.NETWORK).required(),
-	isDefault: Joi.boolean().required(),
+	chainName: Joi.string().pattern(regex.NAME).required(),
+	chainID: Joi.string().required(),
+	networkType: Joi.string().pattern(regex.NETWORK).required(),
+	isDefault: Joi.boolean().optional(),
 	title: Joi.string().optional(),
 	description: Joi.string().optional(),
-	genesisBlock: Joi.string().optional(),
-	homepage: Joi.string().required(),
-	apis: Joi.array().items(apis).required(),
-	explorers: Joi.array().items(Joi.string()).optional(),
-	logo: Joi.object(logo).optional(),
-	backgroundColor: Joi.string().optional(),
+	genesisURL: Joi.string().required(),
+	projectPage: Joi.string().required(),
+	appPage: Joi.string().optional(),
+	serviceURLs: Joi.array().items(serviceURL).required(),
+	explorers: Joi.array().items(explorer).required(),
+	logo: Joi.object(logo).required(),
+	backgroundColor: Joi.string().required(),
+	appNodes: Joi.array().items(appNode).optional(),
 };
 
 module.exports = {

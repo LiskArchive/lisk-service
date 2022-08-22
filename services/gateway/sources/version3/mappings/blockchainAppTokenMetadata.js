@@ -16,13 +16,20 @@
 module.exports = {
 	chainID: '=,string',
 	chainName: '=,string',
-	assets: ['assets', {
-		description: '=,string',
-		name: '=,string',
-		symbol: '=,string',
-		display: '=,string',
-		base: '=,string',
-		exponent: '=,string',
-		logo: '=',
+	tokenID: '=,string',
+	tokenName: '=,string',
+	networkType: 'network,string',
+	description: '=,string',
+	logo: {
+		png: '=,string',
+		svg: '=,string',
+	},
+	symbol: '=,string',
+	displayDenom: '=,string',
+	baseDenom: '=,string',
+	denomUnits: ['denomUnits', {
+		denom: '=,string',
+		decimal: '=,number',
+		aliases: '=',
 	}],
 };

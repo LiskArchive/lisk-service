@@ -32,7 +32,7 @@ const {
 const wsRpcUrl = `${config.SERVICE_ENDPOINT}/rpc-v3`;
 const getBlockchainApps = async (params) => request(wsRpcUrl, 'get.blockchain.apps.meta.list', params);
 
-// TODO: Enable test cases once off-chain data is available
+// TODO: Enable/update test cases once off-chain data is available
 xdescribe('get.blockchain.apps.meta.list', () => {
 	it('returns list', async () => {
 		const response = await getBlockchainApps();
@@ -67,8 +67,8 @@ xdescribe('get.blockchain.apps.meta.list', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns list with limit=10, offset=1 and sort=name:desc', async () => {
-		const response = await getBlockchainApps({ limit: 10, offset: 1, sort: 'name:desc' });
+	it('returns list with limit=10, offset=1 and sort=chainName:desc', async () => {
+		const response = await getBlockchainApps({ limit: 10, offset: 1, sort: 'chainName:desc' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);
@@ -78,8 +78,28 @@ xdescribe('get.blockchain.apps.meta.list', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns blockchain applications meta list by name', async () => {
-		const response = await getBlockchainApps({ name: 'Lisk' });
+	it('returns blockchain applications meta list by chainName', async () => {
+		const response = await getBlockchainApps({ chainName: 'Lisk' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain applications meta list by network', async () => {
+		const response = await getBlockchainApps({ network: 'mainnet' });
+		expect(response).toMap(jsonRpcEnvelopeSchema);
+		const { result } = response;
+		expect(result.data).toBeInstanceOf(Array);
+		expect(result.data.length).toEqual(1);
+		result.data.forEach(blockchainApp => expect(blockchainApp).toMap(blockchainAppMetaListSchema));
+		expect(result.meta).toMap(metaSchema);
+	});
+
+	it('returns blockchain applications meta list by network as CSV', async () => {
+		const response = await getBlockchainApps({ network: 'mainnet,testnet' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(result.data).toBeInstanceOf(Array);

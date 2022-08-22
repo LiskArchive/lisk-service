@@ -21,7 +21,8 @@ const config = require('../config');
 
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const { normalizeRangeParam } = require('./utils/paramUtils');
+const { read } = require('./utils/fsUtils');
+
 const applicationsIndexSchema = require('./database/schema/applications');
 const tokensIndexSchema = require('./database/schema/tokens');
 
@@ -37,34 +38,6 @@ const getTokensIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-const formatResponseEntries = (arr) => {
-	const map = new Map(arr.map(entry => [entry.name, { name: entry.name, networks: [] }]));
-	for (let i = 0; i < arr.length; i++) {
-		map.get(arr[i].name).networks.push({ network: arr[i].network, chainID: arr[i].chainID });
-	}
-	return [...map.values()];
-};
-
-const formatResponseEntriesForTokens = (arr) => {
-	const map = new Map(arr.map(entry => [entry.chainName, {
-		chainID: entry.chainID,
-		chainName: entry.chainName,
-		assets: [],
-	}]));
-	for (let i = 0; i < arr.length; i++) {
-		map.get(arr[i].chainName).assets.push({
-			description: arr[i].description,
-			name: arr[i].name,
-			symbol: arr[i].symbol,
-			display: arr[i].display,
-			base: arr[i].base,
-			exponent: arr[i].exponent,
-			logo: JSON.parse(arr[i].logo),
-		});
-	}
-	return [...map.values()];
-};
-
 const getBlockchainAppsMetaList = async (params) => {
 	const applicationsDB = await getApplicationsIndex();
 
@@ -78,7 +51,7 @@ const getBlockchainAppsMetaList = async (params) => {
 		params = remParams;
 
 		params.search = {
-			property: 'name',
+			property: 'chainName',
 			pattern: search,
 		};
 	}
@@ -86,25 +59,23 @@ const getBlockchainAppsMetaList = async (params) => {
 	const limit = params.limit * config.supportedNetworks.length;
 	const defaultApps = await applicationsDB.find(
 		{ ...params, limit, isDefault: true },
-		['name', 'chainID', 'network'],
+		['network', 'chainID', 'chainName'],
 	);
 
-	blockchainAppsMetaList.data = formatResponseEntries(defaultApps);
-
-	if (blockchainAppsMetaList.data.length < params.limit) {
+	if (defaultApps.length < params.limit) {
 		const nonDefaultApps = await applicationsDB.find(
 			{ ...params, limit, isDefault: false },
-			['name', 'chainID', 'network'],
+			['network', 'chainID', 'chainName'],
 		);
 
-		blockchainAppsMetaList.data = blockchainAppsMetaList.data
-			.concat(formatResponseEntries(nonDefaultApps));
+		blockchainAppsMetaList.data = defaultApps.concat(nonDefaultApps);
 	}
 
 	blockchainAppsMetaList.data = blockchainAppsMetaList.data
 		.slice(params.offset, params.offset + params.limit);
 
-	const [{ count: total }] = await applicationsDB.rawQuery('SELECT COUNT(DISTINCT(name)) as count from applications');
+	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
+	const [{ total }] = await applicationsDB.rawQuery('SELECT COUNT(chainName) as total from applications');
 
 	blockchainAppsMetaList.meta = {
 		count: blockchainAppsMetaList.data.length,
@@ -116,16 +87,14 @@ const getBlockchainAppsMetaList = async (params) => {
 };
 
 const getBlockchainAppsMetadata = async (params) => {
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
 	const applicationsDB = await getApplicationsIndex();
 
 	const blockchainAppsMetadata = {
 		data: [],
 		meta: {},
 	};
-
-	if (params.chainID && params.chainID.includes(':')) {
-		params = normalizeRangeParam(params, 'chainID');
-	}
 
 	if (params.network) {
 		const { network, ...remParams } = params;
@@ -140,28 +109,39 @@ const getBlockchainAppsMetadata = async (params) => {
 		const { search, ...remParams } = params;
 		params = remParams;
 		params.search = {
-			property: 'name',
+			property: 'chainName',
 			pattern: search,
 		};
 	}
 
-	const response = await applicationsDB.find(
-		params,
-		Object.getOwnPropertyNames(applicationsIndexSchema.schema),
+	const limit = params.limit * config.supportedNetworks.length;
+	const defaultApps = await applicationsDB.find(
+		{ ...params, limit, isDefault: true },
+		['network', 'appDirName'],
 	);
+
+	if (defaultApps.length < params.limit) {
+		const nonDefaultApps = await applicationsDB.find(
+			{ ...params, limit, isDefault: false },
+			['network', 'appDirName'],
+		);
+
+		blockchainAppsMetadata.data = defaultApps.concat(nonDefaultApps);
+	}
 
 	blockchainAppsMetadata.data = await BluebirdPromise.map(
-		response,
+		blockchainAppsMetadata.data,
 		async (appMetadata) => {
-			appMetadata.apis = JSON.parse(appMetadata.apis);
-			appMetadata.explorers = JSON.parse(appMetadata.explorers);
-			appMetadata.logo = JSON.parse(appMetadata.logo);
-			return appMetadata;
+			const appPathInClonedRepo = `${dataDir}/${repo}/${appMetadata.network}/${appMetadata.appDirName}`;
+			const chainMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.APP_JSON}`);
+			const chainMeta = JSON.parse(chainMetaString);
+			return chainMeta;
 		},
-		{ concurrency: response.length },
+		{ concurrency: blockchainAppsMetadata.data.length },
 	);
 
-	const total = await applicationsDB.count(params);
+	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
+	const [{ total }] = await applicationsDB.rawQuery('SELECT COUNT(chainName) as total from applications');
 
 	blockchainAppsMetadata.meta = {
 		count: blockchainAppsMetadata.data.length,
@@ -173,6 +153,9 @@ const getBlockchainAppsMetadata = async (params) => {
 };
 
 const getBlockchainAppsTokenMetadata = async (params) => {
+	const { dataDir } = config;
+	const repo = config.gitHub.appRegistryRepoName;
+	const applicationsDB = await getApplicationsIndex();
 	const tokensDB = await getTokensIndex();
 
 	const blockchainAppsTokenMetadata = {
@@ -180,14 +163,13 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		meta: {},
 	};
 
-	if (params.chainID && params.chainID.includes(':')) {
-		params = normalizeRangeParam(params, 'chainID');
-	}
-
-	if (params.name) {
-		const { name, ...remParams } = params;
+	if (params.network) {
+		const { network, ...remParams } = params;
 		params = remParams;
-		params.chainName = name;
+		params.whereIn = {
+			property: 'network',
+			values: network.split(','),
+		};
 	}
 
 	if (params.search) {
@@ -199,14 +181,25 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		};
 	}
 
-	const response = await tokensDB.find(
-		params,
-		Object.getOwnPropertyNames(tokensIndexSchema.schema),
+	const tokensResultSet = await tokensDB.find(params, ['network', 'chainID']);
+
+	blockchainAppsTokenMetadata.data = await BluebirdPromise.map(
+		tokensResultSet,
+		async (tokenMeta) => {
+			const [{ appDirName }] = await applicationsDB.find(
+				{ network: tokenMeta.network, chainID: tokenMeta.chainID },
+				['appDirName'],
+			);
+			const appPathInClonedRepo = `${dataDir}/${repo}/${tokenMeta.network}/${appDirName}`;
+			const tokenMetaString = await read(`${appPathInClonedRepo}/${config.FILENAME.NATIVETOKENS_JSON}`);
+			const parsedTokenMeta = JSON.parse(tokenMetaString);
+			return parsedTokenMeta;
+		},
+		{ concurrency: tokensResultSet.length },
 	);
 
-	blockchainAppsTokenMetadata.data = formatResponseEntriesForTokens(response);
-
-	const total = await tokensDB.count(params);
+	// TODO: Use count method directly once support for custom column-based count added https://github.com/LiskHQ/lisk-service/issues/1188
+	const [{ total }] = await applicationsDB.rawQuery('SELECT COUNT(tokenName) as total from tokens');
 
 	blockchainAppsTokenMetadata.meta = {
 		count: blockchainAppsTokenMetadata.data.length,

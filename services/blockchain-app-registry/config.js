@@ -60,7 +60,10 @@ config.gitHub = {
 	accessToken: process.env.GITHUB_ACCESS_TOKEN,
 	appRegistryRepo: process.env.GITHUB_APP_REGISTRY_REPO || 'https://github.com/LiskHQ/app-registry',
 	branch: process.env.GITHUB_APP_REGISTRY_REPO_BRANCH || 'main',
+	get appRegistryRepoName() { return this.appRegistryRepo.split('/').pop(); },
 };
+
+config.dataDir = `${process.cwd()}/data`;
 
 config.serviceURL = {
 	mainnet: process.env.SERVICE_URL_MAINNET || 'https://service.lisk.com',
@@ -74,5 +77,10 @@ const DEFAULT_LISK_APPS = ['Lisk', 'Lisk DEX'];
 const DEFAULT_USER_APPS = String(process.env.DEFAULT_APPS).split(',');
 
 config.defaultApps = DEFAULT_LISK_APPS.concat(DEFAULT_USER_APPS);
+
+config.FILENAME = Object.freeze({
+	APP_JSON: 'app.json',
+	NATIVETOKENS_JSON: 'nativetokens.json',
+});
 
 module.exports = config;
