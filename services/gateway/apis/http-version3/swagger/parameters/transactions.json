@@ -14,5 +14,13 @@
         "schema": {
             "$ref": "#/definitions/transactionParamEnvelope"
         }
+    },
+    "recipientAddress": {
+        "name": "recipientAddress",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 41
     }
 }

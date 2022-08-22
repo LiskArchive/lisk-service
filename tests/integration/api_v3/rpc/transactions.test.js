@@ -183,7 +183,7 @@ xdescribe('Method get.transactions', () => {
 
 	describe('is able to retrieve list of transactions using senderAddress', () => {
 		it('known senderAddress -> ok', async () => {
-			const response = await getTransactions({ senderAddress: refTransaction.senderAddress });
+			const response = await getTransactions({ senderAddress: refTransaction.sender.address });
 			expect(response).toMap(jsonRpcEnvelopeSchema);
 			const { result } = response;
 			expect(result.data).toBeInstanceOf(Array);
@@ -192,7 +192,7 @@ xdescribe('Method get.transactions', () => {
 			expect(response.result).toMap(resultEnvelopeSchema);
 			result.data.forEach((transaction, i) => {
 				expect(transaction).toMap(transactionSchema);
-				expect(transaction.senderaddress).toEqual(refTransaction.senderAddress);
+				expect(transaction.sender.address).toEqual(refTransaction.sender.address);
 				if (i > 0) {
 					const prevTx = result.data[i];
 					const prevTxTimestamp = prevTx.block.timestamp;
@@ -211,6 +211,74 @@ xdescribe('Method get.transactions', () => {
 
 		it('invalid senderAddress -> invalid params', async () => {
 			const response = await getTransactions({ senderAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
+			expect(response).toMap(invalidParamsSchema);
+		});
+	});
+
+	describe('is able to retrieve list of transactions using recipientAddress', () => {
+		it('known recipientAddress -> ok', async () => {
+			const response = await getTransactions({
+				recipientAddress: refTransaction.params.recipientAddress,
+			});
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				expect(transaction.params.recipientAddress).toEqual(refTransaction.params.recipientAddress);
+				if (i > 0) {
+					const prevTx = result.data[i];
+					const prevTxTimestamp = prevTx.block.timestamp;
+					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('empty recipientAddress -> empty response', async () => {
+			const response = await getTransactions({ recipientAddress: '' });
+			expect(response).toMap(emptyResponseSchema);
+			const { result } = response;
+			expect(result).toMap(emptyResultEnvelopeSchema);
+		});
+
+		it('invalid recipientAddress -> invalid params', async () => {
+			const response = await getTransactions({ recipientAddress: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
+			expect(response).toMap(invalidParamsSchema);
+		});
+	});
+
+	describe('is able to retrieve list of transactions by address', () => {
+		it('known address -> ok', async () => {
+			const response = await getTransactions({ address: refTransaction.sender.address });
+			expect(response).toMap(jsonRpcEnvelopeSchema);
+			const { result } = response;
+			expect(result.data).toBeInstanceOf(Array);
+			expect(result.data.length).toBeGreaterThanOrEqual(1);
+			expect(result.data.length).toBeLessThanOrEqual(10);
+			expect(response.result).toMap(resultEnvelopeSchema);
+			result.data.forEach((transaction, i) => {
+				expect(transaction).toMap(transactionSchema);
+				if (transaction.params.recipientAddress) {
+					expect([transaction.sender.address, transaction.params.recipientAddress])
+						.toContain(refTransaction.sender.address);
+				} else {
+					expect(transaction.sender.address).toMatch(refTransaction.sender.address);
+				}
+				if (i > 0) {
+					const prevTx = result.data[i];
+					const prevTxTimestamp = prevTx.block.timestamp;
+					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
+				}
+			});
+			expect(result.meta).toMap(metaSchema);
+		});
+
+		it('invalid address -> invalid params', async () => {
+			const response = await getTransactions({ address: 'lsydxc4ta5j43jp9ro3f8zqbxta9fn6jwzjucw7yj' });
 			expect(response).toMap(invalidParamsSchema);
 		});
 	});

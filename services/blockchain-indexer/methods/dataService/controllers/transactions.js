@@ -23,21 +23,30 @@ const {
 	Utils: { isEmptyArray, isEmptyObject },
 } = require('lisk-service-framework');
 
-const { getAddressByAny } = require('../../../shared/accountUtils');
+const { confirmAddress } = require('../../../shared/accountUtils');
 
 const dataService = require('../../../shared/dataService');
 
 const getTransactions = async (params) => {
 	try {
-		if (params.senderAddress) {
-			// TODO: Check if this section can be removed
-			const address = await getAddressByAny(params.senderAddress);
-			if (!address) {
-				return {
-					status: NOT_FOUND,
-					data: { error: `Address ${params.senderAddress} not found.` },
-				};
-			}
+		const addressParam = [
+			'senderAddress',
+			'recipientAddress',
+			'address',
+		].filter((item) => typeof params[item] === 'string');
+
+		const addressLookupResult = await Promise.all(
+			addressParam.map(async (param) => {
+				const paramVal = params[param];
+				const address = await confirmAddress(paramVal);
+				return address;
+			}),
+		);
+
+		const NOT_FOUND_RESPONSE = { status: NOT_FOUND, data: { error: 'Not found.' } };
+
+		if (addressLookupResult.includes(false)) {
+			return NOT_FOUND_RESPONSE;
 		}
 
 		const result = await dataService.getTransactions({
@@ -46,7 +55,7 @@ const getTransactions = async (params) => {
 		});
 
 		if (isEmptyObject(result) || isEmptyArray(result.data)) {
-			return { status: NOT_FOUND, data: { error: 'Not found.' } };
+			return NOT_FOUND_RESPONSE;
 		}
 
 		const meta = {

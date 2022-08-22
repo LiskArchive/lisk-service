@@ -114,6 +114,14 @@ const validateParams = async params => {
 		params.whereIn = { property: 'executionStatus', values: executionStatuses };
 	}
 
+	if (params.address) {
+		const { address, ...remParams } = params;
+		params = remParams;
+
+		params.orWhere = { recipientAddress: address };
+		params.orWhereWith = { senderAddress: address };
+	}
+
 	return params;
 };
 
@@ -239,9 +247,9 @@ const getTransactionsByBlockID = async blockID => {
 			}
 
 			transaction.block = {
-				id: block.header.id,
-				height: block.header.height,
-				timestamp: block.header.timestamp,
+				id: block.id,
+				height: block.height,
+				timestamp: block.timestamp,
 			};
 
 			// TODO: Check - this information might not be available yet
@@ -254,7 +262,7 @@ const getTransactionsByBlockID = async blockID => {
 
 			return transaction;
 		},
-		{ concurrency: block.payload.length },
+		{ concurrency: block.transactions.length },
 	);
 
 	return {
