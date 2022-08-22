@@ -22,7 +22,7 @@ const {
 	Signals,
 } = require('lisk-service-framework');
 
-const { resolveChainNameByFilePath } = require('./chainUtils');
+const { resolveChainNameByNetworkAppDir } = require('./chainUtils');
 const { downloadAndExtractTarball, downloadFile } = require('./downloadUtils');
 const { exists, mkdir, getDirectories, rename } = require('./fsUtils');
 
@@ -30,6 +30,8 @@ const keyValueDB = require('../database/mysqlKVStore');
 const { indexMetadataFromFile } = require('../metadataIndex');
 
 const config = require('../../config');
+
+const { FILENAME } = config;
 
 const logger = Logger();
 
@@ -130,33 +132,57 @@ const getDiff = async (lastSyncedCommitHash, latestCommitHash) => {
 	}
 };
 
+const filterMetaConfigFilesByNetwork = async (network, filesChanged) => {
+	const filesUpdated = filesChanged.filter(
+		file => file.startsWith(network)
+			&& (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)),
+	);
+	return filesUpdated;
+};
+
+const getUniqueNetworkAppDirPairs = async (files) => {
+	const updatedAppDirs = files.map(file => {
+		const [network, appDirName] = file.split('/');
+		const updatedAppDir = `${network}/${appDirName}`;
+		return updatedAppDir;
+	});
+
+	const uniqueAppDirs = [...new Set(updatedAppDirs)];
+	const updatedNetworkAppDirs = uniqueAppDirs.map(dirPath => {
+		const [network, appDirName] = dirPath.split('/');
+		return { network, appDirName };
+	});
+
+	return updatedNetworkAppDirs;
+};
+
 const buildEventPayload = async (filesChanged) => {
-	const mainnetFilesUpdated = filesChanged.filter(file => file.startsWith('mainnet'));
-	const testnetFilesUpdated = filesChanged.filter(file => file.startsWith('testnet'));
-	const betanetFilesUpdated = filesChanged.filter(file => file.startsWith('betanet'));
+	const mainnetFilesUpdated = await filterMetaConfigFilesByNetwork('mainnet', filesChanged);
+	const testnetFilesUpdated = await filterMetaConfigFilesByNetwork('testnet', filesChanged);
+	const betanetFilesUpdated = await filterMetaConfigFilesByNetwork('betanet', filesChanged);
 
 	const mainnetAppsUpdated = await BluebirdPromise.map(
-		mainnetFilesUpdated,
-		async filePath => resolveChainNameByFilePath(filePath),
+		await getUniqueNetworkAppDirPairs(mainnetFilesUpdated),
+		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
 		{ concurrency: mainnetFilesUpdated.length },
 	);
 
 	const testnetAppsUpdated = await BluebirdPromise.map(
-		testnetFilesUpdated,
-		async filePath => resolveChainNameByFilePath(filePath),
+		await getUniqueNetworkAppDirPairs(testnetFilesUpdated),
+		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
 		{ concurrency: testnetFilesUpdated.length },
 	);
 
 	const betanetAppsUpdated = await BluebirdPromise.map(
-		betanetFilesUpdated,
-		async filePath => resolveChainNameByFilePath(filePath),
+		await getUniqueNetworkAppDirPairs(betanetFilesUpdated),
+		async ({ network, appDirName }) => resolveChainNameByNetworkAppDir(network, appDirName),
 		{ concurrency: betanetFilesUpdated.length },
 	);
 
 	const eventPayload = {
-		mainnet: [...new Set(mainnetAppsUpdated)],
-		testnet: [...new Set(testnetAppsUpdated)],
-		betanet: [...new Set(betanetAppsUpdated)],
+		mainnet: mainnetAppsUpdated,
+		testnet: testnetAppsUpdated,
+		betanet: betanetAppsUpdated,
 	};
 
 	return eventPayload;
@@ -184,7 +210,7 @@ const syncWithRemoteRepo = async () => {
 					await downloadFile(result.data.download_url, filePath);
 					logger.debug(`Successfully downloaded: ${file}`);
 
-					if (file.endsWith('.json')) {
+					if (file.endsWith(FILENAME.APP_JSON) || file.endsWith(FILENAME.NATIVETOKENS_JSON)) {
 						const [network, appName, filename] = file.split('/').slice(-3);
 						await indexMetadataFromFile(network, appName, filename);
 						logger.debug('Successfully updated the database with the latest changes');
