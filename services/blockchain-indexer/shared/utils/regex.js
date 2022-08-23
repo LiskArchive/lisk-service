@@ -13,16 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const dataService = require('../business');
-
-const getTokens = async (params) => dataService.getTokens(params);
-
-const getTopLiskAddresses = async (params) => dataService.getTopLiskAddresses(params);
-
-const getSupportedTokens = async (params) => dataService.getSupportedTokens(params);
+const TOKEN_ID = /[0-9A-Fa-f]{16}/g;
 
 module.exports = {
-	getTokens,
-	getTopLiskAddresses,
-	getSupportedTokens,
+	TOKEN_ID,
 };

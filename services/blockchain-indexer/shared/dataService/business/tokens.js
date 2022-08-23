@@ -17,12 +17,16 @@ const BluebirdPromise = require('bluebird');
 
 const {
 	MySQL: { getTableInstance },
-	Exceptions: { InvalidParamsException },
+	Exceptions: {
+		InvalidParamsException,
+		ValidationException,
+	},
 } = require('lisk-service-framework');
 
 const topLSKAddressesIndexSchema = require('../../database/schema/topLSKAddresses');
 const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
-const { requestConnector } = require('../../utils/request');
+const { requestConnector, requestAppRegistry } = require('../../utils/request');
+const regex = require('../../utils/regex');
 const { getAccountKnowledge } = require('../../knownAccounts');
 
 const config = require('../../../config');
@@ -34,6 +38,15 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 	topLSKAddressesIndexSchema,
 	MYSQL_ENDPOINT,
 );
+
+const getTokenMetadataByID = async (tokenID) => {
+	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
+
+	const chainID = tokenID.split(0, 8);
+	const localID = tokenID.split(8);
+	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID, localID });
+	return tokenMetadata;
+};
 
 const getTokens = async (params) => {
 	let tokensInfo;
@@ -60,6 +73,20 @@ const getTokens = async (params) => {
 
 		tokensInfo = response.balances;
 	}
+
+	// TODO: Enable the code once token metadata is available
+	// tokens.data = await BluebirdPromise.map(
+	// 	tokensInfo,
+	// 	async tokenInfo => {
+	// 		const [tokenMetadata] = (await getTokenMetadataByID(tokenInfo.tokenID)).data;
+	// 		return {
+	// 			...tokenInfo,
+	// 			symbol: tokenMetadata.symbol,
+	// 			name: tokenMetadata.tableName,
+	// 		};
+	// 	},
+	// 	{ concurrency: tokensInfo.length },
+	// );
 
 	tokens.data = tokensInfo.slice(params.offset, params.offset + params.limit);
 
@@ -108,7 +135,44 @@ const getTopLiskAddresses = async (params) => {
 	return topLiskAddresses;
 };
 
+const getSupportedTokens = async (params) => {
+	const supportedTokensList = {
+		data: {
+			supportedTokens: [],
+		},
+		meta: {},
+	};
+
+	const response = await requestConnector('token_getSupportedTokens');
+
+	supportedTokensList.data.supportedTokens = await BluebirdPromise.map(
+		response.tokenIDs,
+		async (tokenID) => {
+			const [tokenMetadata] = (await getTokenMetadataByID(tokenID)).data;
+			return {
+				tokenID,
+				symbol: tokenMetadata.symbol,
+				name: tokenMetadata.tokenName,
+			};
+		},
+		{ concurrency: response.tokenIDs.length },
+	);
+
+	const total = supportedTokensList.data.supportedTokens.length;
+	supportedTokensList.data.supportedTokens = supportedTokensList.data.supportedTokens
+		.slice(params.offset, params.offset + params.limit);
+
+	supportedTokensList.meta = {
+		count: supportedTokensList.data.supportedTokens.length,
+		offset: params.offset,
+		total,
+	};
+
+	return supportedTokensList;
+};
+
 module.exports = {
 	getTokens,
 	getTopLiskAddresses,
+	getSupportedTokens,
 };
