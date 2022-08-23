@@ -13,23 +13,8 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const newsfeed = require('./mappings/newsfeed');
+const TOKEN_ID = /[0-9A-Fa-f]{16}/g;
 
 module.exports = {
-	type: 'moleculer',
-	method: 'newsfeed.articles',
-	params: {
-		source: '=,string',
-		offset: '=,number',
-		limit: '=,number',
-	},
-	definition: {
-		data: ['data', newsfeed],
-		meta: {
-			count: '=,number',
-			offset: '=,number',
-			total: '=,number',
-		},
-		links: {},
-	},
+	TOKEN_ID,
 };
