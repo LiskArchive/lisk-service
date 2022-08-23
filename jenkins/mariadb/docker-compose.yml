@@ -20,8 +20,6 @@ services:
       - "127.0.0.1:3306:3306"
     healthcheck:
       test: ['CMD', 'bash', '/healthcheck.sh']
-      interval: 1m
-      timeout: 5s
 
 volumes:
   db-data:
