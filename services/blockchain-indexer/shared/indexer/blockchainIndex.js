@@ -54,6 +54,8 @@ const {
 
 const config = require('../../config');
 
+const keyValueDB = require('../database/mysqlKVStore');
+
 const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
 // const eventsIndexSchema = require('../database/schema/events');
@@ -90,6 +92,8 @@ const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema,
 	MYSQL_ENDPOINT,
 );
+
+const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 // const getGeneratorPkInfoArray = async (blocks) => {
 // 	const blocksDB = await getBlocksIndex();
@@ -400,6 +404,10 @@ const isGenesisBlockIndexed = async () => {
 
 const addBlockToQueue = async height => indexBlocksQueue.add({ height });
 
+const setIndexVerifiedHeight = (params) => keyValueDB.set(INDEX_VERIFIED_HEIGHT, params.height);
+
+const getIndexVerifiedHeight = () => keyValueDB.get(INDEX_VERIFIED_HEIGHT);
+
 module.exports = {
 	indexBlock,
 	indexNewBlock,
@@ -408,4 +416,6 @@ module.exports = {
 	addBlockToQueue,
 	getMissingBlocks,
 	deleteBlock,
+	setIndexVerifiedHeight,
+	getIndexVerifiedHeight,
 };
