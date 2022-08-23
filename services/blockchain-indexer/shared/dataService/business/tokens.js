@@ -42,7 +42,7 @@ const getTopLSKAddressesIndex = () => getTableInstance(
 const getTokenMetadataByID = async (tokenID) => {
 	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
 
-	const chainID = tokenID.slice(0, 8)
+	const chainID = tokenID.slice(0, 8);
 	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID, tokenID });
 	return tokenMetadata;
 };
