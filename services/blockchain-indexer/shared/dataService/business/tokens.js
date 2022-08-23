@@ -43,8 +43,7 @@ const getTokenMetadataByID = async (tokenID) => {
 	if (!tokenID.match(regex.TOKEN_ID)) throw new ValidationException('Invalid TokenID');
 
 	const chainID = tokenID.split(0, 8);
-	const localID = tokenID.split(8);
-	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID, localID });
+	const tokenMetadata = await requestAppRegistry('blockchain.apps.meta.tokens', { chainID, tokenID });
 	return tokenMetadata;
 };
 
@@ -148,7 +147,9 @@ const getSupportedTokens = async (params) => {
 	supportedTokensList.data.supportedTokens = await BluebirdPromise.map(
 		response.tokenIDs,
 		async (tokenID) => {
-			const [tokenMetadata] = (await getTokenMetadataByID(tokenID)).data;
+			const tokenMetadataResponse = await getTokenMetadataByID(tokenID);
+			const [tokenMetadata = {}] = tokenMetadataResponse.data || [];
+
 			return {
 				tokenID,
 				symbol: tokenMetadata.symbol,

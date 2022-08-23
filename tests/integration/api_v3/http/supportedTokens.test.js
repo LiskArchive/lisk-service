@@ -19,6 +19,7 @@ const { api } = require('../../../helpers/api');
 const {
 	badRequestSchema,
 	metaSchema,
+	wrongInputParamSchema,
 } = require('../../../schemas/httpGenerics.schema');
 
 const {
@@ -56,6 +57,11 @@ describe('Supported Tokens API', () => {
 		expect(response.data.supportedTokens.length).toBeLessThanOrEqual(5);
 		expect(response.data).toMap(supportedTokensSchema);
 		expect(response.meta).toMap(metaSchema);
+	});
+
+	it('invalid query parameter -> 400', async () => {
+		const response = await api.get(`${endpoint}?limit=-5`, 400);
+		expect(response).toMap(wrongInputParamSchema);
 	});
 
 	it('invalid request param -> bad request', async () => {

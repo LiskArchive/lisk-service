@@ -47,7 +47,7 @@ const supportedTokensSchema = {
 };
 
 const goodRequestSchemaForSupportedTokens = {
-	data: Joi.object().required(),
+	data: Joi.object(supportedTokensSchema).required(),
 	meta: Joi.object().required(),
 };
 

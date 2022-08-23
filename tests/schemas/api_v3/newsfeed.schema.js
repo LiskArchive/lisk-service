@@ -30,9 +30,9 @@ const newsfeedArticleSchema = {
 };
 
 const newsfeedMetaSchema = {
-	count: Joi.number().required(),
-	total: Joi.number().required(),
-	offset: Joi.number().required(),
+	count: Joi.number().integer().min(1).required(),
+	total: Joi.number().integer().min(1).required(),
+	offset: Joi.number().integer().min(0).required(),
 };
 
 module.exports = {

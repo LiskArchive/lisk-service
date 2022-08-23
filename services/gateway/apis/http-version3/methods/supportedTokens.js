@@ -15,7 +15,6 @@
  */
 const supportedTokensSource = require('../../../sources/version3/supportedTokens');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
-const regex = require('../../../shared/regex');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
 
 module.exports = {
@@ -24,8 +23,8 @@ module.exports = {
 	rpcMethod: 'get.tokens.supported',
 	tags: ['Tokens'],
 	params: {
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: regex.LIMIT },
-		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: regex.OFFSET },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	get schema() {
 		const SupportedTokenSchema = {};
@@ -34,12 +33,12 @@ module.exports = {
 		SupportedTokenSchema[this.swaggerApiPath].get.summary = 'Requests supported tokens information';
 		SupportedTokenSchema[this.swaggerApiPath].get.description = getSwaggerDescription({
 			rpcMethod: this.rpcMethod,
-			description: 'Returns supported tokens information',
+			description: 'Returns supported tokens information. The \'supportedTokens\' is an empty list when all the tokens are supported on the blockchain application.',
 		});
 		SupportedTokenSchema[this.swaggerApiPath].get.parameters = transformParams('tokens', this.params);
 		SupportedTokenSchema[this.swaggerApiPath].get.responses = {
 			200: {
-				description: 'Returns supported tokens information',
+				description: 'Returns supported tokens information. The \'supportedTokens\' is an empty list when all the tokens are supported on the blockchain application.',
 				schema: {
 					$ref: '#/definitions/supportedTokenWithEnvelope',
 				},

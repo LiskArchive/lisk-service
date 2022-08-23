@@ -63,6 +63,11 @@ describe('get.tokens.supported', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
+	it('returns INVALID_PARAMS error (-32602) on invalid address', async () => {
+		const response = await getSupportedTokens({ limit: -5 });
+		expect(response).toMap(invalidParamsSchema);
+	});
+
 	it('invalid request param -> invalid param', async () => {
 		const response = await getSupportedTokens({ invalidParam: 'invalid' });
 		expect(response).toMap(invalidParamsSchema);
