@@ -47,6 +47,8 @@ const getNewsfeedArticles = async params => {
 	// Send 'Service Unavailable' when no data is available
 	if (!data.length) throw new ServiceUnavailableException('Service not available');
 
+	const total = await newsfeedDB.count(params);
+
 	return {
 		data,
 		meta: {
@@ -54,6 +56,7 @@ const getNewsfeedArticles = async params => {
 			limit,
 			offset,
 			source,
+			total,
 		},
 	};
 };

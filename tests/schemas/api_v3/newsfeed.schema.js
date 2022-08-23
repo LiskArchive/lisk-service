@@ -31,7 +31,7 @@ const newsfeedArticleSchema = {
 
 const newsfeedMetaSchema = {
 	count: Joi.number().required(),
-	limit: Joi.number().required(),
+	total: Joi.number().required(),
 	offset: Joi.number().required(),
 };
 

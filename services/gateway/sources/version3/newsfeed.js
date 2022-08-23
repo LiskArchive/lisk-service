@@ -27,8 +27,8 @@ module.exports = {
 		data: ['data', newsfeed],
 		meta: {
 			count: '=,number',
-			limit: '=,number',
 			offset: '=,number',
+			total: '=,number',
 		},
 		links: {},
 	},
