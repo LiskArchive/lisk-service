@@ -13,18 +13,17 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const newsfeed = require('./mappings/newsfeed');
-
 module.exports = {
 	type: 'moleculer',
-	method: 'newsfeed.articles',
+	method: 'indexer.tokens.supported',
 	params: {
-		source: '=,string',
 		offset: '=,number',
 		limit: '=,number',
 	},
 	definition: {
-		data: ['data', newsfeed],
+		data: {
+			supportedTokens: '=',
+		},
 		meta: {
 			count: '=,number',
 			offset: '=,number',

@@ -36,7 +36,24 @@ const tokensSchema = {
 	lockedAmount: Joi.array().items(lockedAmount).required(),
 };
 
+const supportedToken = {
+	tokenID: Joi.string().required(),
+	name: Joi.string().optional(),
+	symbol: Joi.string().optional(),
+};
+
+const supportedTokensSchema = {
+	supportedTokens: Joi.array().items(supportedToken).required(),
+};
+
+const goodRequestSchemaForSupportedTokens = {
+	data: Joi.object(supportedTokensSchema).required(),
+	meta: Joi.object().required(),
+};
+
 module.exports = {
 	tokensSchema: Joi.object(tokensSchema).required(),
+	supportedTokensSchema: Joi.object(supportedTokensSchema).required(),
 	tokensMetaSchema: Joi.object(tokensMetaSchema).required(),
+	goodRequestSchemaForSupportedTokens: Joi.object(goodRequestSchemaForSupportedTokens).required(),
 };

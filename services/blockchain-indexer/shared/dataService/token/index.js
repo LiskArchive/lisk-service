@@ -16,9 +16,11 @@
 const {
 	getTokens,
 	getTopLiskAddresses,
+	getSupportedTokens,
 } = require('./token');
 
 module.exports = {
 	getTokens,
 	getTopLiskAddresses,
+	getSupportedTokens,
 };

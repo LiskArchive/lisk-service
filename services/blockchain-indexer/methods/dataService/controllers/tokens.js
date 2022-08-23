@@ -50,7 +50,20 @@ const getTopLiskAddresses = async params => {
 	return topLiskAddresses;
 };
 
+const getSupportedTokens = async params => {
+	const supportedTokens = {
+		data: {},
+		meta: {},
+	};
+	const response = await dataService.getSupportedTokens(params);
+	if (response.data) supportedTokens.data = response.data;
+	if (response.meta) supportedTokens.meta = response.meta;
+
+	return supportedTokens;
+};
+
 module.exports = {
 	getTokens,
 	getTopLiskAddresses,
+	getSupportedTokens,
 };
