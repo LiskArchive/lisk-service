@@ -129,16 +129,13 @@ const initIndexingScheduler = async () => {
 	// }
 };
 
-const scheduleMissingBlocksIndexing = async (params = {}) => {
+const scheduleMissingBlocksIndexing = async () => {
 	const genesisHeight = await getGenesisHeight();
 	const currentHeight = await getCurrentHeight();
 
-	// Missing blocks are being checked during start
+	// Missing blocks are being checked during regualar interval
 	// By default they are checked from the blockchain's beginning
-	// The param force: true skips the getIndexVerifiedHeight
-	// and makes it check the whole index
-	let lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
-	if (params.force === true) lastVerifiedHeight = genesisHeight;
+	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
 
 	// Lowest and highest block heights expected to be indexed
 	const blockIndexHigherRange = currentHeight;

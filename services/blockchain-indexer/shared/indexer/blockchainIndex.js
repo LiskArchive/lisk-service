@@ -176,10 +176,12 @@ const indexBlock = async job => {
 			await updateAddressBalanceQueue.add({ address: block.generatorAddress });
 		}
 
+		// TODO: Fetch reward from events
 		const blockToIndex = {
 			...block,
 			assetsModuleIDs: block.assets.map(asset => asset.moduleID),
 			numberOfEvents: 1,
+			reward: BigInt('0'),
 			// numberOfEvents: events.length,
 		};
 
@@ -404,7 +406,7 @@ const isGenesisBlockIndexed = async () => {
 
 const addBlockToQueue = async height => indexBlocksQueue.add({ height });
 
-const setIndexVerifiedHeight = (params) => keyValueDB.set(INDEX_VERIFIED_HEIGHT, params.height);
+const setIndexVerifiedHeight = ({ height }) => keyValueDB.set(INDEX_VERIFIED_HEIGHT, height);
 
 const getIndexVerifiedHeight = () => keyValueDB.get(INDEX_VERIFIED_HEIGHT);
 

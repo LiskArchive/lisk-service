@@ -51,7 +51,9 @@ const checkIsClientAlive = async () => {
 const instantiateClient = async () => {
 	try {
 		if (!isInstantiating) {
-			if (!clientCache || !(await checkIsClientAlive())) {
+			// TODO: Verify and enable the code
+			// if (!clientCache || !(await checkIsClientAlive())) {
+			if (!clientCache) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
 				if (clientCache) await clientCache.disconnect();

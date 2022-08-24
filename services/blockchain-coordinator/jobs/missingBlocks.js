@@ -24,19 +24,11 @@ module.exports = [
 		name: 'index.missing.blocks',
 		description: 'Verify and update blocks indexing',
 		schedule: '*/15 * * * *', // Every 15 min
-		init: async () => {
-			logger.debug('Schedule missing blocks indexing...');
-			try {
-				await scheduleMissingBlocksIndexing();
-				logger.info('Successfully scheduled missing blocks indexing');
-			} catch (err) {
-				logger.warn(`Schedule missing blocks indexing failed due to: ${err.message}`);
-			}
-		},
 		controller: async () => {
 			logger.debug('Schedule missing blocks indexing...');
 			try {
 				await scheduleMissingBlocksIndexing();
+				logger.info('Successfully scheduled missing blocks indexing');
 			} catch (err) {
 				logger.warn(`Schedule missing blocks indexing failed due to: ${err.message}`);
 			}

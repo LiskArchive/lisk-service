@@ -25,6 +25,7 @@ module.exports = {
 		isFinal: { type: 'boolean', defaultValue: false },
 		assetsModuleIDs: { type: 'json' },
 		numberOfEvents: { type: 'integer' },
+		reward: { type: 'bigInteger' },
 	},
 	indexes: {
 		id: { type: 'key' },
