@@ -32,6 +32,10 @@ const getCurrentHeight = async () => requestIndexer('getCurrentHeight');
 
 const getGenesisHeight = async () => requestIndexer('getGenesisHeight');
 
+const getIndexVerifiedHeight = async () => requestIndexer('getIndexVerifiedHeight');
+
+const setIndexVerifiedHeight = async (height) => requestIndexer('setIndexVerifiedHeight', { height });
+
 module.exports = {
 	isGenesisBlockIndexed,
 	isGenesisAccountsIndexed,
@@ -40,4 +44,6 @@ module.exports = {
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
+	getIndexVerifiedHeight,
+	setIndexVerifiedHeight,
 };

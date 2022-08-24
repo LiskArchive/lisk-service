@@ -13,6 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
+const path = require('path');
 const {
 	Microservice,
 	Logger,
@@ -61,6 +62,8 @@ const app = Microservice({
 });
 
 setAppContext(app);
+
+app.addJobs(path.join(__dirname, 'jobs'));
 
 // Run the application
 app.run().then(async () => {

@@ -54,6 +54,8 @@ const {
 
 const config = require('../../config');
 
+const keyValueDB = require('../database/mysqlKVStore');
+
 const accountsIndexSchema = require('../database/schema/accounts');
 const blocksIndexSchema = require('../database/schema/blocks');
 // const eventsIndexSchema = require('../database/schema/events');
@@ -90,6 +92,8 @@ const getTransactionsIndex = () => getTableInstance(
 	transactionsIndexSchema,
 	MYSQL_ENDPOINT,
 );
+
+const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
 
 // const getGeneratorPkInfoArray = async (blocks) => {
 // 	const blocksDB = await getBlocksIndex();
@@ -172,10 +176,12 @@ const indexBlock = async job => {
 			await updateAddressBalanceQueue.add({ address: block.generatorAddress });
 		}
 
+		// TODO: Fetch reward from events
 		const blockToIndex = {
 			...block,
 			assetsModuleIDs: block.assets.map(asset => asset.moduleID),
 			numberOfEvents: 1,
+			reward: BigInt('0'),
 			// numberOfEvents: events.length,
 		};
 
@@ -400,6 +406,10 @@ const isGenesisBlockIndexed = async () => {
 
 const addBlockToQueue = async height => indexBlocksQueue.add({ height });
 
+const setIndexVerifiedHeight = ({ height }) => keyValueDB.set(INDEX_VERIFIED_HEIGHT, height);
+
+const getIndexVerifiedHeight = () => keyValueDB.get(INDEX_VERIFIED_HEIGHT);
+
 module.exports = {
 	indexBlock,
 	indexNewBlock,
@@ -408,4 +418,6 @@ module.exports = {
 	addBlockToQueue,
 	getMissingBlocks,
 	deleteBlock,
+	setIndexVerifiedHeight,
+	getIndexVerifiedHeight,
 };

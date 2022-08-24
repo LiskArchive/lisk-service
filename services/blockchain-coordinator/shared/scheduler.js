@@ -31,6 +31,8 @@ const {
 	getMissingblocks,
 	getCurrentHeight,
 	getGenesisHeight,
+	getIndexVerifiedHeight,
+	setIndexVerifiedHeight,
 } = require('./sources/indexer');
 
 const {
@@ -127,6 +129,41 @@ const initIndexingScheduler = async () => {
 	// }
 };
 
+const scheduleMissingBlocksIndexing = async () => {
+	const genesisHeight = await getGenesisHeight();
+	const currentHeight = await getCurrentHeight();
+
+	// Missing blocks are being checked during regualar interval
+	// By default they are checked from the blockchain's beginning
+	const lastVerifiedHeight = await getIndexVerifiedHeight() || genesisHeight;
+
+	// Lowest and highest block heights expected to be indexed
+	const blockIndexHigherRange = currentHeight;
+	const blockIndexLowerRange = lastVerifiedHeight;
+
+	const missingBlocksByHeight = await getMissingblocks(
+		blockIndexLowerRange,
+		blockIndexHigherRange,
+	);
+
+	try {
+		if (!Array.isArray(missingBlocksByHeight)) {
+			logger.trace(`missingBlocksByHeight: ${missingBlocksByHeight}`);
+			throw new Error(`Expected missingBlocksByHeight to be an array but found ${typeof missingBlocksByHeight}`);
+		}
+
+		if (missingBlocksByHeight.length === 0) {
+			// Update 'indexVerifiedHeight' when no missing blocks are found
+			await setIndexVerifiedHeight(blockIndexHigherRange);
+		} else {
+			// Schedule indexing for the missing blocks
+			await scheduleBlocksIndexing(missingBlocksByHeight);
+		}
+	} catch (err) {
+		logger.warn(`Missed blocks indexing failed due to: ${err.message}`);
+	}
+};
+
 const init = async () => {
 	await initIndexingScheduler();
 	await initEventsScheduler();
@@ -135,4 +172,5 @@ const init = async () => {
 module.exports = {
 	init,
 	getRegisteredModuleAssets,
+	scheduleMissingBlocksIndexing,
 };
