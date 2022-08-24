@@ -56,7 +56,7 @@ const instantiateClient = async () => {
 			if (!clientCache) {
 				isInstantiating = true;
 				instantiationBeginTime = Date.now();
-				if (clientCache) await clientCache.disconnect();
+				// if (clientCache) await clientCache.disconnect();
 
 				if (config.isUseLiskIPCClient) {
 					clientCache = await createIPCClient(config.liskAppDataPath);
