@@ -81,6 +81,38 @@ module.exports = [
 		},
 	},
 	{
+		name: 'block.delete',
+		description: 'Emit the list of deleted blocks.',
+		controller: callback => {
+			const deleteBlockListener = async (data) => {
+				try {
+					if (data && Array.isArray(data.data)) {
+						callback(data);
+					}
+				} catch (err) {
+					logger.error(`Error occured when processing 'block.delete' event:\n${err.stack}`);
+				}
+			};
+			Signals.get('deleteBlock').add(deleteBlockListener);
+		},
+	},
+	{
+		name: 'transactions.delete',
+		description: 'Emit the list of deleted Transactions.',
+		controller: callback => {
+			const deleteTransactionsListener = async (data) => {
+				try {
+					if (data && Array.isArray(data.data)) {
+						callback(data);
+					}
+				} catch (err) {
+					logger.error(`Error occured when processing 'transactions.delete' event:\n${err.stack}`);
+				}
+			};
+			Signals.get('deleteTransactions').add(deleteTransactionsListener);
+		},
+	},
+	{
 		name: 'generators.change',
 		description: 'Keep generators list up-to-date',
 		controller: callback => {
