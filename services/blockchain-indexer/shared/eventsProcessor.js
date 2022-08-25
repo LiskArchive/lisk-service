@@ -23,7 +23,6 @@ const {
 	reloadDelegateCache,
 	getGenerators,
 	getNumberOfGenerators,
-	normalizeBlocks,
 } = require('./dataService');
 
 const { deleteBlock } = require('./indexer/blockchainIndex');
