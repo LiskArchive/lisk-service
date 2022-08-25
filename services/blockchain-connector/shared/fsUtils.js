@@ -14,6 +14,8 @@
  *
  */
 const fs = require('fs');
+const util = require('util');
+const crypto = require('crypto');
 
 const { Logger } = require('lisk-service-framework');
 
@@ -40,7 +42,45 @@ const mkdir = async (directoryPath, options = { recursive: true, mode: '0o777' }
 	);
 };
 
+const verifyChecksum = async (filePath, expectedChecksum) => {
+	const fileStream = fs.createReadStream(filePath);
+	const dataHash = crypto.createHash('sha256');
+	const fileHash = await new Promise((resolve, reject) => {
+		fileStream.on('data', (datum) => {
+			dataHash.update(datum);
+		});
+		fileStream.on('error', error => {
+			reject(error);
+		});
+		fileStream.on('end', () => {
+			resolve(dataHash.digest());
+		});
+	});
+
+	const fileChecksum = fileHash.toString('hex');
+	if (fileChecksum !== expectedChecksum) {
+		logger.info(`File checksum: ${fileChecksum} mismatched with expected checksum: ${expectedChecksum}. filepath:${filePath}`);
+		return false;
+	}
+
+	return true;
+};
+
+const readFileAsync = async (filePath) => {
+	const readWrapper = util.promisify(fs.readFile);
+
+	return readWrapper(filePath, 'utf8');
+}
+
+const verifyFileChecksum = async (filePath, checksumPath) => {
+	const expectedChecksum = (await readFileAsync(checksumPath)).split(' ')[0];
+
+	return verifyChecksum(filePath, expectedChecksum);
+};
+
+
 module.exports = {
 	exists,
 	mkdir,
+	verifyFileChecksum,
 };

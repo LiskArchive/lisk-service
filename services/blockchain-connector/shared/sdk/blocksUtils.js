@@ -28,6 +28,7 @@ const {
 } = require('../downloadFile');
 
 const config = require('../../config');
+const { verifyFileChecksum } = require('../fsUtils');
 
 const logger = Logger();
 
@@ -80,28 +81,36 @@ const loadConfig = async () => {
 	}
 };
 
-const downloadGenesisBlock = async () => {
+const downloadAndValidateGenesisBlock = async () => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
 	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
 
-	if (genesisBlockUrl.endsWith('.tar.gz')) await downloadAndExtractTarball(genesisBlockUrl, directoryPath);
-	else await downloadJSONFile(genesisBlockUrl, genesisBlockFilePath);
-
-	// Download tar file
-	await downloadFile(genesisBlockUrl, directoryPath);
-
-	// Download SHA256 file
+	// Download the genesis and the digest files
 	const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
+	await downloadFile(genesisBlockUrl, directoryPath);
 	await downloadFile(genesisBlockUrlSHA256, directoryPath);
+
+	// Verify the integrity of the downloaded file, retry on failure
+	const genesisFileName = genesisBlockUrl.substring(genesisBlockUrl.lastIndexOf('/') + 1);
+	const genesisFilePath = directoryPath + '/' + genesisFileName;
+	const checksumFilePath = genesisFilePath + '.SHA256';
+
+
+	const isValidGenesisBlock = await verifyFileChecksum(genesisFilePath, checksumFilePath);
+
+	console.log(`isValidGenesisBlock: ${isValidGenesisBlock}`);
+
+
+	// Extract the file if necessary
 };
 
 const getGenesisBlockFromFS = async () => {
 	if (!genesisBlockUrl || !genesisBlockFilePath) await loadConfig();
 	if (!getGenesisBlockId()) {
 		if (!(await exists(genesisBlockFilePath))) {
-			await downloadGenesisBlock();
+			await downloadAndValidateGenesisBlock();
 			readStream = fs.createReadStream(genesisBlockFilePath);
 		}
 
@@ -115,6 +124,14 @@ const getGenesisBlockFromFS = async () => {
 
 	return getGenesisBlock();
 };
+
+
+// genesisBlockUrl = config.networks[0].genesisBlockUrl;
+// genesisBlockFilePath = `./data/${config.networks[0].name}/genesis_block.json`;
+
+// downloadAndValidateGenesisBlock()
+// 	.then(console.log)
+// 	.catch(console.error);
 
 module.exports = {
 	getGenesisBlockId,
