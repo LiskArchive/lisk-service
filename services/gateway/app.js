@@ -36,7 +36,7 @@ const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
 const { definition: blocksDefinition } = require('./sources/version3/blocks');
-const { definition: feesDefinition } = require('./sources/version2/fees');
+const { definition: feesDefinition } = require('./sources/version3/fees');
 const { definition: generatorsDefinition } = require('./sources/version3/generators');
 const { definition: transactionsDefinition } = require('./sources/version3/transactions');
 
@@ -133,8 +133,10 @@ const gatewayConfig = {
 	},
 	methods,
 	events: {
-		'block.change': (payload) => sendSocketIoEvent('update.block', mapper(payload, blocksDefinition)),
-		'transactions.new': (payload) => sendSocketIoEvent('update.transactions', mapper(payload, transactionsDefinition)),
+		'block.change': (payload) => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
+		'transactions.new': (payload) => sendSocketIoEvent('new.transactions', mapper(payload, transactionsDefinition)),
+		'block.delete': (payload) => sendSocketIoEvent('delete.block', mapper(payload, blocksDefinition)),
+		'transactions.delete': (payload) => sendSocketIoEvent('delete.transactions', mapper(payload, transactionsDefinition)),
 		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
 		'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
