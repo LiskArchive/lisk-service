@@ -82,7 +82,7 @@ module.exports = [
 	},
 	{
 		name: 'block.delete',
-		description: 'Emit the list of deleted blocks.',
+		description: 'Emit the deleted block.',
 		controller: callback => {
 			const deleteBlockListener = async (data) => {
 				try {

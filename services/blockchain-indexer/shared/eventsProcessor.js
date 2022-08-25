@@ -39,17 +39,18 @@ const eventsQueue = new MessageQueue(
 );
 
 const newBlockProcessor = async (block) => {
-	logger.debug(`New block arrived at height ${block.height}`);
+	logger.debug(`New block arrived at height ${block.height}, id: ${block.id}`);
 	const response = await getBlocks({ height: block.height });
 	await performLastBlockUpdate(response.data[0]);
 	Signals.get('newBlock').dispatch(response);
 };
 
+// TODO: Test delete block implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1189
 const deleteBlockProcessor = async (block) => {
-	logger.debug(`Performing updates on delete block event for the block at height: ${block.header.height}`);
+	logger.debug(`Performing updates on delete block event for the block at height: ${block.height}, id: ${block.id}`);
+	const response = await getBlocks({ id: block.id });
 	await deleteBlock(block);
-	const normalizedBlocks = await normalizeBlocks([block]);
-	Signals.get('deleteBlock').dispatch({ data: normalizedBlocks });
+	Signals.get('deleteBlock').dispatch(response);
 };
 
 const newRoundProcessor = async () => {
