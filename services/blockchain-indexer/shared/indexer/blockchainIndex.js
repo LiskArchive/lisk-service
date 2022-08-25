@@ -25,6 +25,7 @@ const {
 		commitDbTransaction,
 		rollbackDbTransaction,
 	},
+	Signals,
 } = require('lisk-service-framework');
 
 const { applyTransaction, revertTransaction } = require('./transactionProcessor');
@@ -40,6 +41,7 @@ const {
 } = require('../utils/arrayUtils');
 
 const { getBase32AddressFromPublicKey } = require('../utils/accountUtils');
+const { normalizeTransaction } = require('../utils/transactionsUtils');
 
 // const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
@@ -219,7 +221,7 @@ const deleteIndexedBlocks = async job => {
 					const transactionsDB = await getTransactionsIndex();
 					const { transactions, assets, ...blockHeader } = block;
 
-					await BluebirdPromise.map(
+					const forkedTransactions = await BluebirdPromise.map(
 						transactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
@@ -227,9 +229,12 @@ const deleteIndexedBlocks = async job => {
 
 							const forkedTransactionIDs = await getTransactionsByBlockIDs([blockHeader.id]);
 							await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+							const normalizedTransaction = await normalizeTransaction(tx);
+							return normalizedTransaction;
 						},
 						{ concurrency: block.transactions.length },
 					);
+					Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 				}
 			});
 
