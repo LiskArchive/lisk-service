@@ -72,15 +72,28 @@ const readFileAsync = async (filePath) => {
 	return readWrapper(filePath, 'utf8');
 }
 
+const deleteFileRecursive = async (filePath) => {
+	if(await exists(filePath)) {
+		const unlinkWrapper = util.promisify(fs.rm);
+
+		await unlinkWrapper(filePath, { recursive: true, force: true });
+	}
+}
+
 const verifyFileChecksum = async (filePath, checksumPath) => {
 	const expectedChecksum = (await readFileAsync(checksumPath)).split(' ')[0];
 
 	return verifyChecksum(filePath, expectedChecksum);
 };
 
+// const extractTarBall = async => (filePath) {
+// 	fs.createReadStream()
+// }
+
 
 module.exports = {
 	exists,
 	mkdir,
 	verifyFileChecksum,
+	deleteFileRecursive
 };

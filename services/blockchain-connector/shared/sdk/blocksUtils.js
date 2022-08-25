@@ -16,6 +16,7 @@
 const fs = require('fs');
 const json = require('big-json');
 const path = require('path');
+const tar = require('tar');
 
 const { Logger } = require('lisk-service-framework');
 
@@ -28,7 +29,7 @@ const {
 } = require('../downloadFile');
 
 const config = require('../../config');
-const { verifyFileChecksum } = require('../fsUtils');
+const { verifyFileChecksum, deleteFileRecursive } = require('../fsUtils');
 
 const logger = Logger();
 
@@ -81,29 +82,36 @@ const loadConfig = async () => {
 	}
 };
 
-const downloadAndValidateGenesisBlock = async () => {
+const downloadAndValidateGenesisBlock = async (retries = 2) => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
-	if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
-
-	logger.info(`Downloading genesis block to the filesystem from: ${genesisBlockUrl}`);
-
-	// Download the genesis and the digest files
-	const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
-	await downloadFile(genesisBlockUrl, directoryPath);
-	await downloadFile(genesisBlockUrlSHA256, directoryPath);
-
-	// Verify the integrity of the downloaded file, retry on failure
 	const genesisFileName = genesisBlockUrl.substring(genesisBlockUrl.lastIndexOf('/') + 1);
 	const genesisFilePath = directoryPath + '/' + genesisFileName;
 	const checksumFilePath = genesisFilePath + '.SHA256';
 
+	do {
+		// Delete all previous files including the containing directory
+		await deleteFileRecursive(directoryPath);
 
-	const isValidGenesisBlock = await verifyFileChecksum(genesisFilePath, checksumFilePath);
+		if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
-	console.log(`isValidGenesisBlock: ${isValidGenesisBlock}`);
+		// Download the genesis and the digest files
+		const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
+		await downloadFile(genesisBlockUrl, directoryPath);
+		await downloadFile(genesisBlockUrlSHA256, directoryPath);
 
+		// Verify the integrity of the downloaded file, retry on failure
+		const isValidGenesisBlock = await verifyFileChecksum(genesisFilePath, checksumFilePath);
 
-	// Extract the file if necessary
+		// Extract the file if necessary
+		if (genesisFilePath.endsWith('.tar.gz')) {
+			const ret = await fs.createReadStream(genesisFilePath).pipe(tar.extract({ cwd: directoryPath }));
+		}
+
+		if (isValidGenesisBlock) return true;
+	} while (retries-- > 0);
+
+	logger.fatal(`Could not verfiy genesis block. genesisBlockUrl:${genesisBlockUrl}`);
+	process.exit();
 };
 
 const getGenesisBlockFromFS = async () => {
@@ -129,9 +137,7 @@ const getGenesisBlockFromFS = async () => {
 // genesisBlockUrl = config.networks[0].genesisBlockUrl;
 // genesisBlockFilePath = `./data/${config.networks[0].name}/genesis_block.json`;
 
-// downloadAndValidateGenesisBlock()
-// 	.then(console.log)
-// 	.catch(console.error);
+// downloadAndValidateGenesisBlock();
 
 module.exports = {
 	getGenesisBlockId,
