@@ -76,13 +76,15 @@ const loadConfig = async () => {
 	}
 };
 
+// eslint-disable-next-line consistent-return
 const downloadAndValidateGenesisBlock = async (retries = 2) => {
 	const directoryPath = path.dirname(genesisBlockFilePath);
 	const genesisFileName = genesisBlockUrl.substring(genesisBlockUrl.lastIndexOf('/') + 1);
-	const genesisFilePath = directoryPath + '/' + genesisFileName;
-	const checksumFilePath = genesisFilePath + '.SHA256';
+	const genesisFilePath = `${directoryPath}/${genesisFileName}`;
+	const checksumFilePath = `${genesisFilePath}.SHA256`;
 
 	do {
+		/* eslint-disable no-await-in-loop */
 		// Delete all previous files including the containing directory
 		await deleteFileRecursive(directoryPath);
 
@@ -102,6 +104,7 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 		}
 
 		if (isValidGenesisBlock) return true;
+		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
 
 	logger.fatal(`Could not verfiy genesis block. genesisBlockUrl:${genesisBlockUrl}`);

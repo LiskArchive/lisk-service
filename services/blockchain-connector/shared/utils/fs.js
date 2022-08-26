@@ -71,15 +71,15 @@ const readFileAsync = async (filePath) => {
 	const readWrapper = util.promisify(fs.readFile);
 
 	return readWrapper(filePath, 'utf8');
-}
+};
 
 const deleteFileRecursive = async (filePath) => {
-	if(await exists(filePath)) {
+	if (await exists(filePath)) {
 		const rmWrapper = util.promisify(fs.rm);
 
 		await rmWrapper(filePath, { recursive: true, force: true });
 	}
-}
+};
 
 const verifyFileChecksum = async (filePath, checksumPath) => {
 	const expectedChecksum = (await readFileAsync(checksumPath)).split(' ')[0];
@@ -87,10 +87,9 @@ const verifyFileChecksum = async (filePath, checksumPath) => {
 	return verifyChecksum(filePath, expectedChecksum);
 };
 
-const extractTarBall = async (filePath, directoryPath) => {
-	return fs.createReadStream(filePath).pipe(tar.extract({ cwd: directoryPath }));
-}
-
+const extractTarBall = async (filePath, directoryPath) => fs
+	.createReadStream(filePath)
+	.pipe(tar.extract({ cwd: directoryPath }));
 
 module.exports = {
 	deleteFileRecursive,
