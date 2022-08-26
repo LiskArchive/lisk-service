@@ -22,7 +22,7 @@ const {
 const { decodeResponse } = require('./decoder');
 const config = require('../../config');
 const delay = require('../utils/delay');
-const waitForIt = require('../waitForIt');
+const waitForIt = require('../utils/waitForIt');
 
 const logger = Logger();
 
