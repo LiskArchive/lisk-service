@@ -21,7 +21,7 @@ const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
 const { exists, mkdir, verifyFileChecksum, deleteFileRecursive, extractTarBall } = require('../utils/fs');
-const { downloadFile } = require('../downloadFile');
+const { downloadFile } = require('../utils/download');
 
 const config = require('../../config');
 
