@@ -16,20 +16,15 @@
 const fs = require('fs');
 const json = require('big-json');
 const path = require('path');
-const tar = require('tar');
 
 const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
 const { exists, mkdir } = require('../fsUtils');
-const {
-	downloadAndExtractTarball,
-	downloadJSONFile,
-	downloadFile,
-} = require('../downloadFile');
+const { downloadFile } = require('../downloadFile');
 
 const config = require('../../config');
-const { verifyFileChecksum, deleteFileRecursive } = require('../fsUtils');
+const { verifyFileChecksum, deleteFileRecursive, extractTarBall } = require('../fsUtils');
 
 const logger = Logger();
 
@@ -104,7 +99,7 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 
 		// Extract the file if necessary
 		if (genesisFilePath.endsWith('.tar.gz')) {
-			const ret = await fs.createReadStream(genesisFilePath).pipe(tar.extract({ cwd: directoryPath }));
+			await extractTarBall(genesisFilePath, directoryPath);
 		}
 
 		if (isValidGenesisBlock) return true;
@@ -132,12 +127,6 @@ const getGenesisBlockFromFS = async () => {
 
 	return getGenesisBlock();
 };
-
-
-// genesisBlockUrl = config.networks[0].genesisBlockUrl;
-// genesisBlockFilePath = `./data/${config.networks[0].name}/genesis_block.json`;
-
-// downloadAndValidateGenesisBlock();
 
 module.exports = {
 	getGenesisBlockId,

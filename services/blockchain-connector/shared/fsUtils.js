@@ -16,6 +16,7 @@
 const fs = require('fs');
 const util = require('util');
 const crypto = require('crypto');
+const tar = require('tar');
 
 const { Logger } = require('lisk-service-framework');
 
@@ -74,9 +75,9 @@ const readFileAsync = async (filePath) => {
 
 const deleteFileRecursive = async (filePath) => {
 	if(await exists(filePath)) {
-		const unlinkWrapper = util.promisify(fs.rm);
+		const rmWrapper = util.promisify(fs.rm);
 
-		await unlinkWrapper(filePath, { recursive: true, force: true });
+		await rmWrapper(filePath, { recursive: true, force: true });
 	}
 }
 
@@ -86,14 +87,15 @@ const verifyFileChecksum = async (filePath, checksumPath) => {
 	return verifyChecksum(filePath, expectedChecksum);
 };
 
-// const extractTarBall = async => (filePath) {
-// 	fs.createReadStream()
-// }
+const extractTarBall = async (filePath, directoryPath) => {
+	return fs.createReadStream(filePath).pipe(tar.extract({ cwd: directoryPath }));
+}
 
 
 module.exports = {
+	deleteFileRecursive,
 	exists,
+	extractTarBall,
 	mkdir,
 	verifyFileChecksum,
-	deleteFileRecursive
 };
