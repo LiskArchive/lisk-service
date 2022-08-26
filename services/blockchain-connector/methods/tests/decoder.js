@@ -20,7 +20,7 @@ const {
 	decodeResponse,
 } = require('../../shared/sdk/decoder');
 
-const { parseToJSONCompatObj } = require('../../shared/parser');
+const { parseToJSONCompatObj } = require('../../shared/utils/parser');
 
 module.exports = [
 	{
