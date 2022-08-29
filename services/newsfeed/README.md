@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/newsfeed # move into newsfeed microservice directory
-npm install # install required Node.js modules
+npm install # install required Node.js dependencies
 ```
 
 ## Configuration

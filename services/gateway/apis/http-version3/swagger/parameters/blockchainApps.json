@@ -1,0 +1,47 @@
+{
+    "name": {
+        "name": "name",
+        "in": "query",
+        "description": "Blockchain application name",
+        "type": "string",
+        "format": "name",
+        "minLength": 1,
+        "maxLength": 20
+    },
+    "chainID": {
+        "name": "chainID",
+        "in": "query",
+        "description": "Chain ID to query (can be expressed as an interval from:to)",
+        "type": "string",
+        "format": "id",
+        "minLength": 1
+    },
+    "state": {
+        "name": "state",
+        "in": "query",
+        "description": "State of Blockchain application",
+        "type": "string",
+        "minLength": 1
+    },
+    "isDefault": {
+        "name": "isDefault",
+        "in": "query",
+        "description": "Filter default blockchain application",
+        "type": "string",
+        "minLength": 1
+    },
+    "network": {
+        "name": "network",
+        "in": "query",
+        "description": "Network for which the application metadata is to be queried (can be expressed as CSV)",
+        "type": "string",
+        "minLength": 1
+    },
+    "chainName": {
+        "name": "chainName",
+        "in": "query",
+        "description": "Chain Name to query",
+        "type": "string",
+        "minLength": 1
+    }
+}

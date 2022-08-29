@@ -4,7 +4,7 @@
 	],
 	"plugins": [
 		"import",
-		"mocha",
+		"mocha"
 	],
 	"globals": {
 		"ipc": true,
@@ -20,6 +20,14 @@
 		"arrow-parens": "off",
 		"func-names": "off",
 		"global-require": "off",
+		"no-multiple-empty-lines": [
+			"error",
+			{
+				"max": 1,
+				"maxBOF": 0,
+				"maxEOF": 1
+			}
+		],
 		"new-cap": [
 			"error",
 			{
@@ -38,6 +46,7 @@
 		"no-plusplus": "off",
 		"no-restricted-properties": "off",
 		"no-return-assign": "off",
+		"no-trailing-spaces": "error",
 		"no-underscore-dangle": "off",
 		"import/no-extraneous-dependencies": [
 			"error",
@@ -54,8 +63,16 @@
 				"properties": "never"
 			}
 		],
-		"mocha/max-top-level-suites": ["warn", {"limit": 6}],
+		"mocha/max-top-level-suites": [
+			"warn",
+			{
+				"limit": 6
+			}
+		],
 		"mocha/no-skipped-tests": "off",
-		"indent": ["error", "tab"]
+		"indent": [
+			"error",
+			"tab"
+		]
 	}
 }

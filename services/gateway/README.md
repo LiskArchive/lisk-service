@@ -17,7 +17,7 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/gateway # move into gateway microservice directory
-npm install # install required Node.js modules
+npm install # install required Node.js dependencies
 ```
 
 ## Configuration
@@ -60,7 +60,7 @@ node app.js
 
 ```bash
 cd lisk-service/services/gateway # navigate into the root directory of the gateway microservice
-npm start # start the microservice
+npm start # start the microservice with running nodes locally
 ```
 
 Use the `framework/bin/moleculer_client.js` and `framework/bin/moleculer_subscribe.js` clients to test particular service endpoints.

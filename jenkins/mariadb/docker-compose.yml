@@ -5,7 +5,7 @@ version: '3.3'
 services:
 
   mariadb:
-    image: mariadb:10.6
+    image: mariadb:10.7
     command: mysqld --default-authentication-plugin=mysql_native_password
     volumes:
       - db-data:/var/lib/mysql
@@ -20,8 +20,6 @@ services:
       - "127.0.0.1:3306:3306"
     healthcheck:
       test: ['CMD', 'bash', '/healthcheck.sh']
-      interval: 1m
-      timeout: 5s
 
 volumes:
   db-data:

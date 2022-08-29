@@ -15,12 +15,12 @@ Clone the Lisk Service Repository:
 ```bash
 git clone https://github.com/LiskHQ/lisk-service.git # clone repository
 cd lisk-service/services/export # move into export microservice directory
-npm install # install required Node.js modules
+npm install # install required Node.js dependencies
 ```
 
 ## Configuration
 
-To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations. The template service does not use any of them by default.
+To configure the different microservices, there are a number of environment variables, the user can define in order to customize the configurations.
 
 ## Management
 

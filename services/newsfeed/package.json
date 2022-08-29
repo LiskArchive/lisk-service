@@ -34,9 +34,8 @@
     "html-entities": "^2.3.2",
     "html-to-text": "^8.0.0",
     "knex": "^2.0.0",
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/f401073c992ec9c2eca045664082353857cceebd/framework/dist/lisk-service-framework-1.4.3.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz",
     "moment": "^2.29.4",
-    "mysql2": "^2.3.3",
     "object-hash": "^2.2.0",
     "twitter": "^1.7.1"
   },

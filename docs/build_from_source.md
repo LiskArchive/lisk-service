@@ -73,7 +73,7 @@ pm2 stop ecosystem.core3.config.js
 
 ### Restart Lisk Service
 
-Restart all components of Lisk Service simultaneously.
+Restart all microservices of Lisk Service simultaneously.
 
 ```bash
 pm2 restart ecosystem.core3.config.js

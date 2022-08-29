@@ -15,7 +15,7 @@
  */
 module.exports = {
 	type: 'moleculer',
-	method: 'core.peers.statistics',
+	method: 'indexer.peers.statistics',
 	params: {},
 	definition: {
 		data: {

@@ -1,0 +1,40 @@
+pipeline {
+	agent none
+	triggers {
+		// Triggers every week at midnight on Sunday morning
+		cron('0 0 * * 0')
+		}
+	stages {
+		stage('Build docker images') {
+			agent any
+            when { branch 'development' }
+			steps {
+				sh 'make build'
+			}
+		}
+		stage('Deploy lisk-service Mainnet') {
+			agent any
+			when { branch 'development' }
+			environment {
+				ENABLE_HTTP_API='http-status,http-version3'
+				ENABLE_WS_API='blockchain,rpc-v3'
+				// Mainnet node URL
+				LISK_CORE_WS='ws://host.docker.internal:8080'
+				USE_LISK_IPC_CLIENT='false'
+				ENABLE_TRANSACTION_STATS='true'
+				TRANSACTION_STATS_HISTORY_LENGTH_DAYS='366'
+				ENABLE_FEE_ESTIMATOR_QUICK='true'
+			}
+			steps {
+				ansiColor('xterm') {
+					dir('./') {
+						sh 'make down'
+						sh 'make up'
+						sh 'make print-config'
+					}
+				}
+			}
+		}
+	}
+}
+// vim: filetype=groovy

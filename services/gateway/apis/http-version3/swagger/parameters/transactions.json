@@ -1,0 +1,26 @@
+{
+    "executionStatus": {
+        "name": "executionStatus",
+        "in": "query",
+        "description": "Retrieve pending transactions",
+        "type": "string",
+        "minLength": 1
+    },
+    "transaction": {
+        "name": "body",
+        "in": "body",
+        "required": true,
+        "description": "The request body can contain only one property:\n- transaction (required): Binary payload",
+        "schema": {
+            "$ref": "#/definitions/transactionParamEnvelope"
+        }
+    },
+    "recipientAddress": {
+        "name": "recipientAddress",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 41
+    }
+}

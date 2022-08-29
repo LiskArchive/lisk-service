@@ -28,7 +28,7 @@
     },
     "filename": {
         "name": "filename",
-        "in": "path",
+        "in": "query",
         "description": "Filename",
         "required": true,
         "type": "string",

@@ -79,9 +79,9 @@ describe('Test normalizers', () => {
 		expect(result.length).toBeLessThanOrEqual(config.defaultNewsLength);
 	});
 
-	xit('Test drupalUnixTimestamp', async () => {
+	it('Test drupalUnixTimestamp', async () => {
 		const result = normalizeFunctions.drupalUnixTimestamp('06/30/2021 - 10:04');
-		expect(result).toEqual(1625040240);
+		expect(result).toEqual(1625047440);
 	});
 
 	it('Test twitterUnixTimestamp', async () => {

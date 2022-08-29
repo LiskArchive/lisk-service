@@ -1,0 +1,52 @@
+{
+    "limit": {
+        "in": "query",
+        "name": "limit",
+        "description": "Limit to apply to the query results",
+        "type": "integer",
+        "format": "int32",
+        "minimum": 1,
+        "maximum": 100,
+        "default": 10
+    },
+    "offset": {
+        "name": "offset",
+        "in": "query",
+        "description": "Offset to apply to the query results",
+        "type": "integer",
+        "format": "int32",
+        "minimum": 0,
+        "default": 0
+    },
+    "height": {
+        "name": "height",
+        "in": "query",
+        "description": "Query by height or a height range (fromHeight:toHeight, both inclusive)",
+        "type": "string",
+        "minimum": 0
+    },
+    "timestamp": {
+        "name": "timestamp",
+        "in": "query",
+        "description": "Query by timestamp or a timestamp range (fromTimestamp:toTimestamp, both inclusive)",
+        "type": "string",
+        "minLength": 1
+    },
+    "address": {
+        "name": "address",
+        "in": "query",
+        "description": "Lisk account address",
+        "type": "string",
+        "format": "address",
+        "minLength": 1,
+        "maxLength": 41
+    },
+    "search": {
+        "in": "query",
+        "name": "search",
+        "required": true,
+        "description": "Search query",
+        "type": "string",
+        "minLength": 1
+    }
+}

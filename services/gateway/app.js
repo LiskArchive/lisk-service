@@ -35,10 +35,10 @@ const { getReady, updateSvcStatus, getIndexStatus } = require('./shared/ready');
 const { genDocs } = require('./shared/generateDocs');
 
 const mapper = require('./shared/customMapper');
-const { definition: blocksDefinition } = require('./sources/version2/blocks');
-const { definition: feesDefinition } = require('./sources/version2/fees');
-const { definition: forgersDefinition } = require('./sources/version2/forgers');
-const { definition: transactionsDefinition } = require('./sources/version2/transactions');
+const { definition: blocksDefinition } = require('./sources/version3/blocks');
+const { definition: feesDefinition } = require('./sources/version3/fees');
+const { definition: generatorsDefinition } = require('./sources/version3/generators');
+const { definition: transactionsDefinition } = require('./sources/version3/transactions');
 
 const { host, port } = config;
 
@@ -133,13 +133,19 @@ const gatewayConfig = {
 	},
 	methods,
 	events: {
-		'block.change': (payload) => sendSocketIoEvent('update.block', mapper(payload, blocksDefinition)),
-		'transactions.new': (payload) => sendSocketIoEvent('update.transactions', mapper(payload, transactionsDefinition)),
+		'block.new': (payload) => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
+		'transactions.new': (payload) => sendSocketIoEvent('new.transactions', mapper(payload, transactionsDefinition)),
+		'block.delete': (payload) => sendSocketIoEvent('delete.block', mapper(payload, blocksDefinition)),
+		'transactions.delete': (payload) => sendSocketIoEvent('delete.transactions', mapper(payload, transactionsDefinition)),
 		'round.change': (payload) => sendSocketIoEvent('update.round', payload),
-		'forgers.change': (payload) => sendSocketIoEvent('update.forgers', mapper(payload, forgersDefinition)),
+		'generators.change': (payload) => sendSocketIoEvent('update.generators', mapper(payload, generatorsDefinition)),
 		'update.fee_estimates': (payload) => sendSocketIoEvent('update.fee_estimates', mapper(payload, feesDefinition)),
 		'coreService.Ready': (payload) => updateSvcStatus(payload),
+		'metadata.change': (payload) => sendSocketIoEvent('update.metadata', payload),
 	},
+	dependencies: [
+		'connector',
+	],
 };
 
 if (config.rateLimit.enable) {
@@ -158,8 +164,6 @@ if (config.rateLimit.enable) {
 }
 
 broker.createService(gatewayConfig);
-
-broker.waitForServices(['core', 'market', 'newsfeed']);
 
 broker.start();
 logger.info(`Started Gateway API on ${host}:${port}`);

@@ -1,5 +1,3 @@
-@Library('lisk-jenkins') _
-
 def echoBanner(msg) {
 	echo '----------------------------------------------------------------------'
 	echo msg
@@ -12,26 +10,31 @@ pipeline {
 		timeout(time: 10, unit: 'MINUTES')
 	}
 	stages {
-		stage ('Build deps') {
+		stage ('Build dependencies') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
-					dir('./') { sh 'npm i' }
-					dir('./framework') { sh 'npm i' }
-					dir('./services/core') { sh 'npm i' }
-					dir('./services/market') { sh 'npm i' }
-					dir('./services/newsfeed') { sh 'npm i' }
-					dir('./services/export') { sh 'npm i' }
-					dir('./services/gateway') { sh 'npm i' }
-					dir('./services/template') { sh 'npm i' }
-					dir('./tests') { sh 'npm i' }
+				nvm(readFile('.nvmrc').trim()) {
+					dir('./') { sh 'npm ci' }
+					dir('./framework') { sh 'npm ci' }
+					dir('./services/blockchain-app-registry') { sh 'npm ci' }
+					dir('./services/blockchain-connector') { sh 'npm ci' }
+					dir('./services/blockchain-indexer') { sh 'npm ci' }
+					dir('./services/blockchain-coordinator') { sh 'npm ci' }
+					dir('./services/fee-estimator') { sh 'npm ci' }
+					dir('./services/market') { sh 'npm ci' }
+					dir('./services/newsfeed') { sh 'npm ci' }
+					dir('./services/export') { sh 'npm ci' }
+					dir('./services/gateway') { sh 'npm ci' }
+					dir('./services/template') { sh 'npm ci' }
+					dir('./services/transaction-statistics') { sh 'npm ci' }
+					dir('./tests') { sh 'npm ci' }
 				}
 			}
 		}
 		stage ('Check linting') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
+				nvm(readFile('.nvmrc').trim()) {
 					sh 'npm run eslint'
 				}
 			}
@@ -39,9 +42,12 @@ pipeline {
 		stage('Perform unit tests') {
 			steps {
 				script { echoBanner(STAGE_NAME) }
-				nvm(getNodejsVersion()) {
+				nvm(readFile('.nvmrc').trim()) {
 					dir('./framework') { sh "npm run test:unit" }
-					dir('./services/core') { sh "npm run test:unit" }
+					dir('./services/blockchain-app-registry') { sh "npm run test:unit" }
+					dir('./services/blockchain-connector') { sh "npm run test:unit" }
+					dir('./services/blockchain-indexer') { sh "npm run test:unit" }
+					dir('./services/fee-estimator') { sh "npm run test:unit" }
 					dir('./services/market') { sh "npm run test:unit" }
 					dir('./services/newsfeed') { sh "npm run test:unit" }
 					dir('./services/export') { sh "npm run test:unit" }
@@ -54,8 +60,13 @@ pipeline {
 			script { echoBanner('Failed to run the pipeline') }
 		}
 		cleanup {
-			script { echoBanner('Cleaning up...') }
-			echo 'Keeping dependencies for the next build'
+			script { 
+				echoBanner('Cleaning up...') 
+				nvm(readFile('.nvmrc').trim()) {
+					echoBanner('Removing dependencies') 
+					sh 'make clean-local'
+				}
+			}
 		}
 	}
 }

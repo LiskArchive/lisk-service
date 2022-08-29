@@ -24,13 +24,13 @@
   },
   "scripts": {
     "start": "node app.js",
-    "eslint": "eslint ./api ./knowledge ./services ./test ./*.js",
-    "eslint-fix": "eslint --fix ./api ./knowledge ./services ./test ./*.js",
+    "eslint": "eslint . --ext .js",
+    "eslint-fix": "eslint . --fix --ext .js",
     "clean": "rm -rf ./node_modules",
     "watch": "supervisor -w . -i ./node_modules app.js"
   },
   "dependencies": {
-    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/f401073c992ec9c2eca045664082353857cceebd/framework/dist/lisk-service-framework-1.4.3.tgz",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz",
     "node-cron": "=2.0.3"
   },
   "devDependencies": {}

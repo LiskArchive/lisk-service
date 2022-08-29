@@ -16,17 +16,19 @@
 const {
 	HTTP: { request: requestLib },
 	Logger,
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const { normalizeData } = require('../shared/normalizers');
-const { getTableInstance } = require('../shared/indexdb/mysql');
 
 const newsfeedIndexSchema = require('../shared/schema/newsfeed');
 const config = require('../config');
 
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const logger = Logger();
 
-const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema);
+const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema, MYSQL_ENDPOINT);
 
 const reloadNewsFromDrupal = async drupalSources => {
 	const newsfeedDB = await getNewsFeedIndex();

@@ -1,0 +1,69 @@
+{
+    "apiJson": {
+        "swagger": "2.0",
+        "info": {
+            "title": "Lisk Service API",
+            "version": "3.0",
+            "contact": {
+                "email": "admin@lisk.com"
+            },
+            "description": "# Lisk Service API Documentation\n\nLisk Service is a middleware web application that interacts with the entire Lisk ecosystem in various aspects, such as accessing blockchain data, storing users' private data, retrieving and storing the market data, and interacting with social media. \n\nThe main focus of this project is to provide data to Lisk blockchain users by serving them in a standardized JSON format and exposing a public RESTful API. The project is split into several smaller components each focused on serving a single specific purpose. \n\nAs a pure backend project, it is designed to meet the requirements of the frontend developers, especially Lisk Desktop and Lisk Mobile.\n\nThe API can be accessed at `https://service.lisk.com`.\nIt is also possible to access the Testnet network at `https://testnet-service.lisk.com`.\n\nThe Lisk Service API is compatible with RESTful guidelines. The specification below contains numerous examples of how to use the API in practice.\n\n## Endpoint Logic\n\nThe logic of the endpoints are as follows:\n- the structure is always based on `/<root_entity>/<object>/<properties>`\n\n## Responses\n\nAll responses are returned in the JSON format - `application/json`.\n\nEach API request has the following structure:\n\n```\n{\n  \"data\": {}, // Contains the requested data\n  \"meta\": {}, // Contains additional metadata, e.g. the values of `limit` and `offset`\n}\n```\n\nAnd, the error responses adhere to the following structure:\n\n```\n{\n  \"error\": true,\n  \"message\": \"Not found\", // Contains the error message\n}\n```",
+            "license": {
+                "name": "GPL v3.0",
+                "url": "https://www.gnu.org/licenses/gpl-3.0.en.html"
+            }
+        },
+        "basePath": "/api/v3",
+        "tags": [
+            {
+                "name": "Blocks",
+                "description": "API calls for blocks from the Lisk network"
+            },
+            {
+                "name": "Transactions",
+                "description": "API calls for the transactions on the Lisk network"
+            },
+            {
+                "name": "Network",
+                "description": "Lisk Network utility API calls"
+            },
+            {
+                "name": "Auth",
+                "description": "Lisk Auth module API calls"
+            },
+            {
+                "name": "Interoperability",
+                "description": "Lisk Blockchain Interoperability related API calls"
+            },
+            {
+                "name": "DPoS",
+                "description": "Lisk DPoS module API calls"
+            },
+            {
+                "name": "Events",
+                "description": "Lisk Events API calls"
+            },
+            {
+                "name": "Fee",
+                "description": "Lisk transaction fee recommendation API calls"
+            },
+            {
+                "name": "Legacy",
+                "description": "Lisk Legacy module API calls"
+            },
+            {
+                "name": "Tokens",
+                "description": "Lisk Token module API calls"
+            },
+            {
+                "name": "Validator",
+                "description": "Lisk Validators module API calls"
+            }
+        ],
+        "schemes": [
+            "http",
+            "https"
+        ],
+        "paths": {}
+    }
+}

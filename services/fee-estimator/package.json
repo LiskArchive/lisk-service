@@ -1,0 +1,43 @@
+{
+  "name": "lisk-service-fee-estimator",
+  "version": "0.6.4",
+  "description": "Lisk Service Fee Estimator",
+  "keywords": [
+    "lisk",
+    "blockchain"
+  ],
+  "homepage": "https://github.com/LiskHQ/lisk-service",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:LiskHQ/lisk-service.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LiskHQ/lisk-service/issues"
+  },
+  "private": true,
+  "author": "Lisk Foundation <admin@lisk.com>, lightcurve GmbH <admin@lightcurve.io>",
+  "license": "Apache-2.0",
+  "main": "app.js",
+  "engines": {
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "clean": "rm -rf ./node_modules",
+    "test": "npm run test:unit",
+    "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
+  },
+  "dependencies": {
+    "@liskhq/lisk-transactions": "6.0.0-alpha.2",
+    "bluebird": "^3.7.2",
+    "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.14.0",
+    "babel-jest": "^27.3.0",
+    "jest": "^27.3.0",
+    "jest-when": "^3.5.1",
+    "mocker-data-generator": "^2.12.0"
+  }
+}

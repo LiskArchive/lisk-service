@@ -17,7 +17,7 @@ const definition = require('./mappings/transactionsStatistics');
 
 module.exports = {
 	type: 'moleculer',
-	method: 'core.transactions.statistics.month',
+	method: 'statistics.transactions.statistics.month',
 	params: {
 		offset: '=',
 		limit: '=',

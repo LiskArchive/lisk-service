@@ -1,0 +1,293 @@
+{
+    "delegate": {
+        "type": "object",
+        "required": [
+            "name",
+            "address",
+            "totalVotesReceived",
+            "selfVotes",
+            "voteWeight",
+            "status",
+            "isBanned",
+            "pomHeights"
+        ],
+        "properties": {
+            "name": {
+                "type": "string",
+                "example": "genesis_84",
+                "description": "Delegate name"
+            },
+            "totalVotesReceived": {
+                "type": "string",
+                "example": "109000000000",
+                "description": "Total votes received"
+            },
+            "selfVotes": {
+                "type": "string",
+                "example": "109000000000",
+                "description": "Self votes"
+            },
+            "voteWeight": {
+                "type": "string",
+                "example": "109000000000",
+                "description": "vote weight"
+            },
+            "address": {
+                "type": "string",
+                "format": "address",
+                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+            },
+            "lastGeneratedHeight": {
+                "type": "integer",
+                "example": 0
+            },
+            "status": {
+                "type": "string",
+                "example": "active",
+                "description": "Delegate status"
+            },
+            "isBanned": {
+                "type": "boolean",
+                "example": "false"
+            },
+            "pomHeights": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "start": {
+                            "type": "integer",
+                            "example": 123
+                        },
+                        "end": {
+                            "type": "integer",
+                            "example": 567
+                        }
+                    }
+                }
+            },
+            "consecutiveMissedBlocks": {
+                "type": "integer",
+                "example": 0
+            }
+        }
+    },
+    "delegatesWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of delegates",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/delegate"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
+    },
+    "unlock": {
+        "type": "object",
+        "required": [
+            "address",
+            "publicKey",
+            "name"
+        ],
+        "properties": {
+            "address": {
+                "type": "string",
+                "format": "address",
+                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+            },
+            "publicKey": {
+                "type": "string",
+                "format": "publicKey",
+                "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+            },
+            "name": {
+                "type": "string",
+                "example": "genesis_84",
+                "description": "Name of auth account"
+            },
+            "unlocking": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "delegateAddress": {
+                            "type": "string",
+                            "example": "lsk24cd35u4jdq8szo3pnsqe5dsxwrnazyqqqg5eu"
+                        },
+                        "amount": {
+                            "type": "string",
+                            "example": "10000"
+                        },
+                        "unvoteHeight": {
+                            "type": "object",
+                            "properties": {
+                                "start": {
+                                    "type": "integer",
+                                    "example": 30
+                                },
+                                "end": {
+                                    "type": "integer",
+                                    "example": 300
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "unlocksWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "Array of delegate unlocks",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/unlock"
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
+    },
+    "Vote": {
+        "type": "object",
+        "required": [
+            "delegateAddress",
+            "amount",
+            "name"
+        ],
+        "properties": {
+            "delegateAddress": {
+                "type": "string",
+                "format": "address",
+                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                "description": "Lisk Address of the delegate the queried account voted for."
+            },
+            "amount": {
+                "type": "string",
+                "example": 1081560729258
+            },
+            "name": {
+                "type": "string",
+                "format": "username",
+                "example": "liskhq",
+                "description": "Name of the delegate the queried account voted for."
+            }
+        }
+    },
+    "VotesReceivedWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of votes",
+                "type": "object",
+                "properties": {
+                    "account": {
+                        "type": "object",
+                        "properties": {
+                            "address": {
+                                "type": "string",
+                                "format": "address",
+                                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "genesis_84",
+                                "description": "Delegate name"
+                            },
+                            "publicKey": {
+                                "type": "string",
+                                "format": "publicKey",
+                                "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                            }
+                        }
+                    },
+                    "votes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Vote"
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
+    },
+    "VotesSentWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "List of votes",
+                "type": "object",
+                "properties": {
+                    "account": {
+                        "type": "object",
+                        "properties": {
+                            "address": {
+                                "type": "string",
+                                "format": "address",
+                                "example": "lskdwsyfmcko6mcd357446yatromr9vzgu7eb8y99",
+                                "description": "The Lisk Address is the human-readable representation of a blockchain account.\nIt is 41 character long identifier that begins with `lsk`.\n"
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "genesis_84",
+                                "description": "Delegate name"
+                            },
+                            "publicKey": {
+                                "type": "string",
+                                "format": "publicKey",
+                                "example": "b1d6bc6c7edd0673f5fed0681b73de6eb70539c21278b300f07ade277e1962cd",
+                                "description": "The public key is derived from the private key of the owner of the account.\nIt can be used to validate that the private key belongs to the owner, but not provide access to the owners private key.\n"
+                            },
+                            "votesUsed": {
+                                "type": "integer",
+                                "example": 10,
+                                "description": ""
+                            }
+                        }
+                    },
+                    "votes": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/Vote"
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "$ref": "#/definitions/Pagination"
+            }
+        }
+    }
+}

@@ -15,21 +15,19 @@
  */
 const {
 	Exceptions: { ServiceUnavailableException },
+	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
 const config = require('../config');
 
-const { getTableInstance } = require('./indexdb/mysql');
 const newsfeedIndexSchema = require('./schema/newsfeed');
 
-const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema);
+const MYSQL_ENDPOINT = config.endpoints.mysql;
 
-const enabledSources = Object.values(config.sources)
-	.filter(({ enabled }) => enabled)
-	.map(({ name }) => name).join(',');
+const getNewsFeedIndex = () => getTableInstance('newsfeed', newsfeedIndexSchema, MYSQL_ENDPOINT);
 
 const getNewsfeedArticles = async params => {
-	const { offset, limit, source = enabledSources } = params;
+	const { offset } = params;
 	const newsfeedDB = await getNewsFeedIndex();
 
 	if (params.source) params = {
@@ -45,13 +43,14 @@ const getNewsfeedArticles = async params => {
 	// Send 'Service Unavailable' when no data is available
 	if (!data.length) throw new ServiceUnavailableException('Service not available');
 
+	const total = await newsfeedDB.count(params);
+
 	return {
 		data,
 		meta: {
 			count: data.length,
-			limit,
 			offset,
-			source,
+			total,
 		},
 	};
 };

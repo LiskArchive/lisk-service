@@ -15,11 +15,16 @@
  */
 const moment = require('moment');
 
-const { getTableInstance } = require('../../shared/indexdb/mysql');
+const { MySQL: { getTableInstance } } = require('lisk-service-framework');
+
 const schema = require('../../shared/schema/newsfeed');
 
+const config = require('../../config');
+
+const MYSQL_ENDPOINT = config.endpoints.mysql;
+
 const tableName = 'newsfeedTestSchema';
-const getIndex = () => getTableInstance(tableName, schema);
+const getIndex = () => getTableInstance(tableName, schema, MYSQL_ENDPOINT);
 
 const { normalizedTwitterData } = require('../constants/newsfeed');
 const { prune } = require('../../shared/dbMaintenance');
@@ -34,7 +39,7 @@ describe('Test DB Maintenance', () => {
 
 	afterAll(async () => {
 		const result = await db.find();
-		await db.deleteIds(result.map(r => r[`${schema.primaryKey}`]));
+		await db.deleteByPrimaryKey(result.map(r => r[`${schema.primaryKey}`]));
 		db.rawQuery(`DROP TABLE IF EXISTS ${tableName} CASCADE`);
 	});
 

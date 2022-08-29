@@ -1,0 +1,75 @@
+{
+    "market": {
+        "type": "object",
+        "required": [
+            "code",
+            "from",
+            "rate",
+            "to",
+            "updateTimestamp",
+            "sources"
+        ],
+        "properties": {
+            "code": {
+                "type": "string",
+                "example": "LSK_CHF"
+            },
+            "from": {
+                "type": "string",
+                "example": "LSK",
+                "description": "from"
+            },
+            "rate": {
+                "type": "string",
+                "example": "2.4058",
+                "description": "Current rate"
+            },
+            "to": {
+                "type": "string",
+                "example": "CHF",
+                "description": "to"
+            },
+            "sources": {
+                "type": "array",
+                "items": {
+                    "type": "string",
+                    "example": "kraken"
+                }
+            },
+            "updateTimestamp": {
+                "type": "integer",
+                "example": 1623053809,
+                "description": "Last updated timestamp."
+            }
+        }
+    },
+    "MarketPricesWithEnvelope": {
+        "type": "object",
+        "required": [
+            "data",
+            "meta"
+        ],
+        "properties": {
+            "data": {
+                "description": "Market price by currency pairs",
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/market"
+                }
+            },
+            "meta": {
+                "type": "object",
+                "required": [
+                    "count"
+                ],
+                "properties": {
+                    "count": {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "count"
+                    }
+                }
+            }
+        }
+    }
+}

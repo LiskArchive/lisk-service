@@ -29,6 +29,7 @@
     "eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
     "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\""
   },
+  "dependencies": {},
   "devDependencies": {
     "eslint": "^7.32.0",
     "eslint-config-lisk-base": "^2.0.1",

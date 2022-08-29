@@ -20,7 +20,7 @@ const {
 
 module.exports = [
 	{
-		name: 'transactions.export',
+		name: 'transactions.schedule',
 		description: 'Schedule transaction history export',
 		params: {
 			address: { type: 'string', optional: true },

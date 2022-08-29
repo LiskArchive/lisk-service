@@ -2,6 +2,13 @@
 
 # Lisk Service
 
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/liskHQ/lisk-service)
+![GitHub repo size](https://img.shields.io/github/repo-size/liskhq/lisk-service)
+[![DeepScan grade](https://deepscan.io/api/teams/6759/projects/8870/branches/113510/badge/grade.svg)](https://deepscan.io/dashboard/#view=project&tid=6759&pid=8870&bid=113510)
+![GitHub issues](https://img.shields.io/github/issues-raw/liskhq/lisk-service)
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/liskhq/lisk-service)
+
 Lisk Service is a web application that allows interaction with various blockchain networks based on Lisk and Bitcoin protocols.
 
 The main focus of Lisk Service is to provide data to the UI clients such as Lisk Desktop and Lisk Mobile. Lisk Service makes it possible to access all live blockchain data in a similar manner to the regular Lisk SDK API. 
