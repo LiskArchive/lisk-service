@@ -19,8 +19,8 @@
   "private": true,
   "main": "index.js",
   "engines": {
-    "node": ">=16.14.0 <=16",
-    "npm": ">=8.3.1"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "release:github": "npm pack && mv lisk-service-framework-$npm_package_version.tgz ./dist/lisk-service-framework-$npm_package_version.tgz",

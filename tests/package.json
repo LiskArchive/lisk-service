@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-tests",
-  "version": "0.1.0",
+  "version": "0.6.4",
   "description": "Lisk Service Test Package",
   "keywords": [
     "lisk",
@@ -20,8 +20,8 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": ">=16.14.0 <=16",
-    "npm": ">=8.3.1"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "clean": "rm -rf ./node_modules",
