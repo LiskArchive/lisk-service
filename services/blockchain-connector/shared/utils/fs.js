@@ -51,19 +51,15 @@ const read = (filePath) => new Promise((resolve, reject) => {
 	});
 });
 
-const rmDir = (directoryPath, options = {}) => new Promise((resolve, reject) => {
-	fs.rmDir(
+const rm = async (directoryPath, options = {}) => {
+	await fs.rm(
 		directoryPath,
 		options,
 		(err) => {
-			if (err) {
-				logger.error(err);
-				return reject(err);
-			}
-			return resolve();
+			if (err) logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
 		},
 	);
-});
+};
 
 const extractTarBall = async (filePath, directoryPath) => fs
 	.createReadStream(filePath)
@@ -74,5 +70,5 @@ module.exports = {
 	extractTarBall,
 	mkdir,
 	read,
-	rmDir,
+	rm,
 };

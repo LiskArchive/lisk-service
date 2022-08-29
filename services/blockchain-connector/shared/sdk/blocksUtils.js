@@ -20,7 +20,7 @@ const path = require('path');
 const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
-const { exists, mkdir, rmDir, extractTarBall } = require('../utils/fs');
+const { exists, mkdir, rm, extractTarBall } = require('../utils/fs');
 const { downloadFile, verifyFileChecksum } = require('../utils/download');
 
 const config = require('../../config');
@@ -104,7 +104,7 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 			if (isValidGenesisBlock) return true;
 
 			// Delete all previous files including the containing directory
-			await rmDir(directoryPath);
+			await rm(directoryPath, { recursive: true, force: true });
 		} catch (err) {
 			logger.error('Error while downloading and validating genesis block');
 			logger.error(err.message);
