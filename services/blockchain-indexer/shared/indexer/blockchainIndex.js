@@ -25,13 +25,15 @@ const {
 		commitDbTransaction,
 		rollbackDbTransaction,
 	},
+	Signals,
 } = require('lisk-service-framework');
 
 const { applyTransaction, revertTransaction } = require('./transactionProcessor');
 
 const {
 	getBlockByHeight,
-	getTransactionsByBlockIDs,
+	getTransactionIDsByBlockID,
+	getTransactions,
 	// getEventsByHeight,
 } = require('../dataService');
 
@@ -40,6 +42,7 @@ const {
 } = require('../utils/arrayUtils');
 
 const { getBase32AddressFromPublicKey } = require('../utils/accountUtils');
+const { normalizeTransaction } = require('../utils/transactionsUtils');
 
 // const { getEventsInfoToIndex } = require('../utils/eventsUtils');
 
@@ -221,22 +224,38 @@ const deleteIndexedBlocks = async job => {
 		await BluebirdPromise.map(
 			blocks,
 			async block => {
-				if (block.transactions.length) {
-					const transactionsDB = await getTransactionsIndex();
+				let forkedTransactions;
+				const transactionsDB = await getTransactionsIndex();
+
+				if (block.transactions && block.transactions.length) {
 					const { transactions, assets, ...blockHeader } = block;
 
-					await BluebirdPromise.map(
+					forkedTransactions = await BluebirdPromise.map(
 						transactions,
 						async (tx) => {
 							// Invoke 'revertTransaction' to execute command specific reverting logic
 							await revertTransaction(blockHeader, tx, dbTrx);
-
-							const forkedTransactionIDs = await getTransactionsByBlockIDs([blockHeader.id]);
-							await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+							const normalizedTransaction = await normalizeTransaction(tx);
+							return normalizedTransaction;
 						},
 						{ concurrency: block.transactions.length },
 					);
 				}
+
+				const forkedTransactionIDs = await getTransactionIDsByBlockID(block.header.id);
+				if (!Array.isArray(forkedTransactions)) {
+					const deletedTransactions = await BluebirdPromise.map(
+						forkedTransactionIDs,
+						async txID => {
+							const transaction = await getTransactions({ id: txID });
+							return transaction.data ? transaction.data[0] : null;
+						},
+						{ concurrency: 25 },
+					);
+					forkedTransactions = deletedTransactions.map(e => e !== null);
+				}
+				await transactionsDB.deleteByPrimaryKey(forkedTransactionIDs, dbTrx);
+				Signals.get('deleteTransactions').dispatch({ data: forkedTransactions });
 			});
 
 		await blocksDB.deleteByPrimaryKey(blockIDs);

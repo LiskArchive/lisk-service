@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const util = require('util');
 const { Logger, Signals } = require('lisk-service-framework');
 
 const {
@@ -29,13 +28,13 @@ let localPreviousBlockId;
 
 module.exports = [
 	{
-		name: 'block.change',
+		name: 'block.new',
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
-			const newBlockListener = async data => {
+			const newBlockListener = async (payload) => {
 				try {
-					if (data && Array.isArray(data.data)) {
-						const [block] = data.data;
+					if (payload && Array.isArray(payload.data)) {
+						const [block] = payload.data;
 						logger.debug(`New block arrived (${block.id})...`);
 						// Fork detection
 						if (localPreviousBlockId) {
@@ -45,15 +44,13 @@ module.exports = [
 						}
 						localPreviousBlockId = block.id;
 						reloadAllPendingTransactions();
-						callback(data);
+						callback(payload);
 					} else {
-						logger.warn([
-							'Invalid payload received with the newBlock signal: ',
-							util.inspect(data),
-						].join('\n'));
+						const payloadStr = JSON.stringify(payload);
+						logger.warn(`Incorrect payload detected for 'newBlock' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
-					logger.error(`Error occured when processing 'block.change' event:\n${err.stack}`);
+					logger.error(`Error occured when processing 'block.new' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(newBlockListener);
@@ -63,15 +60,18 @@ module.exports = [
 		name: 'transactions.new',
 		description: 'Keep newly added transactions list up-to-date',
 		controller: callback => {
-			const newTransactionsListener = async (data) => {
+			const newTransactionsListener = async (payload) => {
 				try {
-					if (data && Array.isArray(data.data)) {
-						const [block] = data.data;
+					if (payload && Array.isArray(payload.data)) {
+						const [block] = payload.data;
 						if (block.numberOfTransactions > 0) {
 							logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
 							const transactionData = await getTransactionsByBlockID(block.id);
 							callback(transactionData);
 						}
+					} else {
+						const payloadStr = JSON.stringify(payload);
+						logger.warn(`Incorrect payload detected for 'newBlock' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
 					logger.error(`Error occured when processing 'transactions.new' event:\n${err.stack}`);
@@ -81,13 +81,51 @@ module.exports = [
 		},
 	},
 	{
+		name: 'block.delete',
+		description: 'Emit the deleted block.',
+		controller: callback => {
+			const deleteBlockListener = async (payload) => {
+				try {
+					if (payload && Array.isArray(payload.data)) {
+						callback(payload);
+					} else {
+						const payloadStr = JSON.stringify(payload);
+						logger.warn(`Incorrect payload detected for 'deleteBlock' signal:\n${payloadStr}`);
+					}
+				} catch (err) {
+					logger.error(`Error occured when processing 'block.delete' event:\n${err.stack}`);
+				}
+			};
+			Signals.get('deleteBlock').add(deleteBlockListener);
+		},
+	},
+	{
+		name: 'transactions.delete',
+		description: 'Emit the list of deleted transactions.',
+		controller: callback => {
+			const deleteTransactionsListener = async (payload) => {
+				try {
+					if (payload && Array.isArray(payload.data)) {
+						callback(payload);
+					} else {
+						const payloadStr = JSON.stringify(payload);
+						logger.warn(`Incorrect payload detected for 'deleteTransactions' signal:\n${payloadStr}`);
+					}
+				} catch (err) {
+					logger.error(`Error occured when processing 'transactions.delete' event:\n${err.stack}`);
+				}
+			};
+			Signals.get('deleteTransactions').add(deleteTransactionsListener);
+		},
+	},
+	{
 		name: 'generators.change',
 		description: 'Keep generators list up-to-date',
 		controller: callback => {
 			const generatorsChangeListener = async () => {
 				try {
 					await reloadGeneratorsCache();
-					const generators = await getGenerators({ limit: 103 });
+					const generators = await getGenerators({ limit: 103, offset: 0 });
 					callback(generators);
 				} catch (err) {
 					logger.error(`Error occured when processing 'generators.change' event:\n${err.stack}`);
@@ -100,10 +138,10 @@ module.exports = [
 		name: 'round.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			const newRoundListener = async data => {
+			const newRoundListener = async payload => {
 				try {
 					logger.debug('Returning all forgers for the new round...');
-					callback(data);
+					callback(payload);
 				} catch (err) {
 					logger.error(`Error occured when processing 'round.change' event:\n${err.stack}`);
 				}
@@ -115,9 +153,9 @@ module.exports = [
 		name: 'index.ready',
 		description: 'Returns true when the index is ready',
 		controller: callback => {
-			const indexStatusListener = async (data) => {
+			const indexStatusListener = async (payload) => {
 				logger.debug('Dispatching \'index.ready\' event over websocket');
-				callback(data);
+				callback(payload);
 			};
 			Signals.get('blockIndexReady').add(indexStatusListener);
 		},
