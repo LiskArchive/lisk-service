@@ -60,20 +60,20 @@ const verifyChecksum = async (filePath, expectedChecksum) => {
 
 	const fileChecksum = fileHash.toString('hex');
 	if (fileChecksum !== expectedChecksum) {
-		logger.info(`File checksum: ${fileChecksum} mismatched with expected checksum: ${expectedChecksum}. filepath:${filePath}`);
+		logger.info(`Checksum verification failed for file:${filePath}\nExpected: ${expectedChecksum}, Actual: ${fileChecksum}`);
 		return false;
 	}
 
 	return true;
 };
 
-const readFileAsync = async (filePath) => {
+const read = async (filePath) => {
 	const readWrapper = util.promisify(fs.readFile);
 
 	return readWrapper(filePath, 'utf8');
 };
 
-const deleteFileRecursive = async (filePath) => {
+const remove = async (filePath) => {
 	if (await exists(filePath)) {
 		const rmWrapper = util.promisify(fs.rm);
 
@@ -82,7 +82,7 @@ const deleteFileRecursive = async (filePath) => {
 };
 
 const verifyFileChecksum = async (filePath, checksumPath) => {
-	const expectedChecksum = (await readFileAsync(checksumPath)).split(' ')[0];
+	const expectedChecksum = (await read(checksumPath)).split(' ')[0];
 
 	return verifyChecksum(filePath, expectedChecksum);
 };
@@ -92,7 +92,7 @@ const extractTarBall = async (filePath, directoryPath) => fs
 	.pipe(tar.extract({ cwd: directoryPath }));
 
 module.exports = {
-	deleteFileRecursive,
+	remove,
 	exists,
 	extractTarBall,
 	mkdir,

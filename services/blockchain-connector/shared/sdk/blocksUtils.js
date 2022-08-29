@@ -20,7 +20,7 @@ const path = require('path');
 const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
-const { exists, mkdir, verifyFileChecksum, deleteFileRecursive, extractTarBall } = require('../utils/fs');
+const { exists, mkdir, verifyFileChecksum, remove, extractTarBall } = require('../utils/fs');
 const { downloadFile } = require('../utils/download');
 
 const config = require('../../config');
@@ -85,9 +85,6 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 
 	do {
 		/* eslint-disable no-await-in-loop */
-		// Delete all previous files including the containing directory
-		await deleteFileRecursive(directoryPath);
-
 		if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
 		// Download the genesis and the digest files
@@ -104,11 +101,15 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 		}
 
 		if (isValidGenesisBlock) return true;
+		
+		// Delete all previous files including the containing directory
+		await remove(directoryPath);
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
 
-	logger.fatal(`Could not verfiy genesis block. genesisBlockUrl:${genesisBlockUrl}`);
-	process.exit();
+	logger.fatal(`Unable to verify the integrity of the downloaded genesis block from ${genesisBlockUrl}`);
+	logger.fatal('Exiting the application');
+	process.exit(1);
 };
 
 const getGenesisBlockFromFS = async () => {
