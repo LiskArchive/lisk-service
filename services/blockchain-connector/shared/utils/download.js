@@ -33,7 +33,7 @@ const logger = Logger();
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
-	logger.info(`Downloading external file.\nurl:${url}\ndirectory:${directoryPath}`);
+	logger.info(`Downloading and extracting file from ${url} to ${directoryPath}`);
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
 			response.pipe(tar.extract({ cwd: directoryPath }));
@@ -52,7 +52,7 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 });
 
 const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
-	logger.info(`Downloading external file.\nurl:${fileUrl}\nfilePath:${filePath}`);
+	logger.info(`Downloading JSON file from ${fileUrl} as ${filePath}`);
 	request(fileUrl)
 		.then(async response => {
 			const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
@@ -65,7 +65,7 @@ const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) =>
 });
 
 const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
-	logger.info(`Downloading external file.\nurl:${fileUrl}\nfilePath:${filePath}`);
+	logger.info(`Downloading and extracting file from ${fileUrl} as ${filePath}`);
 	getHTTPProtocolByURL(fileUrl).get(fileUrl, (response) => {
 		if (response.statusCode === 200) {
 			const unzip = zlib.createUnzip();
@@ -86,7 +86,7 @@ const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject
 });
 
 const downloadFile = (url, dirPath) => new Promise((resolve, reject) => {
-	logger.info(`Downloading external file.\nurl:${url}\ndirectory:${dirPath}`);
+	logger.info(`Downloading file from ${url} to ${dirPath}`);
 
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
