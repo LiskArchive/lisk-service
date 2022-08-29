@@ -1,6 +1,6 @@
 {
   "name": "lisk-service-blockchain-indexer",
-  "version": "0.6.4",
+  "version": "0.7.0-alpha.0",
   "description": "Lisk Service Blockchain Indexer",
   "keywords": [
     "lisk",

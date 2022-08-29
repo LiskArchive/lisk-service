@@ -205,7 +205,7 @@ tag-%:
 	git add ./services/export/package*.json
 	git add ./services/template/package*.json
 	git add ./package*.json
-	git commit -m "Version bump to $*"
+	git commit -m ":arrow_up: Version bump to $*"
 	git tag v$*
 
 mrproper: down clean
