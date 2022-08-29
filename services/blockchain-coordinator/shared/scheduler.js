@@ -26,7 +26,6 @@ const { initEventsScheduler } = require('./eventsScheduler');
 const {
 	isGenesisBlockIndexed,
 	// isGenesisAccountsIndexed,
-	// getDelegateAccounts,
 	// getGenesisAccountAddresses,
 	getMissingblocks,
 	getCurrentHeight,
@@ -73,13 +72,6 @@ const scheduleBlocksIndexing = async (heights, isNewBlock = false) => {
 	}));
 };
 
-// const scheduleDelegateAccountsIndexing = async (addresses) => {
-// 	await Promise.all(addresses
-// 		.map(async (address) => accountIndexQueue.add({ address })),
-// 	);
-// 	logger.info('Finished scheduling of delegate accounts indexing');
-// };
-
 // const scheduleGenesisAccountsIndexing = async (accountAddressesToIndex) => {
 // 	await Promise.all(accountAddressesToIndex
 // 		.map(async (address) => accountIndexQueue.add({ address })),
@@ -96,12 +88,6 @@ const initIndexingScheduler = async () => {
 
 	// Retrieve enabled modules from connector
 	registeredLiskModules = await getRegisteredModules();
-
-	// Get all delegates and schedule indexing
-	// const delegates = await getDelegateAccounts();
-	// if (Array.isArray(delegates) && delegates.length) {
-	// 	await scheduleDelegateAccountsIndexing(delegates);
-	// }
 
 	// Check if genesis block is already indexed and schedule indexing if not indexed
 	const isGenesisBlockAlreadyIndexed = await isGenesisBlockIndexed();

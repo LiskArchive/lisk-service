@@ -47,7 +47,6 @@ const { updateAddressBalanceQueue } = require('./tokenIndex');
 
 const {
 	getFinalizedHeight,
-	getCurrentHeight,
 	getGenesisHeight,
 	getAvailableModuleCommands,
 } = require('../constants');
@@ -94,25 +93,6 @@ const getTransactionsIndex = () => getTableInstance(
 );
 
 const INDEX_VERIFIED_HEIGHT = 'indexVerifiedHeight';
-
-// const getGeneratorPkInfoArray = async (blocks) => {
-// 	const blocksDB = await getBlocksIndex();
-// 	const pkInfoArray = [];
-// 	await BluebirdPromise.map(
-// 		blocks,
-// 		async block => {
-// 			const [blockInfo] = await blocksDB.find({ id: block.id, limit: 1 }, ['id']);
-// 			pkInfoArray.push({
-// 				publicKey: block.generatorPublicKey,
-// 				reward: block.reward,
-// 				isForger: true,
-// 				isBlockIndexed: !!blockInfo,
-// 			});
-// 		},
-// 		{ concurrency: blocks.length },
-// 	);
-// 	return pkInfoArray;
-// };
 
 const validateBlock = (block) => !!block && block.height >= 0;
 
@@ -301,33 +281,6 @@ const indexNewBlock = async height => {
 	}
 };
 
-const buildIndex = async (from, to) => {
-	if (from > to) {
-		logger.warn(`Invalid interval of blocks to index: ${from} -> ${to}`);
-		return;
-	}
-
-	const MAX_BLOCKS_LIMIT_PP = 1; // 1 block at a time
-	const numOfPages = Math.ceil((to + 1) / MAX_BLOCKS_LIMIT_PP - from / MAX_BLOCKS_LIMIT_PP);
-
-	for (let pageNum = 0; pageNum < numOfPages; pageNum++) {
-		/* eslint-disable no-await-in-loop */
-		const pseudoOffset = to - (MAX_BLOCKS_LIMIT_PP * (pageNum + 1));
-		const offset = pseudoOffset >= from ? pseudoOffset : from - 1;
-		const batchFromHeight = offset + 1;
-		const batchToHeight = (offset + MAX_BLOCKS_LIMIT_PP) <= to
-			? (offset + MAX_BLOCKS_LIMIT_PP) : to;
-		const percentage = (((pageNum + 1) / numOfPages) * 100).toFixed(1);
-		logger.debug(`Scheduling retrieval of blocks ${batchFromHeight}-${batchToHeight} (${percentage}%)`);
-
-		for (let height = batchFromHeight; height <= batchToHeight; height++) {
-			await indexBlocksQueue.add({ height });
-		}
-		/* eslint-enable no-await-in-loop */
-	}
-	logger.info(`Finished scheduling the block index build (${from}-${to})`);
-};
-
 const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	let result = [];
 
@@ -367,28 +320,6 @@ const findMissingBlocksInRange = async (fromHeight, toHeight) => {
 	return result;
 };
 
-const getMinNonFinalHeight = async () => {
-	const blocksDB = await getBlocksIndex();
-
-	const [{ height: lastIndexedHeight } = {}] = await blocksDB.find({
-		sort: 'height:asc',
-		limit: 1,
-		isFinal: false,
-	}, ['height']);
-
-	return lastIndexedHeight;
-};
-
-const updateNonFinalBlocks = async () => {
-	const cHeight = await getCurrentHeight();
-	const minNFHeight = await getMinNonFinalHeight();
-
-	if (typeof minNFHeight === 'number') {
-		logger.info(`Re-indexing ${cHeight - minNFHeight + 1} non-finalized blocks`);
-		await buildIndex(minNFHeight, cHeight);
-	}
-};
-
 const getMissingBlocks = async (params) => {
 	const missingBlockRanges = await findMissingBlocksInRange(params.from, params.to);
 	const nestedListOfRanges = missingBlockRanges
@@ -413,7 +344,6 @@ const getIndexVerifiedHeight = () => keyValueDB.get(INDEX_VERIFIED_HEIGHT);
 module.exports = {
 	indexBlock,
 	indexNewBlock,
-	updateNonFinalBlocks,
 	isGenesisBlockIndexed,
 	addBlockToQueue,
 	getMissingBlocks,
