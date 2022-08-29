@@ -13,7 +13,6 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const util = require('util');
 const { Logger, Signals } = require('lisk-service-framework');
 
 const {
@@ -29,7 +28,7 @@ let localPreviousBlockId;
 
 module.exports = [
 	{
-		name: 'block.change',
+		name: 'block.new',
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
 			const newBlockListener = async (payload) => {
@@ -47,13 +46,11 @@ module.exports = [
 						reloadAllPendingTransactions();
 						callback(payload);
 					} else {
-						logger.warn([
-							'Invalid payload received with the newBlock signal: ',
-							util.inspect(payload),
-						].join('\n'));
+						const payloadStr = JSON.stringify(payload);
+						logger.warn(`Incorrect payload detected for 'newBlock' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
-					logger.error(`Error occured when processing 'block.change' event:\n${err.stack}`);
+					logger.error(`Error occured when processing 'block.new' event:\n${err.stack}`);
 				}
 			};
 			Signals.get('newBlock').add(newBlockListener);
@@ -74,7 +71,7 @@ module.exports = [
 						}
 					} else {
 						const payloadStr = JSON.stringify(payload);
-						logger.debug(`Incorrect payload detected for 'newBlock' signal:\n${payloadStr}`);
+						logger.warn(`Incorrect payload detected for 'newBlock' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
 					logger.error(`Error occured when processing 'transactions.new' event:\n${err.stack}`);
@@ -93,7 +90,7 @@ module.exports = [
 						callback(payload);
 					} else {
 						const payloadStr = JSON.stringify(payload);
-						logger.debug(`Incorrect payload detected for 'deleteBlock' signal:\n${payloadStr}`);
+						logger.warn(`Incorrect payload detected for 'deleteBlock' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
 					logger.error(`Error occured when processing 'block.delete' event:\n${err.stack}`);
@@ -112,7 +109,7 @@ module.exports = [
 						callback(payload);
 					} else {
 						const payloadStr = JSON.stringify(payload);
-						logger.debug(`Incorrect payload detected for 'deleteTransactions' signal:\n${payloadStr}`);
+						logger.warn(`Incorrect payload detected for 'deleteTransactions' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
 					logger.error(`Error occured when processing 'transactions.delete' event:\n${err.stack}`);
