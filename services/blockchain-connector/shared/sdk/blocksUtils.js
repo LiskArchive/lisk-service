@@ -96,14 +96,14 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 			// Verify the integrity of the downloaded file, retry on failure
 			const isValidGenesisBlock = await verifyFileChecksum(genesisFilePath, checksumFilePath);
 
-			// Extract the file if necessary
-			if (genesisFilePath.endsWith('.tar.gz')) {
-				await extractTarBall(genesisFilePath, directoryPath);
+			if (isValidGenesisBlock) {
+				// Extract if downloaded file is a tar archive
+				if (genesisFilePath.endsWith('.tar.gz')) await extractTarBall(genesisFilePath, directoryPath);
+
+				return true;
 			}
 
-			if (isValidGenesisBlock) return true;
-
-			// Delete all previous files including the containing directory
+			// Delete all previous files including the containing directory if genesis block is not valid
 			await rm(directoryPath, { recursive: true, force: true });
 		} catch (err) {
 			logger.error('Error while downloading and validating genesis block');

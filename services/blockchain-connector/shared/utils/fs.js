@@ -57,6 +57,7 @@ const rm = async (directoryPath, options = {}) => {
 		options,
 		(err) => {
 			if (err) logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
+			return !err;
 		},
 	);
 };

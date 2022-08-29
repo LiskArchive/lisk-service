@@ -33,6 +33,7 @@ const logger = Logger();
 const getHTTPProtocolByURL = (url) => url.startsWith('https') ? https : http;
 
 const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, reject) => {
+	logger.info(`Downloading external file.\nurl:${url}\ndirectory:${directoryPath}`);
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
 			response.pipe(tar.extract({ cwd: directoryPath }));
@@ -51,6 +52,7 @@ const downloadAndExtractTarball = (url, directoryPath) => new Promise((resolve, 
 });
 
 const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
+	logger.info(`Downloading external file.\nurl:${fileUrl}\nfilePath:${filePath}`);
 	request(fileUrl)
 		.then(async response => {
 			const block = typeof response === 'string' ? JSON.parse(response).data : response.data;
@@ -63,6 +65,7 @@ const downloadJSONFile = (fileUrl, filePath) => new Promise((resolve, reject) =>
 });
 
 const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject) => {
+	logger.info(`Downloading external file.\nurl:${fileUrl}\nfilePath:${filePath}`);
 	getHTTPProtocolByURL(fileUrl).get(fileUrl, (response) => {
 		if (response.statusCode === 200) {
 			const unzip = zlib.createUnzip();
@@ -83,6 +86,8 @@ const downloadAndUnzipFile = (fileUrl, filePath) => new Promise((resolve, reject
 });
 
 const downloadFile = (url, dirPath) => new Promise((resolve, reject) => {
+	logger.info(`Downloading external file.\nurl:${url}\ndirectory:${dirPath}`);
+
 	getHTTPProtocolByURL(url).get(url, (response) => {
 		if (response.statusCode === 200) {
 			const pathWithoutProtocol = url.replace(/(^\w+:|^)\/\//, '').split('/');
@@ -104,15 +109,15 @@ const downloadFile = (url, dirPath) => new Promise((resolve, reject) => {
 });
 
 const verifyFileChecksum = async (filePath, checksumPath) => {
-	// validate existance of both files
+	// Validate existance of both files
 	if (!(await exists(filePath)) || !(await exists(checksumPath))) {
-		logger.info(`Checksum verification failed for empty file(s). filePath:${filePath}, checksumPath:${checksumPath}`);
+		logger.info(`Checksum verification failed. One of the following files does not exist:\nfilePath:${filePath}\nchecksumPath:${checksumPath}`);
 		return false;
 	}
-	// read checksum hash
+	// Read checksum hash
 	const [expectedChecksum] = (await read(checksumPath)).split(' ');
 
-	// generate file hash
+	// Generate file hash
 	const fileStream = fs.createReadStream(filePath);
 	const dataHash = crypto.createHash('sha256');
 	const fileHash = await new Promise((resolve, reject) => {
