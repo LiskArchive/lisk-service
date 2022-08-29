@@ -130,7 +130,7 @@ const getBlockByHeight = async (height) => {
 const getBlocksByHeightBetween = async ({ from, to }) => {
 	try {
 		const gHeight = await getGenesisHeight();
-		const blocks = [[], []];
+		const blocksArr = [[], []];
 
 		if (from < gHeight) {
 			throw new Error(`'from' cannot be lower than the genesis height (${gHeight})`);
@@ -138,15 +138,21 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 
 		// File based Genesis block handling
 		if (Number(from) === gHeight) {
-			blocks[0] = await getBlockByHeight(gHeight);
+			blocksArr[0] = await getBlockByHeight(gHeight);
 			from++;
 		}
 
 		if (from <= to) {
-			blocks[1] = await invokeEndpoint('chain_getBlocksByHeightBetween', { from, to });
+			blocksArr[1] = await invokeEndpoint('chain_getBlocksByHeightBetween', { from, to });
 		}
 
-		return ([blocks[0], ...blocks[1]]);
+		const blocks = ([blocksArr[0], ...blocksArr[1]]);
+		await BluebirdPromise.map(
+			blocks,
+			async block => cacheBlock(block),
+			{ concurrency: blocks.length },
+		);
+		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
 			throw new TimeoutException(`Request timed out when calling 'getBlocksByHeightBetween' for heights: ${from} - ${to}`);
