@@ -56,12 +56,12 @@ const resolveModuleCommand = async (moduleCommandVal) => {
 	return response;
 };
 
-const getTransactionsByBlockIDs = async blockIDs => {
+const getTransactionIDsByBlockID = async blockID => {
 	const transactionsDB = await getTransactionsIndex();
 	const transactions = await transactionsDB.find({
 		whereIn: {
 			property: 'blockId',
-			values: blockIDs,
+			values: [blockID],
 		},
 	}, ['id']);
 	const transactionsIds = transactions.map(t => t.id);
@@ -277,7 +277,7 @@ const getTransactionsByBlockID = async blockID => {
 
 module.exports = {
 	getTransactions,
-	getTransactionsByBlockIDs,
+	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,

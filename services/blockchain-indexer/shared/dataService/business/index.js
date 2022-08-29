@@ -67,7 +67,7 @@ const {
 
 const {
 	getTransactions,
-	getTransactionsByBlockIDs,
+	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	normalizeTransaction,
@@ -111,7 +111,7 @@ module.exports = {
 	getPendingTransactions,
 	loadAllPendingTransactions,
 	getTransactions,
-	getTransactionsByBlockIDs,
+	getTransactionIDsByBlockID,
 	getTransactionsByBlockID,
 	getTransactionsByIDs,
 	getCommandsParamsSchemas,

@@ -32,10 +32,10 @@ module.exports = [
 		name: 'block.change',
 		description: 'Keep the block list up-to-date',
 		controller: callback => {
-			const newBlockListener = async data => {
+			const newBlockListener = async (payload) => {
 				try {
-					if (data && Array.isArray(data.data)) {
-						const [block] = data.data;
+					if (payload && Array.isArray(payload.data)) {
+						const [block] = payload.data;
 						logger.debug(`New block arrived (${block.id})...`);
 						// Fork detection
 						if (localPreviousBlockId) {
@@ -45,11 +45,11 @@ module.exports = [
 						}
 						localPreviousBlockId = block.id;
 						reloadAllPendingTransactions();
-						callback(data);
+						callback(payload);
 					} else {
 						logger.warn([
 							'Invalid payload received with the newBlock signal: ',
-							util.inspect(data),
+							util.inspect(payload),
 						].join('\n'));
 					}
 				} catch (err) {
@@ -63,15 +63,18 @@ module.exports = [
 		name: 'transactions.new',
 		description: 'Keep newly added transactions list up-to-date',
 		controller: callback => {
-			const newTransactionsListener = async (data) => {
+			const newTransactionsListener = async (payload) => {
 				try {
-					if (data && Array.isArray(data.data)) {
-						const [block] = data.data;
+					if (payload && Array.isArray(payload.data)) {
+						const [block] = payload.data;
 						if (block.numberOfTransactions > 0) {
 							logger.debug(`Block (${block.id}) arrived containing ${block.numberOfTransactions} new transactions`);
 							const transactionData = await getTransactionsByBlockID(block.id);
 							callback(transactionData);
 						}
+					} else {
+						const payloadStr = JSON.stringify(payload);
+						logger.debug(`Incorrect payload detected for 'newBlock' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
 					logger.error(`Error occured when processing 'transactions.new' event:\n${err.stack}`);
@@ -84,10 +87,13 @@ module.exports = [
 		name: 'block.delete',
 		description: 'Emit the deleted block.',
 		controller: callback => {
-			const deleteBlockListener = async (data) => {
+			const deleteBlockListener = async (payload) => {
 				try {
-					if (data && Array.isArray(data.data)) {
-						callback(data);
+					if (payload && Array.isArray(payload.data)) {
+						callback(payload);
+					} else {
+						const payloadStr = JSON.stringify(payload);
+						logger.debug(`Incorrect payload detected for 'deleteBlock' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
 					logger.error(`Error occured when processing 'block.delete' event:\n${err.stack}`);
@@ -98,12 +104,15 @@ module.exports = [
 	},
 	{
 		name: 'transactions.delete',
-		description: 'Emit the list of deleted Transactions.',
+		description: 'Emit the list of deleted transactions.',
 		controller: callback => {
-			const deleteTransactionsListener = async (data) => {
+			const deleteTransactionsListener = async (payload) => {
 				try {
-					if (data && Array.isArray(data.data)) {
-						callback(data);
+					if (payload && Array.isArray(payload.data)) {
+						callback(payload);
+					} else {
+						const payloadStr = JSON.stringify(payload);
+						logger.debug(`Incorrect payload detected for 'deleteTransactions' signal:\n${payloadStr}`);
 					}
 				} catch (err) {
 					logger.error(`Error occured when processing 'transactions.delete' event:\n${err.stack}`);
@@ -132,10 +141,10 @@ module.exports = [
 		name: 'round.change',
 		description: 'Track round change updates',
 		controller: callback => {
-			const newRoundListener = async data => {
+			const newRoundListener = async payload => {
 				try {
 					logger.debug('Returning all forgers for the new round...');
-					callback(data);
+					callback(payload);
 				} catch (err) {
 					logger.error(`Error occured when processing 'round.change' event:\n${err.stack}`);
 				}
@@ -147,9 +156,9 @@ module.exports = [
 		name: 'index.ready',
 		description: 'Returns true when the index is ready',
 		controller: callback => {
-			const indexStatusListener = async (data) => {
+			const indexStatusListener = async (payload) => {
 				logger.debug('Dispatching \'index.ready\' event over websocket');
-				callback(data);
+				callback(payload);
 			};
 			Signals.get('blockIndexReady').add(indexStatusListener);
 		},

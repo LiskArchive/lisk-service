@@ -23,6 +23,7 @@ const {
 	reloadDelegateCache,
 	getGenerators,
 	getNumberOfGenerators,
+	normalizeBlocks,
 } = require('./dataService');
 
 const { deleteBlock } = require('./indexer/blockchainIndex');
@@ -46,9 +47,19 @@ const newBlockProcessor = async (block) => {
 
 // TODO: Test delete block implementation with the issue https://github.com/LiskHQ/lisk-service/issues/1189
 const deleteBlockProcessor = async (block) => {
-	logger.debug(`Performing updates on delete block event for the block at height: ${block.height}, id: ${block.id}`);
-	const response = await getBlocks({ id: block.id });
-	await deleteBlock(block);
+	let response;
+	try {
+		logger.debug(`Processing the delete block event for the block at height: ${block.height}, id: ${block.id}`);
+		response = await getBlocks({ blockID: block.id });
+		await deleteBlock(block);
+	} catch (error) {
+		const normalizedBlocks = await normalizeBlocks([{
+			header: block,
+			transactions: [],
+			assets: [],
+		}]);
+		response = { data: normalizedBlocks };
+	}
 	Signals.get('deleteBlock').dispatch(response);
 };
 

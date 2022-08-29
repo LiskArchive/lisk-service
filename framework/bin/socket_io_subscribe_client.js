@@ -46,6 +46,7 @@ const subscribe = event => {
 	});
 };
 
+// subscribe('*'); // Listen to all the events
 subscribe('new.block');
 subscribe('new.transactions');
 subscribe('delete.block');
