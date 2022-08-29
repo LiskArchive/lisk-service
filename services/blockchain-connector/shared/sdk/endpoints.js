@@ -16,9 +16,8 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-	Logger,
+	CacheLRU,
 	Exceptions: {
-		NotFoundException,
 		TimeoutException,
 	},
 } = require('lisk-service-framework');
@@ -32,11 +31,22 @@ const {
 	getSystemMetadata,
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
-const { decodeAccount } = require('./decoder');
-const { parseToJSONCompatObj } = require('../parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
+const config = require('../../config');
 
-const logger = Logger();
+const BLOCKS_CACHE = 'cache_blocks';
+const TX_TO_BLOCK_MAP = 'mapTransactionIDToBlockID';
+const blocksCache = CacheLRU(BLOCKS_CACHE, config.endpoints.cache);
+const txToBlockCache = CacheLRU(TX_TO_BLOCK_MAP, config.endpoints.cache);
+
+const cacheBlock = async (block) => {
+	await blocksCache.set(block.header.id, JSON.stringify(block));
+	await BluebirdPromise.map(
+		block.transactions,
+		async transaction => txToBlockCache.set(transaction.id, block.header.id),
+		{ concurrency: block.transactions.length },
+	);
+};
 
 const getConnectedPeers = async () => {
 	try {
@@ -74,10 +84,10 @@ const getForgingStatus = async () => {
 	}
 };
 
-const updateForgingStatus = async (config) => {
+const updateForgingStatus = async (forgerConfig) => {
 	try {
 		const apiClient = await getApiClient();
-		const response = await apiClient._channel.invoke('generator_updateForgingStatus', { ...config });
+		const response = await apiClient._channel.invoke('generator_updateForgingStatus', { ...forgerConfig });
 		return response;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -87,45 +97,10 @@ const updateForgingStatus = async (config) => {
 	}
 };
 
-const getAccount = async (address) => {
-	try {
-		const encodedAccount = await invokeEndpoint('app_getAccount', { address });
-		const account = await decodeAccount(encodedAccount);
-		return { ...parseToJSONCompatObj(account), _raw: encodedAccount };
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getAccount' for address: ${address}`);
-		} else if (err.message === `Specified key accounts:address:${address} does not exist`) {
-			throw new NotFoundException(`Account ${address} does not exist on the blockchain`);
-		}
-		logger.warn(`Unable to currently fetch account information for address: ${address}. The network synchronization process might still be in progress for the Lisk Core node or the requested account has not been migrated yet.`);
-		throw new Error('MISSING_ACCOUNT_IN_BLOCKCHAIN');
-	}
-};
-
-const getAccounts = async (addresses) => {
-	try {
-		const encodedAccounts = await invokeEndpoint('app_getAccounts', { address: addresses });
-		const accounts = await BluebirdPromise.map(
-			encodedAccounts,
-			async (account) => ({
-				...(await decodeAccount(account)),
-				_raw: account,
-			}),
-			{ concurrency: encodedAccounts.length },
-		);
-		return parseToJSONCompatObj(accounts);
-	} catch (err) {
-		if (err.message.includes(timeoutMessage)) {
-			throw new TimeoutException(`Request timed out when calling 'getAccounts' for addresses: ${addresses}`);
-		}
-		throw err;
-	}
-};
-
 const getLastBlock = async () => {
 	try {
 		const block = await invokeEndpoint('chain_getLastBlock');
+		await cacheBlock(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -142,6 +117,7 @@ const getBlockByHeight = async (height) => {
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
+		await cacheBlock(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -187,6 +163,7 @@ const getBlockByID = async (id) => {
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
+		await cacheBlock(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -211,6 +188,11 @@ const getBlocksByIDs = async (ids) => {
 		}
 
 		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
+		await BluebirdPromise.map(
+			blocks,
+			async block => cacheBlock(block),
+			{ concurrency: blocks.length },
+		);
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -294,8 +276,6 @@ module.exports = {
 	getDisconnectedPeers,
 	getForgingStatus,
 	updateForgingStatus,
-	getAccount,
-	getAccounts,
 	getLastBlock,
 	getBlockByID,
 	getBlocksByIDs,
