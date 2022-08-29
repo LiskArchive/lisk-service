@@ -14,8 +14,6 @@
  *
  */
 const fs = require('fs');
-const util = require('util');
-const crypto = require('crypto');
 const tar = require('tar');
 
 const { Logger } = require('lisk-service-framework');
@@ -43,58 +41,38 @@ const mkdir = async (directoryPath, options = { recursive: true, mode: '0o777' }
 	);
 };
 
-const verifyChecksum = async (filePath, expectedChecksum) => {
-	const fileStream = fs.createReadStream(filePath);
-	const dataHash = crypto.createHash('sha256');
-	const fileHash = await new Promise((resolve, reject) => {
-		fileStream.on('data', (datum) => {
-			dataHash.update(datum);
-		});
-		fileStream.on('error', error => {
-			reject(error);
-		});
-		fileStream.on('end', () => {
-			resolve(dataHash.digest());
-		});
+const read = (filePath) => new Promise((resolve, reject) => {
+	fs.readFile(filePath, 'utf8', (err, data) => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve(data);
 	});
+});
 
-	const fileChecksum = fileHash.toString('hex');
-	if (fileChecksum !== expectedChecksum) {
-		logger.info(`Checksum verification failed for file:${filePath}\nExpected: ${expectedChecksum}, Actual: ${fileChecksum}`);
-		return false;
-	}
-
-	return true;
-};
-
-const read = async (filePath) => {
-	const readWrapper = util.promisify(fs.readFile);
-
-	return readWrapper(filePath, 'utf8');
-};
-
-const remove = async (filePath) => {
-	if (await exists(filePath)) {
-		const rmWrapper = util.promisify(fs.rm);
-
-		await rmWrapper(filePath, { recursive: true, force: true });
-	}
-};
-
-const verifyFileChecksum = async (filePath, checksumPath) => {
-	const expectedChecksum = (await read(checksumPath)).split(' ')[0];
-
-	return verifyChecksum(filePath, expectedChecksum);
-};
+const rmDir = (directoryPath, options = {}) => new Promise((resolve, reject) => {
+	fs.rmDir(
+		directoryPath,
+		options,
+		(err) => {
+			if (err) {
+				logger.error(err);
+				return reject(err);
+			}
+			return resolve();
+		},
+	);
+});
 
 const extractTarBall = async (filePath, directoryPath) => fs
 	.createReadStream(filePath)
 	.pipe(tar.extract({ cwd: directoryPath }));
 
 module.exports = {
-	remove,
 	exists,
 	extractTarBall,
 	mkdir,
-	verifyFileChecksum,
+	read,
+	rmDir,
 };

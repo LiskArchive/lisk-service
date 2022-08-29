@@ -18,12 +18,15 @@ const http = require('http');
 const https = require('https');
 const tar = require('tar');
 const zlib = require('zlib');
+const crypto = require('crypto');
 
 const {
 	Logger,
 	Exceptions: { NotFoundException },
 	HTTP: { request },
 } = require('lisk-service-framework');
+
+const { read, exists } = require('./fs');
 
 const logger = Logger();
 
@@ -100,9 +103,43 @@ const downloadFile = (url, dirPath) => new Promise((resolve, reject) => {
 	});
 });
 
+const verifyFileChecksum = async (filePath, checksumPath) => {
+	// validate existance of both files
+	if (!(await exists(filePath)) || !(await exists(checksumPath))) {
+		logger.info(`Checksum verification failed for empty file(s). filePath:${filePath}, checksumPath:${checksumPath}`);
+		return false;
+	}
+	// read checksum hash
+	const [expectedChecksum] = (await read(checksumPath)).split(' ');
+
+	// generate file hash
+	const fileStream = fs.createReadStream(filePath);
+	const dataHash = crypto.createHash('sha256');
+	const fileHash = await new Promise((resolve, reject) => {
+		fileStream.on('data', (datum) => {
+			dataHash.update(datum);
+		});
+		fileStream.on('error', error => {
+			reject(error);
+		});
+		fileStream.on('end', () => {
+			resolve(dataHash.digest());
+		});
+	});
+
+	const fileChecksum = fileHash.toString('hex');
+	if (fileChecksum !== expectedChecksum) {
+		logger.info(`Checksum verification failed for file:${filePath}\nExpected: ${expectedChecksum}, Actual: ${fileChecksum}`);
+		return false;
+	}
+
+	return true;
+};
+
 module.exports = {
 	downloadAndExtractTarball,
 	downloadJSONFile,
 	downloadAndUnzipFile,
 	downloadFile,
+	verifyFileChecksum,
 };

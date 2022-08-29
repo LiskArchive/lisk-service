@@ -20,8 +20,8 @@ const path = require('path');
 const { Logger } = require('lisk-service-framework');
 
 const { getNodeInfo } = require('./endpoints_1');
-const { exists, mkdir, verifyFileChecksum, remove, extractTarBall } = require('../utils/fs');
-const { downloadFile } = require('../utils/download');
+const { exists, mkdir, rmDir, extractTarBall } = require('../utils/fs');
+const { downloadFile, verifyFileChecksum } = require('../utils/download');
 
 const config = require('../../config');
 
@@ -85,25 +85,30 @@ const downloadAndValidateGenesisBlock = async (retries = 2) => {
 
 	do {
 		/* eslint-disable no-await-in-loop */
-		if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
+		try {
+			if (!(await exists(directoryPath))) await mkdir(directoryPath, { recursive: true });
 
-		// Download the genesis and the digest files
-		const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
-		await downloadFile(genesisBlockUrl, directoryPath);
-		await downloadFile(genesisBlockUrlSHA256, directoryPath);
+			// Download the genesis and the digest files
+			const genesisBlockUrlSHA256 = genesisBlockUrl.concat('.SHA256');
+			await downloadFile(genesisBlockUrl, directoryPath);
+			await downloadFile(genesisBlockUrlSHA256, directoryPath);
 
-		// Verify the integrity of the downloaded file, retry on failure
-		const isValidGenesisBlock = await verifyFileChecksum(genesisFilePath, checksumFilePath);
+			// Verify the integrity of the downloaded file, retry on failure
+			const isValidGenesisBlock = await verifyFileChecksum(genesisFilePath, checksumFilePath);
 
-		// Extract the file if necessary
-		if (genesisFilePath.endsWith('.tar.gz')) {
-			await extractTarBall(genesisFilePath, directoryPath);
+			// Extract the file if necessary
+			if (genesisFilePath.endsWith('.tar.gz')) {
+				await extractTarBall(genesisFilePath, directoryPath);
+			}
+
+			if (isValidGenesisBlock) return true;
+
+			// Delete all previous files including the containing directory
+			await rmDir(directoryPath);
+		} catch (err) {
+			logger.error('Error while downloading and validating genesis block');
+			logger.error(err.message);
 		}
-
-		if (isValidGenesisBlock) return true;
-		
-		// Delete all previous files including the containing directory
-		await remove(directoryPath);
 		/* eslint-enable no-await-in-loop */
 	} while (retries-- > 0);
 
