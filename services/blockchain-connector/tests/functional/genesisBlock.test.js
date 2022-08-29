@@ -17,7 +17,7 @@ const { ServiceBroker } = require('moleculer');
 const fs = require('fs');
 const crypto = require('crypto');
 
-const { exists } = require('../../shared/fsUtils');
+const { exists } = require('../../shared/utils/fs');
 const config = require('../../config');
 
 const broker = new ServiceBroker({

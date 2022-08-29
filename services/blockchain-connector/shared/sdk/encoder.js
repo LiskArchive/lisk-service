@@ -15,7 +15,7 @@
  */
 const { codec } = require('@liskhq/lisk-codec');
 
-const { parseInputBySchema } = require('../parser');
+const { parseInputBySchema } = require('../utils/parser');
 const {
 	getBlockSchema,
 	getBlockHeaderSchema,

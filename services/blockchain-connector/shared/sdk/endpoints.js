@@ -33,7 +33,7 @@ const {
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { decodeAccount } = require('./decoder');
-const { parseToJSONCompatObj } = require('../parser');
+const { parseToJSONCompatObj } = require('../utils/parser');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
 
 const logger = Logger();

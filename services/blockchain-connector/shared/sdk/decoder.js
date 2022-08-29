@@ -26,7 +26,7 @@ const {
 	getTransactionParamsSchema,
 } = require('./schema');
 
-const { parseToJSONCompatObj } = require('../parser');
+const { parseToJSONCompatObj } = require('../utils/parser');
 
 const decodeTransaction = (encodedTransaction) => {
 	const txSchema = getTransactionSchema();

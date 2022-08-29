@@ -16,7 +16,7 @@
 const {
 	parseToJSONCompatObj,
 	parseInputBySchema,
-} = require('../../shared/parser');
+} = require('../../shared/utils/parser');
 
 const {
 	liskAccount,
