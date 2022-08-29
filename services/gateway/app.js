@@ -133,7 +133,7 @@ const gatewayConfig = {
 	},
 	methods,
 	events: {
-		'block.change': (payload) => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
+		'block.new': (payload) => sendSocketIoEvent('new.block', mapper(payload, blocksDefinition)),
 		'transactions.new': (payload) => sendSocketIoEvent('new.transactions', mapper(payload, transactionsDefinition)),
 		'block.delete': (payload) => sendSocketIoEvent('delete.block', mapper(payload, blocksDefinition)),
 		'transactions.delete': (payload) => sendSocketIoEvent('delete.transactions', mapper(payload, transactionsDefinition)),
