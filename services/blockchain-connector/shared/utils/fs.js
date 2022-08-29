@@ -14,6 +14,7 @@
  *
  */
 const fs = require('fs');
+const tar = require('tar');
 
 const { Logger } = require('lisk-service-framework');
 
@@ -40,7 +41,35 @@ const mkdir = async (directoryPath, options = { recursive: true, mode: '0o777' }
 	);
 };
 
+const read = (filePath) => new Promise((resolve, reject) => {
+	fs.readFile(filePath, 'utf8', (err, data) => {
+		if (err) {
+			logger.error(err);
+			return reject(err);
+		}
+		return resolve(data);
+	});
+});
+
+const rm = async (directoryPath, options = {}) => {
+	await fs.rm(
+		directoryPath,
+		options,
+		(err) => {
+			if (err) logger.error(`Error when removing directory: ${directoryPath}\n`, err.message);
+			return !err;
+		},
+	);
+};
+
+const extractTarBall = async (filePath, directoryPath) => fs
+	.createReadStream(filePath)
+	.pipe(tar.extract({ cwd: directoryPath }));
+
 module.exports = {
 	exists,
+	extractTarBall,
 	mkdir,
+	read,
+	rm,
 };

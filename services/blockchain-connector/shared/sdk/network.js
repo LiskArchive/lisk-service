@@ -15,7 +15,7 @@
  */
 const { Logger, Signals } = require('lisk-service-framework');
 const { getNodeInfo } = require('./endpoints');
-const { parseToJSONCompatObj } = require('../parser');
+const { parseToJSONCompatObj } = require('../utils/parser');
 
 const logger = Logger();
 
