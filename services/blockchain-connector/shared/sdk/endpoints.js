@@ -39,12 +39,19 @@ const TX_TO_BLOCK_MAP = 'mapTransactionIDToBlockID';
 const blocksCache = CacheLRU(BLOCKS_CACHE, config.endpoints.cache);
 const txToBlockCache = CacheLRU(TX_TO_BLOCK_MAP, config.endpoints.cache);
 
-const cacheBlock = async (block) => {
-	await blocksCache.set(block.header.id, JSON.stringify(block));
+const cacheBlocks = async (blocks) => {
+	blocks = Array.isArray(blocks) ? blocks : [blocks];
 	await BluebirdPromise.map(
-		block.transactions,
-		async transaction => txToBlockCache.set(transaction.id, block.header.id),
-		{ concurrency: block.transactions.length },
+		blocks,
+		async block => {
+			await blocksCache.set(block.header.id, JSON.stringify(block));
+			await BluebirdPromise.map(
+				block.transactions,
+				async transaction => txToBlockCache.set(transaction.id, block.header.id),
+				{ concurrency: block.transactions.length },
+			);
+		},
+		{ concurrency: blocks.length },
 	);
 };
 
@@ -100,7 +107,6 @@ const updateForgingStatus = async (forgerConfig) => {
 const getLastBlock = async () => {
 	try {
 		const block = await invokeEndpoint('chain_getLastBlock');
-		await cacheBlock(block);
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -117,7 +123,9 @@ const getBlockByHeight = async (height) => {
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByHeight', { height });
-		await cacheBlock(block);
+		if (config.caching.isEnabled) {
+			await cacheBlocks(block);
+		}
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -147,11 +155,9 @@ const getBlocksByHeightBetween = async ({ from, to }) => {
 		}
 
 		const blocks = ([blocksArr[0], ...blocksArr[1]]);
-		await BluebirdPromise.map(
-			blocks,
-			async block => cacheBlock(block),
-			{ concurrency: blocks.length },
-		);
+		if (config.caching.isEnabled) {
+			await cacheBlocks(blocks);
+		}
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -169,7 +175,9 @@ const getBlockByID = async (id) => {
 		}
 
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
-		await cacheBlock(block);
+		if (config.caching.isEnabled) {
+			await cacheBlocks(block);
+		}
 		return block;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
@@ -194,11 +202,9 @@ const getBlocksByIDs = async (ids) => {
 		}
 
 		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
-		await BluebirdPromise.map(
-			blocks,
-			async block => cacheBlock(block),
-			{ concurrency: blocks.length },
-		);
+		if (config.caching.isEnabled) {
+			await cacheBlocks(blocks);
+		}
 		return blocks;
 	} catch (err) {
 		if (err.message.includes(timeoutMessage)) {
