@@ -16,7 +16,7 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-    CacheLRU,
+	CacheLRU,
 } = require('lisk-service-framework');
 
 const config = require('../../config');
@@ -28,22 +28,22 @@ const blocksCache = CacheLRU(BLOCKS_CACHE, config.endpoints.cache);
 const txToBlockCache = CacheLRU(TX_TO_BLOCK_ID_MAP, config.endpoints.cache);
 
 const cacheBlocks = async (blocks) => {
-    blocks = Array.isArray(blocks) ? blocks : [blocks];
+	blocks = Array.isArray(blocks) ? blocks : [blocks];
 
-    await BluebirdPromise.map(
-        blocks,
-        async block => {
-            await blocksCache.set(block.header.id, JSON.stringify(block));
-            await BluebirdPromise.map(
-                block.transactions,
-                async transaction => txToBlockCache.set(transaction.id, block.header.id),
-                { concurrency: block.transactions.length },
-            );
-        },
-        { concurrency: blocks.length },
-    );
+	await BluebirdPromise.map(
+		blocks,
+		async block => {
+			await blocksCache.set(block.header.id, JSON.stringify(block));
+			await BluebirdPromise.map(
+				block.transactions,
+				async transaction => txToBlockCache.set(transaction.id, block.header.id),
+				{ concurrency: block.transactions.length },
+			);
+		},
+		{ concurrency: blocks.length },
+	);
 };
 
 module.exports = {
-    cacheBlocks,
+	cacheBlocks,
 };
