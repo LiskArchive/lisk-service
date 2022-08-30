@@ -29,7 +29,13 @@ const {
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
-const { cacheBlocks } = require('../utils/cache');
+const {
+	cacheBlocks,
+	getBlockByIDFromCache,
+	getBlockByIDsFromCache,
+	getTransactionByIDFromCache,
+	getTransactionByIDsFromCache,
+} = require('../utils/cache');
 const config = require('../../config');
 
 const getConnectedPeers = async () => {
@@ -151,6 +157,9 @@ const getBlockByID = async (id) => {
 			return getGenesisBlock();
 		}
 
+		const blockFromCache = await getBlockByIDFromCache(id);
+		if (blockFromCache) return blockFromCache;
+
 		const block = await invokeEndpoint('chain_getBlockByID', { id });
 		if (config.caching.isEnabled) {
 			await cacheBlocks(block);
@@ -178,6 +187,9 @@ const getBlocksByIDs = async (ids) => {
 			return remainingBlocks.splice(genesisBlockIndex, 0, genesisBlock);
 		}
 
+		const blocksFromCache = await getBlockByIDsFromCache(ids);
+		if (blocksFromCache) return blocksFromCache;
+
 		const blocks = await invokeEndpoint('chain_getBlocksByIDs', { ids });
 		if (config.caching.isEnabled) {
 			await cacheBlocks(blocks);
@@ -193,6 +205,9 @@ const getBlocksByIDs = async (ids) => {
 
 const getTransactionByID = async (id) => {
 	try {
+		const transactionFromCache = await getTransactionByIDFromCache(id);
+		if (transactionFromCache) return transactionFromCache;
+
 		const transaction = await invokeEndpoint('chain_getTransactionByID', { id });
 		return transaction;
 	} catch (err) {
@@ -205,6 +220,9 @@ const getTransactionByID = async (id) => {
 
 const getTransactionsByIDs = async (ids) => {
 	try {
+		const transactionsFromCache = await getTransactionByIDsFromCache(ids);
+		if (transactionsFromCache) return transactionsFromCache;
+
 		const transaction = await invokeEndpoint('chain_getTransactionsByIDs', { ids });
 		return transaction;
 	} catch (err) {

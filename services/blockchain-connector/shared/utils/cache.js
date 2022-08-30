@@ -50,18 +50,37 @@ const getBlockByIDFromCache = async (blockID) => {
 	return parsedBlock;
 };
 
-const getBlockByIDsFromCache = async (ids) => {
-	const blockIDs = Array.isArray(ids) ? ids : [ids];
-
-	await BluebirdPromise.map(
+const getBlockByIDsFromCache = async (blockIDs) => {
+	const blocks = await BluebirdPromise.map(
 		blockIDs,
 		async blockID => getBlockByIDFromCache(blockID),
 		{ concurrency: blockIDs.length },
 	);
+
+	return blocks;
+};
+
+const getTransactionByIDFromCache = async (transactionID) => {
+	const blockID = await txToBlockCache.get(transactionID);
+	const block = await getBlockByIDFromCache(blockID);
+	const transaction = block.transactions.find(tx => tx === transactionID);
+	return transaction;
+};
+
+const getTransactionByIDsFromCache = async (transactionIDs) => {
+	const transactions = await BluebirdPromise.map(
+		transactionIDs,
+		async transactionID => getTransactionByIDFromCache(transactionID),
+		{ concurrency: transactionIDs.length },
+	);
+
+	return transactions;
 };
 
 module.exports = {
 	cacheBlocks,
 	getBlockByIDFromCache,
 	getBlockByIDsFromCache,
+	getTransactionByIDFromCache,
+	getTransactionByIDsFromCache,
 };
