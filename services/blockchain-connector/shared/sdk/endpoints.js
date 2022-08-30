@@ -13,10 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-const BluebirdPromise = require('bluebird');
-
 const {
-	CacheLRU,
 	Exceptions: {
 		TimeoutException,
 	},
@@ -32,28 +29,8 @@ const {
 } = require('./endpoints_1');
 const { timeoutMessage, getApiClient, invokeEndpoint, invokeEndpointProxy } = require('./client');
 const { getGenesisHeight, getGenesisBlockID, getGenesisBlock } = require('./genesisBlock');
+const { cacheBlocks } = require('../utils/cache');
 const config = require('../../config');
-
-const BLOCKS_CACHE = 'cache_blocks';
-const TX_TO_BLOCK_MAP = 'mapTransactionIDToBlockID';
-const blocksCache = CacheLRU(BLOCKS_CACHE, config.endpoints.cache);
-const txToBlockCache = CacheLRU(TX_TO_BLOCK_MAP, config.endpoints.cache);
-
-const cacheBlocks = async (blocks) => {
-	blocks = Array.isArray(blocks) ? blocks : [blocks];
-	await BluebirdPromise.map(
-		blocks,
-		async block => {
-			await blocksCache.set(block.header.id, JSON.stringify(block));
-			await BluebirdPromise.map(
-				block.transactions,
-				async transaction => txToBlockCache.set(transaction.id, block.header.id),
-				{ concurrency: block.transactions.length },
-			);
-		},
-		{ concurrency: blocks.length },
-	);
-};
 
 const getConnectedPeers = async () => {
 	try {
