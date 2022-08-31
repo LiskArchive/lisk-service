@@ -24,7 +24,7 @@ const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 
 const config = require('../../../config');
-const { MODULE_ID } = require('../../constants');
+const { MODULE_NAME } = require('../../constants');
 
 const LAST_BLOCK_CACHE = 'lastBlock';
 const lastBlockCache = CacheRedis(LAST_BLOCK_CACHE, config.endpoints.cache);
@@ -33,7 +33,7 @@ const LAST_BLOCK_KEY = 'lastBlock';
 
 const isDposModuleRegistered = async () => {
 	const response = await requestConnector('getSystemMetadata');
-	const isRegistered = response.modules.some(module => module.id === MODULE_ID.DPOS);
+	const isRegistered = response.modules.some(module => module.name === MODULE_NAME.DPOS);
 	return isRegistered;
 };
 

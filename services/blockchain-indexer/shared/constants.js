@@ -85,8 +85,8 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
-const MODULE_ID = {
-	DPOS: process.env.MODULE_ID_DPOS || '0000000d',
+const MODULE_NAME = {
+	DPOS: process.env.MODULE_NAME_DPOS || 'dpos',
 };
 
 const COMMAND_ID = {
@@ -104,6 +104,6 @@ module.exports = {
 	getRegisteredModules,
 	getSystemMetadata,
 
-	MODULE_ID,
+	MODULE_NAME,
 	COMMAND_ID,
 };
