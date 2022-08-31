@@ -89,9 +89,9 @@ const MODULE_NAME = {
 	DPOS: process.env.MODULE_NAME_DPOS || 'dpos',
 };
 
-const COMMAND_ID = {
-	REGISTER_DELEGATE: process.env.COMMAND_ID_DPOS_REGISTER_DELEGATE || 0,
-	VOTE_DELEGATE: process.env.COMMAND_ID_DPOS_VOTE_DELEGATE || 1,
+const COMMAND_NAME = {
+	REGISTER_DELEGATE: process.env.COMMAND_NAME_DPOS_REGISTER_DELEGATE || 'registerDelegate',
+	VOTE_DELEGATE: process.env.COMMAND_NAME_DPOS_VOTE_DELEGATE || 'voteDelegate',
 };
 
 module.exports = {
@@ -105,5 +105,5 @@ module.exports = {
 	getSystemMetadata,
 
 	MODULE_NAME,
-	COMMAND_ID,
+	COMMAND_NAME,
 };

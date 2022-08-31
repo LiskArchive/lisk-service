@@ -26,11 +26,10 @@ const dataService = require('../business');
 const { getLastBlock } = require('../blocks');
 const { getAllGenerators } = require('../generators');
 const {
-	getHexAddressFromBase32,
 	getBase32AddressFromPublicKey,
 	getBase32AddressFromHex,
 } = require('../../utils/accountUtils');
-const { MODULE_ID, COMMAND_ID } = require('../../constants');
+const { MODULE_NAME, COMMAND_NAME } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
 
@@ -213,11 +212,11 @@ const updateDelegateListEveryBlock = () => {
 		const [block] = data.data;
 		if (block && block.transactions && Array.isArray(block.transactions)) {
 			block.transactions.forEach(tx => {
-				if (tx.moduleID === MODULE_ID.DPOS) {
-					if (tx.CommandID === COMMAND_ID.REGISTER_DELEGATE) {
+				if (tx.module === MODULE_NAME.DPOS) {
+					if (tx.command === COMMAND_NAME.REGISTER_DELEGATE) {
 						updatedDelegateAddresses
 							.push(getBase32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.CommandID === COMMAND_ID.VOTE_DELEGATE) {
+					} else if (tx.command === COMMAND_NAME.VOTE_DELEGATE) {
 						tx.params.votes.forEach(vote => updatedDelegateAddresses
 							.push(getBase32AddressFromHex(vote.delegateAddress)));
 					}
