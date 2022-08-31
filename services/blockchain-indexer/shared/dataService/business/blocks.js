@@ -99,7 +99,7 @@ const normalizeBlock = async (originalblock) => {
 
 		return parseToJSONCompatObj(block);
 	} catch (error) {
-		logger.error(`Error occured when normalizing block at height ${originalblock.header.height}:\n${error.stack}`);
+		logger.error(`Error occured when normalizing block at height ${originalblock.header.height}, id: ${originalblock.header.id}:\n${error.stack}`);
 		throw error;
 	}
 };

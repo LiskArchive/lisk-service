@@ -1,6 +1,6 @@
 {
   "name": "lisk-service",
-  "version": "0.6.1",
+  "version": "0.7.0-alpha.0",
   "description": "Lisk Service",
   "keywords": [
     "lisk",
@@ -20,8 +20,8 @@
   "license": "Apache-2.0",
   "main": "app.js",
   "engines": {
-    "node": ">=16.14.0 <=16",
-    "npm": ">=8.3.1"
+    "node": ">=16.15.0 <=16",
+    "npm": ">=8.5.0"
   },
   "scripts": {
     "start": "pm2 start ecosystem.core3.config.js",
@@ -29,12 +29,12 @@
     "eslint": "eslint \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\"",
     "eslint-fix": "eslint --fix \"./framework/**/*.js\" \"./services/**/*.js\" \"./tests/**/*.js\""
   },
+  "dependencies": {},
   "devDependencies": {
     "eslint": "^7.32.0",
     "eslint-config-lisk-base": "^2.0.1",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-jest": "^26.2.2",
     "eslint-plugin-mocha": "^10.0.4"
-  },
-  "dependencies": {}
+  }
 }

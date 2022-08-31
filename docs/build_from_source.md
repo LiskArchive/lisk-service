@@ -73,7 +73,7 @@ pm2 stop ecosystem.core3.config.js
 
 ### Restart Lisk Service
 
-Restart all components of Lisk Service simultaneously.
+Restart all microservices of Lisk Service simultaneously.
 
 ```bash
 pm2 restart ecosystem.core3.config.js
@@ -112,7 +112,7 @@ npm test
 
 Functional tests ensure that a project build on the top of the framework is able to process requests and collect responses involving the API gateway.
 
-In order to run them successfully, it is necessary to have the template component running alongside.
+In order to run them successfully, it is necessary to have the template microservice running alongside.
 
 ```bash
 cd service/template
