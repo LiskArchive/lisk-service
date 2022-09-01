@@ -35,9 +35,9 @@ const calculateBlockSize = async block => {
 
 const calculateWeightedAvg = async blocks => {
 	const blockSizes = await BluebirdPromise.map(
-		blocks, 
+		blocks,
 		async block => calculateBlockSize(block),
-		{ concurrency : blocks.length},
+		{ concurrency: blocks.length },
 	);
 	const decayFactor = config.feeEstimates.wavgDecayPercentage / 100;
 	let weight = 1;
