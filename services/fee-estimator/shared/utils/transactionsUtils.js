@@ -59,11 +59,10 @@ const getTxnMinFee = async (
 	getTxnParamsSchemaFn = getTxnParamsSchema,
 	getGenesisConfigFn = getGenesisConfig,
 ) => computeMinFee(
-	await getTxnParamsSchemaFn(txn),
 	txn,
+	await getTxnParamsSchemaFn(txn),
 	{
 		minFeePerByte: (await getGenesisConfigFn()).minFeePerByte,
-		baseFees: (await getGenesisConfigFn()).baseFees,
 		numberOfSignatures: txn.signatures.filter(s => s.length).length,
 		numberOfEmptySignatures: txn.signatures.filter(s => !s.length).length,
 	},
