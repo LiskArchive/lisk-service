@@ -240,7 +240,7 @@ const getTransactionsByBlockID = async blockID => {
 	);
 
 	return {
-		data: await normalizeTransactions(transactions),
+		data: transactions,
 		meta: {
 			offset: 0,
 			count: transactions.length,
