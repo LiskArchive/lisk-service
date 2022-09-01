@@ -19,7 +19,7 @@ const {
 	CacheRedis,
 } = require('lisk-service-framework');
 
-const { getHexAddressFromBase32 } = require('../../utils/accountUtils');
+const { getHexAddressFromBase32, getBase32AddressFromHex } = require('../../utils/accountUtils');
 
 const { requestConnector } = require('../../utils/request');
 
@@ -53,6 +53,7 @@ const getAllDelegates = async () => {
 		rawDelegates,
 		// TODO: Get delegateWeight from SDK directly when available
 		async delegate => {
+			delegate.address = getBase32AddressFromHex(delegate.address);
 			if (delegate.isBanned || await verifyIfPunished(delegate)) {
 				delegate.delegateWeight = BigInt('0');
 			} else {

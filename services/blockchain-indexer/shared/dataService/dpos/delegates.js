@@ -28,6 +28,7 @@ const { getAllGenerators } = require('../generators');
 const {
 	getBase32AddressFromPublicKey,
 	getBase32AddressFromHex,
+	getHexAddressFromBase32,
 } = require('../../utils/accountUtils');
 const { MODULE_NAME, COMMAND_NAME } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -50,8 +51,8 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return Buffer.from(a.address, 'hex')
-		.compare(Buffer.from(b.address, 'hex'));
+	return Buffer.from(getHexAddressFromBase32(a.address), 'hex')
+		.compare(Buffer.from(getHexAddressFromBase32(b.address), 'hex'));
 };
 
 const computeDelegateRank = async () => {

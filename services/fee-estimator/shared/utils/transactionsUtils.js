@@ -19,7 +19,7 @@ const { requestConnector } = require('./request');
 const { getGenesisConfig } = require('../networkConstants');
 
 let allCommandsParamsSchemasFromAppCache;
-let allCommandsParamsSchemasForFeesCache;
+const allCommandsParamsSchemasForFeesCache = [];
 
 const getCommandsParamsSchemasFromApp = async () => {
 	const schemas = await requestConnector('getSystemMetadata');
@@ -37,15 +37,16 @@ const getTxnParamsSchema = async (trx) => {
 	const moduleCommand = String(trx.module).concat(':').concat(trx.command);
 	const response = await getAllCommandsParamsSchemas();
 
-	response.modules.forEach(module => {
-		module.commands.forEach(command => {
-			const formattedTxParams = {};
-			formattedTxParams.moduleCommand = String(module.name).concat(':').concat(command.name);
-			formattedTxParams.schema = command.params;
-			allCommandsParamsSchemasForFeesCache.push(formattedTxParams);
+	if (!allCommandsParamsSchemasForFeesCache.length) {
+		response.modules.forEach(module => {
+			module.commands.forEach(command => {
+				const formattedTxParams = {};
+				formattedTxParams.moduleCommand = String(module.name).concat(':').concat(command.name);
+				formattedTxParams.schema = command.params;
+				allCommandsParamsSchemasForFeesCache.push(formattedTxParams);
+			});
 		});
-	});
-
+	}
 	const [{ schema }] = allCommandsParamsSchemasForFeesCache.filter(
 		txSchema => (!moduleCommand)
 			|| txSchema.moduleCommand === moduleCommand,
