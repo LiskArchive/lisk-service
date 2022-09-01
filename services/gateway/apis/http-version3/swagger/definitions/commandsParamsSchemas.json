@@ -134,7 +134,7 @@
             },
             "message": {
                 "type": "string",
-                "example": "Schema corresponding moduleCommandID: '3:1' not found."
+                "example": "Schema corresponding moduleCommand: 'token:transfer' not found."
             }
         }
     }

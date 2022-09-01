@@ -29,6 +29,8 @@
     "test:unit": "jest --config=jest.config.js --detectOpenHandles --forceExit"
   },
   "dependencies": {
+    "@liskhq/lisk-codec": "0.3.0-alpha.32139",
+    "@liskhq/lisk-cryptography": "4.0.0-alpha.32139",
     "@liskhq/lisk-transactions": "6.0.0-alpha.32139",
     "bluebird": "^3.7.2",
     "lisk-service-framework": "https://github.com/LiskHQ/lisk-service/raw/03183491493e49b879438252b31923cce867e0d3/framework/dist/lisk-service-framework-1.4.4.tgz"

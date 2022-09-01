@@ -22,7 +22,7 @@ let allCommandsParamsSchemasFromAppCache;
 let allCommandsParamsSchemasForFeesCache;
 
 const getCommandsParamsSchemasFromApp = async () => {
-	const schemas = await requestConnector('getSchema');
+	const schemas = await requestConnector('getSystemMetadata');
 	return schemas;
 };
 
@@ -34,22 +34,21 @@ const getAllCommandsParamsSchemas = async () => {
 };
 
 const getTxnParamsSchema = async (trx) => {
-	const moduleCommandID = String(trx.moduleID).concat(':').concat(trx.commandID);
+	const moduleCommand = String(trx.module).concat(':').concat(trx.command);
 	const response = await getAllCommandsParamsSchemas();
 
-	if (!allCommandsParamsSchemasForFeesCache) {
-		allCommandsParamsSchemasForFeesCache = response.commands.map(txParams => {
+	response.modules.forEach(module => {
+		module.commands.forEach(command => {
 			const formattedTxParams = {};
-			formattedTxParams.moduleCommandID = String(txParams.moduleID).concat(':').concat(txParams.commandID);
-			formattedTxParams.moduleCommandName = String(txParams.moduleName).concat(':').concat(txParams.commandName);
-			formattedTxParams.schema = txParams.schema;
-			return formattedTxParams;
+			formattedTxParams.moduleCommand = String(module.name).concat(':').concat(command.name);
+			formattedTxParams.schema = command.params;
+			allCommandsParamsSchemasForFeesCache.push(formattedTxParams);
 		});
-	}
+	});
 
 	const [{ schema }] = allCommandsParamsSchemasForFeesCache.filter(
-		txSchema => (!moduleCommandID)
-			|| txSchema.moduleCommandID === moduleCommandID,
+		txSchema => (!moduleCommand)
+			|| txSchema.moduleCommand === moduleCommand,
 	);
 	return schema;
 };

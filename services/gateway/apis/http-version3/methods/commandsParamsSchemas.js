@@ -25,11 +25,6 @@ module.exports = {
 	params: {
 		moduleCommand: { optional: true, type: 'string', min: 3, pattern: /[a-z]+:[a-z]+/ },
 	},
-	paramsRequired: false,
-	validParamPairings: [
-		['moduleCommandID'],
-		['moduleCommandName'],
-	],
 	get schema() {
 		const commandsParamsSchema = {};
 		commandsParamsSchema[this.swaggerApiPath] = { get: {} };
