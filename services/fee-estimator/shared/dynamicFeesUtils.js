@@ -129,6 +129,7 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 		status: 'SERVICE_UNAVAILABLE',
 	};
 };
+
 Signals.get('newBlock').add(async () => {
 	try {
 		if (config.feeEstimates.fullAlgorithmEnabled) {

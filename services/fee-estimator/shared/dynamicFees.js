@@ -34,14 +34,22 @@ const calculateBlockSize = async block => {
 };
 
 const calculateWeightedAvg = async blocks => {
-	const blockSizes = await Promise.all(blocks.map(block => calculateBlockSize(block)));
+	const blockSizes = await BluebirdPromise.map(
+		blocks, 
+		async block => calculateBlockSize(block),
+		{ concurrency : blocks.length},
+	);
 	const decayFactor = config.feeEstimates.wavgDecayPercentage / 100;
 	let weight = 1;
-	const wavgLastBlocks = blockSizes.reduce((a = 0, b = 0) => {
-		weight *= 1 - decayFactor;
-		return a + (b * weight);
-	});
+	const wSumLastBlocks = blockSizes.reduce(
+		(prevWSum = 0, blockSize) => {
+			const currentWSum = prevWSum + (blockSize * weight);
+			weight *= (1 - decayFactor);
+			return currentWSum;
+		},
+	);
 
+	const wavgLastBlocks = wSumLastBlocks / blocks.length;
 	return wavgLastBlocks;
 };
 
@@ -165,17 +173,18 @@ const getEstimateFeeByteForBatch = async (fromHeight, toHeight, cacheKey) => {
 		/* eslint-disable no-await-in-loop */
 		const idealEMABatchSize = config.feeEstimates.emaBatchSize;
 		const finalEMABatchSize = (() => {
-			const maxEmaBasedOnHeight = prevFeeEstPerByte.blockHeight - genesisHeight;
-			if (idealEMABatchSize > maxEmaBasedOnHeight) return maxEmaBasedOnHeight + 1;
+			const maxEMABasedOnHeight = prevFeeEstPerByte.blockHeight - genesisHeight;
+			if (idealEMABatchSize > maxEMABasedOnHeight) return maxEMABasedOnHeight + 1;
 			return idealEMABatchSize;
 		})();
 
 		blockBatch.data = await BluebirdPromise.map(
 			range(finalEMABatchSize),
 			async i => {
-				const { header, transactions } = await requestConnector('getBlockByHeight', {
-					height: prevFeeEstPerByte.blockHeight + 1 - i,
-				});
+				const { header, transactions } = await requestConnector(
+					'getBlockByHeight',
+					{ height: prevFeeEstPerByte.blockHeight + 1 - i },
+				);
 				return { ...header, transactions };
 			},
 			{ concurrency: 50 },
