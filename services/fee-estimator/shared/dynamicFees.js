@@ -39,15 +39,15 @@ const calculateWeightedAvg = async blocks => {
 		async block => calculateBlockSize(block),
 		{ concurrency: blocks.length },
 	);
-	const decayFactor = 1 - ( config.feeEstimates.wavgDecayPercentage / 100 );
+	const decayFactor = 1 - (config.feeEstimates.wavgDecayPercentage / 100);
 	let weight = 1;
 	let totalWeight = 0;
-	
+
 	const wSumLastBlocks = blockSizes.reduce(
 		(wBlockAcc = 0, blockSize) => {
-			wBlockAcc   += (blockSize * weight);
+			wBlockAcc += (blockSize * weight);
 			totalWeight += weight;
-			weight      *= decayFactor;
+			weight *= decayFactor;
 			return wBlockAcc;
 		},
 	);
