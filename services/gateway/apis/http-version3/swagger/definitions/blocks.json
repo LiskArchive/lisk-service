@@ -100,6 +100,21 @@
                     }
                 }
             },
+            "totalBurnt": {
+                "type": "string",
+                "example": "0",
+                "description": "Total amount of LSK that have been burnt in this Block"
+            },
+            "networkFee": {
+                "type": "string",
+                "example": "15000000",
+                "description": "The total amount of fees associated with the block."
+            },
+            "totalForged": {
+                "type": "string",
+                "example": "65000000",
+                "description": "Total amount of LSK that have been forged in this Block.\nConsists of fees and the reward.\n"
+            },
             "signature": {
                 "type": "string",
                 "format": "signature",

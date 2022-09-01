@@ -71,8 +71,7 @@
         "type": "object",
         "required": [
             "id",
-            "moduleCommandID",
-            "moduleCommandName",
+            "moduleCommand",
             "fee",
             "nonce",
             "block",
@@ -88,12 +87,7 @@
                 "maxLength": 64,
                 "description": "Unique identifier of the transaction.\nDerived from the transaction signature.\n"
             },
-            "moduleCommandID": {
-                "type": "string",
-                "example": "2:0",
-                "description": "Combination of transaction moduleID:commandID.\n"
-            },
-            "moduleCommandName": {
+            "moduleCommand": {
                 "type": "string",
                 "example": "token:transfer",
                 "description": "Combination of transaction moduleName:commandName.\n"
