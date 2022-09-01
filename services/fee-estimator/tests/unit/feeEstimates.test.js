@@ -60,19 +60,19 @@ describe('Fee estimation tests', () => {
 		it('Batch of non-empty blocks (lowTraffic)', async () => {
 			const wavg = await calculateWeightedAvg(lowTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(19346.3862945068);
+			expect(wavg).toBeCloseTo(2457.1059446382164);
 		});
 
 		it('Batch of non-empty blocks (moderateTraffic)', async () => {
 			const wavg = await calculateWeightedAvg(moderateTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(51251.21374171622);
+			expect(wavg).toBeCloseTo(6508.82505522327);
 		});
 
 		it('Batch of non-empty blocks (highTraffic)', async () => {
 			const wavg = await calculateWeightedAvg(highTrafficMockup.blocks);
 			expect(wavg).not.toBe(0);
-			expect(wavg).toBeCloseTo(160557.05610962515);
+			expect(wavg).toBeCloseTo(20391.122266012917);
 		});
 	});
 
