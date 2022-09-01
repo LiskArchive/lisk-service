@@ -40,7 +40,7 @@ module.exports = {
 	numberOfEvents: '=,number',
 	totalForged: '=,string',
 	totalBurnt: '=,string',
-	totalFee: '=,string',
+	networkFee: '=,string',
 	signature: '=,string',
 	isFinal: '=,boolean',
 };

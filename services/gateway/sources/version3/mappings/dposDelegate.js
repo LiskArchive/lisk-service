@@ -26,5 +26,6 @@ module.exports = {
 		start: '=,number',
 		end: '=,number',
 	}],
+	rank: '=,number',
 	consecutiveMissedBlocks: '=,number',
 };

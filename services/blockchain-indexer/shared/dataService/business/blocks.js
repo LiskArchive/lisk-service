@@ -81,7 +81,7 @@ const normalizeBlock = async (originalblock) => {
 		// TODO: get reward value from block event
 		block.totalForged = BigInt(reward || '0');
 		block.totalBurnt = BigInt('0');
-		block.totalFee = BigInt('0');
+		block.networkFee = BigInt('0');
 
 		block.transactions = await BluebirdPromise.map(
 			block.transactions,
