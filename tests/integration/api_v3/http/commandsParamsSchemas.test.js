@@ -41,63 +41,28 @@ describe('Commands parameters Schemas API', () => {
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('returns command parameters schema for known moduleCommandID', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandID=2:0`);
+	it('returns command parameters with known moduleCommand', async () => {
+		const response = await api.get(`${endpoint}?moduleCommand=token:transfer`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toEqual(1);
 		response.data.forEach(schema => expect(schema)
-			.toMap(
-				commandsParamsSchemasSchema,
-				{ moduleCommandID: '2:0', moduleCommandName: 'token:transfer' },
-			));
+			.toMap(commandsParamsSchemasSchema, { moduleCommand: 'token:transfer' }));
 		expect(response.meta).toMap(metaSchema);
 	});
 
-	it('returns command parameters with known moduleCommandName', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandName=token:transfer`);
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toEqual(1);
-		response.data.forEach(schema => expect(schema)
-			.toMap(
-				commandsParamsSchemasSchema,
-				{ moduleCommandID: '2:0', moduleCommandName: 'token:transfer' },
-			));
-		expect(response.meta).toMap(metaSchema);
-	});
-
-	it('inexistent moduleCommandID -> 404', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandID=-124:999`, 404);
+	it('inexistent moduleCommand -> 404', async () => {
+		const response = await api.get(`${endpoint}?moduleCommand=inexistent:name`, 404);
 		expect(response).toMap(notFoundSchema);
 	});
 
-	it('invalid moduleCommandID -> 400', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandID=-124`, 400);
+	it('invalid moduleCommand -> 400', async () => {
+		const response = await api.get(`${endpoint}?moduleCommand=invalid_name`, 400);
 		expect(response).toMap(badRequestSchema);
 	});
 
-	it('empty moduleCommandID ->  ok', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandID=`);
-		expect(response).toMap(goodRequestSchema);
-		expect(response.data).toBeInstanceOf(Array);
-		expect(response.data.length).toBeGreaterThanOrEqual(1);
-		response.data.forEach(schema => expect(schema).toMap(commandsParamsSchemasSchema));
-		expect(response.meta).toMap(metaSchema);
-	});
-
-	it('inexistent moduleCommandName -> 404', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandName=inexistent:name`, 404);
-		expect(response).toMap(notFoundSchema);
-	});
-
-	it('invalid moduleCommandName -> 400', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandName=invalid_name`, 400);
-		expect(response).toMap(badRequestSchema);
-	});
-
-	it('empty moduleCommandName ->  ok', async () => {
-		const response = await api.get(`${endpoint}?moduleCommandName=`);
+	it('empty moduleCommand ->  ok', async () => {
+		const response = await api.get(`${endpoint}?moduleCommand=`);
 		expect(response).toMap(goodRequestSchema);
 		expect(response.data).toBeInstanceOf(Array);
 		expect(response.data.length).toBeGreaterThanOrEqual(1);

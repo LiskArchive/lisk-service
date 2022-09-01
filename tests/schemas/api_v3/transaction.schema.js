@@ -40,8 +40,7 @@ const TRANSACTION_EXECUTION_STATUSES = [
 
 const transactionSchema = {
 	id: Joi.string().required(),
-	moduleCommandID: Joi.string().required(),
-	moduleCommandName: Joi.string().required(),
+	moduleCommand: Joi.string().required(),
 	nonce: Joi.string().required(),
 	fee: Joi.string().required(),
 	sender: Joi.object(sender).required(),

@@ -24,8 +24,7 @@ const commandParamsSchema = {
 };
 
 const commandsParamsSchemasSchema = {
-	moduleCommandID: Joi.string().required(),
-	moduleCommandName: Joi.string().required(),
+	moduleCommand: Joi.string().required(),
 	// TODO: Update schema to required when all schemas are avalable from sdk
 	schema: Joi.object(commandParamsSchema).optional(),
 };
