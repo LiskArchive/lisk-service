@@ -129,7 +129,8 @@ const getEstimateFeeByte = async () => { // aka getBestEstimateAvailable
 		status: 'SERVICE_UNAVAILABLE',
 	};
 };
-Signals.get('newBlock').add(async () => {
+
+const newBlockListener = async () => {
 	try {
 		if (config.feeEstimates.fullAlgorithmEnabled) {
 			logger.debug('Initiate the dynamic fee estimates computation (full computation)');
@@ -144,7 +145,9 @@ Signals.get('newBlock').add(async () => {
 	} catch (err) {
 		logger.error(`Error occured when processing 'calculateFeeEstimate' event:\n${err.stack}`);
 	}
-});
+};
+
+Signals.get('newBlock').add(newBlockListener);
 
 module.exports = {
 	getEstimateFeeByte,
