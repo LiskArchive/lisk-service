@@ -49,12 +49,8 @@ const resolveModuleCommands = (data) => {
 		if (liskModule.commands.length) {
 			result = result.concat(
 				liskModule.commands.map(command => {
-					const id = String(liskModule.id).concat(':').concat(command.id);
-					if (liskModule.name && command.name) {
-						const name = liskModule.name.concat(':').concat(command.name);
-						return { id, name };
-					}
-					return { id };
+					const name = liskModule.name.concat(':').concat(command.name);
+					return { name };
 				}),
 			);
 		}

@@ -28,8 +28,7 @@ const crossChainMessagesIndexSchema = require('../../../database/schema/crossCha
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
 
-// command specific constants
-const commandID = '00000006';
+// commandName specific constants
 const commandName = 'stateRecoveryInitialization';
 
 // eslint-disable-next-line no-unused-vars
@@ -51,7 +50,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

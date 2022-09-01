@@ -33,8 +33,7 @@ const votesIndexSchema = require('../../../database/schema/votes');
 
 const getVotesIndex = () => getTableInstance('votes', votesIndexSchema, MYSQL_ENDPOINT);
 
-// Command specific constants
-const commandID = '00000001';
+// commandName specific constants
 const commandName = 'voteDelegate';
 
 const getVoteIndexingInfo = async (tx) => {
@@ -115,7 +114,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

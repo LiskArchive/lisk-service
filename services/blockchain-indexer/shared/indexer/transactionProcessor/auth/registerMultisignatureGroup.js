@@ -30,8 +30,7 @@ const multisignatureIndexSchema = require('../../../database/schema/multisignatu
 
 const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
 
-// Command specific constants
-const commandID = '00000000';
+// commandName specific constants
 const commandName = 'registerMultisignatureGroup';
 
 const resolveMultisignatureMemberships = (tx) => {
@@ -74,7 +73,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

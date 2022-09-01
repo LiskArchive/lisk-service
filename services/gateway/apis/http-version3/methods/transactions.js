@@ -25,8 +25,7 @@ module.exports = {
 	tags: ['Transactions'],
 	params: {
 		transactionID: { optional: true, type: 'string', min: 1, max: 64, pattern: regex.HASH_SHA256 },
-		moduleCommandID: { optional: true, type: 'string', min: 1, max: 21 },
-		moduleCommandName: { optional: true, type: 'string', min: 1 },
+		moduleCommand: { optional: true, type: 'string', min: 1 },
 		senderAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
 		address: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },
 		recipientAddress: { optional: true, type: 'string', min: 3, max: 41, pattern: regex.ADDRESS_BASE32 },

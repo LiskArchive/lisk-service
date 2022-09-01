@@ -13,8 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// Command specific constants
-const commandID = '00000002';
+// commandName specific constants
 const commandName = 'unlockToken';
 
 // eslint-disable-next-line no-unused-vars
@@ -27,7 +26,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

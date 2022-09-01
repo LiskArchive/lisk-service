@@ -21,7 +21,6 @@ const {
 } = require('lisk-service-framework');
 
 const { getLastBlock, getBlockByID } = require('./blocks');
-const { getAvailableModuleCommands } = require('../../constants');
 
 const {
 	getBase32AddressFromPublicKey,
@@ -37,24 +36,6 @@ const config = require('../../../config');
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
-
-const resolveModuleCommand = async (moduleCommandVal) => {
-	const availableModuleCommands = await getAvailableModuleCommands();
-	const [module, command] = moduleCommandVal.split(':');
-	let response;
-	if (!Number.isNaN(Number(module)) && !Number.isNaN(Number(command))) {
-		const { name } = (availableModuleCommands
-			.find(moduleCommand => moduleCommand.id === moduleCommandVal));
-		response = name;
-	} else {
-		const { id } = (availableModuleCommands
-			.find(moduleCommand => moduleCommand.name === moduleCommandVal));
-		response = id;
-	}
-	if ([undefined, null, '']
-		.includes(response)) return new Error(`Incorrect moduleCommand ID/Name combination: ${moduleCommandVal}`);
-	return response;
-};
 
 const getTransactionIDsByBlockID = async blockID => {
 	const transactionsDB = await getTransactionsIndex();
@@ -98,13 +79,6 @@ const validateParams = async params => {
 
 	if (params.nonce && !(params.senderAddress)) {
 		throw new InvalidParamsException('Nonce based retrieval is only possible along with senderAddress');
-	}
-
-	if (params.moduleCommandName) {
-		const { moduleCommandName, ...remParams } = params;
-		params = remParams;
-
-		params.moduleCommandID = await resolveModuleCommand(moduleCommandName);
 	}
 
 	if (params.executionStatus) {
@@ -198,7 +172,7 @@ const getTransactions = async params => {
 			transaction.executionStatus = indexedTxInfo.executionStatus;
 
 			// The following two lines below are necessary for transaction statistics
-			if (transaction.moduleCommandID) transaction.type = transaction.moduleCommandID;
+			if (transaction.moduleCommand) transaction.type = transaction.moduleCommand;
 			transaction.amount = transaction.params.amount || 0;
 
 			return transaction;
@@ -266,7 +240,7 @@ const getTransactionsByBlockID = async blockID => {
 	);
 
 	return {
-		data: await normalizeTransaction(transactions),
+		data: await normalizeTransactions(transactions),
 		meta: {
 			offset: 0,
 			count: transactions.length,

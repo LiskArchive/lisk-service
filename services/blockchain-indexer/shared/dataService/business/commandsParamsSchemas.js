@@ -41,19 +41,17 @@ const getCommandsParamsSchemas = async params => {
 	response.modules.forEach(module => {
 		module.commands.forEach(command => {
 			const formattedTxParams = {};
-			formattedTxParams.moduleCommandID = String(module.id).concat(':').concat(command.id);
-			formattedTxParams.moduleCommandName = String(module.name).concat(':').concat(command.name);
+			formattedTxParams.moduleCommand = String(module.name).concat(':').concat(command.name);
 			formattedTxParams.schema = command.params;
 			allCommandsParamsSchemas.push(formattedTxParams);
 		});
 	});
 
-	const { moduleCommandID, moduleCommandName } = params;
+	const { moduleCommand } = params;
 
 	commandsParamsSchemas.data = allCommandsParamsSchemas.filter(
-		txSchema => (!moduleCommandID && !moduleCommandName)
-			|| txSchema.moduleCommandID === moduleCommandID
-			|| txSchema.moduleCommandName === moduleCommandName,
+		txSchema => (!moduleCommand)
+			|| txSchema.moduleCommand === moduleCommand,
 	);
 
 	commandsParamsSchemas.meta = {

@@ -20,8 +20,7 @@ module.exports = {
 	method: 'indexer.transactions',
 	params: {
 		id: 'transactionID,string',
-		moduleCommandID: '=,string',
-		moduleCommandName: '=,string',
+		moduleCommand: '=,string',
 		senderAddress: '=,string',
 		recipientAddress: '=,string',
 		address: '=,string',

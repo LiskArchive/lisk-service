@@ -14,7 +14,6 @@
  *
  */
 module.exports = {
-	moduleCommandID: '=,string',
-	moduleCommandName: '=,string',
+	moduleCommand: '=,string',
 	schema: '=',
 };

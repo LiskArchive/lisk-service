@@ -30,8 +30,7 @@ const validatorsIndexSchema = require('../../../database/schema/validators');
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
 
-// Command specific constants
-const commandID = '00000000';
+// commandName specific constants
 const commandName = 'registerDelegate';
 
 // eslint-disable-next-line no-unused-vars
@@ -64,7 +63,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

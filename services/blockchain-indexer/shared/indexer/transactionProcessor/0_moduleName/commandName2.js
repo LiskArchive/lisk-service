@@ -33,8 +33,7 @@ const entityIndexSchema = require('../../../database/schema/transactions');
 
 const getEntityIndex = () => getTableInstance('entity_index_name', entityIndexSchema, MYSQL_ENDPOINT);
 
-// Declare and export the following command specific constants
-export const commandID = 0;
+// Declare and export the following commandName specific constants
 export const commandName = 'commandName';
 
 // Implement the custom logic in the 'applyTransaction' method and export it

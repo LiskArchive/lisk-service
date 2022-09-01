@@ -39,8 +39,7 @@ const getTransactionsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-// Command specific constants
-const commandID = '00000000';
+// commandName specific constants
 const commandName = 'transfer';
 
 // eslint-disable-next-line no-unused-vars
@@ -70,7 +69,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

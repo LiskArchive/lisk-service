@@ -23,8 +23,7 @@ module.exports = {
 	rpcMethod: 'get.commands.parameters.schemas',
 	tags: ['Transactions'],
 	params: {
-		moduleCommandID: { optional: true, type: 'string', min: 3, pattern: /[0-9]+:[0-9]+/ },
-		moduleCommandName: { optional: true, type: 'string', min: 3, pattern: /[a-z]+:[a-z]+/ },
+		moduleCommand: { optional: true, type: 'string', min: 3, pattern: /[a-z]+:[a-z]+/ },
 	},
 	paramsRequired: false,
 	validParamPairings: [

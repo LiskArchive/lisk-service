@@ -142,9 +142,9 @@ const indexBlock = async job => {
 				block.transactions,
 				async (tx) => {
 					// Apply default transformations and index with minimal information by default
-					const { id } = availableModuleCommands
-						.find(module => module.id === String(tx.moduleID).concat(':', tx.commandID));
-					tx.moduleCommandID = id;
+					const { name } = availableModuleCommands
+						.find(moduleCommand => moduleCommand.name === String(tx.module).concat(':', tx.command));
+					tx.moduleCommand = name;
 					tx.blockID = block.id;
 					tx.height = block.height;
 					tx.senderAddress = getBase32AddressFromPublicKey(tx.senderPublicKey);

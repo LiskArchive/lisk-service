@@ -15,10 +15,8 @@
  */
 
 // Module specific constants
-const moduleID = '00000002';
 const moduleName = 'token';
 
 module.exports = {
-	moduleID,
 	moduleName,
 };

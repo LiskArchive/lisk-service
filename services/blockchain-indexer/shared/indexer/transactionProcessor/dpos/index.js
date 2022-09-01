@@ -15,10 +15,8 @@
  */
 
 // Module specific constants
-const moduleID = '0000000d';
 const moduleName = 'dpos';
 
 module.exports = {
-	moduleID,
 	moduleName,
 };

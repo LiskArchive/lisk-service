@@ -30,8 +30,7 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
 
-// command specific constants
-const commandID = '00000000';
+// commandName specific constants
 const commandName = 'sidechainRegistration';
 
 // eslint-disable-next-line no-unused-vars
@@ -65,7 +64,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

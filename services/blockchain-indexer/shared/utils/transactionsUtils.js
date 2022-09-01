@@ -33,8 +33,8 @@ const { parseInputBySchema, parseToJSONCompatObj } = require('./parser');
 const { getCommandsParamsSchemas } = require('../dataService/business/commandsParamsSchemas');
 
 const getTxnParamsSchema = async (trx) => {
-	const moduleCommandID = trx.moduleID.toString('hex').concat(':').concat(trx.commandID.toString('hex'));
-	const { data: [{ schema }] } = await getCommandsParamsSchemas({ moduleCommandID });
+	const moduleCommand = trx.module.concat(':').concat(trx.command);
+	const { data: [{ schema }] } = await getCommandsParamsSchemas({ moduleCommand });
 	return schema;
 };
 
@@ -55,8 +55,8 @@ const getTxnMinFee = async (
 
 const normalizeTransaction = async tx => {
 	const metadata = await getSystemMetadata();
-	const filteredModule = metadata.modules.find(module => module.id === tx.moduleID);
-	const filteredCommand = filteredModule.commands.find(s => s.id === tx.commandID);
+	const filteredModule = metadata.modules.find(module => module.name === tx.module);
+	const filteredCommand = filteredModule.commands.find(s => s.name === tx.command);
 
 	const { params } = tx;
 	const decodedParams = codec.decode(filteredCommand.params, Buffer.from(params, 'hex'));
@@ -78,11 +78,11 @@ const normalizeTransaction = async tx => {
 	tx.params = decodedParams;
 
 	const availableModuleCommands = await getAvailableModuleCommands();
-	const txModuleCommandID = String(tx.moduleID).concat(':', tx.commandID);
-	const { id, name } = availableModuleCommands.find(module => module.id === txModuleCommandID);
+	const txModuleCommand = String(tx.module).concat(':', tx.command);
+	const { name } = availableModuleCommands
+		.find(moduleCommand => moduleCommand.name === txModuleCommand);
 
-	tx.moduleCommandID = id;
-	tx.moduleCommandName = name;
+	tx.moduleCommand = name;
 	if (tx.params.recipientAddress) {
 		tx.params
 			.recipientAddress = getBase32AddressFromHex(tx.params.recipientAddress);

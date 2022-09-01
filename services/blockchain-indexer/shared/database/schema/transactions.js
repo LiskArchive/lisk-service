@@ -20,7 +20,7 @@ module.exports = {
 	schema: {
 		id: { type: 'string', null: false },
 		height: { type: 'integer', null: false },
-		moduleCommandID: { type: 'string', null: false },
+		moduleCommand: { type: 'string', null: false },
 		nonce: { type: 'integer', null: false },
 		blockID: { type: 'string', null: false },
 		timestamp: { type: 'integer', null: false },
@@ -36,7 +36,7 @@ module.exports = {
 	},
 	indexes: {
 		height: { type: 'range' },
-		moduleCommandID: { type: 'key' },
+		moduleCommand: { type: 'key' },
 		nonce: { type: 'range' },
 		blockID: { type: 'key' },
 		timestamp: { type: 'range' },
