@@ -16,5 +16,6 @@
 module.exports = {
 	address: '=,string',
 	name: '=,string',
+	publicKey: '=,string',
 	nextAllocatedTime: '=,number',
 };

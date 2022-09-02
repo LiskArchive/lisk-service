@@ -43,19 +43,14 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const resolveModuleCommands = (data) => {
-	let result = [];
-	data.forEach(liskModule => {
-		if (liskModule.commands.length) {
-			result = result.concat(
-				liskModule.commands.map(command => {
-					const name = `${liskModule.name}:${command.name}`;
-					return name;
-				}),
-			);
-		}
+const resolveModuleCommands = (systemMeta) => {
+	const moduleCommandList = [];
+	systemMeta.forEach(module => {
+		module.commands.forEach(command => {
+			moduleCommandList.push(`${module.name}:${command.name}`);
+		});
 	});
-	return result;
+	return moduleCommandList;
 };
 
 const getAvailableModuleCommands = async () => {
