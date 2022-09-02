@@ -30,7 +30,7 @@ const multisignatureIndexSchema = require('../../../database/schema/multisignatu
 
 const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
 
-// command specific constants
+// Command specific constants
 const commandName = 'registerMultisignatureGroup';
 
 const resolveMultisignatureMemberships = (tx) => {

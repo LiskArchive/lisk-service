@@ -28,7 +28,7 @@ const crossChainMessagesIndexSchema = require('../../../database/schema/crossCha
 const getTransactionsIndex = () => getTableInstance('transactions', transactionsIndexSchema, MYSQL_ENDPOINT);
 const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
 
-// command specific constants
+// Command specific constants
 const commandName = 'stateRecovery';
 
 // eslint-disable-next-line no-unused-vars

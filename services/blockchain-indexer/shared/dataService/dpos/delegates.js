@@ -55,6 +55,7 @@ const delegateComparator = (a, b) => {
 		.compare(Buffer.from(getHexAddressFromLisk32(b.address), 'hex'));
 };
 
+// TODO: Remove code after SDK returns rank
 const computeDelegateRank = async () => {
 	delegateList.sort(delegateComparator);
 	delegateList.map((delegate, index) => {
