@@ -14,7 +14,6 @@
  *
  */
 // Command specific constants
-const commandID = '00000002';
 const commandName = 'unlockToken';
 
 // eslint-disable-next-line no-unused-vars
@@ -27,7 +26,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

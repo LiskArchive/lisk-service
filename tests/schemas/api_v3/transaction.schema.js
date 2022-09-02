@@ -20,13 +20,13 @@ const regex = require('./regex');
 const sender = {
 	address: Joi.string().pattern(regex.ADDRESS_BASE32).required(),
 	publicKey: Joi.string().pattern(regex.PUBLIC_KEY).required(),
-	name: Joi.string().optional(),
+	name: Joi.string().pattern(regex.NAME).required(),
 };
 
 const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
 const block = {
-	id: Joi.string().required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	height: Joi.number().integer().min(1).required(),
 	timestamp: Joi.number().integer().positive().max(getCurrentTime())
 		.required(),
@@ -34,14 +34,13 @@ const block = {
 
 const TRANSACTION_EXECUTION_STATUSES = [
 	'pending',
-	'succeeded',
-	'failed',
+	'success',
+	'fail',
 ];
 
 const transactionSchema = {
-	id: Joi.string().required(),
-	moduleCommandID: Joi.string().required(),
-	moduleCommandName: Joi.string().required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
+	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
 	nonce: Joi.string().required(),
 	fee: Joi.string().required(),
 	sender: Joi.object(sender).required(),

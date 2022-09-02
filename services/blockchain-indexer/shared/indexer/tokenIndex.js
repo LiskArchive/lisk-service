@@ -18,7 +18,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getHexAddressFromBase32 } = require('../utils/accountUtils');
+const { getHexAddressFromLisk32 } = require('../utils/accountUtils');
 const { requestConnector } = require('../utils/request');
 
 const config = require('../../config');
@@ -39,7 +39,7 @@ const getLiskBalanceByAddress = async (address) => {
 	const response = await requestConnector(
 		'token_getBalance',
 		{
-			address: getHexAddressFromBase32(address),
+			address: getHexAddressFromLisk32(address),
 			tokenID: LISK_TOKEN_ID,
 		},
 	);

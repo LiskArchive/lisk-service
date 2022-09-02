@@ -27,8 +27,7 @@ module.exports = [
 		controller: getTransactions,
 		params: {
 			transactionID: { optional: true, type: 'string' },
-			moduleCommandID: { optional: true, type: 'string' },
-			moduleCommandName: { optional: true, type: 'string' },
+			moduleCommand: { optional: true, type: 'string' },
 			address: { optional: true, type: 'string' },
 			senderAddress: { optional: true, type: 'string' },
 			recipientAddress: { optional: true, type: 'string' },
@@ -59,8 +58,7 @@ module.exports = [
 		name: 'commands.parameters.schemas',
 		controller: getCommandsParamsSchemas,
 		params: {
-			moduleCommandID: { optional: true, type: 'string' },
-			moduleCommandName: { optional: true, type: 'string' },
+			moduleCommand: { optional: true, type: 'string' },
 		},
 	},
 ];

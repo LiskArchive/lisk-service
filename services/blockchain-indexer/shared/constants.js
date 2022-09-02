@@ -43,23 +43,14 @@ const getGenesisConfig = async () => {
 	return genesisConfig;
 };
 
-const resolveModuleCommands = (data) => {
-	let result = [];
-	data.forEach(liskModule => {
-		if (liskModule.commands.length) {
-			result = result.concat(
-				liskModule.commands.map(command => {
-					const id = String(liskModule.id).concat(':').concat(command.id);
-					if (liskModule.name && command.name) {
-						const name = liskModule.name.concat(':').concat(command.name);
-						return { id, name };
-					}
-					return { id };
-				}),
-			);
-		}
+const resolveModuleCommands = (systemMeta) => {
+	const moduleCommandList = [];
+	systemMeta.forEach(module => {
+		module.commands.forEach(command => {
+			moduleCommandList.push(`${module.name}:${command.name}`);
+		});
 	});
-	return result;
+	return moduleCommandList;
 };
 
 const getAvailableModuleCommands = async () => {
@@ -85,13 +76,13 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
-const MODULE_ID = {
-	DPOS: process.env.MODULE_ID_DPOS || '0000000d',
+const MODULE = {
+	DPOS: 'dpos',
 };
 
-const COMMAND_ID = {
-	REGISTER_DELEGATE: process.env.COMMAND_ID_DPOS_REGISTER_DELEGATE || 0,
-	VOTE_DELEGATE: process.env.COMMAND_ID_DPOS_VOTE_DELEGATE || 1,
+const COMMAND = {
+	REGISTER_DELEGATE: 'registerDelegate',
+	VOTE_DELEGATE: 'voteDelegate',
 };
 
 module.exports = {
@@ -104,6 +95,6 @@ module.exports = {
 	getRegisteredModules,
 	getSystemMetadata,
 
-	MODULE_ID,
-	COMMAND_ID,
+	MODULE,
+	COMMAND,
 };

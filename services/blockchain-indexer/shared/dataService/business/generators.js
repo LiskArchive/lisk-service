@@ -15,21 +15,28 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { getBase32AddressFromHex } = require('../../utils/accountUtils');
+const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { getGenesisConfig } = require('../../constants');
 const { requestConnector } = require('../../utils/request');
 const { getNameByAddress } = require('../../utils/delegateUtils');
 
 const getGenerators = async () => {
-	const { list: generatorsAddresses } = await requestConnector('getGenerators');
+	const { list: generatorsList } = await requestConnector('getGenerators');
 	const generators = await BluebirdPromise.map(
-		generatorsAddresses,
-		async address => ({
-			address: getBase32AddressFromHex(address),
-			name: await getNameByAddress(address),
-			// TODO: Update when nextForgingTime is available from SDK
-			nextForgingTime: Math.floor(Date.now() / 1000) + 1000,
-		}));
+		generatorsList,
+		async generator => {
+			const { name, publicKey } = await getIndexedAccountInfo(
+				{ address: generator.addres, limit: 1 },
+				['name', 'publicKey'],
+			);
+
+			return {
+				address: getLisk32AddressFromHex(generator.address),
+				name: name || await getNameByAddress(generator.address),
+				publicKey,
+				nextAllocatedTime: generator.nextAllocatedTime,
+			};
+		});
 
 	return generators;
 };

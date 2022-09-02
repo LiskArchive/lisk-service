@@ -20,7 +20,7 @@ const {
 const config = require('../../../../config');
 
 const {
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 } = require('../../../utils/accountUtils');
 
 const logger = Logger();
@@ -31,7 +31,6 @@ const multisignatureIndexSchema = require('../../../database/schema/multisignatu
 const getMultisignatureIndex = () => getTableInstance('multisignature', multisignatureIndexSchema, MYSQL_ENDPOINT);
 
 // Command specific constants
-const commandID = '00000000';
 const commandName = 'registerMultisignatureGroup';
 
 const resolveMultisignatureMemberships = (tx) => {
@@ -40,8 +39,8 @@ const resolveMultisignatureMemberships = (tx) => {
 
 	allKeys.forEach(key => {
 		const members = {
-			id: tx.senderAddress.concat('_', getBase32AddressFromPublicKey(key)),
-			memberAddress: getBase32AddressFromPublicKey(key),
+			id: tx.senderAddress.concat('_', getLisk32AddressFromPublicKey(key)),
+			memberAddress: getLisk32AddressFromPublicKey(key),
 			groupAddress: tx.senderAddress,
 		};
 		multisignatureInfoToIndex.push(members);
@@ -74,7 +73,6 @@ const revertTransaction = async (blockHeader, tx, dbTrx) => {
 };
 
 module.exports = {
-	commandID,
 	commandName,
 	applyTransaction,
 	revertTransaction,

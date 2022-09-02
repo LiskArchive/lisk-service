@@ -15,10 +15,8 @@
  */
 
 // Module specific constants
-const moduleID = '00000040';
 const moduleName = 'interoperability';
 
 module.exports = {
-	moduleID,
 	moduleName,
 };

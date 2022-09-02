@@ -19,8 +19,7 @@ module.exports = {
 	type: 'moleculer',
 	method: 'indexer.commands.parameters.schemas',
 	params: {
-		moduleCommandID: '=',
-		moduleCommandName: '=',
+		moduleCommand: '=,string',
 	},
 	definition: {
 		data: ['data', commandsParamsSchema],

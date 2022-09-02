@@ -15,8 +15,7 @@
  */
 module.exports = {
 	id: '=,string',
-	moduleCommandID: '=,string',
-	moduleCommandName: '=,string',
+	moduleCommand: '=,string',
 	nonce: '=,string',
 	fee: '=,string',
 	sender: {

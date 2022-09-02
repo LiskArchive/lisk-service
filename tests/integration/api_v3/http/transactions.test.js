@@ -37,7 +37,7 @@ const endpoint = `${baseUrl}/transactions`;
 xdescribe('Transactions API', () => {
 	let refTransaction;
 	beforeAll(async () => {
-		const response = await api.get(`${endpoint}?limit=1&moduleCommandID=2:0`);
+		const response = await api.get(`${endpoint}?limit=1&moduleCommand=token:transfer`);
 		[refTransaction] = response.data;
 	});
 
@@ -59,15 +59,15 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions with known moduleCommandID', async () => {
-			const response = await api.get(`${endpoint}?moduleCommandID=${refTransaction.moduleCommandID}`);
+		it('returns transactions with known moduleCommand', async () => {
+			const response = await api.get(`${endpoint}?moduleCommand=${refTransaction.moduleCommand}`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);
 			expect(response.data.length).toBeLessThanOrEqual(10);
 			response.data.forEach((transaction, i) => {
 				expect(transaction)
-					.toMap(transactionSchema, { moduleCommandID: refTransaction.moduleCommandID });
+					.toMap(transactionSchema, { moduleCommand: refTransaction.moduleCommand });
 				if (i > 0) {
 					const prevTx = response.data[i - 1];
 					const prevTxTimestamp = prevTx.block.timestamp;
@@ -77,31 +77,8 @@ xdescribe('Transactions API', () => {
 			expect(response.meta).toMap(metaSchema);
 		});
 
-		it('returns transactions with known moduleCommandName', async () => {
-			const response = await api.get(`${endpoint}?moduleCommandName=${refTransaction.moduleCommandName}`);
-			expect(response).toMap(goodRequestSchema);
-			expect(response.data).toBeInstanceOf(Array);
-			expect(response.data.length).toBeGreaterThanOrEqual(1);
-			expect(response.data.length).toBeLessThanOrEqual(10);
-			response.data.forEach((transaction, i) => {
-				expect(transaction)
-					.toMap(transactionSchema, { moduleCommandName: refTransaction.moduleCommandName });
-				if (i > 0) {
-					const prevTx = response.data[i - 1];
-					const prevTxTimestamp = prevTx.block.timestamp;
-					expect(prevTxTimestamp).toBeGreaterThanOrEqual(transaction.block.timestamp);
-				}
-			});
-			expect(response.meta).toMap(metaSchema);
-		});
-
-		it('invalid moduleCommandID -> 404', async () => {
-			const response = await api.get(`${endpoint}?moduleCommandID=-124`, 404);
-			expect(response).toMap(notFoundSchema);
-		});
-
-		it('empty moduleCommandID ->  ok', async () => {
-			const response = await api.get(`${endpoint}?moduleCommandID=`);
+		it('empty moduleCommand ->  ok', async () => {
+			const response = await api.get(`${endpoint}?moduleCommand=`);
 			expect(response).toMap(goodRequestSchema);
 			expect(response.data).toBeInstanceOf(Array);
 			expect(response.data.length).toBeGreaterThanOrEqual(1);

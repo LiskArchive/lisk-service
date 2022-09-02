@@ -26,11 +26,11 @@ const dataService = require('../business');
 const { getLastBlock } = require('../blocks');
 const { getAllGenerators } = require('../generators');
 const {
-	getHexAddressFromBase32,
-	getBase32AddressFromPublicKey,
-	getBase32AddressFromHex,
+	getLisk32AddressFromPublicKey,
+	getLisk32AddressFromHex,
+	getHexAddressFromLisk32,
 } = require('../../utils/accountUtils');
-const { MODULE_ID, COMMAND_ID } = require('../../constants');
+const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
 
@@ -51,10 +51,11 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return Buffer.from(getHexAddressFromBase32(a.address), 'hex')
-		.compare(Buffer.from(getHexAddressFromBase32(b.address), 'hex'));
+	return Buffer.from(getHexAddressFromLisk32(a.address), 'hex')
+		.compare(Buffer.from(getHexAddressFromLisk32(b.address), 'hex'));
 };
 
+// TODO: Remove code after SDK returns rank
 const computeDelegateRank = async () => {
 	delegateList.sort(delegateComparator);
 	delegateList.map((delegate, index) => {
@@ -213,13 +214,13 @@ const updateDelegateListEveryBlock = () => {
 		const [block] = data.data;
 		if (block && block.transactions && Array.isArray(block.transactions)) {
 			block.transactions.forEach(tx => {
-				if (tx.moduleID === MODULE_ID.DPOS) {
-					if (tx.CommandID === COMMAND_ID.REGISTER_DELEGATE) {
+				if (tx.module === MODULE.DPOS) {
+					if (tx.command === COMMAND.REGISTER_DELEGATE) {
 						updatedDelegateAddresses
-							.push(getBase32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.CommandID === COMMAND_ID.VOTE_DELEGATE) {
+							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
+					} else if (tx.command === COMMAND.VOTE_DELEGATE) {
 						tx.params.votes.forEach(vote => updatedDelegateAddresses
-							.push(getBase32AddressFromHex(vote.delegateAddress)));
+							.push(getLisk32AddressFromHex(vote.delegateAddress)));
 					}
 				}
 			});
@@ -280,7 +281,7 @@ const updateDelegateListEveryBlock = () => {
 const updateDelegateListOnAccountsUpdate = () => {
 	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
 		hexAddresses.forEach(async hexAddress => {
-			const address = getBase32AddressFromHex(hexAddress);
+			const address = getLisk32AddressFromHex(hexAddress);
 			const delegateIndex = delegateList.findIndex(acc => acc.address === address);
 			const delegate = delegateList[delegateIndex] || {};
 			if (Object.getOwnPropertyNames(delegate).length) {

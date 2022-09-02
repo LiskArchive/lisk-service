@@ -44,46 +44,8 @@ describe('Method get.commands.parameters.schemas', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns command parameters schema for known moduleCommandID', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandID: '2:0' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(response.result).toMap(resultEnvelopeSchema);
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toEqual(1);
-		result.data.forEach(schema => expect(schema)
-			.toMap(
-				commandsParamsSchemasSchema,
-				{ moduleCommandID: '2:0', moduleCommandName: 'token:transfer' },
-			));
-		expect(result.meta).toMap(metaSchema);
-	});
-
-	it('returns empty response for inexistent moduleCommandID', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandID: '-124:999' });
-		expect(response).toMap(emptyResponseSchema);
-		const { result } = response;
-		expect(result).toMap(emptyResultEnvelopeSchema);
-	});
-
-	it('returns invalid response for invalid moduleCommandID', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandID: '-124' });
-		expect(response).toMap(invalidParamsSchema);
-	});
-
-	it('empty moduleCommandID ->  ok', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandID: '' });
-		expect(response).toMap(jsonRpcEnvelopeSchema);
-		const { result } = response;
-		expect(response.result).toMap(resultEnvelopeSchema);
-		expect(result.data).toBeInstanceOf(Array);
-		expect(result.data.length).toBeGreaterThanOrEqual(1);
-		result.data.forEach(schema => expect(schema).toMap(commandsParamsSchemasSchema));
-		expect(result.meta).toMap(metaSchema);
-	});
-
-	it('returns command parameters schema for known moduleCommandName', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandName: 'token:transfer' });
+	it('returns command parameters schema for known moduleCommand', async () => {
+		const response = await requestCommandsParamsSchemas({ moduleCommand: 'token:transfer' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(response.result).toMap(resultEnvelopeSchema);
@@ -93,20 +55,20 @@ describe('Method get.commands.parameters.schemas', () => {
 		expect(result.meta).toMap(metaSchema);
 	});
 
-	it('returns empty response for inexistent moduleCommandName', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandName: 'invalid:name' });
+	it('returns empty response for inexistent moduleCommand', async () => {
+		const response = await requestCommandsParamsSchemas({ moduleCommand: 'invalid:name' });
 		expect(response).toMap(emptyResponseSchema);
 		const { result } = response;
 		expect(result).toMap(emptyResultEnvelopeSchema);
 	});
 
-	it('returns invalid response for invalid moduleCommandName', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandName: 'invalid_name' });
+	it('returns invalid response for invalid moduleCommand', async () => {
+		const response = await requestCommandsParamsSchemas({ moduleCommand: 'invalid_name' });
 		expect(response).toMap(invalidParamsSchema);
 	});
 
-	it('empty moduleCommandName ->  ok', async () => {
-		const response = await requestCommandsParamsSchemas({ moduleCommandName: '' });
+	it('empty moduleCommand ->  ok', async () => {
+		const response = await requestCommandsParamsSchemas({ moduleCommand: '' });
 		expect(response).toMap(jsonRpcEnvelopeSchema);
 		const { result } = response;
 		expect(response.result).toMap(resultEnvelopeSchema);
