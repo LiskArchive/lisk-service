@@ -42,5 +42,6 @@ module.exports = {
 	totalBurnt: '=,string',
 	networkFee: '=,string',
 	signature: '=,string',
+	reward: '=,string',
 	isFinal: '=,boolean',
 };

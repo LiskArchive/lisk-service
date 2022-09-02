@@ -15,7 +15,7 @@
  */
 const BluebirdPromise = require('bluebird');
 
-const { getBase32AddressFromHex } = require('../../utils/accountUtils');
+const { getLisk32AddressFromHex } = require('../../utils/accountUtils');
 const { getGenesisConfig } = require('../../constants');
 const { requestConnector } = require('../../utils/request');
 const { getNameByAddress } = require('../../utils/delegateUtils');
@@ -25,10 +25,9 @@ const getGenerators = async () => {
 	const generators = await BluebirdPromise.map(
 		generatorsList,
 		async generator => ({
-			address: getBase32AddressFromHex(generator.address),
+			address: getLisk32AddressFromHex(generator.address),
 			name: await getNameByAddress(generator.address),
-			// TODO: Update when nextForgingTime is available from SDK
-			nextForgingTime: generator.nextAllocatedTime,
+			nextAllocatedTime: generator.nextAllocatedTime,
 		}));
 
 	return generators;

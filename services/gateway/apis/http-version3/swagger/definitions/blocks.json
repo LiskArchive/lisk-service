@@ -103,17 +103,22 @@
             "totalBurnt": {
                 "type": "string",
                 "example": "0",
-                "description": "Total amount of LSK that have been burnt in this Block"
+                "description": "The total amount of Lisk (in Beddows) that was burnt in this block. It is the sum total of minimum fees for each transaction contained within the block."
             },
             "networkFee": {
                 "type": "string",
                 "example": "15000000",
-                "description": "The total amount of fees associated with the block."
+                "description": "TThe total amount of Lisk (in Beddows) that the block generator makes from the transaction fees after burning the minimum fees."
             },
             "totalForged": {
                 "type": "string",
                 "example": "65000000",
-                "description": "Total amount of LSK that have been forged in this Block.\nConsists of fees and the reward.\n"
+                "description": "Total amount of Lisk (in Beddows) that has been forged in this block. It is a sum of all the transaction fees and the block reward.\n"
+            },
+            "reward": {
+                "type": "string",
+                "example": "50000000",
+                "description": "The Lisk reward for the delegate."
             },
             "signature": {
                 "type": "string",

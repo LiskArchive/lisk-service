@@ -20,7 +20,7 @@ const {
 const config = require('../../../../config');
 
 const {
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 } = require('../../../utils/accountUtils');
 
 const logger = Logger();
@@ -39,8 +39,8 @@ const resolveMultisignatureMemberships = (tx) => {
 
 	allKeys.forEach(key => {
 		const members = {
-			id: tx.senderAddress.concat('_', getBase32AddressFromPublicKey(key)),
-			memberAddress: getBase32AddressFromPublicKey(key),
+			id: tx.senderAddress.concat('_', getLisk32AddressFromPublicKey(key)),
+			memberAddress: getLisk32AddressFromPublicKey(key),
 			groupAddress: tx.senderAddress,
 		};
 		multisignatureInfoToIndex.push(members);

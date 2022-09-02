@@ -133,7 +133,7 @@ const getCommandsParamsSchemas = async params => {
 	if (response.data) commandsParamsSchemas.data = response.data;
 	if (response.meta) commandsParamsSchemas.meta = response.meta;
 
-	if (!commandsParamsSchemas.data.length && (params.moduleCommand)) {
+	if (!commandsParamsSchemas.data.length && params.moduleCommand) {
 		const errorMessage = `Schema corresponding moduleCommand: '${params.moduleCommand}' not found.`;
 		return {
 			data: { error: errorMessage },

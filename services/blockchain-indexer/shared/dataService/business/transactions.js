@@ -23,7 +23,7 @@ const {
 const { getLastBlock, getBlockByID } = require('./blocks');
 
 const {
-	getBase32AddressFromPublicKey,
+	getLisk32AddressFromPublicKey,
 	getIndexedAccountInfo,
 } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
@@ -135,7 +135,7 @@ const getTransactions = async params => {
 		async transaction => {
 			const indexedTxInfo = resultSet.find(txInfo => txInfo.id === transaction.id);
 
-			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
+			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 			const senderAccount = await getIndexedAccountInfo(
 				{ address: senderAddress, limit: 1 },
 				['name'],
@@ -192,7 +192,7 @@ const getTransactionsByBlockID = async blockID => {
 	const transactions = await BluebirdPromise.map(
 		block.transactions,
 		async (transaction) => {
-			const senderAddress = getBase32AddressFromPublicKey(transaction.senderPublicKey);
+			const senderAddress = getLisk32AddressFromPublicKey(transaction.senderPublicKey);
 
 			const senderAccount = await getIndexedAccountInfo(
 				{ address: senderAddress, limit: 1 },

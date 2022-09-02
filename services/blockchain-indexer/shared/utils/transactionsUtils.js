@@ -22,13 +22,12 @@ const {
 } = require('@liskhq/lisk-cryptography');
 
 const {
-	getAvailableModuleCommands,
 	getGenesisConfig,
 	getSystemMetadata,
 } = require('../constants');
 
 const { requestConnector } = require('./request');
-const { getBase32AddressFromHex } = require('./accountUtils');
+const { getLisk32AddressFromHex } = require('./accountUtils');
 const { parseInputBySchema, parseToJSONCompatObj } = require('./parser');
 const { getCommandsParamsSchemas } = require('../dataService/business/commandsParamsSchemas');
 
@@ -77,19 +76,14 @@ const normalizeTransaction = async tx => {
 	tx.size = txBuffer.length;
 	tx.params = decodedParams;
 
-	const availableModuleCommands = await getAvailableModuleCommands();
-	const txModuleCommand = String(tx.module).concat(':', tx.command);
-	const { name } = availableModuleCommands
-		.find(moduleCommand => moduleCommand.name === txModuleCommand);
-
-	tx.moduleCommand = name;
+	tx.moduleCommand = `${tx.module}:${tx.command}`;
 	if (tx.params.recipientAddress) {
 		tx.params
-			.recipientAddress = getBase32AddressFromHex(tx.params.recipientAddress);
+			.recipientAddress = getLisk32AddressFromHex(tx.params.recipientAddress);
 	}
 	if (tx.params.votes && tx.params.votes.length) {
 		tx.params.votes
-			.forEach(vote => vote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress));
+			.forEach(vote => vote.delegateAddress = getLisk32AddressFromHex(vote.delegateAddress));
 	}
 
 	// TODO: Set execution status from observing the events

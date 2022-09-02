@@ -28,6 +28,7 @@ const INTERVAL = /^\b((\d{4})-((1[012])|(0?[1-9]))-(([012][1-9])|([123]0)|31))(:
 const CHAINID_RANGE = /^\b(?:[0-9]{1,10}(?::[0-9]{1,10})?)\b$/;
 const NETWORK = /^\b(?:mainnet|testnet|betanet|,)+\b$/;
 const APPLICATION_STATE = /^\b(?:registered|active|terminated|,)+\b$/;
+const MODULE_COMMAND = /[a-z]+:[a-z]+/;
 
 module.exports = {
 	PUBLIC_KEY,
@@ -45,4 +46,5 @@ module.exports = {
 	CHAINID_RANGE,
 	NETWORK,
 	APPLICATION_STATE,
+	MODULE_COMMAND,
 };

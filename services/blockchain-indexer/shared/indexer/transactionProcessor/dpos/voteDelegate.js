@@ -21,8 +21,8 @@ const {
 } = require('lisk-service-framework');
 
 const {
-	getBase32AddressFromPublicKey,
-	getBase32AddressFromHex,
+	getLisk32AddressFromPublicKey,
+	getLisk32AddressFromHex,
 } = require('../../../utils/accountUtils');
 const config = require('../../../../config');
 
@@ -40,8 +40,8 @@ const getVoteIndexingInfo = async (tx) => {
 	const votes = tx.params.votes.map(async vote => {
 		const voteEntry = {};
 
-		voteEntry.sentAddress = getBase32AddressFromPublicKey(tx.senderPublicKey);
-		voteEntry.receivedAddress = getBase32AddressFromHex(vote.delegateAddress);
+		voteEntry.sentAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
+		voteEntry.receivedAddress = getLisk32AddressFromHex(vote.delegateAddress);
 		voteEntry.amount = vote.amount;
 		return voteEntry;
 	});

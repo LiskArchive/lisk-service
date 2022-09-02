@@ -50,7 +50,7 @@ const resolveModuleCommands = (data) => {
 			result = result.concat(
 				liskModule.commands.map(command => {
 					const name = liskModule.name.concat(':').concat(command.name);
-					return { name };
+					return name;
 				}),
 			);
 		}
@@ -81,11 +81,11 @@ const getSystemMetadata = async () => {
 	return systemMetadata;
 };
 
-const MODULE_NAME = {
+const MODULE = {
 	DPOS: process.env.MODULE_NAME_DPOS || 'dpos',
 };
 
-const COMMAND_NAME = {
+const COMMAND = {
 	REGISTER_DELEGATE: process.env.COMMAND_NAME_DPOS_REGISTER_DELEGATE || 'registerDelegate',
 	VOTE_DELEGATE: process.env.COMMAND_NAME_DPOS_VOTE_DELEGATE || 'voteDelegate',
 };
@@ -100,6 +100,6 @@ module.exports = {
 	getRegisteredModules,
 	getSystemMetadata,
 
-	MODULE_NAME,
-	COMMAND_NAME,
+	MODULE,
+	COMMAND,
 };

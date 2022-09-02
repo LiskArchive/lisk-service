@@ -14,7 +14,6 @@
  *
  */
 const {
-	Utils: { Data: { isEmptyObject } },
 	HTTP: { StatusCodes: { BAD_REQUEST } },
 	Exceptions: { ValidationException, InvalidParamsException },
 } = require('lisk-service-framework');
@@ -29,8 +28,6 @@ const getDelegates = async params => {
 
 	try {
 		const response = await dataService.getDelegates(params);
-		if (isEmptyObject(response)) return {};
-
 		if (response.data) delegates.data = response.data;
 		if (response.meta) delegates.meta = response.meta;
 

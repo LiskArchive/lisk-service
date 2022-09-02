@@ -18,7 +18,7 @@ const {
 	MySQL: { getTableInstance },
 } = require('lisk-service-framework');
 
-const { getBase32AddressFromPublicKey } = require('../../../utils/accountUtils');
+const { getLisk32AddressFromPublicKey } = require('../../../utils/accountUtils');
 const config = require('../../../../config');
 
 const logger = Logger();
@@ -40,7 +40,7 @@ const applyTransaction = async (blockHeader, tx, dbTrx) => {
 	const validatorsDB = await getValidatorsIndex();
 
 	const account = {
-		address: getBase32AddressFromPublicKey(tx.senderPublicKey),
+		address: getLisk32AddressFromPublicKey(tx.senderPublicKey),
 		isValidator: true,
 		publicKey: tx.senderPublicKey,
 		generatorKey: tx.params.generatorKey,

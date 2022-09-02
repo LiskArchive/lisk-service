@@ -26,11 +26,11 @@ const dataService = require('../business');
 const { getLastBlock } = require('../blocks');
 const { getAllGenerators } = require('../generators');
 const {
-	getBase32AddressFromPublicKey,
-	getBase32AddressFromHex,
-	getHexAddressFromBase32,
+	getLisk32AddressFromPublicKey,
+	getLisk32AddressFromHex,
+	getHexAddressFromLisk32,
 } = require('../../utils/accountUtils');
-const { MODULE_NAME, COMMAND_NAME } = require('../../constants');
+const { MODULE, COMMAND } = require('../../constants');
 const { parseToJSONCompatObj } = require('../../utils/parser');
 const config = require('../../../config');
 
@@ -51,8 +51,8 @@ let delegateList = [];
 const delegateComparator = (a, b) => {
 	const diff = BigInt(b.delegateWeight) - BigInt(a.delegateWeight);
 	if (diff !== BigInt('0')) return Number(diff);
-	return Buffer.from(getHexAddressFromBase32(a.address), 'hex')
-		.compare(Buffer.from(getHexAddressFromBase32(b.address), 'hex'));
+	return Buffer.from(getHexAddressFromLisk32(a.address), 'hex')
+		.compare(Buffer.from(getHexAddressFromLisk32(b.address), 'hex'));
 };
 
 const computeDelegateRank = async () => {
@@ -213,13 +213,13 @@ const updateDelegateListEveryBlock = () => {
 		const [block] = data.data;
 		if (block && block.transactions && Array.isArray(block.transactions)) {
 			block.transactions.forEach(tx => {
-				if (tx.module === MODULE_NAME.DPOS) {
-					if (tx.command === COMMAND_NAME.REGISTER_DELEGATE) {
+				if (tx.module === MODULE.DPOS) {
+					if (tx.command === COMMAND.REGISTER_DELEGATE) {
 						updatedDelegateAddresses
-							.push(getBase32AddressFromPublicKey(tx.senderPublicKey));
-					} else if (tx.command === COMMAND_NAME.VOTE_DELEGATE) {
+							.push(getLisk32AddressFromPublicKey(tx.senderPublicKey));
+					} else if (tx.command === COMMAND.VOTE_DELEGATE) {
 						tx.params.votes.forEach(vote => updatedDelegateAddresses
-							.push(getBase32AddressFromHex(vote.delegateAddress)));
+							.push(getLisk32AddressFromHex(vote.delegateAddress)));
 					}
 				}
 			});
@@ -280,7 +280,7 @@ const updateDelegateListEveryBlock = () => {
 const updateDelegateListOnAccountsUpdate = () => {
 	const updateDelegateListOnAccountsUpdateListener = (hexAddresses) => {
 		hexAddresses.forEach(async hexAddress => {
-			const address = getBase32AddressFromHex(hexAddress);
+			const address = getLisk32AddressFromHex(hexAddress);
 			const delegateIndex = delegateList.findIndex(acc => acc.address === address);
 			const delegate = delegateList[delegateIndex] || {};
 			if (Object.getOwnPropertyNames(delegate).length) {

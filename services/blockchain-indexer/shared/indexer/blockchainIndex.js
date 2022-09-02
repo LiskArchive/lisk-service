@@ -41,7 +41,7 @@ const {
 	range,
 } = require('../utils/arrayUtils');
 
-const { getBase32AddressFromPublicKey } = require('../utils/accountUtils');
+const { getLisk32AddressFromPublicKey } = require('../utils/accountUtils');
 const { normalizeTransaction } = require('../utils/transactionsUtils');
 
 // const { getEventsInfoToIndex } = require('../utils/eventsUtils');
@@ -52,7 +52,6 @@ const {
 	getFinalizedHeight,
 	getCurrentHeight,
 	getGenesisHeight,
-	getAvailableModuleCommands,
 } = require('../constants');
 
 const config = require('../../config');
@@ -133,7 +132,6 @@ const indexBlock = async job => {
 
 	try {
 		if (block.transactions.length) {
-			const availableModuleCommands = await getAvailableModuleCommands();
 			const { transactions, assets, ...blockHeader } = block;
 
 			const accountsDB = await getAccountsIndex();
@@ -142,12 +140,10 @@ const indexBlock = async job => {
 				block.transactions,
 				async (tx) => {
 					// Apply default transformations and index with minimal information by default
-					const { name } = availableModuleCommands
-						.find(moduleCommand => moduleCommand.name === String(tx.module).concat(':', tx.command));
-					tx.moduleCommand = name;
+					tx.moduleCommand = `${tx.module}:${tx.command}`;
 					tx.blockID = block.id;
 					tx.height = block.height;
-					tx.senderAddress = getBase32AddressFromPublicKey(tx.senderPublicKey);
+					tx.senderAddress = getLisk32AddressFromPublicKey(tx.senderPublicKey);
 					tx.timestamp = block.timestamp;
 
 					await updateAddressBalanceQueue.add({ address: tx.senderAddress });

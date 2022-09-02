@@ -16,8 +16,8 @@
 const BluebirdPromise = require('bluebird');
 
 const {
-	getBase32AddressFromHex,
-	getHexAddressFromBase32,
+	getLisk32AddressFromHex,
+	getHexAddressFromLisk32,
 	getIndexedAccountInfo,
 } = require('../../../utils/accountUtils');
 const { getAddressByName } = require('../../../utils/delegateUtils');
@@ -26,7 +26,7 @@ const { requestConnector } = require('../../../utils/request');
 
 const normalizeVote = vote => {
 	const normalizedVote = parseToJSONCompatObj(vote);
-	normalizedVote.delegateAddress = getBase32AddressFromHex(vote.delegateAddress);
+	normalizedVote.delegateAddress = getLisk32AddressFromHex(vote.delegateAddress);
 	return normalizedVote;
 };
 
@@ -43,7 +43,7 @@ const getVotesSent = async params => {
 		params.address = await getAddressByName(params.name);
 	}
 
-	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromBase32(params.address) });
+	const response = await requestConnector('dpos_getVoter', { address: getHexAddressFromLisk32(params.address) });
 
 	// TODO: Remove if condition when proper error handling implemented in SDK
 	if (!response.error) response.sentVotes

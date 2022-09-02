@@ -30,7 +30,7 @@ const logger = Logger();
 const { getFinalizedHeight } = require('../../constants');
 const blocksIndexSchema = require('../../database/schema/blocks');
 
-const { getBase32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
+const { getLisk32AddressFromHex, getIndexedAccountInfo } = require('../../utils/accountUtils');
 const { requestConnector } = require('../../utils/request');
 const { normalizeRangeParam } = require('../../utils/paramUtils');
 const { parseToJSONCompatObj } = require('../../utils/parser');
@@ -57,7 +57,7 @@ const normalizeBlock = async (originalblock) => {
 		};
 
 		if (block.generatorAddress) {
-			block.generatorAddress = await getBase32AddressFromHex(block.generatorAddress);
+			block.generatorAddress = await getLisk32AddressFromHex(block.generatorAddress);
 
 			const generatorInfo = await getIndexedAccountInfo(
 				{ address: block.generatorAddress, limit: 1 },
@@ -91,7 +91,7 @@ const normalizeBlock = async (originalblock) => {
 				block.size += txn.size;
 				block.totalForged += BigInt(txn.fee);
 				block.totalBurnt += BigInt(txn.minFee);
-				block.totalFee += BigInt(txn.fee) - BigInt(txn.minFee);
+				block.networkFee += BigInt(txn.fee) - BigInt(txn.minFee);
 				return txn;
 			},
 			{ concurrency: 1 },

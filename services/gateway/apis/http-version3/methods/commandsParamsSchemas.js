@@ -16,6 +16,7 @@
 const commandsParamsSchemaSource = require('../../../sources/version3/commandsParamsSchemas');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, getSwaggerDescription } = require('../../../shared/utils');
+const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
@@ -23,7 +24,7 @@ module.exports = {
 	rpcMethod: 'get.commands.parameters.schemas',
 	tags: ['Transactions'],
 	params: {
-		moduleCommand: { optional: true, type: 'string', min: 3, pattern: /[a-z]+:[a-z]+/ },
+		moduleCommand: { optional: true, type: 'string', min: 3, pattern: regex.MODULE_COMMAND },
 	},
 	get schema() {
 		const commandsParamsSchema = {};

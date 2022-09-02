@@ -16,5 +16,5 @@
 module.exports = {
 	address: '=,string',
 	name: '=,string',
-	nextForgingTime: '=,number',
+	nextAllocatedTime: '=,number',
 };

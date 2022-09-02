@@ -34,7 +34,7 @@ const getAllCommandsParamsSchemas = async () => {
 };
 
 const getTxnParamsSchema = async (trx) => {
-	const moduleCommand = String(trx.module).concat(':').concat(trx.command);
+	const moduleCommand = `${trx.module}:${trx.command}`;
 	const response = await getAllCommandsParamsSchemas();
 
 	if (!allCommandsParamsSchemasForFeesCache.length) {
@@ -47,10 +47,9 @@ const getTxnParamsSchema = async (trx) => {
 			});
 		});
 	}
-	const [{ schema }] = allCommandsParamsSchemasForFeesCache.filter(
-		txSchema => (!moduleCommand)
-			|| txSchema.moduleCommand === moduleCommand,
-	);
+	const { schema } = allCommandsParamsSchemasForFeesCache
+		.find(entry => entry.moduleCommand === moduleCommand);
+
 	return schema;
 };
 
