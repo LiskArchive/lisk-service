@@ -41,7 +41,7 @@ const getTxnParamsSchema = async (trx) => {
 		response.modules.forEach(module => {
 			module.commands.forEach(command => {
 				const formattedTxParams = {};
-				formattedTxParams.moduleCommand = String(module.name).concat(':').concat(command.name);
+				formattedTxParams.moduleCommand = `${module.name}:${command.name}`;
 				formattedTxParams.schema = command.params;
 				allCommandsParamsSchemasForFeesCache.push(formattedTxParams);
 			});

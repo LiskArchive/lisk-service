@@ -24,7 +24,7 @@
                 "minLength": 1,
                 "maxLength": 64,
                 "example": "01967dba384998026fe028119bd099ecf073c05c045381500a93d1a7c7307e5b",
-                "description": "Unique identifier of the block.\nDerived from the block signature.\n"
+                "description": "Unique identifier of the block.\nDerived from the block signature."
             },
             "version": {
                 "type": "integer",
@@ -36,7 +36,7 @@
                 "type": "integer",
                 "example": 8344448,
                 "minimum": 1,
-                "description": "Height of the network, when the block got forged.\nThe height of the networks represents the number of blocks, that have been forged on the network since Genesis Block.\n"
+                "description": "Height of the network, when the block got forged.\nThe height of the networks represents the number of blocks, that have been forged on the network since Genesis Block."
             },
             "timestamp": {
                 "type": "integer",
@@ -58,7 +58,7 @@
                 "type": "string",
                 "format": "hex",
                 "example": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-                "description": "Merkle root of the block payload.\nThe block payload comprises the transactions contained within the block.\n"
+                "description": "Merkle root of the block payload.\nThe block payload comprises the transactions contained within the block."
             },
             "assetsRoot": {
                 "type": "string",
@@ -113,18 +113,18 @@
             "totalForged": {
                 "type": "string",
                 "example": "65000000",
-                "description": "Total amount of Lisk (in Beddows) that has been forged in this block. It is a sum of all the transaction fees and the block reward.\n"
+                "description": "Total amount of Lisk (in Beddows) that has been forged in this block. It is a sum of all the transaction fees and the block reward."
             },
             "reward": {
                 "type": "string",
                 "example": "50000000",
-                "description": "The Lisk reward for the delegate."
+                "description": "The amount of Lisk (in Beddows) that was rewarded to the block generator."
             },
             "signature": {
                 "type": "string",
                 "format": "signature",
                 "example": "a3733254aad600fa787d6223002278c3400be5e8ed4763ae27f9a15b80e20c22ac9259dc926f4f4cabdf0e4f8cec49308fa8296d71c288f56b9d1e11dfe81e07",
-                "description": "Derived from a SHA-256 hash of the block header,\nthat is signed by the private key of the delegate who forged the block.\n"
+                "description": "Derived from a SHA-256 hash of the block header,\nthat is signed by the private key of the delegate who forged the block."
             },
             "isFinal": {
                 "type": "boolean",

@@ -32,7 +32,7 @@ const { parseInputBySchema, parseToJSONCompatObj } = require('./parser');
 const { getCommandsParamsSchemas } = require('../dataService/business/commandsParamsSchemas');
 
 const getTxnParamsSchema = async (trx) => {
-	const moduleCommand = trx.module.concat(':').concat(trx.command);
+	const moduleCommand = `${trx.module}:${trx.command}`;
 	const { data: [{ schema }] } = await getCommandsParamsSchemas({ moduleCommand });
 	return schema;
 };

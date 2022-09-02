@@ -26,8 +26,7 @@ const sender = {
 const getCurrentTime = () => Math.floor(Date.now() / 1000);
 
 const block = {
-	id: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
-		.required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	height: Joi.number().integer().min(1).required(),
 	timestamp: Joi.number().integer().positive().max(getCurrentTime())
 		.required(),
@@ -40,8 +39,7 @@ const TRANSACTION_EXECUTION_STATUSES = [
 ];
 
 const transactionSchema = {
-	id: Joi.string().min(1).max(64).pattern(regex.HASH_SHA256)
-		.required(),
+	id: Joi.string().pattern(regex.HASH_SHA256).required(),
 	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
 	nonce: Joi.string().required(),
 	fee: Joi.string().required(),
