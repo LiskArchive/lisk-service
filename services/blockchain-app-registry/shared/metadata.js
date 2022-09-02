@@ -163,15 +163,6 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 		meta: {},
 	};
 
-	if (params.network) {
-		const { network, ...remParams } = params;
-		params = remParams;
-		params.whereIn = {
-			property: 'network',
-			values: network.split(','),
-		};
-	}
-
 	if (params.search) {
 		const { search, ...remParams } = params;
 		params = remParams;
@@ -182,7 +173,10 @@ const getBlockchainAppsTokenMetadata = async (params) => {
 	}
 
 	const tokensResultSet = await tokensDB.find(params, ['network', 'chainID', 'chainName']);
-	const uniqueChainList = [...new Map(tokensResultSet.map(item => [item.chainID, item])).values()];
+
+	const uniqueChainMap = {};
+	tokensResultSet.forEach(item => uniqueChainMap[item.chainID] = item);
+	const uniqueChainList = Object.values(uniqueChainMap);
 
 	await BluebirdPromise.map(
 		uniqueChainList,

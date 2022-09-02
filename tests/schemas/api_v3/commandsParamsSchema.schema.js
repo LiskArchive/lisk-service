@@ -15,6 +15,8 @@
  */
 import Joi from 'joi';
 
+const regex = require('./regex');
+
 const commandParamsSchema = {
 	$id: Joi.string().required(),
 	title: Joi.string().optional(),
@@ -24,7 +26,7 @@ const commandParamsSchema = {
 };
 
 const commandsParamsSchemasSchema = {
-	moduleCommand: Joi.string().required(),
+	moduleCommand: Joi.string().pattern(regex.MODULE_COMMAND).required(),
 	// TODO: Update schema to required when all schemas are avalable from sdk
 	schema: Joi.object(commandParamsSchema).optional(),
 };

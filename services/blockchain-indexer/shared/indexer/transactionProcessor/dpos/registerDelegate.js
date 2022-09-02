@@ -30,7 +30,7 @@ const validatorsIndexSchema = require('../../../database/schema/validators');
 const getAccountsIndex = () => getTableInstance('accounts', accountsIndexSchema, MYSQL_ENDPOINT);
 const getValidatorsIndex = () => getTableInstance('validators', validatorsIndexSchema, MYSQL_ENDPOINT);
 
-// commandName specific constants
+// command specific constants
 const commandName = 'registerDelegate';
 
 // eslint-disable-next-line no-unused-vars

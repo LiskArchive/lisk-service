@@ -39,7 +39,7 @@ const getTransactionsIndex = () => getTableInstance(
 	MYSQL_ENDPOINT,
 );
 
-// commandName specific constants
+// command specific constants
 const commandName = 'transfer';
 
 // eslint-disable-next-line no-unused-vars

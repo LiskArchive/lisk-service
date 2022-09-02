@@ -13,7 +13,7 @@
  * Removal or modification of this copyright notice is prohibited.
  *
  */
-// commandName specific constants
+// command specific constants
 const commandName = 'unlockToken';
 
 // eslint-disable-next-line no-unused-vars

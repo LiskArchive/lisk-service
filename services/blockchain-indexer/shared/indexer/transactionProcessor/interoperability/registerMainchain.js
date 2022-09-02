@@ -30,7 +30,7 @@ const getTransactionsIndex = () => getTableInstance('transactions', transactions
 const getCrossChainMessagesIndex = () => getTableInstance('ccm', crossChainMessagesIndexSchema, MYSQL_ENDPOINT);
 const getBlockchainAppsIndex = () => getTableInstance('blockchain_apps', blockchainAppsIndexSchema, MYSQL_ENDPOINT);
 
-// commandName specific constants
+// command specific constants
 const commandName = 'mainchainRegistration';
 
 // eslint-disable-next-line no-unused-vars
