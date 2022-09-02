@@ -15,5 +15,6 @@
  */
 
 // Declare and export the following module specific constants
-// eslint-disable-next-line import/prefer-default-export
-export const moduleName = 'module';
+const moduleName = 'module';
+
+export default moduleName;
