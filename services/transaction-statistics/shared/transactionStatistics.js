@@ -60,13 +60,13 @@ const getSelector = async (params) => {
 	};
 };
 
-const getWithFallback = (acc, type, range) => {
+const getWithFallback = (acc, moduleCommand, range) => {
 	const defaultValue = {
 		count: 0,
 		volume: 0,
 	};
-	return acc[type]
-		? acc[type][range] || defaultValue
+	return acc[moduleCommand]
+		? acc[moduleCommand][range] || defaultValue
 		: defaultValue;
 };
 
@@ -81,12 +81,12 @@ const getRange = tx => {
 
 const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 	const transaction = {
-		type: 'any',
+		moduleCommand: 'any',
 		amount: String(1e8),
 		fee: String(1e7),
 	};
 	return {
-		[transaction.type]: {
+		[transaction.moduleCommand]: {
 			[getRange(transaction)]: getWithFallback({}),
 		},
 	};
@@ -94,21 +94,21 @@ const getInitialValueToEnsureEachDayHasAtLeastOneEntry = () => {
 
 const computeTransactionStats = transactions => transactions.reduce((acc, tx) => ({
 	...acc,
-	[tx.type]: {
-		...acc[tx.type],
+	[tx.moduleCommand]: {
+		...acc[tx.moduleCommand],
 		[getRange(tx)]: {
-			count: getWithFallback(acc, tx.type, getRange(tx)).count + 1,
-			volume: BigNumber(getWithFallback(acc, tx.type, getRange(tx)).volume)
+			count: getWithFallback(acc, tx.moduleCommand, getRange(tx)).count + 1,
+			volume: BigNumber(getWithFallback(acc, tx.moduleCommand, getRange(tx)).volume)
 				.add(getTxValue(tx)),
 		},
 	},
 }), getInitialValueToEnsureEachDayHasAtLeastOneEntry());
 
 const transformStatsObjectToList = statsObject => (
-	Object.entries(statsObject).reduce((acc, [type, rangeObject]) => ([
+	Object.entries(statsObject).reduce((acc, [moduleCommand, rangeObject]) => ([
 		...acc,
 		...Object.entries(rangeObject).map(([range, { count, volume }]) => ({
-			type,
+			moduleCommand,
 			volume: Math.ceil(volume),
 			count,
 			range,
@@ -132,7 +132,7 @@ const insertToDb = async (statsList, date) => {
 		statsList.map(statistic => {
 			Object.assign(statistic, { date, amount_range: statistic.range });
 			statistic.id = String(statistic.date)
-				.concat('-', statistic.type)
+				.concat('-', statistic.moduleCommand)
 				.concat('-', statistic.amount_range);
 			delete statistic.range;
 			return statistic;
@@ -227,20 +227,21 @@ const getDistributionByAmount = async params => {
 	return orderedFinalResult;
 };
 
-const getDistributionByType = async params => {
+const getDistributionByModuleCommand = async params => {
 	const db = await getDbInstance();
 
-	const result = (await db.find(await getSelector(params), ['type', 'count'])).filter(o => o.count > 0);
+	const result = (await db.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
 
 	const unorderedfinalResult = {};
 	result.forEach(entry => {
-		if (!unorderedfinalResult[entry.type]) unorderedfinalResult[entry.type] = 0;
-		unorderedfinalResult[entry.type] += entry.count;
+		if (!unorderedfinalResult[entry.moduleCommand]) unorderedfinalResult[entry.moduleCommand] = 0;
+		unorderedfinalResult[entry.moduleCommand] += entry.count;
 	});
 
 	const orderedFinalResult = {};
-	Object.keys(unorderedfinalResult).sort((a, b) => Number(a) - Number(b))
-		.forEach(type => orderedFinalResult[type] = unorderedfinalResult[type]);
+	Object.keys(unorderedfinalResult)
+		.sort((a, b) => Number(a) - Number(b))
+		.forEach(moduleCommand => orderedFinalResult[moduleCommand] = unorderedfinalResult[moduleCommand]);
 
 	return orderedFinalResult;
 };
@@ -286,22 +287,22 @@ const validateTransactionStatistics = async historyLengthDays => {
 		dateFrom,
 	};
 
-	const distributionByType = await getDistributionByType(params);
+	const distributionByModuleCommand = await getDistributionByModuleCommand(params);
 
 	const verifyStatistics = await BluebirdPromise.map(
-		Object.keys(distributionByType),
-		async type => {
+		Object.keys(distributionByModuleCommand),
+		async moduleCommand => {
 			const fromTimestamp = Math.floor((moment.unix(dateFrom).unix()) / 1000);
 			const toTimestamp = Math.floor((moment.unix(dateTo).unix()) / 1000);
 
 			const { meta: { total } } = await requestIndexer('getTransactions', {
-				moduleAssetId: type,
+				moduleCommand,
 				timestamp: `${fromTimestamp}:${toTimestamp}`,
 				limit: 1,
 			});
-			return total === distributionByType[type];
+			return total === distributionByModuleCommand[moduleCommand];
 		},
-		{ concurrency: Object.keys(distributionByType).length },
+		{ concurrency: Object.keys(distributionByModuleCommand).length },
 	);
 
 	const isStatsProperlyBuilt = verifyStatistics.every(isVerified => isVerified);
@@ -310,7 +311,7 @@ const validateTransactionStatistics = async historyLengthDays => {
 
 module.exports = {
 	getStatsTimeline,
-	getDistributionByType,
+	getDistributionByModuleCommand,
 	getDistributionByAmount,
 	init,
 	updateTodayStats,

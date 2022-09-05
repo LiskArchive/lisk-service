@@ -20,7 +20,7 @@ module.exports = {
 		count: { type: 'integer' },
 		date: { type: 'integer' },
 		id: { type: 'string' },
-		type: { type: 'string' },
+		moduleCommand: { type: 'string' },
 		volume: { type: 'bigInteger' },
 	},
 	indexes: {

@@ -40,13 +40,15 @@ const getTransactionsStatistics = async (params) => {
 		transactionCount: parseInt(el.transactionCount, 10),
 	}));
 
-	const distributionByType = await txStatisticsService.getDistributionByType(statsParams);
-	const distributionByAmount = await txStatisticsService.getDistributionByAmount(statsParams);
+	const distributionByModuleCommand = await txStatisticsService
+		.getDistributionByModuleCommand(statsParams);
+	const distributionByAmount = await txStatisticsService
+		.getDistributionByAmount(statsParams);
 
 	return {
 		data: {
 			timeline,
-			distributionByType,
+			distributionByModuleCommand,
 			distributionByAmount,
 		},
 		meta: {

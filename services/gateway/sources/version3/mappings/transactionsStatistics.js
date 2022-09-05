@@ -15,6 +15,6 @@
  */
 module.exports = {
 	timeline: '=',
-	distributionByType: '=',
+	distributionByModuleCommand: '=',
 	distributionByAmount: '=',
 };
