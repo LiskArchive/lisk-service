@@ -22,8 +22,10 @@ module.exports = {
 		id: { type: 'string' },
 		moduleCommand: { type: 'string' },
 		volume: { type: 'bigInteger' },
+		tokenID: { type: 'string' },
 	},
 	indexes: {
 		date: { type: 'range' },
+		tokenID: { type: 'key' },
 	},
 };
