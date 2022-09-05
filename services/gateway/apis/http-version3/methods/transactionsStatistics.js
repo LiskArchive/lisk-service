@@ -24,8 +24,10 @@ module.exports = {
 	tags: ['Transactions'],
 	params: {
 		interval: { optional: false, type: 'string', enum: ['day', 'month'] },
-		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10, pattern: /^\b((?:[1-9][0-9]?)|100)\b$/ },
-		offset: { optional: true, type: 'number', min: 0, default: 0, pattern: /^\b([0-9][0-9]*)\b$/ },
+		tokenName: { optional: true, type: 'string', min: 1, max: 20, pattern: regex.NAME },
+		tokenID: { optional: true, type: 'string', min: 1, max: 21 },
+		limit: { optional: true, type: 'number', min: 1, max: 100, default: 10 },
+		offset: { optional: true, type: 'number', min: 0, default: 0 },
 	},
 	get schema() {
 		const transactionSchema = {};

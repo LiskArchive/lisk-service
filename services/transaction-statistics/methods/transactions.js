@@ -24,6 +24,8 @@ module.exports = [
 		controller: getTransactionsStatistics,
 		params: {
 			interval: { optional: false, type: 'string' },
+			tokenID: { optional: true, type: 'string' },
+			tokenName: { optional: true, type: 'string' },
 			limit: { optional: true, type: 'number' },
 			offset: { optional: true, type: 'number' },
 		},
