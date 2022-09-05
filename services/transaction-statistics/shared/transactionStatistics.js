@@ -40,6 +40,7 @@ const logger = Logger();
 const MYSQL_ENDPOINT = config.endpoints.mysql;
 
 let numTrxTypes;
+
 const getDbInstance = () => getTableInstance('transaction_statistics', txStatisticsIndexSchema, MYSQL_ENDPOINT);
 
 const getSelector = async (params) => {
@@ -241,7 +242,9 @@ const getDistributionByType = async params => {
 	const orderedFinalResult = {};
 	Object.keys(unorderedfinalResult)
 		.sort((a, b) => Number(a) - Number(b))
-		.forEach(moduleCommand => orderedFinalResult[moduleCommand] = unorderedfinalResult[moduleCommand]);
+		.forEach(moduleCommand => {
+			orderedFinalResult[moduleCommand] = unorderedfinalResult[moduleCommand];
+		});
 
 	return orderedFinalResult;
 };

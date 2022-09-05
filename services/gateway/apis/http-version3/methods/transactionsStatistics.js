@@ -16,6 +16,7 @@
 const transactionsStatisticsSource = require('../../../sources/version3/transactionsStatistics');
 const envelope = require('../../../sources/version3/mappings/stdEnvelope');
 const { transformParams, response, getSwaggerDescription } = require('../../../shared/utils');
+const regex = require('../../../shared/regex');
 
 module.exports = {
 	version: '2.0',
