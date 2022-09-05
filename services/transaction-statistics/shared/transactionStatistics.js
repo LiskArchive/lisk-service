@@ -227,7 +227,7 @@ const getDistributionByAmount = async params => {
 	return orderedFinalResult;
 };
 
-const getDistributionByModuleCommand = async params => {
+const getDistributionByType = async params => {
 	const db = await getDbInstance();
 
 	const result = (await db.find(await getSelector(params), ['moduleCommand', 'count'])).filter(o => o.count > 0);
@@ -287,10 +287,10 @@ const validateTransactionStatistics = async historyLengthDays => {
 		dateFrom,
 	};
 
-	const distributionByModuleCommand = await getDistributionByModuleCommand(params);
+	const distributionByType = await getDistributionByType(params);
 
 	const verifyStatistics = await BluebirdPromise.map(
-		Object.keys(distributionByModuleCommand),
+		Object.keys(distributionByType),
 		async moduleCommand => {
 			const fromTimestamp = Math.floor((moment.unix(dateFrom).unix()) / 1000);
 			const toTimestamp = Math.floor((moment.unix(dateTo).unix()) / 1000);
@@ -300,9 +300,9 @@ const validateTransactionStatistics = async historyLengthDays => {
 				timestamp: `${fromTimestamp}:${toTimestamp}`,
 				limit: 1,
 			});
-			return total === distributionByModuleCommand[moduleCommand];
+			return total === distributionByType[moduleCommand];
 		},
-		{ concurrency: Object.keys(distributionByModuleCommand).length },
+		{ concurrency: Object.keys(distributionByType).length },
 	);
 
 	const isStatsProperlyBuilt = verifyStatistics.every(isVerified => isVerified);
@@ -311,7 +311,7 @@ const validateTransactionStatistics = async historyLengthDays => {
 
 module.exports = {
 	getStatsTimeline,
-	getDistributionByModuleCommand,
+	getDistributionByType,
 	getDistributionByAmount,
 	init,
 	updateTodayStats,
